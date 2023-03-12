@@ -8,11 +8,15 @@ Categories=
 X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1
 X-KDE-AutostartScript=true
-# XFCE working
-Exec=/usr/bin/sudo /usr/bin/eui-start.sh
-Terminal=true
 
-#
+# XFCE working
+#Exec=/usr/bin/sudo /usr/bin/eui-start.sh
+#Terminal=true
+
 # Cinnamon working
-Exec=/usr/bin/gnome-terminal -- /usr/bin/sudo /usr/bin/eui-start.sh
+#Exec=/usr/bin/gnome-terminal -- /usr/bin/sudo /usr/bin/eui-start.sh
+#Terminal=false
+
+# PLASMA not working
+Exec=/usr/bin/konsole -e /usr/bin/sudo /usr/bin/eui-start.sh
 Terminal=false
