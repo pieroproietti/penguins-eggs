@@ -28,7 +28,15 @@ At this point we can restart the machines, which will no longer find an availabl
 # Recommendations
 Of course, this methodology must be carried out in controlled environments and by experienced personnel; the risk-if proper care is not taken-is to erase important machines.
 
-Booting a machine via PXE involves copying the entire compressed filesystem into the RAM memory of the client machine, therefore it is recommended for egg-of-ubuntu-chick and egg-of-linuxmint-vera 8 GB of RAM, while eggs- of-bookworm-colibri can be installed on machines with 4GB of memory
+Booting a machine via PXE involves copying the entire compressed filesystem into the RAM memory of the client machine, therefore it is recommended for egg-of-ubuntu-chick and egg-of-linuxmint-vera 8 GB of RAM, while eggs- of-bookworm-colibri can be installed on machines with 4GB of memory.
+
+Carefully read the README present in [uei](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md) regarding the possibilities: language, compression format, etc. 
+
+## Video
+I am not very skilled at producing movies, even less so as an actor, I made this videos, I hope it will help you.
+
+* [using PXE and EUI from ISO](https://youtu.be/rYvCzGO3V6k)
+* [Create a Live EUI - Eggs Unattended Installation](https://youtu.be/QBjkxxoc8ho) 
 
 # Disclaimer
 The use of eggs for the installation of systems and especially the automatic installation is ENTIRELY YOUR SOLE RESPONSIBILITY.

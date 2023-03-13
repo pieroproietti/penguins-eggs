@@ -139,8 +139,7 @@ fi
 **Note:** look at the new `--halt` flag, introduced to shut down the machine after installation and avoid. thus, further attempts in the case of PXE-enabled computers and with first PXE boot device.
 
 # Video
-I am not ve
-ry skilled at producing movies, even less so as an actor, I made this videos, I hope it will help you.
+I am not very skilled at producing movies, even less so as an actor, I made this videos, I hope it will help you.
 
 * [using PXE and EUI from ISO](https://youtu.be/rYvCzGO3V6k)
 * [Create a Live EUI - Eggs Unattended Installation](https://youtu.be/QBjkxxoc8ho) 
