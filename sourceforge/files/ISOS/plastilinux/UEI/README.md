@@ -19,15 +19,17 @@ We will boot our first machine from live on DVD ROM or USB stick and have the ca
 At this point we can start our PXE server which, in the presence of any dhcp server that releases ip addresses, will complete them with its address and the file to download for starting the installation via LAN.
 
 ### Starting the machines to be installed
-
 If you have a method to automatically boot all machines and if they are configured with network boot as the first option, we are in the best situation: just turn on the machines and wait for them to install the system and perform shutdown.
 
 
 ### PXE service stop and client restart
-
 At this point we can restart the machines, which will no longer find an available PXE server and will reboot from hard disk with the previously installed system.
 
 # Recommendations
-
 Of course, this methodology must be carried out in controlled environments and by experienced personnel; the risk-if proper care is not taken-is to erase important machines.
+
+# Disclaimer
+The use of eggs for the installation of systems and especially the automatic installation is ENTIRELY YOUR SOLE RESPONSIBILITY.
+
+
 
