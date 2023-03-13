@@ -18,6 +18,10 @@ Detailed instructions for usage are published on the [Penguins' eggs book](https
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
+
+### eggs-9.4.1a
+Until now I tested on XFCE, when I tried cinnamon, gnome and KDE I realized the xdg/autostard don't work in "my way". I did manu templs and now I get it working on XFCE and cinnamon. We lacks again GNOME, KDE and others Desktop, but I'm suce someome will come to help on them. Thanks for interest and so much stars on github last week.
+
 ### eggs-9.4.1
 Working on EUI (Eggs Unattended Installation):
 
