@@ -143,5 +143,6 @@ I am not ve
 ry skilled at producing movies, even less so as an actor, I made this videos, I hope it will help you.
 
 * [using PXE and EUI from ISO](https://youtu.be/rYvCzGO3V6k)
-* [EGGS UNATTENDED INSTALLATION](https://youtu.be/QBjkxxoc8ho) 
+* [Create a Live EUI - Eggs Unattended Installation](https://youtu.be/QBjkxxoc8ho) 
+
 
