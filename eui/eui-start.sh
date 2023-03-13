@@ -1,6 +1,8 @@
 #!/bin/bash
 set -Eeuo pipefail
 
+
+
 if mountpoint -q "/lib/live/mount"; then 
     # if isLive
     echo "E G G S: the reproductive system of penguins"
@@ -48,12 +50,14 @@ if mountpoint -q "/lib/live/mount"; then
     # -s, --small           Swap small: RAM
     # -u, --unattended      Unattended installation
     # -v, --verbose         Verbose
+
+    # on XFCE we are sudo
     eggs install --custom=it --domain=.local --random --nointeractive --halt
 else  
     # isInstalled
-    sudo rm -f /etc/sudoers.d/eui-users
-    sudo rm -f /usr/bin/eui-start.sh
-    sudo rm -f /etc/xdg/autostart/eui.desktop
+    rm -f /etc/sudoers.d/eui-users
+    rm -f /usr/bin/eui-start.sh
+    rm -f /etc/xdg/autostart/eui.desktop
 fi
 
 

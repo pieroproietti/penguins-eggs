@@ -3,10 +3,11 @@ Encoding=UTF-8
 Name=Eggs unattended install
 Comment=Start unattended installation
 Icon=cinnamon-symbolic
-Exec=sudo /usr/bin/eui-start.sh
-Terminal=true
 Type=Application
 Categories=
 X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1
 X-KDE-AutostartScript=true
+# cinnamon working
+Exec=/usr/bin/gnome-terminal -- /usr/bin/sudo /usr/bin/eui-start.sh
+Terminal=false
