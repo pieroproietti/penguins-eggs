@@ -23,7 +23,7 @@ Save and start the image creation:
 
 An image with fast compression will be generated, and the cuckoo command will be started to distribute it.
 
-**Note:*** once the image is created. simply start 'eggs cuckoo' to distribute it, no need to regenerate it
+**Note:** once the image is created. simply start 'eggs cuckoo' to distribute it, no need to regenerate it
 
 
 # Differences of a UEI image versus a normal image
@@ -52,8 +52,8 @@ You can select a particular customization or create your own, at the moment I am
 It is copied inside `/etc/sudoers.d`, MUST be owned by root and have rights 0440
 
 ```
-live ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
-artisan ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
+live ALL=(ALL) NOPASSWD: ALL
+artisan ALL=(ALL) NOPASSWD: ALL
 ```
 
 ##  /etc/xdg/autostart/eui-autostart-[xdce/cinnamon].desktop
