@@ -31,21 +31,21 @@ An image with fast compression will be generated, and the cuckoo command will be
 Self-starting of the installer is done through the following files:
 
 * /etc/sudoers.d/eui-users
-* /etc/xdg/autostart/eui.desktop
+* /etc/xdg/autostart/eui-[xfce/cinnamon].desktop
 * /usr/bin/eui-start.ch
 
 You can select a particular customization or create your own, at the moment I am trying to adapt the customization to the various languages and we have:
 
-* bg (bulgaro)
-* br (portoghese brasiliano)
-* de (tedesco)
-* es (spagnolo)
-* fr (francese)
-* it (italiano)
-* nl (olandese)
-* pe (spagnolo perù)
-* ru (russo)
-* uk (ucraino)
+* bg (Bulgarian)
+* br (Brazilian Portuguese)
+* de (German)
+* es (Spanish)
+* fr (French)
+* it (Italian)
+* nl (Dutch)
+* pe (Spanish Peru)
+* ru (Russian)
+* uk (ukrainian)
 
 ## /etc/sudoers.d/eui-users
 
@@ -65,13 +65,14 @@ Encoding=UTF-8
 Name=Eggs unattended install
 Comment=Start unattended installation
 Icon=cinnamon-symbolic
-Exec=sudo /usr/bin/eui-start.sh
-Terminal=true
 Type=Application
 Categories=
 X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1
 X-KDE-AutostartScript=true
+# XFCE working
+Exec=/usr/bin/sudo /usr/bin/eui-start.sh
+Terminal=true
 ```
 
 ## /usr/bin/eui-start.sh
