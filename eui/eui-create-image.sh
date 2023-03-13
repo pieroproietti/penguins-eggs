@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuo pipefail
 sudo eggs tools clean -n
 sudo eggs tools ppa -n
 sudo eggs kill -n
@@ -16,10 +17,9 @@ case $DESKTOP in
 
     "ubuntu:GNOME")
         echo "not yet supported!"
-        exit(0)
+        exit 0
         ;;
 esac
-
 sudo eggs produce --release -n
 sudo rm /etc/sudoers.d/eui-users
 sudo rm /usr/bin/eui-start.sh
