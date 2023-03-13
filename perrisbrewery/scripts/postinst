@@ -61,7 +61,6 @@ case "$1" in
             chmod +x /usr/lib/penguins-eggs/eui/eui-create-image.sh
             chmod +x /usr/lib/penguins-eggs/eui/eui-start.sh
             chmod 0400 /usr/lib/penguins-eggs/eui/eui-users
-            chmod +x /usr/lib/penguins-eggs/eui/eui.desktop
         fi
 
         # Adding man page
