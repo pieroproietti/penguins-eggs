@@ -23,7 +23,7 @@ Save and start the image creation:
 
 An image with fast compression will be generated, and the cuckoo command will be started to distribute it.
 
-**Note:*** once the image is created. simply start 'eggs cuckoo' to distribute it, no need to regenerate it
+**Note:** once the image is created. simply start 'eggs cuckoo' to distribute it, no need to regenerate it
 
 
 # Differences of a UEI image versus a normal image
@@ -31,29 +31,29 @@ An image with fast compression will be generated, and the cuckoo command will be
 Self-starting of the installer is done through the following files:
 
 * /etc/sudoers.d/eui-users
-* /etc/xdg/autostart/eui.desktop
+* /etc/xdg/autostart/eui-[xfce/cinnamon].desktop
 * /usr/bin/eui-start.ch
 
 You can select a particular customization or create your own, at the moment I am trying to adapt the customization to the various languages and we have:
 
-* bg (bulgaro)
-* br (portoghese brasiliano)
-* de (tedesco)
-* es (spagnolo)
-* fr (francese)
-* it (italiano)
-* nl (olandese)
-* pe (spagnolo perù)
-* ru (russo)
-* uk (ucraino)
+* bg (Bulgarian)
+* br (Brazilian Portuguese)
+* de (German)
+* es (Spanish)
+* fr (French)
+* it (Italian)
+* nl (Dutch)
+* pe (Spanish Peru)
+* ru (Russian)
+* uk (ukrainian)
 
 ## /etc/sudoers.d/eui-users
 
 It is copied inside `/etc/sudoers.d`, MUST be owned by root and have rights 0440
 
 ```
-live ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
-artisan ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
+live ALL=(ALL) NOPASSWD: ALL
+artisan ALL=(ALL) NOPASSWD: ALL
 ```
 
 ##  /etc/xdg/autostart/eui-autostart-[xdce/cinnamon].desktop
@@ -65,13 +65,14 @@ Encoding=UTF-8
 Name=Eggs unattended install
 Comment=Start unattended installation
 Icon=cinnamon-symbolic
-Exec=sudo /usr/bin/eui-start.sh
-Terminal=true
 Type=Application
 Categories=
 X-GNOME-Autostart-Phase=Initialization
 X-KDE-autostart-phase=1
 X-KDE-AutostartScript=true
+# XFCE working
+Exec=/usr/bin/sudo /usr/bin/eui-start.sh
+Terminal=true
 ```
 
 ## /usr/bin/eui-start.sh
@@ -138,4 +139,4 @@ fi
 **Note:** look at the new `--halt` flag, introduced to shut down the machine after installation and avoid. thus, further attempts in the case of PXE-enabled computers and with first PXE boot device.
 
 # Video
-I am not very skilled at producing movies, even less so as an actor, I made this [video]((https://youtu.be/QBjkxxoc8ho) I hope it will help you.
+I am not very skilled at producing movies, even less so as an actor, I made this [video](https://youtu.be/QBjkxxoc8ho) I hope it will help you.
