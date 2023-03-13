@@ -21,7 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
  
 ### eggs-9.4.1a
-Until now I have tried [UEI](https://youtu.be/QBjkxxoc8ho) (Unattended Eggs Installation) extensively on XFCE, when I tried with cinnamon, gnome and KDE I realized that the automatic startup does not work the same way. 
+Until now I have tried [UEI - Unattended Eggs Installation](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md) extensively on XFCE, when I tried with cinnamon, gnome and KDE I realized that the automatic startup does not work the same way. 
 
 I have made many attempts, now it finally seems to work both XFCE and in cinnamon. However, GNOME, KDE and other Desktops are still missing, but I am sure someone will want to help. 
 

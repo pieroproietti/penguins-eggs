@@ -1,39 +1,40 @@
 # eggs unattended install
 
-Eggs unattended install è basato su semplici script:
-* ```eui-create-image.sh``` crea l'immagine;
-* ```eui-start.sh``` viene copiato in ```/usr/bin/```
-* ```eui-users``` lista degli utenti abilitati a sudo SENZA password, viene copiato in ```/etc/sudoers.d/```;
-* ```eui.desktop``` avvia l'installazione automatica al login e viene copiato in ```/etc/xdg/autostart```.
+Eggs unattended install Is based on simple scripts:
+* ```eui-create-image.sh``` creates the image;
+* ```eui-start.sh``` is copied into ```/usr/bin/```
+* ```eui-users``` contains the list of users enabled to sudo WITHOUT password, it is copied to ```/etc/sudoers.d/```;
+* ```eui-autostart-[xfce/cinnamon].desktop``` starts automatic installation at login and is copied to ```/etc/xdg/autostart```.
 
-I tre file eui-start.sh, eui-users ed eui.desktop vengono eliminati dalla directory di destinazione non appena completata la produzione dell'immagine.
+The three files `eui-start.sh`, `eui-users` and `eui-*.desktop` are deleted from the destination directory as soon as the production of the image is completed
 
-# Creazione di una ISO eui
-Per creare una ISO con possibilità di unattended-install, procedere come segue:
+# Creation of an EUI image
+To create an ISO with unattended-install capability, proceed as follows:
 
 ```
 cd /usr/lib/penguins-eggs/eui
 ```
-Modificare eventualmente il file eui-start.sh ```sudo nano eui-start.sh``` per selezionare la lingua desiderata, la configurazione di swap e le altre possibili configurazioni riportate nel sorgente. 
+If necessary, modify the `eui-start.sh` file `sudo nano eui-start.sh` to select the desired language, swap configuration, and other possible configurations given in the source. 
 
-Salvate ed avviare la creazione dell'immagine:
-
+Save and start the image creation:
 ```
 ./eui-create-image.sh
 ```
 
-Verrà generata una immagine fast, quindi abbastanza veloce, ed avviato il comando cuckoo.
+An image with fast compression will be generated, and the cuckoo command will be started to distribute it.
+
+**Note:*** once the image is created. simply start 'eggs cuckoo' to distribute it, no need to regenerate it
 
 
-# Modifiche necessarie rispetto ad una normale immagine
+# Differences of a UEI image versus a normal image
 
-Sono coinvolti 3 file:
+Self-starting of the installer is done through the following files:
 
 * /etc/sudoers.d/eui-users
 * /etc/xdg/autostart/eui.desktop
 * /usr/bin/eui-start.ch
 
-E' possibile selezionare una particolare customizzazione o crearne una propria, al momento sto cercando di adattare la customizzazione alle varie lingue ed abbiamo:
+You can select a particular customization or create your own, at the moment I am trying to adapt the customization to the various languages and we have:
 
 * bg (bulgaro)
 * br (portoghese brasiliano)
@@ -48,23 +49,15 @@ E' possibile selezionare una particolare customizzazione o crearne una propria, 
 
 ## /etc/sudoers.d/eui-users
 
-Create a file:
-```
-sudo nano /etc/sudoers.d/eui-users
-```
-and copy and past, following code:
+It is copied inside `/etc/sudoers.d`, MUST be owned by root and have rights 0440
 
 ```
 live ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
 artisan ALL=(ALL) NOPASSWD: /usr/bin/eui-start.sh
 ```
-Change permissions to /etc/sudoers.d/eui-users
-```
-chmod 0440 /etc/sudoers.d/eui-users
-```
 
-##  /etc/xdg/autostart/eui.desktop
-Serve per avviare l'installazione non appena effettuato il login. Al momento funziona su XFCE, per qualche motivo non avvia l'installazione con cinnamon. Gli altri DE sono da testare.
+##  /etc/xdg/autostart/eui-autostart-[xdce/cinnamon].desktop
+It is the file that makes it possible to auto-start the installer: there are currently two working versions, one for XFCE and one for cinnamon;
 
 ```
 [Desktop Entry]
@@ -82,9 +75,7 @@ X-KDE-AutostartScript=true
 ```
 
 ## /usr/bin/eui-start.sh
-Al momento, la customizzazione dell'installazione, DEVE essere effettuata modificando questo file:
-
-Si noti il nuovo flag --halt, introdotto per spegnere la macchina dopo l'installazione ed evitare. quindi, ulteriori tentativi nel caso di computer abilitati PXE e con primo dispositivo di boot PXE.
+Currently, customization of the installation, MUST be done by editing this file.
 
 ```
 set -Eeuo pipefail
@@ -144,3 +135,7 @@ else
     sudo rm -f /etc/xdg/autostart/eui.desktop
 fi
 ```
+**Note:** look at the new `--halt` flag, introduced to shut down the machine after installation and avoid. thus, further attempts in the case of PXE-enabled computers and with first PXE boot device.
+
+# Video
+I am not very skilled at producing movies, even less so as an actor, I made this [video]((https://youtu.be/QBjkxxoc8ho) I hope it will help you.
