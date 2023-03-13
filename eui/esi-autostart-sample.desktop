@@ -1,0 +1,26 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Eggs unattended install
+Comment=Start unattended installation
+Icon=cinnamon-symbolic
+Type=Application
+Categories=
+X-GNOME-Autostart-Phase=Initialization
+X-KDE-autostart-phase=1
+X-KDE-AutostartScript=true
+
+# XFCE working
+Exec=/usr/bin/sudo /usr/bin/eui-start.sh
+Terminal=true
+
+# Cinnamon working
+#Exec=/usr/bin/gnome-terminal -- /usr/bin/sudo /usr/bin/eui-start.sh
+#Terminal=false
+
+# GNOME/PLASMA NOT working
+# Exec=/usr/bin/sudo /usr/bin/eui-start.sh
+# Terminal=true
+
+# GNOME/PLASMA NOT working
+# Exec=/usr/bin/gnome-terminal -- /usr/bin/sudo /usr/bin/eui-start.sh
+# Terminal=false
