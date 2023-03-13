@@ -139,4 +139,4 @@ fi
 **Note:** look at the new `--halt` flag, introduced to shut down the machine after installation and avoid. thus, further attempts in the case of PXE-enabled computers and with first PXE boot device.
 
 # Video
-I am not very skilled at producing movies, even less so as an actor, I made this [video]((https://youtu.be/QBjkxxoc8ho) I hope it will help you.
+I am not very skilled at producing movies, even less so as an actor, I made this [video](https://youtu.be/QBjkxxoc8ho) I hope it will help you.
