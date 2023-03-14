@@ -16,7 +16,7 @@ set -e
 #          <conflicting-package> <version>
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
-
+# echo ">>> $0 $1 $2 $3 $4<<<"
 
 case "$1" in
     configure)
@@ -71,8 +71,6 @@ case "$1" in
             cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         fi
 
-        # deve essere chiamato SOLO da new-postinst
-        # mentre viene chiamato anche da old
         eggs config --nointeractive
         echo "eggs was installed..." 
     ;;
