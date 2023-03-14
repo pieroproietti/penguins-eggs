@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@oclif/core': ^1.21.0
+  '@oclif/core': ^1.26.0
   '@oclif/plugin-autocomplete': 1.3.8
   '@oclif/plugin-help': ^5.1.23
   '@oclif/plugin-not-found': ^2.3.15
@@ -654,8 +654,8 @@ packages:
       widest-line: 3.1.0
       wrap-ansi: 7.0.0
 
-  /@oclif/core/2.6.2_alpjt73dvgv6kni625hu7f2l4m:
-    resolution: {integrity: sha512-roxcBLr4BuoOEDEkMQk4Yy0Tolr39n6i+A63qPLa19vrgxjZZJygh2HpThsn69/UPuEzMq051FnvJ9tNln3Y5g==}
+  /@oclif/core/2.6.3_alpjt73dvgv6kni625hu7f2l4m:
+    resolution: {integrity: sha512-kLwg+lmeZt4vfUlYN1XI8bPkcNBozfPOqciFOJMzHkPnq18lmoMu3+Xnm4wL1A9dXEyzoa5jidFhdyP/kZMBCw==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
@@ -711,7 +711,7 @@ packages:
     resolution: {integrity: sha512-p6DJk0QMfzGvXGqrSZTQPitUGi68oGzr48tRKdrVxDDPMAELxHeXXFbkNRNdvjldPpTk44m0PbxV5tWhwurRwg==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.6.2_alpjt73dvgv6kni625hu7f2l4m
+      '@oclif/core': 2.6.3_alpjt73dvgv6kni625hu7f2l4m
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -723,7 +723,7 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.4
-      '@oclif/core': 2.6.2_alpjt73dvgv6kni625hu7f2l4m
+      '@oclif/core': 2.6.3_alpjt73dvgv6kni625hu7f2l4m
       fast-levenshtein: 3.0.0
       lodash: 4.17.21
     transitivePeerDependencies:
@@ -736,7 +736,7 @@ packages:
     resolution: {integrity: sha512-Xb7MECv9uSaxIuzPbgJnOZEf0gnHlcLdncBkJCn5vsMnt1hC91j65feGeY8c68vsrAi6SumOfI8C63v8gC+FEA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@oclif/core': 2.6.2_alpjt73dvgv6kni625hu7f2l4m
+      '@oclif/core': 2.6.3_alpjt73dvgv6kni625hu7f2l4m
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -747,7 +747,7 @@ packages:
     resolution: {integrity: sha512-CjLuqT1Jcuv2GG6s0nYukSo66U7N0UUGAzVB4LeGiGQHOJkeLxTBErfsPAjBNOTGss/cC3VAkCHBlHKovB5S6A==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.6.2_alpjt73dvgv6kni625hu7f2l4m
+      '@oclif/core': 2.6.3_alpjt73dvgv6kni625hu7f2l4m
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 9.1.0
@@ -770,7 +770,7 @@ packages:
     resolution: {integrity: sha512-FACnv9W9Pd0F9ADH/xCh8n3s9bJ3NvCoR4QkD8fedjxocfASu00h+ggFDVSlD2Wmgqpk1E0HSK2gDvKKtSJQOQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
-      '@oclif/core': 2.6.2_alpjt73dvgv6kni625hu7f2l4m
+      '@oclif/core': 2.6.3_alpjt73dvgv6kni625hu7f2l4m
       fancy-test: 2.0.13
     transitivePeerDependencies:
       - '@swc/core'

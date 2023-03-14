@@ -18,6 +18,8 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+#echo ">>> $0 $1 $2 $3 $4<<<"
+
 
 case "$1" in
     purge)
@@ -31,11 +33,10 @@ case "$1" in
         rm -f /usr/bin/adapt
         rm -f /usr/sbin/resy
 
-        # pulizia dei link non rimovibili da apt
+        # sanitize /usr/lib/penguins-eggs/
         rm -rf /usr/lib/penguins-eggs/distros
         rm -rf /usr/lib/penguins-eggs/eui
         rm -rf /usr/lib/penguins-eggs/krill
-        rm -rf /usr/lib/penguins-eggs/node_modules
 
         # sanitize applications links
         rm -f /usr/share/applications/penguins-adapt.destop
@@ -50,10 +51,10 @@ case "$1" in
         rm -f /usr/bin/pve-live.sh
         rm -f /etc/systemd/system/pve-live.service
 
-        # remove yolk
+        # sanitize yolk
         rm -rf /var/local/yolk
 
-        # remove penguins-eggs multiarch (krill-modules)
+        # sanitize penguins-eggs multiarch (krill-modules)
         rm -rf /usr/lib/i386-linux-gnu/penguins-eggs/
         rm -rf /usr/lib/x86_64-linux-gnu/penguins-eggs/
         # armel and arm64 have all in /usr/lib/penguins-eggs/

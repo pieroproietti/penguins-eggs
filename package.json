@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.4.1",
+    "version": "9.4.2",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
@@ -9,7 +9,7 @@
     "type": "commonjs",
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^1.21.0",
+        "@oclif/core": "^1.26.0",
         "@oclif/plugin-autocomplete": "1.3.8",
         "@oclif/plugin-help": "^5.1.23",
         "@oclif/plugin-not-found": "^2.3.15",
@@ -19,9 +19,9 @@
         "axios": "^1.2.1",
         "chalk": "^4.1.2",
         "etrick": "^0.0.2",
-        "ink": "^3.2.0",
         "ink-big-text": "^1.2.0",
         "ink-gradient": "^2.0.0",
+        "ink": "^3.2.0",
         "inquirer": "^8",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
@@ -79,16 +79,16 @@
         "/eui",
         "/ipxe",
         "/manpages",
-        "mkinitcpio",
-        "/scripts"
+        "/scripts",
+        "mkinitcpio"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
         "oclif",
+        "pxe",
         "refracta",
         "remastersys",
-        "systemback",
-        "pxe"
+        "systemback"
     ],
     "license": "MIT",
     "main": "./dist/index.js",

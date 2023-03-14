@@ -17,6 +17,8 @@ set -e
 # https://stackoverflow.com/questions/18599599/apt-get-commands-from-within-a-deb-postinst
 # calamares è installato se esiste /var/lib/dpkg/info/calamares.list
 
+#echo ">>> $0 $1 $2 $3 $4<<<"
+
 case "$1" in
     install|upgrade)
     ;;
