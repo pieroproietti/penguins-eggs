@@ -3,9 +3,13 @@
 ################################################
 # pre-remove script
 ################################################
+#echo ">>> $0 $1 $2 $3 $4<<<"
 
-# pulizia dei link non rimovibili da apt
-rm -rf /usr/lib/penguins-eggs/conf/distros
+
+# sanitize /usr/lib/penguins-eggs/
+rm -rf /usr/lib/penguins-eggs/distros
+rm -rf /usr/lib/penguins-eggs/eui
+rm -rf /usr/lib/penguins-eggs/krill
 
 # remove man eggs
 if [ -f "/usr/share/man/man1/eggs.1.gz" ]; then

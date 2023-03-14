@@ -19,9 +19,9 @@
         "axios": "^1.2.1",
         "chalk": "^4.1.2",
         "etrick": "^0.0.2",
-        "ink": "^3.2.0",
         "ink-big-text": "^1.2.0",
         "ink-gradient": "^2.0.0",
+        "ink": "^3.2.0",
         "inquirer": "^8",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
@@ -79,16 +79,16 @@
         "/eui",
         "/ipxe",
         "/manpages",
-        "mkinitcpio",
-        "/scripts"
+        "/scripts",
+        "mkinitcpio"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
         "oclif",
+        "pxe",
         "refracta",
         "remastersys",
-        "systemback",
-        "pxe"
+        "systemback"
     ],
     "license": "MIT",
     "main": "./dist/index.js",
