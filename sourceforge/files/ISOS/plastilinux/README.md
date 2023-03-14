@@ -16,7 +16,7 @@ Plastilinux would like to become a meta-distribution for school and be based on 
 ![chicks](https://penguins-eggs.net/images/chicks.png)
 
 # Integration with epoptes.
-I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ```sudo eggs produces --fast`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
+I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ``sudo eggs produce`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
 
 * user/password
 * ```live/evolution``
