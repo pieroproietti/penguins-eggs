@@ -196,7 +196,7 @@ export default class Config extends Command {
     }
 
     if (i.distroTemplate) {
-      Utils.warning('coping distro templates...')
+      Utils.warning('copying distro templates...')
       await Pacman.distroTemplateInstall(verbose)
     }
 
