@@ -1871,6 +1871,7 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   const check = await exec(cmd, echo)
   if (!cmd.startsWith('umount')) { // skip umount errors
     if (check.code !== 0) {
+      console.clear()
       console.log(`command: ${chalk.cyan(cmd)} ended with code ${chalk.cyan(check.code)}`)
       console.log()
       await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
