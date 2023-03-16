@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.2.3</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.4.2</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i eggs_9.2.3_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.4.2_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.2.3 linux-x64 node-v16.16.0
+penguins-eggs/9.4.2 linux-x64 node-v16.19.1
 $ eggs --help [COMMAND]
 
 USAGE
@@ -59,9 +59,9 @@ sudo eggs dad -d
       <li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
       <li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
       <li><a href="#eggs-config"><code>eggs config</code></a></li>
+      <li><a href="#eggs-cuckoo"><code>eggs cuckoo</code></a></li>
       <li><a href="#eggs-dad"><code>eggs dad</code></a></li>
       <li><a href="#eggs-export-deb"><code>eggs export deb</code></a></li>
-      <li><a href="#eggs-export-docs"><code>eggs export docs</code></a></li>
       <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
       <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
       <li><a href="#eggs-install"><code>eggs install</code></a></li>
@@ -72,13 +72,13 @@ sudo eggs dad -d
       <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
       <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
       <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
+      <li><a href="#eggs-tools-ppa"><code>eggs tools ppa</code></a></li>
       <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
       <li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
       <li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
       <li><a href="#eggs-update"><code>eggs update</code></a></li>
       <li><a href="#eggs-version"><code>eggs version</code></a></li>
       <li><a href="#eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-ironing-costume"><code>eggs wardrobe ironing [COSTUME]</code></a></li>
       <li><a href="#eggs-wardrobe-list-wardrobe"><code>eggs wardrobe list [WARDROBE]</code></a></li>
       <li><a href="#eggs-wardrobe-show-costume"><code>eggs wardrobe show [COSTUME]</code></a></li>
       <li><a href="#eggs-wardrobe-wear-costume"><code>eggs wardrobe wear [COSTUME]</code></a></li>
@@ -86,7 +86,7 @@ sudo eggs dad -d
     <h2><code>eggs adapt</code></h2>
     <p>adapt monitor resolution for VM only</p>
     <pre><code>USAGE
-  $ eggs adapt [-v] [-h]
+  $ eggs adapt [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -94,6 +94,9 @@ FLAGS
 
 DESCRIPTION
   adapt monitor resolution for VM only
+
+EXAMPLES
+  $ eggs adapt
 </code></pre>
     <h2><code>eggs analyze</code></h2>
     <p>analyze for syncto</p>
@@ -108,7 +111,7 @@ DESCRIPTION
   analyze for syncto
 
 EXAMPLES
-  $ sudo eggs analyze
+  sudo eggs analyze
 </code></pre>
     <h2><code>eggs autocomplete [SHELL]</code></h2>
     <p>display autocomplete installation instructions</p>
@@ -134,50 +137,70 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 </code></pre>
     <h2><code>eggs calamares</code></h2>
-    <p>calamares or install or configure it</p>
+    <p>configure calamares or install or configure it</p>
     <pre><code>USAGE
-  $ eggs calamares [-h] [-v] [-i] [-r] [--remove] [--theme &#x3C;value>]
+  $ eggs calamares [-h] [-i] [-n] [-r] [--remove] [--theme &#x3C;value>] [-v]
 
 FLAGS
-  -h, --help       Show CLI help.
-  -i, --install    install calamares and it's dependencies
-  -r, --release    release: remove calamares and all it's dependencies after the installation
+  -h, --help           Show CLI help.
+  -i, --install        install calamares and it's dependencies
+  -n, --nointeractive  no user interaction
+  -r, --release        release: remove calamares and all it's dependencies after the installation
   -v, --verbose
-  --remove         remove calamares and it's dependencies
-  --theme=&#x3C;value>  theme/branding for eggs and calamares
+  --remove             remove calamares and it's dependencies
+  --theme=&#x3C;value>      theme/branding for eggs and calamares
 
 DESCRIPTION
-  calamares or install or configure it
+  configure calamares or install or configure it
 
 EXAMPLES
-  ~$ sudo eggs calamares 
-  create/renew calamares configuration's files
+  sudo eggs calamares
 
-  ~$ sudo eggs calamares -i 
-  install calamares and create it's configuration's files
+  sudo eggs calamares --install
+
+  sudo eggs calamares --install --theme=/path/to/theme
+
+  sudo eggs calamares --remove
 </code></pre>
     <h2><code>eggs config</code></h2>
     <p>Configure and install prerequisites deb packages to run it</p>
     <pre><code>USAGE
-  $ eggs config [-n] [-c] [-h] [-v]
+  $ eggs config [-c] [-h] [-n] [-v]
 
 FLAGS
   -c, --clean          remove old configuration before to create new one
   -h, --help           Show CLI help.
-  -n, --nointeractive  assume yes
+  -n, --nointeractive  no user interaction
   -v, --verbose        verbose
 
 DESCRIPTION
   Configure and install prerequisites deb packages to run it
 
 EXAMPLES
-  ~$ sudo eggs config
-  Configure and install prerequisites deb packages to run it
+  sudo eggs config
+
+  sudo eggs config --clean
+
+  sudo eggs config --clean --nointeractive
+</code></pre>
+    <h2><code>eggs cuckoo</code></h2>
+    <p>PXE start with proxy-dhcp</p>
+    <pre><code>USAGE
+  $ eggs cuckoo [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  PXE start with proxy-dhcp
+
+EXAMPLES
+  sudo eggs cuckoo
 </code></pre>
     <h2><code>eggs dad</code></h2>
-    <p>ask help from daddy - configuration helper</p>
+    <p>ask help from daddy - TUI configuration helper</p>
     <pre><code>USAGE
-  $ eggs dad [-h] [-c] [-d] [-v]
+  $ eggs dad [-c] [-d] [-h] [-v]
 
 FLAGS
   -c, --clean    remove old configuration before to create
@@ -186,48 +209,53 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  ask help from daddy - configuration helper
+  ask help from daddy - TUI configuration helper
+
+EXAMPLES
+  sudo dad
+
+  sudo dad --clean
+
+  sudo dad --default
 </code></pre>
     <h2><code>eggs export deb</code></h2>
     <p>export deb/docs/iso to the destination host</p>
     <pre><code>USAGE
-  $ eggs export deb [-h] [-c] [--amd64] [--i386] [--armel] [--arm64] [-a]
+  $ eggs export deb [-a] [-c] [-h] [-v]
 
 FLAGS
-  -a, --all    export all archs
-  -c, --clean  remove old .deb before to copy
-  -h, --help   Show CLI help.
-  --amd64      export amd64 arch
-  --arm64      export arm64 arch
-  --armel      export armel arch
-  --i386       export i386 arch
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export deb/docs/iso to the destination host
-</code></pre>
-    <h2><code>eggs export docs</code></h2>
-    <p>remove and export docType documentation of the sources in the destination host</p>
-    <pre><code>USAGE
-  $ eggs export docs [-h]
 
-FLAGS
-  -h, --help  Show CLI help.
+EXAMPLES
+  $ eggs export deb
 
-DESCRIPTION
-  remove and export docType documentation of the sources in the destination host
+  $ eggs export deb --clean
+
+  $ eggs export deb --all
 </code></pre>
     <h2><code>eggs export iso</code></h2>
     <p>export iso in the destination host</p>
     <pre><code>USAGE
-  $ eggs export iso [-h] [-b] [-c]
+  $ eggs export iso [-c] [-h] [-v]
 
 FLAGS
-  -b, --backup  export backup ISOs
-  -c, --clean   delete old ISOs before to copy
-  -h, --help    Show CLI help.
+  -c, --clean    delete old ISOs before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
 
 DESCRIPTION
   export iso in the destination host
+
+EXAMPLES
+  $ eggs export iso
+
+  $ eggs export iso --clean
 </code></pre>
     <h2><code>eggs help [COMMAND]</code></h2>
     <p>Display help for eggs.</p>
@@ -244,42 +272,54 @@ DESCRIPTION
   Display help for eggs.
 </code></pre>
     <h2><code>eggs install</code></h2>
-    <p>command-line system installer - the egg became a penguin!</p>
+    <p>krill: the CLI system installer - the egg became a penguin!</p>
     <pre><code>USAGE
-  $ eggs install [-u] [-k] [-p] [-h] [-v]
+  $ eggs install [-k] [-c &#x3C;value>] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
 
 FLAGS
-  -h, --help        Show CLI help.
-  -k, --crypted     crypted CLI installation
-  -p, --pve         Proxmox VE install
-  -u, --unattended  unattended CLI installation
-  -v, --verbose     verbose
+  -H, --halt            Halt the system after installation
+  -N, --none            Swap none: 256M
+  -S, --suspend         Swap suspend: RAM x 2
+  -c, --custom=&#x3C;value>  custom unattended configuration
+  -d, --domain=&#x3C;value>  Domain name, defult: .local
+  -h, --help            Show CLI help.
+  -i, --ip              hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted         Crypted CLI installation
+  -n, --nointeractive   no user interaction
+  -p, --pve             Proxmox VE install
+  -r, --random          Add random to hostname, eg: colibri-ay412dt
+  -s, --small           Swap small: RAM
+  -u, --unattended      Unattended installation
+  -v, --verbose         Verbose
 
 DESCRIPTION
-  command-line system installer - the egg became a penguin!
+  krill: the CLI system installer - the egg became a penguin!
 
 EXAMPLES
-  $ eggs install
-  Install the system using krill installer
+  sudo eggs install
+
+  sudo eggs install --unattended
+
+  sudo eggs install --custom it
 </code></pre>
     <h2><code>eggs kill</code></h2>
     <p>kill the eggs/free the nest</p>
     <pre><code>USAGE
-  $ eggs kill [-h] [-v]
+  $ eggs kill [-h] [-n] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
 
 DESCRIPTION
   kill the eggs/free the nest
 
 EXAMPLES
-  $ eggs kill
-  kill the eggs/free the nest
+  sudo eggs kill
 </code></pre>
     <h2><code>eggs mom</code></h2>
-    <p>ask for mommy - gui helper</p>
+    <p>ask help from mommy - TUI helper</p>
     <pre><code>USAGE
   $ eggs mom [-h]
 
@@ -287,21 +327,24 @@ FLAGS
   -h, --help  Show CLI help.
 
 DESCRIPTION
-  ask for mommy - gui helper
+  ask help from mommy - TUI helper
+
+EXAMPLES
+  $ eggs mom
 </code></pre>
     <h2><code>eggs produce</code></h2>
     <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
-  $ eggs produce [-p &#x3C;value>] [--basename &#x3C;value>] [-b] [-c] [-f] [-n] [-m] [-v] [-y] [-s] [-h] [--theme
-    &#x3C;value>] [--addons &#x3C;value>] [--release]
+  $ eggs produce [--addons &#x3C;value>] [--basename &#x3C;value>] [-c] [-C] [-h] [-m] [-n] [-p &#x3C;value>] [--release]
+    [-s] [-f] [--theme &#x3C;value>] [-v] [-y]
 
 FLAGS
-  -b, --backup          backup mode (CRYPTED)
-  -c, --clone           clone mode
-  -f, --fast            fast compression
+  -C, --cryptedclone    crypted clone
+  -c, --clone           clone
+  -f, --standard        standard compression
   -h, --help            Show CLI help.
   -m, --max             max compression
-  -n, --normal          normal compression
+  -n, --nointeractive   no user interaction
   -p, --prefix=&#x3C;value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
   -v, --verbose         verbose
@@ -315,40 +358,26 @@ DESCRIPTION
   produce a live image from your system whithout your data
 
 EXAMPLES
-  $ sudo eggs produce 
-  produce an ISO called [hostname]-[arch]-YYYY-MM-DD_HHMM.iso, compressed xz (standard compression).
-  If hostname=ugo and arch=i386 ugo-x86-2020-08-25_1215.iso
+  sudo eggs produce
 
-  $ sudo eggs produce -v
-  same as previuos, but with --verbose output
+  sudo eggs produce --standard
 
-  $ sudo eggs produce -vf
-  same as previuos, compression zstd, lz4 or gzip (depend from system capability)
+  sudo eggs produce --max
 
-  $ sudo eggs produce -vm
-  same as previuos, compression xz -Xbcj x86 (max compression, about 10%
-  more compressed)
+  sudo eggs produce --max --basename=colibri
 
-  $ sudo eggs produce -vf --basename leo --theme debian --addons adapt 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression fast,
-  using Debian theme and link to adapt
+  sudo eggs produce --cryptedclone
 
-  $ sudo eggs produce -v --basename leo --theme debian --addons rsupport 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz,
-  using Debian theme and link to dwagent
+  sudo eggs produce --clone
 
-  $ sudo eggs produce -v --basename leo --rsupport 
-  produce an ISO called leo-i386-2020-08-25_1215.iso compression xz, using eggs
-  theme and link to dwagent
+  sudo eggs produce --basename=colibri
 
-  $ sudo eggs produce -vs --basename leo --rsupport 
-  produce scripts to build an ISO as the previus example. Scripts can be found
-  in /home/eggs/ovarium and you can customize all you need
+  sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
 </code></pre>
     <h2><code>eggs status</code></h2>
     <p>informations about eggs status</p>
     <pre><code>USAGE
-  $ eggs status [-v] [-h]
+  $ eggs status [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
@@ -356,11 +385,14 @@ FLAGS
 
 DESCRIPTION
   informations about eggs status
+
+EXAMPLES
+  $ eggs status
 </code></pre>
     <h2><code>eggs syncfrom</code></h2>
     <p>restore users and user data from a LUKS volumes</p>
     <pre><code>USAGE
-  $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-r &#x3C;value>] [-h] [-v]
+  $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-h] [-r &#x3C;value>] [-v]
 
 FLAGS
   -f, --file=&#x3C;value>     file LUKS volume encrypted
@@ -373,7 +405,9 @@ DESCRIPTION
   restore users and user data from a LUKS volumes
 
 EXAMPLES
-  $ sudo eggs restore
+  sudo eggs syncfrom
+
+  sudo eggs syncfrom --file /path/to/fileLUKS
 </code></pre>
     <h2><code>eggs syncto</code></h2>
     <p>saves users and user data in a LUKS volume inside the iso</p>
@@ -390,19 +424,45 @@ DESCRIPTION
   saves users and user data in a LUKS volume inside the iso
 
 EXAMPLES
-  $ sudo eggs syncto
+  sudo eggs syncto
+
+  sudo eggs syncto --file /path/to/fileLUKS
 </code></pre>
     <h2><code>eggs tools clean</code></h2>
     <p>clean system log, apt, etc</p>
     <pre><code>USAGE
-  $ eggs tools clean [-h] [-v]
+  $ eggs tools clean [-h] [-n] [-v]
 
 FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
 
 DESCRIPTION
   clean system log, apt, etc
+
+EXAMPLES
+  sudo eggs tools clean
+</code></pre>
+    <h2><code>eggs tools ppa</code></h2>
+    <p>add/remove PPA repositories (Debian family)</p>
+    <pre><code>USAGE
+  $ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
+
+FLAGS
+  -a, --add            add penguins-eggs PPA repository
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -r, --remove         remove penguins-eggs PPA repository
+  -v, --verbose        verbose
+
+DESCRIPTION
+  add/remove PPA repositories (Debian family)
+
+EXAMPLES
+  sudo eggs tools ppa --add
+
+  sudo eggs tools ppa --remove
 </code></pre>
     <h2><code>eggs tools skel</code></h2>
     <p>update skel from home configuration</p>
@@ -418,8 +478,9 @@ DESCRIPTION
   update skel from home configuration
 
 EXAMPLES
-  $ eggs skel --user mauro
-  desktop configuration of user mauro will get used as default
+  sudo eggs skel
+
+  sudo eggs skel --user user-to-be-copied
 </code></pre>
     <h2><code>eggs tools stat</code></h2>
     <p>get statistics from sourceforge</p>
@@ -433,6 +494,13 @@ FLAGS
 
 DESCRIPTION
   get statistics from sourceforge
+
+EXAMPLES
+  $ eggs tools stat
+
+  $ eggs tools stat --month
+
+  $ eggs tools stat --year
 </code></pre>
     <h2><code>eggs tools yolk</code></h2>
     <p>configure eggs to install without internet</p>
@@ -447,7 +515,7 @@ DESCRIPTION
   configure eggs to install without internet
 
 EXAMPLES
-  $ eggs yolk -v
+  sudo eggs yolk
 </code></pre>
     <h2><code>eggs update</code></h2>
     <p>update the Penguins' eggs tool</p>
@@ -463,7 +531,6 @@ DESCRIPTION
 
 EXAMPLES
   $ eggs update
-  update/upgrade the Penguins' eggs tool
 </code></pre>
     <h2><code>eggs version</code></h2>
     <pre><code>USAGE
@@ -483,7 +550,7 @@ FLAG DESCRIPTIONS
     <h2><code>eggs wardrobe get [REPO]</code></h2>
     <p>get warorobe</p>
     <pre><code>USAGE
-  $ eggs wardrobe get [REPO] [-v] [-h]
+  $ eggs wardrobe get [REPO] [-h] [-v]
 
 ARGUMENTS
   REPO  repository to get
@@ -494,27 +561,16 @@ FLAGS
 
 DESCRIPTION
   get warorobe
-</code></pre>
-    <h2><code>eggs wardrobe ironing [COSTUME]</code></h2>
-    <p>ordered show of costumes or accessories in wardrobe</p>
-    <pre><code>USAGE
-  $ eggs wardrobe ironing [COSTUME] [-w &#x3C;value>] [-v] [-h]
 
-ARGUMENTS
-  COSTUME  costume
+EXAMPLES
+  $ eggs wardrobe get
 
-FLAGS
-  -h, --help              Show CLI help.
-  -v, --verbose
-  -w, --wardrobe=&#x3C;value>  wardrobe
-
-DESCRIPTION
-  ordered show of costumes or accessories in wardrobe
+  $ eggs wardrobe get your-wardrobe
 </code></pre>
     <h2><code>eggs wardrobe list [WARDROBE]</code></h2>
     <p>list costumes and accessoires in wardrobe</p>
     <pre><code>USAGE
-  $ eggs wardrobe list [WARDROBE] [-v] [-h]
+  $ eggs wardrobe list [WARDROBE] [-h] [-v]
 
 ARGUMENTS
   WARDROBE  wardrobe
@@ -525,11 +581,16 @@ FLAGS
 
 DESCRIPTION
   list costumes and accessoires in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe list
+
+  $ eggs wardrobe list your-wardrove
 </code></pre>
     <h2><code>eggs wardrobe show [COSTUME]</code></h2>
     <p>show costumes/accessories in wardrobe</p>
     <pre><code>USAGE
-  $ eggs wardrobe show [COSTUME] [-w &#x3C;value>] [-j] [-v] [-h]
+  $ eggs wardrobe show [COSTUME] [-h] [-j] [-v] [-w &#x3C;value>]
 
 ARGUMENTS
   COSTUME  costume
@@ -542,11 +603,18 @@ FLAGS
 
 DESCRIPTION
   show costumes/accessories in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe show colibri
+
+  $ eggs wardrobe show accessories/firmwares
+
+  $ eggs wardrobe show accessories/
 </code></pre>
     <h2><code>eggs wardrobe wear [COSTUME]</code></h2>
     <p>wear costume/accessories from wardrobe</p>
     <pre><code>USAGE
-  $ eggs wardrobe wear [COSTUME] [-w &#x3C;value>] [-a] [-f] [-s] [-v] [-h]
+  $ eggs wardrobe wear [COSTUME] [-h] [-a] [-f] [-s] [-v] [-w &#x3C;value>]
 
 ARGUMENTS
   COSTUME  costume
@@ -561,6 +629,13 @@ FLAGS
 
 DESCRIPTION
   wear costume/accessories from wardrobe
+
+EXAMPLES
+  sudo eggs wardrobe wear duck
+
+  sudo eggs wardrobe wear accessories/firmwares
+
+  sudo eggs wardrobe wear wagtail/waydroid
 </code></pre>
     <h1>FILES</h1>
     <pre><code>  /etc/penguins-eggs.d
