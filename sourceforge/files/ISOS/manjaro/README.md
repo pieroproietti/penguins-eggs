@@ -22,7 +22,12 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
-* **egg-of-manjarolinux-sikaris-colibri**
+
+I am putting arch and manjaro back on line, it had been two months that I had been having problems and, busy with other development, I had stopped dealing with these two important distributions.
+
+At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation of it without having to go through the creation of a PKGBUILD.
+
+* **egg-of-manjarolinux-sikaris-colibri_clone**
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
 
