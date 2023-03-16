@@ -26,7 +26,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 I am putting arch and manjaro back on line, it had been two months that I had been having problems and, busy with other development, I had stopped dealing with these two important distributions.
 
-At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation of it without having to go through the creation of a PKGBUILD.
+At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation from the sources, without having to go through the creation of a PKGBUILD.
 
 ### install the live 
 * boot the machine from the image;
