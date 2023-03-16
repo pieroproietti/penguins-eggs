@@ -43,6 +43,7 @@ specifiers:
   nyc: ^15.1.0
   oclif-pnpm: ^3.4.3-1
   perrisbrewery: ^9.3.15
+  pnpm: ^7.29.3
   react: ^18.2.0
   shelljs: 0.8.5
   systeminformation: ^5.17.9
@@ -70,6 +71,7 @@ dependencies:
   mustache: 4.2.0
   netmask: 2.0.2
   node-static: 0.7.11
+  pnpm: 7.29.3
   react: 18.2.0
   shelljs: 0.8.5
   systeminformation: 5.17.12
@@ -5001,6 +5003,12 @@ packages:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
     dev: true
+
+  /pnpm/7.29.3:
+    resolution: {integrity: sha512-w4tVG3ZV1txgM2bp9/XMmqSYYO3qdhyMVdU8S0zegVvfB6SxNL+nxRq5t7hhw+yc+GrKegyZuIp9aWPhy6NNMA==}
+    engines: {node: '>=14.6'}
+    hasBin: true
+    dev: false
 
   /preferred-pm/3.0.3:
     resolution: {integrity: sha512-+wZgbxNES/KlJs9q40F/1sfOd/j7f1O9JaHcW5Dsn3aUUOZg3L2bjpVUcKV2jvtElYfoTuQiNeMfQJ4kwUAhCQ==}
