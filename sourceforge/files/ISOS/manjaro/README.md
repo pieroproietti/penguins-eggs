@@ -27,6 +27,20 @@ I am putting arch and manjaro back on line, it had been two months that I had be
 
 At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation of it without having to go through the creation of a PKGBUILD.
 
+### install the live 
+* boot the machine from the image;
+* login;
+* ```cd penguins-eggs```
+* ```sudo ./eggs install -un```
+
+### Replicate 
+* ```cd penguins-eggs```
+* ```pnpm i```
+* ```sudo ./eggs dad -d```
+* ```sudo ./eggs produce --clone```
+
+### Have fun!
+
 * **egg-of-manjarolinux-sikaris-colibri_clone**
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too. 
