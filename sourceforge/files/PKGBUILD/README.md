@@ -5,7 +5,8 @@ This repository exists in two forms, an stable one on AUR and a development one 
 * https://aur.archlinux.org/packages/penguins-eggs (stable)
 * https://github.com/pieroproietti/penguins-eggs-arch (devel)
 
-# Build and install penguins-eggs on Arch
+# Build and install penguins-eggs
+This PKGBUILD works in both Arch and Manjaro and could with your cooperation be further extended to other derivatives.
 
 ## stable
 Copy and paste the following instructions:
