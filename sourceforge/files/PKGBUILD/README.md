@@ -1,90 +1,85 @@
-penguins-eggs PKGBUILD
-======================
+# penguins-eggs-arch
 
-### Penguin&#39;s eggs are generated and new birds are ready to fly...
-[![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
-[![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-cyan)](https://penguins-eggs.sourceforge.io/)
-[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
-[![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
-[![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
+This repository exists in two forms, an stable one on AUR and a development one on github
 
-# Arch
+* https://aur.archlinux.org/packages/penguins-eggs (stable)
+* https://github.com/pieroproietti/penguins-eggs-arch (devel)
 
-## Development repository
-Copy and paste follow instructions
+# Build and install penguins-eggs on Arch
+
+## stable
+Copy and paste the following instructions:
+
+```
+git clone https://aur.archlinux.org/penguins-eggs.git
+cd penguins-eggs
+makepkg -srcCi
+```
+
+## developer
+Copy and paste the following instructions:
+
+
 ```
 git clone https://github.com/pieroproietti/penguins-eggs-arch
 cd penguins-eggs-arch
 makepkg -srcCi
 ```
 
-## AUR repository
-Copy and paste follow instructions
-```
-git clone https://aur.archlinux.org/packages/penguins-eggs
-cd penguins-eggs
-makepkg -srcCi
-```
+# Configuration
+You can configure eggs with the default settings, simply with the command:
 
-You can vote for penguins-eggs in the AUR repository, and suggest my a way to bring it in chaotic-aur, thanks.
+```sudo eggs dad -d```
 
-# Manjaro
+# add calamares installer (optional)
+To add the calamares GUI installer, type:
 
-## Development repository
+```sudo eggs calamares --install```
 
-Copy and paste follow instructions
-```
-git clone https://github.com/pieroproietti/penguins-eggs-manjaro
-cd penguins-eggs-manjaro
-makepkg -srcCi
-```
-s
-## Configure eggs
-* '''sudo eggs dad -d```
+**Note:** while for Manjaro we can refer to the official version of the distribution, in the case of Arch we can relay just on the repository https://github.com/pieroproietti/penguins-calamares-arch  which may occasionally be broken.
 
-## Create your first iso: CLI installer krill
-* ```sudo eggs produce --fast```
+## Create your first iso
+All the users will be removed from your live system.
 
-## Create your first desktop iso: CLI installer krill
-* ```sudo eggs produce --fast```
+```sudo eggs produce```
 
-## Copy your iso image and boot the son of your system
-You can use simple USB or USB with ventoy, iso file with proxmox ve, virtualbox, vmware etc.
+### Create a live system including all users
+You can use the flag --clone, all users will be saved uncrypted on the live.
 
+```sudo eggs produce --clone```
 
-# Developer and collaboration links
-* penguins-eggs discussion on [facebook](https://www.facebook.com/groups/128861437762355) 
-* [telegram](https://t.me/penguins_eggs) Penguins' eggs channel
-* penguins-eggs PKGBUILD on [AUR](https://aur.archlinux.org/packages/eggs) (not aligned for now)
-* penguins-eggs PKGBUILD on [github](https://github.com/pieroproietti/penguins-eggs-arch)
-* penguins-eggs [sources](https://github.com/pieroproietti/penguins-eggs)
-* penguins-eggs [book](https://penguins-eggs.net/book/)
-* penguins-eggs [blog](https://penguins-eggs.net)
+### Create a live system including all users crypted
+Or you can use the --cryptedclone flag, all users will be saved encrypted in a LUKS volume within the live image. The user data will not be available in live mode, but can be reinstalled using the CLI installer.
 
+```sudo eggs produce ----cryptedclone```
 
-Added packages
+### Would you like a more compressed image?
+Just add flag --max:
 
-## all
-* base-devel
-* iw
-* wpa_supplicant
-* networkmanager 
-* wireless_tools
-* dialog
-* gvfs
-* udiskie 
-* udisks2
+```sudo eggs produce --max``` 
 
-* added in /etc/polkit-1/rules.d
-  * 10-udisks2.rules
-  * 49-nopasswd_global.rules
-  * 99-custom.rules
-  * 10-udisks.rules
-  * 50-udisks.rules
+### Do you want eggs and calamares removed after installation?
+Just add flag --release:
 
-## colibri
+```sudo eggs produce --max --release``` 
 
-* network-manager-applet 
-* polkit-gnome
+# Boot the image
+You can use: [Ventoy](https://www.ventoy.net/en/index.html), Balena etcher, Rufus or similar on USB key, or use the iso file with [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), Virtualbox, vmware, etc.
+
+# Binaries
+It would be very useful to have the binaries for penguins-eggs and calamares freely created and shared by the community from the PKGBUILDs in AUR, if anyone wants to help can contact [me](https://t.me/penguins_eggs).
+
+# More informations
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
+
+You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
+[blog](https://penguins-eggs.net), 
+[facebook](https://www.facebook.com/groups/128861437762355/), 
+[github](https://github.com/pieroproietti/penguins-krill), 
+[jtsi](https://meet.jit.si/PenguinsEggsMeeting), 
+[reddit](https://www.reddit.com/user/Artisan61), 
+[telegram](https://t.me/penguins_eggs), 
+[twitter](https://twitter.com/pieroproietti).
+
+# Copyright and licenses
+Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
