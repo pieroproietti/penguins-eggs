@@ -41,22 +41,19 @@ At the moment I have made images with the --clone option, this is because it all
 * ```sudo ./eggs produce --clone```
 
 
-For arch and mangiaro there are already PKGBUILD packages, however, they are to be updated and revised.
+For arch and mangiaro there are already PKGBUILD packages, reviewed by Stefano Capitali of manjaro.
 
 These are the repositories of the same:
 
-#### Arch Linux
-* [AUR penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) (Arch Linux)
-* [mine penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch) (Arch Linux)
-* [mine penguins-calamares](https://github.com/pieroproietti/penguins-calamares-arch)
-
-#### Manjaro Linux.
-* [penguins-eggs-manjaro](https://github.com/pieroproietti/penguins-eggs-manjaro) (Manjaro Linux)
+* [AUR penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) (Arch Linux/manjaro)
+* [github penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch) (Arch Linux/manjaro)
+* [github penguins-calamares](https://github.com/pieroproietti/penguins-calamares-arch)  (Arch Linux)
 
 ### Have fun!
 
-* **egg-of-arch-rolling-naked_clone** (1,8 G compression fast)
-* **egg-of-arch-rolling-colibri_clone** (2,4G compression fast)
+* **egg-of-arch-rolling-naked** Just the juice, without GUI. You can start here to build your revolution!
+* **egg-of-arch-rolling-colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
+
 
 
 # USE
