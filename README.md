@@ -900,16 +900,17 @@ The original edition of the eggs manual is released in Italian, of course other 
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
-## More informations
+# More informations
 There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
-* [blog](https://penguins-eggs.net)    
-* [facebook Penguins' eggs group](https://www.facebook.com/groups/128861437762355/)
-* [telegram Penguins' eggs channel](https://t.me/penguins_eggs) 
-* [twitter](https://twitter.com/pieroproietti)
-* [sources](https://github.com/pieroproietti/penguins-krill)
+You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
+[blog](https://penguins-eggs.net), 
+[facebook](https://www.facebook.com/groups/128861437762355/), 
+[github](https://github.com/pieroproietti/penguins-krill), 
+[jtsi](https://meet.jit.si/PenguinsEggsMeeting), 
+[reddit](https://www.reddit.com/user/Artisan61), 
+[telegram](https://t.me/penguins_eggs), 
+[twitter](https://twitter.com/pieroproietti).
 
-You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
-
-## Copyright and licenses
+# Copyright and licenses
 Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
