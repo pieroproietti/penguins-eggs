@@ -27,7 +27,7 @@ penguins-eggs
 <!-- tocstop -->
 
 # Presentation
-**penguins-eggs** is a console utility, under continuous development, that allows you to remaster your system and redistribute it as iso images.
+**penguins-eggs** is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on usb sticks or via PXE.
 
 The purpose of this project is to implement the process of remastering your own version of Linux, generate it as an ISO image to burn to a CD/DVD or copy to a USB stick to boot your system. The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--cryptedclone**.
 
