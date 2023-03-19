@@ -13,27 +13,26 @@ Generally i use to work a virtual machine, on a Proxmox VE installation, with mi
 * sockets: 2
 * vga: qxl
 
-In the host system I have virt-viewer installed and on the virtual machine I install always spice-vdagent to 
-can adapt the monitor of the VM to the window, cut and past and so on.
-
-The entire process of prepare an egg take about 1/2 minutes using --fast option, and the resultig image is about 
-1.2 GB on Debian with --max compression.
+In the host system I have virt-viewer installed and on the virtual machine I install always spice-vdagent to can adapt the monitor of the VM to the window, cut and past and so on.
 
 
-# Prepare a Debian hen
-We try to install a light version of Debian
-* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso), we need just a net-install, don't install GUI at this point.
-* install light GUI xfce: ```apt install xfce4 xfce4-terminal firefox-esr lightdm```
+# Prepare a Debian naked
+We will install a CLI Debian:
+* download and install net-install of Debian and install it, don't install GUI at this point.
+* reboot and download and install eggs from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/DEBS/)
 
-## Adding developing tools
-* install code: [download](https://code.visualstudio.com/download#) and install with ```sudo dpkg -i code_1.63.2-1639562499_amd64.deb```
-* install build-essential: ```apt install build-essential```
-* install nodejs: as root
-```curl -fsSL https://deb.nodesource.com/setup_16.x | bash -```
-```apt-get install -y nodejs```
-* install git: ```apt install git```
-* install spice-vdagent: ```apt install spice-vdagent```
-* continue with [downloading eggs form repo](#downloading-eggs-from-repo)
+```sudo eggs tools ppa --add```
+```sudo eggs dad -d```
+```sudo eggs produce --max```
+
+You will get a naked image of Debian you can install and customize.
+
+You can also dress it using eggs wardrobe:
+
+```eggs wardrobe get```
+```sudo eggs wardrobe wear colibri```
+
+colibri is my configuration for development of eggs, about 1.2 GB iso.
 
 
 # Prepare an Arch/Manjaro hen
@@ -44,7 +43,6 @@ git clone https://aur.archlinux.org/penguins-eggs.git
 cd penguins-eggs
 makepkg -srcCi
 ```
-  
 * Configure eggs
 ```
 sudo eggs dad --default
@@ -57,6 +55,9 @@ sudo eggs calamares --install
 ```
 sudo ./eggs produce
 ```
+
+
+
 # More informations
 There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
