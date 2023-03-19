@@ -36,63 +36,42 @@ We try to install a light version of Debian
 * continue with [downloading eggs form repo](#downloading-eggs-from-repo)
 
 
-# Prepare a manjaro hen
-We try to install a light version on manjaro
-* install manjaro-xfce-21.2.1-220103-linux515.iso
+# Prepare an Arch/Manjaro hen
+* Install a light version of Arch or Manjaro
 
-## Addind developing tools
-* install code: ```sudo pacman -S vscode```
-* install base-devel: ```sudo pacman -S base-devel``` Something like Debian build-essential package
-* install node: ```sudo pacman -S "nodejs=16.13.1"``` I choose version 16.13.1 just to be pair with Debian hen
-* install npm: ```sudo pacman -S npm```
+* I use this, to clone and build penguins-eggs from AUR
+```
+git clone https://aur.archlinux.org/penguins-eggs.git
+cd penguins-eggs
+makepkg -srcCi
+```
+  
+* Configure eggs
+```
+sudo eggs dad --default
+'''
 
-## Downloading mkinitcpio-eggs-squashfs
-* ```git clone https://gitlab.manjaro.org/ste74/mkinitcpio-eggs-squashfs-git```
+* install calamares
+```
+sudo eggs calamares --install
+```
 
-```cd mkinitcpio-eggs-squashfs```
-```makepkg -i```
+* producing our first iso
+```
+sudo ./eggs produce
+```
 
+# More informations
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
-## Downloading eggs
-* ```git clone https://gitlab.manjaro.org/ste74/penguins-eggs-dev```
-* ```cd penguins-eggs```
-* ```makepkg -i```
+You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
+[blog](https://penguins-eggs.net), 
+[facebook](https://www.facebook.com/groups/128861437762355/), 
+[github](https://github.com/pieroproietti/penguins-krill), 
+[jtsi](https://meet.jit.si/PenguinsEggsMeeting), 
+[reddit](https://www.reddit.com/user/Artisan61), 
+[telegram](https://t.me/penguins_eggs), 
+[twitter](https://twitter.com/pieroproietti).
 
-## Original repositories
-You can use eggs from sources too:
-* ```git clone https://github,com/pieroproietti/mkinitcpio-squashfs```
-* ```git clone https://github,com/pieroproietti/penguins-eggs/```
-
-* continue with [downloading eggs form repo](#downloading-eggs-from-repo)
-
-# Downloading eggs from repo:
-* get eggs: ```git clone https://github-com/pieroproietti/penguins-eggs```
-* install node packages in eggs
-    * ```cd penguins-eggs```
-    * ```npm i```
-    
-## Configure eggs
-eggs need differents packages to work, this packages are installed by the command: sudo config, 
-the same command take cure to add in /etc/bash_completion.d eggs-bash.sh for autocompletion,
-create an eggs.yml and a tools.yml in /etc/penguins-eggs.d.
-
-* ```sudo ./eggs config --clean --verbose``` this will install prerequisites
-* ```sudo ./eggs config --clean --verbose``` the second config will configure correctly eggs
-* ```sudo ./eggs dad -d``` will config eggs to defaults (prefix, etx)
-
-## Producing our first iso
-* sudo ./eggs produce --fast --verbose
-
-
-# Contacts
-* [blog Penguins' eggs](https://penguins-eggs.net)    
-* [facebook Penguins' eggs group](https://www.facebook.com/groups/128861437762355/)
-* [mail piero.proietti@gmail.com](mailto://pieroproietti@gmail.com)
-* [sources](https://github.com/pieroproietti/penguins-krill)
-* [telegram](https://t.me/penguins_eggs) Penguins' eggs channel
-* [twitter](https://twitter.com/pieroproietti)
-
-
-
-
-
+# Copyright and licenses
+Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
