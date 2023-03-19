@@ -22,7 +22,7 @@ The entire process of prepare an egg take about 1/2 minutes using --fast option,
 
 # Prepare a Debian hen
 We try to install a light version of Debian
-* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso), we need just a nel-install, don't install GUI at this point.
+* install [Debian](https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso), we need just a net-install, don't install GUI at this point.
 * install light GUI xfce: ```apt install xfce4 xfce4-terminal firefox-esr lightdm```
 
 ## Adding developing tools
@@ -38,7 +38,6 @@ We try to install a light version of Debian
 
 # Prepare an Arch/Manjaro hen
 * Install a light version of Arch or Manjaro
-
 * I use this, to clone and build penguins-eggs from AUR
 ```
 git clone https://aur.archlinux.org/penguins-eggs.git
@@ -50,17 +49,14 @@ makepkg -srcCi
 ```
 sudo eggs dad --default
 ```
-
 * install calamares
 ```
 sudo eggs calamares --install
 ```
-
 * producing our first iso
 ```
 sudo ./eggs produce
 ```
-
 # More informations
 There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
