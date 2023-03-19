@@ -49,7 +49,7 @@ makepkg -srcCi
 * Configure eggs
 ```
 sudo eggs dad --default
-'''
+```
 
 * install calamares
 ```
