@@ -31,7 +31,9 @@ penguins-eggs
 
 The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--cryptedclone**.
 
-You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. It is possible to have also unattended installation using **--unattended** flag.
+You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. 
+
+It is possible to have also unattended installation using **--unattended** flag.
 
 Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
@@ -86,13 +88,28 @@ I added two built-in assistants with eggs: mom and dad. While mom is a script ba
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 # Packages
-Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILD.
+Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs).
 
 ## Debian families
-eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, without worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm. 
+eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, without worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm and manPages. 
 
 ### Install eggs
 There are more than a way to install eggs as .deb package, the most common it's to add and use penguins-eggs-ppa.
+
+#### Download the package and install with dpkg
+
+The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
+
+```
+sudo dpkg -i eggs_9.4.2_amd64.deb
+```
+
+or, on a i386 system:
+```
+sudo dpkg -i eggs_8.17.17-1_i386.deb
+```
+
+Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) reposiory with the command: ```sudo eggs tools ppa --install``
 
 #### Using penguins-eggs-ppa (stable version)
 
@@ -107,20 +124,6 @@ Update your repositories and install eggs:
 
 ```
 sudo apt update && sudo apt install eggs
-```
-
-
-#### Download the package and install with dpkg
-
-The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
-
-```
-sudo dpkg -i eggs_9.4.0_amd64.deb
-```
-
-or, on a i386 system:
-```
-sudo dpkg -i eggs_8.17.17-1_i386.deb
 ```
 
 ### Upgrade eggs
