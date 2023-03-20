@@ -109,7 +109,7 @@ or, on a i386 system:
 sudo dpkg -i eggs_8.17.17-1_i386.deb
 ```
 
-Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) reposiory with the command: ```sudo eggs tools ppa --install```
+Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) repository with the command: ```sudo eggs tools ppa --install```
 
 #### Using penguins-eggs-ppa (stable version)
 
@@ -127,15 +127,12 @@ sudo apt update && sudo apt install eggs
 ```
 
 ### Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_.9.2.2-1_amd64.deb**.
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_.9.4.2_amd64.deb**.
 
 ## Arch families: Arch and ManjaroLinux
-eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) for Arch, however you can refer to the versions for Arch and manjaro in their respective repositories on github.
+eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) for Arch and Manjaro, for the development version refer instead to [penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch).
 
-To install eggs on Arch, simply ```git clone https://github.com/pieroproietti/penguins-eggs-arch```, ```cd penguins-eggs-arch```, then  ```makepkg -si```.
-
-
-The same for manjaro: ```git clone https://github.com/pieroproietti/penguins-eggs-manjaro```, ```cd penguins-eggs-manjaro```, then  ```makepkg -si```.
+To install eggs on Arch or Manjaro, simply ```git clone https://aur.archlinux.org/packages/penguins-eggs```, ```cd penguins-eggs-arch```, then  ```makepkg -srcCi```.
 
 # Usage
 
@@ -158,7 +155,6 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the --max flag to get more compressed ISOs.
 
 In addition to the description of the commands in this README, you can consult the [Penguins' eggs official book](#penguins-eggs-official-book).
-
 
 # Commands
 <!-- commands -->
