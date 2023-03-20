@@ -132,7 +132,10 @@ If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: 
 ## Arch families: Arch and ManjaroLinux
 eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) for Arch and Manjaro, for the development version refer instead to [penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch).
 
-To install eggs on Arch or Manjaro, simply ```git clone https://aur.archlinux.org/packages/penguins-eggs```, ```cd penguins-eggs-arch```, then  ```makepkg -srcCi```.
+To install eggs on Arch or Manjaro, simply:
+ ```git clone https://aur.archlinux.org/packages/penguins-eggs```
+ ```cd penguins-eggs-arch```
+ ```makepkg -srcCi```.
 
 # Usage
 
