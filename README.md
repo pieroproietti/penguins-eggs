@@ -40,7 +40,9 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 
 # Technology
 
-eggs is written mostly in typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. Currently eggs supports: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
+eggs is written mostly in typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. 
+
+Currently eggs supports: Debian, Devuan, Ubuntu, Arch and ManjaroLinux and [derivaties](./conf/derivatives.yaml).
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/). 
 
