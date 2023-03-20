@@ -907,7 +907,7 @@ A nice thing to do to help users could be to make terminal samples, I did this s
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
 # More informations
-There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in Debian. Arch and manjaro. and the post[Arch-naked](https://penguins-eggs.net/book/arch-naked.html) which describes how to create a naked iso and then dress it up as a graphics development station.
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in Debian. Arch and manjaro, and the post [Arch-naked](https://penguins-eggs.net/book/arch-naked.html) on the blog which describes how to create an Arch naked iso and then dress it up as a graphics development station.
 
 You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
 [blog](https://penguins-eggs.net), 
