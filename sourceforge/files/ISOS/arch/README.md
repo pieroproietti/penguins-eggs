@@ -22,26 +22,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Arch](https://archlinux.org/) a simple, lightweight distribution.
 
-# Important note
 
-I am putting arch and manjaro back on line, it had been two months that I had been having problems and, busy with other development, I had stopped dealing with these two important distributions.
-
-At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation from the sources, without having to go through the creation of a PKGBUILD.
-
-### install the live 
-* boot the machine from the image;
-* login;
-* ```cd penguins-eggs```
-* ```sudo ./eggs install -un```
-
-### Replicate 
-* ```cd penguins-eggs```
-* ```pnpm i```
-* ```sudo ./eggs dad -d```
-* ```sudo ./eggs produce --clone```
-
-
-Arch and Manjaro share the same PKGBUILD packages, reviewed by Stefano Capitali of Manjaro.
+Arch and Manjaro share the same penguins-eggs PKGBUILD, reviewed by Stefano Capitali of Manjaro.
 
 * [AUR penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) (Arch Linux/manjaro) stable
 * [github penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch) (Arch Linux/manjaro) Developing
