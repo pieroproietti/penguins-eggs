@@ -82,7 +82,7 @@ eggs was developed to use [calamares](https://calamares.io) as the system instal
 The cuckoo lays its eggs in the nests of other birds, and the eggs are hatched by the latter. Similarly eggs can start a self-configuring PXE service to allow you to boot and install your iso on third party networked computers. Command cuckoo can be used either to deploy a newly created iso on an installed system or by live booting the iso itself. 
 
 ## mom and dad
-I added two built-in assistants with eggs: mom and dad. While mom is a script based on [easybashgui](https://github.com/BashGui/easybashgui) that explains the various commands and documentation, dad started as a shortcut to properly configure eggs: just type **sudo eggs dad** and follow simple instructions. Even faster, using **sudo eggs dad -d** you will resets the configuration, loads defaults, deletes created isos. At this point, with eggs configured: just type **sudo produce** to generate your live.
+I added two built-in assistants with eggs: mom and dad. While mom is a script based on [easybashgui](https://github.com/BashGui/easybashgui) that explains the various commands and documentation, dad started as a shortcut to properly configure eggs: just type ```sudo eggs dad``` and follow simple instructions. Even faster, using ```sudo eggs dad -d``` you will resets the configuration, loads defaults, deletes created isos. At this point, with eggs configured, just type ```sudo produce``` to generate your live.
 
 ## yolk 
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
