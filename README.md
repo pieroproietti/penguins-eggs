@@ -6,7 +6,6 @@ penguins-eggs
 ### Penguins&#39; eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-cyan)](https://penguins-eggs.sourceforge.io/)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
@@ -35,12 +34,13 @@ You can easily install the resulting live system with the calamares installer or
 
 It is possible to have also unattended installation using **--unattended** flag.
 
-Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
+Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. 
 
+See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
 
 # Technology
 
-eggs is written in pure typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. Currently eggs supports: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
+eggs is written mostly in typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. Currently eggs supports: Debian, Devuan, Ubuntu, Arch and ManjaroLinux.
 
 You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-that-can-be-remastered-with-eggs/), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/). 
 
@@ -91,10 +91,10 @@ yolk - so called staying on the subject of eggs - is a local repository included
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs).
 
 ## Debian families
-eggs is released deb packages for amd64, armel and arm64 architectures. Due the characteristic of eggs, they can installed in Debian, Devuan or Ubuntu based distros, without worries about different versions, except for the architecture. It include standard scripts for preinst, postinst, prerm and postrm and manPages. 
+eggs is released as a deb package for amd64, armel and arm64 architectures. Because of eggs' features, they can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about version (buster, bullseye, bookworm, etc.) except for architecture. It includes standard scripts for preinst, postinst, prerm and postrm and man pages. 
 
 ### Install eggs
-There are more than a way to install eggs as .deb package, the most common it's to add and use penguins-eggs-ppa.
+There are more than a way to install eggs as .deb package, the most pratical it's to add and use penguins-eggs-ppa.
 
 #### Download the package and install with dpkg
 
