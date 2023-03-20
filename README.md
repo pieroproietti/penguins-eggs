@@ -73,7 +73,7 @@ Saves our data within the generated iso using a LUKS volume. Our data will NOT b
 * ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
 * ```eggs produce --cryptedclone``` include all users data CRYPTED on a LUKS volume inside the iso.
 
-Using krill: ```sudo eggs install --cli``` will automaticaly restore your CRYPTED clone during the installation.
+Using krill: ```sudo eggs install --cli``` will automaticaly restore your CRYPTED data during the installation.
 
 ## calamares and krill
 eggs was developed to use [calamares](https://calamares.io) as the system installer and allows its customization with themes. It also includes its own installer, called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares. This provides a "roughly similar" installation experience for both desktop and server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and will then be used for automatic installation.
