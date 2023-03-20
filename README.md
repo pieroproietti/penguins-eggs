@@ -136,7 +136,8 @@ To install eggs on Arch or Manjaro, simply:
  ```
  git clone https://aur.archlinux.org/packages/penguins-eggs
  cd penguins-eggs-arch
- makepkg -srcCi```.
+ makepkg -srcCi
+ ```
 
 # Usage
 
