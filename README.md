@@ -141,7 +141,7 @@ To install eggs on Arch or Manjaro, simply:
 
 # Usage
 
-Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, typing ```eggs produce --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. You can also use the ```eggs mom``` command that interactively allows you to consult the help for all commands and online documentation..
+Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, typing ```eggs produce --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. You can also use the ```eggs mom``` command that interactively allows you to consult the help for all commands and online documentation.
 
 ## Examples
 
@@ -157,7 +157,7 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 ```sudo eggs produce --cryptedclone```
 
-At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the --max flag to get more compressed ISOs.
+At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the ```--max``` flag to get more compressed ISOs.
 
 In addition to the description of the commands in this README, you can consult the [Penguins' eggs official book](#penguins-eggs-official-book).
 
@@ -893,11 +893,11 @@ EXAMPLES
 <!-- commandsstop -->
 
 # Penguins' eggs official book
-The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation.
+The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation:
 
-* [Manuale in italiano 9.3.x](https://penguins-eggs.net/book/italiano9.3.html)
-* [English manual 9.3.x](https://penguins--eggs-net.translate.goog/book/italiano9.3?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
+[Penguins' eggs official book](https://penguins-eggs.net/book/)
 
+A nice thing to do to help users could be to make terminal samples, I did this some time ago, but they should be updated.
 
 ![terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true)
 
