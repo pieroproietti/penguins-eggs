@@ -109,7 +109,7 @@ or, on a i386 system:
 sudo dpkg -i eggs_8.17.17-1_i386.deb
 ```
 
-Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) reposiory with the command: ```sudo eggs tools ppa --install``
+Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) reposiory with the command: ```sudo eggs tools ppa --install```
 
 #### Using penguins-eggs-ppa (stable version)
 
