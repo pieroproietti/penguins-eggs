@@ -131,15 +131,32 @@ sudo apt update && sudo apt install eggs
 ### Upgrade eggs
 If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_.9.4.2_amd64.deb**.
 
-## Arch families: Arch and ManjaroLinux
-eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) for Arch and Manjaro, for the development version refer instead to [penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch).
+## Arch families
+eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and a mine repository for [Manjaro](https://github.com/pieroproietti/penguins-eggs-manjaro).
 
-To install eggs on Arch or Manjaro, simply:
+### Arch
+To install penguins-eggs on Arch, simply:
  ```
- git clone https://aur.archlinux.org/packages/penguins-eggs
- cd penguins-eggs-arch
- makepkg -srcCi
+ yay penguins-eggs
  ```
+Or, in more traditional way:
+
+```
+git clone https://aur.archlinux.org/packages/penguins-eggs
+cd penguins-eggs-arch
+makepkg -srcCi
+```
+### Manjaro
+
+To install penguins-eggs on Manjaro:
+```
+git clone https://github.com/pieroproietti/penguins-eggs-manjaro
+cd penguins-eggs-arch
+makepkg -srcCi
+```
+
+Don't use **yay penguins-eggs** on Manjaro, AUR is addressed to Arch. 
+
 
 # Usage
 
