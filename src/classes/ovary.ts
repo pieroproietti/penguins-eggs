@@ -165,7 +165,7 @@ export default class Ovary {
 
       // CRYPTEDCLONE
       if (cryptedclone) {
-        console.log('Users and the user data will be saved in an encrypted LUKS volume')
+        console.log('eggs will SAVE users and users\' data ENCRYPTED on LUKS volume within the live')
         const users = await this.usersFill()
         for (const user of users) {
           if (user.saveIt) {
@@ -187,7 +187,7 @@ export default class Ovary {
 
         // NORMAL
       } else {
-        Utils.warning('eggs will REMOVE users and users\' from live')
+        Utils.warning('eggs will REMOVE users and users\' data from live')
       }
 
       /**
