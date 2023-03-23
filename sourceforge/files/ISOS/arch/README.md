@@ -44,7 +44,7 @@ or, more traditionally:
 
 ```
 git clone https://aur.archlinux.org/penguins-eggs.git
-cd penguins-eggs-manjaro
+cd penguins-eggs
 makepkg -srcCi
 ```
 
