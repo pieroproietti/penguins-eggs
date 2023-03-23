@@ -44,8 +44,12 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```sudo ./arch-colibri.sh```
 
 # Installing eggs and producing an iso 
+You can use yay:
 
-
+```
+yay penguins-eggs
+```
+or, more traditionally:
 
 ```
 git clone https://aur.archlinux.org/packages/penguins-eggs
@@ -55,42 +59,31 @@ makepkg -srcCi
 
 Eggs, is installed!
 
-We can autoconfigure it, with the help of dad:
-
-```
-sudo eggs dad -d
-```
-
-And produce our iso:
-
-```
-sudo eggs produce --fast
-```
-
-and You will get your remasterd iso installable with krill.
-
 # Installing calamares
 
-Just clone my repo of [ckbcomp](https://github.com/pieroproietti/ckbcomp)
+It's possible to install calamares by yay too, but at the moment, 
+there is a problem with [ckbcomp](https://aur.archlinux.org/packages/ckbcomp) on AUR.
+
+So, just clone my version [ckbcomp](https://github.com/pieroproietti/ckbcomp), and:
 ```
 git clone https://github.com/pieroproietti/ckbcomp
 cd ckbcomp
 makepkg -srcCi
 ```
 
-At this point you can install calamares with yay:
+Then install calamares:
 
 ```
 yay calamares
 ```
 
-Calamares is installed, at this point we need to reconfigure eggs:
+We need now to reconfigure eggs:
 
 ```
 sudo eggs dad -d
 ```
 
-and let eggs to configure calamares to get used without password:
+and let eggs configure it to allow the use of calamares without entering the root password:
 
 ```
 sudo eggs calamares --install
@@ -99,13 +92,13 @@ sudo eggs calamares --install
 At this point we are ready to create our iso:
 
 ```
-sudo eggs produce --fast
+sudo eggs produce
 ```
 
 If you want calamares and eggs to be removed during installation, simply use:
 
 ```
-sudo eggs produce --fast --release
+sudo eggs produce --release
 ```
 
 # Creating naked starting from archiso
