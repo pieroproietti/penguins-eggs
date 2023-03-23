@@ -5,7 +5,7 @@ specifiers:
   '@oclif/plugin-autocomplete': 1.3.8
   '@oclif/plugin-help': ^5.2.8
   '@oclif/plugin-not-found': ^2.3.22
-  '@oclif/plugin-version': ^1.3.1
+  '@oclif/plugin-version': 1.2.1
   '@oclif/plugin-warn-if-update-available': ^2.0.32
   '@oclif/test': ^2.3.11
   '@tsconfig/recommended': ^1.0.2
@@ -57,7 +57,7 @@ dependencies:
   '@oclif/plugin-autocomplete': 1.3.8
   '@oclif/plugin-help': 5.2.8_zlbzrxdj56n2qhafx752nt3nlm
   '@oclif/plugin-not-found': 2.3.22_zlbzrxdj56n2qhafx752nt3nlm
-  '@oclif/plugin-version': 1.3.1_zlbzrxdj56n2qhafx752nt3nlm
+  '@oclif/plugin-version': 1.2.1_zlbzrxdj56n2qhafx752nt3nlm
   '@oclif/plugin-warn-if-update-available': 2.0.32_zlbzrxdj56n2qhafx752nt3nlm
   '@oclif/test': 2.3.11_zlbzrxdj56n2qhafx752nt3nlm
   axios: 1.3.4
@@ -734,8 +734,8 @@ packages:
       - '@types/node'
       - typescript
 
-  /@oclif/plugin-version/1.3.1_zlbzrxdj56n2qhafx752nt3nlm:
-    resolution: {integrity: sha512-WTRJaHmDUaDGPn0FeE9ZMFCModsPY6+FvrxwOlS0vZugoqRIL7VhxR6Fn8C70pgfkZH8/5jlVMwOHi08b0dzYQ==}
+  /@oclif/plugin-version/1.2.1_zlbzrxdj56n2qhafx752nt3nlm:
+    resolution: {integrity: sha512-Xb7MECv9uSaxIuzPbgJnOZEf0gnHlcLdncBkJCn5vsMnt1hC91j65feGeY8c68vsrAi6SumOfI8C63v8gC+FEA==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@oclif/core': 2.7.1_zlbzrxdj56n2qhafx752nt3nlm
@@ -4949,7 +4949,7 @@ packages:
       '@oclif/plugin-autocomplete': 1.3.8
       '@oclif/plugin-help': 5.2.8_zlbzrxdj56n2qhafx752nt3nlm
       '@oclif/plugin-not-found': 2.3.22_zlbzrxdj56n2qhafx752nt3nlm
-      '@oclif/plugin-version': 1.3.1_zlbzrxdj56n2qhafx752nt3nlm
+      '@oclif/plugin-version': 1.2.1_zlbzrxdj56n2qhafx752nt3nlm
       '@oclif/plugin-warn-if-update-available': 2.0.32_zlbzrxdj56n2qhafx752nt3nlm
       '@typescript-eslint/parser': 5.56.0_jeuwjvsopuo23ctsjsevxmvjsi
       chalk: 4.1.2
