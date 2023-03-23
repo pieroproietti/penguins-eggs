@@ -147,16 +147,12 @@ cd penguins-eggs
 makepkg -srcCi
 ```
 ### Manjaro
-
-To install penguins-eggs on Manjaro:
+From penguins-eggs v9.4.3 the package is part of the [Manjaro community](https://gitlab.manjaro.org/packages/community/penguins-eggs) repo and can be installed with [pamac](https://wiki.manjaro.org/index.php/Pamac), alternatively you can install it with:
 ```
 git clone https://gitlab.manjaro.org/packages/community/penguins-eggs/
 cd penguins-eggs
 makepkg -srcCi
 ```
-
-Don't use **yay penguins-eggs** on Manjaro, AUR is addressed to Arch. 
-
 
 # Usage
 
