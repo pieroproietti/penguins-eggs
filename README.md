@@ -143,15 +143,15 @@ Or, in more traditional way:
 
 ```
 git clone https://aur.archlinux.org/packages/penguins-eggs
-cd penguins-eggs-arch
+cd penguins-eggs
 makepkg -srcCi
 ```
 ### Manjaro
 
 To install penguins-eggs on Manjaro:
 ```
-git clone https://github.com/pieroproietti/penguins-eggs-manjaro
-cd penguins-eggs-arch
+git clone https://gitlab.manjaro.org/packages/community/penguins-eggs/
+cd penguins-eggs
 makepkg -srcCi
 ```
 
