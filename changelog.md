@@ -20,6 +20,12 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
  
+### eggs-9.4.3
+* Manjaro: penguins-eggs was included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs);
+* Arch: penguins-eggs is currently in [AUR](https://aur.archlinux.org/penguins-eggs.git) repository;
+* Debian/Devuan/Ubuntu: penguins-eggs for that distros and derivaties is included on [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa);
+* bugfix: various bugfix and typos.
+
 ### eggs-9.4.2
 * package: fixed the error that occurred when upgrading the package;
 * until now I have tried [UEI - Unattended Eggs Installation](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md) extensively on XFCE, starting from this version cinnammon is working too for eui installation;
