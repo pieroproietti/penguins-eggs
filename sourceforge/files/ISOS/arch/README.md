@@ -21,15 +21,6 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Arch](https://archlinux.org/) a simple, lightweight distribution.
 
-
-Arch and Manjaro share the same penguins-eggs PKGBUILD, reviewed by Stefano Capitali of Manjaro.
-
-* [AUR penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) (Arch Linux/manjaro) stable
-* [github penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch) (Arch Linux/manjaro) Developing
-* [github penguins-calamares-arch](https://github.com/pieroproietti/penguins-calamares-arch)  (Arch Linux) Here I have troubles, help if You can!
-
-### Have fun!
-
 * **egg-of-arch-rolling-naked** Just the juice, without GUI. You can start here to build your revolution!
 * **egg-of-arch-rolling-colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
@@ -52,7 +43,7 @@ yay penguins-eggs
 or, more traditionally:
 
 ```
-git clone https://aur.archlinux.org/packages/penguins-eggs
+git clone https://aur.archlinux.org/penguins-eggs.git
 cd penguins-eggs-manjaro
 makepkg -srcCi
 ```
@@ -71,7 +62,7 @@ cd ckbcomp
 makepkg -srcCi
 ```
 
-Then install calamares:
+Then install calamares with yay:
 
 ```
 yay calamares
