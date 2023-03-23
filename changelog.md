@@ -22,7 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
  
 ### eggs-9.4.3
 * Manjaro: penguins-eggs was included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs);
-* Arch: penguins-eggs is currently in [AUR](https://aur.archlinux.org/penguins-eggs.git) repository;
+* Arch: penguins-eggs is currently in [AUR](https://aur.archlinux.org/packages/penguins-eggs) repository;
 * Debian/Devuan/Ubuntu: penguins-eggs for that distros and derivaties is included on [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa);
 * bugfix: various bugfix and typos.
 
