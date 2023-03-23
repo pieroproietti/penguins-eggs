@@ -4,7 +4,6 @@ penguins-eggs
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
@@ -70,49 +69,20 @@ and You will get your remasterd iso installable with krill.
 
 # Installing calamares
 
-## prerequisites
-We need: ttf-comfortaa, ckbcomp and mkinitcpio-openswap as they are dependencies.
-
-Let's install them.
-
-### ttf-comfortaa
+Just clone my repo of [ckbcomp](https://github.com/pieroproietti/ckbcomp)
 ```
-git clone https://aur.archlinux.org/ttf-comfortaa.git
-
-cd ttf-comfortaa
-
-makepkg -srcCi
-```
-
-### ckbcomp
-```
-git clone https://aur.archlinux.org/ckbcomp.git
-
+git clone https://github.com/pieroproietti/ckbcomp
 cd ckbcomp
-
 makepkg -srcCi
 ```
 
-### mkinitcpio-openswap
+At this point you can install calamares with yay:
 
 ```
-git clone https://aur.archlinux.org/mkinitcpio-openswap.git
-
-cd mkinitcpio-openswap
-
-makepkg -srcCi
+yay calamares
 ```
 
-## build calamares
-```
-git clone https://gitlab.manjaro.org/packages/extra/calamares
-
-cd calamares
-
-makepkg -srcCi
-```
-
-At this point we need to reconfigure eggs:
+Calamares is installed, at this point we need to reconfigure eggs:
 
 ```
 sudo eggs dad -d

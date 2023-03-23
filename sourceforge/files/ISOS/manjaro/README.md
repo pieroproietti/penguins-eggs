@@ -4,7 +4,6 @@ penguins-eggs
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
@@ -22,49 +21,10 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 [Manjaro](https://manjaro.org/) is a professionally made operating system that is a suitable replacement for Windows or MacOS. Multiple Desktop Environments are available through our Official and Community editions.
 
-# Important note
+penguins-eggs is actually included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
-I am putting arch and manjaro back on line, it had been two months that I had been having problems and, busy with other development, I had stopped dealing with these two important distributions.
-
-At the moment I have made images with the --clone option, this is because it allows me to use eggs both in production of the iso and in installation from the sources, without having to go through the creation of a PKGBUILD.
-
-### install the live 
-* boot the machine from the image;
-* login;
-* ```cd penguins-eggs```
-* ```sudo ./eggs install -un```
-
-### Replicate 
-* ```cd penguins-eggs```
-* ```pnpm i```
-* ```sudo ./eggs dad -d```
-* ```sudo ./eggs produce --clone```
-
-For arch and mangiaro there are already PKGBUILD packages, reviewed by Stefano Capitali of manjaro.
-
-These are the repositories of the same:
-
-* [AUR penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) (Arch Linux/manjaro)
-* [github penguins-eggs-arch](https://github.com/pieroproietti/penguins-eggs-arch) (Arch Linux/manjaro)
-* [github penguins-calamares](https://github.com/pieroproietti/penguins-calamares-arch)  (Arch Linux)
-
-
-### Have fun!
 
 * **egg-of-manjarolinux-sikaris-xfce** 
-
-# Installing eggs and producing an iso
-```
-git clone https://github.com/pieroproietti/penguins-eggs-manjaro
-cd penguins-eggs-manjaro
-makepkg -srcCi
-```
-then:
-* ```sudo eggs calamares --install```
-* ```sudo eggs produce --fast```
-
-and You will get your remasterd iso.
-
 
 # Installing manjaro Linux via PXE
 
