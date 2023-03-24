@@ -8,14 +8,12 @@ penguins-eggs
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
-s
+
 # Penguins' eggs remastered ISOs
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
-
-All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Arch
 
@@ -35,7 +33,7 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```sudo ./arch-colibri.sh```
 
 # Installing eggs and producing an iso 
-You can use yay:
+On Arch, You can use yay to install penguins-eggs:
 
 ```
 yay penguins-eggs
@@ -48,21 +46,22 @@ cd penguins-eggs
 makepkg -srcCi
 ```
 
-Eggs, is installed!
+eggs, is installed!
 
-# Installing calamares
+# Calamares
 
-It's possible to install calamares by yay too, but at the moment, 
-there is a problem with [ckbcomp](https://aur.archlinux.org/packages/ckbcomp) on AUR.
+It's possible to install calamares by yay, but at the moment there is a  
+problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp).
 
-So, just clone my version [ckbcomp](https://github.com/pieroproietti/ckbcomp), and:
+So, just clone my version [ckbcomp](https://github.com/pieroproietti/ckbcomp), 
+and install it before:
 ```
 git clone https://github.com/pieroproietti/ckbcomp
 cd ckbcomp
 makepkg -srcCi
 ```
 
-Then install calamares with yay:
+then install calamares:
 
 ```
 yay calamares
@@ -80,19 +79,20 @@ and let eggs configure it to allow the use of calamares without entering the roo
 sudo eggs calamares --install
 ```
 
-At this point we are ready to create our iso:
+We are ready to create our first iso:
 
 ```
 sudo eggs produce
 ```
 
-If you want calamares and eggs to be removed during installation, simply use:
+If you want calamares and eggs to be removed during system installation, simply use:
 
 ```
 sudo eggs produce --release
 ```
 
 # Creating naked starting from archiso
+
 See [arch-naked](https://penguins--eggs-net.translate.goog/book/arch-naked?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
 
 
@@ -107,17 +107,8 @@ Then all you have to do is boot from the network the machines to be installed an
 You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
 
 ## Note
-In Arch - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
+In Arch - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix it to can boot via PXE on UEFI machines too.
 
-
-## More informations:
-
-* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
-* Blog: [penguins-eggs](https://penguins-eggs.net)
-
-* You can find more informations on this Linux distro at: [Arch](https://archlinux.org/).
-
-
-Disclaim
+# Disclaim
 
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
