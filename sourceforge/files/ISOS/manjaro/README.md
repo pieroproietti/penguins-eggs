@@ -23,7 +23,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 penguins-eggs is actually included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
-
+* **egg-of-manjarolinux-sikaris-gnome** 
+* **egg-of-manjarolinux-sikaris-kde** 
 * **egg-of-manjarolinux-sikaris-xfce** 
 
 # Installing manjaro Linux via PXE
@@ -36,18 +37,21 @@ Then all you have to do is boot from the network the machines to be installed an
 
 You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/book/) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
 
-
-## Note
-In manjaro - at the moment - I was able to boot via PXE just on BIOS system not UEFI. I hope someone can suggest a way to fix that and boot via PXE on UEFI machines too.
-
-## More informations:
-
-* Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
-* Blog: [penguins-eggs](https://penguins-eggs.net)
-
-* You can find more informations on this Linux distro at: [manjaro](https://manjaro.org/).
-
-
-Disclaim
+# Disclaim
 
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
+
+# More informations
+There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on the repository [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) under [documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents). I want to point out [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) a brief how to use eggs in Debian. Arch and Manjaro, and the post [Arch-naked](https://penguins-eggs.net/book/arch-naked.html) on the blog which describes how to create an Arch naked live, install it, then dress the resulting system with a graphics development station.
+
+You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
+[blog](https://penguins-eggs.net), 
+[facebook](https://www.facebook.com/groups/128861437762355/), 
+[github](https://github.com/pieroproietti/penguins-krill), 
+[jtsi](https://meet.jit.si/PenguinsEggsMeeting), 
+[reddit](https://www.reddit.com/user/Artisan61), 
+[telegram](https://t.me/penguins_eggs), 
+[twitter](https://twitter.com/pieroproietti).
+
+# Copyright and licenses
+Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
