@@ -49,19 +49,14 @@ makepkg -srcCi
 eggs, is installed!
 
 # Calamares
-
-It's possible to install calamares by yay, but at the moment there is a  
-problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp).
-
-So, just clone my version [ckbcomp](https://github.com/pieroproietti/ckbcomp), 
-and install it before:
+It's possible to install [calamares](https://aur.archlinux.org/packages/calamares-git) by yay, but at the moment there is a problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp), so to install calamares, you will have to:
 ```
-git clone https://github.com/pieroproietti/ckbcomp
-cd ckbcomp
-makepkg -srcCi
+git clone https://github.com/pieroproietti/penguins-eggs-pkgbuilds
+cd penguins-eggs-pkgbuilds/aur/cbkcomp
+makepkg -si
 ```
 
-then install calamares:
+At this point you can properly install calamares with the command: 
 
 ```
 yay calamares

@@ -1,6 +1,6 @@
 # penguins-eggs-pkgbuils
  
-This is my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilbs) repository, and here I am collecting my PKGBUILDs. Once tested, pkgbuilds are published to the [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
+This is my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository, and here I am collecting my PKGBUILDs. Once tested, pkgbuilds are published to the [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
 # Installation
 On Arch you can use yay to install penguins-eggs: ```yay penguins-eggs```, while in Manjaro you can install penguins-eggs directly with pamac and pacman.
