@@ -2,7 +2,7 @@
 
 I am collecting my PKGBUILDs for Arch and Manjaro here: ``````
 
-This is my [development repository]](https://github.com/pieroproietti/penguins-eggs-pkgbuils), once the PKGBUILDs are tested they are posted on [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
+This is my [development repository](https://github.com/pieroproietti/penguins-eggs-pkgbuils), once the PKGBUILDs are tested they are posted on [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
 # Installation
 On Arch you can use yay to install penguins-eggs: ```yay penguins-eggs```. while in Manjaro you can install penguins-eggs directly with pamac and pacman.
@@ -17,7 +17,8 @@ To add the calamares GUI installer, type:
 
 ```sudo eggs calamares --install```
 
-**Note:** while for Manjaro we can refer to the official version of the distribution, in the case of Arch we can relay on the package on [AUR](https://aur.archlinux.org/packages/calamares-git) which may - occasionally - be broken. 
+## Note for Arch
+While for Manjaro we can refer to the official version of the distribution, in the case of Arch we can relay on the package on [AUR](https://aur.archlinux.org/packages/calamares-git) which may - occasionally - be broken. 
 
 Specifically, the cbkcomp package is broken, so to install calamares, you will have to:
 ```
