@@ -90,7 +90,7 @@ I added two built-in assistants with eggs: mom and dad. While mom is a script ba
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 # Packages
-Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs).
+Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILDs.
 
 ## Debian families
 eggs is released as a deb package for amd64, armel and arm64 architectures. Because of eggs' features, they can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about version (buster, bullseye, bookworm, etc.) except for architecture. It includes standard scripts for preinst, postinst, prerm and postrm and man pages. 
