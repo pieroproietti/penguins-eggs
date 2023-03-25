@@ -131,8 +131,11 @@ sudo apt update && sudo apt install eggs
 ### Upgrade eggs
 If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_.9.4.3_amd64.deb**.
 
+
 ## Arch families
-eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and a mine repository for [Manjaro](https://github.com/pieroproietti/penguins-eggs-manjaro).
+eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
+
+The development versions of penguins eggs and other PKGBUILDs are instead in my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository.
 
 ### Arch
 To install penguins-eggs on Arch, simply:
