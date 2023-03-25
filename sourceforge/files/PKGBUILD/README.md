@@ -1,35 +1,11 @@
-# penguins-eggs-arch
+# penguins-eggs-pkgbuils
 
-This repository exists in two forms, an stable one on AUR and a development one on github:
+I am collecting my PKGBUILDs for Arch and Manjaro here: ``````
 
-* https://aur.archlinux.org/packages/penguins-eggs (stable)
-* https://github.com/pieroproietti/penguins-eggs-arch (devel)
+This is my [development repository]](https://github.com/pieroproietti/penguins-eggs-pkgbuils), once the PKGBUILDs are tested they are posted on [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
-**Note:** 
-
-Manjaro: from v9.4.3 penguins-eggs is included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
-
-# Build and install penguins-eggs
-This PKGBUILD works in Arch and could with your cooperation be further extended to other derivatives.
-
-## stable
-Copy and paste the following instructions:
-
-```
-git clone https://aur.archlinux.org/penguins-eggs.git
-cd penguins-eggs
-makepkg -srcCi
-```
-
-## developer
-Copy and paste the following instructions:
-
-
-```
-git clone https://github.com/pieroproietti/penguins-eggs-arch
-cd penguins-eggs-arch
-makepkg -srcCi
-```
+# Installation
+On Arch you can use yay to install penguins-eggs: ```yay penguins-eggs```. while in Manjaro you can install penguins-eggs directly with pamac and pacman.
 
 # Configuration
 You can configure eggs with the default settings, simply with the command:
@@ -41,7 +17,16 @@ To add the calamares GUI installer, type:
 
 ```sudo eggs calamares --install```
 
-**Note:** while for Manjaro we can refer to the official version of the distribution, in the case of Arch we can relay just on the repository https://github.com/pieroproietti/penguins-calamares-arch  which may occasionally be broken.
+**Note:** while for Manjaro we can refer to the official version of the distribution, in the case of Arch we can relay on the package on [AUR](https://aur.archlinux.org/packages/calamares-git) which may - occasionally - be broken. 
+
+Specifically, the cbkcomp package is broken, so to install calamares, you will have to:
+```
+git clone https://github.com/pieroproietti/penguins-eggs-pkgbuilds```
+cd penguins-eggs-pkgbuilds/aur/cbkcomp
+makepkg -si
+```
+
+At this point you can properly install calamares with the command: ```yay calamares```
 
 ## Create your first iso
 All the users will be removed from your live system.
