@@ -288,10 +288,13 @@ class Distro implements IDistro {
         if (!found) {
           console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
           console.log('')
-          console.log('You can edit /usr/lib/penguins-eggs/conf/derivaties.yaml to add it -')
+          console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
           console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
           console.log('If you can create your new iso, you can contribute to the project')
           console.log('by suggesting your modification.')
+          console.log('')
+          console.log('Note: adding derivatives is supported on Debian, Devuan and Ubuntu,')
+          console.log('      but not for the Arch family.')
           process.exit(0)
         }
     }
