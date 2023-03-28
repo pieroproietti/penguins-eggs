@@ -28,8 +28,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.4.2
 * package: fixed the error that occurred when upgrading the package;
-* until now I have tried [UEI - Unattended Eggs Installation](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md) extensively on XFCE, starting from this version cinnammon is working too for eui installation;
-* uei scripts for gnome, kde and other desktop environments still remain to be created/fixed, I hope someone can give me some suggestions or help, thanks in advance.
+* until now I have tried [UEI - Unattended Eggs Installation](https://github.com/pieroproietti/penguins-eggs/blob/master/eui/README.md) extensively on XFCE, starting from this version cinnammon is working too as UEI;
+* UEI scripts for gnome, kde and other desktop environments still remain to be created/fixed, I hope someone can give me some suggestions or help, thanks in advance.
 
 ### eggs-9.4.1
 Working on EUI (Eggs Unattended Installation):
