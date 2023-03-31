@@ -14,10 +14,10 @@ import {IRemix} from '../interfaces/index'
 export default class Calamares extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
-    install: Flags.boolean({char: 'i', description: "install calamares and it's dependencies"}),
+    install: Flags.boolean({char: 'i', description: "install calamares and its dependencies"}),
     nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
-    release: Flags.boolean({char: 'r', description: "release: remove calamares and all it's dependencies after the installation"}),
-    remove: Flags.boolean({description: "remove calamares and it's dependencies"}),
+    release: Flags.boolean({char: 'r', description: "release: remove calamares and all its dependencies after the installation"}),
+    remove: Flags.boolean({description: "remove calamares and its dependencies"}),
     theme: Flags.string({description: 'theme/branding for eggs and calamares'}),
     verbose: Flags.boolean({char: 'v'}),
   }
