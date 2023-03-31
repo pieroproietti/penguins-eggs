@@ -70,7 +70,7 @@ export default class Yolk {
 
     // for all packages, find dependencies and check if are not installed
     for (const package_ of packages) {
-      Utils.warning(`downloading package ${package_} and it's dependencies...`)
+      Utils.warning(`downloading package ${package_} and its dependencies...`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
       const depends = (await exec(cmd, {echo: false, capture: true})).data
       await this.installDeps(depends.split('\n'))
