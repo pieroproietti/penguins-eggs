@@ -243,7 +243,8 @@ class Distro implements IDistro {
 
     case 'Qonos':
     case 'Ruah':
-    case 'Sikaris': {
+    case 'Sikaris':
+    case 'Talos': {
       // Manjaro Linux
       this.familyId = 'archlinux'
       this.distroLike = 'Arch'
