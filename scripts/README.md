@@ -115,6 +115,6 @@ flags=$(jq '.options.menuEntry[0].flags' eggs.json )
 ```
 I see in manifest, they use objects inside object with a field: id, can be a solution? I don't know.
 
-It's very interesting for me to use jq or yt, expecially thinking I can build an approch starting from manifest.yaml, but at the moment not capable to go too inside.
+It's very interesting for me to use jq or yt, especially thinking I can build an approch starting from manifest.yaml, but at the moment not capable to go too inside.
 
 But if you will continue in same way, I will jump on again.
