@@ -23,7 +23,7 @@ You can start to leaning a particular system and try to get it on a VM - for exa
 
 This was mainly the reason, I thought about to revew/update my live. Fortunately, [Mederim](https://github.com/mederim/) was able to solve the problem before I finish!.
 
-**NOTE:** this project expecially regarding PVE live is - at the moment - more an experiment than a real feathures.
+**NOTE:** this project especially regarding PVE live is - at the moment - more an experiment than a real feature.
 
 ## Changelog 
 
