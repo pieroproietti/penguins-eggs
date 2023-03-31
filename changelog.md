@@ -131,7 +131,7 @@ I was undecided whether to publish this version or not - there are no interestin
 * oclif: working to integrate pnpm package manager inside oclif.
 
 ### eggs-9.3.11
-* oclif: passed to [oclif-pnpm](https://github.com/pieroproietti/oclif-pnpm)@[3.4.2](https://www.npmjs.com/package/oclif-pnpm), a mime - little modified version of [oclif](https://github.com/oclif/oclif)@[3.4.2](https://www.npmjs.com/package/oclif) - with the scope of use pnpm. I hope to remain aligned with original, but really I like [pnpm](https://pnpm.io/) and its feathures, if someome have mine same need - use [oclif](https://oclif.io/) with [pnpm](https://pnpm.io/) - will be nice to collaborate.
+* oclif: passed to [oclif-pnpm](https://github.com/pieroproietti/oclif-pnpm)@[3.4.2](https://www.npmjs.com/package/oclif-pnpm), a mime - little modified version of [oclif](https://github.com/oclif/oclif)@[3.4.2](https://www.npmjs.com/package/oclif) - with the scope of use pnpm. I hope to remain aligned with original, but really I like [pnpm](https://pnpm.io/) and its features, if someome have mine same need - use [oclif](https://oclif.io/) with [pnpm](https://pnpm.io/) - will be nice to collaborate.
 
 ### eggs-9.3.10
 * changed ```liveMediumPath = '/run/archiso/copytoram/'``` and ```squashfs = '/airootfs.sfs'``` for archlinux, aligned to archiso;
