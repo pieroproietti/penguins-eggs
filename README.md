@@ -50,7 +50,7 @@ You can read more on the [blog](https://penguins-eggs.net/2021/11/02/distros-tha
 
 ## wardrobe, themes and addons
 
-wardrobe was added to eggs on april 2022, it's is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks mostly under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/), [waydroid](https://sourceforge.net/projects/penguins-eggs/files/ISOS/waydroid/) or [bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) on eggs' sourceforge page.
+wardrobe was added to eggs on april 2022. It is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks mostly under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/), [waydroid](https://sourceforge.net/projects/penguins-eggs/files/ISOS/waydroid/) or [bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) on eggs' sourceforge page.
 
 I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [Penguins' eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
 
@@ -96,7 +96,7 @@ Supporting various distributions, we need to have different packages. Debian, De
 eggs is released as a deb package for amd64, armel and arm64 architectures. Because of eggs' features, they can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about version (buster, bullseye, bookworm, etc.) except for architecture. It includes standard scripts for preinst, postinst, prerm and postrm and man pages. 
 
 ### Install eggs
-There are more than a way to install eggs as .deb package, the most pratical it's to add and use penguins-eggs-ppa.
+There are more than a way to install eggs as .deb package, the most practical is to add and use penguins-eggs-ppa.
 
 #### Download the package and install with dpkg
 
@@ -115,7 +115,7 @@ Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti
 
 #### Using penguins-eggs-ppa (stable version)
 
-eggs have it's repository ppa, You can use it, copy and paste in a terminal window the following two lines:
+eggs have its repository ppa, You can use it, copy and paste in a terminal window the following two lines:
 
 ```
 curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
@@ -291,11 +291,11 @@ USAGE
 
 FLAGS
   -h, --help           Show CLI help.
-  -i, --install        install calamares and it's dependencies
+  -i, --install        install calamares and its dependencies
   -n, --nointeractive  no user interaction
-  -r, --release        release: remove calamares and all it's dependencies after the installation
+  -r, --release        release: remove calamares and all its dependencies after the installation
   -v, --verbose
-  --remove             remove calamares and it's dependencies
+  --remove             remove calamares and its dependencies
   --theme=<value>      theme/branding for eggs and calamares
 
 DESCRIPTION
