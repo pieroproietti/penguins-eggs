@@ -30,20 +30,32 @@ function main() {
 function documentation() {
    while true; do
 
-      menu "book" "manual" "man" "repository" "sourceforge" "QUIT"
-      choose=$(0< "${dir_tmp}/${file_tmp}" )
+      menu "blog" "docs" "man_page_html" "man" "repositories" "site" "sourceforge" "QUIT"
+			choose=$(0< "${dir_tmp}/${file_tmp}" )
 
       case "$choose" in 
-         book)
-            documentation_book ;;
-         manual)
-            documentation_html ;;
+				blog)
+					blog;;
+				docs)
+					docs;;
+				man_page_html)
+					man_page_html;;
+				man)
+					man;;
+				repositories)
+					repositories;;
+				site)
+					site;;
+				sourceforge)
+					sourceforge;;
+         man_page_html)
+            man_page_htm ;;
          man)
-            documentation_man ;;
-         repository)
-            documentation_repository ;;
+            man ;;
+         repositories)
+            repositories ;;
          sourceforge)
-            documentation_sourceforge ;;
+            sourceforge ;;
          QUIT)
             break ;;
       esac
@@ -51,32 +63,37 @@ function documentation() {
 }
 
 ################################
-function documentation_book() {
-   xdg-open "https://penguins-eggs.net/book/italiano"
+function blog() {
+	xdg-open "https://penguins-eggs.net/blog"
 }
 
 ################################
-function documentation_site() {
-   xdg-open "https://penguins-eggs.net"
+function docs() {
+	xdg-open "https://penguins-eggs.net/docs"
 }
 
 ################################
-function documentation_html() {
+function man_page_html() {
    xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
 }
 
 ################################
-function documentation_man() {
+function man() {
    man eggs
 }
 
 ################################
-function documentation_repository() {
-   xdg-open "https://github.com/pieroproietti/penguins-eggs"
+function repositories() {
+   xdg-open "https://github.com/pieroproietti/"
 }
 
 ################################
-function documentation_sourceforge() {
+function site() {
+   xdg-open "https://penguins-eggs.net"
+}
+
+################################
+function sourceforge() {
    xdg-open "https://sourceforge.com/project/penguins-eggs"
 }
 
