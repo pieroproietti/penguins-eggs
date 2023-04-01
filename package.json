@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.4.3",
+    "version": "9.4.4",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
@@ -57,7 +57,7 @@
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
         "oclif-pnpm": "3.4.3-1",
-        "perrisbrewery": "9.3.16",
+        "perrisbrewery": "9.3.18",
         "ts-node": "^10.9.1"
     },
     "dirname": "eggs",
