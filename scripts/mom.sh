@@ -30,14 +30,14 @@ function main() {
 function documentation() {
    while true; do
 
-      menu "blog" "docs" "man" "repositories" "site" "sourceforge" "QUIT"
+      menu "blog" "documents" "man" "repositories" "site" "sourceforge" "QUIT"
 			choose=$(0< "${dir_tmp}/${file_tmp}" )
 
       case "$choose" in 
 				blog)
 					blog;;
-				docs)
-					docs;;
+				documents)
+					documents;;
 				man)
 					man;;
 				repositories)
@@ -66,7 +66,7 @@ function blog() {
 }
 
 ################################
-function docs() {
+function documents() {
 	xdg-open "https://penguins-eggs.net/docs"
 }
 

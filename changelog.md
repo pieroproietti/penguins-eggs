@@ -21,8 +21,10 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.4.4
+* site: we switched to using docusauros to manage the [penguins-eggs.net](https://penguins-eggs.net) site;
+- mom: better integration with the new site;
 * typos: thanks to @JUST1CEjohnson, several grammatical and typing corrections have been made on the READMEs and commands;
-* transpiling: the transition from pnpm@7.30.5 to the new version pnpm@8.1.0 involved a general overhaul that is still ongoing
+* transpiler: the transition from pnpm@7.30.5 to the new version pnpm@8.1.0 involved a general overhaul that is still in progress, I will wait to fix it before releasing this version - for now in [testing](https://sourceforge.net/projects/penguins-eggs/files/DEBS/testing/).
 
 ### eggs-9.4.3
 * Manjaro: penguins-eggs was included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs);
