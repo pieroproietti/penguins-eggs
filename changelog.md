@@ -24,7 +24,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * site: we switched to using docusauros to manage the [penguins-eggs.net](https://penguins-eggs.net) site;
 - mom: better integration with the new site;
 * typos: thanks to @JUST1CEjohnson, several grammatical and typing corrections have been made on the READMEs and commands;
-* using pnpm@8.1.0.
+* using [pnpm@8.1.0](https://pnpm.io/).
 
 ### eggs-9.4.3
 * Manjaro: penguins-eggs was included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs);
