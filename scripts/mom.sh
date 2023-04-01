@@ -30,7 +30,7 @@ function main() {
 function documentation() {
    while true; do
 
-      menu "blog" "docs" "man_page_html" "man" "repositories" "site" "sourceforge" "QUIT"
+      menu "blog" "docs" "man" "repositories" "site" "sourceforge" "QUIT"
 			choose=$(0< "${dir_tmp}/${file_tmp}" )
 
       case "$choose" in 
@@ -38,8 +38,6 @@ function documentation() {
 					blog;;
 				docs)
 					docs;;
-				man_page_html)
-					man_page_html;;
 				man)
 					man;;
 				repositories)
@@ -73,13 +71,8 @@ function docs() {
 }
 
 ################################
-function man_page_html() {
-   xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
-}
-
-################################
 function man() {
-   man eggs
+   xdg-open "file:///usr/lib/penguins-eggs/manpages/doc/man/eggs.html"
 }
 
 ################################
