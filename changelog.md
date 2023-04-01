@@ -19,7 +19,11 @@ Detailed instructions for usage are published on the [Penguins' eggs book](https
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/packages-deb/versions/). 
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
- 
+
+### eggs-9.4.4
+* typos: thanks to @JUST1CEjohnson, several grammatical and typing corrections have been made on the READMEs and commands;
+* transpiling: the transition from pnpm@7.30.5 to the new version pnpm@8.1.0 involved a general overhaul that is still ongoing
+
 ### eggs-9.4.3
 * Manjaro: penguins-eggs was included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs);
 * Arch: penguins-eggs is currently in [AUR](https://aur.archlinux.org/packages/penguins-eggs) repository;
