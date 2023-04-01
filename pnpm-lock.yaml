@@ -41,7 +41,7 @@ specifiers:
   node-static: ^0.7.11
   nyc: ^15.1.0
   oclif-pnpm: 3.4.3-1
-  perrisbrewery: 9.3.16
+  perrisbrewery: 9.3.17
   react: ^18.2.0
   shelljs: 0.8.5
   systeminformation: ^5.17.12
@@ -99,7 +99,7 @@ devDependencies:
   mocha: 10.2.0
   nyc: 15.1.0
   oclif-pnpm: 3.4.3-1_pj3xut33gta66wns5w7rs6cilm
-  perrisbrewery: 9.3.16_@types+node@18.15.11
+  perrisbrewery: 9.3.17_@types+node@18.15.11
   ts-node: 10.9.1_pj3xut33gta66wns5w7rs6cilm
 
 packages:
@@ -5035,8 +5035,8 @@ packages:
     resolution: {integrity: sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==}
     dev: true
 
-  /perrisbrewery/9.3.16_@types+node@18.15.11:
-    resolution: {integrity: sha512-dpGHVbAa86IBuyxtGCFueKTUqcVH/Y4qbo1L0JyxGx7TnHVr7S3hpHmFpNJEFruY46c8Qgf91WLCHWTnUCdj3Q==}
+  /perrisbrewery/9.3.17_@types+node@18.15.11:
+    resolution: {integrity: sha512-RZDuTpBKNV1JKUd7KU2kuRtCWpygoZcnkXmtOMx8fMQdts9CVd1j6z99ZNa4KVggwBfx1/hdFYgNGP18DGfBig==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     dependencies:
