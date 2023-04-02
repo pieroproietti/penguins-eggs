@@ -97,3 +97,6 @@
 - /var/lib/live/config/*
 - /var/mail/*
 - /var/spool/mail/*
+
+# added for btrfs
+- /.snapshots/*
