@@ -56,9 +56,9 @@ export default class Incubator {
     this.verbose = verbose
     this.remix.branding = theme
     this.isClone = isClone
-    if (theme.includes('/')) {
-      this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
-    }
+    
+    // brandig è solo il basename
+    this.remix.branding= path.basename(theme)
   }
 
   /**
@@ -67,6 +67,7 @@ export default class Incubator {
   async config(release = false) {
     const verbose = true
     const echo = Utils.setEcho(verbose)
+
 
     this.createInstallerDirs()
 
@@ -265,9 +266,10 @@ export default class Incubator {
             console.log('error: ' + error + ' creating ' + this.installer.configuration + `branding/${this.remix.branding}`)
           }
         }
-
-        shx.cp(calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
+        // patch quirinux
+        shx.cp('-r', calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
       } else {
+        console.log(calamaresBranding)
         console.log(`${calamaresBranding} branding not found!`)
         process.exit()
       }
