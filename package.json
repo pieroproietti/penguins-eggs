@@ -62,7 +62,7 @@
     },
     "dirname": "eggs",
     "engines": {
-        "node": ">16"
+        "node": ">=16"
     },
     "files": [
         ".oclif.manifest.json",
