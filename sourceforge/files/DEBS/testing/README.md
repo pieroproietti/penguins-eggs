@@ -12,9 +12,14 @@ Penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# eggs-9.4.2 in development
+# development
 
-changelog:
+Working with Charlie
+
+## changelog vs eggs-v9.4.4
+* feature: eggs produce now work nicelly on btrfs, remain to solve calamares and krill configuration;
+* bugfix: now eggs copy branding including subdirs, example lang;
+* bugfix: check theme if exists and remove final / if we pass a theme;
 
 # Penguins' eggs Debian TESTING packages
 

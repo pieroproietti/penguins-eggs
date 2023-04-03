@@ -56,9 +56,9 @@ export default class Incubator {
     this.verbose = verbose
     this.remix.branding = theme
     this.isClone = isClone
-    if (theme.includes('/')) {
-      this.remix.branding= path.basename(theme)
-    }
+    
+    // brandig è solo il basename
+    this.remix.branding= path.basename(theme)
   }
 
   /**
