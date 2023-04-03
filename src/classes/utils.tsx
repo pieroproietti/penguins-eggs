@@ -77,6 +77,7 @@ export default class Utils {
     * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
     */
    static vmlinuz(): string {
+      let distro = new Distro()
       let vmlinuz = ''
 
       // find vmlinuz in /proc/cmdline
@@ -86,6 +87,11 @@ export default class Utils {
             vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
          }
       })
+
+      // btrfs
+      if (vmlinuz.indexOf('@') > 0) {
+         vmlinuz = vmlinuz.substring(vmlinuz.indexOf('@') + 1)
+      }
 
       // If vmlinuz not found in /proc/cmdline, try to find version in initrd.img
       if (vmlinuz === '') {
@@ -106,14 +112,8 @@ export default class Utils {
       }
 
       // Arch
-      let distro = new Distro()
       if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
          vmlinuz = '/boot/vmlinuz-linux'
-      }
-
-      // btrfs
-      if (vmlinuz.indexOf('@') > 0) {
-         vmlinuz = vmlinuz.substring(vmlinuz.indexOf(' ') + 1)
       }
 
       return vmlinuz

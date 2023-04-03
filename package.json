@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "description": "Perri's Brewery edition: remaster your system and distribuite it",
-    "version": "9.4.4",
+    "version": "9.4.5-devel",
     "author": "Piero Proietti @pieroproietti",
     "bin": {
         "eggs": "bin/run"
@@ -62,7 +62,7 @@
     },
     "dirname": "eggs",
     "engines": {
-        "node": ">16"
+        "node": ">=16"
     },
     "files": [
         ".oclif.manifest.json",
