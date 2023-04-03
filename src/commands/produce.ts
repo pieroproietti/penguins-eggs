@@ -122,14 +122,16 @@ export default class Produce extends Command {
       if (flags.theme !== undefined) {
         theme = flags.theme
         if (theme.includes('/')) {
+          console.log('theme: ' + theme)
           if (theme.endsWith('/')) {
             theme = theme.slice(0, Math.max(0, theme.length - 1))
+            console.log('theme normalized: ' + theme)
           }
+        }
 
-          if (!fs.existsSync(theme + '/theme')) {
-            console.log('Cannot find theme: ' + theme)
-            process.exit()
-          }
+        if (!fs.existsSync(theme + '/theme')) {
+          console.log('Cannot find theme: ' + theme)
+          process.exit()
         }
       }
 

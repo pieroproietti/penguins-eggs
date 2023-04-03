@@ -57,7 +57,7 @@ export default class Incubator {
     this.remix.branding = theme
     this.isClone = isClone
     if (theme.includes('/')) {
-      this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
+      this.remix.branding= path.basename(theme)
     }
   }
 
@@ -67,6 +67,7 @@ export default class Incubator {
   async config(release = false) {
     const verbose = true
     const echo = Utils.setEcho(verbose)
+
 
     this.createInstallerDirs()
 
@@ -268,6 +269,7 @@ export default class Incubator {
         // patch quirinux
         shx.cp('-r', calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
       } else {
+        console.log(calamaresBranding)
         console.log(`${calamaresBranding} branding not found!`)
         process.exit()
       }
