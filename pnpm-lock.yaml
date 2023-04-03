@@ -9,7 +9,7 @@ dependencies:
     version: 1.3.8
   '@oclif/plugin-help':
     specifier: ^5.2.8
-    version: 5.2.8(@types/node@18.15.11)(typescript@5.0.3)
+    version: 5.2.9(@types/node@18.15.11)(typescript@5.0.3)
   '@oclif/plugin-version':
     specifier: 1.2.1
     version: 1.2.1(@types/node@18.15.11)(typescript@5.0.3)
@@ -18,7 +18,7 @@ dependencies:
     version: 2.0.33(@types/node@18.15.11)(typescript@5.0.3)
   '@oclif/test':
     specifier: ^2.3.11
-    version: 2.3.13(@types/node@18.15.11)(typescript@5.0.3)
+    version: 2.3.14(@types/node@18.15.11)(typescript@5.0.3)
   axios:
     specifier: ^1.3.4
     version: 1.3.4
@@ -30,7 +30,7 @@ dependencies:
     version: 0.0.3
   ink:
     specifier: ^3.2.0
-    version: 3.2.0(@types/react@18.0.31)(react@18.2.0)
+    version: 3.2.0(@types/react@18.0.32)(react@18.2.0)
   ink-big-text:
     specifier: ^1.2.0
     version: 1.2.0(ink@3.2.0)(react@18.2.0)
@@ -110,7 +110,7 @@ devDependencies:
     version: 0.7.7
   '@types/react':
     specifier: ^18.0.28
-    version: 18.0.31
+    version: 18.0.32
   '@types/shelljs':
     specifier: ^0.8.11
     version: 0.8.11
@@ -792,8 +792,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@oclif/plugin-help@5.2.8(@types/node@18.15.11)(typescript@4.9.5):
-    resolution: {integrity: sha512-Fl1DD6Hm7USG/BYqcUmc/hMXK6Bnd3HvkZsRG+qi0dbYaNtY9zJ58C5b3lgPn69bXJlyi1eWX4S8djSUWD8VYg==}
+  /@oclif/plugin-help@5.2.9(@types/node@18.15.11)(typescript@4.9.5):
+    resolution: {integrity: sha512-0J3oowPURZJ4Dn1p1WpQ46E4+CoV20KTn1cvsNiDl6Hmbw+qoljKQnArJJzNFeZQxWo4R7/S42PrzKJTVYh68Q==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.8.0(@types/node@18.15.11)(typescript@4.9.5)
@@ -804,8 +804,8 @@ packages:
       - typescript
     dev: true
 
-  /@oclif/plugin-help@5.2.8(@types/node@18.15.11)(typescript@5.0.3):
-    resolution: {integrity: sha512-Fl1DD6Hm7USG/BYqcUmc/hMXK6Bnd3HvkZsRG+qi0dbYaNtY9zJ58C5b3lgPn69bXJlyi1eWX4S8djSUWD8VYg==}
+  /@oclif/plugin-help@5.2.9(@types/node@18.15.11)(typescript@5.0.3):
+    resolution: {integrity: sha512-0J3oowPURZJ4Dn1p1WpQ46E4+CoV20KTn1cvsNiDl6Hmbw+qoljKQnArJJzNFeZQxWo4R7/S42PrzKJTVYh68Q==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.8.0(@types/node@18.15.11)(typescript@5.0.3)
@@ -815,8 +815,8 @@ packages:
       - '@types/node'
       - typescript
 
-  /@oclif/plugin-not-found@2.3.22(@types/node@18.15.11)(typescript@4.9.5):
-    resolution: {integrity: sha512-dZ202qQZwZFXKKGSxpKh063eGzjS1sw2CX9S/x8rhMALeU3p0GAJtLSLQx6AFXdlJTPpqw2b/KDn8OLlIMHhJA==}
+  /@oclif/plugin-not-found@2.3.23(@types/node@18.15.11)(typescript@4.9.5):
+    resolution: {integrity: sha512-UZM8aolxXvqwH8WcmJxRNASDWgMoSQm/pgCdkc1AGCRevYc8+LBSO+U6nLWq+Dx8H/dn9RyIv5oiUIOGkKDlZA==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.4
@@ -830,8 +830,8 @@ packages:
       - typescript
     dev: true
 
-  /@oclif/plugin-not-found@2.3.22(@types/node@18.15.11)(typescript@5.0.3):
-    resolution: {integrity: sha512-dZ202qQZwZFXKKGSxpKh063eGzjS1sw2CX9S/x8rhMALeU3p0GAJtLSLQx6AFXdlJTPpqw2b/KDn8OLlIMHhJA==}
+  /@oclif/plugin-not-found@2.3.23(@types/node@18.15.11)(typescript@5.0.3):
+    resolution: {integrity: sha512-UZM8aolxXvqwH8WcmJxRNASDWgMoSQm/pgCdkc1AGCRevYc8+LBSO+U6nLWq+Dx8H/dn9RyIv5oiUIOGkKDlZA==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.4
@@ -911,12 +911,12 @@ packages:
     engines: {node: '>=12.0.0'}
     deprecated: Deprecated in favor of @oclif/core
 
-  /@oclif/test@2.3.13(@types/node@18.15.11)(typescript@5.0.3):
-    resolution: {integrity: sha512-CD3qRj4pwEiRA2GGNr9sLL9iu4ASKJFBxUEk4/qsgPLGY6roMubRwKQTQI9orZ+9F21PdVM7xlNLeVsrpXqA9w==}
+  /@oclif/test@2.3.14(@types/node@18.15.11)(typescript@5.0.3):
+    resolution: {integrity: sha512-F7gYNGGb8b46+ZRTpeS0dpShgZpV/ENPWBIkHSw5xc161hhb8ioQ9wwf84dDfhYuNXYfcwxqA+VSRyqyFz/ITQ==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.8.0(@types/node@18.15.11)(typescript@5.0.3)
-      fancy-test: 2.0.16
+      fancy-test: 2.0.18
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -1115,13 +1115,13 @@ packages:
   /@types/ink-big-text@1.2.1:
     resolution: {integrity: sha512-2J+vxIcVzYkQrWfgqDorcui0ueF8g7j2BgQ+iYSsRkXi8/B3mSRM9fNL4jN3UOPWC2upfDssrumG2bOkRs6aXA==}
     dependencies:
-      '@types/react': 18.0.31
+      '@types/react': 18.0.32
     dev: true
 
   /@types/ink-gradient@2.0.1:
     resolution: {integrity: sha512-itcg0raINFVyexBQJVRkPopt/CLgBnDsqUi1JC096WquiD0NEBuKhtVvbvPiqJbtAffMAmtiXU24a5xSS0r1og==}
     dependencies:
-      '@types/react': 18.0.31
+      '@types/react': 18.0.32
     dev: true
 
   /@types/inquirer@9.0.3:
@@ -1200,12 +1200,12 @@ packages:
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
 
-  /@types/react@18.0.31:
-    resolution: {integrity: sha512-EEG67of7DsvRDU6BLLI0p+k1GojDLz9+lZsnCpCRTa/lOokvyPBvp8S5x+A24hME3yyQuIipcP70KJ6H7Qupww==}
+  /@types/react@18.0.32:
+    resolution: {integrity: sha512-gYGXdtPQ9Cj0w2Fwqg5/ak6BcK3Z15YgjSqtyDizWUfx7mQ8drs0NBUzRRsAdoFVTO8kJ8L2TL8Skm7OFPnLUw==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
-      csstype: 3.1.1
+      csstype: 3.1.2
 
   /@types/responselike@1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
@@ -2257,8 +2257,8 @@ packages:
       which: 2.0.2
     dev: true
 
-  /csstype@3.1.1:
-    resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+  /csstype@3.1.2:
+    resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
 
   /dargs@7.0.0:
     resolution: {integrity: sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==}
@@ -2795,8 +2795,8 @@ packages:
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
-  /fancy-test@2.0.16:
-    resolution: {integrity: sha512-Bgsd32hr+Ohrh/D4zACMstWjViYR6IHJxzvhLSzbekNIrDWOwSHx7zvKtrN/pFrFVyNBo02kNdz3PyPD5W2ibQ==}
+  /fancy-test@2.0.18:
+    resolution: {integrity: sha512-wA9xzWMJ4L51Jcr9k06koPwi58bbUkTZrqqNYd6z7DHky1jW+D5jc/q86zPmkVdnjOrCg91VOeEzyOjTLIlD8A==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@types/chai': 4.3.4
@@ -3486,7 +3486,7 @@ packages:
       react: '>=16.8.0'
     dependencies:
       cfonts: 2.10.1
-      ink: 3.2.0(@types/react@18.0.31)(react@18.2.0)
+      ink: 3.2.0(@types/react@18.0.32)(react@18.2.0)
       prop-types: 15.8.1
       react: 18.2.0
     dev: false
@@ -3499,13 +3499,13 @@ packages:
       react: '>=16.8.0'
     dependencies:
       gradient-string: 1.2.0
-      ink: 3.2.0(@types/react@18.0.31)(react@18.2.0)
+      ink: 3.2.0(@types/react@18.0.32)(react@18.2.0)
       prop-types: 15.8.1
       react: 18.2.0
       strip-ansi: 6.0.1
     dev: false
 
-  /ink@3.2.0(@types/react@18.0.31)(react@18.2.0):
+  /ink@3.2.0(@types/react@18.0.32)(react@18.2.0):
     resolution: {integrity: sha512-firNp1q3xxTzoItj/eOOSZQnYSlyrWks5llCTVX37nJ59K3eXbQ8PtzCguqo8YI19EELo5QxaKnJd4VxzhU8tg==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -3515,7 +3515,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@types/react': 18.0.31
+      '@types/react': 18.0.32
       ansi-escapes: 4.3.2
       auto-bind: 4.0.0
       chalk: 4.1.2
@@ -4226,7 +4226,7 @@ packages:
       globby: 11.1.0
       isbinaryfile: 5.0.0
       mem-fs: 2.3.0
-      minimatch: 7.4.3
+      minimatch: 7.4.4
       multimatch: 5.0.0
       normalize-path: 3.0.0
       textextensions: 5.15.0
@@ -4316,8 +4316,8 @@ packages:
     dependencies:
       brace-expansion: 2.0.1
 
-  /minimatch@7.4.3:
-    resolution: {integrity: sha512-5UB4yYusDtkRPbRiy1cqZ1IpGNcJCGlEMG17RKzPddpyiPKoCdwohbED8g4QXT0ewCt8LTkQXuljsUfQ3FKM4A==}
+  /minimatch@7.4.4:
+    resolution: {integrity: sha512-T+8B3kNrLP7jDb5eaC4rUIp6DKoeTSb6f9SwF2phcY2gxJUA0GEf1i29/FHxBMEfx0ppWlr434/D0P+6jb8bOQ==}
     engines: {node: '>=10'}
     dependencies:
       brace-expansion: 2.0.1
@@ -4764,8 +4764,8 @@ packages:
     hasBin: true
     dependencies:
       '@oclif/core': 1.26.2
-      '@oclif/plugin-help': 5.2.8(@types/node@18.15.11)(typescript@5.0.3)
-      '@oclif/plugin-not-found': 2.3.22(@types/node@18.15.11)(typescript@5.0.3)
+      '@oclif/plugin-help': 5.2.9(@types/node@18.15.11)(typescript@5.0.3)
+      '@oclif/plugin-not-found': 2.3.23(@types/node@18.15.11)(typescript@5.0.3)
       '@oclif/plugin-warn-if-update-available': 2.0.33(@types/node@18.15.11)(typescript@5.0.3)
       aws-sdk: 2.1348.0
       concurrently: 7.6.0
@@ -5057,8 +5057,8 @@ packages:
     dependencies:
       '@oclif/core': 1.26.2
       '@oclif/plugin-autocomplete': 1.3.8
-      '@oclif/plugin-help': 5.2.8(@types/node@18.15.11)(typescript@4.9.5)
-      '@oclif/plugin-not-found': 2.3.22(@types/node@18.15.11)(typescript@4.9.5)
+      '@oclif/plugin-help': 5.2.9(@types/node@18.15.11)(typescript@4.9.5)
+      '@oclif/plugin-not-found': 2.3.23(@types/node@18.15.11)(typescript@4.9.5)
       '@oclif/plugin-version': 1.2.1(@types/node@18.15.11)(typescript@4.9.5)
       '@oclif/plugin-warn-if-update-available': 2.0.33(@types/node@18.15.11)(typescript@4.9.5)
       chalk: 4.1.2
