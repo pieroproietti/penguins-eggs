@@ -265,8 +265,8 @@ export default class Incubator {
             console.log('error: ' + error + ' creating ' + this.installer.configuration + `branding/${this.remix.branding}`)
           }
         }
-
-        shx.cp(calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
+        // patch quirinux
+        shx.cp('-r', calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
       } else {
         console.log(`${calamaresBranding} branding not found!`)
         process.exit()
