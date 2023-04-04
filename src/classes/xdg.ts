@@ -14,11 +14,7 @@ import N8 from './n8'
 
 // libraries
 import {exec} from '../lib/utils'
-import {verify} from 'node:crypto'
-import {file, string} from '@oclif/core/lib/flags'
-import {dir} from 'node:console'
-import {execSync} from 'node:child_process'
-import ts from 'typescript'
+import Distro from './distro'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -259,6 +255,18 @@ export default class Xdg {
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
+
+    // quirinux
+    let distro = new Distro()
+    if (distro.distroId === 'Quirinux') {
+      console.log(distro.distroId)
+      await exec('chmod -R 777 /etc/skel/.config') 
+      await exec('chmod -R 777 /etc/xdg/autostart') // here we must change ***
+      await exec('chmod -R 777 /home/*/.config') 
+      await exec('chmod -R 777 /opt/estilos-general/.config')
+      await exec('chmod -R 777 /opt/estilos/.config')
+      await exec('chmod -R 777 /usr/bin/iniciar-asistente')
+    }
 
     // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
     // cat /etc/defualt/useradd
