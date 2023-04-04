@@ -231,6 +231,7 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config/xfce4`, '/etc/skel/.config', verbose)
       await exec('mkdir /etc/skel/.local/share -p', echo)
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
+
     }
 
     /**
@@ -260,12 +261,17 @@ export default class Xdg {
     let distro = new Distro()
     if (distro.distroId === 'Quirinux') {
       console.log(distro.distroId)
+
       await exec('chmod -R 777 /etc/skel/.config') 
       await exec('chmod -R 777 /etc/xdg/autostart') // here we must change ***
       await exec('chmod -R 777 /home/*/.config') 
       await exec('chmod -R 777 /opt/estilos-general/.config')
       await exec('chmod -R 777 /opt/estilos/.config')
       await exec('chmod -R 777 /usr/bin/iniciar-asistente')
+
+      // Copy xfce4-theme-switcher
+      await exec('mkdir /etc/skel/.config/xfce4-theme-switcher -p', echo)
+      await rsyncIfExist(`/home/${user}/.config/xfce4-theme-switcher`, '/etc/skel/.config/xfce4-theme-switcher', verbose)
     }
 
     // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
