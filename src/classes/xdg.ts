@@ -260,8 +260,6 @@ export default class Xdg {
     // quirinux
     let distro = new Distro()
     if (distro.distroId === 'Quirinux') {
-      console.log(distro.distroId)
-
       await exec('chmod -R 777 /etc/skel/.config') 
       await exec('chmod -R 777 /etc/xdg/autostart') // here we must change ***
       await exec('chmod -R 777 /home/*/.config') 
