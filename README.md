@@ -52,7 +52,7 @@ You can read more on the [blog](https://penguins-eggs.net/blog/distros-that-can-
 
 wardrobe was added to eggs on april 2022. It is a way to guide and consolidate the process of creating a custom version of Linux, starting from a CLI system. All my personal editions are passed to use wardrobe for their convenience, in that way I can organize, consolidate and manage better my work. I used birds names for my customizations, we have: colibri, duck, eagle, owl, wagtail, warbier and chicks mostly under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/), [waydroid](https://sourceforge.net/projects/penguins-eggs/files/ISOS/waydroid/) or [bullseye](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) on eggs' sourceforge page.
 
-I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [Penguins' eggs blog](https://penguins-eggs.net/2022/04/12/wardrobe-colibri-duck-eagle-and-owl/).
+I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [Penguins' eggs blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/).
 
 Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
 
