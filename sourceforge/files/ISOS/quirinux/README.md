@@ -10,21 +10,23 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
+
 # Penguins' eggs remastered ISOs
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All ISOs include eggs, you can udate it with: ```sudo eggs update```.
+All the ISOs include eggs installed, so you can update your eggs tool with the command:
 
-# MX Linux
+```sudo eggs update```
 
-[MX Linux](https://mxlinux.org/) is a cooperative venture between the [antiX](https://antixlinux.com/) and MX Linux communities. It is a family of operating systems that are designed to combine elegant and efficient desktops with high stability and solid performance.  MX’s graphical tools provide an easy way to do a wide variety of tasks, while the Live USB and snapshot tools inherited from antiX add impressive portability and remastering capabilities. Extensive support is available through videos, documentation and a very friendly Forum.
+# Quirinux
+Sistema operativo para el desarrollo del cine animado
 
-* **egg-of-mx-bullseye-xfce** - remastered version from MX21
+* **egg-of-quirinux-bullseye-generic**  
 
-# Installing MX Linux via PXE
+# Installing Quirinux via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
 
@@ -34,18 +36,12 @@ Then all you have to do is boot from the network the machines to be installed an
 
 You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/docs/Tutorial/english) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
 
-
-![mx-linux-cuckoo](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/mx-linux-cuckoo.png/1024/768)
-
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [MX Linux](https://mxlinux.org/).
+* You can find more informations on this Linux distro at: [system76](https://pop.system76.com/).
 
-
-Disclaim
-
+# Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
-
