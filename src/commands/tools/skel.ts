@@ -18,8 +18,8 @@ export default class Skel extends Command {
 
   static description = 'update skel from home configuration'
   static examples = [
-    'sudo eggs skel',
-    'sudo eggs skel --user user-to-be-copied',
+    'sudo eggs tools skel',
+    'sudo eggs tools skel --user user-to-be-copied',
   ]
 
   async run(): Promise<void> {

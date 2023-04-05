@@ -21,7 +21,7 @@ export default class DevYolk extends Command {
 
   static description = 'configure eggs to install without internet'
   static examples = [
-    'sudo eggs yolk',
+    'sudo eggs tools yolk',
   ]
 
   static dir = '/var/local/yolk'
