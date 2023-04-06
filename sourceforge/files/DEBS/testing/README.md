@@ -55,7 +55,7 @@ Chasing [calamares](https://calamares.io/), I have already chosen as a mascot fo
 
 [Sepia oficinalis](https://en.wikipedia.org/wiki/Common_cuttlefish)
 
-![sepia](https://raw.githubusercontent.com/pieroproietti/sepia/main/assets/sepia.png)
+![sepia](https://raw.githubusercontent.com/pieroproietti/sepia/main/assets/sepia.jpg)
 
 ## License
 
