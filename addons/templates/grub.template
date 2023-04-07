@@ -14,18 +14,21 @@ if loadfont $prefix/font.pf2 ; then
   terminal_output gfxterm
 fi
 
+set default=0
+set timeout=5
+set timeout_style=hidden
 set theme=/boot/grub/theme.cfg
 
-menuentry "{{{fullname}}} GUI" {
+menuentry "{{{fullname}}}" {
     set gfxpayload=keep
     {{{rmModules}}}
     linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
     initrd {{{initrdImg}}}
 }
 
-menuentry "{{{fullname}}} CLI" {
+menuentry "{{{fullname}}} safe" {
   set gfxpayload=keep
   {{{rmModules}}}
-  linux {{{vmlinuz}}} {{{kernel_parameters}}} 3
+  linux {{{vmlinuz}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal 
   initrd {{{initrdImg}}}
 }
