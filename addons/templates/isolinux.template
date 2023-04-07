@@ -6,7 +6,7 @@ path
 include isolinux.theme.cfg
 default vesamenu.c32
 prompt 0
-timeout 5
+timeout 2
 
 #
 label GUI
