@@ -14,9 +14,10 @@ Penguins-eggs
 
 # development
 
-Working with Charlie
+## changelog eggs-v9.4.6 vs eggs-v9.4.5
+* releasing v9.4.5
 
-## changelog vs eggs-v9.4.4
+
 
 # Penguins' eggs Debian TESTING packages
 
