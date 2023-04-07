@@ -10,7 +10,7 @@ timeout 5
 
 #
 label GUI
-  menu label {{{fullname}}} GUI
+  menu label {{{fullname}}}
   menu default
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
@@ -18,7 +18,7 @@ label GUI
 
 label SAFE
   menu label {{{fullname}}} SAFE
-  say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
+  say "Booting {{{fullname}}} GNU/Linux Live safe mode (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal 
 
