@@ -20,6 +20,13 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.5
+* btrfs: eggs produce now work nicelly on btrfs, note: at the moment calamares and krill configuration for btrfs are not enabled;
+* bugfix: eggs copy branding from themes including subdirs;
+* bugfix: check theme if exists and remove final / if we pass a theme;
+* bugfix: link penguins-eggs and others stuffs README.md connected to the new site;
+* live boot: removed CLI boot option and added safe option, GRUB is now hidden with a 5 second timeout, same booting with isolinux on BIOS systems.
+
 ### eggs-9.4.4
 * site: we switched to using docusauros to manage the [penguins-eggs.net](https://penguins-eggs.net) site;
 - mom: better integration with the new site;

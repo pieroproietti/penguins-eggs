@@ -17,10 +17,6 @@ Penguins-eggs
 Working with Charlie
 
 ## changelog vs eggs-v9.4.4
-* feature: eggs produce now work nicelly on btrfs, remain to solve calamares and krill configuration;
-* bugfix: now eggs copy branding including subdirs, example lang;
-* bugfix: check theme if exists and remove final / if we pass a theme;
-* bugfix: link penguins-eggs and others stuffs README.md connected to the new site;
 
 # Penguins' eggs Debian TESTING packages
 
