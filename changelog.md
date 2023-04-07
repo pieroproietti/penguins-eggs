@@ -21,7 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.4.5
-* btrfs: eggs produce now work nicelly on btrfs, note: at the moment calamares and krill configuration for btrfs are not enabled;
+* btrfs: ```eggs produce``` now works fine on btrfs. Note: calamares and krill configuration for btrfs is not enabled by default;
 * bugfix: eggs copy branding from themes including subdirs;
 * bugfix: check theme if exists and remove final / if we pass a theme;
 * bugfix: link penguins-eggs and others stuffs README.md connected to the new site;
