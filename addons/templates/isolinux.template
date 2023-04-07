@@ -6,10 +6,9 @@ path
 include isolinux.theme.cfg
 default vesamenu.c32
 prompt 0
-timeout 30
-#
-#
+timeout 5
 
+#
 label GUI
   menu label {{{fullname}}} GUI
   menu default
@@ -17,11 +16,11 @@ label GUI
   linux {{{vmlinuz}}} 
   append initrd={{{initrdImg}}} {{{kernel_parameters}}}
 
-label CLI
-  menu label {{{fullname}}} CLI
+label SAFE
+  menu label {{{fullname}}} SAFE
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}} 3
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal 
 
 label Boot from local
   com32 chain.c32
