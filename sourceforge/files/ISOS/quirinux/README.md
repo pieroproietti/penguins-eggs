@@ -22,7 +22,9 @@ All the ISOs include eggs installed, so you can update your eggs tool with the c
 ```sudo eggs update```
 
 # Quirinux
-Sistema operativo para el desarrollo del cine animado
+[Quirinu](https://www.quirinux.org/): operating system for animated film development.
+
+Created by Charlie Martinez is a GNU/Linux distribution specially designed for all artists who wish to create cartoons.
 
 * **egg-of-quirinux-bullseye-generic**  
 
