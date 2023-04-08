@@ -4,7 +4,6 @@ penguins-eggs
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
-[![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
@@ -22,12 +21,12 @@ All the ISOs include eggs installed, so you can update your eggs tool with the c
 ```sudo eggs update```
 
 # Quirinux
-[Quirinux](https://www.quirinux.org/) operating system for animated film development. 
+[Quirinux](https://www.quirinux.org/),  operating system for animated film development. 
 
 Created by argentinean singer-songwriter, recording engineer, programmer and animated filmmaker Charlie Martinez is a GNU / Linux distribution specially designed for all artists who want create cartoons. 
-
-[forum](https://foro.quirinux.org/)
-[blog](https://blog.quirinux.org/)
+* [site](https://www.quirinux.org/)
+* [forum](https://foro.quirinux.org/)
+* [blog](https://blog.quirinux.org/)
 
 
 * **quirinux-general** BETA version
