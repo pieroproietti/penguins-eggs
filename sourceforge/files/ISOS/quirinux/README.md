@@ -25,9 +25,9 @@ All the ISOs include eggs installed, so you can update your eggs tool with the c
 
 Created by argentinean singer-songwriter, recording engineer, programmer and animated filmmaker Charlie Martinez is a GNU / Linux distribution specially designed for all artists who want create cartoons.
 
-* [site](https://www.quirinux.org/)
-* [forum](https://foro.quirinux.org/)
-* [blog](https://blog.quirinux.org/)
+### [site](https://www.quirinux.org/)
+### [forum](https://foro.quirinux.org/)
+### [blog](https://blog.quirinux.org/)
 
 
 * **quirinux-general** BETA version
