@@ -5,7 +5,7 @@ penguins-eggs
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
 [![sources-documentation](https://img.shields.io/badge/sources-documentation-blue)](https://penguins-eggs.net/sources-documentation/index.html)
-[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/book/)
+[![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/docs/Tutorial/italiano)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
@@ -67,7 +67,7 @@ and select the version you want install
 No need other configurations, penguins-eggs are battery included or better - as in the real - live is inside! :-D
 
 ## More informations
-There is [user's manual](https://penguins-eggs.net/book/) and same other documentation in our [repository](https://github.com/pieroproietti/penguins-eggs/documents).
+There is [user's manual](https://penguins-eggs.net/docs/Tutorial/italiano) and same other documentation in our [repository](https://github.com/pieroproietti/penguins-eggs/documents).
 
 Contact me via [gitter](https://gitter.im/penguins-eggs-1/community), or open an [issue](https://github.com/pieroproietti/penguins-eggs/issues) on github.
 
