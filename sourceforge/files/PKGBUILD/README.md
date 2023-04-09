@@ -59,7 +59,7 @@ You can use: [Ventoy](https://www.ventoy.net/en/index.html), Balena etcher, Rufu
 It would be very useful to have the binaries for penguins-eggs and calamares freely created and shared by the community from the PKGBUILDs in AUR, if anyone wants to help can contact [me](https://t.me/penguins_eggs).
 
 # More informations
-There is a [Penguins' eggs official book](https://penguins-eggs.net/book/) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
+There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/italiano) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
 You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
 [blog](https://penguins-eggs.net), 
