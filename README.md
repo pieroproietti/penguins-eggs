@@ -21,7 +21,7 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Penguins' eggs official book](#penguins-eggs-official-book)
+* [Penguins' eggs official guide](#penguins-eggs-official-book)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -177,7 +177,7 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the ```--max``` flag to get more compressed ISOs.
 
-In addition to the description of the commands in this README, you can consult the [Penguins' eggs official book](#penguins-eggs-official-book).
+In addition to the description of the commands in this README, you can consult the [Penguins' eggs official guide](#penguins-eggs-official-book).
 
 # Commands
 <!-- commands -->
@@ -714,9 +714,9 @@ DESCRIPTION
   update skel from home configuration
 
 EXAMPLES
-  sudo eggs skel
+  sudo eggs tools skel
 
-  sudo eggs skel --user user-to-be-copied
+  sudo eggs tools skel --user user-to-be-copied
 ```
 
 ## `eggs tools stat`
@@ -759,7 +759,7 @@ DESCRIPTION
   configure eggs to install without internet
 
 EXAMPLES
-  sudo eggs yolk
+  sudo eggs tools yolk
 ```
 
 ## `eggs update`
@@ -910,7 +910,7 @@ EXAMPLES
 ```
 <!-- commandsstop -->
 
-# Penguins' eggs official book
+# Penguins' eggs official guide
 The original edition of the eggs manual is released in Italian, of course other languages can be accessed using machine translation:
 
 [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/italiano)
