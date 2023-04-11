@@ -147,7 +147,7 @@ I was undecided whether to publish this version or not - there are no interestin
 
 ### eggs-9.3.10
 * changed ```liveMediumPath = '/run/archiso/copytoram/'``` and ```squashfs = '/airootfs.sfs'``` for archlinux, aligned to archiso;
-* created configuration on ```naked/arch``` for archinstall for a [Arch naked](https://penguins-eggs.net/book/arch-naked.html) version;
+* created configuration on ```naked/arch``` for archinstall for a [Arch naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html) version;
 
 
 ### eggs-9.3.9
