@@ -28,7 +28,7 @@ You can use simple USB or USB with ventoy, iso file with proxmox ve, virtualbox,
 * penguins-eggs PKGBUILD on [community](https://gitlab.manjaro.org/packages/community/penguins-eggs)
 * penguins-eggs PKGBUILD [my way](https://github.com/pieroproietti/penguins-eggs-manjaro) (*)
 * penguins-eggs [sources](https://github.com/pieroproietti/penguins-eggs)
-* penguins-eggs [book](https://penguins-eggs.net/docs/Tutorial/italiano)
+* penguins-eggs [book](https://penguins-eggs.net/docs/Tutorial/users-guide)
 * penguins-eggs [blog](https://penguins-eggs.net)
 
 (*) Here we refere always to that, but I hope with same help to solve the problems and have it in community again.

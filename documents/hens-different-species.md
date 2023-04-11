@@ -59,7 +59,7 @@ sudo ./eggs produce
 
 
 # More informations
-There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/italiano) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
+There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/users-guide) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
 
 You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
 [blog](https://penguins-eggs.net), 
