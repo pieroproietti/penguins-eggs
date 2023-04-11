@@ -848,7 +848,7 @@ DESCRIPTION
 EXAMPLES
   $ eggs wardrobe list
 
-  $ eggs wardrobe list your-wardrove
+  $ eggs wardrobe list your-wardrobe
 ```
 
 ## `eggs wardrobe show [COSTUME]`
