@@ -30,7 +30,7 @@ export default class List extends Command {
   static description = 'list costumes and accessoires in wardrobe'
   static examples=[
     'eggs wardrobe list',
-    'eggs wardrobe list your-wardrove',
+    'eggs wardrobe list your-wardrobe',
   ]
 
   async run(): Promise<void> {
