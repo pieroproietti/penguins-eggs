@@ -1,4 +1,4 @@
-# penguins-eggs-pkgbuils
+# penguins-eggs-pkgbuilds
  
 This is my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository, and here I am collecting my PKGBUILDs. Once tested, pkgbuilds are published to the [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
@@ -59,7 +59,7 @@ You can use: [Ventoy](https://www.ventoy.net/en/index.html), Balena etcher, Rufu
 It would be very useful to have the binaries for penguins-eggs and calamares freely created and shared by the community from the PKGBUILDs in AUR, if anyone wants to help can contact [me](https://t.me/penguins_eggs).
 
 # More informations
-There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/users-guide) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
+There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/users-guide) and same other documentation - mostly for developers - on the repository [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) under [documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents). I want to point out [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) a brief how to use eggs in Debian. Arch and Manjaro, and the post [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html) on the blog which describes how to create an Arch naked live, install it, then dress the resulting system with a graphics development station.
 
 You can contact me by [mail](mailto://pieroproietti@gmail.com) or follow me on 
 [blog](https://penguins-eggs.net), 
