@@ -49,7 +49,7 @@ It is possible to create and customize these images from the original distributi
 * install a minimum configuration of Debian bullseye or eggs-of-debian-bullseye-naked
 * download and install eggs, if not already installed
 * ``eggs wardrobe get```
-* ```sudo wardrobe wear chicks```
+* ```sudo eggs wardrobe wear chicks```
 
 ### Ubuntu jammy chicks.
 * install minimum configuration of xubuntu 22.04 or eggs-of-ubuntu-jammy-naked
@@ -57,6 +57,19 @@ It is possible to create and customize these images from the original distributi
 * ``eggs wardrobe get```
 * ```cd .wardrobe/costumes/chicks```
 * ```sudo ./ubuntu-jammy_colibri.sh```
+
+
+### NOTE
+I'm refactoring wardrobe, including the main originals distros: Arch, Debian/Devuan and Ubuntu.
+
+At the moment I'm using YAML configurations files for Debian/Devuan and simple Bash files for Arch and Ubuntu, this in future will change try to uniform all the distros. 
+
+I'm thinking to use:
+* README.md 
+* index.yaml
+* distro-version_costume.sh 
+
+and call all them with a simple `sudo eggs ewardrobe wear [costume]`.
 
 # images
 
