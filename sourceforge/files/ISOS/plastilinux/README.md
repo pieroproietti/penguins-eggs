@@ -15,14 +15,7 @@ Plastilinux would like to become a meta-distribution for school and be based on 
 
 ![chicks](https://penguins-eggs.net/images/chicks.png)
 
-# Integration with epoptes.
-I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ``sudo eggs produce`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
-
-* user/password
-* ```live/evolution``
-* ```root/evolution```
-
-# chicks
+## chicks
 XFCE4, light customization office, code, nodejs and school programs.
 
 ![chicks](https://penguins-eggs.net/images/chicks-245x183.png)
@@ -34,24 +27,31 @@ Available as:
 * Ubuntu jammy.
 
 
-# Create your own image.
+## Integration with epoptes.
+I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ``sudo eggs produce`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
+
+* user/password
+* ```live/evolution``
+* ```root/evolution```
+
+## Create your own image.
 
 It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
 
-### Arch chicks
+#### Arch chicks
 * install a minimum configuration of Arch Linux or `eggs-of-arch-rolling-naked`
 * install penguins-eggs using yay, if not already installed
 * `eggs wardrobe get`
 * `cd .wardrobe/costumes/chicks`
 * `sudo ./arch_colibri.sh`
 
-### Debian bullseye chicks
+#### Debian bullseye chicks
 * install a minimum configuration of Debian bullseye or `eggs-of-debian-bullseye-naked`
 * download and install eggs, if not already installed
 * `eggs wardrobe get`
 * `sudo eggs wardrobe wear chicks`
 
-### Ubuntu jammy chicks.
+#### Ubuntu jammy chicks.
 * install minimum configuration of xubuntu 22.04 or `eggs-of-ubuntu-jammy-naked`
 * download and install eggs
 * `eggs wardrobe get`
@@ -72,7 +72,10 @@ I'm think to use for every costume/accessory:
 
 And let to call them with: `sudo eggs wardrobe wear [costume]`, at the moment we are in transiction.
 
-# images
+
+# Other images plastilinux
+Trying to get the same remaster from 3 or 4 differents original distros: Arch Linux, Debian, Devuan and Ubuntu.
+
 
 ## **colibri**
 A light xfce4 for developers you can easily start to improve eggs by installing colibri.
@@ -95,18 +98,6 @@ xfce4 for graphics designers, with 6.1.15-2-liquorix-amd64 kernel, based on the 
 
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
-
-## Debian buster chicks
-Same as Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) version of Debian buster.
-
-## Devuan chimaera chicks.
-Same as for Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/chimaera /) version of Devuan chimaera 
-
-## Devuan daedalus chicks.
-As for Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/devuan/daedalus/) version of Devuan daedalus ceres 
-
-# ... and the others?
-Yes, it would also be possible to get versions based on other distributions such as arch and manjaro, but your cooperation is needed!
 
 ## More informations
 There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/users-guide) and same other documentation - mostly for developers - on [penguins-eggs repo](https://github.com/pieroproietti/penguins-eggs) under **documents** and **i386**, in particular we have [hens, differents species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md) who descrive how to use eggs in manjaro.
