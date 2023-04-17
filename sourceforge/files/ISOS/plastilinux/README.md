@@ -29,13 +29,38 @@ XFCE4, light customization office, code, nodejs and school programs.
 
 Available as: 
 
-* Debian buster/bullseye/bookworm;
-
-* Devuan beowulf/chimaera/daedalus;
-
+* Arch Linux
+* Debian bullseye
 * Ubuntu jammy.
 
-# **colibri**
+
+# Create your own image.
+
+It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
+
+### Arch chicks
+* install a minimum configuration of Arch Linux or eggs-of-arch-rolling-naked
+* install penguins-eggs using yay, if not already installed
+* ```eggs wardrobe get```
+* ```cd .wardrobe/costumes/chicks```
+* ```sudo ./arch_colibri.sh```
+
+### Debian bullseye chicks
+* install a minimum configuration of Debian bullseye or eggs-of-debian-bullseye-naked
+* download and install eggs, if not already installed
+* ``eggs wardrobe get```
+* ```sudo wardrobe wear chicks```
+
+### Ubuntu jammy chicks.
+* install minimum configuration of xubuntu 22.04 or eggs-of-ubuntu-jammy-naked
+* download and install eggs
+* ``eggs wardrobe get```
+* ```cd .wardrobe/costumes/chicks```
+* ```sudo ./ubuntu-jammy_colibri.sh```
+
+# images
+
+## **colibri**
 A light xfce4 for developers you can easily start to improve eggs by installing colibri.
 
 ![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
@@ -56,35 +81,6 @@ xfce4 for graphics designers, with 6.1.15-2-liquorix-amd64 kernel, based on the 
 
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
-# Create your own image.
-
-It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
-
-## Ubuntu jammy chicks.
-* run and install a minimum configuration of xubuntu 22.04.
-* download and install eggs
-* ``eggs wardrobe get```
-* ```sudo eggs wardrobe wear accessories/chicks``
-
-or: 
-
-* download egg-of-ubuntu-jammy-naked from the penguins-eggs du [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/ISOS/ubuntu/jammy/) page;
-
-* boot and install with: ``sudo eggs install -un``.
-* restart the machine and download the wardrobe: ``eggs wardrobe get``.
-* ```sudo eggs wardrobe wear chicks``.
-
-## Debian bullseye chicks.
-* perform a minimal installation of [Debian bullseye](https://www.debian.org/releases/bullseye/debian-installer/) minimal;
-* download and install eggs;
-
-alternatively:
-
-* download and install with ``sudo eggs install`` the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bullseye/) version of Debian bullseye. 
-
-* reboot the system and log in with your credentials, give the following commands:
-* ``eggs wardrobe get``.
-* ```sudo eggs wardrobe wear chick``.
 
 ## Debian buster chicks
 Same as Debian bullseye, but downloading the [naked](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/buster /) version of Debian buster.
