@@ -64,12 +64,13 @@ I'm refactoring wardrobe, including the main originals distros: Arch, Debian/Dev
 
 At the moment I'm using YAML configurations files for Debian/Devuan and simple Bash files for Arch and Ubuntu, this in future will change try to uniform all the distros. 
 
-I'm thinking to use:
-* README.md 
-* index.yaml
-* distro-version_costume.sh 
+I'm think to use for every costume/accessory:
 
-and call all them with a simple `sudo eggs ewardrobe wear [costume]`.
+* `README.md` 
+* `index.yaml`
+* `distro-version_costume.sh`
+
+And let to call them with: `sudo eggs wardrobe wear [costume]`, at the moment we are in transiction.
 
 # images
 
