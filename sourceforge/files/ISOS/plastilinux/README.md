@@ -39,24 +39,24 @@ Available as:
 It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
 
 ### Arch chicks
-* install a minimum configuration of Arch Linux or eggs-of-arch-rolling-naked
+* install a minimum configuration of Arch Linux or `eggs-of-arch-rolling-naked`
 * install penguins-eggs using yay, if not already installed
-* ```eggs wardrobe get```
-* ```cd .wardrobe/costumes/chicks```
-* ```sudo ./arch_colibri.sh```
+* `eggs wardrobe get`
+* `cd .wardrobe/costumes/chicks`
+* `sudo ./arch_colibri.sh`
 
 ### Debian bullseye chicks
-* install a minimum configuration of Debian bullseye or eggs-of-debian-bullseye-naked
+* install a minimum configuration of Debian bullseye or `eggs-of-debian-bullseye-naked`
 * download and install eggs, if not already installed
-* ``eggs wardrobe get```
-* ```sudo eggs wardrobe wear chicks```
+* `eggs wardrobe get`
+* `sudo eggs wardrobe wear chicks`
 
 ### Ubuntu jammy chicks.
-* install minimum configuration of xubuntu 22.04 or eggs-of-ubuntu-jammy-naked
+* install minimum configuration of xubuntu 22.04 or `eggs-of-ubuntu-jammy-naked`
 * download and install eggs
-* ``eggs wardrobe get```
-* ```cd .wardrobe/costumes/chicks```
-* ```sudo ./ubuntu-jammy_colibri.sh```
+* `eggs wardrobe get`
+* `cd .wardrobe/costumes/chicks`
+* `sudo ./ubuntu-jammy_colibri.sh`
 
 
 ### NOTE
