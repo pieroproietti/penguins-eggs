@@ -65,7 +65,7 @@ export default class Tailor {
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/ubuntu.yml`
           if (!fs.existsSync(tailorList)) {
-            console.log(`no definition found compatible Debian`)
+            console.log(`no costume definition found compatible Debian`)
             process.exit()
           }
         }
@@ -78,7 +78,7 @@ export default class Tailor {
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/ubuntu.yml`
           if (!fs.existsSync(tailorList)) {
-            console.log(`no definition found compatible Devuan`)
+            console.log(`no costume definition found compatible Devuan`)
             process.exit()
           }
         }
@@ -92,7 +92,7 @@ export default class Tailor {
           tailorList = `${this.costume}/devuan.yml`
           console.log(`trying ` + tailorList)
           if (!fs.existsSync(tailorList)) {
-            console.log(`no definition found compatible Ubuntu`)
+            console.log(`no costume definition found compatible Ubuntu`)
             process.exit()
           }
         }
