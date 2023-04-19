@@ -74,8 +74,8 @@
         "/eui",
         "/ipxe",
         "/manpages",
-        "/scripts",
-        "mkinitcpio"
+        "/mkinitcpio",
+        "/scripts"
     ],
     "homepage": "https://penguins-eggs.net/",
     "keywords": [
