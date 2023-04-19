@@ -87,8 +87,10 @@ export default class Tailor {
       tailorList = `${this.costume}/ubuntu.yml`
       if (!fs.existsSync(tailorList)) {
         tailorList = `${this.costume}/debian.yml`
+        console.log(`trying ` + tailorList)
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/devuan.yml`
+          console.log(`trying ` + tailorList)
           if (!fs.existsSync(tailorList)) {
             console.log(`no definition found compatible Ubuntu`)
             process.exit()

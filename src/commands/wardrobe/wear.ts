@@ -68,26 +68,15 @@ export default class Wear extends Command {
      */
     let costume = 'costumes/colibri'
     if (this.argv['0'] !== undefined) {
-      costume = this.argv['0']      // 12345678                                  12345678901                                  1234567
+      costume = this.argv['0']  // 12345678                               12345678901                              1234567
       if (costume.slice(0, 8) !== 'costumes' && costume.slice(0, 11) !== 'accessories' && costume.slice(0, 7) !== 'servers') {
         costume = `costumes/${costume}`
       }
     }
-
     costume = wardrobe + costume
     console.log(costume)
-
     if (!fs.existsSync(costume)) {
-      console.log(`costume: ${chalk.green(path.basename(costume))} not found in wardrobe: ${chalk.green(wardrobe)}`)
-      process.exit()
-    }
-
-    /**
-    * taller
-    */
-    const taller = `${costume}`
-    if (!fs.existsSync(taller)) {
-      Utils.warning(`taller not found in : ${costume}!`)
+      Utils.warning(`costume not found in : ${costume}!`)
       process.exit()
     }
 
