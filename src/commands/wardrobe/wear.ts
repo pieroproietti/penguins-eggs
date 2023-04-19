@@ -83,11 +83,11 @@ export default class Wear extends Command {
     }
 
     /**
-    * tailorList
+    * taller
     */
-    const tailorList = `${costume}/index.yml`
-    if (!fs.existsSync(tailorList)) {
-      Utils.warning(`index.yml not found in : ${costume}!`)
+    const taller = `${costume}`
+    if (!fs.existsSync(taller)) {
+      Utils.warning(`taller not found in : ${costume}!`)
       process.exit()
     }
 

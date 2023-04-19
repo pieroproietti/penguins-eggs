@@ -55,7 +55,50 @@ export default class Tailor {
       process.exit()
     }
 
-    const tailorList = `${this.costume}/index.yml`
+    // Analyze distro
+    let distro = new Distro()
+    let tailorList = ''
+    if (distro.distroLike === 'Debian') {
+      tailorList = `${this.costume}/debian.yml`
+      if (!fs.existsSync(tailorList)) {
+        tailorList = `${this.costume}/devuan.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/ubuntu.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no definition found compatible Debian`)
+            process.exit()
+          }
+        }
+      }
+
+    } else if (distro.distroLike === 'Devuan') {
+      tailorList = `${this.costume}/devuan.yml`
+      if (!fs.existsSync(tailorList)) {
+        tailorList = `${this.costume}/debian.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/ubuntu.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no definition found compatible Devuan`)
+            process.exit()
+          }
+        }
+      }
+    } else if (distro.distroLike === 'Ubuntu') {
+      tailorList = `${this.costume}/ubuntu.yml`
+      if (!fs.existsSync(tailorList)) {
+        tailorList = `${this.costume}/debian.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/devuan.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no definition found compatible Ubuntu`)
+            process.exit()
+          }
+        }
+      }
+    } else if (distro.distroLike === 'Arch') {
+      tailorList = `${this.costume}/arch-rolling.sh`
+    }
+
     if (fs.existsSync(tailorList)) {
       this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
     } else switch (this.category) {
@@ -87,7 +130,6 @@ export default class Tailor {
     * distro e sources_list
     * vengono definite qua perchè servono a tutti
     */
-    const distro = new Distro()
     const sources_list = new SourcesList()
     let step = ''
 
@@ -214,14 +256,14 @@ export default class Tailor {
 
     /**
     * apt-get install dependencies
-   * I think its not more used! to check
+    * I think its not more used! to check
     */
-    if (this.materials.sequence.dependencies !== undefined) {
-      const dependencies = await this.helperExists(this.materials.sequence.dependencies)
-      if (dependencies.length > 1) {
-        await this.helperInstall(dependencies, 'dependencies')
-      }
-    }
+    // if (this.materials.sequence.dependencies !== undefined) {
+    // const dependencies = await this.helperExists(this.materials.sequence.dependencies)
+    // if (dependencies.length > 1) {
+    //     await this.helperInstall(dependencies, 'dependencies')
+    //   }
+    // }
 
     /**
     * apt-get install packages
@@ -378,10 +420,10 @@ export default class Tailor {
       /**
       * customize/hostname
       */
-      if (this.materials.customize.hostname) {
-        Utils.warning(`changing hostname = ${this.materials.name}`)
-        await this.hostname()
-      }
+      // if (this.materials.customize.hostname) {
+      // Utils.warning(`changing hostname = ${this.materials.name}`)
+      //   await this.hostname()
+      // }
 
       /**
       * customize/scripts

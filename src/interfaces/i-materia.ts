@@ -20,7 +20,7 @@ export interface IMateria {
       upgrade: boolean
     },
     preinst: string[]
-    dependencies: string[]
+    // dependencies: string[]
     packages: string[]
     packages_no_install_recommends: string[]
     try_packages: string[]
@@ -32,7 +32,7 @@ export interface IMateria {
   }
   customize: {
     dirs: boolean
-    hostname: boolean
+    // hostname: boolean
     scripts: string[]
   }
   reboot: boolean
