@@ -101,8 +101,11 @@ export default class Tailor {
     } else if (distro.distroLike === 'Arch') {
       tailorList = `${this.costume}/arch.yml`
       if (!fs.existsSync(tailorList)) {
-        console.log(`no costume definition found compatible Arch`)
-        process.exit()
+        tailorList = `${this.costume}/debian.yml`
+        if (!fs.existsSync(tailorList)) {
+          console.log(`no costume definition found compatible Arch`)
+          process.exit()
+        }
       }
     }
 
