@@ -225,7 +225,7 @@ export default class Tailor {
           process.exit()
         }
 
-        step = 'updating repositories'
+        step = 'repositories update'
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
           if (distro.familyId === "debian") {
@@ -239,7 +239,7 @@ export default class Tailor {
         * sequence/repositories/upgrade
         */
         if (this.materials.sequence.repositories.upgrade !== undefined) {
-          step = 'apt-get full-upgrade'
+          step = 'repositories upgrade'
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
             if (distro.familyId === "debian") {
