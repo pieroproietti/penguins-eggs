@@ -98,7 +98,11 @@ export default class Tailor {
         }
       }
     } else if (distro.distroLike === 'Arch') {
-      tailorList = `${this.costume}/arch-rolling.sh`
+      tailorList = `${this.costume}/arch.yml`
+      if (!fs.existsSync(tailorList)) {
+        console.log(`no costume definition found compatible Arch`)
+        process.exit()
+      }
     }
 
     if (fs.existsSync(tailorList)) {
@@ -179,14 +183,14 @@ export default class Tailor {
       */
       if (this.materials.sequence.repositories !== undefined) {
         /**
-              * sequence/repositories/sources_list
-              */
+        * sequence/repositories/sources_list
+        */
         // evito di fallire se sources_list non è presente
         if (this.materials.sequence.repositories.sources_list !== undefined) {
           step = 'analyzing sources_list'
           Utils.warning(step)
-          // controllo i componenti solo se Debian/Devuab
-          if (distro.distroId === 'Debian' || distro.distroId === 'Devuan') {
+          // controllo i componenti solo se Debian/Devuan/Ubuntu
+          if (distro.familyId === 'debian' ) {
             await sources_list.components(this.materials.sequence.repositories.sources_list)
           }
         }
