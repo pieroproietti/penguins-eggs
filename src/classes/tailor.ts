@@ -193,29 +193,31 @@ export default class Tailor {
         if (this.materials.sequence.repositories.sources_list !== undefined) {
           step = 'analyzing repositories'
           Utils.warning(step)
-          if (distro.familyId === 'debian' ) {
+          if (distro.familyId === 'debian') {
             await sources_list.components(this.materials.sequence.repositories.sources_list)
-          } 
+          }
         }
 
-        /**
-        * sequence/repositories/sources_list_d
-        */
-        if (this.materials.sequence.repositories.sources_list_d !== undefined && this.materials.sequence.repositories.sources_list_d[0] !== null) {
-          step = 'adding repositories to /etc/apt/sources_list_d'
-          Utils.warning(step)
+        if (distro.familyId === "debian") {
+          /**
+          * sequence/repositories/sources_list_d
+          */
+          if (this.materials.sequence.repositories.sources_list_d !== undefined && this.materials.sequence.repositories.sources_list_d[0] !== null) {
+            step = 'adding repositories to /etc/apt/sources_list_d'
+            Utils.warning(step)
 
-          for (const cmd of this.materials.sequence.repositories.sources_list_d) {
-            try {
-              // repeat 3 times if fail curl or others commands
-              for (let i = 0; i < 2; i++) {
-                const result = await exec(cmd, this.echo)
-                if (result.code === 0) {
-                  break
+            for (const cmd of this.materials.sequence.repositories.sources_list_d) {
+              try {
+                // repeat 3 times if fail curl or others commands
+                for (let i = 0; i < 2; i++) {
+                  const result = await exec(cmd, this.echo)
+                  if (result.code === 0) {
+                    break
+                  }
                 }
+              } catch (error) {
+                await Utils.pressKeyToExit(JSON.stringify(error))
               }
-            } catch (error) {
-              await Utils.pressKeyToExit(JSON.stringify(error))
             }
           }
         }
