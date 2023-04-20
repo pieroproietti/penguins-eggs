@@ -281,11 +281,11 @@ export default class Tailor {
         const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
         if (packages.length > 1) {
           await this.helperInstall(packages)
-        } else {
-          await this.helperInstall(this.materials.sequence.packages,
-            'packages',
-            "pacman -S --noconfirm")
         }
+      } else {
+        await this.helperInstall(this.materials.sequence.packages,
+          'packages',
+          "pacman -S --noconfirm")
       }
     }
 
