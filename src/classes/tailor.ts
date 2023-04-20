@@ -14,6 +14,7 @@ import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
 import SourcesList from './sources_list'
+import { disconnect } from 'process'
 
 const pjson = require('../../package.json')
 
@@ -189,10 +190,9 @@ export default class Tailor {
         if (this.materials.sequence.repositories.sources_list !== undefined) {
           step = 'analyzing sources_list'
           Utils.warning(step)
-          // controllo i componenti solo se Debian/Devuan/Ubuntu
           if (distro.familyId === 'debian' ) {
             await sources_list.components(this.materials.sequence.repositories.sources_list)
-          }
+          } 
         }
 
         /**
@@ -221,14 +221,18 @@ export default class Tailor {
         * sequence/repositories/update
         */
         if (this.materials.sequence.repositories.update === undefined) {
-          console.log('repositiories, and repositories.update MUST be defined on sequence ')
+          console.log('repositiories, and repositories.update MUST be defined on sequence')
           process.exit()
         }
 
         step = 'updating repositories'
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
-          await exec('apt-get update', Utils.setEcho(false))
+          if (distro.familyId === "debian") {
+            await exec('apt-get update', Utils.setEcho(false))
+          } else {
+            await exec('pacman -Sy', Utils.setEcho(false))
+          }
         }
 
         /**
@@ -238,7 +242,11 @@ export default class Tailor {
           step = 'apt-get full-upgrade'
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
-            await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+            if (distro.familyId === "debian") {
+              await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+            } else {
+              await exec('pacman -Su', Utils.setEcho(false))
+            }
           }
         }
       }
@@ -261,23 +269,16 @@ export default class Tailor {
     }
 
     /**
-    * apt-get install dependencies
-    * I think its not more used! to check
-    */
-    // if (this.materials.sequence.dependencies !== undefined) {
-    // const dependencies = await this.helperExists(this.materials.sequence.dependencies)
-    // if (dependencies.length > 1) {
-    //     await this.helperInstall(dependencies, 'dependencies')
-    //   }
-    // }
-
-    /**
-    * apt-get install packages
+    * install packages
     */
     if (this.materials.sequence.packages !== undefined) {
       const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
       if (packages.length > 1) {
-        await this.helperInstall(packages)
+        if (distro.familyId === 'debian')
+          await this.helperInstall(packages)
+        else {
+          await this.helperInstall(packages,'packages',"pacman -Su")
+        }
       }
     }
 
@@ -424,14 +425,6 @@ export default class Tailor {
       }
 
       /**
-      * customize/hostname
-      */
-      // if (this.materials.customize.hostname) {
-      // Utils.warning(`changing hostname = ${this.materials.name}`)
-      //   await this.hostname()
-      // }
-
-      /**
       * customize/scripts
       */
       if (this.materials.customize.scripts !== undefined && Array.isArray(this.materials.customize.scripts)) {
@@ -494,13 +487,23 @@ export default class Tailor {
     /**
     * packages_exists
     */
-    await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+    let distro = new Distro()
+    if (distro.familyId === 'debian') {
+      await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+    } else {
+      await exec(`pacman -Q | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+    }
+
 
     /**
     * packages_not_exists
     */
     if (verbose) {
-      await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      if (distro.familyId === "debian") {
+        await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      } else {
+        await exec(`pacman -Q | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      }
       const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
       if (not_exist_packages.length > 1) { // Una riga c'è sempre
         let content = ''
