@@ -494,7 +494,7 @@ export default class Tailor {
     if (distro.familyId === 'debian') {
       await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
     } else {
-      await exec(`pacman -Q | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
     }
 
 
@@ -505,7 +505,7 @@ export default class Tailor {
       if (distro.familyId === "debian") {
         await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
       } else {
-        await exec(`pacman -Q | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+        await exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
       }
       const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
       if (not_exist_packages.length > 1) { // Una riga c'è sempre
