@@ -275,12 +275,14 @@ export default class Tailor {
     * install packages
     */
     if (this.materials.sequence.packages !== undefined) {
-      const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
-      if (packages.length > 1) {
-        if (distro.familyId === 'debian')
+      if (distro.familyId === 'debian') {
+        const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
+        if (packages.length > 1) {
           await this.helperInstall(packages)
-        else {
-          await this.helperInstall(packages,'packages',"pacman -Su --noconfirm")
+        } else {
+          await this.helperInstall(this.materials.sequence.packages,
+            'packages',
+            "pacman -S --noconfirm")
         }
       }
     }
