@@ -191,7 +191,7 @@ export default class Tailor {
         */
         // evito di fallire se sources_list non è presente
         if (this.materials.sequence.repositories.sources_list !== undefined) {
-          step = 'analyzing sources_list'
+          step = 'analyzing repositories'
           Utils.warning(step)
           if (distro.familyId === 'debian' ) {
             await sources_list.components(this.materials.sequence.repositories.sources_list)
@@ -280,7 +280,7 @@ export default class Tailor {
         if (distro.familyId === 'debian')
           await this.helperInstall(packages)
         else {
-          await this.helperInstall(packages,'packages',"pacman -Su")
+          await this.helperInstall(packages,'packages',"pacman -Su --noconfirm")
         }
       }
     }
