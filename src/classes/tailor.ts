@@ -184,8 +184,8 @@ export default class Tailor {
       /**
       * sequence/repositories
       */
-      if (distro.familyId === "debian") {
-        if (this.materials.sequence.repositories !== undefined) {
+      if (this.materials.sequence.repositories !== undefined) {
+        if (distro.familyId === "debian") {
           /**
           * sequence/repositories/sources_list
           */
