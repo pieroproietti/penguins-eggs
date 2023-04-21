@@ -118,8 +118,8 @@ export default class List extends Command {
     const servers = fs.readdirSync(`${wardrobe}/servers/`)
     console.log(chalk.green('servers: '))
     for (const server of servers) {
-      if (fs.existsSync(`${wardrobe}/servers/${server}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/index.yml`, 'utf-8')) as IMateria
+      if (fs.existsSync(`${wardrobe}/servers/${server}/${index}`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/${index}`, 'utf-8')) as IMateria
         console.log(chalk.cyan(server) + ': ' + materials.description)
       }
     }
