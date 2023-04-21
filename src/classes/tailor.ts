@@ -42,7 +42,7 @@ export default class Tailor {
   /**
   *
   */
-  async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
+  async prepare(verbose = false, no_accessories = false, no_firmwares = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
@@ -282,9 +282,13 @@ export default class Tailor {
           await this.helperInstall(packages)
         }
       } else {
+        let noConfirm = ""
+        if (this.verbose) {
+          noConfirm = "--noconfirm"
+        }
         await this.helperInstall(this.materials.sequence.packages,
           'packages',
-          "pacman -S --noconfirm")
+          `pacman -S ${noConfirm}`)
       }
     }
 
@@ -376,7 +380,7 @@ export default class Tailor {
 
           if (elem.slice(0, 2) === './') {
             const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
-            await tailor.prepare(verbose)
+            await tailor.prepare(ose)
           } else {
             const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
             await tailor.prepare(verbose)

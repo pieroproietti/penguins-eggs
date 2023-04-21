@@ -20,7 +20,6 @@ export default class Wear extends Command {
     help: Flags.help({char: 'h'}),
     no_accessories: Flags.boolean({char: 'a', description: 'not install accessories'}),
     no_firmwares: Flags.boolean({char: 'f', description: 'not install firmwares'}),
-    silent: Flags.boolean({char: 's'}),
     verbose: Flags.boolean({char: 'v'}),
     wardrobe: Flags.string({char: 'w', description: 'wardrobe'}),
   }
