@@ -8,6 +8,7 @@ import yaml from 'js-yaml'
 import fs from 'fs'
 import path from 'path'
 import chalk from 'chalk'
+import Distro from '../../classes/distro'
 
 import Utils from '../../classes/utils'
 import { IMateria } from '../../interfaces/index'
@@ -75,7 +76,17 @@ export default class Show extends Command {
     /**
       * tailorList
       */
-    const tailorList = `${costume}/index.yml`
+    let distro = new Distro()
+    let index = ''
+    if (distro.distroLike === "Arch") {
+      index = 'arch.yml'
+    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
+      index = 'debian.yml'
+    } else if (distro.distroLike === "Debian") {      
+      index = 'ubuntu.yml'
+    }
+
+    const tailorList = `${costume}/${index}`
     if (!fs.existsSync(tailorList)) {
       Utils.warning(`index.yml not found in : ${costume}!`)
       process.exit()

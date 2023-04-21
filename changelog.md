@@ -19,6 +19,18 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.6
+
+I worked mainly on wardrobe, the changes in egg were a consequence.
+
+After an attempt to switch to bash for defining customs, I decided to use for all four managed distributions the yaml language.
+
+Managing Debian/Devuan, Ubuntu, and Arch with the same code is accomplished through yaml files that allow you to define the operations to be performed and what is needed,
+
+The effort made was considerable, I hope it was worth it, but that will depend on who wants to adopt the methodology.
+
+Report problems and bugs, suggestions, etc., after all, being able to handle more than 50% of Linux distributions in the same way could come in handy.
+
 ### eggs-9.4.5
 * btrfs: ```eggs produce``` now works fine on btrfs. Note: calamares and krill configuration for btrfs is not enabled by default;
 * bugfix: eggs copy branding from themes including subdirs;
