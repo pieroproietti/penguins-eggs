@@ -282,13 +282,9 @@ export default class Tailor {
           await this.helperInstall(packages)
         }
       } else {
-        let noConfirm = ""
-        if (this.verbose) {
-          noConfirm = "--noconfirm"
-        }
         await this.helperInstall(this.materials.sequence.packages,
           'packages',
-          `pacman -S `) //${noConfirm}
+          `pacman -Sy --noconfirm`)
       }
     }
 
