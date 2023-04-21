@@ -380,7 +380,7 @@ export default class Tailor {
 
           if (elem.slice(0, 2) === './') {
             const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
-            await tailor.prepare(ose)
+            await tailor.prepare(verbose)
           } else {
             const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
             await tailor.prepare(verbose)
