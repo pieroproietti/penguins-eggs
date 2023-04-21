@@ -10,8 +10,8 @@ import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import os from 'os'
 import {IMateria} from '../../interfaces/index'
+import Distro from '../../classes/distro'
 
 // libraries
 import chalk from 'chalk'
@@ -62,14 +62,24 @@ export default class List extends Command {
     console.log(chalk.green('wardrobe: ') + wardrobe)
     console.log()
 
+    let distro = new Distro()
+    let index = ''
+    if (distro.distroLike === "Arch") {
+      index = 'arch.yml'
+    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
+      index = 'debian.yml'
+    } else if (distro.distroLike === "Debian") {      
+      index = 'ubuntu.yml'
+    }
+
     /**
     * costumes
     */
     const costumes = fs.readdirSync(`${wardrobe}costumes/`)
     console.log(chalk.green('costumes: '))
     for (const costume of costumes) {
-      if (fs.existsSync(`${wardrobe}costumes/${costume}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/index.yml`, 'utf-8')) as IMateria
+      if (fs.existsSync(`${wardrobe}costumes/${costume}/${index}`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/${index}`, 'utf-8')) as IMateria
         console.log(chalk.cyan(costume) + ': ' + materials.description)
       }
     }
@@ -82,8 +92,8 @@ export default class List extends Command {
     const accessories = fs.readdirSync(`${wardrobe}/accessories/`)
     console.log(chalk.green('accessories: '))
     for (const accessory of accessories) {
-      if (fs.existsSync(`${wardrobe}/accessories/${accessory}/index.yml`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/index.yml`, 'utf-8')) as IMateria
+      if (fs.existsSync(`${wardrobe}/accessories/${accessory}/${index}`)) {
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/${index}`, 'utf-8')) as IMateria
         console.log(chalk.cyan(accessory) + ': ' + materials.description)
       }
     }
