@@ -238,172 +238,173 @@ export default class Tailor {
             await exec('pacman -Sy', Utils.setEcho(false))
           }
         }
-      } // debian family
+
+        /**
+        * sequence/repositories/upgrade
+        */
+        if (this.materials.sequence.repositories.upgrade !== undefined) {
+          step = 'repositories upgrade'
+          Utils.warning(step)
+          if (this.materials.sequence.repositories.upgrade) {
+            if (distro.familyId === "debian") {
+              await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+            } else {
+              await exec('pacman -Su', Utils.setEcho(false))
+            }
+          } //  upgrade true
+        } // undefined upgrade
+
+      } // end sequence/repositories
 
       /**
-      * sequence/repositories/upgrade
+      * sequence/preinst
       */
-      if (this.materials.sequence.repositories.upgrade !== undefined) {
-        step = 'repositories upgrade'
+      if (this.materials.sequence.preinst !== undefined && Array.isArray(this.materials.sequence.preinst)) {
+        step = 'preinst scripts'
         Utils.warning(step)
-        if (this.materials.sequence.repositories.upgrade) {
-          if (distro.familyId === "debian") {
-            await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+        for (const script of this.materials.sequence.preinst) {
+          if (fs.existsSync(`${this.costume}/${script}`)) {
+            await exec(`${this.costume}/${script}`, Utils.setEcho(true))
           } else {
-            await exec('pacman -Su', Utils.setEcho(false))
+            // exec script real env
+            await exec(`${script}`, Utils.setEcho(true))
           }
         }
       }
-    } // fine repositories
 
-    /**
-    * sequence/preinst
-    */
-    if (this.materials.sequence.preinst !== undefined && Array.isArray(this.materials.sequence.preinst)) {
-      step = 'preinst scripts'
-      Utils.warning(step)
-      for (const script of this.materials.sequence.preinst) {
-        if (fs.existsSync(`${this.costume}/${script}`)) {
-          await exec(`${this.costume}/${script}`, Utils.setEcho(true))
+      /**
+      * install packages
+      */
+      if (this.materials.sequence.packages !== undefined) {
+        if (distro.familyId === 'debian') {
+          const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
+          if (packages.length > 1) {
+            await this.helperInstall(packages)
+          }
         } else {
-          // exec script real env
-          await exec(`${script}`, Utils.setEcho(true))
-        }
-      }
-    }
-
-    /**
-    * install packages
-    */
-    if (this.materials.sequence.packages !== undefined) {
-      if (distro.familyId === 'debian') {
-        const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
-        if (packages.length > 1) {
-          await this.helperInstall(packages)
-        }
-      } else {
-        await this.helperInstall(this.materials.sequence.packages,
-          'packages',
-          `pacman -Sy --noconfirm`)
-      }
-    }
-
-    if (distro.familyId === "debian") {
-      /**
-      * sequence/packages_no_install_recommends
-      */
-      if (this.materials.sequence.packages_no_install_recommends !== undefined) {
-        const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
-        if (packages_no_install_recommends.length > 1) {
-          await this.helperInstall(
-            packages_no_install_recommends,
-            'packages without recommends and suggests',
-            'apt-get install --no-install-recommends --no-install-suggests -yq ',
-          )
-        }
-      }
-
-      /**
-      * sequence/try_packages
-      */
-      if (this.materials.sequence.try_packages !== undefined) {
-        const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
-        if (try_packages.length > 1) {
-          await this.helperInstall(try_packages, 'try packages ')
-        }
-      }
-
-      /**
-      * sequence/try_packages_no_install_recommends
-      */
-      if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
-        const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
-        if (try_packages_no_install_recommends.length > 1) {
-          await this.helperInstall(
-            try_packages_no_install_recommends,
-            'try packages without recommends and suggests',
-            'apt-get install --no-install-recommends --no-install-suggests -yq ',
-          )
-        }
-      }
-
-      /**
-      * sequence/debs
-      */
-      if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
-        step = 'installing local packages'
-        Utils.warning(step)
-        let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
-        if (!fs.existsSync(pathDebs)) {
-          pathDebs = `${this.costume}/debs`
-        }
-
-        // if exists pathDebs
-        if (fs.existsSync(pathDebs)) {
-          await exec(`dpkg -i ${pathDebs}/*.deb`)
-        }
-      }
-    }
-
-
-    /**
-    * sequence/packages_python
-    */
-    if (this.materials.sequence.packages_python !== undefined && Array.isArray(this.materials.sequence.packages_python)) {
-      let cmd = 'pip install '
-      let pip = ''
-      for (const elem of this.materials.sequence.packages_python) {
-        cmd += ` ${elem}`
-        pip += `, ${elem}`
-      }
-
-      step = `installing python packages pip ${pip.slice(2)}`
-      Utils.warning(step)
-      await exec(cmd, this.echo)
-    }
-
-    /**
-    * sequence/accessories
-    */
-    if (!no_accessories) {
-      // accessories
-      if (this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
-        step = 'wearing accessories'
-        for (const elem of this.materials.sequence.accessories) {
-          if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-            continue
-          }
-
-          if (elem.slice(0, 2) === './') {
-            const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
-            await tailor.prepare(verbose)
-          } else {
-            const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
-            await tailor.prepare(verbose)
-          }
+          await this.helperInstall(this.materials.sequence.packages,
+            'packages',
+            `pacman -Sy --noconfirm`)
         }
       }
 
       if (distro.familyId === "debian") {
-        // try_accessories
-        if (this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
-          step = 'wearing try_accessories'
-          for (const elem of this.materials.sequence.try_accessories) {
+        /**
+        * sequence/packages_no_install_recommends
+        */
+        if (this.materials.sequence.packages_no_install_recommends !== undefined) {
+          const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
+          if (packages_no_install_recommends.length > 1) {
+            await this.helperInstall(
+              packages_no_install_recommends,
+              'packages without recommends and suggests',
+              'apt-get install --no-install-recommends --no-install-suggests -yq ',
+            )
+          }
+        }
+
+        /**
+        * sequence/try_packages
+        */
+        if (this.materials.sequence.try_packages !== undefined) {
+          const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
+          if (try_packages.length > 1) {
+            await this.helperInstall(try_packages, 'try packages ')
+          }
+        }
+
+        /**
+        * sequence/try_packages_no_install_recommends
+        */
+        if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
+          const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
+          if (try_packages_no_install_recommends.length > 1) {
+            await this.helperInstall(
+              try_packages_no_install_recommends,
+              'try packages without recommends and suggests',
+              'apt-get install --no-install-recommends --no-install-suggests -yq ',
+            )
+          }
+        }
+
+        /**
+        * sequence/debs
+        */
+        if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
+          step = 'installing local packages'
+          Utils.warning(step)
+          let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
+          if (!fs.existsSync(pathDebs)) {
+            pathDebs = `${this.costume}/debs`
+          }
+
+          // if exists pathDebs
+          if (fs.existsSync(pathDebs)) {
+            await exec(`dpkg -i ${pathDebs}/*.deb`)
+          }
+        }
+      }
+
+
+      /**
+      * sequence/packages_python
+      */
+      if (this.materials.sequence.packages_python !== undefined && Array.isArray(this.materials.sequence.packages_python)) {
+        let cmd = 'pip install '
+        let pip = ''
+        for (const elem of this.materials.sequence.packages_python) {
+          cmd += ` ${elem}`
+          pip += `, ${elem}`
+        }
+
+        step = `installing python packages pip ${pip.slice(2)}`
+        Utils.warning(step)
+        await exec(cmd, this.echo)
+      }
+
+      /**
+      * sequence/accessories
+      */
+      if (!no_accessories) {
+        // accessories
+        if (this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
+          step = 'wearing accessories'
+          for (const elem of this.materials.sequence.accessories) {
             if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
               continue
             }
 
             if (elem.slice(0, 2) === './') {
-              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
+              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
               await tailor.prepare(verbose)
             } else {
-              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
+              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
               await tailor.prepare(verbose)
             }
           }
         }
-      }
-    } // no-accessories
+
+        if (distro.familyId === "debian") {
+          // try_accessories
+          if (this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
+            step = 'wearing try_accessories'
+            for (const elem of this.materials.sequence.try_accessories) {
+              if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+                continue
+              }
+
+              if (elem.slice(0, 2) === './') {
+                const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
+                await tailor.prepare(verbose)
+              } else {
+                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
+                await tailor.prepare(verbose)
+              }
+            }
+          }
+        }
+      } // no-accessories
+    } // end sequence
 
     /**
        * customize
