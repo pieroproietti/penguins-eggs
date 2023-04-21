@@ -5,36 +5,38 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
 import fs from 'fs'
-import {IMateria} from '../../interfaces/index'
+import { IMateria } from '../../interfaces/index'
 import Distro from '../../classes/distro'
 
 // libraries
 import chalk from 'chalk'
-import {Example} from '@oclif/core/lib/interfaces'
+import { fork } from 'child_process'
 
 /**
  *
  */
 export default class List extends Command {
   static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v'}),
+    help: Flags.help({ char: 'h' }),
+    distro: Flags.string({ char: 'd', description: 'distro' }),
+    verbose: Flags.boolean({ char: 'v' }),
   }
 
-  static args = [{name: 'wardrobe', description: 'wardrobe', required: false}]
+  static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
   static description = 'list costumes and accessoires in wardrobe'
-  static examples=[
+  static examples = [
     'eggs wardrobe list',
     'eggs wardrobe list your-wardrobe',
+    'eggs wardrobe list --distro arch',
   ]
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(List)
+    const { args, flags } = await this.parse(List)
 
     let verbose = false
     if (flags.verbose) {
@@ -48,28 +50,38 @@ export default class List extends Command {
     * wardobe
     */
     let wardrobe = await Utils.wardrobe()
-    if (this.argv['0'] !== undefined) {
-      wardrobe = this.argv['0']
+
+    if (flags.distro === undefined) {
+      if (this.argv['0'] !== undefined) {
+        wardrobe = this.argv['0']
+      }
     }
+
+    /**
+     * seleziona distro
+     */
+    let index = ''
+    let distro = new Distro()
+    if (distro.distroLike === "Arch") {
+      index = 'arch'
+    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
+      index = 'debian'
+    } else if (distro.distroLike === "Ubuntu") {
+      index = 'ubuntu'
+    }
+    if (flags.distro !== undefined) {
+      index = flags.distro
+    }
+    index+='.yml'
+
+    console.log(chalk.green('wardrobe: ') + wardrobe)
+    console.log()
 
     wardrobe = `${path.resolve(process.cwd(), wardrobe)}/`
 
     if (!fs.existsSync(wardrobe)) {
       Utils.warning(`wardrobe: ${wardrobe} not found!`)
       process.exit()
-    }
-
-    console.log(chalk.green('wardrobe: ') + wardrobe)
-    console.log()
-
-    let distro = new Distro()
-    let index = ''
-    if (distro.distroLike === "Arch") {
-      index = 'arch.yml'
-    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
-      index = 'debian.yml'
-    } else if (distro.distroLike === "Debian") {      
-      index = 'ubuntu.yml'
     }
 
     /**
@@ -84,8 +96,8 @@ export default class List extends Command {
       }
     }
 
-    console.log()
 
+    console.log()
     /**
      * accessories
      */

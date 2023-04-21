@@ -86,7 +86,6 @@ export default class Show extends Command {
       index = 'ubuntu.yml'
     }
 
-
     const tailorList = `${costume}/${index}`
     if (!fs.existsSync(tailorList)) {
       Utils.warning(`index.yml not found in : ${costume}!`)
