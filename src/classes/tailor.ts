@@ -14,7 +14,6 @@ import yaml from 'js-yaml'
 import Pacman from './pacman'
 import Distro from './distro'
 import SourcesList from './sources_list'
-import { disconnect } from 'process'
 
 const pjson = require('../../package.json')
 
@@ -185,20 +184,20 @@ export default class Tailor {
       /**
       * sequence/repositories
       */
-      if (this.materials.sequence.repositories !== undefined) {
-        /**
-        * sequence/repositories/sources_list
-        */
-        // evito di fallire se sources_list non è presente
-        if (this.materials.sequence.repositories.sources_list !== undefined) {
-          step = 'analyzing repositories'
-          Utils.warning(step)
-          if (distro.familyId === 'debian') {
-            await sources_list.components(this.materials.sequence.repositories.sources_list)
+      if (distro.familyId === "debian") {
+        if (this.materials.sequence.repositories !== undefined) {
+          /**
+          * sequence/repositories/sources_list
+          */
+          // evito di fallire se sources_list non è presente
+          if (this.materials.sequence.repositories.sources_list !== undefined) {
+            step = 'analyzing repositories'
+            Utils.warning(step)
+            if (distro.familyId === 'debian') {
+              await sources_list.components(this.materials.sequence.repositories.sources_list)
+            }
           }
-        }
 
-        if (distro.familyId === "debian") {
           /**
           * sequence/repositories/sources_list_d
           */
@@ -289,60 +288,63 @@ export default class Tailor {
       }
     }
 
-    /**
-    * sequence/packages_no_install_recommends
-    */
-    if (this.materials.sequence.packages_no_install_recommends !== undefined) {
-      const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
-      if (packages_no_install_recommends.length > 1) {
-        await this.helperInstall(
-          packages_no_install_recommends,
-          'packages without recommends and suggests',
-          'apt-get install --no-install-recommends --no-install-suggests -yq ',
-        )
+    if (distro.familyId === "debian") {
+      /**
+      * sequence/packages_no_install_recommends
+      */
+      if (this.materials.sequence.packages_no_install_recommends !== undefined) {
+        const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
+        if (packages_no_install_recommends.length > 1) {
+          await this.helperInstall(
+            packages_no_install_recommends,
+            'packages without recommends and suggests',
+            'apt-get install --no-install-recommends --no-install-suggests -yq ',
+          )
+        }
+      }
+
+      /**
+      * sequence/try_packages
+      */
+      if (this.materials.sequence.try_packages !== undefined) {
+        const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
+        if (try_packages.length > 1) {
+          await this.helperInstall(try_packages, 'try packages ')
+        }
+      }
+
+      /**
+      * sequence/try_packages_no_install_recommends
+      */
+      if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
+        const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
+        if (try_packages_no_install_recommends.length > 1) {
+          await this.helperInstall(
+            try_packages_no_install_recommends,
+            'try packages without recommends and suggests',
+            'apt-get install --no-install-recommends --no-install-suggests -yq ',
+          )
+        }
+      }
+
+      /**
+      * sequence/debs
+      */
+      if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
+        step = 'installing local packages'
+        Utils.warning(step)
+        let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
+        if (!fs.existsSync(pathDebs)) {
+          pathDebs = `${this.costume}/debs`
+        }
+
+        // if exists pathDebs
+        if (fs.existsSync(pathDebs)) {
+          await exec(`dpkg -i ${pathDebs}/*.deb`)
+        }
       }
     }
 
-    /**
-    * sequence/try_packages
-    */
-    if (this.materials.sequence.try_packages !== undefined) {
-      const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
-      if (try_packages.length > 1) {
-        await this.helperInstall(try_packages, 'try packages ')
-      }
-    }
-
-    /**
-    * sequence/try_packages_no_install_recommends
-    */
-    if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
-      const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
-      if (try_packages_no_install_recommends.length > 1) {
-        await this.helperInstall(
-          try_packages_no_install_recommends,
-          'try packages without recommends and suggests',
-          'apt-get install --no-install-recommends --no-install-suggests -yq ',
-        )
-      }
-    }
-
-    /**
-    * sequence/debs
-    */
-    if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
-      step = 'installing local packages'
-      Utils.warning(step)
-      let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
-      if (!fs.existsSync(pathDebs)) {
-        pathDebs = `${this.costume}/debs`
-      }
-
-      // if exists pathDebs
-      if (fs.existsSync(pathDebs)) {
-        await exec(`dpkg -i ${pathDebs}/*.deb`)
-      }
-    }
 
     /**
     * sequence/packages_python
@@ -382,20 +384,22 @@ export default class Tailor {
         }
       }
 
-      // try_accessories
-      if (this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
-        step = 'wearing try_accessories'
-        for (const elem of this.materials.sequence.try_accessories) {
-          if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-            continue
-          }
+      if (distro.familyId === "debian") {
+        // try_accessories
+        if (this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
+          step = 'wearing try_accessories'
+          for (const elem of this.materials.sequence.try_accessories) {
+            if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+              continue
+            }
 
-          if (elem.slice(0, 2) === './') {
-            const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
-            await tailor.prepare(verbose)
-          } else {
-            const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
-            await tailor.prepare(verbose)
+            if (elem.slice(0, 2) === './') {
+              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
+              await tailor.prepare(verbose)
+            } else {
+              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
+              await tailor.prepare(verbose)
+            }
           }
         }
       }
@@ -563,44 +567,6 @@ export default class Tailor {
         }
       }
     }
-  }
-
-  /**
-  * hostname and hosts
-  */
-  private async hostname() {
-    /**
-       * hostname
-       */
-    let file = '/etc/hostname'
-    let text = this.materials.name
-    await exec(`rm ${file} `, this.echo)
-    fs.writeFileSync(file, text)
-
-    /**
-       * hosts
-       */
-    file = '/etc/hosts'
-    text = ''
-    text += '127.0.0.1 localhost localhost.localdomain\n'
-    text += `127.0.1.1 ${this.materials.name} \n`
-    text += '# The following lines are desirable for IPv6 capable hosts\n'
-    text += ':: 1     ip6 - localhost ip6 - loopback\n'
-    text += 'fe00:: 0 ip6 - localnet\n'
-    text += 'ff00:: 0 ip6 - mcastprefix\n'
-    text += 'ff02:: 1 ip6 - allnodes\n'
-    text += 'ff02:: 2 ip6 - allrouters\n'
-    text += 'ff02:: 3 ip6 - allhosts\n'
-    await exec(`rm ${file} `, this.echo)
-    fs.writeFileSync(file, text)
-
-    /**
-       * chenge config.snapshot.basename
-       */
-    const config_file = '/etc/penguins-eggs.d/eggs.yaml'
-    const config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IEggsConfig
-    config.snapshot_basename = this.materials.name
-    fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
   }
 
   /**
