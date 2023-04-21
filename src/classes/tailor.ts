@@ -238,19 +238,19 @@ export default class Tailor {
             await exec('pacman -Sy', Utils.setEcho(false))
           }
         }
+      } // debian family
 
-        /**
-        * sequence/repositories/upgrade
-        */
-        if (this.materials.sequence.repositories.upgrade !== undefined) {
-          step = 'repositories upgrade'
-          Utils.warning(step)
-          if (this.materials.sequence.repositories.upgrade) {
-            if (distro.familyId === "debian") {
-              await exec('apt-get full-upgrade -y', Utils.setEcho(false))
-            } else {
-              await exec('pacman -Su', Utils.setEcho(false))
-            }
+      /**
+      * sequence/repositories/upgrade
+      */
+      if (this.materials.sequence.repositories.upgrade !== undefined) {
+        step = 'repositories upgrade'
+        Utils.warning(step)
+        if (this.materials.sequence.repositories.upgrade) {
+          if (distro.familyId === "debian") {
+            await exec('apt-get full-upgrade -y', Utils.setEcho(false))
+          } else {
+            await exec('pacman -Su', Utils.setEcho(false))
           }
         }
       }
