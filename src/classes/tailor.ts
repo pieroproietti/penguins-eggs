@@ -42,7 +42,7 @@ export default class Tailor {
   /**
   *
   */
-  async prepare(verbose = false, no_accessories = false, no_firmwares = false) {
+  async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
@@ -288,7 +288,7 @@ export default class Tailor {
         }
         await this.helperInstall(this.materials.sequence.packages,
           'packages',
-          `pacman -S ${noConfirm}`)
+          `pacman -S `) //${noConfirm}
       }
     }
 
