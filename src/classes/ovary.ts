@@ -75,7 +75,7 @@ export default class Ovary {
    */
   async fertilization(snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
     this.settings = new Settings()
-    
+
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
 
@@ -744,10 +744,12 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    if (this.settings.distro.distroId === 'ManjaroLinux') {
-      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
-    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+    if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    } else if (this.settings.distro.distroId === 'blendOS') {
+      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/blendos/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    } else if (this.settings.distro.distroId === 'ManjaroLinux') {
+      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
     }
   }
 
@@ -1063,7 +1065,7 @@ export default class Ovary {
     }
 
     if (this.clone) {
-      cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))      
+      cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
     }
     Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
   }
@@ -1638,7 +1640,7 @@ export default class Ovary {
       }
 
       if (fs.existsSync('/usr/bin/eui-start.sh')) {
-        typology+="_EUI"
+        typology += "_EUI"
       }
 
     }

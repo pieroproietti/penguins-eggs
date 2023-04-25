@@ -193,7 +193,7 @@ export default class Tailor {
           if (this.materials.sequence.repositories.sources_list !== undefined) {
             step = 'analyzing repositories'
             Utils.warning(step)
-            if (distro.familyId === 'debian') {
+            if (distro.distroLike === 'Debian') {
               await sources_list.components(this.materials.sequence.repositories.sources_list)
             }
           }
