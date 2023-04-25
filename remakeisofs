@@ -1,3 +1,3 @@
 sudo mkinitcpio -c mkinitcpio/blendos/mkinitcpio-produce.conf -g /home/eggs/ovarium/iso/live/initramfs-linux.img
 sudo rm /home/eggs/egg-of*
-sudo /home/eggs/ovarium/mkisofs
+sudo xorriso -as mkisofs -J -joliet-long -l -iso-level 3 -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin -partition_offset 16 -V BLENDOS_202304 -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot -o /home/eggs/egg-of-blendos-rolling-blendos_amd64_2023-04-25_1738.iso /home/eggs/ovarium/iso/
