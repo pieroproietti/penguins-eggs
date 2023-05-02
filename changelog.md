@@ -20,7 +20,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.4.8
-Arch derivatives: compatibility with EndeavourOS distribution added;
+Arch derivatives: compatibility with [EndeavourOS](https://endeavouros.com/) distribution added;
 
 ### eggs-9.4.6
 
