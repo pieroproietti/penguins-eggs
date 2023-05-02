@@ -270,7 +270,9 @@ export default class Ovary {
           await exec(`mkdir ${this.settings.work_dir.pathIso}manjaro/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
-        } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+        } else if (this.settings.distro.distroId === 'Arch' ||
+                  this.settings.distro.distroId === 'RebornOS' ||
+                  this.settings.distro.distroId === 'EndeavourOS') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
