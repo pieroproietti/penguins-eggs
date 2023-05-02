@@ -19,43 +19,30 @@ penguins-eggs
 
 [EndeavourOS](https://endeavouros.com/) a terminal-centric distro with a vibrant and friendly community at its core
 
-* **egg-of-endeavouros-rolling-xfce** A light xfce4 
+* **egg-of-endeavouros-rolling-xfce** xfce4 desktop
+* **egg-of-endeavouros-rolling-cinnamon**  cinnamon desktop
 
 # Calamares
-Here we are using calamares from aur, installing calamares from pacman don't work.
 
-It's possible to install [calamares](https://aur.archlinux.org/packages/calamares-git) by yay, but at the moment there is a problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp), so to install calamares, you will have to:
-```
-git clone https://github.com/pieroproietti/penguins-eggs-pkgbuilds
-cd penguins-eggs-pkgbuilds/aur/cbkcomp
-makepkg -si
-```
-
-At this point you can properly install calamares with the command: 
+Installing calamares from EndeavourOS repository will not work with `penguins-eggs`, so we must install [calamares 3.2.61-1](https://aur.archlinux.org/calamares.git) from aur:
 
 ```
 yay calamares
 ```
 
-We need now to reconfigure eggs:
+After that we need now to reconfigure eggs:
 
 ```
 sudo eggs dad -d
 ```
 
-and let eggs configure it to allow the use of calamares without entering the root password:
-
-```
-sudo eggs calamares --install
-```
-
-We are ready to create our first iso:
+Then we are ready to create our first iso:
 
 ```
 sudo eggs produce
 ```
 
-If you want calamares and eggs to be removed during system installation, simply use:
+**NOTE**: If you want calamares and eggs to be removed after the system installation finish, simply use:
 
 ```
 sudo eggs produce --release
