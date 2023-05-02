@@ -21,7 +21,7 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Penguins' eggs official guide](#penguins-eggs-official-book)
+* [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
 * [That's all Folks!](#thats-all-folks)
 <!-- tocstop -->
 
@@ -177,7 +177,7 @@ Once the package has been installed, you can have the new ```eggs``` command. Ty
 
 At the moment eggs uses the default fast compression, which provides a faster compression speed, for the final compression it is worth using the ```--max``` flag to get more compressed ISOs.
 
-In addition to the description of the commands in this README, you can consult the [Penguins' eggs official guide](#penguins-eggs-official-book).
+In addition to the description of the commands in this README, you can consult the [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide).
 
 # Commands
 <!-- commands -->
