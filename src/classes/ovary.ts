@@ -684,7 +684,9 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+      } else if (this.settings.distro.distroId === 'Arch' || 
+      this.settings.distro.distroId === 'RebornOS' || 
+      this.settings.distro.distroId === 'EndeavourOS') {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
@@ -746,7 +748,9 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+    if (this.settings.distro.distroId === 'Arch' || 
+    this.settings.distro.distroId === 'RebornOS' ||
+    this.settings.distro.distroId === 'EndeavourOS') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
     } else if (this.settings.distro.distroId === 'blendOS') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/blendos/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
@@ -1568,7 +1572,9 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+      } else if (this.settings.distro.distroId === 'Arch' || 
+        this.settings.distro.distroId === 'RebornOS' ||
+        this.settings.distro.distroId === 'EndeavourOS' ) {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
