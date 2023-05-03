@@ -56,7 +56,7 @@ I hope peoples will be interested in wardrobe and you will end to fork the main 
 
 Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
 
-Consult [wardrobe users' guide][https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide).
+Consult [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide).
 
 ## clone/cryptedclone
 You can create your live to distribute it - the default mode - or with datas using clone and clonecrypted:
