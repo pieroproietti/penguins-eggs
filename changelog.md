@@ -19,6 +19,10 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.9
+* install-debian after so long time, became finally install-system.sh;
+* trying to solve the lacks of calamares show and progress gnome;
+
 ### eggs-9.4.8
 Arch derivatives: compatibility with [EndeavourOS](https://endeavouros.com/) distribution added;
 

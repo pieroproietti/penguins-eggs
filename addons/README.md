@@ -18,7 +18,7 @@ blissos/
         livecd
 ```
 
-* in **applications** we have the desktop link named **install-system.sh.desktop** into calamares startup;
+* in **applications** we have the desktop link named **install-system.desktop** into calamares startup;
 * in **artwork** the icon named **install-system.png** for the calamares launcher
 * in **calamares** we have two directories: **branding** with your slides for calamares and **modules**
 * **livecd** includes grub and isolinux templates, buoot splash named **splash.png** and theme for grub and isolinux.
