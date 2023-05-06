@@ -9,5 +9,5 @@ if [ -f "$CHROOT"/etc/issue ]; then
     sed -i '/^eggs-start-message/,/^\eggs-end-message/{/^#/!{/^\$/!d;};}' "$CHROOT"/etc/issue
 fi
 
-rm -f $CHROOT/usr/share/applications/install-system.sh.desktop
+rm -f $CHROOT/usr/share/applications/install-system.desktop
 rm -f $CHROOT/etc/systemd/system/getty@.service.d/override.conf # remove cli-autologin

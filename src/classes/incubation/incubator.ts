@@ -286,7 +286,7 @@ export default class Incubator {
         process.exit()
       }
 
-      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.sh.desktop`)
+      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
       if (this.theme.includes('/')) {
         calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
       }

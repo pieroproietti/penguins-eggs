@@ -1204,10 +1204,10 @@ export default class Ovary {
      */
     shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
 
-    let installerUrl = 'install-system.sh.desktop'
+    let installerUrl = 'install-system.desktop'
     let installerIcon = 'install-system.sh'
     if (Pacman.packageIsInstalled('calamares')) {
-      shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.sh.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
       // carico la policy per live-installer
       const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
