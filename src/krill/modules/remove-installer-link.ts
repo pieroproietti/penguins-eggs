@@ -29,7 +29,7 @@ export default async function removeInstallerLink(this: Sequence): Promise<void>
           lines[i] = '#' + lines[i]
         }
 
-        if (lines[i].search('install-system.sh.desktop') !== -1) {
+        if (lines[i].search('install-system.desktop') !== -1) {
           lines[i] = '#' + lines[i]
         }
 
