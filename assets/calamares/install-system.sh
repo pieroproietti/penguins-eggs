@@ -10,8 +10,8 @@ sudo mv /etc/fstab /etc/fstab.orig.calamares
 # This is fixed in the Calamares 3.3.0 series
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
-# for gnome... 
-export QT_QPA_PLATFORM=wayland
+# Gnome... not work
+# export QT_QPA_PLATFORM=wayland
 
 # Access control to run calamares as root for xwayland
 xhost +si:localuser:root

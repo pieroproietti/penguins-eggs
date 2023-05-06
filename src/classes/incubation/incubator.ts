@@ -274,9 +274,9 @@ export default class Incubator {
         process.exit()
       }
 
-      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-debian.png`)
+      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.sh.png`)
       if (this.theme.includes('/')) {
-        calamaresIcon = `${this.theme}/theme/artwork/install-debian.png`
+        calamaresIcon = `${this.theme}/theme/artwork/install-system.sh.png`
       }
 
       if (fs.existsSync(calamaresIcon)) {
@@ -286,9 +286,9 @@ export default class Incubator {
         process.exit()
       }
 
-      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-debian.desktop`)
+      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.sh.desktop`)
       if (this.theme.includes('/')) {
-        calamaresLauncher = `${this.theme}/theme/applications/install-debian.desktop`
+        calamaresLauncher = `${this.theme}/theme/applications/install-system.sh.desktop`
       }
 
       if (fs.existsSync(calamaresLauncher)) {
@@ -299,8 +299,8 @@ export default class Incubator {
       }
 
       // script di avvio
-      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-debian'), '/usr/sbin/install-debian')
-      shx.chmod('+x', '/usr/sbin/install-debian')
+      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
+      shx.chmod('+x', '/usr/sbin/install-system.sh')
     }
   }
 
@@ -323,9 +323,9 @@ export default class Incubator {
    * non dovrebbe servire
    */
   private async createInstallDebian() {
-    const scriptInstallDebian = require('./calamares-modules/scripts/install-debian').installDebian
+    const scriptInstallDebian = require('./calamares-modules/scripts/install-system.sh').installDebian
     const scriptDir = '/usr/bin/'
-    const scriptFile = scriptDir + 'install-debian'
+    const scriptFile = scriptDir + 'install-system.sh'
     const scriptContent = scriptInstallDebian()
     write(scriptFile, scriptContent, this.verbose)
     await exec(`chmod +x ${scriptFile}`)

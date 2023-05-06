@@ -749,7 +749,7 @@ eggs will run on armel and arm64 architecture, but we need to generate a new UEF
 * fix gdm3 displaymanager in calamares configuration, export deb armel
 
 ### eggs-7.6.81.1_deb deprecated
-* restored debian theme for calamares, check install-debian, clean flags usage in export
+* restored debian theme for calamares, check install-system.sh, clean flags usage in export
 
 ### eggs-7.6.80.1_deb deprecated
 * displays the command flags
