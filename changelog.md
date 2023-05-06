@@ -170,7 +170,7 @@ Working with [LinuxFX](https://www.linuxfx.org/), which impressed me with its ab
 
 * eggs: added compatibility to [doas](https://wiki.archlinux.org/title/Doas), thanks to Roy Reynolds:
 * produce: now remove the last slash from the theme (passed as path) and checks the existence of the theme itself;
-* calamares: changed line Exec in install-debian.desktop **Exec=install-debian**
+* calamares: changed line Exec in install-system.sh.desktop **Exec=install-system.sh**
 * skel: added file .linuxfx if exist in home for linuxfx
 
 ### eggs-9.3.8
