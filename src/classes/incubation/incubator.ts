@@ -274,9 +274,9 @@ export default class Incubator {
         process.exit()
       }
 
-      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.sh.png`)
+      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.png`)
       if (this.theme.includes('/')) {
-        calamaresIcon = `${this.theme}/theme/artwork/install-system.sh.png`
+        calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
       }
 
       if (fs.existsSync(calamaresIcon)) {
@@ -288,7 +288,7 @@ export default class Incubator {
 
       let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.sh.desktop`)
       if (this.theme.includes('/')) {
-        calamaresLauncher = `${this.theme}/theme/applications/install-system.sh.desktop`
+        calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
       }
 
       if (fs.existsSync(calamaresLauncher)) {
