@@ -20,9 +20,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.4.9
-* install-debian after so long time, became finally install-system.sh;
-* aligned penguis-wardrove themes;
-* investigating the lacks of calamares show and progress gnome on Ubuntu jammy;
+* `install-debian` - after so long time - became finally `install-system`;
+* investigate about the lacks of calamares show and progress bar on Ubuntu jammy gnome;
+* moved naked/arch configuration to penguis-wardrobe and aligned themes to the changes in eggs.
 
 ### eggs-9.4.8
 Arch derivatives: compatibility with [EndeavourOS](https://endeavouros.com/) distribution added;
