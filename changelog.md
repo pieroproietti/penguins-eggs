@@ -21,7 +21,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.4.9
 * install-debian after so long time, became finally install-system.sh;
-* trying to solve the lacks of calamares show and progress gnome;
+* aligned penguis-wardrove themes;
+* investigating the lacks of calamares show and progress gnome on Ubuntu jammy;
 
 ### eggs-9.4.8
 Arch derivatives: compatibility with [EndeavourOS](https://endeavouros.com/) distribution added;
