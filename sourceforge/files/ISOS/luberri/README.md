@@ -20,8 +20,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Luberri
 [Luberri](https://luberrilinux.eus/) A free, Basque operating system for use in education.
 
-
-* **egg-of-luberri-vanessa-gnome** A remastered version of Luberri 22.04
+* **egg-of-luberri-vanessa-cinnamon** A remastered version of Luberri 22.04
 
 ![luberri-image](https://luberrilinux-eus.translate.goog/wp-content/uploads/2022/09/Luberri-mahaigaina-aplikaziorekin-768x432.jpg?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=it&_x_tr_pto=wapp)
 
