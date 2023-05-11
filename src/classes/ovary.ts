@@ -852,8 +852,8 @@ export default class Ovary {
 
     const compression = `-comp ${this.settings.config.compression}`
 
-    // let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+    //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} --exclude-from ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`    
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -ef ${this.settings.config.snapshot_excludes} -wildcards ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
     if (!scriptOnly) {
