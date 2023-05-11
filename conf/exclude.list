@@ -1,45 +1,45 @@
 # from https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
-
+# new version
 # Exclude some system files. 
 # These are required, and you probably shouldn't change them.
-# /
-/boot/*.bak
-/boot/*.old-dkms
-/boot/grub/device.map
-/boot/grub/grub.cfg
-/boot/grub/menu.lst
-/cdrom/*
-/dev/*
-/etc/apt/sources.list~
-/etc/blkid.tab
-/etc/blkid.tab.old
-/etc/crypttab
-/etc/fstab
-/etc/fstab.d/*
-/etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
-/etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
-/etc/mtab
-/etc/popularity-contest.conf
-/etc/udev/rules.d/70-persistent-cd.rules
-/etc/udev/rules.d/70-persistent-net.rules
-/home/snapshot
-/live
-/media/*
-/mnt/*
-/persistence.conf
-/proc/*
-/swapfile
-/sys/*
-/tmp/*
-/lib/live/overlay
-/lib/live/image
-/lib/live/rootfs
-/lib/live/mount
-/run/*
-/usr/lib/live/overlay
-/usr/lib/live/image
-/usr/lib/live/rootfs
-/usr/lib/live/mount
+# 
+boot/*.bak
+boot/*.old-dkms
+boot/grub/device.map
+boot/grub/grub.cfg
+boot/grub/menu.lst
+cdrom/*
+dev/*
+etc/apt/sources.list~
+etc/blkid.tab
+etc/blkid.tab.old
+etc/crypttab
+etc/fstab
+etc/fstab.d/*
+etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
+etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
+etc/mtab
+etc/popularity-contest.conf
+etc/udev/rules.d/70-persistent-cd.rules
+etc/udev/rules.d/70-persistent-net.rules
+home/snapshot
+live
+media/*
+mnt/*
+persistence.conf
+proc/*
+swapfile
+sys/*
+tmp/*
+lib/live/overlay
+lib/live/image
+lib/live/rootfs
+lib/live/mount
+run/*
+usr/lib/live/overlay
+usr/lib/live/image
+usr/lib/live/rootfs
+usr/lib/live/mount
 
 # Uncomment this to exclude everything in /var/log/
 #- /var/log/*
@@ -56,90 +56,89 @@
 #- /var/log/[h-z]*
 #- /var/log/*gz
 
-/var/cache/apt/archives/*.deb
-/var/cache/apt/pkgcache.bin
-/var/cache/apt/srcpkgcache.bin
-/var/cache/apt/apt-file/*
-/var/cache/debconf/*~old
-/var/lib/apt/lists/*
-/var/lib/apt/*~
-/var/lib/apt/cdroms.list
-/var/lib/aptitude/*.old
-/var/lib/dhcp/*
-/var/lib/dpkg/*~old
-/var/spool/mail/*
-/var/mail/*
-/var/backups/*.gz
-/var/backups/*.bak
-/var/lib/dbus/machine-id
-/var/lib/live/config/*
+var/cache/apt/archives/*.deb
+var/cache/apt/pkgcache.bin
+var/cache/apt/srcpkgcache.bin
+var/cache/apt/apt-file/*
+var/cache/debconf/*~old
+var/lib/apt/lists/*
+var/lib/apt/*~
+var/lib/apt/cdroms.list
+var/lib/aptitude/*.old
+var/lib/dhcp/*
+var/lib/dpkg/*~old
+var/spool/mail/*
+var/mail/*
+var/backups/*.gz
+var/backups/*.bak
+var/lib/dbus/machine-id
+var/lib/live/config/*
 
-/usr/share/icons/*/icon-theme.cache
+usr/share/icons/*/icon-theme.cache
 
-/root/.aptitude
-/root/.bash_history
-/root/.disk-manager.conf
-/root/.fstab.log
-/root/.lesshst
-/root/*/.log
-/root/.local/share/*
-/root/.nano_history
-/root/.synaptic
-/root/.VirtualBox
-/root/.ICEauthority
-/root/.Xauthority
+root/.aptitude
+root/.bash_history
+root/.disk-manager.conf
+root/.fstab.log
+root/.lesshst
+root/*/.log
+root/.local/share/*
+root/.nano_history
+root/.synaptic
+root/.VirtualBox
+root/.ICEauthority
+root/.Xauthority
 
 
-/root/.ssh
+root/.ssh
 
-/home/*/.Trash*
-/home/*/.local/share/Trash/*
-/home/*/.mozilla/*/Cache/*
-/home/*/.mozilla/*/urlclassifier3.sqlite
-/home/*/.mozilla/*/places.sqlite
-/home/*/.mozilla/*/cookies.sqlite
-/home/*/.mozilla/*/signons.sqlite
-/home/*/.mozilla/*/formhistory.sqlite
-/home/*/.mozilla/*/downloads.sqlite
-/home/*/.adobe
-/home/*/.aptitude
-/home/*/.bash_history
-/home/*/.cache
-/home/*/.dbus
-/home/*/.gksu*
-/home/*/.gvfs
-/home/*/.lesshst
-/home/*/.log
-/home/*/.macromedia
-/home/*/.nano_history
-/home/*/.pulse*
-/home/*/.recently-used
-/home/*/.recently-used.xbel
-/home/*/.local/share/recently-used.xbel
-/home/*/.thumbnails/large/*
-/home/*/.thumbnails/normal/*
-/home/*/.thumbnails/fail/*
-/home/*/.vbox*
-/home/*/.VirtualBox
-/home/*/VirtualBox\ VMs
-/home/*/.wine
-/home/*/.xsession-errors*
-/home/*/.ICEauthority
-/home/*/.Xauthority
-
+home/*/.Trash*
+home/*/.local/share/Trash/*
+home/*/.mozilla/*/Cache/*
+home/*/.mozilla/*/urlclassifier3.sqlite
+home/*/.mozilla/*/places.sqlite
+home/*/.mozilla/*/cookies.sqlite
+home/*/.mozilla/*/signons.sqlite
+home/*/.mozilla/*/formhistory.sqlite
+home/*/.mozilla/*/downloads.sqlite
+home/*/.adobe
+home/*/.aptitude
+home/*/.bash_history
+home/*/.cache
+home/*/.dbus
+home/*/.gksu*
+home/*/.gvfs
+home/*/.lesshst
+home/*/.log
+home/*/.macromedia
+home/*/.nano_history
+home/*/.pulse*
+home/*/.recently-used
+home/*/.recently-used.xbel
+home/*/.local/share/recently-used.xbel
+home/*/.thumbnails/large/*
+home/*/.thumbnails/normal/*
+home/*/.thumbnails/fail/*
+home/*/.vbox*
+home/*/.VirtualBox
+home/*/VirtualBox\ VMs
+home/*/.wine
+home/*/.xsession-errors*
+home/*/.ICEauthority
+home/*/.Xauthority
 # You might want to comment these out if you're making a snapshot for
 # your own personal use, not to be shared with others.
-/home/*/.gnupg
-/home/*/.ssh
-/home/*/.xchat2
-/home/*/.config/hexchat
+home/*/.gnupg
+home/*/.ssh
+home/*/.xchat2
+home/*/.config/hexchat
 
 # Exclude ssh_host_keys. New ones will be generated upon live boot.
 # This fixes a security hole in all versions before 9.0.9-3.
 # If you really want to clone your existing ssh host keys
 # in your snapshot, comment out these two lines.
-/etc/ssh/ssh_host_*_key*
-/etc/ssh/ssh_host_key*
+etc/ssh/ssh_host_*_key*
+etc/ssh/ssh_host_key*
 
 # Examples of things to exclude in order to keep the image small:
 #- /home/fred/Downloads/*
@@ -153,6 +152,6 @@
 #- /home/*/.[a-z,A-Z,0-9]*
 
 # custom
-/.snapshots/*
-/swap/*
-/swapfile
+.snapshots/*
+swap/*
+swapfile
