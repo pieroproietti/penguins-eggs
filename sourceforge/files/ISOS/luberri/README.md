@@ -20,9 +20,10 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Luberri
 [Luberri](https://luberrilinux.eus/) A free, Basque operating system for use in education.
 
-![luberri-image](https://luberrilinux-eus.translate.goog/wp-content/uploads/2022/09/Luberri-mahaigaina-aplikaziorekin-768x432.jpg?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=it&_x_tr_pto=wapp)
 
 * **egg-of-luberri-vanessa-gnome** A remastered version of LinuxFX theme plasma
+
+![luberri-image](https://luberrilinux-eus.translate.goog/wp-content/uploads/2022/09/Luberri-mahaigaina-aplikaziorekin-768x432.jpg?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=it&_x_tr_pto=wapp)
 
 
 ## More informations:
@@ -30,7 +31,7 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
 
-* You can find more informations on this Linux distro at: [LinuxFX](https://www.linuxfx.org/).
+* You can find more informations on this Linux distro at: [Luberri](https://luberrilinux.eus/).
 
 
 Disclaim
