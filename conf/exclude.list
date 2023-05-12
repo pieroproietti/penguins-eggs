@@ -1,8 +1,7 @@
-# from https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
-# new version
-# Exclude some system files. 
-# These are required, and you probably shouldn't change them.
-# 
+# I started from https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
+# converting it from rsync - not more used - to mksquashfs
+
+# Required: ou probably shouldn't change them.
 boot/*.bak
 boot/*.old-dkms
 boot/grub/device.map
@@ -20,136 +19,101 @@ etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
 etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 etc/mtab
 etc/popularity-contest.conf
+etc/ssh/ssh_host_*_key*
+etc/ssh/ssh_host_key*
 etc/udev/rules.d/70-persistent-cd.rules
 etc/udev/rules.d/70-persistent-net.rules
 home/snapshot
+lib/live/image
+lib/live/mount
+lib/live/overlay
+lib/live/rootfs
 live
 media/*
 mnt/*
 persistence.conf
 proc/*
+run/*
 swapfile
 sys/*
 tmp/*
-lib/live/overlay
-lib/live/image
-lib/live/rootfs
-lib/live/mount
-run/*
-usr/lib/live/overlay
 usr/lib/live/image
-usr/lib/live/rootfs
 usr/lib/live/mount
-
-# Uncomment this to exclude everything in /var/log/
-#- /var/log/*
-
-# As of version 9.2.0, current log files are truncated,
-# and archived log files are excluded.
-#
-# The next three lines exclude everything in /var/log
-# except /var/log/clamav/ (or anything else beginning with "c") and
-# /var/log/gdm (or anything beginning with "g").
-# If clamav log files are excluded, freshclam will give errors at boot.
-#- /var/log/[a-b,A-Z]*
-#- /var/log/[d-f]*
-#- /var/log/[h-z]*
-#- /var/log/*gz
-
+usr/lib/live/overlay
+usr/lib/live/rootfs
+usr/share/icons/*/icon-theme.cache
+var/backups/*.bak
+var/backups/*.gz
+var/cache/apt/apt-file/*
 var/cache/apt/archives/*.deb
 var/cache/apt/pkgcache.bin
 var/cache/apt/srcpkgcache.bin
-var/cache/apt/apt-file/*
 var/cache/debconf/*~old
-var/lib/apt/lists/*
 var/lib/apt/*~
 var/lib/apt/cdroms.list
+var/lib/apt/lists/*
 var/lib/aptitude/*.old
+var/lib/dbus/machine-id
 var/lib/dhcp/*
 var/lib/dpkg/*~old
-var/spool/mail/*
-var/mail/*
-var/backups/*.gz
-var/backups/*.bak
-var/lib/dbus/machine-id
 var/lib/live/config/*
+var/mail/*
+var/spool/mail/*
 
-usr/share/icons/*/icon-theme.cache
-
+# root: you can exclude all 
 root/.aptitude
 root/.bash_history
 root/.disk-manager.conf
 root/.fstab.log
+root/.ICEauthority
 root/.lesshst
-root/*/.log
 root/.local/share/*
 root/.nano_history
+root/.ssh
 root/.synaptic
 root/.VirtualBox
-root/.ICEauthority
 root/.Xauthority
+root/*/.log
 
-
-root/.ssh
-
-home/*/.Trash*
-home/*/.local/share/Trash/*
-home/*/.mozilla/*/Cache/*
-home/*/.mozilla/*/urlclassifier3.sqlite
-home/*/.mozilla/*/places.sqlite
-home/*/.mozilla/*/cookies.sqlite
-home/*/.mozilla/*/signons.sqlite
-home/*/.mozilla/*/formhistory.sqlite
-home/*/.mozilla/*/downloads.sqlite
+# home: mostly clean
 home/*/.adobe
 home/*/.aptitude
 home/*/.bash_history
 home/*/.cache
+home/*/.config/hexchat
 home/*/.dbus
 home/*/.gksu*
+home/*/.gnupg
 home/*/.gvfs
+home/*/.ICEauthority
 home/*/.lesshst
+home/*/.local/share/recently-used.xbel
+home/*/.local/share/Trash/*
 home/*/.log
 home/*/.macromedia
+home/*/.mozilla/*/Cache/*
+home/*/.mozilla/*/cookies.sqlite
+home/*/.mozilla/*/downloads.sqlite
+home/*/.mozilla/*/formhistory.sqlite
+home/*/.mozilla/*/places.sqlite
+home/*/.mozilla/*/signons.sqlite
+home/*/.mozilla/*/urlclassifier3.sqlite
 home/*/.nano_history
 home/*/.pulse*
 home/*/.recently-used
 home/*/.recently-used.xbel
-home/*/.local/share/recently-used.xbel
+home/*/.ssh
+home/*/.thumbnails/fail/*
 home/*/.thumbnails/large/*
 home/*/.thumbnails/normal/*
-home/*/.thumbnails/fail/*
+home/*/.Trash*
 home/*/.vbox*
 home/*/.VirtualBox
-home/*/VirtualBox\ VMs
 home/*/.wine
-home/*/.xsession-errors*
-home/*/.ICEauthority
 home/*/.Xauthority
-# You might want to comment these out if you're making a snapshot for
-# your own personal use, not to be shared with others.
-home/*/.gnupg
-home/*/.ssh
 home/*/.xchat2
-home/*/.config/hexchat
-
-# Exclude ssh_host_keys. New ones will be generated upon live boot.
-# This fixes a security hole in all versions before 9.0.9-3.
-# If you really want to clone your existing ssh host keys
-# in your snapshot, comment out these two lines.
-etc/ssh/ssh_host_*_key*
-etc/ssh/ssh_host_key*
-
-# Examples of things to exclude in order to keep the image small:
-#- /home/fred/Downloads/*
-#- /home/*/Music/*
-#- /home/user/Pictures/*
-#- /home/*/Videos/*
-
-
-# To exclude all hidden files and directories in your home, uncomment
-# the next line. You will lose custom desktop configs if you do.
-#- /home/*/.[a-z,A-Z,0-9]*
+home/*/.xsession-errors*
+home/*/VirtualBox\ VMs
 
 # custom
 .snapshots/*
