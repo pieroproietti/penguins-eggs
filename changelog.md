@@ -20,7 +20,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.4.10
-* Solved issue `Exclude.list not working` [#231](https://github.com/pieroproietti/penguins-eggs/issues/231);
+* Solved issue [Exclude.list not working #231](https://github.com/pieroproietti/penguins-eggs/issues/231);
 * fixed: install-system.desktop icon.
 
 ### eggs-9.4.9
