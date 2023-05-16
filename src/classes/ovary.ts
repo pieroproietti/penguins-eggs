@@ -749,7 +749,6 @@ export default class Ovary {
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     if (this.settings.distro.distroId === 'Arch' || 
-    this.settings.distro.distroId === 'Crystal' ||
     this.settings.distro.distroId === 'RebornOS' ||
     this.settings.distro.distroId === 'EndeavourOS') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
@@ -757,6 +756,8 @@ export default class Ovary {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/blendos/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
     } else if (this.settings.distro.distroId === 'ManjaroLinux') {
       await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    } else if (this.settings.distro.distroId === 'Crystal') {
+      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/crystal/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
     }
   }
 
