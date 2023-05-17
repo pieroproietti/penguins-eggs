@@ -2,7 +2,8 @@
 # eggs: grub.template.cfg
 #
 
-if loadfont $prefix/font.pf2 ; then
+#if loadfont $prefix/font.pf2 ; then
+if loadfont $prefix/unicode.pf2 ; then
   set gfxmode=1024x768
   insmod efi_gop
   insmod efi_uga
