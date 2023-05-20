@@ -95,14 +95,23 @@ export default class Utils {
 
       /** 
        * If vmlinuz not found in /proc/cmdline, 
-       * try to find version in initrd.img
        */
       if (vmlinuz === '') {
-         cmdline.forEach(cmd => {
-            if (cmd.includes('initrd.img')) {
-               vmlinuz = '/boot/vmlinuz' + cmd.substring(cmd.indexOf('initrd.img') + 10)
-            }
-         })
+         let version = 'linux'
+         if (distro.familyId === 'debian') {
+            cmdline.forEach(cmd => {
+               if (cmd.includes('initrd.img')) {
+                  version = cmd.substring(cmd.indexOf('initrd.img') + 10)
+               }
+            })
+         } else if (distro.distroId === 'Manjaro') {
+            cmdline.forEach(cmd => {
+               if (cmd.includes('initrd.img')) {
+                  version = cmd.substring(cmd.indexOf('initrd.img') + 10)
+               }
+            })
+         }
+         vmlinuz = '/boot/vmlinuz'+ version
       }
 
       /**
@@ -115,12 +124,6 @@ export default class Utils {
             vmlinuz = '/path/to/vmlinuz'
          }
       }
-
-      // Arch This is a non-sense
-      // if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
-      //    vmlinuz = '/boot/vmlinuz-linux'
-      // }
-
       return vmlinuz
    }
 
@@ -130,20 +133,20 @@ export default class Utils {
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
-      let initrd = 'initrd-'
+      let initrd = 'initrd'
       let version = 'linux'
 
       let distro = new Distro()
       if (distro.familyId === 'debian') {
          version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
       } else if (distro.familyId === 'archlinux') {
-         initrd = 'initramfs-'
+         initrd = 'initramfs'
       }
 
       if (distro.distroId === 'Manjaro') {
          version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
       }
-      initrd = path + initrd + version + '.img'
+      initrd = path + initrd + '-' + version + '.img'
       return initrd
    }
 
