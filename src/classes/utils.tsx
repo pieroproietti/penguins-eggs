@@ -126,32 +126,31 @@ export default class Utils {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
 
+      let distro = new Distro()
+
       let initrd = ''
       let version = ''
-      if (Pacman.distro().familyId === 'debian') {
+      if (distro.familyId === 'debian') {
          initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
-      } else if (Pacman.distro().familyId === 'fedora') {
+      } else if (distro.familyId === 'fedora') {
          initrd = 'initramfs'
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
-      } else if (Pacman.distro().familyId === 'archlinux') {
-         initrd = 'initramfs'
+      } else if (distro.familyId === 'archlinux') {
+         if (
+            distro.distroId === 'Arch' ||
+            distro.distroId === 'BlendOS' ||
+            distro.distroId === 'Crystal' ||
+            distro.distroId === 'EndeavourOS' ||
+            distro.distroId === 'RebornOS') {
+            initrd = '/boot/initramfs-linux.img'
+         } else {
+            initrd = path + initrd + version
+         }
          version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
-      } else if (Pacman.distro().familyId === 'suse') {
+      } else if (distro.familyId === 'suse') {
          initrd = 'initrd'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
-      }
-
-      let distro = new Distro()
-      if (
-         distro.distroId === 'Arch' ||
-         distro.distroId === 'BlendOS' ||
-         distro.distroId === 'Crystal' ||
-         distro.distroId === 'EndeavourOS' ||
-         distro.distroId === 'RebornOS') {
-         initrd = '/boot/initramfs-linux.img'
-      } else {
-         initrd = path + initrd + version
       }
       return initrd
    }
