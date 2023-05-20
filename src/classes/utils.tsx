@@ -111,18 +111,14 @@ export default class Utils {
                }
             })
          }
-         vmlinuz = '/boot/vmlinuz'+ version
+         vmlinuz = '/boot/vmlinuz-'+ version
       }
 
       /**
-       * if not exists
+       * if not exists exit
        */
       if (!fs.existsSync(vmlinuz)) {
-         if (fs.existsSync('/boot' + vmlinuz)) {
-            vmlinuz = '/boot' + vmlinuz
-         } else {
-            vmlinuz = '/path/to/vmlinuz'
-         }
+         console.log(vmlinuz + 'not exists!')
       }
       return vmlinuz
    }
