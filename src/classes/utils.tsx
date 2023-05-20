@@ -143,7 +143,12 @@ export default class Utils {
       }
 
       let distro = new Distro()
-      if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
+      if (
+         distro.distroId === 'Arch' ||
+         distro.distroId === 'BlendOS' ||
+         distro.distroId === 'Crystal' ||
+         distro.distroId === 'EndeavourOS' ||
+         distro.distroId === 'RebornOS') {
          initrd = '/boot/initramfs-linux.img'
       } else {
          initrd = path + initrd + version
@@ -916,10 +921,10 @@ unknown target format aarch64-efi
     *
     * @returns flag
     */
-   static flag() : string {
+   static flag(): string {
       return chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
-      chalk.bgWhite.blue(" Perri's Brewery edition ") +
-      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
+         chalk.bgWhite.blue(" Perri's Brewery edition ") +
+         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
    }
 
 
