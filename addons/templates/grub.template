@@ -2,16 +2,18 @@
 # eggs: grub.template.cfg
 #
 
-#if loadfont $prefix/font.pf2 ; then
-if loadfont $prefix/unicode.pf2 ; then
+# ieee1275_fb.mod vbe.mod vga.mod not found
+
+#if loadfont $prefix/unifont.pf2; then
+if loadfont $prefix/font.pf2 ; then
   set gfxmode=1024x768
   insmod efi_gop
   insmod efi_uga
-  insmod video_bochs
-  insmod video_cirrus
   insmod gfxterm
   insmod jpeg
   insmod png
+  insmod video_bochs
+  insmod video_cirrus
   terminal_output gfxterm
 fi
 
