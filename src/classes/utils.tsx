@@ -130,18 +130,18 @@ export default class Utils {
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
-      let initrd = 'initrd'
+      let initrd = 'initrd-'
       let version = 'linux'
 
       let distro = new Distro()
       if (distro.familyId === 'debian') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-'))
+         version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
       } else if (distro.familyId === 'archlinux') {
-         initrd = 'initramfs'
+         initrd = 'initramfs-'
       }
 
       if (distro.distroId === 'Manjaro') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-'))
+         version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
       }
       initrd = path + initrd + version + '.img'
       return initrd
