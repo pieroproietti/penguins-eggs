@@ -93,7 +93,10 @@ export default class Utils {
          vmlinuz = vmlinuz.substring(vmlinuz.indexOf('@') + 1)
       }
 
-      // If vmlinuz not found in /proc/cmdline, try to find version in initrd.img
+      /** 
+       * If vmlinuz not found in /proc/cmdline, 
+       * try to find version in initrd.img
+       */
       if (vmlinuz === '') {
          cmdline.forEach(cmd => {
             if (cmd.includes('initrd.img')) {
@@ -102,8 +105,10 @@ export default class Utils {
          })
       }
 
+      /**
+       * if not exists
+       */
       if (!fs.existsSync(vmlinuz)) {
-         // check if vmlinuz exist in /boot
          if (fs.existsSync('/boot' + vmlinuz)) {
             vmlinuz = '/boot' + vmlinuz
          } else {
@@ -111,10 +116,10 @@ export default class Utils {
          }
       }
 
-      // Arch
-      if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
-         vmlinuz = '/boot/vmlinuz-linux'
-      }
+      // Arch This is a non-sense
+      // if (distro.distroId === 'Arch' || distro.distroId === 'RebornOS') {
+      //    vmlinuz = '/boot/vmlinuz-linux'
+      // }
 
       return vmlinuz
    }
@@ -125,33 +130,20 @@ export default class Utils {
    static initrdImg(): string {
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
+      let initrd = 'initrd'
+      let version = 'linux'
 
       let distro = new Distro()
-
-      let initrd = ''
-      let version = ''
       if (distro.familyId === 'debian') {
-         initrd = 'initrd.img'
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
-      } else if (distro.familyId === 'fedora') {
-         initrd = 'initramfs'
-         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
       } else if (distro.familyId === 'archlinux') {
-         if (
-            distro.distroId === 'Arch' ||
-            distro.distroId === 'BlendOS' ||
-            distro.distroId === 'Crystal' ||
-            distro.distroId === 'EndeavourOS' ||
-            distro.distroId === 'RebornOS') {
-            initrd = '/boot/initramfs-linux.img'
-         } else {
-            initrd = path + initrd + version
-         }
-         version = vmlinuz.substring(vmlinuz.indexOf('-')) + '.img'
-      } else if (distro.familyId === 'suse') {
-         initrd = 'initrd'
+         initrd = 'initramfs'
+      }
+
+      if (distro.distroId === 'Manjaro') {
          version = vmlinuz.substring(vmlinuz.indexOf('-'))
       }
+      initrd = path + initrd + version + '.img'
       return initrd
    }
 
