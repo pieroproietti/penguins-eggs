@@ -66,6 +66,7 @@
 - id: jammy
   distro: Ubuntu
   derivatives:
+    - devel # Rhino
     - horus # elementary OS 7 Horus
     - jolnir # Elementary jolnir
     - lunar # Ubuntu rolling
