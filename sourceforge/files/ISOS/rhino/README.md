@@ -29,6 +29,25 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Calamares note
 At this stage there is a problem with Rhino Linux remastering regarding calamares: the installation proceeds normally until localization, after which it terminates.
 
+Amethod to avoid the problem is to edit the `/usr/lib/penguins-eggs/conf/distros/focal/calamares/settings.yml` file that is used for calamares configuration and edit the following lines:
+`
+- id: bug-LP#1829805
+     module: shellprocess
+    config: shellprocess_bug-LP#1829805.conf
+`
+by taking them to:
+`
+#- id: bug-LP#1829805
+# ` module: shellprocess
+# ` config: shellprocess_bug-LP#1829805.conf
+`
+After that, reconfigure eggs:
+`sudo eggs dad -d`
+
+
+`sudo eggs dad -d`
+
+
 While waiting to solve the problem, I would be grateful if someone could give suggestions, it is still possible to install this version, by opening a terminal window and proceeding with the installe CLI, with the command: `sudo eggs install`.
 
 ## More informations:
