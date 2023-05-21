@@ -32,6 +32,7 @@ At this stage there is a problem with Rhino Linux remastering regarding calamare
 I tryed to change this two modules:
 * `shellprocess_bug-LP#1829805.yml`
 * `before_bootloader_mkdirs_context.yml`
+* `after_bootloader_context.yml`
 
 After that, reconfigure eggs:
 `sudo eggs dad -d`
