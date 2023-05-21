@@ -40,8 +40,9 @@ After that, reconfigure eggs: `sudo eggs dad -d`,
 But again there are problems in bootloader phase and calamares exit.
 
 If you want to use for theme, the original rhino adapted to eggs, use the following commands:
-`eggs wardrobe get`
-`sudo eggs produce --max --theme .wardrobe/themes/rhino`
+
+* `eggs wardrobe get`
+* `sudo eggs produce --max --theme .wardrobe/themes/rhino`
 
 While waiting to solve the problem, I would be grateful if someone could give suggestions, it is still possible to install this version, by opening a terminal window and proceeding with the installe CLI, with the command: `sudo eggs install`.
 
