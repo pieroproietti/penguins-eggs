@@ -29,13 +29,13 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Calamares note
 At this stage there is a problem with Rhino Linux remastering regarding calamares: the installation proceeds normally until localization, after which it terminates.
 
-I tryed to change this two modules:
+I tryed to change this calamares modules:
+
 * `shellprocess_bug-LP#1829805.yml`
 * `before_bootloader_mkdirs_context.yml`
 * `after_bootloader_context.yml`
 
-After that, reconfigure eggs:
-`sudo eggs dad -d`
+After that, reconfigure eggs: `sudo eggs dad -d`,
 
 But again there are problems in bootloader phase and calamares exit.
 
