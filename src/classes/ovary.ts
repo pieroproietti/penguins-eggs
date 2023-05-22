@@ -684,9 +684,12 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'Arch' || 
-      this.settings.distro.distroId === 'RebornOS' || 
-      this.settings.distro.distroId === 'EndeavourOS') {
+      } else if (
+        this.settings.distro.distroId === 'Arch' || 
+        this.settings.distro.distroId === 'blendOS' ||
+        this.settings.distro.distroId === 'EndeavourOS' || 
+        this.settings.distro.distroId === 'RebornOS'    
+      ) {
         kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
       }
     }
