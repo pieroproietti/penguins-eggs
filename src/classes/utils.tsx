@@ -115,10 +115,21 @@ export default class Utils {
       }
 
       /**
+       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux
+       *        but =/vmlinuz-linux don't exists
+       */
+      if (vmlinuz === '/vmlinuz-linux') {
+         if (!fs.existsSync(vmlinuz)) {
+            vmlinuz = '/boot/vmlinuz-linux'
+         }
+      }
+
+      /**
        * if not exists exit
        */
       if (!fs.existsSync(vmlinuz)) {
-         console.log(vmlinuz + 'not exists!')
+         console.log(vmlinuz + ' not exists!')
+         process.exit()
       }
       return vmlinuz
    }
