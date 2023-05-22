@@ -26,25 +26,13 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 * **egg-of-ubuntu-devel-xfce** - a remaster of [Rhino Linu x86_64](https://github.com/rhino-linux/os/releases/download/2023.1-beta5/Rhino-Linux-2023.1-beta5-amd64.iso)
 
 
-# Calamares note
-At this stage there is a problem with Rhino Linux remastering regarding calamares: the installation proceeds normally until localization, after which it terminates.
-
-I tryed to change this calamares modules:
-
-* `shellprocess_bug-LP#1829805.yml`
-* `before_bootloader_mkdirs_context.yml`
-* `after_bootloader_context.yml`
-
-After that, reconfigure eggs: `sudo eggs dad -d`,
-
-But again there are problems in bootloader phase and calamares exit.
-
-If you want to use for theme, the original rhino adapted to eggs, use the following commands:
+# Calamares notes
+If you want to use the original rhino theme - adapted to eggs - just use the following commands:
 
 * `eggs wardrobe get`
 * `sudo eggs produce --max --theme .wardrobe/themes/rhino`
 
-While waiting to solve the problem, I would be grateful if someone could give suggestions, it is still possible to install this version, by opening a terminal window and proceeding with the installe CLI, with the command: `sudo eggs install`.
+Krill: It is still possible to install this version, by opening a terminal window and proceeding with the CLI installer, just use the command: `sudo eggs install`.
 
 ## More informations:
 
