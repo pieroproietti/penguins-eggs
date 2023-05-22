@@ -1,0 +1,24 @@
+# Make sure the correct bootloader package is installed for EFI.
+# Also pull in shim so secureboot has a chance at working.
+# Because of edge cases, we ignore BIOS, and do the same
+# procedure for all EFI types.
+---
+firmwareType:
+    bios:
+        -    command: sed -i 's/ cdrom/ [trusted=yes] cdrom/g' /etc/apt/sources.list
+        -    timeout: 10
+        -    command: apt-get update --allow-releaseinfo-change
+             timeout: 120
+        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-pc
+             timeout: 300
+        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
+             timeout: 300'
+    "*":
+        -    command: sed -i 's/ cdrom/ [trusted=yes] cdrom/g' /etc/apt/sources.list
+        -    timeout: 10
+        -    command: apt-get update --allow-releaseinfo-change
+             timeout: 120
+        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(dpkg --print-architecture)-signed
+             timeout: 300
+        -    command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
+             timeout: 300'

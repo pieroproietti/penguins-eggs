@@ -664,6 +664,22 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
+      /**
+       * Ubuntu rhino: eredita da devel e buster
+       */
+    } else if (this.distro().codenameLikeId === 'devel') {
+      const dest = '/etc/penguins-eggs.d/distros/devel'
+      const focal = `${rootPen}/conf/distros/devel/*`
+      await exec(`cp -r ${focal} ${dest}`, echo)
+
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+
       /***********************************************************************************
        * Fedora
        **********************************************************************************/
