@@ -27,7 +27,7 @@ All the ISOs include nodejs and eggs installed (.npm package), so you can update
 # Ubuntu
 Ubuntu is a Linux distribution based on Debian mostly composed of free and open-source software. Ubuntu is officially released in three editions: Desktop, Server, and Core for Internet of things devices and robots. All the editions can run on the computer alone, or in a virtual machine. Ubuntu is a popular operating system for cloud computing, with support for OpenStack. Ubuntu's default desktop has been GNOME, since version 17.10.
 
-## Rolling Rhino Remix
+## lunar
 
 * **egg-of-ubuntu-lunar-naked**  just a remaster of Rolling Rhino Remix, but you can install it via PXE in a lot of machines!
 * **egg-of-ubuntu-lunar-colibri**  a remaster of Rolling Rhino Remix, with xfce and develop tools for eggs

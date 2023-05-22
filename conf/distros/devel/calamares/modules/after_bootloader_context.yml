@@ -1,0 +1,18 @@
+---
+dontChroot: false
+timeout: 120
+firmwareType:
+    "*":
+        - "-rm /usr/share/applications/calamares.desktop"
+        - command: "-ln -s /usr/local/share/applications/org.rhinolinux.RhinoSetup.desktop /home/$USER/.config/autostart/setup.desktop"
+        - command: "-wget https://ThiagoLcioBittencourt.gallery.vsassets.io/_apis/public/gallery/publisher/ThiagoLcioBittencourt/extension/omni-dracula-theme/1.0.7/assetbyname/Microsoft.VisualStudio.Services.VSIXPackage"
+        - command: "-mv Microsoft.VisualStudio.Services.VSIXPackage omni-dracula.vsix"
+        - command: "-mkdir /home/$USER/.config/VSCodium/"
+        - command: "-mkdir /home/$USER/.config/VSCodium/User/"
+        - command: "-chown -cR $USER /home/$USER/.config/VSCodium/"
+        - command: "-HOME=/home/$USER runuser -m -u $USER -- sh -c  'codium --install-extension omni-dracula.vsix'"
+        - command: "-rm omni-dracula.vsix"
+        - command: "-chown -cR $USER /home/$USER/.config"
+        - command: "-HOME=/home/$USER runuser -l $USER -c 'DISPLAY=:0 XAUTHORITY=/home/$USER/.Xauthority DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus gsettings set org.gnome.desktop.interface gtk-theme Yaru-purple'"
+        - command: "-HOME=/home/$USER runuser -l $USER -c 'DISPLAY=:0 XAUTHORITY=/home/$USER/.Xauthority DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus xfconf-query -c xsettings -p /Net/IconThemeName -s Papirus-Dark'"
+        - command: "-HOME=/home/$USER runuser -l $USER -c 'DISPLAY=:0 XAUTHORITY=/home/$USER/.Xauthority DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus xfconf-query -c xsettings -p /Gtk/CursorThemeName -s Quintom_Ink'"
