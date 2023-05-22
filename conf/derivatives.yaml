@@ -66,10 +66,8 @@
 - id: jammy
   distro: Ubuntu
   derivatives:
-    - devel # Rhino
     - horus # elementary OS 7 Horus
     - jolnir # Elementary jolnir
-    - lunar # Ubuntu rolling
     - ShiFt # Makululu
     - ulyana # Linux Mint
     - ulyssa # Linux Mint
@@ -78,3 +76,9 @@
     - vanessa # Linux Mint
     - vera # Linux Mint
     - victoria # Linux Mint
+
+- id: devel
+  distro: Ubuntu
+  derivatives:
+    - devel # Rhino
+    - lunar # Ubuntu lunar 23.04

@@ -1,0 +1,3 @@
+overwrite: false
+defaults:
+    GRUB_ENABLE_CRYPTODISK: true
