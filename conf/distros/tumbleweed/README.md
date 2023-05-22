@@ -1,3 +1,0 @@
-# openSUSE
-
-do to
