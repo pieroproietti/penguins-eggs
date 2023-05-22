@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.4.5</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.4.12</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i eggs_9.4.5_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.4.12_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.4.5 linux-x64 node-v16.19.1
+penguins-eggs/9.4.12 linux-x64 node-v16.20.0
 $ eggs --help [COMMAND]
 
 USAGE
@@ -478,9 +478,9 @@ DESCRIPTION
   update skel from home configuration
 
 EXAMPLES
-  sudo eggs skel
+  sudo eggs tools skel
 
-  sudo eggs skel --user user-to-be-copied
+  sudo eggs tools skel --user user-to-be-copied
 </code></pre>
     <h2><code>eggs tools stat</code></h2>
     <p>get statistics from sourceforge</p>
@@ -515,7 +515,7 @@ DESCRIPTION
   configure eggs to install without internet
 
 EXAMPLES
-  sudo eggs yolk
+  sudo eggs tools yolk
 </code></pre>
     <h2><code>eggs update</code></h2>
     <p>update the Penguins' eggs tool</p>
