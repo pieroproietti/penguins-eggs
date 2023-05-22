@@ -68,7 +68,6 @@
   derivatives:
     - horus # elementary OS 7 Horus
     - jolnir # Elementary jolnir
-    - lunar # Ubuntu 23.04
     - ShiFt # Makululu
     - ulyana # Linux Mint
     - ulyssa # Linux Mint
@@ -82,3 +81,4 @@
   distro: Ubuntu
   derivatives:
     - devel # Rhino
+    - lunar # Ubuntu lunar 23.04

@@ -19,6 +19,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.12
+* Introduced Ubuntu/devel compatibility for rhino, this solve the problems with calamares installer in rhino;
+
 ### eggs-9.4.11
 * rewrote Utils.initrdImg() and Utils.vmlinuz() to try to integrate Arch, BlendOS, Crystal, EndeavourOS, RebornOS;
 * adjustments in /addons/template/grub.template;
