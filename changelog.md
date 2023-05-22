@@ -19,6 +19,12 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+
+### eggs-9.4.13
+Occorre sistemare i kernel_parameters per le distro Arch e derivate:
+* Manjaro: `misobasedir=manjaro misolabel=${volid}`
+* Arch, blendOS, EndeavourOS, RebornOS: `archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
+
 ### eggs-9.4.12
 * Introduced Ubuntu/devel compatibility for rhino, this solve the problems with calamares installer in rhino;
 
