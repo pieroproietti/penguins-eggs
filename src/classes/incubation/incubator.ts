@@ -157,13 +157,6 @@ export default class Incubator {
       break
     }
 
-    case 'kinetic': {
-      const kinetic = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await kinetic.create()
-
-      break
-    }
-
     case 'devel': {
       const devel = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await devel.create()
