@@ -1,0 +1,8 @@
+efiSystemPartition: "/boot/efi"
+enableLuksAutomatedPartitioning: true
+userSwapChoices:
+    - none
+    - file
+initialSwapChoice: file
+drawNestedPartitions: true
+defaultFileSystemType: "ext4"

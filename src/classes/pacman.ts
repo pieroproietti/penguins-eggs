@@ -649,11 +649,12 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu 22.10 kinetic: eredita da focal e buster
+       * Ubuntu lunar/rhino: eredita da devel e buster
+       *  
        */
-    } else if (this.distro().codenameLikeId === 'kinetic') {
-      const dest = '/etc/penguins-eggs.d/distros/kinetic'
-      const focal = `${rootPen}/conf/distros/focal/*`
+    } else if (this.distro().codenameLikeId === 'devel') {
+      const dest = '/etc/penguins-eggs.d/distros/devel'
+      const focal = `${rootPen}/conf/distros/devel/*`
       await exec(`cp -r ${focal} ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)

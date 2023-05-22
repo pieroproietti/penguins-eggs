@@ -215,12 +215,10 @@ class Distro implements IDistro {
       break
     }
 
-    case 'kinetic': {
-      // Ubuntu 22.10 kinetic
+    case 'devel': {
+      // Ubuntu rhino
       this.distroLike = 'Ubuntu'
-      this.codenameLikeId = 'kinetic'
-
-      // quindi le derivate...
+      this.codenameLikeId = 'devel'
 
       break
     }
