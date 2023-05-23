@@ -729,60 +729,6 @@ unknown target format aarch64-efi
    }
 
    /**
-    * _userAdd
-    * @param target
-    * @param username
-    * @param password
-    * @param fullName
-    */
-   static _userAdd(target = '/TARGET', username = 'live', password = 'evolution', fullName = '') {
-      const cmd = `sudo chroot ${target} adduser ${username}\
-                    --home /home/${username} \
-                    --shell /bin/bash \
-                    --disabled-password \
-                    --gecos ${fullName},\
-                            '',\
-                            '',\
-                            ''`
-
-      console.log(`addUser: ${cmd}`)
-      shx.exec(cmd)
-
-      const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
-      console.log(`addUser cmdPass: ${cmdPass}`)
-      shx.exec(cmdPass)
-
-      const cmdSudo = `chroot ${target} usermod  -G sudo -a ${username}`
-
-      console.log(`addUser cmdSudo: ${cmdSudo}`)
-      shx.exec(cmdSudo, { silent: true })
-   }
-
-   /**
-    * Return an array of the users of the system
-    * @remarks to move in Utils
-    * @returns {string[]} array di utenti
-    */
-   static usersList(): string[] {
-      const out = shx.exec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
-      const users: string[] = out.split('\n')
-      return users
-   }
-
-   /**
-    * Create folder
-    * @param dir
-    * @param varius {recursive: true/false}
-    */
-   static shxMkDir(dir = '', varius: any): void {
-      if (varius.recursive) {
-         shx.mkdir('-p', dir)
-      } else {
-         shx.mkdir(dir)
-      }
-   }
-
-   /**
     * write a file
     * @param file
     * @param text
@@ -964,4 +910,3 @@ unknown target format aarch64-efi
       return wardrobe
    }
 }
-
