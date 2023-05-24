@@ -684,9 +684,10 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'blendOS') {
+        kernel_parameters += ` archisobasedir=blend archisodevice=UUID=$ARCHISO_UUID cow_spacesize=4G`
       } else if (
         this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'blendOS' ||
         this.settings.distro.distroId === 'EndeavourOS' ||
         this.settings.distro.distroId === 'RebornOS'
       ) {
@@ -1579,9 +1580,10 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (this.settings.distro.distroId === 'ManjaroLinux') {
         kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
+      } else if (this.settings.distro.distroId === 'blendOS') {
+        kernel_parameters += ` archisobasedir=blend archisodevice=UUID=$ARCHISO_UUID cow_spacesize=4G`
       } else if (
         this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'blendOS' ||
         this.settings.distro.distroId === 'EndeavourOS' ||
         this.settings.distro.distroId === 'RebornOS'
       ) {
@@ -1731,7 +1733,7 @@ export default class Ovary {
       * -isohybrid-gpt-basdat
       *         isohybrid-apm-hfsplus
       * boot1 CD1
-
+ 
     command = `xorriso -as mkisofs \
      -r \
      -checksum_algorithm_iso md5,sha1,sha256,sha512 \
