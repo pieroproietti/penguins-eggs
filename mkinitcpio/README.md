@@ -1,16 +1,15 @@
-# Hic sunt leones...
+# Hic sunt leones!
 
-After Debian/Devuan/Ubuntu I decided to bring eggs under Arch and thanx to the collaboration of stefano@manjaro.com
-we was able to remaster linuxmanjaro since january 2022.
+After Debian/Devuan/Ubuntu I decided to bring eggs under Arch and thanx to the collaboration of stefano@manjaro.com we was able to remaster linuxmanjaro since january 2022.
 
-eggs was on AUR from an age, thanx someone create the PKGBUILD from the amd64 Debian edition.
+Actually, we are on may 2023, arch, rebornOS, endeavourOS are working well with archlinux mkinitcpio.
 
-eggs was in manjaro community until June 2022, after it [was removed](https://forum.manjaro.org/t/penguins-eggs-help-needed-for-manjaro-compatibility/96799/20?u=artisan).
+The same for manjaro.
 
-Unfortunately I have not mantainer authorizations in manjaro, so I started to buld a new PKGBUILD here because want optimize PKGBUILD of eggs amd have it complete, streamlined, and compliant with manjaro policies and eggs.
+We have problems with blendos and crystal and sometime I don't know how to ask help and how to find.
 
+# informations about mkinitcpio
 
+[mkinitcpio](https://gitlab.archlinux.org/archlinux/mkinitcpio)
 
-
-
-
+[mkinitcpio-archiso](https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio-archiso/-/tree/master/docs)
