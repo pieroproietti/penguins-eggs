@@ -8,8 +8,12 @@ The same for manjaro.
 
 We have problems with blendos and crystal and sometime I don't know how to ask help and how to find.
 
-# informations about mkinitcpio
+## informations about mkinitcpio
 
-[mkinitcpio](https://gitlab.archlinux.org/archlinux/mkinitcpio)
+[mkinitcpio documantation](https://wiki.archlinux.org/title/mkinitcpio)
 
-[mkinitcpio-archiso](https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio-archiso/-/tree/master/docs)
+## Repositories
+
+* [mkinitcpio](https://gitlab.archlinux.org/archlinux/mkinitcpio)
+* [mkinitcpio-archiso](https://gitlab.archlinux.org/archlinux/mkinitcpio/mkinitcpio-archiso/-/tree/master/docs)
+
