@@ -19,6 +19,11 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+
+### eggs-9.4.13
+* created unique kernelParameters function used for both grub.cfg and isolinux.cfg for live for Arch derived distributions;
+* rethought and modified the creation of initramfs-linux.img for Arch derived distributions.
+
 ### eggs-9.4.12
 * Introduced Ubuntu/devel compatibility for rhino, this solve the problems with calamares installer in rhino;
 
