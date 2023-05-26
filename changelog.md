@@ -21,9 +21,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 ### eggs-9.4.13
-Occorre sistemare i kernel_parameters per le distro Arch e derivate:
-* Manjaro: `misobasedir=manjaro misolabel=${volid}`
-* Arch, blendOS, EndeavourOS, RebornOS: `archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
+* created unique kernelParameters function used for both grub.cfg and isolinux.cfg for live for Arch derived distributions;
+* rethought and modified the creation of initramfs-linux.img for Arch derived distributions.
 
 ### eggs-9.4.12
 * Introduced Ubuntu/devel compatibility for rhino, this solve the problems with calamares installer in rhino;
