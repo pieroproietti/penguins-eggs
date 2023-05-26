@@ -757,16 +757,15 @@ export default class Ovary {
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     const distroId = this.settings.distro.distroId
     let fileConf = 'archlinux'
-    if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
-      fileConf = 'archlinux'
-    } else if (distroId === 'blendOS') {
-      fileConf = 'blendos'
-    } else if (distroId === 'Crystal') {
-      fileConf = 'crystal'
-    } else if (distroId === 'ManjaroLinux') {
-      fileConf = 'manjaro'
+    if (distroId === 'Arch' || 
+        distroId === 'EndeavourOS' || 
+        distroId === 'RebornOS') {
+      fileConf = 'arch'
+    } else { 
+      // 'blendOS', 'Crystal', 'ManjaroLinux') {
+      fileConf = distroId.toLowerCase()
     }
-    let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/mkinitcpio-produce.conf`)
+    let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
   }
 
