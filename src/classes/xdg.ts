@@ -277,10 +277,6 @@ export default class Xdg {
       await exec('mkdir /etc/skel/.config/xfce4-theme-switcher -p', echo)
       await rsyncIfExist(`/home/${user}/.config/xfce4-theme-switcher`, '/etc/skel/.config/xfce4-theme-switcher', verbose)
     }
-
-    // https://www.thegeekdiary.com/understanding-the-etc-skel-directory-in-linux/
-    // cat /etc/defualt/useradd
-    // ls -lart /etc/skel
   }
 }
 

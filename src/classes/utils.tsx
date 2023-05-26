@@ -14,7 +14,6 @@ import os from 'os'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
 import Pacman from './pacman'
-// import { green, whiteBright } from 'chalk'
 import { ChildProcess, spawnSync } from 'child_process'
 import { Netmask } from 'netmask'
 
@@ -115,10 +114,21 @@ export default class Utils {
       }
 
       /**
+       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux
+       *        but =/vmlinuz-linux don't exists
+       */
+      if (vmlinuz === '/vmlinuz-linux') {
+         if (!fs.existsSync(vmlinuz)) {
+            vmlinuz = '/boot/vmlinuz-linux'
+         }
+      }
+
+      /**
        * if not exists exit
        */
       if (!fs.existsSync(vmlinuz)) {
-         console.log(vmlinuz + 'not exists!')
+         console.log(vmlinuz + ' not exists!')
+         process.exit()
       }
       return vmlinuz
    }
@@ -602,9 +612,6 @@ unknown target format aarch64-efi
 
    /**
     * address
-    * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1
-    * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d ":" -f 2`
-    *
     */
    static address(): string {
       const interfaces = os.networkInterfaces()
@@ -629,13 +636,10 @@ unknown target format aarch64-efi
          }
       }
       return address
-      //return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 1`, { silent: true }).stdout.trim()
    }
 
    /**
     * netmask
-    * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2
-    * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $4}' | cut -d ":" -f 2
     */
    static netmask(): string {
       const interfaces = os.networkInterfaces()
@@ -660,12 +664,10 @@ unknown target format aarch64-efi
          }
       }
       return netmask
-      // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $2}' | cut -d "/" -f 2`, { silent: true }).stdout.trim()
    }
 
    /**
-    *
-    * @returns 192.169.1.2/24
+    * cidr
     */
    static cidr(): string {
       const interfaces = os.networkInterfaces()
@@ -696,23 +698,23 @@ unknown target format aarch64-efi
 
    /**
     *
-    * @returns
-   * ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'
-   * ifconfig | grep -w inet |grep -v 127.0.0.1| awk '{print $6}' | cut -d ":" -f 2
+    * broadcast
    */
    static broadcast(): string {
       let n = new Netmask(Utils.cidr())
       return n.broadcast
-      // return shx.exec(`ip a | grep -w inet |grep -v 127.0.0.1| awk '{print $4}'`, { silent: true }).stdout.trim()
    }
 
    /**
-    * @returns dns
+    * dns
     */
    static getDns(): string[] {
       return dns.getServers()
    }
 
+   /**
+    * getDomain
+    */
    static getDomain(): string {
       return shx.exec('dnsdomainname', { silent: true }).stdout.trim()
       // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
@@ -724,60 +726,6 @@ unknown target format aarch64-efi
     */
    static gateway(): string {
       return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
-   }
-
-   /**
-    * userAdd
-    * @param target
-    * @param username
-    * @param password
-    * @param fullName
-    */
-   static userAdd(target = '/TARGET', username = 'live', password = 'evolution', fullName = '') {
-      const cmd = `sudo chroot ${target} adduser ${username}\
-                    --home /home/${username} \
-                    --shell /bin/bash \
-                    --disabled-password \
-                    --gecos ${fullName},\
-                            '',\
-                            '',\
-                            ''`
-
-      console.log(`addUser: ${cmd}`)
-      shx.exec(cmd)
-
-      const cmdPass = `echo ${username}:${password} | chroot ${target} chpasswd `
-      console.log(`addUser cmdPass: ${cmdPass}`)
-      shx.exec(cmdPass)
-
-      const cmdSudo = `chroot ${target} usermod  -G sudo -a ${username}`
-
-      console.log(`addUser cmdSudo: ${cmdSudo}`)
-      shx.exec(cmdSudo, { silent: true })
-   }
-
-   /**
-    * Return an array of the users of the system
-    * @remarks to move in Utils
-    * @returns {string[]} array di utenti
-    */
-   static usersList(): string[] {
-      const out = shx.exec('/usr/bin/lslogins --noheadings -u -o user | grep -vw root', { silent: true }).stdout
-      const users: string[] = out.split('\n')
-      return users
-   }
-
-   /**
-    * Create folder
-    * @param dir
-    * @param varius {recursive: true/false}
-    */
-   static shxMkDir(dir = '', varius: any): void {
-      if (varius.recursive) {
-         shx.mkdir('-p', dir)
-      } else {
-         shx.mkdir(dir)
-      }
    }
 
    /**
@@ -950,7 +898,6 @@ unknown target format aarch64-efi
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
    }
 
-
    /**
     *
     * @returns wardrobe
@@ -959,13 +906,7 @@ unknown target format aarch64-efi
       let wardrobe = `${os.homedir()}/.wardrobe`
       if (Utils.isRoot()) {
          wardrobe = `/home/${await Utils.getPrimaryUser()}/.wardrobe`
-         // let result = await exec(`echo $(logname)`, { echo: false, capture: true })
-         // let result = await exec(`echo $(SUDO_USER)`, { echo: false, capture: true })
-         //if (result.code === 0) {
-         //   wardrobe = `/home/${result.data.trim()}/.wardrobe`
-         //}
       }
       return wardrobe
    }
 }
-

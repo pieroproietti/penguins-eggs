@@ -18,9 +18,11 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Linux Mint - una
+# Linux Mint - vera
 
-* **egg-of-linuxmint-vanessa-cinnamon** - Linux Mint 21 (based on Ubuntu jammy), cinnamon (amd64)
+* **egg-of-linuxmint-vera-cinnamon** - Linux Mint 21.1 (based on Ubuntu jammy), cinnamon (amd64)
+* **egg-of-linuxmint-vera-mate** - Linux Mint 21.1 (based on Ubuntu jammy), mate (amd64)
+* **egg-of-linuxmint-vera-xfce4** - Linux Mint 21.1 (based on Ubuntu jammy), xfce4 (amd64)
 
 # Installing Linuxmint via PXE
 
