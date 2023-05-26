@@ -767,7 +767,7 @@ export default class Ovary {
       fileConf = 'manjaro'
     }
     let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/mkinitcpio-produce.conf`)
-    await exec(`mkinitcpio -c ${pathConf}`, Utils.setEcho(true))
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
