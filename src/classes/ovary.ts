@@ -676,25 +676,7 @@ export default class Ovary {
       process.exit()
     }
 
-    /**
-     * kernel_parameters are used by miso, archiso
-     */
-    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    if (this.familyId === 'archlinux') {
-      const volid = Utils.getVolid(this.settings.remix.name)
-      if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'blendOS') {
-        kernel_parameters += ` archisobasedir=blend archisodevice=UUID=$ARCHISO_UUID cow_spacesize=4G`
-      } else if (
-        this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'EndeavourOS' ||
-        this.settings.distro.distroId === 'RebornOS'
-      ) {
-        kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
-      }
-    }
-
+    const kernel_parameters = this.kernelParameters()
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
@@ -720,6 +702,27 @@ export default class Ovary {
     }
 
     fs.copyFileSync(splashSrc, splashDest)
+  }
+
+  /**
+   * 
+   * @returns kernelParameters
+   */
+  kernelParameters(): string {
+    const distroId = this.settings.distro.distroId
+    let kp = `boot=live components locales=${process.env.LANG}`
+    if (this.familyId === 'archlinux') {
+      const volid = Utils.getVolid(this.settings.remix.name)
+      if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
+        kp += ` archisobasedir=arch archisolabel=${volid}`
+      } else if (distroId === 'blendOS') {
+        kp += ` archisobasedir=blend archisodevice=${volid}`
+      } else if (distroId === 'ManjaroLinux') {
+        kp += ` misobasedir=manjaro misolabel=${volid}`
+      }
+      kp += ` cow_spacesize=4G`
+    }
+    return kp
   }
 
   /**
@@ -752,17 +755,19 @@ export default class Ovary {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
-    if (this.settings.distro.distroId === 'Arch' ||
-      this.settings.distro.distroId === 'RebornOS' ||
-      this.settings.distro.distroId === 'EndeavourOS') {
-      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/archlinux/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
-    } else if (this.settings.distro.distroId === 'blendOS') {
-      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/blendos/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
-    } else if (this.settings.distro.distroId === 'ManjaroLinux') {
-      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/manjaro/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
-    } else if (this.settings.distro.distroId === 'Crystal') {
-      await exec(`mkinitcpio -c ${path.resolve(__dirname, '../../mkinitcpio/crystal/mkinitcpio-produce.conf')} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    const distroId = this.settings.distro.distroId
+    let fileConf = 'archlinux'
+    if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
+      fileConf = 'archlinux'
+    } else if (distroId === 'blendOS') {
+      fileConf = 'blendos'
+    } else if (distroId === 'Crystal') {
+      fileConf = 'crystal'
+    } else if (distroId === 'ManjaroLinux') {
+      fileConf = 'manjaro'
     }
+    let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/mkinitcpio-produce.conf`)
+    await exec(`mkinitcpio -c ${pathConf}`, Utils.setEcho(true))
   }
 
   /**
@@ -786,7 +791,7 @@ export default class Ovary {
     }
 
     /*
-
+  
     Utils.warning(`initrdCopy`)
     if (this.verbose) {
       console.log('ovary: initrdCopy')
@@ -798,7 +803,7 @@ export default class Ovary {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
     }
-
+  
     if (lackInitrdImage) {
       Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
       Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
@@ -1571,26 +1576,7 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + grubTemplate)
       process.exit()
     }
-
-    /**
-    * kernel_parameters are used by miso, archiso
-    */
-    let kernel_parameters = `boot=live components locales=${process.env.LANG}`
-    if (this.familyId === 'archlinux') {
-      const volid = Utils.getVolid(this.settings.remix.name)
-      if (this.settings.distro.distroId === 'ManjaroLinux') {
-        kernel_parameters += ` misobasedir=manjaro misolabel=${volid}`
-      } else if (this.settings.distro.distroId === 'blendOS') {
-        kernel_parameters += ` archisobasedir=blend archisodevice=UUID=$ARCHISO_UUID cow_spacesize=4G`
-      } else if (
-        this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'EndeavourOS' ||
-        this.settings.distro.distroId === 'RebornOS'
-      ) {
-        kernel_parameters += ` archisobasedir=arch archisolabel=${volid} cow_spacesize=4G`
-      }
-    }
-
+    const kernel_parameters = this.kernelParameters()
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
@@ -1733,7 +1719,7 @@ export default class Ovary {
       * -isohybrid-gpt-basdat
       *         isohybrid-apm-hfsplus
       * boot1 CD1
- 
+   
     command = `xorriso -as mkisofs \
      -r \
      -checksum_algorithm_iso md5,sha1,sha256,sha512 \
@@ -1900,3 +1886,5 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   }
   return cmd
 }
+
+
