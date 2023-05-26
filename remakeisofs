@@ -1,4 +1,10 @@
-sudo mkinitcpio -c mkinitcpio/blendos/mkinitcpio-produce.conf -g /home/eggs/ovarium/iso/live/initramfs-linux.img
+#!/bin/bash
+dirConf="$1"
+if [ -z "${dirConf}" ]; then 
+    dirConf='arch'
+fi
+echo "building for: ${dirConf}"
+echo ""
+sudo mkinitcpio -c mkinitcpio/${dirConf}/live.conf -g /home/eggs/ovarium/iso/live/initramfs-linux.img
 sudo rm /home/eggs/egg-of*
 sudo /home/eggs/ovarium/mkisofs
-
