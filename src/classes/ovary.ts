@@ -270,12 +270,17 @@ export default class Ovary {
           await exec(`mkdir ${this.settings.work_dir.pathIso}manjaro/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
-        } else if (this.settings.distro.distroId === 'Arch' ||
+        } else if (
+          this.settings.distro.distroId === 'Arch' ||
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
+        } else if (this.settings.distro.distroId === 'blendOS') {
+          await exec(`mkdir ${this.settings.work_dir.pathIso}blend/x86_64 -p`, this.echo)
+          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}blend/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}blend/x86_64/airootfs.sha512`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
@@ -716,8 +721,7 @@ export default class Ovary {
       if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       } else if (distroId === 'blendOS') {
-        kp += ` archisobasedir=arch archisolabel=${volid}`
-        // kp += ` archisobasedir=blend archisolabel=${volid}`
+        kp += ` archisobasedir=blend archisolabel=${volid}`
       } else if (distroId === 'ManjaroLinux') {
         kp += ` misobasedir=manjaro misolabel=${volid}`
       }
