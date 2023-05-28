@@ -716,7 +716,8 @@ export default class Ovary {
       if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       } else if (distroId === 'blendOS') {
-        kp += ` archisobasedir=blend archisolabel=${volid}`
+        kp += ` archisobasedir=arch archisolabel=${volid}`
+        // kp += ` archisobasedir=blend archisolabel=${volid}`
       } else if (distroId === 'ManjaroLinux') {
         kp += ` misobasedir=manjaro misolabel=${volid}`
       }
