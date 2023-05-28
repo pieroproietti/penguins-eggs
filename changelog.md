@@ -19,6 +19,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.14
+* first egg of [blendOS](https://blendos.co/) produced! You can find samples on [sample](https://sourceforge.net/projects/penguins-eggs/files/ISOS/blendos/).
 
 ### eggs-9.4.13
 * created unique kernelParameters function used for both grub.cfg and isolinux.cfg for live for Arch derived distributions;
