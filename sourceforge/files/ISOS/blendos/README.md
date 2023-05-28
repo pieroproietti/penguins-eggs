@@ -15,7 +15,7 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# Arch
+# blendOS
 
 [blendOS](https://blendos.co/) the only operating system you'll ever need. A seamless blend of all Linux distributions, Android apps and web apps.
 
@@ -24,7 +24,8 @@ blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4
 * **egg-of-blendos-rolling-gnome** 
 * **egg-of-blendos-rolling-plasma** 
 
-![video](https://youtu.be/_OpKeqTtY1s)
+![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
+
 
 # Disclaim
 
