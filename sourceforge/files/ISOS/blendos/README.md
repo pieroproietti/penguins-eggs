@@ -26,6 +26,16 @@ blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4
 
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
+# Calamares notes
+To be able to install remastered blendOS, we need calamares@3.2.61-1 in aur.
+
+I don't know why it's not reconnized by yay here, in all the way just:
+
+```
+git clone https://aur.archlinux.org/calamares.git
+cd calamares
+makepkg -si
+```
 
 # Disclaim
 
