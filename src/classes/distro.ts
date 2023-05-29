@@ -224,12 +224,11 @@ class Distro implements IDistro {
     }
 
     /**
-       * Arch Linux / RebornOS
-       * calamares rebornOS: Reborn-OS/calamares-core-git
+       * Arch Linux
        */
     case 'n/a': 
     case 'rolling': {
-      // ARCH, BlendOS, RebornOS, EndeavourOS
+      // Arch, BlendOS, RebornOS, EndeavourOS
       this.familyId = 'archlinux'
       this.distroLike = 'Arch'
       this.codenameId = 'rolling'
