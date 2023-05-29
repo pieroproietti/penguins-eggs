@@ -1,11 +1,11 @@
-# Debian Buster
+# Arch
 # users
 ---
 userGroup: users
 defaultGroups:
   - cdrom
   - floppy
-  - sudo
+  - wheel
   - audio
   - dip
   - video
@@ -15,6 +15,6 @@ defaultGroups:
   - scanner
   - bluetooth
 autologinGroup: autologin
-sudoersGroup: sudo
+sudoersGroup: wheel
 setRootPassword: true
 doReusePassword: false
