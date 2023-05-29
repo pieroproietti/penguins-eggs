@@ -272,18 +272,12 @@ export default class Ovary {
           await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
         } else if (
           this.settings.distro.distroId === 'Arch' ||
+          this.settings.distro.distroId === 'blendOS' ||
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
           await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
-        } else if (this.settings.distro.distroId === 'blendOS') {
-          await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
-          // await exec(`mkdir ${this.settings.work_dir.pathIso}blend/x86_64 -p`, this.echo)
-          // await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}blend/x86_64/airootfs.sfs`, this.echo)
-          // await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}blend/x86_64/airootfs.sha512`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
@@ -721,11 +715,13 @@ export default class Ovary {
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
       const volid = Utils.getVolid(this.settings.remix.name)
-      if (distroId === 'Arch' || distroId === 'EndeavourOS' || distroId === 'RebornOS') {
+      if (
+        distroId === 'Arch' ||
+        distroId === 'blendOS' ||
+        distroId === 'EndeavourOS' ||
+        distroId === 'RebornOS'
+      ) {
         kp += ` archisobasedir=arch archisolabel=${volid}`
-      } else if (distroId === 'blendOS') {
-        kp += ` archisobasedir=arch archisolabel=${volid}`
-        // kp += ` archisobasedir=blend archisolabel=${volid}`
       } else if (distroId === 'ManjaroLinux') {
         kp += ` misobasedir=manjaro misolabel=${volid}`
       }
@@ -766,12 +762,19 @@ export default class Ovary {
     Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
     const distroId = this.settings.distro.distroId
     let fileConf = 'archlinux'
-    if (distroId === 'Arch' || 
-        distroId === 'EndeavourOS' || 
-        distroId === 'RebornOS') {
+    if (
+      distroId === 'Arch' ||
+      distroId === 'EndeavourOS' ||
+      distroId === 'RebornOS'
+    ) {
+      /**
+       * Arch, EndeavoursOS and RebornOS use arch
+       */
       fileConf = 'arch'
-    } else { 
-      // 'blendOS', 'Crystal', 'ManjaroLinux') {
+    } else {
+      /**
+       * blendOS, Crystal and ManjaroLinux have is own mkinitcpio
+       */
       fileConf = distroId.toLowerCase()
     }
     let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
