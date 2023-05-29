@@ -170,6 +170,8 @@ export default class Incubator {
     case 'rolling': {
       const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.isClone, this.verbose)
       await rolling.create()
+      console.log("rolling configurata")
+      process.exit()
 
       break
     }
