@@ -109,6 +109,8 @@ export default class Fisherman {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
     /**
+     * Here we MUST revisit it and bring theme from wardrobe
+     * 
      * We need vendor here to have possibility to load custom modules for calamares
      * the custom modules live in: /addons/vendor/theme/calamares/modules
      * and - if exist - take priority on distro modules on /conf/distros/calamares/modules
