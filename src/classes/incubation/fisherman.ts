@@ -16,7 +16,6 @@ import { IInstaller } from '../../interfaces/index'
 import { displaymanager } from './fisherman-helper/displaymanager'
 
 import { exec } from '../../lib/utils'
-import Settings from '../settings'
 
 interface IReplaces {
   search: string
@@ -41,13 +40,15 @@ export default class Fisherman {
    */
   async settings(vendor = 'eggs', isClone = false) {
     let branding = vendor
+    let settingsSrc = this.installer.template + 'settings.yml'
     if (vendor !== 'eggs' && vendor.includes('/')) {
       branding = vendor.slice(Math.max(0, vendor.lastIndexOf('/')))
+      if (fs.existsSync(`${vendor}settings.yml`)) {
+        settingsSrc = `${vendor}settings.yml`
+      }
     }
-
-    const settings = this.installer.configuration + 'settings.conf'
-
-    shx.cp(this.installer.template + 'settings.yml', settings)
+    const settingsDest = this.installer.configuration + 'settings.conf'
+    shx.cp(settingsSrc, settingsDest)
     let hasSystemd = '# '
     if (Utils.isSystemd()) {
       hasSystemd = '- '
@@ -63,10 +64,10 @@ export default class Fisherman {
       hasDisplaymanager = '- '
     }
 
-    shx.sed('-i', '{{hasSystemd}}', hasSystemd, settings)
-    shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settings)
-    shx.sed('-i', '{{branding}}', branding, settings)
-    shx.sed('-i', '{{createUsers}}', createUsers, settings)
+    shx.sed('-i', '{{hasSystemd}}', hasSystemd, settingsDest)
+    shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settingsDest)
+    shx.sed('-i', '{{branding}}', branding, settingsDest)
+    shx.sed('-i', '{{createUsers}}', createUsers, settingsDest)
   }
 
   /**
