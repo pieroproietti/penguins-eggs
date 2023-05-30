@@ -154,14 +154,15 @@ export default class Fisherman {
    * @param name
    * @param isScript
    */
-  async buildCalamaresModule(name: string, isScript = true): Promise<string> {
-    const moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch + name)
+  async buildCalamaresModule(name: string, isScript = true, theme = 'eggs'): Promise<string> {
+
+    let moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch + name)
+    if (theme !== 'eggs')  {
+      moduleTemplate = theme + name
+    }
+
     const moduleDest = this.installer.multiarchModules + name
     const moduleScript = `/usr/sbin/${name}.sh`
-
-    // console.log('moduleDest: ' + moduleDest)
-    // console.log('moduleTemplate: ' + moduleTemplate)
-    // console.log('moduleScript: ' + moduleScript)
 
     if (this.verbose) this.show(name, 'module', moduleDest)
 

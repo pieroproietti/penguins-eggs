@@ -34,7 +34,7 @@ export class Buster {
 
   user_opt: string
 
-  theme: string
+  theme: string // theme comprende il path
 
   isClone: boolean
 
@@ -91,6 +91,12 @@ export class Buster {
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
+
+    // bliss patch
+    if (this.theme.includes('bliss')) {
+      await fisherman.buildCalamaresModule('blissos', true, this.theme)
+    }
+
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }
