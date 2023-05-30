@@ -15,6 +15,10 @@ import {IInstaller, IRemix} from '../../interfaces/index'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
 
+/**
+ * 
+ * @returns 
+ */
 export function installer(): IInstaller {
   const installer = {} as IInstaller
   if (Pacman.packageIsInstalled('calamares')) {

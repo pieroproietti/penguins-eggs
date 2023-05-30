@@ -318,18 +318,6 @@ export default class Incubator {
     const content = branding(this.remix, this.distro, this.verbose)
     write(file, content, this.verbose)
   }
-
-  /**
-   * non dovrebbe servire
-   */
-  private async createInstallDebian() {
-    const scriptInstallDebian = require('./calamares-modules/scripts/install-system.sh').installDebian
-    const scriptDir = '/usr/bin/'
-    const scriptFile = scriptDir + 'install-system.sh'
-    const scriptContent = scriptInstallDebian()
-    write(scriptFile, scriptContent, this.verbose)
-    await exec(`chmod +x ${scriptFile}`)
-  }
 }
 
 /**

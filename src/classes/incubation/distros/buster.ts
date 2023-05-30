@@ -92,11 +92,6 @@ export class Buster {
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 
-    // bliss patch
-    if (this.theme.includes('bliss')) {
-      await fisherman.buildCalamaresModule('blissos', true, this.theme)
-    }
-
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }
