@@ -252,7 +252,7 @@ export default class Incubator {
      * ADDONS (only for calamares)
      */
     if (this.installer.name === 'calamares') {
-      // console.log('theme: ' + this.theme)
+      console.log('theme: ' + this.theme)
       let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
       if (this.theme.includes('/')) {
         calamaresBranding = `${this.theme}/theme/calamares/branding`
