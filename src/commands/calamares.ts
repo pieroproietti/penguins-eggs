@@ -65,6 +65,10 @@ export default class Calamares extends Command {
     let theme = 'eggs'
     if (flags.theme !== undefined) {
       theme = flags.theme
+      // remove final /
+      if (theme.endsWith('/')) {
+        theme = theme.substring(0, theme.length -1)
+      }
     }
 
     const nointeractive = flags.nointeractive
