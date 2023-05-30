@@ -92,6 +92,7 @@ export class Focal {
     await fisherman.buildCalamaresModule('sources-yolk', false)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
+
     // bliss patch
     if (this.theme.includes('bliss')) {
       await fisherman.buildCalamaresModule('blissos', true, this.theme)
