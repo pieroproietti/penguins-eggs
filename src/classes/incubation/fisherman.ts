@@ -158,7 +158,7 @@ export default class Fisherman {
 
     let moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch + name)
     if (theme !== 'eggs')  {
-      moduleTemplate = theme + name
+      moduleTemplate = theme + '/theme/calamares/calamares-modules/' + name
     }
 
     const moduleDest = this.installer.multiarchModules + name
