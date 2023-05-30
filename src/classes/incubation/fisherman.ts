@@ -45,6 +45,7 @@ export default class Fisherman {
       branding = vendor.slice(Math.max(0, vendor.lastIndexOf('/')+1))
       if (fs.existsSync(`${vendor}/theme/calamares/settings.yml`)) {
         settingsSrc = `${vendor}/theme/calamares/settings.yml`
+        console.log('settingsSrc: ' + settingsSrc)
       }
     }
     const settingsDest = this.installer.configuration + 'settings.conf'
