@@ -5,6 +5,8 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
+import path from 'path'
+import fs  from 'fs'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
@@ -65,15 +67,18 @@ export default class Calamares extends Command {
     let theme = 'eggs'
     if (flags.theme !== undefined) {
       theme = flags.theme
-      // remove final /
       if (theme.endsWith('/')) {
         theme = theme.substring(0, theme.length -1)
       }
+      theme = path.resolve(theme)
+      if (!fs.existsSync(theme + '/theme')) {
+        console.log('Cannot find theme: ' + theme)
+        process.exit()
+      }
     }
+    console.log(`theme_ ${theme}`)
 
     const nointeractive = flags.nointeractive
-
-    console.log(`theme: ${theme}`)
 
     if (Utils.isRoot(this.id)) {
       let installer = 'krill'

@@ -49,7 +49,7 @@ export class Jessie {
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
-    await fisherman.settings(this.remix.branding)
+    await fisherman.createCalamaresSettings(this.remix.branding)
 
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildCalamaresModule('sources-yolk', true)

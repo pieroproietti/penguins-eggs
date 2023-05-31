@@ -34,9 +34,9 @@ export class Focal {
 
   release = false
 
-  user_opt: string
+  theme: string // theme comprende il path  
 
-  theme: string
+  user_opt: string
 
   isClone: boolean
 
@@ -63,7 +63,7 @@ export class Focal {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.settings(this.remix.branding, this.isClone)
+    await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')

@@ -62,7 +62,7 @@ export class Buster {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.settings(this.theme, this.isClone)
+    await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
@@ -91,7 +91,10 @@ export class Buster {
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
-
+    // bliss patch
+    if (this.theme.includes('bliss')) {
+      await fisherman.buildCalamaresModule('blissos', true, this.theme)
+    }
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }

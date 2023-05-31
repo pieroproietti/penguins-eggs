@@ -119,3 +119,6 @@ home/*/VirtualBox\ VMs
 .snapshots/*
 swap/*
 swapfile
+
+# blissos
+blissos/data.img

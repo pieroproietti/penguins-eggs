@@ -137,7 +137,7 @@ export default class Incubator {
        * UBUNTU
        */
     case 'bionic': {
-      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.isClone, this.verbose)
+      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await bionic.create()
 
       break
@@ -168,7 +168,7 @@ export default class Incubator {
        * Arch
        */
     case 'rolling': {
-      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.isClone, this.verbose)
+      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await rolling.create()
 
       break
@@ -249,15 +249,14 @@ export default class Incubator {
     }
 
     /**
-     * ADDONS (only for calamares)
+     * themes (only for calamares)
      */
     if (this.installer.name === 'calamares') {
-      console.log('theme: ' + this.theme)
-      let calamaresBranding = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/calamares/branding`)
+      let calamaresBranding = path.resolve(__dirname, `../../../addons/eggs/theme/calamares/branding`)
       if (this.theme.includes('/')) {
         calamaresBranding = `${this.theme}/theme/calamares/branding`
       }
-
+      // console.log(`calamaresBranding: ${calamaresBranding}`)
       if (fs.existsSync(calamaresBranding)) {
         if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
           try {

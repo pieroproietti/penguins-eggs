@@ -35,6 +35,8 @@ export class Bionic {
 
   release = false
 
+  theme: string // theme comprende il path
+
   user_opt: string
 
   isClone: boolean
@@ -45,13 +47,14 @@ export class Bionic {
    * @param release
    * @param verbose
    */
-  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, isClone = false, verbose = false) {
+  constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, theme = 'eggs', isClone = false, verbose = false) {
     this.installer = installer
     this.remix = remix
     this.distro = distro
     this.user_opt = user_opt
     this.verbose = verbose
     this.release = release
+    this.theme = theme  
     this.isClone = isClone
   }
 
@@ -61,7 +64,7 @@ export class Bionic {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.settings(this.remix.branding, this.isClone)
+    await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
