@@ -33,6 +33,8 @@ export class Rolling {
 
    release = false
 
+   theme: string // theme comprende il path
+
    verbose = false
 
    isClone = false
@@ -43,7 +45,7 @@ export class Rolling {
     * @param displaymanager
     * @param verbose
     */
-   constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, isClone=false, verbose = false) {
+   constructor(installer: IInstaller, remix: IRemix, distro: IDistro, user_opt: string, release = false, theme = 'eggs', isClone = false, verbose = false) {
      this.installer = installer
 
      this.remix = remix
@@ -51,6 +53,7 @@ export class Rolling {
      this.user_opt = user_opt
      this.verbose = verbose
      this.release = release
+     this.theme = theme  
      this.isClone = isClone
    }
 
@@ -60,18 +63,18 @@ export class Rolling {
    async create() {
      const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-     await fisherman.settings(this.remix.branding, this.isClone)
+     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
-     await fisherman.buildModule('partition', this.remix.branding)
+     await fisherman.buildModule('partition', this.theme)
      await fisherman.buildModule('mount')
      await fisherman.moduleUnpackfs()
      // await fisherman.buildCalamaresModule('sources-yolk', true)
      // await fisherman.buildModule('machineid')
      await fisherman.buildModule('fstab')
-     await fisherman.buildModule('locale', this.remix.branding)
+     await fisherman.buildModule('locale', this.theme)
      await fisherman.buildModule('keyboard')
      await fisherman.buildModule('localecfg')
-     await fisherman.buildModule('users', this.remix.branding)
+     await fisherman.buildModule('users', this.theme)
      await fisherman.moduleDisplaymanager()
      await fisherman.buildModule('networkcfg')
      await fisherman.buildModule('hwclock')

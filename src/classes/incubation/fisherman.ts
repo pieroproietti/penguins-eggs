@@ -38,20 +38,20 @@ export default class Fisherman {
   /**
    * write setting
    */
-  async settings(vendor = 'eggs', isClone = false) {
-    let branding = vendor
+  async createCalamaresSettings(theme = 'eggs', isClone = false) {
+    let branding = theme
     let settingsSrc = this.installer.template + 'settings.yml'
 
-    if (vendor.includes('/')) {
-      branding = vendor.slice(Math.max(0, vendor.lastIndexOf('/')+1))
-      if (fs.existsSync(`${vendor}/theme/calamares/settings.yml`)) {
-        settingsSrc = `${vendor}/theme/calamares/settings.yml`
+    if (theme.includes('/')) {
+      branding = theme.slice(Math.max(0, theme.lastIndexOf('/')+1))
+      if (fs.existsSync(`${theme}/theme/calamares/settings.yml`)) {
+        settingsSrc = `${theme}/theme/calamares/settings.yml`
       } else {
-        console.log(`cannot find: ${vendor}/theme/calamares/settings.yml`)    
+        console.log(`cannot find: ${theme}/theme/calamares/settings.yml`)    
       }
     }
-    console.log('vendor: ' + vendor)
-    console.log('settingsSrc: ' + settingsSrc)
+    // console.log('theme: ' + theme)
+    // console.log('settingsSrc: ' + settingsSrc)
     const settingsDest = this.installer.configuration + 'settings.conf'
     shx.cp(settingsSrc, settingsDest)
     let hasSystemd = '# '

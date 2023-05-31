@@ -121,19 +121,16 @@ export default class Produce extends Command {
       let theme = 'eggs'
       if (flags.theme !== undefined) {
         theme = flags.theme
-        if (theme.includes('/')) {
-          // remove final /
-          if (theme.endsWith('/')) {
-            theme = theme.substring(0, theme.length -1)
-          }
-
-          // check if theme exists
-          if (!fs.existsSync(theme + '/theme')) {
-            console.log('Cannot find theme: ' + theme)
-            process.exit()
-          }
+        if (theme.endsWith('/')) {
+          theme = theme.substring(0, theme.length - 1)
+        }
+        theme = path.resolve(theme)
+        if (!fs.existsSync(theme + '/theme')) {
+          console.log('Cannot find theme: ' + theme)
+          process.exit()
         }
       }
+      console.log(`theme_ ${theme}`)
 
       const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
