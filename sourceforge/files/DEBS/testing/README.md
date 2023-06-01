@@ -13,9 +13,9 @@ Penguins-eggs
 
 # development
 
-## changelog eggs-v9.4.6 vs eggs-v9.4.5
-* releasing v9.4.5
+## changelog eggs-v9.4.16 vs v9.4.15
 
+* added in penguins-wardrobe theme bliss; to use this theme `git clone https://github.com/pieroproietti/penguins-wardrobe`, `cd penguins-wardrobe`, `git checkout devel`, then `sudo eggs produce --theme ./penguins-wardrobe/theme/bliss`
 
 
 # Penguins' eggs Debian TESTING packages
