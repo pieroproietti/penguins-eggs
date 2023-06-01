@@ -93,10 +93,13 @@ export class Focal {
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 
-    // bliss patch
+    // bliss calamares-modules
     if (this.theme.includes('bliss')) {
-      await fisherman.buildCalamaresModule('blissos', true, this.theme)
+      await fisherman.buildCalamaresModule('bliss-install', true, this.theme)
+      await fisherman.buildCalamaresModule('bliss-data-img', true, this.theme)
+      await fisherman.buildCalamaresModule('bliss-bootloader', true, this.theme)
     }
+
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
   }
