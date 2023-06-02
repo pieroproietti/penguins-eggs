@@ -18,7 +18,7 @@ Penguins-eggs
 * added in penguins-wardrobe theme bliss; to use this theme `git clone https://github.com/pieroproietti/penguins-wardrobe`, `cd penguins-wardrobe`, `git checkout devel`, then `sudo eggs produce --theme ./penguins-wardrobe/theme/bliss`
 
 ```
-NOTE:   this version are just to test bliss theme usage in penguins-wardrobe, except for this any 
+NOTE:   this version are just to test [bliss theme](https://github.com/pieroproietti/penguins-wardrobe/tree/main/themes/bliss#readme) usage in penguins-wardrobe, except for this any 
         changes is included. 
 ```
 
