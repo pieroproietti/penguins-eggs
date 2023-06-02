@@ -42,6 +42,7 @@
  *  - initramfs:     initramfs
  *  - removeuser:    removeuser
  *  - sources-yolk-undo: execCalamaresModule('sources-yolk-undo')
+ *  - bliss clustom modules
  *  - umount:     umountVfs, this.umountFs
  */
 
@@ -621,6 +622,12 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+
+
+         /**
+          * TO DO: here we need to check theme and if 
+          *        theme=bliss, then call custom modules
+          */
 
          // umount
          message = "umount"
