@@ -12,6 +12,8 @@ import shx from 'shelljs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 
+import {ccm} from '../../ccm'
+
 import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
 
 import Fisherman from '../fisherman'
@@ -91,6 +93,16 @@ export class Buster {
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
+
+    /**
+     * custom calamares modules
+     */
+    const cm = ccm()
+    if (cm.length > 0) {
+      for (const step of cm) {
+        await fisherman.buildCalamaresModule(step, true, this.theme)
+      }
+    }
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }
