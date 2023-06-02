@@ -97,12 +97,13 @@ export class Buster {
     /**
      * custom calamares modules
      */
-    const cm = ccm()
-    if (cm.length > 0) {
-      for (const step of cm) {
+    const steps = ccm()
+    if (steps.length > 0) {
+      for (const step of steps) {
         await fisherman.buildCalamaresModule(step, true, this.theme)
       }
     }
+
     await fisherman.buildModule('umount')
     await fisherman.moduleFinished()
   }
