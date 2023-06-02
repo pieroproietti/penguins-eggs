@@ -646,8 +646,6 @@ export default class Sequence {
             }
          }
 
-
-
          // umount
          message = "umount"
          percent = 0.98
