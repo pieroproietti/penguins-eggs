@@ -1542,7 +1542,9 @@ export default class Ovary {
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-    if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+    if (fs.existsSync('/usr/share/grub/font.pf2')) {
+      await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
       await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
       await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
