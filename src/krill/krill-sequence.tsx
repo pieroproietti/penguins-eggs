@@ -259,6 +259,12 @@ export default class Sequence {
     */
    async start(domain = 'local', unattended = false, nointeractive = false, halt = false, verbose = false) {
 
+      /**
+       * To let krill to work with Arch
+       */
+      if (this.distro.familyId=== 'archlinux') {
+         await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
+      }
       this.unattended = unattended
       this.nointeractive = nointeractive
       this.halt = halt
