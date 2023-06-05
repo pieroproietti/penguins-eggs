@@ -21,6 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.4.16
 * added custom calamares-module ;
+* `eggs install -un` krill the CLI installer now work in arch too.
 
 ### eggs-9.4.15
 * egg of [blendOS](https://blendos.co/) now install and can re-produce! Until now I used version [23.04-1](https://sourceforge.net/projects/blendos/files/23.04-1/). You can find samples on [sample](https://sourceforge.net/projects/penguins-eggs/files/ISOS/blendos/).
