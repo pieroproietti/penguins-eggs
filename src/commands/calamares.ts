@@ -76,7 +76,7 @@ export default class Calamares extends Command {
         process.exit()
       }
     }
-    console.log(`theme_ ${theme}`)
+    console.log(`theme: ${theme}`)
 
     const nointeractive = flags.nointeractive
 

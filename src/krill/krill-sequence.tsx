@@ -65,7 +65,6 @@ import { installer } from '../classes/incubation/installer'
 import Xdg from '../classes/xdg';
 import Distro from '../classes/distro'
 
-
 import { IInstaller, IDevices, IDevice } from '../interfaces/index'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { exec } from '../lib/utils'
@@ -110,7 +109,7 @@ import hostname from './modules/hostname'
 import { ReadableByteStreamController } from 'stream/web';
 import { createCompilerHost } from 'typescript';
 
-import {ccm} from '../classes/ccm'
+import  CFS from '../classes/cfs'
 
 /**
  * hatching: installazione o cova!!!
@@ -635,11 +634,12 @@ export default class Sequence {
          }
 
          /**
-          * custom calamares modules
+          * custom final steps
           */
-         const cm = ccm()
-         if (cm.length > 0) {
-            for (const step of cm) {
+         const cfs = new CFS()
+         const steps = cfs.steps()
+         if (steps.length > 0) {
+            for (const step of steps) {
                if (this.distro.familyId === 'debian') {
                   message = `running ${step}`
                   percent = 0.97
