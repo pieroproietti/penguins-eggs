@@ -1172,6 +1172,7 @@ export default class Ovary {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'archlinux') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
+      
       // check or create group: autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || groupadd autologin`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
@@ -1542,7 +1543,9 @@ export default class Ovary {
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-    if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+    if (fs.existsSync('/usr/share/grub/font.pf2')) {
+      await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
       await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
       await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)

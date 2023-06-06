@@ -42,6 +42,7 @@
  *  - initramfs:     initramfs
  *  - removeuser:    removeuser
  *  - sources-yolk-undo: execCalamaresModule('sources-yolk-undo')
+ *  - bliss clustom modules
  *  - umount:     umountVfs, this.umountFs
  */
 
@@ -63,6 +64,7 @@ import Pacman from '../classes/pacman';
 import { installer } from '../classes/incubation/installer'
 import Xdg from '../classes/xdg';
 import Distro from '../classes/distro'
+
 
 import { IInstaller, IDevices, IDevice } from '../interfaces/index'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
@@ -106,6 +108,9 @@ import umount from './modules/umount'
 import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
 import { ReadableByteStreamController } from 'stream/web';
+import { createCompilerHost } from 'typescript';
+
+import {ccm} from '../classes/ccm'
 
 /**
  * hatching: installazione o cova!!!
@@ -253,6 +258,13 @@ export default class Sequence {
     * @returns
     */
    async start(domain = 'local', unattended = false, nointeractive = false, halt = false, verbose = false) {
+
+      /**
+       * To let krill to work with Arch we need:
+       */
+      if (this.distro.familyId=== 'archlinux') {
+         await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
+      }
 
       this.unattended = unattended
       this.nointeractive = nointeractive
@@ -622,6 +634,25 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         /**
+          * custom calamares modules
+          */
+         const cm = ccm()
+         if (cm.length > 0) {
+            for (const step of cm) {
+               if (this.distro.familyId === 'debian') {
+                  message = `running ${step}`
+                  percent = 0.97
+                  try {
+                     await redraw(<Install message={message} percent={percent} />)
+                     await this.execCalamaresModule(step)
+                  } catch (error) {
+                     await Utils.pressKeyToExit(JSON.stringify(error))
+                  }
+               }
+            }
+         }
+
          // umount
          message = "umount"
          percent = 0.98
@@ -709,3 +740,4 @@ function sleep(ms = 0) {
       setTimeout(resolve, ms);
    });
 }
+

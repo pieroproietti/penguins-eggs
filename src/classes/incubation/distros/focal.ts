@@ -15,6 +15,8 @@ import Fisherman from '../fisherman'
 import {exec} from '../../../lib/utils'
 import {throws} from 'node:assert'
 
+import {ccm} from '../../ccm'
+
 interface IReplaces {
   search: string
   replace: string
@@ -93,10 +95,16 @@ export class Focal {
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 
-    // bliss patch
-    if (this.theme.includes('bliss')) {
-      await fisherman.buildCalamaresModule('blissos', true, this.theme)
+    /**
+     * custom calamares modules
+     */
+    const steps = ccm()
+    if (steps.length > 0) {
+      for (const step of steps) {
+        await fisherman.buildCalamaresModule(step, true, this.theme)
+      }
     }
+
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
   }
