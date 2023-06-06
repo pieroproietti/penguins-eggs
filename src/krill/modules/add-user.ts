@@ -26,13 +26,16 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   await exec(cmd, this.echo)
 
   cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
-  //  echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}
   await exec(cmd, this.echo)
 
   // Debian
   cmd = `chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`
   if (this.distro.familyId === 'archlinux') {
     cmd = `chroot ${this.installTarget} usermod -aG wheel ${name}`
+    // check or create group: autologin
+    await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
+    await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
+
   }
 
   try {
