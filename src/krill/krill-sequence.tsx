@@ -260,11 +260,12 @@ export default class Sequence {
    async start(domain = 'local', unattended = false, nointeractive = false, halt = false, verbose = false) {
 
       /**
-       * To let krill to work with Arch
+       * To let krill to work with Arch we need:
        */
       if (this.distro.familyId=== 'archlinux') {
          await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
       }
+
       this.unattended = unattended
       this.nointeractive = nointeractive
       this.halt = halt
@@ -526,6 +527,13 @@ export default class Sequence {
                   percent = 0.78
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
+                     /**
+                      * on Arch we need gruup autologin
+                      */
+                     if (this.distro.familyId=== 'archlinux') {
+                        await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
+                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.name}`)
+                     }
                   }
                   await redraw(<Install message={message} percent={percent} />)
                } catch (error) {
