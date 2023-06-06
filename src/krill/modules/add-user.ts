@@ -4,7 +4,7 @@
 
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
-import {exec} from '../../lib/utils'
+import { exec } from '../../lib/utils'
 
 /**
  *
@@ -32,14 +32,15 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   cmd = `chroot ${this.installTarget} usermod -aG sudo ${name} ${this.toNull}`
   if (this.distro.familyId === 'archlinux') {
     cmd = `chroot ${this.installTarget} usermod -aG wheel ${name}`
-    // check or create group: autologin
-    await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
-    await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
-
   }
 
   try {
     await exec(cmd, this.echo)
+    // check or create group: autologin
+    if (this.distro.familyId === 'archlinux') {
+      await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
+      await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
+    }
   } catch {
     await Utils.pressKeyToExit(cmd)
   }
