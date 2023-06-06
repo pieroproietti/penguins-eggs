@@ -1,24 +1,11 @@
 /**
  * penguins-eggs: buster.ts
- *
- * it work both: buster, bullseye
- *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
- */
-
-import fs from 'node:fs'
-import shx from 'shelljs'
-import yaml from 'js-yaml'
-import path from 'node:path'
-
-import {ccm} from '../../ccm'
-
+*/
+import CFS from '../../cfs'
 import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
-
 import Fisherman from '../fisherman'
-
-import {exec} from '../../../lib/utils'
 
 /**
  *
@@ -95,9 +82,10 @@ export class Buster {
     await fisherman.buildCalamaresModule('cleanup', true)
 
     /**
-     * custom calamares modules
+     * cfs: custom final steps   
      */
-    const steps = ccm()
+    const cfs = new CFS()
+    const steps = cfs.steps()
     if (steps.length > 0) {
       for (const step of steps) {
         await fisherman.buildCalamaresModule(step, true, this.theme)
