@@ -4,7 +4,7 @@
 
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
-import {exec} from '../../lib/utils'
+import { exec } from '../../lib/utils'
 
 /**
  *
@@ -26,7 +26,6 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   await exec(cmd, this.echo)
 
   cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
-  //  echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}
   await exec(cmd, this.echo)
 
   // Debian
@@ -37,6 +36,11 @@ export default async function addUser(this: Sequence, name = 'live', password = 
 
   try {
     await exec(cmd, this.echo)
+    // check or create group: autologin
+    if (this.distro.familyId === 'archlinux') {
+      await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
+      await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
+    }
   } catch {
     await Utils.pressKeyToExit(cmd)
   }

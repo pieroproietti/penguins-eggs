@@ -130,7 +130,7 @@ export default class Produce extends Command {
           process.exit()
         }
       }
-      console.log(`theme_ ${theme}`)
+      console.log(`theme: ${theme}`)
 
       const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
