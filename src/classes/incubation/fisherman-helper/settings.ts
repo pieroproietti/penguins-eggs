@@ -10,7 +10,6 @@ import shx from 'shelljs'
 import { displaymanager } from './displaymanager'
 import Utils from '../../utils'
 import { ISettings } from '../../../interfaces/i-settings'
-import { YAMLException } from 'js-yaml'
 
 /**
  * 
@@ -24,11 +23,6 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
     let settingsSrc = src + 'settings.yml'
     if (theme.includes('/')) {
         branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
-        if (fs.existsSync(`${theme}/theme/calamares/settings.yml`)) {
-            settingsSrc = `${theme}/theme/calamares/settings.yml`
-        } else {
-            console.log(`cannot find: ${theme}/theme/calamares/settings.yml`)
-        }
     }
 
     const settingsDest = dest + 'settings.conf'
@@ -54,9 +48,8 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
     shx.sed('-i', '{{createUsers}}', createUsers, settingsDest)
 
     /**
-     * 
+     * cfsAppend
      */
-    console.log("theme: " + theme)
     const cfsPath = `${theme}/theme/calamares/cfs.yml`
     if (fs.existsSync(cfsPath)) {
         cfsAppend(cfsPath)
@@ -84,7 +77,7 @@ function cfsAppend(cfs: string) {
         for (const cfsStep of cfsSteps) {
             so.sequence[1].exec.push(cfsStep)
         }
-        so.sequence[1].exec.push('end-cfs')
+        so.sequence[1].exec.push('end-cfs') // we will replace with umount
        }
     }
     fs.writeFileSync("/etc/calamares/settings.conf", yaml.dump(so), 'utf-8')
