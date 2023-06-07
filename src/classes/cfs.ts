@@ -15,17 +15,16 @@ export default class CFS {
     * @returns 
     */
    steps(): string[] {
-      const ccm: string[] = []
-      // const settingsVar: string = fs.readFileSync('/etc/calamares/settings.conf', 'utf8')
-      const settingsVar: string = fs.readFileSync('/etc/calamares/cfs.conf', 'utf8')
+      const cfs: string[] = []
+      const settingsVar: string = fs.readFileSync('/etc/calamares/settings.conf', 'utf8')
       const settingsYaml = yaml.load(settingsVar) as ISettings
       const execSequence = settingsYaml.sequence[1]
       const steps = execSequence.exec
       for (const step of steps) {
-         if (step.includes('ccm-')) {
-            ccm.push(step)
+         if (step.includes('cfs-')) {
+            cfs.push(step)
          }
       }
-      return ccm
+      return cfs
    }
 }
