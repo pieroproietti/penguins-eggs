@@ -623,16 +623,6 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // umountVfs
-         message = "umount VFS"
-         percent = 0.96
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.umountVfs()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
          /**
           * custom final steps
           */
@@ -653,7 +643,16 @@ export default class Sequence {
             }
          }
 
-         // umount
+         // umountVfs
+         message = "umount VFS"
+         percent = 0.96
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.umountVfs()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
          message = "umount"
          percent = 0.98
          try {
