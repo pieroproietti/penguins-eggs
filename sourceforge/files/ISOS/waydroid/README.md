@@ -22,8 +22,14 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
+## **egg-of-debian-bullseye-go**
 
-# 
+This iso is a special version of `egg-of-debian-bullseye-books`, created with the bliss theme for the installation of `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso`.
+
+For Go to work properly, a virtual machine with two hard drives is required, in which, you will use the second hard drive /dev/sdb1 to save the `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso`.
+
+At the moment, the steps are done, I had to re-enter zenity instead of dialog, the boot menus are created but, at least to me, the installed system does NOT work.
+
 ##  **wagtail**
 A light wayland/gnome/waydroid for developers
 
