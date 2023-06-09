@@ -596,8 +596,6 @@ export default class Sequence {
          } catch (error) {
             console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
-
 
          /**
           *
@@ -613,8 +611,6 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
-         await Utils.pressKeyToExit(message)
-
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
@@ -626,13 +622,13 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
 
          /**
           * custom final steps
           */
          const cfs = new CFS()
          const steps = cfs.steps()
+         console.log(steps)
          await Utils.pressKeyToExit("steps")
 
          if (steps.length > 0) {
