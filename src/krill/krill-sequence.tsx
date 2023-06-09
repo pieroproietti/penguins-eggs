@@ -628,7 +628,8 @@ export default class Sequence {
           */
          const cfs = new CFS()
          const steps = cfs.steps()
-         console.log(steps)
+         await Utils.pressKeyToExit("steps")
+
          if (steps.length > 0) {
             for (const step of steps) {
                if (this.distro.familyId === 'debian') {
