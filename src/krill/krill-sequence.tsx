@@ -109,7 +109,7 @@ import hostname from './modules/hostname'
 import { ReadableByteStreamController } from 'stream/web';
 import { createCompilerHost } from 'typescript';
 
-import  CFS from '../classes/cfs'
+import CFS from '../classes/cfs'
 
 /**
  * hatching: installazione o cova!!!
@@ -261,7 +261,7 @@ export default class Sequence {
       /**
        * To let krill to work with Arch we need:
        */
-      if (this.distro.familyId=== 'archlinux') {
+      if (this.distro.familyId === 'archlinux') {
          await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
       }
 
@@ -628,22 +628,18 @@ export default class Sequence {
           */
          const cfs = new CFS()
          const steps = cfs.steps()
-         console.log(steps)
-         await Utils.pressKeyToExit("steps")
 
          if (steps.length > 0) {
             for (const step of steps) {
-               if (this.distro.familyId === 'debian') {
-                  message = `running ${step}`
-                  percent = 0.97
-                  try {
-                     await redraw(<Install message={message} percent={percent} />)
-                     await this.execCalamaresModule(step)
-                  } catch (error) {
-                     await Utils.pressKeyToExit(JSON.stringify(error))
-                  }
-                  await Utils.pressKeyToExit(step)
+               message = `running ${step}`
+               percent = 0.97
+               try {
+                  await redraw(<Install message={message} percent={percent} />)
+                  await this.execCalamaresModule(step)
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
                }
+               await Utils.pressKeyToExit(step)
             }
          }
 
