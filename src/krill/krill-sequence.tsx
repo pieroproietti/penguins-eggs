@@ -628,7 +628,6 @@ export default class Sequence {
           */
          const cfs = new CFS()
          const steps = cfs.steps()
-
          if (steps.length > 0) {
             for (const step of steps) {
                message = `running ${step}`
@@ -639,7 +638,6 @@ export default class Sequence {
                } catch (error) {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
-               await Utils.pressKeyToExit(step)
             }
          }
 
