@@ -16,11 +16,13 @@ Utils.titles('settings')
 main()
 
 async function main() {
-  const settingsVar: string = fs.readFileSync('/etc/calamares/settings.conf', 'utf8')
-  const settingsYaml = yaml.load(settingsVar) as ISettings
+  let configRoot = '/etc/penguins-eggs.d/krill/'
+  if (fs.existsSync('/etc/calamares/settings.conf')) {
+    configRoot = '/etc/calamares/'
+   }
 
-  // console.log()
-  // console.log(settingsYaml.sequence)
+  const settingsVar: string = fs.readFileSync(`${configRoot}settings.conf`, 'utf8')
+  const settingsYaml = yaml.load(settingsVar) as ISettings
 
   console.log()
 
