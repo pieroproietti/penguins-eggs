@@ -1,20 +1,11 @@
 /**
  * penguins-eggs: bionic.ts
- *
  * author: Piero Proietti
  * mail: piero.proietti@gmail.com
  */
-
-import fs from 'node:fs'
-import shx from 'shelljs'
-import yaml from 'js-yaml'
-import path from 'node:path'
-
-import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
-
+import  CFS from '../../cfs'
+import { IInstaller, IRemix, IDistro } from '../../../interfaces/index'
 import Fisherman from '../fisherman'
-
-import {exec} from '../../../lib/utils'
 
 interface IReplaces {
   search: string
@@ -54,7 +45,7 @@ export class Bionic {
     this.user_opt = user_opt
     this.verbose = verbose
     this.release = release
-    this.theme = theme  
+    this.theme = theme
     this.isClone = isClone
   }
 
@@ -91,6 +82,18 @@ export class Bionic {
     await fisherman.moduleRemoveuser(this.user_opt) //
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
+
+    /**
+     * cfs: custom final steps   
+     */
+    const cfs = new CFS()
+    const steps = cfs.steps()
+    if (steps.length > 0) {
+      for (const step of steps) {
+        await fisherman.buildCalamaresModule(step, true, this.theme)
+      }
+    }
+
     await fisherman.buildModule('umount')
     await fisherman.buildModule('finished')
   }

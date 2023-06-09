@@ -19,10 +19,15 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+### eggs-9.4.17
+Finished to work on implementing custom final steps. Actually is possible to builds cfs for Arch/Debian/Ubuntu and they can be used to execute arbitrary customizations at the end of installations progress. 
+
+You can find a sample on [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/vendors/bliss), write me for more informations.
+
 ### eggs-9.4.16
-Almost no differences, except the work to add custom-calamares-modules to let possible configure easily custom installation with calamares or krill;
+Almost no differences, except the work to add custom-final-steps to let possible configure easily custom installation with calamares or krill;
 * Note: actually krill `eggs install -un` - the CLI installer - can work on Arch too;
-* Some fixex.
+* Some fixes.
 
 ### eggs-9.4.15
 * egg of [blendOS](https://blendos.co/) now install and can re-produce! Until now I used version [23.04-1](https://sourceforge.net/projects/blendos/files/23.04-1/). You can find samples on [sample](https://sourceforge.net/projects/penguins-eggs/files/ISOS/blendos/).
