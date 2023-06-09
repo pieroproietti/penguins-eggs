@@ -65,7 +65,6 @@ import { installer } from '../classes/incubation/installer'
 import Xdg from '../classes/xdg';
 import Distro from '../classes/distro'
 
-
 import { IInstaller, IDevices, IDevice } from '../interfaces/index'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 import { exec } from '../lib/utils'
@@ -110,7 +109,7 @@ import hostname from './modules/hostname'
 import { ReadableByteStreamController } from 'stream/web';
 import { createCompilerHost } from 'typescript';
 
-import {ccm} from '../classes/ccm'
+import CFS from '../classes/cfs'
 
 /**
  * hatching: installazione o cova!!!
@@ -262,7 +261,7 @@ export default class Sequence {
       /**
        * To let krill to work with Arch we need:
        */
-      if (this.distro.familyId=== 'archlinux') {
+      if (this.distro.familyId === 'archlinux') {
          await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
       }
 
@@ -624,6 +623,24 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         /**
+          * custom final steps
+          */
+         const cfs = new CFS()
+         const steps = cfs.steps()
+         if (steps.length > 0) {
+            for (const step of steps) {
+               message = `running ${step}`
+               percent = 0.97
+               try {
+                  await redraw(<Install message={message} percent={percent} />)
+                  await this.execCalamaresModule(step)
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
+               }
+            }
+         }
+
          // umountVfs
          message = "umount VFS"
          percent = 0.96
@@ -634,26 +651,6 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         /**
-          * custom calamares modules
-          */
-         const cm = ccm()
-         if (cm.length > 0) {
-            for (const step of cm) {
-               if (this.distro.familyId === 'debian') {
-                  message = `running ${step}`
-                  percent = 0.97
-                  try {
-                     await redraw(<Install message={message} percent={percent} />)
-                     await this.execCalamaresModule(step)
-                  } catch (error) {
-                     await Utils.pressKeyToExit(JSON.stringify(error))
-                  }
-               }
-            }
-         }
-
-         // umount
          message = "umount"
          percent = 0.98
          try {

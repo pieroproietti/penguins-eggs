@@ -22,8 +22,22 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
+## **egg-of-debian-bullseye-go**
 
-# 
+This iso is a special version of `egg-of-debian-bullseye-colibri`, created with the `bliss` theme for the installation of `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso`.
+
+For Go to work properly, a virtual machine with two hard drives is required, in which, you will use the second hard drive `/dev/sdb1` to save the `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso` for our tests.
+
+At the moment, all the steps are done, I had to re-enter zenity instead of dialog, the boot menus are created but, at least to me, the installed system does NOT work.
+
+## **egg-of-arch-rolling-go**
+
+it works - and has the same problems - as the corresponding one for Debian.
+
+The problems, however by now should only be inherent in the teme bliss scripts, which is included in the repository https://github.com/pieroproietti/penguins-wardrobe under vendors.
+
+There are basically three scripts: cfs-install.sh, cfs-data-img.sh, and cfg-bootloader.sh that are executed by calamares or krill (a quick and rudimentary CLI installer) at the end of the installation process.
+
 ##  **wagtail**
 A light wayland/gnome/waydroid for developers
 

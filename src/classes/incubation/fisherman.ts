@@ -14,6 +14,7 @@ import chalk from 'chalk'
 import Utils from '../utils'
 import { IInstaller } from '../../interfaces/index'
 import { displaymanager } from './fisherman-helper/displaymanager'
+import { settings} from './fisherman-helper/settings'
 
 import { exec } from '../../lib/utils'
 
@@ -39,40 +40,7 @@ export default class Fisherman {
    * write setting
    */
   async createCalamaresSettings(theme = 'eggs', isClone = false) {
-    let branding = theme
-    let settingsSrc = this.installer.template + 'settings.yml'
-
-    if (theme.includes('/')) {
-      branding = theme.slice(Math.max(0, theme.lastIndexOf('/')+1))
-      if (fs.existsSync(`${theme}/theme/calamares/settings.yml`)) {
-        settingsSrc = `${theme}/theme/calamares/settings.yml`
-      } else {
-        console.log(`cannot find: ${theme}/theme/calamares/settings.yml`)    
-      }
-    }
-    // console.log('theme: ' + theme)
-    // console.log('settingsSrc: ' + settingsSrc)
-    const settingsDest = this.installer.configuration + 'settings.conf'
-    shx.cp(settingsSrc, settingsDest)
-    let hasSystemd = '# '
-    if (Utils.isSystemd()) {
-      hasSystemd = '- '
-    }
-
-    let createUsers = '- '
-    if (isClone) {
-      createUsers = '# '
-    }
-
-    let hasDisplaymanager = '# '
-    if (displaymanager() !== '') {
-      hasDisplaymanager = '- '
-    }
-
-    shx.sed('-i', '{{hasSystemd}}', hasSystemd, settingsDest)
-    shx.sed('-i', '{{hasDisplaymanager}}', hasDisplaymanager, settingsDest)
-    shx.sed('-i', '{{branding}}', branding, settingsDest)
-    shx.sed('-i', '{{createUsers}}', createUsers, settingsDest)
+    await settings(this.installer.template, this.installer.configuration, theme, isClone)
   }
 
   /**
