@@ -30,6 +30,14 @@ For Go to work properly, a virtual machine with two hard drives is required, in 
 
 At the moment, all the steps are done, I had to re-enter zenity instead of dialog, the boot menus are created but, at least to me, the installed system does NOT work.
 
+## **egg-of-arch-rolling-go**
+
+it works - and has the same problems - as the corresponding one for Debian.
+
+The problems, however by now should only be inherent in the teme bliss scripts, which is included in the repository https://github.com/pieroproietti/penguins-wardrobe under vendors.
+
+There are basically three scripts: cfs-install.sh, cfs-data-img.sh, and cfg-bootloader.sh that are executed by calamares or krill (a quick and rudimentary CLI installer) at the end of the installation process.
+
 ##  **wagtail**
 A light wayland/gnome/waydroid for developers
 
