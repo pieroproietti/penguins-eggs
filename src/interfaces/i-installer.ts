@@ -10,7 +10,7 @@
  */
 export interface IInstaller {
   name: string
-  configuration: string
+  configRoot: string
   modules: string
   multiarch: string
   multiarchModules: string
