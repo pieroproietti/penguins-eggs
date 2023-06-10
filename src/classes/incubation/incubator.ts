@@ -187,9 +187,9 @@ export default class Incubator {
     if (this.installer.name !== 'calamares') {
       // Remove krill configuration and multiarc if present
       try {
-        shx.exec('rm ' + this.installer.configuration + ' -rf')
+        shx.exec('rm ' + this.installer.configRoot + ' -rf')
       } catch (error) {
-        console.log('error: ' + error + ' removing ' + this.installer.configuration + ' -rf')
+        console.log('error: ' + error + ' removing ' + this.installer.configRoot + ' -rf')
       }
 
       try {
@@ -200,35 +200,35 @@ export default class Incubator {
     }
 
     // rootConfiguration krill calamares
-    if (!fs.existsSync(this.installer.configuration)) {
+    if (!fs.existsSync(this.installer.configRoot)) {
       try {
-        fs.mkdirSync(this.installer.configuration)
+        fs.mkdirSync(this.installer.configRoot)
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configuration)
+        console.log('error: ' + error + ' creating ' + this.installer.configRoot)
       }
     }
 
-    if (!fs.existsSync(this.installer.configuration + 'branding')) {
+    if (!fs.existsSync(this.installer.configRoot + 'branding')) {
       try {
-        fs.mkdirSync(this.installer.configuration + 'branding')
+        fs.mkdirSync(this.installer.configRoot + 'branding')
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configuration + 'branding')
+        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'branding')
       }
     }
 
-    if (!fs.existsSync(this.installer.configuration + 'branding/eggs')) {
+    if (!fs.existsSync(this.installer.configRoot + 'branding/eggs')) {
       try {
-        fs.mkdirSync(this.installer.configuration + 'branding/eggs')
+        fs.mkdirSync(this.installer.configRoot + 'branding/eggs')
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configuration + 'branding/eggs')
+        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'branding/eggs')
       }
     }
 
-    if (!fs.existsSync(this.installer.configuration + 'modules')) {
+    if (!fs.existsSync(this.installer.configRoot + 'modules')) {
       try {
-        fs.mkdirSync(this.installer.configuration + 'modules')
+        fs.mkdirSync(this.installer.configRoot + 'modules')
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configuration + 'modules')
+        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'modules')
       }
     }
 
@@ -258,15 +258,15 @@ export default class Incubator {
       }
       // console.log(`calamaresBranding: ${calamaresBranding}`)
       if (fs.existsSync(calamaresBranding)) {
-        if (!fs.existsSync(this.installer.configuration + `branding/${this.remix.branding}`)) {
+        if (!fs.existsSync(this.installer.configRoot + `branding/${this.remix.branding}`)) {
           try {
-            fs.mkdirSync(this.installer.configuration + `branding/${this.remix.branding}`)
+            fs.mkdirSync(this.installer.configRoot + `branding/${this.remix.branding}`)
           } catch (error) {
-            console.log('error: ' + error + ' creating ' + this.installer.configuration + `branding/${this.remix.branding}`)
+            console.log('error: ' + error + ' creating ' + this.installer.configRoot + `branding/${this.remix.branding}`)
           }
         }
         // patch quirinux
-        shx.cp('-r', calamaresBranding + '/*', this.installer.configuration + `branding/${this.remix.branding}/`)
+        shx.cp('-r', calamaresBranding + '/*', this.installer.configRoot + `branding/${this.remix.branding}/`)
       } else {
         console.log(calamaresBranding)
         console.log(`${calamaresBranding} branding not found!`)
@@ -308,7 +308,7 @@ export default class Incubator {
    */
   private createBranding() {
     const branding = require('./branding').branding
-    const dir = this.installer.configuration + 'branding/' + this.remix.branding + '/'
+    const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
     if (!fs.existsSync(dir)) {
       shx.exec(dir + ' -p')
     }

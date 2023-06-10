@@ -40,7 +40,7 @@ export default class Fisherman {
    * write setting
    */
   async createCalamaresSettings(theme = 'eggs', isClone = false) {
-    await settings(this.installer.template, this.installer.configuration, theme, isClone)
+    await settings(this.installer.template, this.installer.configRoot, theme, isClone)
   }
 
   /**

@@ -11,7 +11,7 @@
  * templateMultiarch = template + installer + '-modules/'
  *
  */
-import {IInstaller, IRemix} from '../../interfaces/index'
+import { IInstaller, IRemix } from '../../interfaces/index'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
 
@@ -21,17 +21,24 @@ import Pacman from '../../classes/pacman'
  */
 export function installer(): IInstaller {
   const installer = {} as IInstaller
+
+  // configRoot
+
+  installer.configRoot = ''
   if (Pacman.packageIsInstalled('calamares')) {
     installer.name = 'calamares'
-    installer.configuration = '/etc/calamares/'
+    installer.configRoot = '/etc/calamares/'
     installer.multiarch = multiarch() + 'calamares/'
   } else {
     installer.name = 'krill'
-    installer.configuration = '/etc/penguins-eggs.d/krill/'
-    installer.multiarch = multiarch() + 'penguins-eggs/'
+    installer.configRoot = '/etc/penguins-eggs.d/krill/'
+    /**
+     * renamed: was penguins-eggs
+     */
+    installer.multiarch = multiarch() + 'krill/' 
   }
 
-  installer.modules = installer.configuration + 'modules/'
+  installer.modules = installer.configRoot + 'modules/'
   installer.multiarchModules = installer.multiarch + 'modules/'
 
   /**

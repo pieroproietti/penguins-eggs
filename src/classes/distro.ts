@@ -300,7 +300,7 @@ class Distro implements IDistro {
     }
 
     /**
-     * setting paths: syslinux, isolinux, usrLib
+     * setting paths: syslinux, isolinux, usrLibPath
      */
     switch (this.familyId) {
     case 'debian': {
@@ -316,31 +316,17 @@ class Distro implements IDistro {
       break
     }
 
-    case 'fedora': {
-      this.syslinuxPath = '/usr/share/syslinux/'
-      this.isolinuxPath = this.syslinuxPath
-
-      break
-    }
-
     case 'archlinux': {
       this.syslinuxPath = '/usr/lib/syslinux/bios/'
       this.pxelinuxPath = this.syslinuxPath
+      this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath
       this.isolinuxPath = this.syslinuxPath
-      this.usrLibPath = '/usr/lib/'
 
       break
     }
 
-    case 'suse': {
-      this.syslinuxPath = '/usr/share/syslinux/'
-      this.isolinuxPath = this.syslinuxPath
-      this.usrLibPath = '/usr/lib64/'
-
-      break
-    }
-      // No default
+     // No default
     }
 
     /**
