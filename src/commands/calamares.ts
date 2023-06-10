@@ -128,7 +128,7 @@ export default class Calamares extends Command {
         Utils.warning('Configuring krill')
         await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
-        console.log('calamares relase: ' + release)
+        console.log('calamares release: ' + release)
         await this.incubator.config(release)
       }
     }
