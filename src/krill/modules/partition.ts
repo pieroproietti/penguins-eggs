@@ -76,7 +76,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
     // SWAP
-
     this.devices.swap.name = `${installDevice}${p}1`
     this.devices.swap.fsType = 'swap'
     this.devices.swap.mountPoint = 'none'
