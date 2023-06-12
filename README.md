@@ -150,7 +150,7 @@ cd penguins-eggs
 makepkg -srcCi
 ```
 ### Manjaro
-From penguins-eggs v9.4.3 the package is part of the [Manjaro community](https://gitlab.manjaro.org/packages/community/penguins-eggs) repo and can be installed with [pamac](https://wiki.manjaro.org/index.php/Pamac), alternatively you can install it with:
+From penguins-eggs v9.4.3 the package is part of the [Manjaro community](https://gitlab.manjaro.org/packages/community/penguins-eggs) repo and can be installed with `pamac install penguins-eggs`, alternatively you can download it and:
 ```
 git clone https://gitlab.manjaro.org/packages/community/penguins-eggs/
 cd penguins-eggs
