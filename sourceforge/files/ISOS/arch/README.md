@@ -33,6 +33,26 @@ NOTE: While waiting to complete the wardrobe for arch, it is still possible to s
 * ```sudo ./arch-colibri.sh```
 
 # Installing eggs and producing an iso 
+
+## Using `Chaotic-AUR`.
+penguins-eggs and calamares are not present in the standard Arch repositories, while it is present in the chaotic-AUS repository, all we have to do is configure it:
+
+```
+ pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
+ pacman-key --lsign-key FBA220DFC880C036
+ pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+```
+
+At this point, we add the following text to the end of `/etc/pacman.conf`:
+```
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+```
+
+At this point we can install penguins-eggs with the command: ``sudo pacman -Sy penguins-eggs``
+
+## Using yay
+
 On Arch, You can use yay to install penguins-eggs:
 
 ```
@@ -49,7 +69,10 @@ makepkg -srcCi
 eggs, is installed!
 
 # Calamares
-It's possible to install [calamares](https://aur.archlinux.org/packages/calamares-git) by yay, but at the moment there is a problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp), so to install calamares, you will have to:
+
+If we uses `Chaotic-AUR` we can just write: `sudo eggs calamares --install` ho have it ready, but its possible to install [calamares](https://aur.archlinux.org/packages/calamares-git) by yay too.
+
+At the moment there is a problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp), so to install calamares, you will have to:
 ```
 git clone https://github.com/pieroproietti/penguins-eggs-pkgbuilds
 cd penguins-eggs-pkgbuilds/aur/cbkcomp
