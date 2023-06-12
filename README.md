@@ -42,7 +42,7 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 
 eggs is written mostly in typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. 
 
-Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivaties](./conf/derivatives.yaml).
+Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml).
 
 You can read more on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/). 
 
@@ -140,12 +140,9 @@ eggs has been present in AUR for a long time, even without my knowledge thanks t
 The development versions of penguins eggs and other PKGBUILDs are instead in my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository.
 
 ### Arch
-To install penguins-eggs on Arch, simply:
- ```
- yay penguins-eggs
- ```
-Or, in more traditional way:
+It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs` or using yay: `yay penguins-eggs` 
 
+It's possible too, do: 
 ```
 git clone https://aur.archlinux.org/packages/penguins-eggs
 cd penguins-eggs
