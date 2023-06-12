@@ -135,14 +135,15 @@ If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: 
 
 
 ## Arch families
-eggs has been present in AUR for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
+eggs has been present in [AUR](https://aur.archlinux.org/) for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
 The development versions of penguins eggs and other PKGBUILDs are instead in my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository.
 
 ### Arch
-It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs` or using yay: `yay penguins-eggs` 
+It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs`.
 
-It's possible too, do: 
+Of course you can also use yay: `yay penguins-eggs` or download the sources and run makepkg:
+
 ```
 git clone https://aur.archlinux.org/packages/penguins-eggs
 cd penguins-eggs
