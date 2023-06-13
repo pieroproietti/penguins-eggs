@@ -2,23 +2,18 @@
 # eggs: grub.template.cfg
 #
 
-# ieee1275_fb.mod vbe.mod vga.mod not found
-
 if loadfont $prefix/font.pf2 ; then
-  set gfxmode=1024x768
+  set gfxmode=1024x768x32
   insmod efi_gop
   insmod efi_uga
+  insmod video_bochs
+  insmod video_cirrus
   insmod gfxterm
   insmod jpeg
   insmod png
-  insmod video_bochs
-  insmod video_cirrus
   terminal_output gfxterm
 fi
 
-set default=0
-set timeout=2
-set timeout_style=hidden
 set theme=/boot/grub/theme.cfg
 
 menuentry "{{{fullname}}}" {
