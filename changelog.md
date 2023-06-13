@@ -20,7 +20,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.5.2
-Just added Manjaro UltimaThule.
+* added the new Manjaro UltimaThule;
+* live boot menu on UEFI architecture - previously invisible - has been fixed.
 
 ### eggs-9.5.1
 Just little bugfix to let eggs to work again on CLI systems, solved a configuration on krill for Arch.
