@@ -219,11 +219,9 @@ export default class Krill {
         driveList.push('/dev/' + element)
       })
 
-      let installationDevice = ''
+      let installationDevice = driveList[0]
       if (driveList.length > 0) {
         installationDevice = await selectInstallationDevice()        
-      } else {
-        installationDevice = driveList[0]
       }
 
       oPartitions = {
