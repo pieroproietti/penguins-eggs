@@ -13,7 +13,6 @@ async function main() {
   for (const d of bd ) {
     console.log(d.name)
     console.log(d.type)
-    
   }
 }
 
