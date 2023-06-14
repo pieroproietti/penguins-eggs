@@ -28,15 +28,15 @@ penguins-eggs
 # Presentation
 **penguins-eggs** is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on usb sticks or via PXE.
 
-The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, use flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--cryptedclone**.
+The default behavior is total removal of the system's data and users, but it is also possible to remaster the system including the data and accounts of present users, using flag **--clone**. It is also possible to keep the users and files present under an encrypted LUKS file within the same resulting iso file, flag **--cryptedclone**.
 
 You can easily install the resulting live system with the calamares installer or the internal TUI krill installer. 
 
 It is possible to have also unattended installation using **--unattended** flag.
 
-Thanks to the wardrobe, you can create or use scripts to switch from a "naked" version - with only a CLI interface - and "wear" it with a full GUI or server configurations. 
+Thanks to the wardrobe, you can create or use scripts to switch from a **naked** version - with only a CLI interface - and `wear` it with a full GUI or server configurations. 
 
-See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt it to yours needs.
+See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it and adapt to yours needs.
 
 # Technology
 
@@ -54,7 +54,7 @@ wardrobe was added to eggs on april 2022. It is a way to guide and consolidate t
 
 I hope peoples will be interested in wardrobe and you will end to fork the main repository and add your customizations: together will be possibile to make great steps impossible for a single developer. You can read more in wardrobe on [Penguins' eggs blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/).
 
-Addons and themes have been grouped under the penguins-wardrobe, use wardrobe for all your customizations. 
+Addons, mostly themes have been grouped under `vendors` folder in the penguins-wardrobe, try to use wardrobe for all your customizations. 
 
 Consult [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide).
 
