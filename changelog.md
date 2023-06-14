@@ -22,7 +22,6 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.5.3
 * solved issues [Krill installer fails on actual hardware #245](https://github.com/pieroproietti/penguins-eggs/issues/245);
 
-
 ### eggs-9.5.2
 I switched to Debian bookworm as a development station, using node v18.16.0 and pnpm v8.6.2
 

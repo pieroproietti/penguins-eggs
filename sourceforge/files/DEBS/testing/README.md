@@ -13,12 +13,8 @@ Penguins-eggs
 
 # development
 
-## changelog eggs-v9.4.16
-
-* added in penguins-wardrobe theme bliss; to use this theme `git clone https://github.com/pieroproietti/penguins-wardrobe`, `cd penguins-wardrobe`, `git checkout devel`, then `sudo eggs produce --theme ./penguins-wardrobe/theme/bliss`
-
-
-**NOTE**: this version is just to test [bliss theme](https://github.com/pieroproietti/penguins-wardrobe/tree/main/themes/bliss#readme) usage in penguins-wardrobe, except for this any changes is included. 
+### eggs-9.5.3
+* solved issues [Krill installer fails on actual hardware #245](https://github.com/pieroproietti/penguins-eggs/issues/245);
 
 
 # Penguins' eggs Debian TESTING packages
