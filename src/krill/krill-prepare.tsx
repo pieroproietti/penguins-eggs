@@ -109,6 +109,9 @@ import Sequence from './krill-sequence'
 import { INet } from '../interfaces/index'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
+import si from 'systeminformation'
+
+
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
 /**
@@ -216,8 +219,13 @@ export default class Krill {
         driveList.push('/dev/' + element)
       })
 
+      let installationDevice = driveList[0]
+      if (driveList.length > 0) {
+        installationDevice = await selectInstallationDevice()        
+      }
+
       oPartitions = {
-        installationDevice: driveList[0],
+        installationDevice: installationDevice,
         installationMode: this.krillConfig.installationMode,
         filesystemType: this.krillConfig.filesystemType,
         userSwapChoice: this.krillConfig.userSwapChoice
@@ -412,6 +420,7 @@ export default class Krill {
   * PARTITIONS
   */
   async partitions(crypted = false, pve = false): Promise<IPartitions> {
+    // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     const driveList: string[] = []
     drives.forEach((element: string) => {
