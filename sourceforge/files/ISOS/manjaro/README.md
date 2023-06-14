@@ -23,9 +23,16 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 penguins-eggs is actually included in the [Manjaro community repo](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
-* **egg-of-manjarolinux-sikaris-gnome** 
-* **egg-of-manjarolinux-sikaris-kde** 
-* **egg-of-manjarolinux-sikaris-xfce** 
+* **egg-of-manjarolinux-ultimathule-gnome** 
+* **egg-of-manjarolinux-ultimathule-kde** 
+* **egg-of-manjarolinux-ultimathule-xfce** 
+
+# Installing manjaro Linux with krill
+If you need to do OEM installations you can also use the eggs CLI installation called krill. 
+
+The installation is destructive, so be careful, however, it is very fast and can be completed in unattended mode.
+
+What you need to do is simply open a terminal and type: `sudo eggs install` for interactive mode, or `sudo eggs install --unattended` for unattended mode.
 
 # Installing manjaro Linux via PXE
 
