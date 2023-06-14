@@ -109,6 +109,9 @@ import Sequence from './krill-sequence'
 import { INet } from '../interfaces/index'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
+import si from 'systeminformation'
+
+
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
 /**
@@ -412,6 +415,7 @@ export default class Krill {
   * PARTITIONS
   */
   async partitions(crypted = false, pve = false): Promise<IPartitions> {
+
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     const driveList: string[] = []
     drives.forEach((element: string) => {
