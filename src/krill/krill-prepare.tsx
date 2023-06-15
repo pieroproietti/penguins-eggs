@@ -220,7 +220,7 @@ export default class Krill {
       })
 
       let installationDevice = driveList[0]
-      if (driveList.length > 0) {
+      if (driveList.length > 1) {
         installationDevice = await selectInstallationDevice()        
       }
 
