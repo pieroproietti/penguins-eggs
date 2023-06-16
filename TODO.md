@@ -1,7 +1,7 @@
 # TODO
 
-
 * il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`;
+
 * rimuovere la dizione rolling nel caso la distro sia rolling, tipicamente Arch e derivate ad esclusione di Manjaro;
 * calamares su blendOS non funziona su BIOS ed in verità manco su EFI.  Su BIOS l'errore è questo:
 ```

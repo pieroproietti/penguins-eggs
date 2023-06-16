@@ -89,6 +89,12 @@ export default class Ppa extends Command {
             await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
             await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
             await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
+
+            // Append to /etc/pacman.conf
+            const chaoticAppend="[chaotic-aur]"
+            // 
+            // Include = /etc/pacman.d/chaotic-mirrorlist
+
           }
         }
 
