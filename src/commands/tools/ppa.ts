@@ -32,7 +32,9 @@ export default class Ppa extends Command {
     'sudo eggs tools ppa --remove',
   ]
 
-
+  /**
+   * 
+   */
   async run(): Promise<void> {
     const { flags } = await this.parse(Ppa)
     Utils.titles(this.id + ' ' + this.argv)
@@ -44,9 +46,9 @@ export default class Ppa extends Command {
 
     const nointeractive = flags.nointeractive
 
-    const distro = new Distro()
-    if (distro.familyId === 'debian') {
-      if (Utils.isRoot()) {
+    if (Utils.isRoot()) {
+      const distro = new Distro()
+      if (distro.familyId === 'debian') {
         if (flags.remove) {
           Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
           if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
@@ -61,33 +63,37 @@ export default class Ppa extends Command {
             await add()
           }
         }
-      }
-    } if (distro.familyId === 'archlinux') {
-      if (distro.distroId !== 'ManjaroLinux') {
-        const path = "/var/cache/pacman/pkg/"
-        const keyring = "chaotic-keyring.pkg.tar.zst"
-        const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
-        const echo = Utils.setEcho(true)
+      } if (distro.familyId === 'archlinux') {
 
-        await exec(`rm ${path}${keyring}`, echo)
-        await exec(`rm ${path}${mirrorlist}`, echo)
+        if (flags.add) {
+          if (distro.distroId !== 'ManjaroLinux') {
+            const path = "/var/cache/pacman/pkg/"
+            const keyring = "chaotic-keyring.pkg.tar.zst"
+            const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
+            const echo = Utils.setEcho(true)
 
-
-        if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
-            console.log("repository chaotic-aur already present!")
-          process.exit()
+            await exec(`rm ${path}${keyring}`, echo)
+            await exec(`rm ${path}${mirrorlist}`, echo)
+            if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
+              console.log("repository chaotic-aur already present!")
+              process.exit()
+            }
+            await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
+            await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
+            await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
+          }
         }
-        // pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
-        // pacman-key --lsign-key FBA220DFC880C036
-        // pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
-        // add chaotic-aur
-        await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
-        await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
-        await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
+        if (flags.remove) {
+          Utils.warning(`Are you sure to remove chaotic-aur to your repositories?`)
+          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+            console.log("not agan implemented!")
+          }
+        }
+
+      } else {
+        Utils.warning(`Distro> ${distro.distroId}/${distro.codenameId}, cannot use this command here!')
       }
-    } else {
-      Utils.warning('you can use ppa only for debian family')
     }
   }
 }
