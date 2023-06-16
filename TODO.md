@@ -6,6 +6,7 @@
 
 * calamares su blendOS non funziona su BIOS ed in verità manco su EFI, qua il problema dovrebbe essere la versione 3.3 di calamares;
 ```
+
 * su blendos il `/proc/cmdline` punta a `/vmlinuz-linux-zen` mentre il vero path è `/boot/vmlinuz-linux-zen` così come `/boot/initramfs-linux.img`;
 
 ``` 
