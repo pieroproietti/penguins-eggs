@@ -1649,7 +1649,6 @@ export default class Ovary {
     const volid = Utils.getVolid(this.settings.remix.name)
 
     let prefix = this.settings.config.snapshot_prefix
-
     if (prefix.endsWith('rolling-')) {
       prefix = prefix.substring(0, prefix.indexOf('rolling-'))
     }
