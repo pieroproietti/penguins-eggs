@@ -3,13 +3,8 @@
 * il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`;
 
 * rimuovere la dizione rolling nel caso la distro sia rolling, tipicamente Arch e derivate ad esclusione di Manjaro;
-* calamares su blendOS non funziona su BIOS ed in verità manco su EFI.  Su BIOS l'errore è questo:
-```
-cannot access local variable 'efi_boot_loader' where it is not associated with a value
-Traceback:
-File /usr/lib/calamares/modules/bootloader/main.py, line 890, in run prepare_bootloader(fw_type)
-File /usr/lib/calamares/modules/bootloader/main.py, line 848, in prepare_bootloader
-if efi_boot_loader.casefold() == none:
+
+* calamares su blendOS non funziona su BIOS ed in verità manco su EFI, qua il problema dovrebbe essere la versione 3.3 di calamares;
 ```
 * su blendos il `/proc/cmdline` punta a `/vmlinuz-linux-zen` mentre il vero path è `/boot/vmlinuz-linux-zen` così come `/boot/initramfs-linux.img`;
 
