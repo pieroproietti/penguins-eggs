@@ -48,6 +48,10 @@ export default class Ppa extends Command {
 
     if (Utils.isRoot()) {
       const distro = new Distro()
+
+      /**
+       * Debian
+       */
       if (distro.familyId === 'debian') {
         if (flags.remove) {
           Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
@@ -63,6 +67,10 @@ export default class Ppa extends Command {
             await add()
           }
         }
+
+        /** 
+         * archlinux
+         */
       } if (distro.familyId === 'archlinux') {
 
         if (flags.add) {
@@ -92,7 +100,10 @@ export default class Ppa extends Command {
         }
 
       } else {
-        Utils.warning(`Distro> ${distro.distroId}/${distro.codenameId}, cannot use this command here!')
+        /**
+         * Others
+         */
+        Utils.warning(`Distro> ${distro.distroId}/${distro.codenameId}, cannot use this command here!`)
       }
     }
   }
