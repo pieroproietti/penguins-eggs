@@ -12,5 +12,3 @@
 artisan@cinnamon ~]$ cat /proc/cmdline 
 BOOT_IMAGE=/boot/vmlinuz-linux-zen root=UUID=d6aaf4fc-461f-4055-9f99-ff5e07161de3 rw quiet splash resume=UUID=5240b1f9-4c8e-440f-a3b2-00577e6c522e
 ``` 
-
-
