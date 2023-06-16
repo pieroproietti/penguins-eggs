@@ -1,6 +1,8 @@
+# Calamares 3.3
+# Arch
 --
 dontChroot: false
 timeout: 30
 script:
-    - "rm -r @@ROOT@@/usr/share/applications/install-system.desktop"
+    - "rm -r ${ROOT}/usr/share/applications/install-system.desktop"
    
