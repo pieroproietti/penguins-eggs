@@ -1648,7 +1648,12 @@ export default class Ovary {
   xorrisoCommand(clone = false, cryptedclone = false): string {
     const volid = Utils.getVolid(this.settings.remix.name)
 
-    const prefix = this.settings.config.snapshot_prefix
+    let prefix = this.settings.config.snapshot_prefix
+
+    if (prefix.endsWith('rolling-')) {
+      prefix = prefix.substring(0, prefix.indexOf('rolling-'))
+    }
+    
 
     let typology = ''
     // typology is applied only with standard egg-of
