@@ -91,9 +91,10 @@ export default class Ppa extends Command {
             await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
 
             // Append to /etc/pacman.conf
-            const chaoticAppend="[chaotic-aur]"
+            const chaoticAppend="\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n\n"
+
             // 
-            // Include = /etc/pacman.d/chaotic-mirrorlist
+            // 
 
           }
         }

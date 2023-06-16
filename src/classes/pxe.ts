@@ -221,7 +221,10 @@ export default class Pxe {
                  * ARCH LINUX
                  */
         let tool = 'archiso'
-        if (distro.codenameId === 'Qonos' || distro.codenameId === 'Ruah' || distro.codenameId === 'Sikaris') {
+        if (distro.codenameId === 'Qonos' || distro.codenameId === 'Ruah' || 
+            distro.codenameId === 'Sikaris' || distro.codenameId === 'Talos' || 
+            distro.codenameId === 'UltimaThule'
+            ) {
           tool = 'miso'
         }
 
@@ -299,7 +302,7 @@ export default class Pxe {
                  * ARCH LINUX
                  */
         let tool = 'archiso'
-        if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris') {
+        if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris' || this.settings.distro.codenameId === 'UltimaThule') {
           tool = 'miso'
         }
 
