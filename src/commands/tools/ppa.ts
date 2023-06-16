@@ -4,10 +4,10 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import Distro from '../../classes/distro'
 import Utils from '../../classes/utils'
-import {exec} from '../../lib/utils'
+import { exec } from '../../lib/utils'
 import fs from 'fs'
 
 const fkey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
@@ -17,53 +17,79 @@ const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
  *
  */
 export default class Ppa extends Command {
-    static flags = {
-      add: Flags.boolean({char: 'a', description: 'add penguins-eggs PPA repository'}),
-      help: Flags.help({char: 'h'}),
-      nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
-      remove: Flags.boolean({char: 'r', description: 'remove penguins-eggs PPA repository'}),
-      verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+
+  static flags = {
+    add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
+    help: Flags.help({ char: 'h' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
+  }
+
+  static description = 'add/remove repo'
+  static examples = [
+    'sudo eggs tools ppa --add',
+    'sudo eggs tools ppa --remove',
+  ]
+
+
+  async run(): Promise<void> {
+    const { flags } = await this.parse(Ppa)
+    Utils.titles(this.id + ' ' + this.argv)
+
+    let verbose = false
+    if (flags.verbose) {
+      verbose = true
     }
 
-    static description = 'add/remove PPA repositories (Debian family)'
-    static examples = [
-      'sudo eggs tools ppa --add',
-      'sudo eggs tools ppa --remove',
-    ]
+    const nointeractive = flags.nointeractive
 
-    async run(): Promise<void> {
-      const {flags} = await this.parse(Ppa)
-      Utils.titles(this.id + ' ' + this.argv)
-
-      let verbose = false
-      if (flags.verbose) {
-        verbose = true
-      }
-
-      const nointeractive = flags.nointeractive
-
-      const distro = new Distro()
-      if (distro.familyId === 'debian') {
-        if (Utils.isRoot()) {
-          if (flags.remove) {
-            Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
-            if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-              await remove()
-            }
-          }
-
-          if (flags.add) {
-            Utils.warning(`Are you sure to add ${flist} to your repositories?`)
-            if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-              await clean()
-              await add()
-            }
+    const distro = new Distro()
+    if (distro.familyId === 'debian') {
+      if (Utils.isRoot()) {
+        if (flags.remove) {
+          Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
+          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+            await remove()
           }
         }
-      } else {
-        Utils.warning('you can use ppa only for debian family')
+
+        if (flags.add) {
+          Utils.warning(`Are you sure to add ${flist} to your repositories?`)
+          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+            await clean()
+            await add()
+          }
+        }
       }
+    } if (distro.familyId === 'archlinux') {
+      if (distro.distroId !== 'ManjaroLinux') {
+        const path = "/var/cache/pacman/pkg/"
+        const keyring = "chaotic-keyring.pkg.tar.zst"
+        const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
+        const echo = Utils.setEcho(true)
+
+        await exec(`rm ${path}${keyring}`, echo)
+        await exec(`rm ${path}${mirrorlist}`, echo)
+
+
+        if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
+            console.log("repository chaotic-aur already present!")
+          process.exit()
+        }
+        // pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
+        // pacman-key --lsign-key FBA220DFC880C036
+        // pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+        // add chaotic-aur
+        await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
+        await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
+        await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
+      }
+    } else {
+      Utils.warning('you can use ppa only for debian family')
     }
+  }
 }
 
 /**
