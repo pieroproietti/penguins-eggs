@@ -73,7 +73,10 @@ export default class Ppa extends Command {
 
         if (flags.add) {
           if (distro.distroId !== 'ManjaroLinux') {
-            await archAdd()
+            Utils.warning(`Are you sure to add chaotic-aur to your repositories?`)
+            if (await Utils.customConfirm('Select yes to continue...')) {
+              await archAdd()
+            }
           }
         } else if (flags.remove) {
           Utils.warning(`Are you sure to remove chaotic-aur to your repositories?`)
