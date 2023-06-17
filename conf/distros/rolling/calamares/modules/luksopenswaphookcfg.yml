@@ -1,6 +1,5 @@
-# Debian Buster
-# luksopenswaphookcfg
-# Writes an openswap configuration with LUKS settings to the given path
+# Calamares 3.3
+# Arch
 ---
 # Path of the configuration file to write (in the target system)
 configFilePath: /etc/openswap.conf
