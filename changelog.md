@@ -19,6 +19,12 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
+
+### eggs-9.5.4
+* adding `eggs sudo tools ppa` for Arch, here we set repository `chaotic-aur`;
+* removed `rolling-` on the default name for Arch, alle the Arch versions are rolling;
+* passed to calamares 3.3 for Arch;
+
 ### eggs-9.5.3
 * solved issues [Krill installer fails on actual hardware #245](https://github.com/pieroproietti/penguins-eggs/issues/245);
 

@@ -1,13 +1,31 @@
-# Debian Buster
-# fstab
+# calamares 3.3
+# Arch
 ---
-mountOptions:
-  default: defaults,noatime
-  btrfs: defaults,noatime,space_cache,autodefrag
-ssdExtraMountOptions:
-  ext4: discard
-  jfs: discard
-  xfs: discard
-  swap: discard
-  btrfs: discard,compress=lzo
-crypttabOptions: luks,keyscript=/bin/cat
+
+# Additional options added to each line in /etc/crypttab
+crypttabOptions: luks
+# For Debian and Debian-based distributions, change the above line to:
+# crypttabOptions: luks,keyscript=/bin/cat
+
+# Options for handling /tmp in /etc/fstab
+# Currently default (required) and ssd are supported
+# The corresponding string can contain the following variables:
+# tmpfs: true or tmpfs: false to either mount /tmp as tmpfs or not
+# options: "<mount options>"
+#
+# Example:
+#tmpOptions:
+#    default:
+#        tmpfs: false
+#        options: ""
+#    ssd:
+#        tmpfs: true
+#        options: "defaults,noatime,mode=1777"
+#
+tmpOptions:
+    default:
+        tmpfs: false
+        options: ""
+    ssd:
+        tmpfs: true
+        options: "defaults,noatime,mode=1777"
