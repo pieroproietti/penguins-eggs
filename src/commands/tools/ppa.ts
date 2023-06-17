@@ -53,18 +53,16 @@ export default class Ppa extends Command {
        * Debian
        */
       if (distro.familyId === 'debian') {
-        if (flags.remove) {
-          Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
-          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            await remove()
-          }
-        }
 
         if (flags.add) {
           Utils.warning(`Are you sure to add ${flist} to your repositories?`)
           if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            await clean()
-            await add()
+            await debianAdd()
+          }
+        } else if (flags.remove) {
+          Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
+          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+            await debianRemove()
           }
         }
 
@@ -75,34 +73,12 @@ export default class Ppa extends Command {
 
         if (flags.add) {
           if (distro.distroId !== 'ManjaroLinux') {
-            const path = "/var/cache/pacman/pkg/"
-            const keyring = "chaotic-keyring.pkg.tar.zst"
-            const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
-            const echo = Utils.setEcho(true)
-
-            await exec(`rm ${path}${keyring}`, echo)
-            await exec(`rm ${path}${mirrorlist}`, echo)
-            if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
-              console.log("repository chaotic-aur already present!")
-              process.exit()
-            }
-            await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
-            await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
-            await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
-
-            // Append to /etc/pacman.conf
-            const chaoticAppend="\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n\n"
-
-            // 
-            // 
-
+            await archAdd()
           }
-        }
-
-        if (flags.remove) {
+        } else if (flags.remove) {
           Utils.warning(`Are you sure to remove chaotic-aur to your repositories?`)
           if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            console.log("not agan implemented!")
+            await archRemove()
           }
         }
 
@@ -117,9 +93,40 @@ export default class Ppa extends Command {
 }
 
 /**
- * add ppa
+ * archAdd
  */
-async function add() {
+async function archAdd() {
+  const path = "/var/cache/pacman/pkg/"
+  const keyring = "chaotic-keyring.pkg.tar.zst"
+  const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
+  const echo = Utils.setEcho(true)
+
+  await exec(`rm ${path}${keyring}`, echo)
+  await exec(`rm ${path}${mirrorlist}`, echo)
+  if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
+    console.log("repository chaotic-aur already present!")
+    process.exit()
+  }
+  await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
+  await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
+  await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)
+
+  // Append to /etc/pacman.conf
+  const chaoticAppend = "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n\n"
+
+}
+
+/**
+ * archRemove
+ */
+async function archRemove() {
+  console.log("not yet implemented!")
+}
+
+/**
+ * debianAdd
+ */
+async function debianAdd() {
   await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${fkey} > /dev/null`)
   const content = `deb [signed-by=${fkey}] https://pieroproietti.github.io/penguins-eggs-ppa ./\n`
   fs.writeFileSync(flist, content)
@@ -127,18 +134,12 @@ async function add() {
 }
 
 /**
- * remove ppa
+ * debianRemove
  */
-async function remove() {
-  await clean()
+async function debianRemove() {
+  await exec('rm -f /etc/apt/trusted.gpg.d/penguins-eggs*')
+  await exec('rm -f /etc/apt/sources.list.d/penguins-eggs*')
+  await exec('rm -f /usr/share/keyrings/penguins-eggs*')
   await exec('apt-get update')
 }
 
-/**
- *
- */
-async function clean() {
-  await exec('rm -f    /etc/apt/trusted.gpg.d/penguins-eggs*')
-  await exec('rm -f /etc/apt/sources.list.d/penguins-eggs*')
-  await exec('rm -f /usr/share/keyrings/penguins-eggs*')
-}
