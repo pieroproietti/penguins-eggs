@@ -124,14 +124,13 @@ export default class Produce extends Command {
         if (theme.endsWith('/')) {
           theme = theme.substring(0, theme.length - 1)
         }
+        
         theme = path.resolve(theme)
         if (!fs.existsSync(theme + '/theme')) {
           console.log('Cannot find theme: ' + theme)
           process.exit()
         }
       }
-      console.log(`theme: ${theme}`)
-
       const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
         await Config.install(i, nointeractive, verbose)
