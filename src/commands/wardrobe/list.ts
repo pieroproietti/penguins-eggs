@@ -92,12 +92,12 @@ export default class List extends Command {
     for (const costume of costumes) {
       if (fs.existsSync(`${wardrobe}costumes/${costume}/${index}`)) {
         const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/${index}`, 'utf-8')) as IMateria
-        console.log(chalk.cyan(costume) + ': ' + materials.description)
+        console.log('- ' + chalk.cyan(costume) + ': ' + materials.description)
       }
     }
 
-
     console.log()
+
     /**
      * accessories
      */
@@ -106,7 +106,7 @@ export default class List extends Command {
     for (const accessory of accessories) {
       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/${index}`)) {
         const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/${index}`, 'utf-8')) as IMateria
-        console.log(chalk.cyan(accessory) + ': ' + materials.description)
+        console.log('- ' + chalk.cyan(accessory) + ': ' + materials.description)
       }
     }
 
@@ -120,10 +120,23 @@ export default class List extends Command {
     for (const server of servers) {
       if (fs.existsSync(`${wardrobe}/servers/${server}/${index}`)) {
         const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/${index}`, 'utf-8')) as IMateria
-        console.log(chalk.cyan(server) + ': ' + materials.description)
+        console.log('- ' + chalk.cyan(server) + ': ' + materials.description)
       }
     }
 
     console.log()
+
+    /**
+     * vendors
+     */
+    const vendors = fs.readdirSync(`${wardrobe}/vendors/`)
+    console.log(chalk.green('vendors/themes: '))
+    for (const vendor of vendors) {
+      if (fs.existsSync(`${wardrobe}/vendors/${vendor}/theme`)) {
+        console.log('- ' + chalk.cyan(vendor)) 
+      }
+    }
+    console.log()
+
   }
 }

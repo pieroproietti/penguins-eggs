@@ -140,6 +140,7 @@ async function debianRemove() {
   await exec('rm -f /etc/apt/trusted.gpg.d/penguins-eggs*')
   await exec('rm -f /etc/apt/sources.list.d/penguins-eggs*')
   await exec('rm -f /usr/share/keyrings/penguins-eggs*')
+  
   await exec('apt-get update')
 }
 
