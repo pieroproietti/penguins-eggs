@@ -22,8 +22,8 @@ penguins-eggs
 blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4 and KDE Plasma 5.27 without any modifications, giving you a vanilla experience, thanks to the Arch base!
 
 * **egg-of-blendos-gnome** 
-* **egg-of-blendos-plasma** 
 * **egg-of-blendos-cinnamon** 
+* **egg-of-blendos-plasma** 
 
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
@@ -36,7 +36,7 @@ This, as I understand it, is handled by the `akshara` hook which I then remove i
 
 That said, in a nutshell, this blendOS remaster is absolutely not the original it's my attempts to understand it that push me and I don't know yet where they will lead.
 
-Also, while for the other iso I normally use the released version of eggs. for this since I'm working on it, normally the version of penguins-eggs is not the current one but an advance of the future version.
+Also, while for the other iso I normally use the released version of penguins-eggs, for this - since I'm working on it . normally the version of penguins-eggs is not the current one but an advance of the future version.
 
 # Disclaim
 
