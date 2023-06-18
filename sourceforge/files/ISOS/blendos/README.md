@@ -28,7 +28,7 @@ blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
 # Note
-I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also eggs, once it's released.
+I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also penguins-eggs, once it's released.
 
 At the moment I'm doing a job of "adapting" penguins-eggs to [blendOS](https://blendos.co/), being a rather particular distribution, especially for immutability.
 
