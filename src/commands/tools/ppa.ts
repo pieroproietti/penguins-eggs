@@ -79,10 +79,7 @@ export default class Ppa extends Command {
             }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove chaotic-aur to your repositories?`)
-          if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            await archRemove()
-          }
+          await archRemove()
         }
 
       } else {
@@ -104,10 +101,9 @@ async function archAdd() {
   const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
   const echo = Utils.setEcho(true)
 
-  await exec(`rm ${path}${keyring}`, echo)
-  await exec(`rm ${path}${mirrorlist}`, echo)
   if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
-    console.log("repository chaotic-aur already present!")
+    console.log("repository chaotic-aur, already present!")
+    await archRemove()
     process.exit()
   }
   await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
@@ -116,14 +112,27 @@ async function archAdd() {
 
   // Append to /etc/pacman.conf
   const chaoticAppend = "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\n\n"
-
+  fs.appendFileSync('/etc/pacman.conf', chaoticAppend);
 }
 
 /**
  * archRemove
  */
 async function archRemove() {
-  console.log("not yet implemented!")
+  const path = "/var/cache/pacman/pkg/"
+  const keyring = "chaotic-keyring.pkg.tar.zst"
+  const mirrorlist = "chaotic-mirrorlist.pkg.tar.zst"
+  const echo = Utils.setEcho(true)
+
+  if (fs.existsSync(path + keyring) && (fs.existsSync(path + mirrorlist))) {
+    console.log('to remove chaotic-aur:\n')
+    console.log(`sudo rm ${path}${keyring}`)
+    console.log(`sudo rm ${path}${mirrorlist}`)
+    console.log(`sudo nano /etc/pacman.conf`)
+    console.log(`remove at the end:`)
+    console.log(`[chaotic-aur]`)
+    console.log(`Include = /etc/pacman.d/chaotic-mirrorlist`)
+  }
 }
 
 /**
@@ -143,7 +152,7 @@ async function debianRemove() {
   await exec('rm -f /etc/apt/trusted.gpg.d/penguins-eggs*')
   await exec('rm -f /etc/apt/sources.list.d/penguins-eggs*')
   await exec('rm -f /usr/share/keyrings/penguins-eggs*')
-  
+
   await exec('apt-get update')
 }
 

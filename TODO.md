@@ -1,6 +1,6 @@
 # TODO
 
-* il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`; (to do the remove)
+* il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`; (solved)
 
 * rimuovere la dizione rolling nel caso la distro sia rolling, tipicamente Arch e derivate ad esclusione di Manjaro; (solved)
 
