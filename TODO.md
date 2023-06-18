@@ -1,13 +1,14 @@
 # TODO
 
-* il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`;
+* il comando `eggs sudo tools ppa --add` potrebbe configurare in Arch il repository `chaotic-aur`; (to do the remove)
 
-* rimuovere la dizione rolling nel caso la distro sia rolling, tipicamente Arch e derivate ad esclusione di Manjaro;
+* rimuovere la dizione rolling nel caso la distro sia rolling, tipicamente Arch e derivate ad esclusione di Manjaro; (solved)
 
-* calamares su blendOS non funziona su BIOS ed in verità manco su EFI, qua il problema dovrebbe essere la versione 3.3 di calamares;
-```
+* calamares su blendOS non funziona su BIOS ed in verità manco su EFI, qua il problema dovrebbe essere la versione 3.3 di calamares; (solved)
 
-* su blendos il `/proc/cmdline` punta a `/vmlinuz-linux-zen` mentre il vero path è `/boot/vmlinuz-linux-zen` così come `/boot/initramfs-linux.img`;
+* su blendos il `/proc/cmdline` punta a `/vmlinuz-linux-zen` mentre il vero path è `/boot/vmlinuz-linux-zen` così come `/boot/initramfs-linux.img`; 
+
+Questo - cosa strana - succede per plasma ma non per cinnamon dove abbiamo:
 
 ``` 
 artisan@cinnamon ~]$ cat /proc/cmdline 
