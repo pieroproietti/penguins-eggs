@@ -21,21 +21,22 @@ penguins-eggs
 
 blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4 and KDE Plasma 5.27 without any modifications, giving you a vanilla experience, thanks to the Arch base!
 
-* **egg-of-blendos-rolling-gnome** 
-* **egg-of-blendos-rolling-plasma** 
+* **egg-of-blendos-gnome** 
+* **egg-of-blendos-plasma** 
+* **egg-of-blendos-cinnamon** 
 
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
-# Calamares notes
-To be able to install remastered blendOS, we need calamares@3.2.61-1 in aur.
+# Note
+I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also eggs, once it's released.
 
-I don't know why it's not reconnized by yay here, in all the way just:
+At the moment I'm doing a job of "adapting" penguins-eggs to blendOS, being a rather particular distribution, especially for immutability.
 
-```
-git clone https://aur.archlinux.org/calamares.git
-cd calamares
-makepkg -si
-```
+This, as I understand it, is handled by the `akshara` hook which I then remove in favor of the `blend` hook as was the case for the first version. It's right? It's not right? I don't know at the moment, also I plan to write a theme that resets akshara on the installed system.
+
+That said, in a nutshell, this blendOS remaster is absolutely not the original it's my attempts to understand it that push me and I don't know yet where they will lead.
+
+Also, while for the other iso I normally use the released version of eggs. for this since I'm working on it, normally the version of penguins-eggs is not the current one but an advance of the future version.
 
 # Disclaim
 
