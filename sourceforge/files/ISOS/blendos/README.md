@@ -30,9 +30,9 @@ blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4
 # Note
 I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also eggs, once it's released.
 
-At the moment I'm doing a job of "adapting" penguins-eggs to blendOS, being a rather particular distribution, especially for immutability.
+At the moment I'm doing a job of "adapting" penguins-eggs to [blendOS](https://blendos.co/), being a rather particular distribution, especially for immutability.
 
-This, as I understand it, is handled by the `akshara` hook which I then remove in favor of the `blend` hook as was the case for the first version. It's right? It's not right? I don't know at the moment, also I plan to write a theme that resets akshara on the installed system.
+This, as I understand it, is handled by the [`akshara`](https://github.com/blend-os/akshara) hook which I then remove in favor of the [`blend`](https://github.com/blend-os/blend) hook as was the case for the first version. It's right? It's not right? I don't know at the moment, also I plan to write a theme that resets to akshara on the installed system.
 
 That said, in a nutshell, this blendOS remaster is absolutely not the original it's my attempts to understand it that push me and I don't know yet where they will lead.
 
