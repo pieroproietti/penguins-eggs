@@ -19,18 +19,21 @@ penguins-eggs
 
 [EndeavourOS](https://endeavouros.com/) a terminal-centric distro with a vibrant and friendly community at its core
 
-* **egg-of-endeavouros-rolling-xfce** xfce4 desktop
-* **egg-of-endeavouros-rolling-cinnamon**  cinnamon desktop
+* **egg-of-endeavouros-xfce** xfce4 desktop
+* **egg-of-endeavouros-cinnamon**  cinnamon desktop
 
 # Calamares
 
-Installing calamares from EndeavourOS repository will not work with `penguins-eggs`, so we must install [calamares 3.2.61-1](https://aur.archlinux.org/calamares.git) from aur:
+Installing calamares from EndeavourOS repository will not work with `penguins-eggs`, I excluded it from upload in `/etc/pacman.conf` 
 
 ```
-yay calamares
+# Pacman won't upgrade packages listed in IgnorePkg and members of IgnoreGroup
+IgnorePkg   = calamares
 ```
 
-After that we need now to reconfigure eggs:
+Then I added [chaotic-aur](https://aur.chaotic.cx/) (follow the instrtuction on the site) and installed calamares with `yay calamares`.
+
+At this point we need now to reconfigure eggs:
 
 ```
 sudo eggs dad -d
