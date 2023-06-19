@@ -1,5 +1,5 @@
-# Calamares 3.3
 # Arch
+# Calamares 3.3
 ---
 # Whether to create /etc/machine-id for systemd.
 # The default is *false*.

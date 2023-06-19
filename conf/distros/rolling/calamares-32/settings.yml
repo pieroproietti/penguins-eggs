@@ -1,5 +1,6 @@
-# Archlinux settings
-# calamares-3.2
+# Manjaro
+# Calamares 3.2
+# setiing
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]

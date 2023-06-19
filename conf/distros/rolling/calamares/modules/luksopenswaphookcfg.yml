@@ -1,5 +1,5 @@
-# Calamares 3.3
 # Arch
+# Calamares 3.3
 ---
 # Path of the configuration file to write (in the target system)
 configFilePath: /etc/openswap.conf

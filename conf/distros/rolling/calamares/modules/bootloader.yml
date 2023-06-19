@@ -1,5 +1,5 @@
-# calamares 3.3
 # arch
+# calamares 3.3
 ---
 # A variable from global storage which overrides the value of efiBootLoader
 #efiBootLoaderVar: "packagechooser_bootloader"
