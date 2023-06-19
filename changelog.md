@@ -23,7 +23,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ### eggs-9.5.4
 * added `eggs sudo tools ppa` on Arch, here we set repository `chaotic-aur`;
 * removed `rolling-` on the default prefix for Arch amd derivated, die all Arch versions are rolling;
-* passed to calamares 3.3 for Arch and derivates.
+* passed to calamares 3.3 for Arch and derivates, created rolling/calamares-3.2 for manjaro.
 
 ### eggs-9.5.3
 * solved issues [Krill installer fails on actual hardware #245](https://github.com/pieroproietti/penguins-eggs/issues/245);
