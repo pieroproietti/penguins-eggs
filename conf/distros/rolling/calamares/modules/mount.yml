@@ -1,5 +1,5 @@
-# calamares 3.3
 # Arch
+# calamares 3.3
 ---
 # Extra filesystems to mount. The key's value is a list of entries; each
 # entry has five keys:

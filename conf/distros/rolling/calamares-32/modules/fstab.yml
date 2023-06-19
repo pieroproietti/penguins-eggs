@@ -1,6 +1,6 @@
-# Debian Buster
-# fstab
+# Manjaro
 # calamares-3.2
+# fstab
 ---
 mountOptions:
   default: defaults,noatime
