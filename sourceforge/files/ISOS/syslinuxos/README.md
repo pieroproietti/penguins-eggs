@@ -16,13 +16,14 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# SysLinuxOS
+# SysLinuxOS 12
+
+[Franco Conidi](https://francoconidi.it/) has announced the release of [SysLinuxOS 12 for System Integrators released](https://syslinuxos.com/syslinuxos-12-for-system-integrators/), a major new release of the project's Debian-based live distribution designed for system administrators and system integrators.
 
 [SysLinuxOS](https://syslinuxos.com/) is a Debian-based GNU/Linux live distribution designed for system administrators and system integrators. It offers a complete networking environment that is organised to integrate various software tools and has a friendly graphical interface using the MATE desktop. SysLinuxOS was built to work right out of the box, with all networking tools already installed by default. It includes all major Virtual Private Networks (VPNs), several remote control clients, various browsers, as well as Wine, Wireshark, Etherape, Ettercap, PackETH, Packet Sender, Putty, Nmap, Cutecom, Packet Tracer, tools for serial console, and the latest stable Linux kernel.
 
-[SysLinuxOS od Distrowatch](https://distrowatch.com/table.php?distribution=syslinuxos)
 
-* **SysLinuxOS-mate**
+* **syslinuxos-mate**
 
 ## More informations:
 
