@@ -273,6 +273,7 @@ export default class Ovary {
         } else if (
           this.settings.distro.distroId === 'Arch' ||
           this.settings.distro.distroId === 'blendOS' ||
+          this.settings.distro.distroId === 'phyOS' ||
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
           await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
@@ -718,6 +719,7 @@ export default class Ovary {
       if (
         distroId === 'Arch' ||
         distroId === 'blendOS' ||
+        distroId === 'phyOS' ||
         distroId === 'EndeavourOS' ||
         distroId === 'RebornOS'
       ) {
