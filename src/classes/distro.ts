@@ -239,6 +239,17 @@ class Distro implements IDistro {
       break
     }
 
+    case 'Raptor':{
+      // Garuda
+      this.familyId = 'archlinux'
+      this.distroLike = 'Arch'
+      // this.codenameId = 'Raptor'
+      this.codenameLikeId = 'rolling'
+      this.liveMediumPath = '/run/archiso/bootmnt/'
+      this.squashfs = `arch/x86_64/airootfs.sfs`
+
+    }
+
     case 'Qonos':
     case 'Ruah':
     case 'Sikaris':
