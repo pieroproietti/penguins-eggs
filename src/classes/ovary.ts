@@ -273,6 +273,7 @@ export default class Ovary {
         } else if (
           this.settings.distro.distroId === 'Arch' ||
           this.settings.distro.distroId === 'blendOS' ||
+          this.settings.distro.distroId === 'Garuda' ||
           this.settings.distro.distroId === 'phyOS' ||
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
@@ -719,6 +720,7 @@ export default class Ovary {
       if (
         distroId === 'Arch' ||
         distroId === 'blendOS' ||
+        distroId === 'Garuda' ||
         distroId === 'phyOS' ||
         distroId === 'EndeavourOS' ||
         distroId === 'RebornOS'
@@ -767,6 +769,7 @@ export default class Ovary {
     if (
       distroId === 'Arch' ||
       distroId === 'EndeavourOS' ||
+      distroId === 'Garuda' ||
       distroId === 'phyOS' ||
       distroId === 'RebornOS'
     ) {
