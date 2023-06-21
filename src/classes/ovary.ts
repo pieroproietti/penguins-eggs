@@ -767,6 +767,7 @@ export default class Ovary {
     if (
       distroId === 'Arch' ||
       distroId === 'EndeavourOS' ||
+      distroId === 'phyOS' ||
       distroId === 'RebornOS'
     ) {
       /**
