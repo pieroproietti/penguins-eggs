@@ -20,8 +20,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 **Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
 
 ### eggs-9.5.5
-* added Garuda Raptor to the compatibility list;
-* added phyOS to the compatibility list.
+* added Garuda Raptor to the compatibility list, see [README.md](https://sourceforge.net/projects/penguins-eggs/files/ISOS/garuda/) for limits.
+
 
 ### eggs-9.5.4
 * added `eggs sudo tools ppa` on Arch, here we set repository `chaotic-aur`;
