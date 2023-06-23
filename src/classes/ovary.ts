@@ -768,6 +768,7 @@ export default class Ovary {
     let fileConf = 'archlinux'
     if (
       distroId === 'Arch' ||
+      distroId === 'Crystal' ||
       distroId === 'EndeavourOS' ||
       distroId === 'Garuda' ||
       distroId === 'phyOS' ||
@@ -779,7 +780,7 @@ export default class Ovary {
       fileConf = 'arch'
     } else {
       /**
-       * blendOS, Crystal and ManjaroLinux have is own mkinitcpio
+       * blendOS and ManjaroLinux have is own mkinitcpio
        */
       fileConf = distroId.toLowerCase()
     }
