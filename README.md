@@ -105,7 +105,7 @@ There are more than a way to install eggs as .deb package, the most practical is
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.5.5_amd64.deb 
+sudo dpkg -i eggs_9.5.6_amd64.deb 
 ```
 
 or, on a i386 system:
@@ -131,7 +131,7 @@ sudo apt update && sudo apt install eggs
 ```
 
 ### Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.5.5_amd64.deb**.
+If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.5.6_amd64.deb**.
 
 
 ## Arch families
