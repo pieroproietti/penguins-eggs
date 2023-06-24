@@ -18,72 +18,38 @@ penguins-eggs
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
+# Linux Hybrid Preview (Bliss OS Go edition)
+
+## debian-bliss-go
+
+This ISO is about `egg-of-debian-bullseye-colibri`, created with the `bliss` theme and with Bliss-GO included.
+
+## **arch-bliss-go**
+
+This ISO is about `egg-of-arch-colibri`, created with the `bliss` theme and with Bliss-GO included.
+
+## Official versions
+If you want the official Bliss-Go version look at [BlissOS](https://blog.blissos.org/bliss-os-linux-hybrid-preview/). 
+
+
 # [Waydroid - Container-based Android for Linux](https://waydro.id/)
 
 A container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 
-## **egg-of-debian-bullseye-go**
+##  **arch-waydroid-gnome**
+A light arch/waydroid/gnome for developers
 
-This iso is a special version of `egg-of-debian-bullseye-colibri`, created with the `bliss` theme for the installation of `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso`.
+##  **arch-waydroid-plasma**
+A light arch/waydroid/plasma for developers
 
-For Go to work properly, a virtual machine with two hard drives is required, in which, you will use the second hard drive `/dev/sdb1` to save the `Bliss-v15.8.5-x86_64-OFFICIAL-foss-20230331.iso` for our tests.
+##  **debian-waydroid-gnome**
+A light arch/waydroid/gnome for developers
 
-At the moment, all the steps are done, I had to re-enter zenity instead of dialog, the boot menus are created but, at least to me, the installed system does NOT work.
+##  **debian-waydroid-plasma**
+A light arch/waydroid/plasma for developers
 
-## **egg-of-arch-rolling-go**
-
-it works - and has the same problems - as the corresponding one for Debian.
-
-The problems, however by now should only be inherent in the teme bliss scripts, which is included in the repository https://github.com/pieroproietti/penguins-wardrobe under vendors.
-
-There are basically three scripts: cfs-install.sh, cfs-data-img.sh, and cfg-bootloader.sh that are executed by calamares or krill (a quick and rudimentary CLI installer) at the end of the installation process.
-
-##  **wagtail**
-A light wayland/gnome/waydroid for developers
-
-##  **warbler**
-A light wayland/kde/waydroid for developers
-
-##  **whipbird**
-An ultra light wayland/weston/waydroid for developers
-
-
-* If you want the official waydroid version look at [Waydroid](https://waydro.id/#wdlinux). 
-
-### NOTE
-
-This waydroid customization are made mostly for developers. so I put inside just firmware for wifi to let you to be able to get what else you need. All the versions are configured with ``no-hardware-accelleration`` to be used, modified and remastered under a virtualizator: [proxmox-ve](https://www.proxmox.com/en/proxmox-ve), virtualbox or others.
-
-I'm using an automatic method to build this iso: I just start with a minimal Debian bookworm CLI, add eggs and - basically - give the following commands:
-
-`eggs wardrobe get`
-
-`sudo eggs wardrobe wear wagtail / warbler / whipbird`
-
-After that reboot, You are ready!
-
-If you want remaster your customized version, just:
-
-`sudo eggs calamares --install`
-
-`sudo eggs tools clean`
-
-`sudo eggs produce --fast theme ./wardrobe/themes/waydroid`
-
-**Support me and give feedback please: https://t.me/penguins_eggs**
-
-
-# Installing Linux Waydroid via PXE
-
-One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
-
-``sudo eggs cuckoo``.
-
-Then all you have to do is boot from the network the machines to be installed and start the calamares or krill installer.
-
-You can also perform an unattended installation with krill, see the [manual](https://penguins-eggs.net/docs/Tutorial/english) or, find assistance in the [telegram Penguins' eggs](https://t.me/penguins_eggs) group.
-
-
+## Official versions
+If you want the official waydroid version look at [Waydroid](https://waydro.id/#wdlinux). 
 
 ## More informations:
 
