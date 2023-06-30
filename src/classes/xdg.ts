@@ -284,7 +284,7 @@ export default class Xdg {
      *    rm .config/user-dirs*
      *    to not look users-dirs building
      */
-    await exec(`rm /etc/skel/.config/user-dirs.dir`)
+    await exec(`rm /etc/skel/.config/user-dirs.dirs`)
   }
 }
 
