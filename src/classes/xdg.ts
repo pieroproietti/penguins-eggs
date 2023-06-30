@@ -277,6 +277,12 @@ export default class Xdg {
       await exec('mkdir /etc/skel/.config/xfce4-theme-switcher -p', echo)
       await rsyncIfExist(`/home/${user}/.config/xfce4-theme-switcher`, '/etc/skel/.config/xfce4-theme-switcher', verbose)
     }
+
+    /**
+     * remove .config/user-dirs*
+     * per non bloccare la costruzione delle dirs
+     */
+    await exec(`rm /etc/skel/.config/user-dirs.*') 
   }
 }
 
