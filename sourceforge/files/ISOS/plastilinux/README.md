@@ -93,14 +93,20 @@ xfce4 for graphics designers, with 6.1.15-2-liquorix-amd64 kernel, based on the 
 ![owl](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/owl.png/245/183)
 
 # Virtualization
-I have discovered Proxmox VE since version 0.7 and have been using it for many, many years, previously using virtualbox. Proxmox VE is based on Debian Bullseye, and allows easy management of remotely manageable virtual machines through an excellent web interface.
+I have discovered Proxmox VE since version 0.7 and have been using it for many, many years. Proxmox VE is based on Debian stable, and allows easy management of remotely manageable virtual machines through an excellent web interface.
 
 Eagle is nothing more than a workstation based on Proxmox VE to which has been added an XFCE GUI, virtual-viewer and spice-vdagent, the result is a system that can be used both as a traditional workstation and as a virtualizer.
 
-Because Proxmox VE is heavily customized on Debian Bullseye I have not tried so far to rebuild eagle with other distributions, the base should still work.
-
 ## **eagle**
 xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install and configure it with static ip to enjoy KVM and containers virtualization.
+
+**Note**: There are some new additions in this version:
+
+* the hostname MUST be eagle, this is forced during installation;
+* the system automatically sets in /etc/hosts the line `eagle x.x.x.x`;
+* during installation the command is used: sudo ssh-keygen -A` to reset the keys;
+* you need to reset the root password, before to be able to access the Proxmox VE management web interface: `sudo passwd`;
+* it would be interesting if some Proxmox VE expert would take over this ISO, which could also be useful for maintenance operations on pre-existing servers, being a complete and functional Proxmox VE system even from live.
 
 ![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
 
