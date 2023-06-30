@@ -282,7 +282,7 @@ export default class Xdg {
      * remove .config/user-dirs*
      * per non bloccare la costruzione delle dirs
      */
-    await exec(`rm /etc/skel/.config/user-dirs.*') 
+    await exec(`rm /etc/skel/.config/user-dirs.*`)
   }
 }
 
