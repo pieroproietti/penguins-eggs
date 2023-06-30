@@ -279,10 +279,12 @@ export default class Xdg {
     }
 
     /**
-     * remove .config/user-dirs*
-     * per non bloccare la costruzione delle dirs
+     * ALL Desktops:
+     * 
+     *    rm .config/user-dirs*
+     *    to not look users-dirs building
      */
-    await exec(`rm /etc/skel/.config/user-dirs.*`)
+    await exec(`rm /etc/skel/.config/user-dirs.dir`)
   }
 }
 
