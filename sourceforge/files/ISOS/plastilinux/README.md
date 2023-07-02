@@ -104,7 +104,8 @@ xfce4 desktop plus [Proxmox VE](https://www.proxmox.com/en/proxmox-ve), install 
 
 * system automatically sets a line `hostname x.x.x.x` in `/etc/hosts`, this let proxmox-ve to start also from a live system;
 * during installation command `sudo ssh-keygen -A` is used to reset keys;
-* it would be interesting if some Proxmox VE expert would take over this ISO, which could also be useful for maintenance operations on pre-existing servers, being a complete and functional Proxmox VE system even from live.
+
+it would be interesting if some Proxmox VE expert would take over this ISO, which could also be useful for maintenance operations on pre-existing servers, being a complete and functional Proxmox VE system even from live.
 
 ![eagle](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/eagle.png/245/183)
 
