@@ -293,6 +293,7 @@ FLAGS
   -h, --help           Show CLI help.
   -i, --install        install calamares and its dependencies
   -n, --nointeractive  no user interaction
+  -N, --noicons        no icons  
   -r, --release        release: remove calamares and all its dependencies after the installation
   -v, --verbose
   --remove             remove calamares and its dependencies
@@ -325,7 +326,7 @@ FLAGS
   -c, --clean          remove old configuration before to create new one
   -h, --help           Show CLI help.
   -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
+  -N, --noicons        no icons
 
 DESCRIPTION
   Configure and install prerequisites deb packages to run it
