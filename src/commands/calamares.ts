@@ -4,24 +4,24 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import path from 'path'
-import fs  from 'fs'
+import fs from 'fs'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import Incubator from '../classes/incubation/incubator'
 import Pacman from '../classes/pacman'
-import {IRemix} from '../interfaces/index'
+import { IRemix } from '../interfaces/index'
 
 export default class Calamares extends Command {
   static flags = {
-    help: Flags.help({char: 'h'}),
-    install: Flags.boolean({char: 'i', description: "install calamares and its dependencies"}),
-    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
-    release: Flags.boolean({char: 'r', description: "release: remove calamares and all its dependencies after the installation"}),
-    remove: Flags.boolean({description: "remove calamares and its dependencies"}),
-    theme: Flags.string({description: 'theme/branding for eggs and calamares'}),
-    verbose: Flags.boolean({char: 'v'}),
+    help: Flags.help({ char: 'h' }),
+    install: Flags.boolean({ char: 'i', description: "install calamares and its dependencies" }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    release: Flags.boolean({ char: 'r', description: "release: remove calamares and all its dependencies after the installation" }),
+    remove: Flags.boolean({ description: "remove calamares and its dependencies" }),
+    theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
+    verbose: Flags.boolean({ char: 'v' }),
   }
 
   static description = 'configure calamares or install or configure it'
@@ -43,7 +43,7 @@ export default class Calamares extends Command {
 
     this.settings = new Settings()
 
-    const {flags} = await this.parse(Calamares)
+    const { flags } = await this.parse(Calamares)
     let verbose = false
     if (flags.verbose) {
       verbose = true
@@ -68,7 +68,7 @@ export default class Calamares extends Command {
     if (flags.theme !== undefined) {
       theme = flags.theme
       if (theme.endsWith('/')) {
-        theme = theme.substring(0, theme.length -1)
+        theme = theme.substring(0, theme.length - 1)
       }
       theme = path.resolve(theme)
       if (!fs.existsSync(theme + '/theme')) {
@@ -79,6 +79,7 @@ export default class Calamares extends Command {
     console.log(`theme: ${theme}`)
 
     const nointeractive = flags.nointeractive
+    const noicons = flags.noicons
 
     if (Utils.isRoot(this.id)) {
       let installer = 'krill'
@@ -86,41 +87,43 @@ export default class Calamares extends Command {
         installer = 'calamares'
       }
 
-      if (installer === 'calamares') {
-        if (!remove) {
-          if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            /**
-             * Install calamares
-             */
-            if (install) {
-              Utils.warning('Installing calamares...')
-              await Pacman.calamaresInstall()
+      if (!noicons) { // se VOGLIO le icone !noicons
+        if (installer === 'calamares') {
+          if (!remove) {
+            if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+              /**
+               * Install calamares
+               */
+              if (install) {
+                Utils.warning('Installing calamares...')
+                await Pacman.calamaresInstall()
+                if (await this.settings.load()) {
+                  this.settings.config.force_installer = true
+                  this.settings.save(this.settings.config)
+                  await Pacman.calamaresPolicies()
+                }
+              }
+
+              /**
+               * Configure calamares
+               */
               if (await this.settings.load()) {
-                this.settings.config.force_installer = true
-                this.settings.save(this.settings.config)
-                await Pacman.calamaresPolicies()
+                Utils.warning('Configuring installer')
+                await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+                this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
+                await this.incubator.config(release)
               }
             }
-
+          } else {
             /**
-             * Configure calamares
+             * Remove calamares
              */
-            if (await this.settings.load()) {
-              Utils.warning('Configuring installer')
-              await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-              this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
-              await this.incubator.config(release)
-            }
-          }
-        } else {
-          /**
-           * Remove calamares
-           */
-          if (await Pacman.calamaresCheck()) {
-            await Pacman.calamaresRemove()
-            if (await this.settings.load()) {
-              this.settings.config.force_installer = false
-              this.settings.save(this.settings.config)
+            if (await Pacman.calamaresCheck()) {
+              await Pacman.calamaresRemove()
+              if (await this.settings.load()) {
+                this.settings.config.force_installer = false
+                this.settings.save(this.settings.config)
+              }
             }
           }
         }

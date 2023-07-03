@@ -4,25 +4,26 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
-import {IInstall} from '../interfaces/index'
-import {array2spaced} from '../lib/dependencies'
+import { IInstall } from '../interfaces/index'
+import { array2spaced } from '../lib/dependencies'
 
-import {exec} from '../lib/utils'
+import { exec } from '../lib/utils'
 
 /**
  *
  */
 export default class Config extends Command {
   static flags = {
-    clean: Flags.boolean({char: 'c', description: 'remove old configuration before to create new one'}),
-    help: Flags.help({char: 'h'}),
-    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
+    help: Flags.help({ char: 'h' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
   static description = 'Configure and install prerequisites deb packages to run it'
@@ -33,8 +34,9 @@ export default class Config extends Command {
   ]
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(Config)
+    const { flags } = await this.parse(Config)
     const nointeractive = flags.nointeractive
+    const noicons = flags.noicons
     const verbose = flags.verbose
 
     if (!nointeractive) {
@@ -65,12 +67,12 @@ export default class Config extends Command {
 
       // Vediamo che cosa c'è da fare...
       Utils.warning('what we need?')
-      const i = await Config.thatWeNeed(nointeractive, verbose)
+      const i = await Config.thatWeNeed(nointeractive, noicons, verbose)
       if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
         if (nointeractive) {
-          await Config.install(i, nointeractive, verbose)
+          await Config.install(i, nointeractive, noicons, verbose)
         } else if (await Utils.customConfirm()) {
-          await Config.install(i, nointeractive, verbose)
+          await Config.install(i, nointeractive, noicons, verbose)
         }
       }
     } else {
@@ -83,7 +85,7 @@ export default class Config extends Command {
    *
    * @param verbose
    */
-  static async thatWeNeed(nointeractive = false, verbose = false, cryptedclone = false): Promise<IInstall> {
+  static async thatWeNeed(nointeractive = false, noicons = false, verbose = false, cryptedclone = false): Promise<IInstall> {
     const i = {} as IInstall
 
     i.distroTemplate = !Pacman.distroTemplateCheck()
@@ -92,10 +94,12 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
-      Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
-      // se nointeractive i.calamares=false
-      i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
+    if (!noicons){ 
+      if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+        Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
+        // se nointeractive i.calamares=false
+        i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
+      }
     }
 
     i.configurationInstall = !Pacman.configurationCheck()
@@ -180,7 +184,7 @@ export default class Config extends Command {
    * @param i
    * @param verbose
    */
-  static async install(i: IInstall, nointeractive = false, verbose = false) {
+  static async install(i: IInstall, nointeractive = false, noicons = false, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
     Utils.warning('config: so, we install')
@@ -223,13 +227,15 @@ export default class Config extends Command {
       }
     }
 
-    if (i.calamares && Pacman.isCalamaresAvailable()) {
-      if (nointeractive) {
-        Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
-      } else {
-        Utils.warning('Installing calamares...')
-        await Pacman.calamaresInstall(verbose)
-        await Pacman.calamaresPolicies()
+    if (!noicons) { // se VOGLIO le icone !noicons
+      if (i.calamares && Pacman.isCalamaresAvailable()) {
+        if (nointeractive) {
+          Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
+        } else {
+          Utils.warning('Installing calamares...')
+          await Pacman.calamaresInstall(verbose)
+          await Pacman.calamaresPolicies()
+        }
       }
     }
 
