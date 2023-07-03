@@ -5,7 +5,7 @@
  * license: MIT
  */
 
-import fs from 'node:fs'
+import fs, { truncate } from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
@@ -185,12 +185,11 @@ export default class Archlinux {
    */
   static async packagePacmanAvailable(packageName: string): Promise<boolean> {
     let available = false
-    const cmd = `/usr/bin/pacman -Q ${packageName} | grep Package:`
+    const cmd = `/usr/bin/pacman -Q ${packageName} | awk '{ print $1 }'`
     const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
-    if (stdout.includes(packageName)) {
+    if (stdout == packageName) {
       available = true
     }
-
     return available
   }
 
