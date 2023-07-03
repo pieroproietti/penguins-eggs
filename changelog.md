@@ -17,12 +17,10 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-### eggs-9.5.7
-* just reintroduced autologin removed - for mistake - on v9.5.6.
-
-### eggs-9.5.6
+### eggs-9.5.8
 * remove `user-dirs.dir` in `/etc/skel/.config/` to not lock building of canonical directory;
-* introduced flag `noicons` in `eggs produce` to remove penguins-eggs icons from desktop and skip calamares control for systems live only.
+* introduced flag `noicons` in `eggs produce` to remove penguins-eggs icons from desktop and skip calamares control for systems live only;
+* fixed bugs introduced by deprecated `v9.5.6` and `v9.6.7`, sometimes adding small features can be less easy than you think.
 
 ### eggs-9.5.5
 * added Garuda Raptor to the compatibility list, see [README.md](https://sourceforge.net/projects/penguins-eggs/files/ISOS/garuda/) for limits.
