@@ -112,7 +112,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, verbose = false) {
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, noicons = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -155,12 +155,16 @@ export default class Ovary {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
       await this.liveCreateStructure()
-      if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
-        this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
-        console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-        await Pacman.calamaresInstall(verbose)
-        const bleach = new Bleach()
-        await bleach.clean(verbose)
+
+      // Carica calamares sono se le icone sono accettate
+      if (!noicons) { // se VOGLIO le icone !noicons
+        if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
+          this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+          console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
+          await Pacman.calamaresInstall(verbose)
+          const bleach = new Bleach()
+          await bleach.clean(verbose)
+        }
       }
 
       // CRYPTEDCLONE
@@ -230,7 +234,9 @@ export default class Ovary {
           await this.cleanUsersAccounts()
           await this.createUserLive()
           if (Pacman.isInstalledGui()) {
-            await this.createXdgAutostart(this.settings.config.theme, myAddons)
+            if (!noicons) { // se VOGLIO le icone !noicons
+              await this.createXdgAutostart(this.settings.config.theme, myAddons)
+            }
 
             /**
              * GUI installed but NOT Desktop Manager: just create motd and issue
@@ -1179,7 +1185,7 @@ export default class Ovary {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'archlinux') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
-      
+
       // check or create group: autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || groupadd autologin`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
@@ -1659,7 +1665,7 @@ export default class Ovary {
     if (prefix.endsWith('rolling-')) {
       prefix = prefix.substring(0, prefix.indexOf('rolling-'))
     }
-    
+
 
     let typology = ''
     // typology is applied only with standard egg-of

@@ -23,6 +23,7 @@ export default class Produce extends Command {
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
@@ -115,6 +116,8 @@ export default class Produce extends Command {
 
       const nointeractive = flags.nointeractive
 
+      const noicons = flags.noicons
+
       /**
        * theme: if not defined will use eggs
        */
@@ -137,9 +140,9 @@ export default class Produce extends Command {
         }
       }
 
-      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
+      const i = await Config.thatWeNeed(nointeractive, noicons, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
-        await Config.install(i, nointeractive, verbose)
+        await Config.install(i, nointeractive, noicons, verbose)
       }
 
       const myAddons = {} as IMyAddons
@@ -165,7 +168,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, nointeractive, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, nointeractive, noicons, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
