@@ -18,6 +18,7 @@ export default class Calamares extends Command {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and its dependencies" }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
     release: Flags.boolean({ char: 'r', description: "release: remove calamares and all its dependencies after the installation" }),
     remove: Flags.boolean({ description: "remove calamares and its dependencies" }),
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
@@ -87,7 +88,7 @@ export default class Calamares extends Command {
         installer = 'calamares'
       }
 
-      if (!noicons) { // se VOGLIO le icone !noicons
+      if (!noicons) { // se VOGLIO le icone
         if (installer === 'calamares') {
           if (!remove) {
             if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
