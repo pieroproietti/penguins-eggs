@@ -136,18 +136,23 @@ export default class Archlinux {
   static async calamaresRemove(verbose = true): Promise<boolean> {
     verbose = true // serve per pacman
 
+    let removed = false
     const echo = Utils.setEcho(verbose)
-    const retVal = false
-    if (fs.existsSync('/etc/calamares')) {
-      await exec('rm /etc/calamares -rf', echo)
-    }
 
     if (await this.packagePacmanAvailable('calamares')){
       await exec('pacman -R calamares', echo)
+      removed = true
     } else if (await this.packagePacmanAvailable('calamares-git')){
       await exec('pacman -R calamares-git', echo)
+      removed = true
     }
-    return retVal
+
+    if (removed) {
+      if (fs.existsSync('/etc/calamares')) {
+        await exec('rm /etc/calamares -rf', echo)
+      }
+    }
+    return removed
   }
 
   /**
