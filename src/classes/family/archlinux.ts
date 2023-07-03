@@ -142,7 +142,11 @@ export default class Archlinux {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    await exec('pacman -R calamares', echo)
+    if (await this.packagePacmanAvailable('calamares')){
+      await exec('pacman -R calamares', echo)
+    } else if (await this.packagePacmanAvailable('calamares-git')){
+      await exec('pacman -R calamares-git', echo)
+    }
     return retVal
   }
 
@@ -179,7 +183,7 @@ export default class Archlinux {
    * restuisce VERO se il pacchetto è installato
    * @param packageName
    */
-  static async packageAptAvailable(packageName: string): Promise<boolean> {
+  static async packagePacmanAvailable(packageName: string): Promise<boolean> {
     let available = false
     const cmd = `/usr/bin/pacman -Q ${packageName} | grep Package:`
     const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
@@ -195,7 +199,7 @@ export default class Archlinux {
    * @param packageName
    * @returns
    */
-  static async packageAptLast(packageName: string): Promise<string> {
+  static async packagePacmanLast(packageName: string): Promise<string> {
     let version = ''
     const cmd = `/usr/bin/pacman -Q ${packageName} | grep Version:`
     const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
