@@ -17,8 +17,6 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-**Note:** test packages with the final letter: -a, -b, -c etcetera are uploaded to the DEBS/testing folder of sourceforge.
-
 ### eggs-9.5.6
 * remove `user-dirs.dir` in `/etc/skel/.config/` to not lock building of canonical directory;
 * introduced flag `noicons` in `eggs produce` to remove penguins-eggs icons from desktop and skip calamares control for systems live only.
