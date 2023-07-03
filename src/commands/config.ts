@@ -94,10 +94,11 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!noicons){ 
-      if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+    if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+      if (noicons) {
+        i.calamares = false 
+      } else {
         Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
-        // se nointeractive i.calamares=false
         i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
       }
     }

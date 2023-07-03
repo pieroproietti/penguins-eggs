@@ -23,7 +23,7 @@ _eggs () {
 "syncfrom:restore users and user data from a LUKS volumes"
 "syncto:saves users and user data in a LUKS volume inside the iso"
 "tools\:clean:clean system log, apt, etc"
-"tools\:ppa:add/remove PPA repositories (Debian family)"
+"tools\:ppa:add/remove repo"
 "tools\:skel:update skel from home configuration"
 "tools\:stat:get statistics from sourceforge"
 "tools\:yolk:configure eggs to install without internet"
@@ -70,6 +70,7 @@ config)
     "--clean[remove old configuration before to create new one]"
 "--help[Show CLI help.]"
 "--nointeractive[no user interaction]"
+"--noicons[no icons]"
 "--verbose[verbose]"
   )
 ;;
@@ -111,6 +112,7 @@ install)
     "--crypted[Crypted CLI installation]"
 "--custom=-[custom unattended configuration]:"
 "--domain=-[Domain name, defult: .local]:"
+"--halt[Halt the system after installation]"
 "--help[Show CLI help.]"
 "--ip[hostname as ip, eg: ip-192-168-1-33]"
 "--nointeractive[no user interaction]"
@@ -147,6 +149,7 @@ produce)
 "--help[Show CLI help.]"
 "--max[max compression]"
 "--nointeractive[no user interaction]"
+"--noicons[no icons on desktop]"
 "--prefix=-[prefix]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
 "--script[script mode. Generate scripts to manage iso build]"
@@ -241,6 +244,7 @@ wardrobe:get)
 wardrobe:list)
   _command_flags=(
     "--help[Show CLI help.]"
+"--distro=-[distro]:"
 "--verbose[]"
   )
 ;;
@@ -259,7 +263,6 @@ wardrobe:wear)
     "--help[Show CLI help.]"
 "--no_accessories[not install accessories]"
 "--no_firmwares[not install firmwares]"
-"--silent[]"
 "--verbose[]"
 "--wardrobe=-[wardrobe]:"
   )

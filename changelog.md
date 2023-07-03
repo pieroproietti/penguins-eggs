@@ -21,6 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ### eggs-9.5.6
 * remove `user-dirs.dir` in `/etc/skel/.config/` to not lock building of canonical directory;
+* introduced flag `noicons` in `eggs produce` to remove penguins-eggs icons from desktop and skip calamares control for systems live only.
 
 ### eggs-9.5.5
 * added Garuda Raptor to the compatibility list, see [README.md](https://sourceforge.net/projects/penguins-eggs/files/ISOS/garuda/) for limits.
