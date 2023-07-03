@@ -1228,7 +1228,10 @@ export default class Ovary {
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
-    if (!noicons) { // se VOGLIO le icone
+    const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
+    if (noicons) { // NO icons
+      shx.rm(dirAutostart)
+    } else { // se VOGLIO le icone
       // Copia icona penguins-eggs
       shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
       shx.cp(path.resolve(__dirname, '../../assets/krill.svg'), '/usr/share/icons/')
@@ -1311,7 +1314,6 @@ export default class Ovary {
       /**
        * configuro add-penguins-desktop-icons in /etc/xdg/autostart
        */
-      const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
       if (fs.existsSync(dirAutostart)) {
         // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
         shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
