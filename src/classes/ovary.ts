@@ -1228,7 +1228,7 @@ export default class Ovary {
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
-    if (!noicons) {
+    if (!noicons) { // se VOGLIO le icone
       // Copia icona penguins-eggs
       shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
       shx.cp(path.resolve(__dirname, '../../assets/krill.svg'), '/usr/share/icons/')
@@ -1341,7 +1341,7 @@ export default class Ovary {
         if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
           // GNOME
           text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-          text += 'test -f "$DESKTOP"/penguins-eggs.desktop && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
+          text += 'test -f "$DESKTOP"/op && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
           text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
           text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
           text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
@@ -1354,7 +1354,7 @@ export default class Ovary {
         fs.writeFileSync(script, text, 'utf8')
         await exec(`chmod a+x ${script}`, this.echo)
       }
-    }
+    } // END se VOGLIO le icone
     await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
   }
 
