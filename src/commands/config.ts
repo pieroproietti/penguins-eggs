@@ -162,7 +162,7 @@ export default class Config extends Command {
       }
 
       if (i.needApt) {
-        console.log('- cleaning apt\n')
+        console.log('- cleaning packages\n')
       }
 
       if (i.configurationInstall) {
@@ -228,7 +228,7 @@ export default class Config extends Command {
       }
     }
 
-    if (!noicons) { // se VOGLIO le icone !noicons
+    if (!noicons) { // se VOGLIO le icone
       if (i.calamares && Pacman.isCalamaresAvailable()) {
         if (nointeractive) {
           Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
