@@ -14,15 +14,15 @@ _eggs_autocomplete()
 adapt --help --verbose
 analyze --help --verbose
 calamares --help --install --nointeractive --release --remove --theme --verbose
-config --clean --help --nointeractive --verbose
+config --clean --help --nointeractive --noicons --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
 export:iso --clean --help --verbose
-install --crypted --custom --domain --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+install --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --nointeractive --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --help --max --nointeractive --prefix --release --script --standard --theme --verbose --yolk
+produce --addons --basename --clone --cryptedclone --help --max --nointeractive --noicons --prefix --release --script --standard --theme --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
@@ -33,9 +33,9 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
 wardrobe:get --help --verbose
-wardrobe:list --help --verbose
+wardrobe:list --help --distro --verbose
 wardrobe:show --help --json --verbose --wardrobe
-wardrobe:wear --help --no_accessories --no_firmwares --silent --verbose --wardrobe
+wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
 autocomplete --refresh-cache
 help --nested-commands
 version --json --verbose

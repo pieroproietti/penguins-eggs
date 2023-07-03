@@ -548,6 +548,7 @@ FLAGS
   -f, --standard        standard compression
   -h, --help            Show CLI help.
   -m, --max             max compression
+  -N, --noicons         no icons
   -n, --nointeractive   no user interaction
   -p, --prefix=<value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
