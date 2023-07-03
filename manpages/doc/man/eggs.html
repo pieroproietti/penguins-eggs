@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.5.6</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.5.8</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i eggs_9.5.6_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.5.8_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.5.6 linux-x64 node-v18.16.1
+penguins-eggs/9.5.8 linux-x64 node-v18.16.1
 $ eggs --help [COMMAND]
 
 USAGE
@@ -145,6 +145,7 @@ FLAGS
   -h, --help           Show CLI help.
   -i, --install        install calamares and its dependencies
   -n, --nointeractive  no user interaction
+  -N, --noicons        no icons  
   -r, --release        release: remove calamares and all its dependencies after the installation
   -v, --verbose
   --remove             remove calamares and its dependencies
@@ -171,7 +172,7 @@ FLAGS
   -c, --clean          remove old configuration before to create new one
   -h, --help           Show CLI help.
   -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
+  -N, --noicons        no icons
 
 DESCRIPTION
   Configure and install prerequisites deb packages to run it
