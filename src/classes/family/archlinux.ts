@@ -142,7 +142,7 @@ export default class Archlinux {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    await exec('yay -Rns calamares', echo)
+    await exec('pacman -R calamares', echo)
     return retVal
   }
 
