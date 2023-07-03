@@ -1313,8 +1313,9 @@ export default class Ovary {
       /**
        * configuro add-penguins-desktop-icons in /etc/xdg/autostart
        */
+
+      const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
       if (fs.existsSync(dirAutostart)) {
-        const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
 
         // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
         shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
