@@ -92,6 +92,17 @@ export default class Utils {
          vmlinuz = vmlinuz.substring(vmlinuz.indexOf('@') + 1)
       }
 
+      /**
+       * blendOS: BOOT_IMAGE=/vmlinuz-linux
+       *          but =/vmlinuz-linux exists in /boot/
+       */
+      if (vmlinuz === '/vmlinuz-linux' || vmlinuz === '/vmlinuz-linux-zen') {
+         if (fs.existsSync('/boot' + vmlinuz)) {
+            vmlinuz = '/boot' + vmlinuz
+         }
+      }
+
+
       /** 
        * If vmlinuz not found in /proc/cmdline, 
        */
@@ -113,21 +124,6 @@ export default class Utils {
          vmlinuz = '/boot/vmlinuz-' + version
       }
 
-      /**
-       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux-zen
-       *        but =/vmlinuz-linux-zen exists in /boot/
-       */
-      if (vmlinuz === '/vmlinuz-linux') {
-         if (fs.existsSync('/boot' + vmlinuz)) {
-            vmlinuz = '/boot' + vmlinuz
-         }
-      }
-
-      if (vmlinuz === '/vmlinuz-linux-zen') {
-         if (fs.existsSync('/boot' + vmlinuz)) {
-            vmlinuz = '/boot' + vmlinuz
-         }
-      }
 
       /**
        * if not exists exit
