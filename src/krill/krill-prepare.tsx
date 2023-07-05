@@ -170,6 +170,7 @@ export default class Krill {
      */
     if (await this.pvExist()) {
       await Utils.pressKeyToExit(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
+      process.exit()
     }
 
     /**

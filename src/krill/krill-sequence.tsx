@@ -530,6 +530,10 @@ export default class Sequence {
                   percent = 0.78
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
+                     if (this.distro.distroLike === 'Arch') {
+                        await exec(`chroot ${this.installTarget} groupadd autologin`)
+                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.name} autologin`)
+                     }
                   }
                   await redraw(<Install message={message} percent={percent} />)
                } catch (error) {
