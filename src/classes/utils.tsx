@@ -92,8 +92,18 @@ export default class Utils {
          vmlinuz = vmlinuz.substring(vmlinuz.indexOf('@') + 1)
       }
 
+      /**
+       * blendOS: BOOT_IMAGE=/vmlinuz-linux
+       *          but =/vmlinuz-linux exists in /boot/
+       */
+      if (vmlinuz === '/vmlinuz-linux' || vmlinuz === '/vmlinuz-linux-zen') {
+         if (fs.existsSync(`/boot${vmlinuz}`)) {
+            vmlinuz = `/boot${vmlinuz}`
+         }
+      }
+
       /** 
-       * If vmlinuz not found in /proc/cmdline, 
+       * If vmlinuz not found
        */
       if (vmlinuz === '') {
          let version = 'linux'
@@ -110,17 +120,7 @@ export default class Utils {
                }
             })
          }
-         vmlinuz = '/boot/vmlinuz-'+ version
-      }
-
-      /**
-       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux
-       *        but =/vmlinuz-linux don't exists
-       */
-      if (vmlinuz === '/vmlinuz-linux') {
-         if (!fs.existsSync(vmlinuz)) {
-            vmlinuz = '/boot/vmlinuz-linux'
-         }
+         vmlinuz = '/boot/vmlinuz-' + version
       }
 
       /**
@@ -130,6 +130,7 @@ export default class Utils {
          console.log(vmlinuz + ' not exists!')
          process.exit()
       }
+      
       return vmlinuz
    }
 
@@ -145,14 +146,14 @@ export default class Utils {
 
       let distro = new Distro()
       if (distro.familyId === 'debian') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
          suffix = '.img'
       }
 
       if (distro.distroId === 'Manjaro') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-')+1)
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
       initrd = path + initrd + '-' + version + suffix
       return initrd
