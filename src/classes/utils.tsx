@@ -103,7 +103,7 @@ export default class Utils {
       }
 
       /** 
-       * If vmlinuz not found in /proc/cmdline, 
+       * If vmlinuz not found
        */
       if (vmlinuz === '') {
          let version = 'linux'
