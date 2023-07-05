@@ -119,7 +119,7 @@ export default class Utils {
        */
       if (vmlinuz === '/vmlinuz-linux') {
          if (!fs.existsSync(vmlinuz)) {
-            vmlinuz = '/boot/vmlinuz-linux'
+            vmlinuz = '/boot/vmlinuz-linuz'
          }
       }
 
