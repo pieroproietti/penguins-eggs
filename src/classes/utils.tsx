@@ -97,11 +97,10 @@ export default class Utils {
        *          but =/vmlinuz-linux exists in /boot/
        */
       if (vmlinuz === '/vmlinuz-linux' || vmlinuz === '/vmlinuz-linux-zen') {
-         if (fs.existsSync('/boot' + vmlinuz)) {
-            vmlinuz = '/boot' + vmlinuz
+         if (fs.existsSync(`/boot${vmlinuz}`)) {
+            vmlinuz = `/boot${vmlinuz}`
          }
       }
-
 
       /** 
        * If vmlinuz not found in /proc/cmdline, 
@@ -124,7 +123,6 @@ export default class Utils {
          vmlinuz = '/boot/vmlinuz-' + version
       }
 
-
       /**
        * if not exists exit
        */
@@ -132,6 +130,7 @@ export default class Utils {
          console.log(vmlinuz + ' not exists!')
          process.exit()
       }
+      
       return vmlinuz
    }
 
