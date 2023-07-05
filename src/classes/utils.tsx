@@ -114,10 +114,16 @@ export default class Utils {
       }
 
       /**
-       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux-zem
+       * patch: blendOS have BOOT_IMAGE=/vmlinuz-linux-zen
        *        but =/vmlinuz-linux-zen exists in /boot/
        */
-      if (!fs.existsSync(vmlinuz)) {
+      if (vmlinuz === '/vmlinuz-linux') {
+         if (fs.existsSync('/boot' + vmlinuz)) {
+            vmlinuz = '/boot' + vmlinuz
+         }
+      }
+
+      if (vmlinuz === '/vmlinuz-linux-zen') {
          if (fs.existsSync('/boot' + vmlinuz)) {
             vmlinuz = '/boot' + vmlinuz
          }
