@@ -49,6 +49,7 @@ export const depCommon = [
   'dosfstools', // eggs
   'dpkg-dev', // yolk
   'git', // wardrobe
+  'grub-efi-amd64-bin', // grub
   'isolinux', // eggs
   'jq', // mom restored
   'live-boot-initramfs-tools', // eggs
