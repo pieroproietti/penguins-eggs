@@ -17,6 +17,11 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## eggs-9.5.9
+* krill now respect autologin on Arch;
+* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS.
+* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce;
+
 ### eggs-9.5.8
 * remove `user-dirs.dir` in `/etc/skel/.config/` to not lock building of canonical directory;
 * introduced flag `noicons` in `eggs produce` to remove penguins-eggs icons from desktop and skip calamares control for systems live only;
