@@ -16,9 +16,10 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-## eggs-9.5.3
-* solved issues [Krill installer fails on actual hardware #245](https://github.com/pieroproietti/penguins-eggs/issues/245);
-
+## eggs-9.5.9
+* krill now respect autologin on Arch;
+* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS.
+* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce;
 
 # OEM Installation
 I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
