@@ -19,8 +19,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ## eggs-9.5.9
 * krill now respect autologin on Arch;
-* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS.
-* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce;
+* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS;
+* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce.
 
 ### eggs-9.5.8
 * remove `user-dirs.dir` in `/etc/skel/.config/` to not lock building of canonical directory;

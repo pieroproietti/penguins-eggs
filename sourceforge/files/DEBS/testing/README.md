@@ -18,8 +18,8 @@ Please, don't use this package for installations, they have just the pourpouse t
 
 ## eggs-9.5.9
 * krill now respect autologin on Arch;
-* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS.
-* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce;
+* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS;
+* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce.
 
 # OEM Installation
 I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
