@@ -21,9 +21,20 @@ penguins-eggs
 
 blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4 and KDE Plasma 5.27 without any modifications, giving you a vanilla experience, thanks to the Arch base!
 
-* **egg-of-blendos-gnome** 
-* **egg-of-blendos-cinnamon** 
-* **egg-of-blendos-plasma** 
+# Created by assemble
+This ISOs are created using assemble and the standard procedure described on [blendOS Documentation](https://docs.blendos.co/docs/build-blend/building_blendos)
+
+* **blendOS-gnome** 
+* **blendOS-plasma**
+
+# remastered with penguins-eggs
+This ISOs are created using penguins-eggs as described on [penguins-blog](https://penguins-eggs.net/blog/build-blendos-image).
+
+* **egg-of-blendos-colibri**  (XFCE + devtools )
+* **egg-of-blendos-cinnamon** (unchanged)
+* **egg-of-blendos-deeping** (unchanged)
+* **egg-of-blendos-gnome** (unchanged)
+* **egg-of-blendos-plasma** (unchanged)
 
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
