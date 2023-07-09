@@ -22,28 +22,33 @@ penguins-eggs
 blendOS ships the latest-and-greatest desktop environments, including GNOME 43.4 and KDE Plasma 5.27 without any modifications, giving you a vanilla experience, thanks to the Arch base!
 
 # blendOS re-created by assemble
-This ISOs are created using assemble and the standard procedure described on [blendOS Documentation](https://docs.blendos.co/docs/build-blend/building_blendos)
+This ISOs are created using [assemble](https://github.com/blend-os/assemble) and the standard procedure described on [blendOS Documentation](https://docs.blendos.co/docs/build-blend/building_blendos)
 
+* **blendOS-xfce** 
+* **blendOS-cinnamon** 
+* **blendOS-deepin** 
 * **blendOS-gnome** 
 * **blendOS-plasma**
 
 # blendOS remastered with penguins-eggs
-This ISOs are created using penguins-eggs as described on [penguins-blog](https://penguins-eggs.net/blog/build-blendos-image).
+This ISOs are created using [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) as described on [penguins-blog](https://penguins-eggs.net/blog/build-blendos-image).
 
 * **egg-of-blendos-colibri**  (A light xfce4 for developers you can easily start to improve eggs installing colibri)
+* **egg-of-blendos-cinnamon** (unchanged)
+* **egg-of-blendos-deepin** (unchanged)
 * **egg-of-blendos-gnome** (unchanged)
 * **egg-of-blendos-plasma** (unchanged)
 
 ![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
 
-# Note
-I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also penguins-eggs.
-
+## Notes about penguins-eggs way
 At the moment I'm doing a job of "adapting" penguins-eggs to [blendOS](https://blendos.co/), being a rather particular distribution, especially for immutability.
 
 This, as I understand it, is handled by the [`akshara`](https://github.com/blend-os/akshara) hook which I then simply remove it, before I remove it and replaced with [`blend`](https://github.com/blend-os/blend) hook as was the case for the first versions. 
 
 It's right? It's not right? I don't know really, also I wrote a simple theme in [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) called `blendos` That reintroduces the akshara hook during the installation of the system.
+
+I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also penguins-eggs.
 
 That said, in a nutshell, **this way to remaster blendOS is absolutely not the original**. Rather, it is my attempt to keep up with the times and include compatibility with this - in some ways revolutionary - distribution.
 
