@@ -57,7 +57,7 @@ export default class Incubator {
     this.remix.branding = theme
     this.isClone = isClone
     
-    // brandig è solo il basename
+    // branding è solo il basename
     this.remix.branding= path.basename(theme)
   }
 
@@ -177,7 +177,10 @@ export default class Incubator {
       // No default
     }
 
-    this.createBranding()
+    // Solo per calamares
+    if (await Pacman.calamaresCheck()) {
+      this.createBranding()
+    }
   }
 
   /**
