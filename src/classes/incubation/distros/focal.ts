@@ -89,7 +89,7 @@ export class Focal {
      * cfs: custom final steps   
      */
     const cfs = new CFS()
-    const steps = cfs.steps()
+    const steps = await cfs.steps()
     if (steps.length > 0) {
       for (const step of steps) {
         await fisherman.buildCalamaresModule(step, true, this.theme)
