@@ -2,6 +2,7 @@
  * penguins-eggs: rolling.ts
  */
 
+import Pacman from '../../pacman'
 import CFS from '../../cfs'
 import { IInstaller, IRemix, IDistro } from '../../../interfaces/index'
 import Fisherman from '../fisherman'
@@ -50,7 +51,10 @@ export class Rolling {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    await fisherman.createCalamaresSettings(this.theme, this.isClone)
+    if (await Pacman.calamaresCheck()) {
+      // Crea settings solo per calamares
+      await fisherman.createCalamaresSettings(this.theme, this.isClone)
+    }
 
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
