@@ -17,7 +17,7 @@ export default class CFS {
     */
    async steps(): Promise <string[]> {
       const cfs: string[] = []
-      if (await Pacman.calamaresCheck()) {
+      // if (await Pacman.calamaresCheck()) {
          let configRoot = '/etc/penguins-eggs.d/krill/'
          if (fs.existsSync('/etc/calamares/settings.conf')) {
            configRoot = '/etc/calamares/'
@@ -32,7 +32,7 @@ export default class CFS {
                cfs.push(step)
             }
          }
-      }
+      //}
       return cfs
    }
 }
