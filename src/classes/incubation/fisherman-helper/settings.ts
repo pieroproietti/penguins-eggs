@@ -10,6 +10,8 @@ import shx from 'shelljs'
 import { displaymanager } from './displaymanager'
 import Utils from '../../utils'
 import { ISettings } from '../../../interfaces/i-settings'
+import { installer } from '../installer'
+
 
 /**
  * 
@@ -60,7 +62,9 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
  * 
  */
 function cfsAppend(cfs: string) {
-    let soContent = fs.readFileSync('/etc/calamares/settings.conf', 'utf8')
+    const configRoot = installer().configRoot + 'settings.conf'
+
+    let soContent = fs.readFileSync(configRoot, 'utf8')
     let so = yaml.load(soContent) as ISettings
 
     const cfsContent: string = fs.readFileSync(cfs, 'utf8')
@@ -68,18 +72,19 @@ function cfsAppend(cfs: string) {
 
     const execSteps = so.sequence[1].exec
     for (const execStep of execSteps) {
-       if (execStep.includes('umount')) {
-        so.sequence[1].exec.pop() // OK remove umount
+        if (execStep.includes('umount')) {
+            so.sequence[1].exec.pop() // OK remove umount
 
-        /**
-         * insert cfsStep
-         */
-        for (const cfsStep of cfsSteps) {
-            so.sequence[1].exec.push(cfsStep)
+            /**
+             * insert cfsStep
+             */
+            for (const cfsStep of cfsSteps) {
+                so.sequence[1].exec.push(cfsStep)
+            }
+            so.sequence[1].exec.push('end-cfs') // we will replace with umount
         }
-        so.sequence[1].exec.push('end-cfs') // we will replace with umount
-       }
     }
-    fs.writeFileSync("/etc/calamares/settings.conf", yaml.dump(so), 'utf-8')
-    shx.sed('-i', 'end-cfs', 'umount', "/etc/calamares/settings.conf")
+    // ***
+    fs.writeFileSync(configRoot, yaml.dump(so), 'utf-8')
+    shx.sed('-i', 'end-cfs', 'umount', configRoot)
 }
