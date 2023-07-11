@@ -5,7 +5,7 @@
  * mail: piero.proietti@gmail.com
  */
 import yaml from 'js-yaml'
-import {IRemix, IDistro} from '../../interfaces/index'
+import { IRemix, IDistro } from '../../interfaces/index'
 
 /**
  *
@@ -33,20 +33,23 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
 
   let bootloaderEntryName = distro.distroId
 
-  // Necessario: Devuan, LMDE, caraco, syslinuxos devono avere EFI=Debian altrimenti non funziona EFI
+  /**
+   * some distros: Devuan, LMDE, syslinuxos 
+   * must have: bootloaderEntryName=Debian 
+   * to work on EFI
+   */
   switch (distro.distroId.toLowerCase()) {
-  case 'caraco':
-  case 'devuan':
-  case 'lmde':
-  case 'syslinuxos': {
-    bootloaderEntryName = 'Debian'
+    case 'devuan':
+    case 'lmde':
+    case 'syslinuxos': {
+      bootloaderEntryName = 'Debian'
 
-    break
-  }
+      break
+    }
 
-  default: {
-    bootloaderEntryName = distro.distroId
-  }
+    default: {
+      bootloaderEntryName = distro.distroId
+    }
   }
 
   const productUrl = homeUrl
