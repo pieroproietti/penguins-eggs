@@ -8,19 +8,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 import Utils from '../utils'
-import {IRemix, IDistro} from '../../interfaces/index'
+import { IRemix, IDistro } from '../../interfaces/index'
 
-import {Jessie} from './distros/jessie'
-import {Buster} from './distros/buster'
-import {Focal} from './distros/focal'
-import {Bionic} from './distros/bionic'
-import {Rolling} from './distros/rolling'
+import { Jessie } from './distros/jessie'
+import { Buster } from './distros/buster'
+import { Focal } from './distros/focal'
+import { Bionic } from './distros/bionic'
+import { Rolling } from './distros/rolling'
 
 import Pacman from '../pacman'
-import {installer} from './installer'
-import {IInstaller} from '../../interfaces/i-installer'
+import { installer } from './installer'
+import { IInstaller } from '../../interfaces/i-installer'
 
-import {exec} from '../../lib/utils'
+import { exec } from '../../lib/utils'
 
 
 /**
@@ -56,9 +56,9 @@ export default class Incubator {
     this.verbose = verbose
     this.remix.branding = theme
     this.isClone = isClone
-    
-    // brandig è solo il basename
-    this.remix.branding= path.basename(theme)
+
+    // branding è solo il basename
+    this.remix.branding = path.basename(theme)
   }
 
   /**
@@ -68,116 +68,114 @@ export default class Incubator {
     const verbose = true
     const echo = Utils.setEcho(verbose)
 
-
     this.createInstallerDirs()
+    this.createBranding()
 
     // DEBIAN
     switch (this.distro.codenameLikeId) {
-    case 'jessie': {
-      const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-      await jessie.create()
+      case 'jessie': {
+        const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        await jessie.create()
 
-      break
-    }
+        break
+      }
 
-    case 'stretch': {
-      const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-      await stretch.create()
+      case 'stretch': {
+        const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
+        await stretch.create()
 
-      break
-    }
+        break
+      }
 
-    case 'buster': {
-      const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await buster.create()
+      case 'buster': {
+        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await buster.create()
 
-      break
-    }
+        break
+      }
 
-    case 'bullseye': {
-      const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await bullseye.create()
+      case 'bullseye': {
+        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await bullseye.create()
 
-      break
-    }
+        break
+      }
 
-    case 'bookworm': {
-      const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await bookworm.create()
-      // DEVUAN
+      case 'bookworm': {
+        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await bookworm.create()
+        // DEVUAN
 
-      break
-    }
+        break
+      }
 
-    /**
-       * DEVUAN
-       */
-    case 'beowulf': {
-      const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await beowulf.create()
+      /**
+         * DEVUAN
+         */
+      case 'beowulf': {
+        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await beowulf.create()
 
-      break
-    }
+        break
+      }
 
-    case 'chimaera': {
-      const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await chimaera.create()
+      case 'chimaera': {
+        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await chimaera.create()
 
-      break
-    }
+        break
+      }
 
-    case 'daedalus': {
-      const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await daedalus.create()
+      case 'daedalus': {
+        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await daedalus.create()
 
-      break
-    }
+        break
+      }
 
-    /**
-       * UBUNTU
-       */
-    case 'bionic': {
-      const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await bionic.create()
+      /**
+         * UBUNTU
+         */
+      case 'bionic': {
+        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await bionic.create()
 
-      break
-    }
+        break
+      }
 
-    case 'focal': {
-      const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await focal.create()
+      case 'focal': {
+        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await focal.create()
 
-      break
-    }
+        break
+      }
 
-    case 'jammy': {
-      const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await jammy.create()
+      case 'jammy': {
+        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await jammy.create()
 
-      break
-    }
+        break
+      }
 
-    case 'devel': {
-      const devel = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await devel.create()
+      case 'devel': {
+        const devel = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await devel.create()
 
-      break
-    }
+        break
+      }
 
-    /**
-       * Arch
-       */
-    case 'rolling': {
-      const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await rolling.create()
+      /**
+         * Arch
+         */
+      case 'rolling': {
+        const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await rolling.create()
 
-      break
-    }
+        break
+      }
 
       // No default
     }
-
-    this.createBranding()
   }
 
   /**
@@ -199,7 +197,7 @@ export default class Incubator {
       }
     }
 
-    // rootConfiguration krill calamares
+    // rootConfiguration krill/calamares
     if (!fs.existsSync(this.installer.configRoot)) {
       try {
         fs.mkdirSync(this.installer.configRoot)
@@ -249,58 +247,57 @@ export default class Incubator {
     }
 
     /**
-     * themes (only for calamares)
+     * themes krill/calamares
      */
-    if (this.installer.name === 'calamares') {
-      let calamaresBranding = path.resolve(__dirname, `../../../addons/eggs/theme/calamares/branding`)
-      if (this.theme.includes('/')) {
-        calamaresBranding = `${this.theme}/theme/calamares/branding`
-      }
-      // console.log(`calamaresBranding: ${calamaresBranding}`)
-      if (fs.existsSync(calamaresBranding)) {
-        if (!fs.existsSync(this.installer.configRoot + `branding/${this.remix.branding}`)) {
-          try {
-            fs.mkdirSync(this.installer.configRoot + `branding/${this.remix.branding}`)
-          } catch (error) {
-            console.log('error: ' + error + ' creating ' + this.installer.configRoot + `branding/${this.remix.branding}`)
-          }
-        }
-        // patch quirinux
-        shx.cp('-r', calamaresBranding + '/*', this.installer.configRoot + `branding/${this.remix.branding}/`)
-      } else {
-        console.log(calamaresBranding)
-        console.log(`${calamaresBranding} branding not found!`)
-        process.exit()
-      }
-
-      let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.png`)
-      if (this.theme.includes('/')) {
-        calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
-      }
-
-      if (fs.existsSync(calamaresIcon)) {
-        shx.cp(calamaresIcon, '/usr/share/icons/')
-      } else {
-        console.log(`${calamaresIcon} icon not found!`)
-        process.exit()
-      }
-
-      let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
-      if (this.theme.includes('/')) {
-        calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
-      }
-
-      if (fs.existsSync(calamaresLauncher)) {
-        shx.cp(calamaresLauncher, '/usr/share/applications/')
-      } else {
-        console.log(`${calamaresLauncher} launcher not found!`)
-        process.exit()
-      }
-
-      // script di avvio
-      shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
-      shx.chmod('+x', '/usr/sbin/install-system.sh')
+    let calamaresBranding = path.resolve(__dirname, `../../../addons/eggs/theme/calamares/branding`)
+    if (this.theme.includes('/')) {
+      calamaresBranding = `${this.theme}/theme/calamares/branding`
     }
+
+    // console.log(`calamaresBranding: ${calamaresBranding}`)
+    if (fs.existsSync(calamaresBranding)) {
+      if (!fs.existsSync(this.installer.configRoot + `branding/${this.remix.branding}`)) {
+        try {
+          fs.mkdirSync(this.installer.configRoot + `branding/${this.remix.branding}`)
+        } catch (error) {
+          console.log('error: ' + error + ' creating ' + this.installer.configRoot + `branding/${this.remix.branding}`)
+        }
+      }
+      // patch quirinux
+      shx.cp('-r', calamaresBranding + '/*', this.installer.configRoot + `branding/${this.remix.branding}/`)
+    } else {
+      console.log(calamaresBranding)
+      console.log(`${calamaresBranding} branding not found!`)
+      process.exit()
+    }
+
+    let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.png`)
+    if (this.theme.includes('/')) {
+      calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
+    }
+
+    if (fs.existsSync(calamaresIcon)) {
+      shx.cp(calamaresIcon, '/usr/share/icons/')
+    } else {
+      console.log(`${calamaresIcon} icon not found!`)
+      process.exit()
+    }
+
+    let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
+    if (this.theme.includes('/')) {
+      calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
+    }
+
+    if (fs.existsSync(calamaresLauncher)) {
+      shx.cp(calamaresLauncher, '/usr/share/applications/')
+    } else {
+      console.log(`${calamaresLauncher} launcher not found!`)
+      process.exit()
+    }
+
+    // script di avvio
+    shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
+    shx.chmod('+x', '/usr/sbin/install-system.sh')
   }
 
   /**
@@ -308,9 +305,10 @@ export default class Incubator {
    */
   private createBranding() {
     const branding = require('./branding').branding
+
     const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
     if (!fs.existsSync(dir)) {
-      shx.exec(dir + ' -p')
+      shx.exec(`mkdir ${dir} -p`)
     }
 
     const file = dir + 'branding.desc'

@@ -42,7 +42,7 @@ export default class Produce extends Command {
     'sudo eggs produce --cryptedclone',
     'sudo eggs produce --clone',
     'sudo eggs produce --basename=colibri',
-    'sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt',
+    'sudo eggs produce --basename=colibri --theme theme --addons adapt',
   ]
 
   async run(): Promise<void> {
