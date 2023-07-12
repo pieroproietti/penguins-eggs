@@ -97,10 +97,11 @@ export default class Archlinux {
    * Torna verso se calamares è installato
    */
   static async calamaresCheck(): Promise<boolean> {
-    let installed = true
+    let installed = false
     for (const i in this.packs4calamares) {
-      if (!this.packageIsInstalled(this.packs4calamares[i])) {
-        installed = false
+      // Se solo uno è installato calamares è installato
+      if (this.packageIsInstalled(this.packs4calamares[i])) {
+        installed = true
         break
       }
     }
