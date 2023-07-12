@@ -17,7 +17,7 @@ import {exec} from '../../lib/utils'
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares']
+  static packs4calamares = ['calamares','arco-calamares-git']
 
   /**
    * check if it's installed xorg
