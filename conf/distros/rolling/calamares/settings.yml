@@ -18,7 +18,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      #{{createUsers}}users
+      {{createUsers}}users
       - summary
 
   # Phase 2 - install.
@@ -36,7 +36,7 @@ sequence:
       - locale
       - keyboard
       - localecfg
-      #{{createUsers}}users
+      {{createUsers}}users
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
