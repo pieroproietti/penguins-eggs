@@ -119,7 +119,7 @@ export default class CliAutologin {
     const fileMotd = `${chroot}/etc/motd`
 
     let installer = 'sudo eggs install'
-    if (Pacman.packageIsInstalled('calamares')) {
+    if (Pacman.calamaresExists()){
       if (Pacman.packageIsInstalled('plasma-desktop')) {
         installer = 'startplasma-wayland to run GUI and launch calamares'
       } else if (Pacman.packageIsInstalled('xfce4')) {
