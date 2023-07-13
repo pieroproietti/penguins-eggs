@@ -90,21 +90,6 @@ export default class Fedora {
   }
 
   /**
-   * Torna verso se calamares è installato
-   */
-  static async calamaresCheck(): Promise<boolean> {
-    let installed = true
-    for (const i in this.packs4calamares) {
-      if (!this.packageIsInstalled(this.packs4calamares[i])) {
-        installed = false
-        break
-      }
-    }
-
-    return installed
-  }
-
-  /**
    *
    */
   static async calamaresInstall(verbose = true): Promise<void> {

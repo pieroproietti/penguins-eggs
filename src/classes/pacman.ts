@@ -230,19 +230,11 @@ export default class Pacman {
   /**
    * return true if calamares is installed
    */
-  static async calamaresCheck(): Promise<boolean> {
-    let installed = true
-
-    if (this.distro().familyId === 'debian') {
-      installed = await Debian.calamaresCheck()
-    } else if (this.distro().familyId === 'fedora') {
-      installed = await Fedora.calamaresCheck()
-    } else if (this.distro().familyId === 'archlinux') {
-      installed = await Archlinux.calamaresCheck()
-    } else if (this.distro().familyId === 'suse') {
-      installed = await Suse.calamaresCheck()
+  static calamaresExists(): boolean {
+    let installed = false
+    if (shx.exec('command -V calamares > /dev/null').code == 0) {
+      installed = true
     }
-
     return installed
   }
 
@@ -362,7 +354,7 @@ export default class Pacman {
     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
     config.pmount_fixed = false
 
-    if (!this.calamaresCheck()) {
+    if (!this.calamaresExists()) {
     //packageIsInstalled('calamares')) {
       config.force_installer = false
       console.log('Due the lacks of calamares package set force_installer = false')

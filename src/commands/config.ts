@@ -94,7 +94,7 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!cryptedclone && !(await Pacman.calamaresCheck()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+    if (!cryptedclone && !(Pacman.calamaresExists()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
       if (noicons) {
         i.calamares = false 
       } else {

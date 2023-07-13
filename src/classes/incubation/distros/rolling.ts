@@ -51,7 +51,7 @@ export class Rolling {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    if (await Pacman.calamaresCheck()) {
+    if (Pacman.calamaresExists()) {
       // Crea settings solo per calamares
       await fisherman.createCalamaresSettings(this.theme, this.isClone)
     }

@@ -119,7 +119,7 @@ export default class Calamares extends Command {
             /**
              * Remove calamares
              */
-            if (await Pacman.calamaresCheck()) {
+            if (Pacman.calamaresExists()) {
               await Pacman.calamaresRemove()
               if (await this.settings.load()) {
                 this.settings.config.force_installer = false
