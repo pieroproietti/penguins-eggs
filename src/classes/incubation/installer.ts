@@ -26,7 +26,7 @@ export function installer(): IInstaller {
 
   installer.configRoot = ''
   //if (Pacman.packageIsInstalled('calamares')) {
-  if (fs.existsSync('/usr/bin/calamares') {
+  if (fs.existsSync('/usr/bin/calamares')) {
     installer.name = 'calamares'
     installer.configRoot = '/etc/calamares/'
     installer.multiarch = multiarch() + 'calamares/'
