@@ -266,7 +266,9 @@ export default class Pacman {
         await Suse.calamaresInstall(verbose)
       }
 
-      // remove calamares link
+      // remove others calamares links
+      await exec('rm -f /usr/share/applications/cal-arcolinux-debugging.desktop')
+      await exec('rm -f /usr/share/applications/cal-arcolinux.desktop')
       await exec('rm -f /usr/share/applications/calamares.desktop')
     }
   }
