@@ -27,12 +27,12 @@ export function installer(): IInstaller {
 
   installer.configRoot = ''
   if (Pacman.calamaresExists()) {
-    console.log('calamares presente')    
+    // console.log('calamares presente')    
     installer.name = 'calamares'
     installer.configRoot = '/etc/calamares/'
     installer.multiarch = multiarch() + 'calamares/'
   } else {
-    console.log('calamares ASSENTE')    
+    // console.log('calamares ASSENTE')    
     installer.name = 'krill'
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
     /**
