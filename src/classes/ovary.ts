@@ -1243,7 +1243,7 @@ export default class Ovary {
 
       let installerUrl = 'install-system.desktop'
       let installerIcon = 'install-system.sh'
-      if (Pacman.packageIsInstalled('calamares')) {
+      if (Pacman.calamaresExists()) {
         shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else if (Pacman.packageIsInstalled('live-installer')) {
         // carico la policy per live-installer
