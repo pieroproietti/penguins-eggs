@@ -232,6 +232,7 @@ export default class Pacman {
    */
   static async calamaresCheck(): Promise<boolean> {
     let installed = true
+
     if (this.distro().familyId === 'debian') {
       installed = await Debian.calamaresCheck()
     } else if (this.distro().familyId === 'fedora') {
@@ -361,7 +362,8 @@ export default class Pacman {
     config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
     config.pmount_fixed = false
 
-    if (!this.packageIsInstalled('calamares')) {
+    if (!this.calamaresCheck()) {
+    //packageIsInstalled('calamares')) {
       config.force_installer = false
       console.log('Due the lacks of calamares package set force_installer = false')
     }

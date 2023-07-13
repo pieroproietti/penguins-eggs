@@ -9,15 +9,15 @@ import fs, { truncate } from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
-import {array2spaced} from '../../lib/dependencies'
-import {exec} from '../../lib/utils'
+import { array2spaced } from '../../lib/dependencies'
+import { exec } from '../../lib/utils'
 
 /**
  * Utils: general porpourse utils
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares','arco-calamares-git']
+  static packs4calamares = ['calamares', 'arco-calamares-git']
 
   /**
    * check if it's installed xorg
@@ -108,7 +108,6 @@ export default class Archlinux {
         break
       }
     }
-
     return installed
   }
 
@@ -143,11 +142,14 @@ export default class Archlinux {
     let removed = false
     const echo = Utils.setEcho(verbose)
 
-    if (await this.packagePacmanAvailable('calamares')){
+    if (await this.packagePacmanAvailable('calamares')) {
       await exec('pacman -R calamares', echo)
       removed = true
-    } else if (await this.packagePacmanAvailable('calamares-git')){
+    } else if (await this.packagePacmanAvailable('calamares-git')) {
       await exec('pacman -R calamares-git', echo)
+      removed = true
+    } else if (await this.packagePacmanAvailable('arco-calamares-git')) {
+      await exec('pacman -R arco-calamares-git', echo)
       removed = true
     }
 
@@ -166,7 +168,7 @@ export default class Archlinux {
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
     const cmd = `/usr/bin/pacman -Qi ${packageName}`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }
@@ -181,7 +183,7 @@ export default class Archlinux {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, {silent: true}) === '0') {
+    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
       retVal = true
     }
 
@@ -195,7 +197,7 @@ export default class Archlinux {
   static async packagePacmanAvailable(packageName: string): Promise<boolean> {
     let available = false
     const cmd = `/usr/bin/pacman -Q ${packageName} | awk '{ print $1 }'`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout == packageName) {
       available = true
     }
@@ -210,7 +212,7 @@ export default class Archlinux {
   static async packagePacmanLast(packageName: string): Promise<string> {
     let version = ''
     const cmd = `/usr/bin/pacman -Q ${packageName} | grep Version:`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     version = stdout.slice(9)
     // console.log('===================================')
     // console.log('[' + version + ']')
