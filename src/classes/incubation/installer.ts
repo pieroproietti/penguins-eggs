@@ -14,7 +14,7 @@
 import { IInstaller, IRemix } from '../../interfaces/index'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
-
+import fs from 'fs'
 /**
  * 
  * @returns 
@@ -25,7 +25,8 @@ export function installer(): IInstaller {
   // configRoot
 
   installer.configRoot = ''
-  if (Pacman.packageIsInstalled('calamares')) {
+  //if (Pacman.packageIsInstalled('calamares')) {
+  if (fs.existsSync('/usr/bin/calamares') {
     installer.name = 'calamares'
     installer.configRoot = '/etc/calamares/'
     installer.multiarch = multiarch() + 'calamares/'
