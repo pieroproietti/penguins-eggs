@@ -2,7 +2,7 @@
  * installer
  *
  * name  = 'calamares' oppure 'krill'
- * configuration = '/etc/calamares/' oppure '/etc/penguins-eggs.d/krill/'
+ * configRoot = '/etc/calamares/' oppure '/etc/penguins-eggs.d/krill/'
  * modules = configuration + 'modules/'
  * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
  *
@@ -14,8 +14,7 @@
 import { IInstaller, IRemix } from '../../interfaces/index'
 import Distro from '../../classes/distro'
 import Pacman from '../../classes/pacman'
-import fs from 'fs'
-import shell from 'shelljs'
+
 /**
  * 
  * @returns 
@@ -27,17 +26,12 @@ export function installer(): IInstaller {
 
   installer.configRoot = ''
   if (Pacman.calamaresExists()) {
-    // console.log('calamares presente')    
     installer.name = 'calamares'
     installer.configRoot = '/etc/calamares/'
     installer.multiarch = multiarch() + 'calamares/'
   } else {
-    // console.log('calamares ASSENTE')    
     installer.name = 'krill'
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
-    /**
-     * renamed: was penguins-eggs
-     */
     installer.multiarch = multiarch() + 'krill/' 
   }
 
@@ -45,7 +39,8 @@ export function installer(): IInstaller {
   installer.multiarchModules = installer.multiarch + 'modules/'
 
   /**
-   * i template nelle versioni isCalamaresAvailable sono QUELLI di calamares
+   * se distro.isCalamaresAvailable()
+   * i template di calamares e krill sono gli stessi
    */
   const remix = {} as IRemix
   const distro = new Distro(remix)
