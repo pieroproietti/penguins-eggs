@@ -159,7 +159,7 @@ export default class Ovary {
       // Carica calamares sono se le icone sono accettate
       if (!noicons) { // se VOGLIO le icone
         if (!nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
-          this.settings.config.force_installer && !(await Pacman.calamaresCheck())) {
+          this.settings.config.force_installer && !(Pacman.calamaresExists())) {
           console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
           await Pacman.calamaresInstall(verbose)
           const bleach = new Bleach()

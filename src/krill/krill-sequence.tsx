@@ -609,7 +609,7 @@ export default class Sequence {
           *
           * if calamares is present: remove GUI installer link
           */
-         if (await Pacman.calamaresCheck()) {
+         if (Pacman.calamaresExists()) {
             message = "remove GUI installer link"
             percent = 0.92
             try {

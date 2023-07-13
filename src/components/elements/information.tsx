@@ -80,7 +80,7 @@ export default async function information(verbose = false): Promise<void> {
 
     let installer = false
     if (Pacman.isInstalledGui()) {
-        installer = await Pacman.calamaresCheck()
+        installer = Pacman.calamaresExists()
     }
 
     const Ok = () => (
