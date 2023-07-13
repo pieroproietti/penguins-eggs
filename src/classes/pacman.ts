@@ -357,7 +357,6 @@ export default class Pacman {
     config.pmount_fixed = false
 
     if (!this.calamaresExists()) {
-    //packageIsInstalled('calamares')) {
       config.force_installer = false
       console.log('Due the lacks of calamares package set force_installer = false')
     }
