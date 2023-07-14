@@ -232,7 +232,7 @@ export default class Pacman {
    */
   static calamaresExists(): boolean {
     let installed = false
-    if (shx.exec('command -V calamares > /dev/null').code == 0) {
+    if (shx.exec('command -V calamares &> /dev/null').code == 0) {
       installed = true
     }
     return installed
@@ -756,8 +756,7 @@ export default class Pacman {
   static async commandIsInstalled(cmd: string): Promise<boolean> {
     let installed = false
 
-    const stdout = shx.exec(`command -v ${cmd}`, {silent: true}).stdout.trim()
-    if (stdout !== '') {
+    if (shx.exec('command -V calamares &> /dev/null').code == 0) {
       installed = true
     } else {
       Utils.warning(`${cmd} is not in your search path or is not installed!`)
