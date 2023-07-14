@@ -18,7 +18,7 @@ export default class CFS {
    async steps(): Promise<string[]> {
       const cfs: string[] = []
       let configRoot = '/etc/penguins-eggs.d/krill/'
-      if (fs.existsSync('/etc/calamares/settings.conf')) {
+      if (Pacman.calamaresExists()) {
          configRoot = '/etc/calamares/'
       }
 
