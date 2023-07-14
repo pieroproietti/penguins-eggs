@@ -10,7 +10,7 @@ import Pacman from '../../pacman'
  * @returns yaml-string
  */
 export function remove(distro: IDistro): string {
-  const packages = ['calamares']
+  const packages = ['calamares', 'calamares-git', 'calamares-eggs']
   if (distro.familyId === 'archlinux') {
     packages.push('penguins-eggs')
   }
@@ -25,7 +25,7 @@ export function remove(distro: IDistro): string {
   }
 
   if (yaml !== '') {
-    yaml = '- remove:\n' + yaml
+    yaml = '- try_remove:\n' + yaml
   }
 
   return yaml
