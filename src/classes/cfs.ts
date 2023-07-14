@@ -22,13 +22,16 @@ export default class CFS {
          configRoot = '/etc/calamares/'
       }
 
-      const settingsVar: string = fs.readFileSync(`${configRoot}settings.conf`, 'utf8')
-      const settingsYaml = yaml.load(settingsVar) as ISettings
-      const execSequence = settingsYaml.sequence[1]
-      const steps = execSequence.exec
-      for (const step of steps) {
-         if (step.includes('cfs-')) {
-            cfs.push(step)
+      // escluso se solo krill
+      if (fs.existsSync(`${configRoot}settings.conf`){
+         const settingsVar: string = fs.readFileSync(`${configRoot}settings.conf`, 'utf8')
+         const settingsYaml = yaml.load(settingsVar) as ISettings
+         const execSequence = settingsYaml.sequence[1]
+         const steps = execSequence.exec
+         for (const step of steps) {
+            if (step.includes('cfs-')) {
+               cfs.push(step)
+            }
          }
       }
       return cfs
