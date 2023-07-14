@@ -756,7 +756,7 @@ export default class Pacman {
   static async commandIsInstalled(cmd: string): Promise<boolean> {
     let installed = false
 
-    if (shx.exec('command -V calamares &> /dev/null').code == 0) {
+    if (shx.exec(`command -V ${cmd} &> /dev/null`).code == 0) {
       installed = true
     } else {
       Utils.warning(`${cmd} is not in your search path or is not installed!`)
