@@ -267,8 +267,8 @@ export default class Pacman {
       }
 
       // remove others calamares links
-      await exec('rm -f /usr/share/applications/cal-arcolinux-debugging.desktop')
-      await exec('rm -f /usr/share/applications/cal-arcolinux.desktop')
+      await exec('rm -f /usr/share/applications/calamares-eggs-debugging.desktop')
+      await exec('rm -f /usr/share/applications/calamares-eggs.desktop')
       await exec('rm -f /usr/share/applications/calamares.desktop')
     }
   }
