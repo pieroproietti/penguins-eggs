@@ -276,13 +276,16 @@ export default class Incubator {
       calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
     }
 
-    if (fs.existsSync(calamaresIcon)) {
-      shx.cp(calamaresIcon, '/usr/share/icons/')
-    } else {
-      console.log(`${calamaresIcon} icon not found!`)
-      process.exit()
+    // se non esiste non copio la icona
+    if (Pacman.calamaresExists()) {
+      if (fs.existsSync(calamaresIcon)) {
+        shx.cp(calamaresIcon, '/usr/share/icons/')
+      } else {
+        console.log(`${calamaresIcon} icon not found!`)
+        process.exit()
+      }
     }
-
+    
     let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
     if (this.theme.includes('/')) {
       calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
