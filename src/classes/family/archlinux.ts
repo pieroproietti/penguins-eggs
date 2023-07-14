@@ -17,7 +17,7 @@ import { exec } from '../../lib/utils'
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares', 'arco-calamares-git']
+  static packs4calamares = ['calamares', 'calamares-git', 'calamares-eggs']
 
   /**
    * check if it's installed xorg
@@ -130,8 +130,8 @@ export default class Archlinux {
     } else if (await this.packagePacmanAvailable('calamares-git')) {
       await exec('pacman -R calamares-git', echo)
       removed = true
-    } else if (await this.packagePacmanAvailable('arco-calamares-git')) {
-      await exec('pacman -R arco-calamares-git', echo)
+    } else if (await this.packagePacmanAvailable('calamares-eggs')) {
+      await exec('pacman -R calamares-eggs', echo)
       removed = true
     }
 
