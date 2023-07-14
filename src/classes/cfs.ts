@@ -22,8 +22,8 @@ export default class CFS {
          configRoot = '/etc/calamares/'
       }
 
-      // escluso se solo krill
-      if (fs.existsSync(`${configRoot}settings.conf`){
+      // solo se esiste settings.conf  CALAMARES
+      if (fs.existsSync(`${configRoot}settings.conf`)) {
          const settingsVar: string = fs.readFileSync(`${configRoot}settings.conf`, 'utf8')
          const settingsYaml = yaml.load(settingsVar) as ISettings
          const execSequence = settingsYaml.sequence[1]
