@@ -17,18 +17,15 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-## eggs-9.5.11
-**krill**: since it is possible for both krill and calamares to use themes not only for aesthetic purposes but also for special configurations, I modified krill to accept themes even in the absence of calamares. This also comes in handy for another reason: I am interested in jade-gui, the crystal-linux and blendOS installer. In time, I would like to make jade-gui available in eggs, somewhat as is the case with calamares.
-
-I have already made a few attempts using blendos and the jade-gui version of it and it seems to work perfectly even on live images created with penguins-eggs.
-
 ## eggs-9.5.12
 After having problems with calamares in Arch, you can read more [here](https://penguins-eggs.net/blog/arch-calamares-icu) I had to provide a new version of calamares for Arch, also there were many fixes also to get krill working in the new mode. 
 
 Really a lot of effort, which should be rewarded by being able to start distributing Arch ISOs and derivatives installable with calamares again.
 
 ## eggs-9.5.11
-krill: since it is possible for both krill and calamares to use themes not only for aesthetic purposes but also for special configurations, I modified krill to accept themes even in the absence of calamares. This also comes in handy for another reason: I am interested in jade-gui, the crystal-linux and blendOS installer. In time, I would like to make jade-gui available in eggs, somewhat as is the case with calamares.
+**krill**: since it is possible for both krill and calamares to use themes not only for aesthetic purposes but also for special configurations, I modified krill to accept themes even in the absence of calamares. This also comes in handy for another reason: I am interested in jade-gui, the crystal-linux and blendOS installer. In time, I would like to make jade-gui available in eggs, somewhat as is the case with calamares.
+
+I have already made a few attempts using blendos and the jade-gui version of it and it seems to work perfectly even on live images created with penguins-eggs.
 
 ## eggs-9.5.10
 * debian: grub-efi-amd64-bin now is included in dependencies, so it's automatically addded and is always possible to produce system for BIOS and EFI;

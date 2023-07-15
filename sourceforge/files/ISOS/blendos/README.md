@@ -48,7 +48,7 @@ This, as I understand it, is handled by the [`akshara`](https://github.com/blend
 
 It's right? It's not right? I don't know really, also I wrote a simple theme in [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe) called `blendos` That reintroduces the akshara hook during the installation of the system.
 
-I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also penguins-eggs.
+I use to create this remaster [chaotic-aur](https://aur.chaotic.cx/) where I get calamares and also penguins-eggs. Recently, given a problem with the [calamares-git](https://aur.archlinux.org/packages/calamares-git) package on [AUR](https://aur.archlinux.org/), I switched to a personal [calamares-eggs](https://github.com/pieroproietti/eggs-pkgbuilds/tree/master/aur/calamares-eggs) not yet on chaotic-aur.
 
 That said, in a nutshell, **this way to remaster blendOS is absolutely not the original**. Rather, it is my attempt to keep up with the times and include compatibility with this - in some ways revolutionary - distribution.
 
