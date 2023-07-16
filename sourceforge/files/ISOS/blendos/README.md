@@ -30,16 +30,21 @@ This ISOs are created using [assemble](https://github.com/blend-os/assemble) and
 * **blendOS-gnome** 
 * **blendOS-plasma**
 
+![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
+
 # blendOS remastered with penguins-eggs
 This ISOs are created using [penguins-eggs](https://github.com/pieroproietti/penguins-eggs) as described on [penguins-blog](https://penguins-eggs.net/blog/build-blendos-image).
 
-* **egg-of-blendos-colibri**  (A light xfce4 for developers you can easily start to improve eggs installing colibri)
-* **egg-of-blendos-cinnamon** (unchanged)
-* **egg-of-blendos-deepin** (unchanged)
-* **egg-of-blendos-gnome** (unchanged)
-* **egg-of-blendos-plasma** (unchanged)
+## **egg-of-blendos-colibri**
+A light xfce4 for developers you can easily start to improve eggs by installing colibri.
 
-![gnome](https://www.gnome.org/wp-content/uploads/2023/02/wgo-splash-40.webp)
+![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+
+## **egg-of-blendos-duck**
+cinnamon, office, multimedia and all that is needed for most users
+
+![duck](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/duck.png/245/183)
+
 
 ## Notes about penguins-eggs way
 At the moment I'm doing a job of "adapting" penguins-eggs to [blendOS](https://blendos.co/), being a rather particular distribution, especially for immutability.
