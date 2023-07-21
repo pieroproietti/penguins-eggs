@@ -25,6 +25,7 @@
   distro: Debian
   derivatives:
     - kali-rolling # kali
+    - faye # LMDE 6
 
 #
 # DEVUAN
