@@ -15,5 +15,5 @@ defaultGroups:
   - bluetooth
 autologinGroup: autologin
 sudoersGroup: sudo
-setRootPassword: false
-# doReusePassword: false
+setRootPassword: true
+doReusePassword: false
