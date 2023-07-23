@@ -45,6 +45,7 @@ efiBootMgr: "efibootmgr"
 # (problematic characters, see above, are replaced).
 #
 # efiBootloaderId: "dirname"
+efiBootloaderId: "Debian"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootia32.efi or bootx64.efi depending on
