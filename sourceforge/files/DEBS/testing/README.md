@@ -16,10 +16,30 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-## eggs-9.5.9
-* krill now respect autologin on Arch;
-* no more need to create symbolic link on the root for `/boot/vmlinuz-linux` or `/boot/vmlinuz-linux-zen` on blendOS;
-* system installation (krill or calamares) remove entirely `/etc/calamares` using option `--release` in produce.
+## eggs-9.5.13
+* Sparky linux came in two version: stable and semi-rolling. On same version field `VERSION_CODENAME` on `/etc/os-release` is not configurated, this lead eggs to assume the version is `rolling` but this is wrong. Add on `/etc/os-release` the line `VERSION_CODENAME=bookworm` to can remaster it with penguins-eggs;
+* Linuxmint LMDE, Sparky and others Debian based distros, need to have the field `efiBootloaderId: "Debian"` to can boot correctly on UEFI;
+* persist a problem on BIOS for LMDE and Sparky who I can't understand. 
+
+Calamares get this error 
+
+```
+Get:1 file:/var/local/yolk ./ InRelease
+...
+Ign:8 file:/var/local/yolk ./ Contents (deb)
+Reading package lists...
+Running bootloader-config...
+ * install grub... (bios)
+Reading package lists...
+Building dependency tree...
+Reading state information...
+grub-pc is already the newest version (2.06-3~deb11u5).
+cryptsetup is already the newest version (2:2.3.7-1+deb11u1).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+1 not fully installed or removed.
+After this operation, 0 B of additional disk space will be used.
+Setting up grub-pc (2.06-3~deb11u5) ...
+```
 
 # OEM Installation
 I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
