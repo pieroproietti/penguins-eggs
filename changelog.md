@@ -19,8 +19,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ## eggs-9.5.13
 * Sparky linux came in two version: stable and semi-rolling. On same version field `VERSION_CODENAME` on `/etc/os-release` is not configurated, this lead eggs to assume the version is `rolling` but this is wrong. Add on `/etc/os-release` the line `VERSION_CODENAME=bookworm` to can remaster it with penguins-eggs;
-* Linuxmint LMDE, Sparky and others Debian based distros, need to have the field `efiBootloaderId: "Debian"`;
-
+* Linuxmint LMDE, Sparky and others Debian based distros, need to have the field `efiBootloaderId: "Debian"` to can boot correctly on UEFI;
+* persist a problem on BIOS for LMDE and Sparky who I can't understand. Calamares get error 
 
 ## eggs-9.5.12
 After having problems with calamares in Arch, you can read more [here](https://penguins-eggs.net/blog/arch-calamares-icu) I had to provide a new version of calamares for Arch, also there were many fixes also to get krill working in the new mode. 
