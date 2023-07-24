@@ -7,7 +7,8 @@ TMPDIR=$CHROOT/tmp
 if [ ! -d $TMPDIR ]; then
     echo mkdir $TMPDIR
 fi
-# patch
+
+# patch: for same reason we need it for derivatives
 chroot $CHROOT dpkg --configure -a
 
 # eseguo apt update
