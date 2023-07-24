@@ -5,4 +5,5 @@ type: "job"
 name: "bootloader-config"
 interface: "process"
 command: "/usr/sbin/bootloader-config.sh"
-timeout: 600
+timeout: 1000
+# just long timeout: 600

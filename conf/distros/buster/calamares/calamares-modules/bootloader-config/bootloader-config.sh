@@ -7,6 +7,9 @@ TMPDIR=$CHROOT/tmp
 if [ ! -d $TMPDIR ]; then
     echo mkdir $TMPDIR
 fi
+# patch
+chroot $CHROOT dpkg --configure -a
+
 # eseguo apt update
 chroot $CHROOT apt-get -y --allow-unauthenticated update
 # Set secure permissions for the initramfs if we're configuring
