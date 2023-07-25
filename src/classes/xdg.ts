@@ -281,10 +281,13 @@ export default class Xdg {
     /**
      * ALL Desktops:
      * 
-     *    rm .config/user-dirs*
-     *    to not look users-dirs building
+     * rm .config/user-dirs*
+     * 
+     * Added user-dirs.locale 
+     * suggestion from: Emer Chen
      */
     await exec(`rm /etc/skel/.config/user-dirs.dirs`)
+    await exec(`rm /etc/skel/.config/user-dirs.locale`)
   }
 }
 
