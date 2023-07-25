@@ -16,33 +16,13 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-## eggs-9.5.13
-* Sparky linux came in two version: stable and semi-rolling. On same version field `VERSION_CODENAME` on `/etc/os-release` is not configurated, this lead eggs to assume the version is `rolling` but this is wrong. Add on `/etc/os-release` the line `VERSION_CODENAME=bookworm` to can remaster it with penguins-eggs;
-* Linuxmint LMDE, Sparky and others Debian based distros, need to have the field `efiBootloaderId: "Debian"` to can boot correctly on UEFI;
-* persist a problem on BIOS for LMDE and Sparky who I can't understand. 
+## eggs-9.5.14-PRE
 
-Calamares get this error 
+Just added this line:
 
-```
-Get:1 file:/var/local/yolk ./ InRelease
-...
-Ign:8 file:/var/local/yolk ./ Contents (deb)
-Reading package lists...
-Running bootloader-config...
- * install grub... (bios)
-Reading package lists...
-Building dependency tree...
-Reading state information...
-grub-pc is already the newest version (2.06-3~deb11u5).
-cryptsetup is already the newest version (2:2.3.7-1+deb11u1).
-0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
-1 not fully installed or removed.
-After this operation, 0 B of additional disk space will be used.
-Setting up grub-pc (2.06-3~deb11u5) ...
-```
+`await exec(`rm /etc/skel/.config/user-dirs.locale`)`
 
-# OEM Installation
-I'm trying to create an OEM installation for eggs, in order to allow configuring pre-installed computers where the user gets a simple configuration program on first boot.
+for better internationalization, on the command skel - class xdg.ts, as suggested Emer Chen.
 
 ## Krill
 An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
