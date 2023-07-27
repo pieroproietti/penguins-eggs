@@ -751,10 +751,10 @@ export default class Pacman {
    */
   static commandIsInstalled(cmd: string): boolean {
     let installed = false
-    if (shx.exec(`command -V ${cmd} &>/dev/null`).code == 0) {
+    // if (shx.exec(`command -V ${cmd} &>/dev/null`).code == 0) {
+    // remove output
+    if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
       installed = true
-    } else {
-      Utils.warning(`${cmd} is not in your search path or is not installed!`)
     }
 
     return installed
