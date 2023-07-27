@@ -24,6 +24,8 @@ Just added this line:
 
 for better internationalization, on the command skel - class xdg.ts, as suggested Emer Chen.
 
+* removed echo `calamares is...` when we check for calamares existence.
+
 ## Krill
 An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
 
