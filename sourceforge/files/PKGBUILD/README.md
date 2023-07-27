@@ -1,12 +1,13 @@
-# penguins-eggs-pkgbuilds
+# eggs-pkgbuilds
  
-This is my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository, and here I am collecting my PKGBUILDs. Once tested, pkgbuilds are published to the [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
+This is my [eggs-pkgbuilds](https://github.com/pieroproietti/eggs-pkgbuilds) repository, and here I am collecting my PKGBUILDs. Once tested, pkgbuilds are published to the [Archlinux User Repository](https://aur.archlinux.org/packages/penguins-eggs) and [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
 # Installation
 
-On Arch it's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs`.
+**NOTE** calamares-eggs is not in aur, to install, just download it and use `pacman -U name-file` to install it.
 
-In Manjaro you can install penguins-eggs with pamac or pacman.
+It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs`.
+
 
 
 # Configuration

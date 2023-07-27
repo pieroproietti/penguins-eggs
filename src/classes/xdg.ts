@@ -280,14 +280,15 @@ export default class Xdg {
 
     /**
      * ALL Desktops:
-     * 
-     * rm .config/user-dirs*
-     * 
-     * Added user-dirs.locale 
+     * rm user-dirs.*
      * suggestion from: Emer Chen
      */
-    await exec(`rm /etc/skel/.config/user-dirs.dirs`)
-    await exec(`rm /etc/skel/.config/user-dirs.locale`)
+    if (fs.existsSync('/etc/skel/.config/user-dirs.dirs')) {
+      await exec(`rm /etc/skel/.config/user-dirs.dirs`)
+    }
+    if (fs.existsSync('/etc/skel/.config/user-dirs.locale')) {
+      await exec(`rm /etc/skel/.config/user-dirs.locale`)
+    }
   }
 }
 
