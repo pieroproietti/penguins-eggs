@@ -161,6 +161,14 @@ class Distro implements IDistro {
 
       break
     }
+    
+    case 'trixie': {
+      // Debian 13 trixie
+      this.distroLike = 'Debian'
+      this.codenameLikeId = 'trixie'
+
+      break
+    }
 
     case 'beowulf': {
       // Devuab 3 beowulf

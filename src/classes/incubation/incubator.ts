@@ -100,10 +100,15 @@ export default class Incubator {
 
         break
       }
-
       case 'bookworm': {
         const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await bookworm.create()
+
+        break
+      }
+      case 'trixie': {
+        const trixie = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await trixie.create()
         // DEVUAN
 
         break
