@@ -1,9 +1,9 @@
-# Debian 13 trixie
+# Debian 12 bookworm
 
 It take all configuration from Debian buster
 
 Used by
-- trixie
+- bookworm
 
 ISSUES
-* added 28 luly 2023
+* added 27 october 2021
