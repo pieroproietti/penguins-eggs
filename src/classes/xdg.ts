@@ -183,7 +183,7 @@ export default class Xdg {
   }
 
   /**
-   * Copia della configuirazione in /etc/skel
+   * Copia della configurazione in /etc/skel
    * @param user
    * @param verbose
    */
@@ -280,15 +280,11 @@ export default class Xdg {
 
     /**
      * ALL Desktops:
-     * rm user-dirs.*
-     * suggestion from: Emer Chen
      */
-    if (fs.existsSync('/etc/skel/.config/user-dirs.dirs')) {
-      await exec(`rm /etc/skel/.config/user-dirs.dirs`)
-    }
-    if (fs.existsSync('/etc/skel/.config/user-dirs.locale')) {
-      await exec(`rm /etc/skel/.config/user-dirs.locale`)
-    }
+    // Emer Chen suggestions
+    await exec(`rm -r /etc/skel/.config/user-dirs.*`)
+    // MX-developer suggestions
+    await exec(`rm -rf /etc/skel/.config/gtk-3.0/bookmarks`)
   }
 }
 
