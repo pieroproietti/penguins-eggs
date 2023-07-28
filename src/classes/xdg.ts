@@ -207,7 +207,7 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
 
-    } else if (Pacman.packageIsInstalled('cinnamon-common')) {
+    } else if (Pacman.packageIsInstalled('cinnamon-common') {
       // use .cinnamon NOT cinnamon/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
