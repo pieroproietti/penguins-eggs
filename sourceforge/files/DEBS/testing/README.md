@@ -26,6 +26,11 @@ for better internationalization, on the command skel - class xdg.ts, as suggeste
 
 * removed echo `calamares is...` when we check for calamares existence.
 
+* removed `/etc/skel/.config/bookmarks` from skel.
+
+* changed the way to recognize cinnamon, not more `cinnamon-core` but `cinnamon-common`.
+
+
 ## Krill
 An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
 
