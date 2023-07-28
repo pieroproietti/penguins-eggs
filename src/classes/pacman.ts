@@ -5,19 +5,19 @@
  * license: MIT
  */
 
-import {array2spaced, depCommon, depArch, depVersions, depInit} from '../lib/dependencies'
+import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
 
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import {IRemix, IDistro} from '../interfaces/index'
+import { IRemix, IDistro } from '../interfaces/index'
 
 import Utils from './utils'
 import Distro from './distro'
 import Settings from './settings'
-import {execSync} from 'node:child_process'
-import {IEggsConfig} from '../interfaces/index'
-import {exec} from '../lib/utils'
+import { execSync } from 'node:child_process'
+import { IEggsConfig } from '../interfaces/index'
+import { exec } from '../lib/utils'
 
 import Debian from './family/debian'
 import Fedora from './family/fedora'
@@ -474,7 +474,7 @@ export default class Pacman {
 
       const manPageDest = man1Dir + 'eggs.1.gz'
       exec(`cp ${manPageSrc} ${manPageDest}`)
-      if (shx.exec('which mandb', {silent: true}).stdout.trim() !== '') {
+      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
         await exec('mandb > /dev/null')
         if (verbose) {
           console.log('manPage eggs installed...')
@@ -542,6 +542,13 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'bookworm') {
       const dest = '/etc/penguins-eggs.d/distros/bookworm'
+      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+      /**
+       * Debian 13 trixie: eredita tutto da buster
+       */
+    } else if (this.distro().codenameLikeId === 'trixie') {
+      const dest = '/etc/penguins-eggs.d/distros/trixie'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
@@ -742,7 +749,7 @@ export default class Pacman {
   }
 
   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
-    return shx.exec('npm show ' + packageNpm + ' version', {silent: true}).stdout.trim()
+    return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
   }
 
   /**
