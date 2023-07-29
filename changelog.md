@@ -21,7 +21,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * skel:`rm -f /etc/skel/.config/user-dirs.*`, `rm -f /etc/skel/.config/bookmarks` as suggested Emer Chen;
 * pacman: removed echo on `commandIsInstalled()`;
 * changed the way to test cinnamon DE, from `cinnamon-core` to `cinnamon-common`;
-* added `Debian 13 trixie`` to support Sparky 8 rolling.
+* added `Debian 13 trixie` to support Sparky 8 rolling.
 
 ## eggs-9.5.13
 Added Sparky linux, and solved issued with derivatives installation on UEFI and BIOS;
