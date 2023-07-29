@@ -61,11 +61,6 @@ After that is better to look apt upgrade of calamares, just use:
 sudo apt-mark hold calamares
 ```
 
-More informations:
-
-* [Sparkylinux](https://sparkylinux.org/) 
-
-
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
