@@ -74,7 +74,7 @@ I switched to Debian bookworm as a development station, using node v18.16.0 and 
 ### eggs-9.5.1
 Just little bugfix to let eggs to work again on CLI systems, solved a configuration on krill for Arch.
 
-# [changelog.d](https://github.com/pieroproietti/penguins-eggs/changelog.d)
+# [changelog.d](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d)
 
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
