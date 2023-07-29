@@ -16,8 +16,10 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-## Holidays
-I'll be on vacation for the next two weeks, to everyone: happy holidays or good work.
+# Testing
+There are no new version to test!
+
+# Future plans
 
 ## Krill
 An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
