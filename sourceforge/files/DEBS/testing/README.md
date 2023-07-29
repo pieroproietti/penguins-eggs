@@ -16,21 +16,8 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
-## eggs-9.5.14-PRE
-
-Just added this line:
-
-`await exec(`rm /etc/skel/.config/user-dirs.locale`)`
-
-for better internationalization, on the command skel - class xdg.ts, as suggested Emer Chen.
-
-* removed echo `calamares is...` when we check for calamares existence.
-
-* removed `/etc/skel/.config/bookmarks` from skel.
-
-* changed the way to recognize cinnamon, not more `cinnamon-core` but `cinnamon-common`;
-
-* added Debian 13 trixie to support Sparkly rolling.
+## Holidays
+I'll be on vacation for the next two weeks, to everyone: happy holidays or good work.
 
 ## Krill
 An OEM installation is divided into two phases, the first to be carried out in the company is the pre-installation which installs the operating system by configuring it with a live user, the second is the final configuration phase which takes place after delivery to the user.
