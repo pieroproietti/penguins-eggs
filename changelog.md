@@ -17,6 +17,12 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## eggs-9.5.14
+* skel:`rm -f /etc/skel/.config/user-dirs.*`, `rm -f /etc/skel/.config/bookmarks` as suggested Emer Chen;
+* pacman: removed echo on `commandIsInstalled()`;
+* changed the way to test cinnamon DE, from `cinnamon-core` to `cinnamon-common`;
+* added `Debian 13 trixie`` to support Sparky 8 rolling.
+
 ## eggs-9.5.13
 Added Sparky linux, and solved issued with derivatives installation on UEFI and BIOS;
 * UEFI: Linuxmint LMDE, Sparky and others Debian based distros, need to have the field `efiBootloaderId: "Debian"` to can boot correctly on UEFI;

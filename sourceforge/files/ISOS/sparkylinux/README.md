@@ -35,7 +35,6 @@ SparkyLinux is a GNU/Linux distribution based on the Debian GNU/Linux operating 
 
 Sparky is a fast, lightweight and fully customizable operating system which offers several versions for different use cases. [Read more…](https://sparkylinux.org/about/)
 
-
 NOTE: Sparkly linux provides its own version of calamares, unfortunately this one has incompatibilities with eggs, so you'd better install the debian version.
 
 ```
