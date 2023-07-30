@@ -223,7 +223,7 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
 
-    } else if (Pacman.packageIsInstalled('lxqt-core')) {
+    } else if (Pacman.packageIsInstalled('lxqt-session')) {
       // we need a more clean solution
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
