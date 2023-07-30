@@ -283,8 +283,8 @@ export default class Xdg {
      * ALL Desktops:
      */
     // Emer Chen suggestions
-    await exec(`rm -r /etc/skel/.config/user-dirs.*`)
-    // MX-developer suggestions
+    await exec(`rm -r /etc/skel/.config/user-dirs.dirs`)
+    await exec(`rm -r /etc/skel/.config/user-dirs.locale`)
     await exec(`rm -rf /etc/skel/.config/gtk-3.0/bookmarks`)
   }
 }
