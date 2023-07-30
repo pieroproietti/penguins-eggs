@@ -50,7 +50,7 @@ I was undecided whether to publish this version or not - there are no interestin
 
 ### eggs-9.3.20
 * krill: added confirm button or abort before to erase disk for --unattended and new option --nointeractive for scripts;
-* produce: if not present sddm.conf and package sddm is installed eggs will create it in production for autologin with ```Session=plasma-wayland``` or ```Session=plasma``` and ```User=live```;
+* produce: if not present  and package sddm is installed eggs will create it in production for autologin with ```Session=plasma-wayland``` or ```Session=plasma``` and ```User=live```;
 * tools skel: added copy waydroid-package-manager to skel if present.
 * wardrobe: removed command ironing and tons of add/remove/fixes on penguins-wardrobe;
 * wardrobe: we have now 3 new birds: wagtail, warbler and whispbird. You can build them from a naked iso installing and running: ```eggs wardrobe get```, ```sudo eggs wardrove wear wagtail```, etc,
