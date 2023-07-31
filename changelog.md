@@ -17,6 +17,10 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.15
+* skel: added `await rsyncIfExist(`/home/${user}/.config/lxqt`, '/etc/skel', verbose)` to lxqt;
+* ovary: cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
+
 ## eggs-9.5.14
 * skel:`rm -f /etc/skel/.config/user-dirs.*`, `rm -f /etc/skel/.config/bookmarks` as suggested Emer Chen;
 * pacman: removed echo on `commandIsInstalled()`;
