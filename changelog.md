@@ -17,6 +17,10 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.16
+* manjaro: added codename Uranos;
+* arch: we try to find [calamares-eggs](https://github.com/pieroproietti/eggs-pkgbuilds/tree/master/aur/calamares-eggs) becouse both, [calamars](https://aur.archlinux.org/packages/calamares) and [calamares-git](https://aur.archlinux.org/packages/calamares-git) don't work here. You will get just an error installing calamares-eggs, this is normal, it's not on aur repositort, just PKGBUILD exists on [eggs-pkgbuilds](https://github.com/pieroproietti/eggs-pkgbuilds). So, if you want to install it you need to build it or
+
 # eggs-9.5.15
 * skel: added `await rsyncIfExist(`/home/${user}/.config/lxqt`, '/etc/skel', verbose)` to lxqt;
 * ovary: cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
