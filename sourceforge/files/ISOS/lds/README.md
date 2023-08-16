@@ -9,11 +9,9 @@ penguins-eggs.net/sources-documentation/index.html)
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# Lilidoc remastered ISOs
+# LDS remasterd ISO
 
-LDS
-
-A Taiwan distro based on Debian Base, created from 
+A Taiwan distro based on Debian bookworm, created from **ldsemerchen**.
 
 # user/password
 * ```live/evolution```
