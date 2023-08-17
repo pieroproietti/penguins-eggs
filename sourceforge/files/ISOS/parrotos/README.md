@@ -29,12 +29,12 @@ Because it was born as a game, and every pirate of the seven seas needs a parrot
 * [Documentation](https://www.parrotsec.org/docs/)
 * You can find more informations on ParrotOS on their [site](https://www.parrotsec.org).
 
+![parrot](https://www.parrotsec.org/_next/static/media/anonsurf.868f43f7.png)
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
 * Blog: [penguins-eggs](https://penguins-eggs.net)
-
-![parrot](https://www.parrotsec.org/_next/static/media/anonsurf.868f43f7.png)
 
 # Disclaim
 __Please note what this project is in no way connected to the original distro in any official way, it’s just my personal experiment.__
