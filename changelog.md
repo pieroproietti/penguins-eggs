@@ -17,9 +17,12 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.17
+* calamares: added module welcome;
+
 # eggs-9.5.16
 * manjaro: added codename Uranos;
-* arch: we try to download and install [calamares-eggs](https://github.com/pieroproietti/eggs-pkgbuilds/tree/master/aur/calamares-eggs) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/), this is a temporary workaround.
+* arch: we now download and install [calamares-eggs](https://github.com/pieroproietti/eggs-pkgbuilds/tree/master/aur/calamares-eggs) from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/). This solve the problems of calamares on AUR and is a temporary workaround.
 
 # eggs-9.5.15
 * skel: added `await rsyncIfExist(`/home/${user}/.config/lxqt`, '/etc/skel', verbose)` to lxqt;

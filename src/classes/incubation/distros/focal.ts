@@ -57,6 +57,7 @@ export class Focal {
 
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
+    await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs()

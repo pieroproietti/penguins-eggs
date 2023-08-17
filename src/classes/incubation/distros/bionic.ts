@@ -57,6 +57,7 @@ export class Bionic {
 
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
+    await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs() //
