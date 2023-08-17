@@ -27,6 +27,7 @@
     - kali-rolling # kali
     - faye # LMDE 6
     - Sparky # SparkyLinux 7
+    - ara # Parrot ara
 
 #
 # DEVUAN
