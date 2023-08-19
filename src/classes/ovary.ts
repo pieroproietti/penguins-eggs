@@ -134,14 +134,14 @@ export default class Ovary {
     if (this.familyId === 'debian') {
       const yolk = new Repo()
       if (!yolk.yolkExists()) {
-        Utils.warning('local repository /var/local/yolk creation...')
+        Utils.warning('Creating yolk')
         await yolk.create(verbose)
       } else if (yolkRenew) {
-        Utils.warning('force renew local repository /var/local/yolk...')
+        Utils.warning('Renew yolk')
         yolk.yolkClean()
         await yolk.create(verbose)
       } else {
-        Utils.warning('Using preesixent yolk...')
+        Utils.warning('Using preesixent yolk')
       }
     }
 
