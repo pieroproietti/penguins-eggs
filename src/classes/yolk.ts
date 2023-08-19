@@ -27,8 +27,14 @@ export default class Yolk {
   async create(verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
+    Utils.warning("Creating a local repo on /var/local/yolk")
 
-    Utils.warning('updating system...')
+    if (Utils.machineArch() !== 'amd64') {
+      Utils.error(`Is not possible to create yolk on ${Utils.machineArch()}`)
+      process.exit
+    }
+
+    Utils.warning('Updating system')
     if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
       process.exit(0)
     }
@@ -50,29 +56,23 @@ export default class Yolk {
     }
 
     // packages we need
-    const packages = ['cryptsetup', 'keyutils', 'shim-signed'] // addes shim-signed
+    const pkgs = [
+      'cryptsetup', 
+//      'grub-efi-amd64-bin',
+      'grub-efi-amd64',
+      'grub-pc',
+      'keyutils', 
+      'shim-signed',
+    ] 
 
-    // grub-pc just for amd64 or i386
-    if (Utils.machineArch() === 'amd64' || Utils.machineArch() === 'i386') {
-      packages.push('grub-pc')
-    }
-
-    // if not i386
-    if (Utils.machineArch() !== 'i386') {
-      // add grub-efi-amd64
-      packages.push('grub-efi-' + Utils.machineArch())
-      // add grub-efi-amd64-bin
-      packages.push('grub-efi-' + Utils.machineArch() + '-bin')
-    }
-
-    // chdir on yolkDir
     process.chdir(this.yolkDir)
+    Utils.warning(`Downloading packages and its dependencies`)
 
-    // for all packages, find dependencies and check if are not installed
-    for (const package_ of packages) {
-      Utils.warning(`downloading package ${package_} and its dependencies...`)
-      cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${package_} | grep "^\\w" | sort -u`
-      const depends = (await exec(cmd, {echo: false, capture: true})).data
+    for (const pkg of pkgs) {
+      Utils.warning(`- ${pkg}`)
+      cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${pkg} | grep "^\\w" | sort -u`
+      let depends = pkg + '\n'
+      depends += (await exec(cmd, {echo: false, capture: true})).data
       await this.installDeps(depends.split('\n'))
     }
 
@@ -102,16 +102,16 @@ export default class Yolk {
     // select for downloads only packages NOT already installed
     const toDownloads: string[] = []
     for (const depend of depends) {
-      if (depend !== '' && !Pacman.packageIsInstalled(depend)) {
+      // if (depend !== '' && !Pacman.packageIsInstalled(depend)) {
         toDownloads.push(depend)
-      }
+      // }
     }
 
     // now we go to downloads them
     for (const toDownload of toDownloads) {
       process.chdir(this.yolkDir)
       const cmd = `apt-get download ${toDownload}`
-      Utils.warning(`- ${cmd}`)
+      // Utils.warning(`- ${cmd}`)
       await exec(cmd, this.echo)
     }
   }
@@ -131,4 +131,3 @@ export default class Yolk {
     await exec(`rm ${this.yolkDir}/*`, this.echo)
   }
 }
-
