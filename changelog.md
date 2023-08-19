@@ -18,7 +18,7 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.5.18
-* yolk: now download the same packages on UEFI and BIOS, without exclusion of installed packages.
+* yolk: now yolk download the same packages on UEFI and BIOS, without exclude installed packages.
 
 # eggs-9.5.17
 * calamares: added module welcome.conf, this allows calamares to work properly on disks with multiple partitions and systems.
