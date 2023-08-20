@@ -26,9 +26,9 @@ The name siduction is a play on two words. The word sid, which is the codename o
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-* **egg-of-siduction-trixie-xfce** - a remaster of the [xfce ](https://ftp.gwdg.de/pub/linux/siduction/iso/Standing_on_the_Shoulders_of_Giants/) version.
+* **egg-of-siduction-trixie-xfce** - a remaster of the [xfce](https://ftp.gwdg.de/pub/linux/siduction/iso/Standing_on_the_Shoulders_of_Giants/) version.
 
-* You can find more informations on this Linux distro at: [Siduction community based OS](https://siduction.org/).
+You can find more informations on this Linux distro at: [Siduction community based OS](https://siduction.org/).
 
 ## More informations:
 
