@@ -38,6 +38,16 @@ Due to a currently unresolved problem we recommend installing this distribution 
 
 You can find more informations on this Linux distro at: [SpiralLinux](https://spirallinux.github.io/).
 
+## Spiral Linux updated to Debian 12 bookworm
+
+I also tried upgrading spirallinux to Debian version 12, I simply upgraded everything and remastered.
+
+The result is this:
+
+* **egg-of-spiral-bookworm-lxqt**
+* **egg-of-spiral-bookworm-xfce**
+
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
