@@ -30,9 +30,9 @@ I wish this distribution great popularity because it is based on good principles
 
 This remastering of mine, however, does not contain the btrs part, it will be installed as ext4, I will see about recovering this very important characteristic in the future.
 
-* **egg-of-spirallinux-cinnamon**
-* **egg-of-spirallinux-lxqt**
-* **egg-of-spirallinux-xfce**
+* **egg-of-spirallinux-bullseye-cinnamon**
+* **egg-of-spirallinux-bullseye-lxqt**
+* **egg-of-spirallinux-bullseye-xfce**
 
 Due to a currently unresolved problem we recommend installing this distribution with krill: `sudo eggs install -u`
 
