@@ -907,7 +907,7 @@ export default class Ovary {
    * @param dir
    */
   mergedAndOvelay(dir: string): boolean {
-    const mountDirs = ['etc', 'boot', 'usr', 'var']
+    const mountDirs = ['boot', 'etc', 'usr', 'var']
     let mountDir = ''
     let overlay = false
     for (mountDir of mountDirs) {

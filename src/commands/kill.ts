@@ -47,11 +47,30 @@ export default class Kill extends Command {
       await settings.load()
       await settings.listFreeSpace()
       if (nointeractive || await Utils.customConfirm()) {
-        await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
-        await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
+        if (checkMPs(`${settings.work_dir.path}/filesystem.squashfs`)) {
+          await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
+          await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
+        } else {
+          console.log(`cannot kill`)
+        }
       }
     } else {
       Utils.useRoot(this.id)
     }
   }
+}
+
+function checkMPs(path: string) : Boolean {
+  let retVal = false
+  const dirs = ['etc', 'boot', 'usr', 'var']
+
+  for (const dir in dirs) {
+    const dirToCheck = `${path}/${dir}`
+    if (Utils.isMountpoint(dirToCheck)) {
+      console.log(`${dirToCheck}, is a mountpoint!`)
+      retVal= true 
+    }
+  }
+
+  return retVal
 }
