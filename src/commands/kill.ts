@@ -69,8 +69,22 @@ export default class Kill extends Command {
  */
 function checkMPs(path: string): Boolean {
   let retVal = false
-  const dirs = ['etc', 'boot', 'usr', 'var']
-
+  const dirs = [
+    'bin',
+    'boot',
+    'etc',
+    'lib',
+    'lib32',
+    'lib64',
+    'libx32',
+    'opt',
+    'root',
+    'sbin',
+    'srv',
+    'usr',
+    'var'
+  ]
+  
   for (const dir of dirs) {
     const dirToCheck = `${path}/${dir}`
     if (fs.existsSync(dirToCheck)) {
