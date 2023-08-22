@@ -17,6 +17,9 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.19
+* kill: check for mountpoints presence under `ovarium/filesystem.squashfs` before to kill. 
+
 # eggs-9.5.18
 * yolk: now yolk download the same packages on UEFI and BIOS, without exclude installed packages.
 
