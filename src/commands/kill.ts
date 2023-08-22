@@ -73,7 +73,6 @@ function checkMPs(path: string): Boolean {
 
   for (const dir of dirs) {
     const dirToCheck = `${path}/${dir}`
-    // console.log("checking " + dirToCheck)
     if (fs.existsSync(dirToCheck)) {
       if (Utils.isMountpoint(dirToCheck)) {
         console.log(`Warning: ${dirToCheck}, is a mountpoint!`)
