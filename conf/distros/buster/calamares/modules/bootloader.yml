@@ -54,3 +54,7 @@ efiBootloaderId: "Debian"
 # to add another module to optionally install the fallback on those
 # boards that need it.
 installEFIFallback: false
+
+# added to test
+defaultFileSystemType:  "btrfs"
+availableFileSystemTypes:  ["btrfs","xfs","f2fs","ext4"]
