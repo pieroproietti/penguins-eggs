@@ -1,3 +1,5 @@
+eggs partition.yml
+---
 # This setting specifies the mount point of the EFI system partition. Some
 # distributions (Fedora, Debian, Manjaro, etc.) use /boot/efi, others (KaOS,
 # etc.) use just /boot.
