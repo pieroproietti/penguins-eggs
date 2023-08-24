@@ -99,7 +99,7 @@ export default class Fisherman {
      * And we solve the issue of Sebastien who need btrfs
      *
      */
-    if (vendor !== '') {
+    if (vendor !== 'eggs') {
       let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
       if (vendor.includes('/')) {
         customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
@@ -119,6 +119,11 @@ export default class Fisherman {
       shx.cp(moduleSource, moduleDest)
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
+    }
+
+    if (name === 'partition') {
+      console.log("src: " + moduleSource)
+      console.log("dest: " + moduleDest)
     }
   }
 
