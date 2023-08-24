@@ -47,26 +47,22 @@ export default class Calamares extends Command {
     const { flags } = await this.parse(Calamares)
     let verbose = flags.verbose
 
-    let remove = false
-    if (flags.remove) {
-      remove = true
-    }
+    let remove = flags.remove
 
-    let install = false
-    if (flags.install) {
-      install = true
-    }
+    let install = flags.install
 
-    let release = false
-    if (flags.release) {
-      release = true
-    }
+    let release = flags.release
 
     let theme = 'eggs'
     if (flags.theme !== undefined) {
       theme = flags.theme
-      if (theme.endsWith('/')) {
-        theme = theme.substring(0, theme.length - 1)
+      if (theme.includes('/')) {
+        if (theme.endsWith('/')) {
+          theme = theme.substring(0, theme.length - 1)
+        }
+      } else {
+        const wpath  = `/home/${await Utils.getPrimaryUser()}/.wardrobe/vendors/`
+        theme = wpath + flags.theme 
       }
       theme = path.resolve(theme)
       if (!fs.existsSync(theme + '/theme')) {
