@@ -175,8 +175,6 @@ export default class Incubator {
 
         break
       }
-
-      // No default
     }
   }
 
