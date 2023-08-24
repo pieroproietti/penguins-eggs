@@ -120,11 +120,6 @@ export default class Fisherman {
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
     }
-
-    if (name === 'partition') {
-      console.log("src: " + moduleSource)
-      console.log("dest: " + moduleDest)
-    }
   }
 
   /**
