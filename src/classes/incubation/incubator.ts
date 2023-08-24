@@ -20,6 +20,11 @@ import Pacman from '../pacman'
 import { installer } from './installer'
 import { IInstaller } from '../../interfaces/i-installer'
 
+// partition
+import yaml from 'js-yaml'
+import { ICalamaresPartition } from '../../interfaces/i-calamares-partition'
+
+
 /**
  *
  */
@@ -176,6 +181,7 @@ export default class Incubator {
         break
       }
     }
+    partitionCustomize()
   }
 
   /**
@@ -332,4 +338,20 @@ function write(file: string, content: string, verbose = false) {
   }
 
   fs.writeFileSync(file, content, 'utf8')
+}
+
+/**
+ * 
+ */
+function partitionCustomize() {
+  const filePartition = '/etc/calamares/modules/partition.conf'
+  let partition = yaml.load(fs.readFileSync(filePartition, 'utf-8')) as ICalamaresPartition
+  partition.defaultFileSystemType = 'ext4'
+  partition.availableFileSystemTypes = ['ext4']
+  if (Pacman.packageIsInstalled('btrfs-progs')) {
+    partition.defaultFileSystemType = 'btrfs'
+    partition.availableFileSystemTypes = ['btrfs', 'ext4']
+  }
+  fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
+
 }
