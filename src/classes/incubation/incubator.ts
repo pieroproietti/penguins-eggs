@@ -20,9 +20,6 @@ import Pacman from '../pacman'
 import { installer } from './installer'
 import { IInstaller } from '../../interfaces/i-installer'
 
-import { exec } from '../../lib/utils'
-
-
 /**
  *
  */
