@@ -17,6 +17,9 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.20
+* produce: added possibility to use themes with btrfs. (in progress).
+
 # eggs-9.5.19
 * kill: check for mountpoints presence under `ovarium/filesystem.squashfs` before to kill. 
 
