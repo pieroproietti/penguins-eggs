@@ -349,8 +349,7 @@ function partitionCustomize() {
   partition.defaultFileSystemType = 'ext4'
   partition.availableFileSystemTypes = ['ext4']
   if (Pacman.packageIsInstalled('btrfs-progs')) {
-    partition.defaultFileSystemType = 'btrfs'
-    partition.availableFileSystemTypes = ['btrfs', 'ext4']
+    partition.availableFileSystemTypes = ['ext4', 'btrfs']
   }
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
 
