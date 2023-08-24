@@ -45,10 +45,7 @@ export default class Calamares extends Command {
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
-    let verbose = false
-    if (flags.verbose) {
-      verbose = true
-    }
+    let verbose = flags.verbose
 
     let remove = false
     if (flags.remove) {
@@ -111,7 +108,8 @@ export default class Calamares extends Command {
               if (await this.settings.load()) {
                 Utils.warning('Configuring installer')
                 await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-                this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, verbose)
+                const isClone = false
+                this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
                 await this.incubator.config(release)
               }
             }
