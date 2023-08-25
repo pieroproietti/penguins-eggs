@@ -257,10 +257,10 @@ export default class Pacman {
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
-        if (this.distro().distroId === 'manjaro') {
-          const cmd = `pacman -Sy --noconfirm calamares)}`
+        if (this.distro().distroId === 'ManjaroLinux') {
+          const cmd = `pacman -Sy --noconfirm calamares`
           try {
-            await exec(cmd, Utils.setEcho(false))
+            await exec(cmd, Utils.setEcho(true))
           } catch {
             Utils.error(`manjaro: ${cmd}`) // + e.error)
           }
