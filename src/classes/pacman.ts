@@ -257,7 +257,16 @@ export default class Pacman {
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
-        await Archlinux.calamaresInstall(verbose)
+        if (this.distro().distroId === 'manjaro') {
+          const cmd = `pacman -Sy --noconfirm calamares)}`
+          try {
+            await exec(cmd, Utils.setEcho(false))
+          } catch {
+            Utils.error(`manjaro: ${cmd}`) // + e.error)
+          }
+        } else {
+          await Archlinux.calamaresInstall(verbose)
+        }
       } else if (this.distro().familyId === 'suse') {
         await Suse.calamaresInstall(verbose)
       }
