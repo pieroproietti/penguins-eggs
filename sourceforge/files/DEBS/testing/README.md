@@ -16,8 +16,25 @@ Penguins-eggs
 
 Please, don't use this package for installations, they have just the pourpouse to be TESTED and can be extremally BUGGED!!!
 
+# Testing btrfs
+This version `eggs_9.5.20_amd64.deb` configure calamares to format with btrfs if package `btrfs-progs` is present.
+
+I have not experience on it, on Debian will istall but give problems (some subvol are mountend RO), on Arch will install too, but it freeze during the boot.
+
+We need to overpass this errors.
+
+
+# installing
+Download the right package for your distro, Debian/Devuan/ubuntu uses .deb, Arch and derivates uses: .zsd.
+
+## Debian/Devuan/Ubuntu
+`sudo dpkg -i eggs_9.5.20_amd64.deb`
+
+## Arch and derivatives
+`sudo pacman -U ./penguins-eggs-9.5.20-1-any.pkg.tar.zst`
+
 # Testing
-There are no new version to test!
+
 
 # Future plans
 
