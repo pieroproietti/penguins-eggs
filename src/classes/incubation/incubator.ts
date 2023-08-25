@@ -347,7 +347,7 @@ function partitionCustomize() {
   const filePartition = '/etc/calamares/modules/partition.conf'
   let partition = yaml.load(fs.readFileSync(filePartition, 'utf-8')) as ICalamaresPartition
   partition.defaultFileSystemType = 'ext4'
-  const availableFileSystemTypes = ['ext4']
+  partition.availableFileSystemTypes = ['ext4']
   if (Pacman.packageIsInstalled('btrfs-progs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
