@@ -19,9 +19,18 @@ Please, don't use this package for installations, they have just the pourpouse t
 # Testing btrfs
 This version `eggs_9.5.20_amd64.deb` configure calamares to format with btrfs if package `btrfs-progs` is present.
 
-I have not experience on it, on Debian will istall but give problems (some subvol are mountend RO), on Arch will install too, but it freeze during the boot.
+I have not experience on btrfs, so don't wait all is working.
+
+On Debian calamares will istall the system on btrfs, but give problems: some subvol are mounted Read Only. On Debian selecting ext4 will install without problems.
+
+On Arch calamares will install btrfs too, but it freeze during the boot. On Arch to be complete freeze also installing on ext4.
+
+On Arch it's possible to install on ext4 using krill: `sudo eggs install -un`, be sure to do it on a clean machine without datas.
 
 We need to overpass this errors.
+
+## ISOs with btrfs support
+To facilitate debugging work, I created two different ISOs with btrfs support: [btrfs-on-debian-bookwork](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/) and [btrfs-on-arch](https://sourceforge.net/projects/penguins-eggs/files/ISOS/arch/). You can find them under their respective directories.
 
 
 # installing
