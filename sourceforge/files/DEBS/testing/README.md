@@ -32,6 +32,8 @@ We need to overpass this errors.
 ## ISOs with btrfs support
 To facilitate debugging work, I created two different ISOs with btrfs support: [btrfs-on-debian-bookwork](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/) and [btrfs-on-arch](https://sourceforge.net/projects/penguins-eggs/files/ISOS/arch/). You can find them under their respective directories.
 
+Becouse here is a question not related to eggs but with the distro, I remastered garuda with this version of eggs, the result is **egg-of-garuda-raptor-xfce_amd64_2023-08-25_1203.iso** you can find on [garuda](https://sourceforge.net/projects/penguins-eggs/files/ISOS/garuda/). This **egg-of-garuda-raptor-xfce_amd64_2023-08-25_1203.iso** install and work nicelly with btrfs.
+
 
 # installing
 Download the right package for your distro, Debian/Devuan/ubuntu uses .deb, Arch and derivates uses: .zsd.
