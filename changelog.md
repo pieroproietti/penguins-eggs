@@ -18,7 +18,13 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.5.20
-* produce: added possibility to use themes with btrfs. (in progress).
+* calamares: I added in the calamares configuration the possibility to detect the filesystem types supported by the system. By default and as the first option we always have ext4, then btrfs, xfs and f2fs.
+
+Of course it's not eggs job to check if the support is complete or not, if the installed system includes it the btrfs installation will be done and work.
+
+At the moment I've only been able to get btrfs-installable images using the garuda distribution, probably because garuda is configured by default to support it.
+
+I hope I get suggestions from the user community on how to build ISOs with btrfs for Debian, Devuan, Ubuntu and Arch.
 
 # eggs-9.5.19
 * kill: check for mountpoints presence under `ovarium/filesystem.squashfs` before to kill. 
