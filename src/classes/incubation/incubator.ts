@@ -181,7 +181,10 @@ export default class Incubator {
         break
       }
     }
-    partitionCustomize()
+
+    if (Pacman.calamaresExists()) {
+      partitionCustomize()
+    }
   }
 
   /**
