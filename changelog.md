@@ -26,6 +26,8 @@ At the moment I've only been able to get btrfs-installable images using the garu
 
 I hope I get suggestions from the user community on how to build ISOs with btrfs for Debian, Devuan, Ubuntu and Arch.
 
+use pnpm 8.6.8
+
 # eggs-9.5.19
 * kill: check for mountpoints presence under `ovarium/filesystem.squashfs` before to kill. 
 
