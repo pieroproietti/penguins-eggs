@@ -1834,6 +1834,9 @@ export default class Ovary {
       if (test !== 0) {
         process.exit()
       }
+      const src =  this.settings.config.mountpoint_dir + this.settings.isoFilename
+      const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
+      await exec(`ln -s ${src} ${dest}`)
     }
   }
 
