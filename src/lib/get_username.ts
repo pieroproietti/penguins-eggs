@@ -1,5 +1,6 @@
 'use strict'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
+
 
 export default async function getUsername(initial: string): Promise<string> {
   return new Promise(function (resolve) {
@@ -12,7 +13,7 @@ export default async function getUsername(initial: string): Promise<string> {
       },
     ]
 
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.name)
     })
   })

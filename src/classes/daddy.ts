@@ -9,7 +9,8 @@ import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
+
 import {IEggsConfig} from '../interfaces/i-eggs-config'
 import {IMyAddons} from '../interfaces/index'
 import chalk from 'chalk'
@@ -198,7 +199,7 @@ export default class Daddy {
           default: compressionOpt,
         },
       ]
-      inquirer.prompt(questions).then(function (options) {
+      inquirer.prompt(questions).then(function (options: any) {
         resolve(JSON.stringify(options))
       })
     })

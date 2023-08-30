@@ -5,7 +5,7 @@
     "importHelpers": true,
     "esModuleInterop": true,
     "module": "Node16",
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,

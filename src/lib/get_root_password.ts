@@ -1,5 +1,6 @@
 'use strict'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
+
 
 export default async function geRootPassword(initial: string): Promise<string> {
   const requireLetterAndNumber = (value: string) => {
@@ -26,7 +27,7 @@ export default async function geRootPassword(initial: string): Promise<string> {
       },
     ]
 
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.password)
     })
   })

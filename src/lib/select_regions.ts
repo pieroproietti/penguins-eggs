@@ -1,5 +1,5 @@
 'use strict'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 
 export default async function selectRegions(selected = ''): Promise<string> {
   const questions: Array<Record<string, any>> = [
@@ -13,7 +13,7 @@ export default async function selectRegions(selected = ''): Promise<string> {
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.region)
     })
   })
