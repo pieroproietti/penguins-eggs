@@ -293,8 +293,9 @@ export default class Ovary {
    * Crea la struttura della workdir
    */
   async liveCreateStructure() {
+    // efi-work iso  memdiskDir sotto mountpoint
     if (this.verbose) {
-      console.log('Overy: liveCreateStructure')
+      console.log('Ovary: liveCreateStructure')
     }
 
     Utils.warning(`Creating egg in ${this.settings.work_dir.path}`)
@@ -332,7 +333,6 @@ export default class Ovary {
 
     /**
      * Creo le directory di destinazione per boot, efi, isolinux e live
-     * precedentemente in isolinux
      */
     if (!fs.existsSync(this.settings.work_dir.pathIso)) {
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`
@@ -1681,14 +1681,13 @@ export default class Ovary {
       if (fs.existsSync('/usr/bin/eui-start.sh')) {
         typology += "_EUI"
       }
-
     }
 
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + typology + postfix
     // 
-    const output = this.settings.config.snapshot_dir + this.settings.isoFilename
-
+    const output =  this.settings.config.mountpoint_dir + this.settings.isoFilename
+    
     let command = ''
     // const appid = `-appid "${this.settings.distro.distroId}" `
     // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
