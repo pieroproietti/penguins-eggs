@@ -1830,7 +1830,10 @@ export default class Ovary {
 
     Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
     if (!scriptOnly) {
-      await exec(cmd, Utils.setEcho(true))
+      const test = (await exec(cmd, Utils.setEcho(true))).code
+      if (test !== 0) {
+        process.exit()
+      }
     }
   }
 
