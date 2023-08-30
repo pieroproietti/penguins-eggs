@@ -1,5 +1,5 @@
 'use strict'
-import inquirer  from 'inquirer'
+const inquirer = require('inquirer') 
 import shx from 'shelljs'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
@@ -24,7 +24,7 @@ export default async function selectFileSystemType(): Promise<string> {
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.fileSystemChoices)
     })
   })

@@ -11,7 +11,7 @@ import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 import chalk from 'chalk'
 import Pacman from './pacman'
 import { ChildProcess, spawnSync } from 'child_process'
@@ -799,7 +799,7 @@ unknown target format aarch64-efi
             }
          ]
 
-         inquirer.prompt(questions).then(function (options) {
+         inquirer.prompt(questions).then(function (options: any) {
             resolve(JSON.stringify(options))
          })
       })
@@ -821,7 +821,7 @@ unknown target format aarch64-efi
             }
          ]
 
-         inquirer.prompt(questions).then(function (options) {
+         inquirer.prompt(questions).then(function (options: any) {
             resolve(JSON.stringify(options))
          })
       })
