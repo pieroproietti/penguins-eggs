@@ -17,6 +17,9 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.21
+* added a .mountpoint dir inside /home/eggs. This can be usefull to can backup a computer full of data. Just mount some partition inside /home/eggs/.mountpoint and You will get suddicient space to backup.
+
 # eggs-9.5.20
 * calamares: I added in the calamares configuration the possibility to detect the filesystem types supported by the system. By default and as the first option we always have ext4, then btrfs, xfs and f2fs.
 
