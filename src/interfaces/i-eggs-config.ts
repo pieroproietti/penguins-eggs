@@ -4,6 +4,7 @@ export interface IEggsConfig {
   snapshot_basename: string
   snapshot_prefix: string
   snapshot_excludes: string
+  mountpoint_dir: string // new
   user_opt: string
   user_opt_passwd: string
   root_passwd: string

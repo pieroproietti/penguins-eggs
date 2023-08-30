@@ -105,10 +105,15 @@ export default class Settings {
     this.work_dir.lowerdir = this.work_dir.path + '.overlay/lowerdir'
     this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
     this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
-    this.work_dir.merged = this.work_dir.path + 'filesystem.squashfs'
 
-    this.efi_work = this.work_dir.path + 'efi-work/'
-    this.work_dir.pathIso = this.work_dir.path + 'iso/'
+    this.config.mountpoint_dir = this.config.snapshot_dir + '.mountpoint/'
+    if (!this.config.mountpoint_dir.endsWith('/')) {
+      this.config.mountpoint_dir += '/'
+    }
+    
+    this.work_dir.merged = this.config.mountpoint_dir + 'filesystem.squashfs'
+    this.efi_work = this.config.mountpoint_dir + 'efi-work/'
+    this.work_dir.pathIso = this.config.mountpoint_dir + 'iso/'
 
     // remember: before was hostname, not empty
     if (this.config.snapshot_basename === '') {
