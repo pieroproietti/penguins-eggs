@@ -37,7 +37,6 @@ import { displaymanager } from './incubation/fisherman-helper/displaymanager'
 import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
-import { createTextChangeRange } from 'typescript'
 import CliAutologin from '../lib/cli-autologin'
 
 /**
