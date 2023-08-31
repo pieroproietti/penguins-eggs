@@ -298,7 +298,7 @@ export default class Ovary {
       console.log('Ovary: liveCreateStructure')
     }
 
-    Utils.warning(`Creating egg in ${this.settings.config}`)
+    Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
 
     let cmd
     if (!fs.existsSync(this.settings.work_dir.path)) {
