@@ -1408,7 +1408,7 @@ export default class Ovary {
     if (this.verbose) {
       console.log('ovary: makeEfi')
     }
-
+    
     const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
     const isoDir = this.settings.work_dir.pathIso
@@ -1834,6 +1834,7 @@ export default class Ovary {
       if (test !== 0) {
         process.exit()
       }
+      // Create link to iso
       const src =  this.settings.config.mountpoint_dir + this.settings.isoFilename
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
       await exec(`ln -s ${src} ${dest}`)
