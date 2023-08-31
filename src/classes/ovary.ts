@@ -889,7 +889,7 @@ export default class Ovary {
     //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.session_excludes}`
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
-    Utils.writeX(`${this.settings.config.snapshot_dir}mksquashfs`, cmd)
+    Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
       await exec(cmd, Utils.setEcho(true))
@@ -1049,7 +1049,8 @@ export default class Ovary {
       cmds.push(endLine)
     }
 
-    Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
   }
 
   /**
@@ -1107,7 +1108,9 @@ export default class Ovary {
     if (this.clone) {
       cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
     }
-    Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}ubind`, cmds)
+
   }
 
   /**
@@ -1122,7 +1125,8 @@ export default class Ovary {
       `mount -o bind /sys ${this.settings.work_dir.merged}/sys`,
       `mount -o bind /run ${this.settings.work_dir.merged}/run`,
     )
-    Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}bindvfs`, cmds)
   }
 
   /**
@@ -1132,7 +1136,8 @@ export default class Ovary {
   async ubindVfs() {
     const cmds: string[] = []
     cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
-    Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}ubindvfs`, cmds)
   }
 
   /**
@@ -1832,8 +1837,8 @@ export default class Ovary {
     if (this.verbose) {
       console.log('ovary: makeIso')
     }
-
-    Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
+    //Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
+    Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
     if (!scriptOnly) {
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
