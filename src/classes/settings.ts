@@ -106,7 +106,7 @@ export default class Settings {
     this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
     this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
 
-    this.config.mountpoint_dir = this.config.snapshot_dir + '.mountpoint/'
+    this.config.mountpoint_dir = this.config.snapshot_dir + 'mnt/'
     if (!this.config.mountpoint_dir.endsWith('/')) {
       this.config.mountpoint_dir += '/'
     }
