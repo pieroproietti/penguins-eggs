@@ -1,5 +1,6 @@
 export interface IWorkDir {
-  path: string
+  // path: string // = settings.config.snapshot_dir
+  ovarium: string // new
   pathIso: string 
   lowerdir: string
   upperdir: string

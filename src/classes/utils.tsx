@@ -255,10 +255,14 @@ export default class Utils {
     */
    static getSnapshotCount(snapshot_dir = '/'): number {
       if (fs.existsSync(snapshot_dir)) {
-         const list = fs.readdirSync(snapshot_dir)
-         if (list.length > 0) {
-            return list.length - 1
+         const files = fs.readdirSync(snapshot_dir)
+         let nIsos = 0
+         for (const f of files) {
+            if (f.endsWith('.iso')) {
+               nIsos ++
+            }
          }
+         return nIsos
       }
       return 0
    }
@@ -269,7 +273,7 @@ export default class Utils {
     */
    static getSnapshotSize(snapshot_dir = '/'): number {
       let fileSizeInBytes = 0
-      const size = shx.exec(`/usr/bin/find /home/eggs -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
 
       if (size === '') {
          fileSizeInBytes = 0
