@@ -1,15 +1,12 @@
 /**
- * penguins-eggs-v7 based on Debian live
+ * penguins-eggs
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 import { Command, Flags } from '@oclif/core'
-import fs from 'fs'
 import Utils from '../classes/utils'
 import Settings from '../classes/settings'
-import { IWorkDir } from '../interfaces/i-workdir'
-import { exec } from '../lib/utils'
 import killMeSoftly from '../lib/kill_me_softly'
 
 
@@ -30,7 +27,7 @@ export default class Kill extends Command {
 
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
   snapshot_dir = '' as string
-  work_dir = {} as IWorkDir
+  
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

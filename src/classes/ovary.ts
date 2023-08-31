@@ -69,6 +69,8 @@ export default class Ovary {
 
   cliAutologin = new CliAutologin()
 
+  ovarium = ''
+
   /**
    * @returns {boolean} success
    */
@@ -102,6 +104,7 @@ export default class Ovary {
       if (await Utils.customConfirm('Select yes to continue...')) {
         return true
       }
+      this.settings.work_dir.ovarium = this.settings.config.snapshot_dir + 'ovarium/'
     }
 
     return false
@@ -257,10 +260,10 @@ export default class Ovary {
 
       if (cryptedclone) {
         await exec('eggs syncto', Utils.setEcho(true))
-        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
+        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.ovarium}iso/live`)
         await exec('sleep 10', Utils.setEcho(false))
-        Utils.warning(`moving ${luksFile} in ${this.settings.config.snapshot_dir}ovarium/iso/live`)
-        await exec(`mv ${luksFile} ${this.settings.config.snapshot_dir}ovarium/iso/live`, this.echo)
+        Utils.warning(`moving ${luksFile} in ${this.ovarium}iso/live`)
+        await exec(`mv ${luksFile} ${this.ovarium}iso/live`, this.echo)
       }
 
       const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)

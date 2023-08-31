@@ -251,8 +251,13 @@ export default class Settings {
     } else {
       console.log(chalk.redBright('The free space should be insufficient') + '.')
       console.log()
-      console.log('If necessary, you can create more available space')
-      console.log('by removing previous  snapshots and saved copies:')
+      if (Utils.isMountpoint(this.config.snapshot_mnt)) {
+        console.log('If necessary, you can create more available space')
+        console.log('by removing previous  snapshots and saved copies.')
+      } else {
+        console.log(`You can mount a free partition under ${this.config.snapshot_mnt}`)
+      }
+      console.log()
     }
   }
 
