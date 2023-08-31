@@ -298,7 +298,7 @@ export default class Ovary {
       console.log('Ovary: liveCreateStructure')
     }
 
-    Utils.warning(`Creating egg in ${this.settings.work_dir.path}`)
+    Utils.warning(`Creating egg in ${this.settings.config}`)
 
     let cmd
     if (!fs.existsSync(this.settings.work_dir.path)) {
@@ -1409,10 +1409,13 @@ export default class Ovary {
       console.log('ovary: makeEfi')
     }
     
-    const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
+    // const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
+    // const efiWorkDir = this.settings.efi_work
+    // const isoDir = this.settings.work_dir.pathIso
+
+    const memdiskDir = this.settings.config.snapshot_mnt + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
     const isoDir = this.settings.work_dir.pathIso
-    // const codenameLikeId = this.settings.distro.codenameLikeId
 
     /**
      * il pachetto grub/grub2 DEVE essere presente
@@ -1686,7 +1689,7 @@ export default class Ovary {
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + typology + postfix
     // 
-    const output =  this.settings.config.mountpoint_dir + this.settings.isoFilename
+    const output =  this.settings.config.snapshot_mnt + this.settings.isoFilename
     
     let command = ''
     // const appid = `-appid "${this.settings.distro.distroId}" `
@@ -1835,7 +1838,7 @@ export default class Ovary {
         process.exit()
       }
       // Create link to iso
-      const src =  this.settings.config.mountpoint_dir + this.settings.isoFilename
+      const src =  this.settings.config.snapshot_mnt + this.settings.isoFilename
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
       await exec(`ln -s ${src} ${dest}`)
     }

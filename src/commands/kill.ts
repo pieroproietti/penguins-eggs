@@ -10,6 +10,8 @@ import Utils from '../classes/utils'
 import Settings from '../classes/settings'
 import { IWorkDir } from '../interfaces/i-workdir'
 import { exec } from '../lib/utils'
+import killMeSoftly from '../lib/kill_me_softly'
+
 
 /**
  * 
@@ -48,51 +50,10 @@ export default class Kill extends Command {
       await settings.load()
       await settings.listFreeSpace()
       if (nointeractive || await Utils.customConfirm()) {
-        const chkPath = `${settings.work_dir.path}filesystem.squashfs`
-        if (!checkMPs(chkPath)) {
-          await exec(`rm ${settings.work_dir.path}/* -rf`, echo)
-          await exec(`rm ${settings.config.snapshot_dir} -rf`, echo)
-        } else {
-          console.log(`Cannot kill!\nWhere are mountpoint under ${chkPath}`)
-        }
+        await killMeSoftly(settings.config.snapshot_dir, settings.config.snapshot_mnt)
       }
     } else {
       Utils.useRoot(this.id)
     }
   }
-}
-
-/**
- * 
- * @param path 
- * @returns 
- */
-function checkMPs(path: string): Boolean {
-  let retVal = false
-  const dirs = [
-    'bin',
-    'boot',
-    'etc',
-    'lib',
-    'lib32',
-    'lib64',
-    'libx32',
-    'opt',
-    'root',
-    'sbin',
-    'srv',
-    'usr',
-    'var'
-  ]
-  
-  for (const dir of dirs) {
-    const dirToCheck = `${path}/${dir}`
-    if (fs.existsSync(dirToCheck)) {
-      if (Utils.isMountpoint(dirToCheck)) {
-        console.log(`Warning: ${dirToCheck}, is a mountpoint!`)
-        retVal = true
-      }
-    }
-  }
-  return retVal
 }
