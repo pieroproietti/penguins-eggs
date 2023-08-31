@@ -23,8 +23,8 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
     await exec (`rm -rf ${eggsMnt}iso`)
     await exec (`rm -rf ${eggsMnt}memdiskDir`)
     await exec (`rm -rf ${eggsRoot}ovarium`)
-    console.log(`Just cleaned!\nPlease, run:\nsudo umount ${eggsMnt}\nif you want to kill`)
-    process.exit(1)
+    console.log(`\nJust cleaned!\nPlease, run:\nsudo umount ${eggsMnt}\nif you want to kill`)
+    process.exit(0)
   }
 
   if (isBinded(eggsRoot)) {

@@ -31,7 +31,7 @@ export default async function information(verbose = false): Promise<void> {
         <Box borderStyle="round" marginRight={2}>
             <Box marginRight={2}><Text>nest: <Text color="cyan">{settings.config.snapshot_dir}</Text></Text></Box>
             <Box marginRight={2}><Text>name: <Text color="cyan">{settings.config.snapshot_prefix}{settings.config.snapshot_basename}</Text></Text></Box>
-            <Box marginRight={2}><Text>ovarium: <Text color="cyan">{settings.work_dir.path}</Text></Text></Box>
+            <Box marginRight={2}><Text>ovarium: <Text color="cyan">{settings.config.snapshot_dir}</Text></Text></Box>
         </Box>
     )
     // render(<Nest />)

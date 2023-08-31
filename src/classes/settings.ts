@@ -101,10 +101,10 @@ export default class Settings {
       this.config.snapshot_dir += '/'
     }
 
-    this.work_dir.path = this.config.snapshot_dir + 'ovarium/'
-    this.work_dir.lowerdir = this.work_dir.path + '.overlay/lowerdir'
-    this.work_dir.upperdir = this.work_dir.path + '.overlay/upperdir'
-    this.work_dir.workdir = this.work_dir.path + '.overlay/workdir'
+    this.work_dir.ovarium = this.config.snapshot_dir + 'ovarium/'
+    this.work_dir.lowerdir = this.work_dir.ovarium + '.overlay/lowerdir'
+    this.work_dir.upperdir = this.work_dir.ovarium + '.overlay/upperdir'
+    this.work_dir.workdir = this.work_dir.ovarium + '.overlay/workdir'
 
     this.config.snapshot_mnt = this.config.snapshot_dir + 'mnt/'
     if (!this.config.snapshot_mnt.endsWith('/')) {
@@ -161,9 +161,9 @@ export default class Settings {
   }
 
   /**
-   * showSettings
+   * show NOT USED MORE
    */
-  async show() {
+  async show_not_used_more() {
     console.log(`application_name:  ${this.app.name} ${this.app.version}`)
     // console.log(`config_file:       ${config_file}`)
     console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
@@ -187,7 +187,7 @@ export default class Settings {
       console.log('initrd_image:      ' + chalk.red(this.initrd_image) + ' not found! Please edit /etc/penguins-eggs.d/eggs.yaml')
     }
 
-    console.log(`work_dir:          ${this.work_dir.path}`)
+    console.log(`snapshot_dir:          ${this.config.snapshot_dir}`)
     // console.log(`efi_work:          ${this.efi_work}`)
     // console.log(`make_efi:          ${this.config.make_efi}`)
     // console.log(`make_md5sum:       ${this.config.make_md5sum}`)
@@ -218,9 +218,11 @@ export default class Settings {
    * @returns {void}
    */
   async listFreeSpace(): Promise<void> {
-    const path: string = this.config.snapshot_dir // convert to absolute path
     if (!fs.existsSync(this.config.snapshot_dir)) {
       fs.mkdirSync(this.config.snapshot_dir)
+      if (!fs.existsSync(this.config.snapshot_mnt)) {
+        fs.mkdirSync(this.config.snapshot_mnt)
+      }
     }
 
     /** Lo spazio usato da SquashFS non è stimabile da live
@@ -234,13 +236,13 @@ export default class Settings {
 
     spaceAvailable = Number(
       shx
-      .exec(`df "${path}" | /usr/bin/awk 'NR==2 {print $4}'`, {
+      .exec(`df "${this.config.snapshot_mnt}" | /usr/bin/awk 'NR==2 {print $4}'`, {
         silent: true,
       })
       .stdout.trim(),
     )
     console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
-    console.log(`There are ${Utils.getSnapshotCount(this.config.snapshot_dir)} snapshots taking ${Math.round((Utils.getSnapshotSize() / gb) * 10) / 10} GB of disk space.`)
+    console.log(`There are ${Utils.getSnapshotCount(this.config.snapshot_mnt)} snapshots taking ${Math.round((Utils.getSnapshotSize(this.config.snapshot_mnt) / gb) * 10) / 10} GB of disk space.`)
     console.log()
 
     if (spaceAvailable > gb * 3) {

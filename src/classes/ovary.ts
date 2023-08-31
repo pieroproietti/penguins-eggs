@@ -301,13 +301,13 @@ export default class Ovary {
     Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
 
     let cmd
-    if (!fs.existsSync(this.settings.work_dir.path)) {
-      cmd = `mkdir -p ${this.settings.work_dir.path}`
+    if (!fs.existsSync(this.settings.config.snapshot_dir)) {
+      cmd = `mkdir -p ${this.settings.config.snapshot_dir}`
       this.tryCatch(cmd)
     }
 
-    if (!fs.existsSync(this.settings.work_dir.path + '/README.md')) {
-      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.work_dir.path}README.md`
+    if (!fs.existsSync(this.settings.config.snapshot_dir + '/README.md')) {
+      cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md`
       this.tryCatch(cmd)
     }
 
@@ -341,7 +341,6 @@ export default class Ovary {
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/efi/boot`
       this.tryCatch(cmd)
 
-      const liveBsseDir = 'live'
       cmd = `mkdir -p ${this.settings.work_dir.pathIso}/isolinux`
       this.tryCatch(cmd)
 
@@ -887,7 +886,7 @@ export default class Ovary {
     //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.session_excludes}`
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
-    Utils.writeX(`${this.settings.work_dir.path}mksquashfs`, cmd)
+    Utils.writeX(`${this.settings.config.snapshot_dir}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
       await exec(cmd, Utils.setEcho(true))
@@ -1047,7 +1046,7 @@ export default class Ovary {
       cmds.push(endLine)
     }
 
-    Utils.writeXs(`${this.settings.work_dir.path}bind`, cmds)
+    Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
   }
 
   /**
@@ -1076,7 +1075,7 @@ export default class Ovary {
         if (N8.isDirectory(dirname)) {
           cmds.push(`\n# directory: ${dirname}`)
           if (this.mergedAndOvelay(dirname)) {
-            cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.work_dir.path}`)
+            cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
             cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
             cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
           } else if (this.merged(dirname)) {
@@ -1088,7 +1087,7 @@ export default class Ovary {
           /**
            * We can't remove the nest!!!
            */
-          const nest = this.settings.work_dir.path.split('/')
+          const nest = this.settings.config.snapshot_dir.split('/')
           if (dirname !== nest[1]) { // We can't remove first level nest
             cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
           }
@@ -1105,7 +1104,7 @@ export default class Ovary {
     if (this.clone) {
       cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
     }
-    Utils.writeXs(`${this.settings.work_dir.path}ubind`, cmds)
+    Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
   }
 
   /**
@@ -1120,7 +1119,7 @@ export default class Ovary {
       `mount -o bind /sys ${this.settings.work_dir.merged}/sys`,
       `mount -o bind /run ${this.settings.work_dir.merged}/run`,
     )
-    Utils.writeXs(`${this.settings.work_dir.path}bindvfs`, cmds)
+    Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
   }
 
   /**
@@ -1130,7 +1129,7 @@ export default class Ovary {
   async ubindVfs() {
     const cmds: string[] = []
     cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
-    Utils.writeXs(`${this.settings.work_dir.path}ubindvfs`, cmds)
+    Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
   }
 
   /**
@@ -1648,7 +1647,7 @@ export default class Ovary {
     fs.writeFileSync(file, content, 'utf-8')
 
     // .disk/mksquashfs
-    const scripts = this.settings.work_dir.path
+    const scripts = this.settings.config.snapshot_dir
     shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
 
     // .disk/mkisofs
@@ -1831,7 +1830,7 @@ export default class Ovary {
       console.log('ovary: makeIso')
     }
 
-    Utils.writeX(`${this.settings.work_dir.path}mkisofs`, cmd)
+    Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
     if (!scriptOnly) {
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
@@ -1853,9 +1852,9 @@ export default class Ovary {
     if (!scriptOnly) {
       console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
     } else {
-      console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.work_dir.path) + '.')
+      console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
       console.log('usage')
-      console.log(chalk.cyanBright(`cd ${this.settings.work_dir.path}`))
+      console.log(chalk.cyanBright(`cd ${this.settings.config.snapshot_dir}`))
       console.log(chalk.cyanBright('sudo ./bind'))
       console.log('Make all yours modifications in the directories filesystem.squashfs and iso.')
       console.log('After when you are ready:')
