@@ -195,7 +195,7 @@ export default class Settings {
     console.log()
 
     if (spaceAvailable > gb * 3) {
-      console.log(chalk.cyanBright('The free space should  be sufficient to hold the'))
+      console.log(chalk.cyanBright('The free space should be sufficient to hold the'))
       console.log(chalk.cyanBright('compressed data from the system'))
     } else {
       console.log(chalk.redBright('The free space should be insufficient') + '.')
