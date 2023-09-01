@@ -48,6 +48,8 @@ export default class Settings {
 
   efi_work = ''
 
+  iso_work = ''
+
   kernel_image = ''
 
   initrd_image = ''
@@ -113,7 +115,7 @@ export default class Settings {
 
     this.work_dir.merged = this.config.snapshot_mnt + 'filesystem.squashfs'
     this.efi_work = this.config.snapshot_mnt + 'efi-work/'
-    this.work_dir.pathIso = this.config.snapshot_mnt + 'iso/'
+    this.iso_work = this.config.snapshot_mnt + 'iso/'
 
     // remember: before was hostname, not empty
     if (this.config.snapshot_basename === '') {

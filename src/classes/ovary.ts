@@ -273,9 +273,9 @@ export default class Ovary {
        */
       if (this.familyId === 'archlinux') {
         if (this.settings.distro.distroId === 'ManjaroLinux') {
-          await exec(`mkdir ${this.settings.work_dir.pathIso}manjaro/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.sfs`, this.echo)
-          await exec(`md5sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}manjaro/x86_64/livefs.md5`, this.echo)
+          await exec(`mkdir ${this.settings.iso_work}manjaro/x86_64 -p`, this.echo)
+          await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}manjaro/x86_64/livefs.sfs`, this.echo)
+          await exec(`md5sum ${this.settings.iso_work}live/filesystem.squashfs > ${this.settings.iso_work}manjaro/x86_64/livefs.md5`, this.echo)
         } else if (
           this.settings.distro.distroId === 'Arch' ||
           this.settings.distro.distroId === 'blendOS' ||
@@ -283,9 +283,9 @@ export default class Ovary {
           this.settings.distro.distroId === 'phyOS' ||
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
-          await exec(`mkdir ${this.settings.work_dir.pathIso}arch/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.work_dir.pathIso}live/filesystem.squashfs          ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sfs`, this.echo)
-          await exec(`sha512sum ${this.settings.work_dir.pathIso}live/filesystem.squashfs > ${this.settings.work_dir.pathIso}arch/x86_64/airootfs.sha512`, this.echo)
+          await exec(`mkdir ${this.settings.iso_work}arch/x86_64 -p`, this.echo)
+          await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs          ${this.settings.iso_work}arch/x86_64/airootfs.sfs`, this.echo)
+          await exec(`sha512sum ${this.settings.iso_work}live/filesystem.squashfs > ${this.settings.iso_work}arch/x86_64/airootfs.sha512`, this.echo)
         }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
@@ -337,17 +337,17 @@ export default class Ovary {
     /**
      * Creo le directory di destinazione per boot, efi, isolinux e live
      */
-    if (!fs.existsSync(this.settings.work_dir.pathIso)) {
-      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/boot/grub/${Utils.machineUEFI()}`
+    if (!fs.existsSync(this.settings.iso_work)) {
+      cmd = `mkdir -p ${this.settings.iso_work}/boot/grub/${Utils.machineUEFI()}`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/efi/boot`
+      cmd = `mkdir -p ${this.settings.iso_work}/efi/boot`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.work_dir.pathIso}/isolinux`
+      cmd = `mkdir -p ${this.settings.iso_work}/isolinux`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.work_dir.pathIso}live`
+      cmd = `mkdir -p ${this.settings.iso_work}live`
       this.tryCatch(cmd)
     }
   }
@@ -632,17 +632,17 @@ export default class Ovary {
       console.log('syslinux path: ' + this.settings.distro.syslinuxPath)
     }
 
-    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     /**
      * per openSuse non sono riusciuto a determinare
      * quale pacchetto installi:
      * ldllinux.c43, libcom32 e libutil.c32
      */
     if (this.familyId !== 'suse') {
-      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     }
   }
 
@@ -657,12 +657,12 @@ export default class Ovary {
     /**
      * isolinux.bin
      */
-    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.work_dir.pathIso}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     /**
      * isolinux.theme.cfg
      */
-    const isolinuxThemeDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.theme.cfg'
+    const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
     if (this.theme.includes('/')) {
       isolinuxThemeSrc = `${theme}/theme/livecd/isolinux.theme.cfg`
@@ -678,7 +678,7 @@ export default class Ovary {
     /**
      * isolinux.cfg from isolinux.template.cfg
      */
-    const isolinuxDest = this.settings.work_dir.pathIso + 'isolinux/isolinux.cfg'
+    const isolinuxDest = this.settings.iso_work + 'isolinux/isolinux.cfg'
     const isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.template')
     if (!fs.existsSync(isolinuxTemplate)) {
       Utils.warning('Cannot find: ' + isolinuxTemplate)
@@ -699,7 +699,7 @@ export default class Ovary {
     /**
      * splash
      */
-    const splashDest = `${this.settings.work_dir.pathIso}/isolinux/splash.png`
+    const splashDest = `${this.settings.iso_work}/isolinux/splash.png`
     let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
     if (this.theme.includes('/')) {
       splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
@@ -749,7 +749,7 @@ export default class Ovary {
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
-      await exec(`cp ${this.settings.kernel_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
+      await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
       lackVmlinuzImage = true
@@ -768,7 +768,7 @@ export default class Ovary {
   async initrdCreate() {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    Utils.warning(`Creating ${initrdImg} in ${this.settings.work_dir.pathIso}/live/`)
+    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}/live/`)
     const distroId = this.settings.distro.distroId
     let fileConf = 'archlinux'
     if (
@@ -790,7 +790,7 @@ export default class Ovary {
       fileConf = distroId.toLowerCase()
     }
     let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.work_dir.pathIso}/live/${initrdImg}`, Utils.setEcho(true))
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}/live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
@@ -807,7 +807,7 @@ export default class Ovary {
       await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
 
-    await exec(`mkinitramfs -o ${this.settings.work_dir.pathIso}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+    await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
 
     if (isCrypted) {
       await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
@@ -821,7 +821,7 @@ export default class Ovary {
     }
     let lackInitrdImage = false
     if (fs.existsSync(this.settings.initrd_image)) {
-      await exec(`cp ${this.settings.initrd_image} ${this.settings.work_dir.pathIso}/live/`, this.echo)
+      await exec(`cp ${this.settings.initrd_image} ${this.settings.iso_work}/live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.initrdImg}`)
       lackInitrdImage = true
@@ -880,14 +880,14 @@ export default class Ovary {
 
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
 
-    if (fs.existsSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)) {
-      fs.unlinkSync(`${this.settings.work_dir.pathIso}/live/filesystem.squashfs`)
+    if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
+      fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
     }
 
 
     const compression = `-comp ${this.settings.config.compression}`
-    //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.session_excludes}`
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.work_dir.pathIso}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+    //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.session_excludes}`
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
@@ -1259,8 +1259,8 @@ export default class Ovary {
         await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
 
         // carico in filesystem.live packages-remove
-        shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.work_dir.pathIso}/live/`)
-        shx.touch(`${this.settings.work_dir.pathIso}/live/filesystem.packages`)
+        shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
+        shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
 
         installerUrl = 'penguins-live-installer.desktop'
         installerIcon = 'utilities-terminal'
@@ -1418,11 +1418,11 @@ export default class Ovary {
     
     // const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
     // const efiWorkDir = this.settings.efi_work
-    // const isoDir = this.settings.work_dir.pathIso
+    // const isoDir = this.settings.iso_work
 
     const memdiskDir = this.settings.config.snapshot_mnt + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
-    const isoDir = this.settings.work_dir.pathIso
+    const isoDir = this.settings.iso_work
 
     /**
      * il pachetto grub/grub2 DEVE essere presente
@@ -1642,7 +1642,7 @@ export default class Ovary {
    * return mkiso
    */
   makeDotDisk(clone = false, cryptedclone = false): string {
-    const dotDisk = this.settings.work_dir.pathIso + '/.disk'
+    const dotDisk = this.settings.iso_work + '/.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
     }
@@ -1780,7 +1780,7 @@ export default class Ovary {
      ${uefi_e} \
      ${uefi_noEmulBoot} \
      ${uefi_isohybridGptBasdat}
-     ${this.settings.work_dir.pathIso}`
+     ${this.settings.iso_work}`
     */
 
     /**
@@ -1822,7 +1822,7 @@ export default class Ovary {
      ${uefi_e} \
      ${uefi_isohybridGptBasdat} \
      ${uefi_noEmulBoot} \
-     -o ${output} ${this.settings.work_dir.pathIso}`
+     -o ${output} ${this.settings.iso_work}`
 
     return command
   }
