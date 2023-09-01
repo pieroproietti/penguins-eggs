@@ -3,7 +3,7 @@
  * selectKeyboardLayout
  * author: Piero Proietti
  */
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'
 
 /**
@@ -29,7 +29,7 @@ export default async function selectKeyboardLayout(selected = ''): Promise<strin
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.layout)
     })
   })

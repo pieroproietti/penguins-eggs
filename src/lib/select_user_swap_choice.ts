@@ -1,5 +1,6 @@
 'use strict'
-import inquirer  from 'inquirer'
+const inquirer = require('inquirer') 
+// import inquirer  from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import {IPartitions} from '../interfaces/index'
@@ -24,7 +25,7 @@ export default async function selectUserSwapChoice(): Promise<string> {
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.userSwapChoices)
     })
   })

@@ -3,7 +3,7 @@
  * selectKeyboardModel
  * author: Piero Proietti
  */
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'
 import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
 
@@ -30,7 +30,7 @@ export default async function selectKeyboardModel(selected = ''): Promise<string
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.model)
     })
   })

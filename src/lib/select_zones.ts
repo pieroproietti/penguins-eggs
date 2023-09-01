@@ -1,6 +1,6 @@
 'use strict'
 'use strict'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') // inquirer from 
 
 export default async function selectRegions(region = ''): Promise<string> {
   const africa = [
@@ -539,7 +539,7 @@ export default async function selectRegions(region = ''): Promise<string> {
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.zone)
     })
   })

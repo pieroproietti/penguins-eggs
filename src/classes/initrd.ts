@@ -24,8 +24,7 @@ export default class Initrd {
   initrdDest = '/home/eggs/ovarium/iso/live'
   fsLive = '/home/eggs/ovarium/filesystem'
 
-  // const initrd = new Initrd(this.settings.initrd_image, `${this.settings.work_dir.pathIso}/live/initrd.img`, this.settings.work_dir.path)
-  constructor(initrdSrc = '/initrd.img', initrdDest = '/home/eggs/ovarium/iso/live/initrd.img', fsLive = '/home/eggs/ovarium/filesystem') {
+  constructor(initrdSrc = '/initrd.img', initrdDest = '/home/eggs/mnt/ovarium/iso/live/initrd.img', fsLive = '/home/eggs/ovarium/filesystem') {
     this.initrdSrc = initrdSrc
     this.initrdDest = initrdDest
     this.fsLive = fsLive

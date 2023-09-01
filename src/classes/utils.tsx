@@ -11,7 +11,7 @@ import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 import chalk from 'chalk'
 import Pacman from './pacman'
 import { ChildProcess, spawnSync } from 'child_process'
@@ -255,10 +255,14 @@ export default class Utils {
     */
    static getSnapshotCount(snapshot_dir = '/'): number {
       if (fs.existsSync(snapshot_dir)) {
-         const list = fs.readdirSync(snapshot_dir)
-         if (list.length > 0) {
-            return list.length - 1
+         const files = fs.readdirSync(snapshot_dir)
+         let nIsos = 0
+         for (const f of files) {
+            if (f.endsWith('.iso')) {
+               nIsos ++
+            }
          }
+         return nIsos
       }
       return 0
    }
@@ -269,7 +273,7 @@ export default class Utils {
     */
    static getSnapshotSize(snapshot_dir = '/'): number {
       let fileSizeInBytes = 0
-      const size = shx.exec(`/usr/bin/find /home/eggs -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
 
       if (size === '') {
          fileSizeInBytes = 0
@@ -799,7 +803,7 @@ unknown target format aarch64-efi
             }
          ]
 
-         inquirer.prompt(questions).then(function (options) {
+         inquirer.prompt(questions).then(function (options: any) {
             resolve(JSON.stringify(options))
          })
       })
@@ -821,7 +825,7 @@ unknown target format aarch64-efi
             }
          ]
 
-         inquirer.prompt(questions).then(function (options) {
+         inquirer.prompt(questions).then(function (options: any) {
             resolve(JSON.stringify(options))
          })
       })

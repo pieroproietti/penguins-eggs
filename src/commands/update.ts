@@ -10,7 +10,8 @@ import Utils from '../classes/utils'
 import Tools from '../classes/tools'
 import Pacman from '../classes/pacman'
 import {exec} from '../lib/utils'
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
+
 
 /**
  *
