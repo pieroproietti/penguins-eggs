@@ -20,9 +20,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 # eggs-9.5.21
 * general refactoring: mostly on settings, ovary, i-workdir, i-eggs-config;
 * produce: a check was added in ovary after launch `mkiso`, if the generation of the iso fail, eggs will exit showing error;
-* added a mountpoint on `/home/eggs/mnt`. This is usefull to can clone/remaster systems without sufficient free space. We need about 2 x filesystem.squashfs size free to can build the iso. Just mount your free partition inside `/home/eggs/mnt`, example: `sudo mount /dev/sdb1 /home/eggs/mnt`, then run `sudo produce`;
+* added a mountpoint on `/home/eggs/mnt`. This is usefull to can clone/remaster systems without sufficient free space. We need about 2 x filesystem.squashfs size free to can build the iso. Just mount your free partition inside `/home/eggs/mnt`, example: `sudo mount /dev/sdb1 /home/eggs/mnt`, then run `sudo produce`. It is also possible to mount free space from a remote computer using sshfs as in the following example: `sudo sshfs root@192.168.1.2:/home/artisan/destination /home/eggs/mnt`;
 * rewrote and checked routines for available and used space, in light of the ability to mount free partition under `/home/eggs/mnt`;
-* a function named `killMeSoftly()` - hopefully safe - was created. The function check presence of binded dirs eventually mounted inside `/home/eggs/mnt/filesystem.squashfs` and mounted partition on`/home/eggs/mnt` before to remove `/home/eggs`.
+* a function named `killMeSoftly()` - hopefully safe - was created. The function check presence of binded dirs eventually mounted inside `/home/eggs/mnt/filesystem.squashfs` and mounted partition on`/home/eggs/mnt` before to rqqemove `/home/eggs`.
 
 # eggs-9.5.20
 * calamares: I added in the calamares configuration the possibility to detect the filesystem types supported by the system. By default and as the first option we always have ext4, then btrfs, xfs and f2fs.
