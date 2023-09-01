@@ -17,6 +17,13 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.21
+* general refactoring: mostly on settings, ovary, i-workdir, i-eggs-config;
+* produce: a check was added in ovary after launch `mkiso`, if the generation of the iso fail, eggs exit showing error;
+* added a mountpoint on `/home/eggs/mnt`. This is usefull to can clone/remaster a system without sufficient free space. (Just mount your free partition inside `/home/eggs/mnt`. Example: `sudo mount /dev/sdb1 /home/eggs/mnt` before to run `sudo produce`);
+* rewrote and checked routines for available and used space, in light of the ability to mount free partition under `/home/eggs/mnt``;
+* a new function `killMeSoftly()` - hopefully safe - was created. The function check presence of binded dirs mounted on `/home/eggs/mnt/filesystem.squashfs` before to remove it or mounted partition on`/home/eggs/mnt`;
+
 # eggs-9.5.20
 * calamares: I added in the calamares configuration the possibility to detect the filesystem types supported by the system. By default and as the first option we always have ext4, then btrfs, xfs and f2fs.
 

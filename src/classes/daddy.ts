@@ -9,7 +9,10 @@ import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
 import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
-import inquirer from 'inquirer'
+import killMeSoftly from '../lib/kill_me_softly'
+
+const inquirer = require('inquirer') 
+
 import {IEggsConfig} from '../interfaces/i-eggs-config'
 import {IMyAddons} from '../interfaces/index'
 import chalk from 'chalk'
@@ -91,8 +94,7 @@ export default class Daddy {
 
       let flags = ''
       if (loadDefault) {
-        await exec(`rm ${this.settings.work_dir.path} -rf`)
-        await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+        await killMeSoftly(this.settings.config.snapshot_dir, this.settings.config.snapshot_mnt)
       } else {
         // Controllo se serve il kill
         if (verbose) {
@@ -103,8 +105,7 @@ export default class Daddy {
         console.log(chalk.cyan('Daddy, what else did you leave for me?'))
         await this.settings.listFreeSpace()
         if (await Utils.customConfirm()) {
-          await exec(`rm ${this.settings.work_dir.path} -rf`)
-          await exec(`rm ${this.settings.config.snapshot_dir} -rf`)
+           await killMeSoftly(this.settings.config.snapshot_dir, this.settings.config.snapshot_mnt)
         }
 
         /**
@@ -198,7 +199,7 @@ export default class Daddy {
           default: compressionOpt,
         },
       ]
-      inquirer.prompt(questions).then(function (options) {
+      inquirer.prompt(questions).then(function (options: any) {
         resolve(JSON.stringify(options))
       })
     })

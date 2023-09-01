@@ -1,8 +1,7 @@
 export interface IWorkDir {
-  path: string
-  pathIso: string
-  lowerdir: string
-  upperdir: string
-  workdir: string
-  merged: string
+  ovarium: string // default: /home/eggs/mnt/ovarium/
+  lowerdir: string // default: ${ovarium}.lowerdir
+  upperdir: string // default: ${ovarium}.upperdir
+  workdir: string // default: ${ovarium}.workdir
+  merged: string // default: ${ovarium}.merged
 }

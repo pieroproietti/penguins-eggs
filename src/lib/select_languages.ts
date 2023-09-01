@@ -1,7 +1,7 @@
 /**
  * less /usr/share/i18n/SUPPORTED
  */
-import inquirer from 'inquirer'
+const inquirer = require('inquirer') 
 import shx from 'shelljs'
 import Locales from '../classes/locales'
 
@@ -21,7 +21,7 @@ export default async function selectLanguages(selectedLanguage = ''): Promise<st
   ]
 
   return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options) {
+    inquirer.prompt(questions).then(function (options: any) {
       resolve(options.language)
     })
   })

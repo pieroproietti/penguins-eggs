@@ -49,10 +49,10 @@ export default class Pxe {
           await exec(`mount /dev/sr0 ${this.eggRoot}`)
         }
       } else {
-        this.eggRoot = path.dirname(this.settings.work_dir.path) + '/ovarium/iso/'
+        this.eggRoot = path.dirname(this.settings.config.snapshot_dir) + '/ovarium/iso/'
       }
 
-      if (!Utils.isLive() && !fs.existsSync(this.settings.work_dir.path)) {
+      if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_dir)) {
         console.log('no image available, build an image with: sudo eggs produce')
         process.exit()
       }
