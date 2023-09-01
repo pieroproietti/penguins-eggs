@@ -18,7 +18,10 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.5.21
-* added a mountpoint called `.mountpoint` inside `/home/eggs`. This can be usefull to can backup a computer full of data. Just mount some partition inside `/home/eggs/.mountpoint` and you will get sufficient space to backup. Example: `sudo mount /dev/sdb1 /home/eggs/.mountpoint`, then `sudo produce`.
+* refactoring settings, ovary, i-workdir, i-eggs-config;
+* added a mountpoint on `/home/eggs/mnt`. This is usefull to can backup a computer full of data. (Just mount your free partition inside `/home/eggs/mnt` to get sufficient space to backup. Example: `sudo mount /dev/sdb1 /home/eggs/mnt`, then `sudo produce`.);
+* rewrote and checked routines for available and used space, in light of the ability to mount free partitions for backup;
+* a new function is used: killMeSoftly() for deleting `/home/eggs`` in light of the possibility of having partitions mounted in`/home/eggs/mnt` and in /home/eggs/ovarium
 
 # eggs-9.5.20
 * calamares: I added in the calamares configuration the possibility to detect the filesystem types supported by the system. By default and as the first option we always have ext4, then btrfs, xfs and f2fs.
