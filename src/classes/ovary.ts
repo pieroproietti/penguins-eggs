@@ -892,7 +892,10 @@ export default class Ovary {
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
       Utils.warning('squashing filesystem: ' + compression)
-      await exec(cmd, Utils.setEcho(true))
+      const test = (await exec(cmd, Utils.setEcho(true))).code
+      if (test !== 0) {
+        process.exit()
+      }
     }
   }
 
