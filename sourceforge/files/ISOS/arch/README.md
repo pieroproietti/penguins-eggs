@@ -21,7 +21,8 @@ penguins-eggs
 
 * **egg-of-arch-naked** Just the juice, without GUI. You can start here to build your revolution!
 * **egg-of-arch-colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
-* **egg-of-arch-fringuello** A colibri turned in a fringuello installing distrobox. Fringuello, strange to say is capable to produce eggs for Arch and Debian.
+* **egg-of-arch-fringuello** A colibri turned in a fringuello installing distrobox. Fringuello, strange to say is capable to produce eggs for Arch and Debian. More informations: [Alice in Wonderland
+](https://penguins-eggs.net/blog/alice-in-wonderland)).
 
 # USE
 
