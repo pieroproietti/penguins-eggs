@@ -26,14 +26,12 @@ penguins-eggs
 
 # USE
 
-**naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too.
-**fringuello** like colibri, with distrobox.
+**naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too, **fringuello** is like colibri, with distrobox.
 
-NOTE: While waiting to complete the wardrobe for arch, it is still possible to switch from the naked configuration to colibri by running the following commands:
+NOTE: it is still possible to "dress" a naked configuration as colibri by running the following commands:
 
 * ```eggs wardrobe get```
-* ```cd .wardrobe/costumes/colibri```
-* ```sudo ./arch-colibri.sh```
+* ```sudo eggs wardrobe wear colibri```
 
 # Installing eggs and producing an iso 
 
@@ -72,39 +70,7 @@ makepkg -srcCi
 eggs, is installed!
 
 # Calamares
-
-If we uses `Chaotic-AUR` we can just write: `sudo eggs calamares --install` ho have it ready, but its possible to install [calamares](https://aur.archlinux.org/packages/calamares-git) by yay too.
-
-At the moment there is a problem with package [ckbcomp](https://aur.archlinux.org/packages/ckbcomp), so to install calamares, you will have to:
-```
-git clone https://github.com/pieroproietti/penguins-eggs-pkgbuilds
-cd penguins-eggs-pkgbuilds/aur/cbkcomp
-makepkg -si
-```
-
-At this point you can properly install calamares with the command: 
-
-```
-yay calamares
-```
-
-We need now to reconfigure eggs:
-
-```
-sudo eggs dad -d
-```
-
-and let eggs configure it to allow the use of calamares without entering the root password:
-
-```
-sudo eggs calamares --install
-```
-
-We are ready to create our first iso:
-
-```
-sudo eggs produce
-```
+Use the command: `sudo eggs calamares --install` to install `calamares-eggs`. This is a custom calamares edition, hosted on sourceforge page of eggs, on the folder [PKGBUILD](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/).
 
 If you want calamares and eggs to be removed during system installation, simply use:
 
