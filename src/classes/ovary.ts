@@ -883,10 +883,7 @@ export default class Ovary {
     if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
     }
-
-
     const compression = `-comp ${this.settings.config.compression}`
-    //let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.session_excludes}`
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
@@ -1068,8 +1065,6 @@ export default class Ovary {
     const cmds: string[] = []
     cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
-
-    // await exec(`/usr/bin/pkill mksquashfs; /usr/bin/pkill md5sum`, {echo: true})
     if (fs.existsSync(this.settings.work_dir.merged)) {
       const bindDirs = fs.readdirSync(this.settings.work_dir.merged, {
         withFileTypes: true,
@@ -1658,8 +1653,7 @@ export default class Ovary {
     fs.writeFileSync(file, content, 'utf-8')
 
     // .disk/mksquashfs
-    const scripts = this.settings.config.snapshot_dir
-    shx.cp(scripts + '/mksquashfs', dotDisk + '/mksquashfs')
+    shx.cp(this.ovarium + 'mksquashfs', dotDisk + '/mksquashfs')
 
     // .disk/mkisofs
     content = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
