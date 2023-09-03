@@ -1841,6 +1841,7 @@ export default class Ovary {
       if (test !== 0) {
         process.exit()
       }
+      
       // Create link to iso
       const src =  this.settings.config.snapshot_mnt + this.settings.isoFilename
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
