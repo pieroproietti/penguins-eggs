@@ -57,7 +57,7 @@ export default class Pxe {
         process.exit()
       }
 
-      this.nest = '/home/eggs'
+      this.nest = '/home/eggs/mnt'
       this.pxeRoot = this.nest + '/pxe'
 
       /**
