@@ -19,7 +19,7 @@ export default class Cuckoo extends Command {
     'sudo eggs cuckoo',
   ]
 
-  async run(nest = '/home/eggs'): Promise<void> {
+  async run(nest = '/home/eggs/mnt'): Promise<void> {
     const {args, flags} = await this.parse(Cuckoo)
 
     Utils.titles(this.id + ' ' + this.argv)
