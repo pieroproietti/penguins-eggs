@@ -15,6 +15,7 @@ import Utils from './utils'
 import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'
+import { createEmitAndSemanticDiagnosticsBuilderProgram } from 'typescript'
 
 /**
 * Pxe:
@@ -49,15 +50,16 @@ export default class Pxe {
           await exec(`mount /dev/sr0 ${this.eggRoot}`)
         }
       } else {
-        this.eggRoot = path.dirname(this.settings.config.snapshot_dir) + '/ovarium/iso/'
+        //this.eggRoot = path.dirname(this.settings.config.snapshot_mnt) + '/iso/'
+        this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
       }
 
-      if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_dir)) {
+      if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_mnt)) {
         console.log('no image available, build an image with: sudo eggs produce')
         process.exit()
       }
 
-      this.nest = '/home/eggs/mnt'
+      this.nest = this.settings.config.snapshot_mnt
       this.pxeRoot = this.nest + '/pxe'
 
       /**
@@ -85,7 +87,7 @@ export default class Pxe {
       */
 
       /**
-           * installed: /home/eggs/ovarium/iso/live
+           * installed: /home/eggs/mnt/iso/live
            * live: this.iso/live
            */
       const pathFiles = this.eggRoot + 'live'
