@@ -42,9 +42,9 @@ case "$1" in
         rm -rf /usr/lib/penguins-eggs/krill
 
         # sanitize applications links
-        rm -f /usr/share/applications/penguins-adapt.destop
-        rm -f /usr/share/applications/penguins-clinstaller.destop
-        rm -f /usr/share/applications/penguins-eggs.destop
+        rm -f /usr/share/applications/penguins-adapt.desktop
+        rm -f /usr/share/applications/penguins-clinstaller.desktop
+        rm -f /usr/share/applications/penguins-eggs.desktop
 
         # sanitize xdg links
         rm -f /etc/xdg/autostart/penguins-links-add.desktop
