@@ -928,6 +928,7 @@ export default class Ovary {
    * - normal solo la creazione della directory, nessun mount
    * - merged creazione della directory e mount ro
    * - mergedAndOverlay creazione directory, overlay e mount rw
+   * - copied: creazione directory e copia
    */
   merged(dir: string): boolean {
     let merged = true
