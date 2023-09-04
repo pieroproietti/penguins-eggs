@@ -6,7 +6,7 @@
  */
 
 // packages
-import fs, { Dir, Dirent, exists } from 'fs'
+import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import os from 'node:os'
@@ -228,6 +228,7 @@ export default class Ovary {
         }
 
         await this.bindLiveFs()
+        await this.copyBoot()
 
         if (!this.clone) {
           /**
@@ -937,6 +938,7 @@ export default class Ovary {
       merged = this.clone
     } else {
       const noMergeDirs = [
+        'boot', // will be copied now
         'cdrom',
         'dev',
         'media',
@@ -976,7 +978,7 @@ export default class Ovary {
      * fs.readdirSync('/', { withFileTypes: true })
      * viene ignorato da Node8, ma da problemi da Node10 in poi
      */
-    const dirs = fs.readdirSync('/')
+    const dirs = fs.readdirSync('/') // we must remove boot and 
     const startLine = '#############################################################'
     const titleLine = '# -----------------------------------------------------------'
     const endLine = '# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
@@ -990,34 +992,36 @@ export default class Ovary {
     for (const dir of dirs) {
       cmds.push(startLine)
       if (N8.isDirectory(dir)) {
-        if (dir !== 'lost+found') {
-          cmd = `# /${dir} is a directory`
-          if (this.mergedAndOvelay(dir)) {
-            /**
-             * mergedAndOverlay creazione directory, overlay e mount rw
-             */
-            cmds.push(`${cmd} need to be presente, and rw`, titleLine, '# create mountpoint lower')
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`), `# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
-            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), '# now remount it ro')
-            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, this.verbose))
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, this.verbose))
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
-            cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
-          } else if (this.merged(dir)) {
-            /*
-             * merged creazione della directory e mount ro
-             */
-            cmds.push(`${cmd} need to be present, mount ro`, titleLine)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose))
-            cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
-            cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
-          } else {
-            /**
-             * normal solo la creazione della directory, nessun mount
-             */
-            cmds.push(`${cmd} need to be present, no mount`, titleLine)
-            cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
+        if (dir !== 'boot') {
+          if (dir !== 'lost+found') {
+            cmd = `# /${dir} is a directory`
+            if (this.mergedAndOvelay(dir)) {
+              /**
+               * mergedAndOverlay creazione directory, overlay e mount rw
+               */
+              cmds.push(`${cmd} need to be presente, and rw`, titleLine, '# create mountpoint lower')
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`), `# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
+              cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), '# now remount it ro')
+              cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.upperdir}/${dir}`, this.verbose))
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.workdir}/${dir}`, this.verbose))
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
+              cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
+            } else if (this.merged(dir)) {
+              /*
+               * merged creazione della directory e mount ro
+               */
+              cmds.push(`${cmd} need to be present, mount ro`, titleLine)
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose))
+              cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
+              cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
+            } else {
+              /**
+               * normal solo la creazione della directory, nessun mount
+               */
+              cmds.push(`${cmd} need to be present, no mount`, titleLine)
+              cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
+            }
           }
         }
       } else if (N8.isFile(dir)) {
@@ -1053,6 +1057,18 @@ export default class Ovary {
     // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
     Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
   }
+
+  /**
+   * copyBoot
+   */
+  async copyBoot() {
+    if (this.verbose) {
+      console.log('ovary: copyBoot')
+    }
+    console.log('ovary: copyBoot')
+    await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
+  }
+
 
   /**
    * ubind del fs live
@@ -1414,7 +1430,7 @@ export default class Ovary {
     if (this.verbose) {
       console.log('ovary: makeEfi')
     }
-    
+
     // const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
     // const efiWorkDir = this.settings.efi_work
     // const isoDir = this.settings.iso_work
@@ -1694,8 +1710,8 @@ export default class Ovary {
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + volid + typology + postfix
     // 
-    const output =  this.settings.config.snapshot_mnt + this.settings.isoFilename
-    
+    const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
+
     let command = ''
     // const appid = `-appid "${this.settings.distro.distroId}" `
     // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
@@ -1842,9 +1858,9 @@ export default class Ovary {
       if (test !== 0) {
         process.exit()
       }
-      
+
       // Create link to iso
-      const src =  this.settings.config.snapshot_mnt + this.settings.isoFilename
+      const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
       await exec(`ln -s ${src} ${dest}`)
     }
