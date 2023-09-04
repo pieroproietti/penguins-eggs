@@ -17,6 +17,11 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.22
+* first positive test remaster and reinstall Arch on btrfs;
+* ovary: actually /boot is copied not more merged to let the use of  /boot on vfat possibile;
+* calamares: updated calamares-eggs on Arch to 'calamares-eggs-3.3.0.r10707.4b3278058-1-x86_64.pkg.tar.zst'.
+
 # eggs-9.5.21
 * general refactoring: mostly on settings, ovary, i-workdir, i-eggs-config;
 * produce: a check was added in ovary after launch `mkiso`, if the generation of the iso fail, eggs will exit showing error;
