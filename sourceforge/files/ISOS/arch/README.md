@@ -36,6 +36,9 @@ NOTE: it is still possible to "dress" a naked configuration as colibri by runnin
 
 # Installing eggs and producing an iso 
 
+Lately I added this short [guide](https://github.com/pieroproietti/penguins-eggs/discussions/276#discussioncomment-6904971), feel free to comment.
+
+
 ## Using `Chaotic-AUR`.
 penguins-eggs and calamares are not present in the standard Arch repositories, while it is present in the chaotic-AUS repository, all we have to do is configure it:
 
