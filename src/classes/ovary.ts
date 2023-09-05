@@ -1065,7 +1065,6 @@ export default class Ovary {
     if (this.verbose) {
       console.log('ovary: copyBoot')
     }
-    console.log('ovary: copyBoot')
     await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
   }
 
