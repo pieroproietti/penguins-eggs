@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Created at: 2023-05-11_1841
-# By: penguins_eggs v. 9.4.9
-# ==> Perri's Brewery edition <== 
-
-mksquashfs /home/eggs/ovarium/filesystem.squashfs /home/eggs/ovarium/iso/live/filesystem.squashfs -comp zstd -b 256K -Xcompression-level 1 -wildcards -e 'boot/efi/EFI' 'etc/fstab' 'etc/mtab' 'etc/udev/rules.d/70-persistent-cd.rules' 'etc/udev/rules.d/70-persistent-net.rules' 'etc/rc0.dK01cryptdisks' 'etc/rc0.dK01cryptdisks-early' 'etc/rc6.dK01cryptdisks' 'etc/rc6.dK01cryptdisks-early' 'etc/rcS.dS01cryptdisks' 'etc/rcS.dS01cryptdisks-early' 'home/eggs/' 'swap/*'
