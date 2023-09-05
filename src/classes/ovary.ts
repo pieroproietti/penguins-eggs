@@ -358,6 +358,10 @@ export default class Ovary {
    * @param cmd
    */
   async tryCatch(cmd = '') {
+    if (this.verbose) {
+      console.log('Ovary: tryCatch')
+    }
+
     try {
       await exec(cmd, this.echo)
     } catch (error) {
@@ -718,6 +722,10 @@ export default class Ovary {
    * @returns kernelParameters
    */
   kernelParameters(): string {
+    if (this.verbose) {
+      console.log('Ovary: kernelParameters')
+    }
+
     const distroId = this.settings.distro.distroId
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
@@ -942,6 +950,10 @@ export default class Ovary {
    * - copied: creazione directory e copia
    */
   merged(dir: string): boolean {
+    if (this.verbose) {
+      console.log('Ovary: merged')
+    }
+
     let merged = true
 
     if (dir === 'home') {
@@ -1410,6 +1422,10 @@ export default class Ovary {
    * @param icon
    */
   private lxdeLink(file: string, name: string, icon: string): string {
+    if (this.verbose) {
+      console.log('Ovary: lxdeLink')
+    }
+
     const lnk = `lnk-${file}`
 
     let text = ''
@@ -1428,6 +1444,10 @@ export default class Ovary {
    * @param exclusion {atring} path to add/remove
    */
   addRemoveExclusion(add: boolean, exclusion: string): void {
+    if (this.verbose) {
+      console.log('Ovary: addRemoveExclusion')
+    }
+
     if (exclusion.startsWith('/')) {
       exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
     }
@@ -1449,7 +1469,7 @@ export default class Ovary {
   // #######################################################################################
   async makeEfi(theme = 'eggs') {
     if (this.verbose) {
-      console.log('ovary: makeEfi')
+      console.log('Ovary: makeEfi')
     }
 
     // const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
@@ -1710,6 +1730,10 @@ export default class Ovary {
    * @returns cmd 4 mkiso
    */
   xorrisoCommand(clone = false, cryptedclone = false): string {
+    if (this.verbose) {
+      console.log('Ovary: xorrisoCommand')
+    }
+
     const volid = Utils.getVolid(this.settings.remix.name)
 
     let prefix = this.settings.config.snapshot_prefix
@@ -1872,9 +1896,8 @@ export default class Ovary {
    */
   async makeIso(cmd: string, scriptOnly = false) {
     // echo = { echo: true, ignore: false }
-
     if (this.verbose) {
-      console.log('ovary: makeIso')
+      console.log('Ovary: makeIso')
     }
     //Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
     Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
@@ -1921,6 +1944,10 @@ export default class Ovary {
   * fill
   */
   async usersFill(): Promise<Users[]> {
+    if (this.verbose) {
+      console.log('Ovary: usersFill')
+    }
+
     const usersArray = []
     await access('/etc/passwd', constants.R_OK | constants.W_OK)
     const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
@@ -1943,7 +1970,7 @@ export default class Ovary {
  */
 async function makeIfNotExist(path: string, verbose = false): Promise<string> {
   if (verbose) {
-    console.log(`ovary: makeIfNotExist(${path})`)
+    console.log(`Ovary: makeIfNotExist(${path})`)
   }
 
   const echo = Utils.setEcho(verbose)
@@ -1962,6 +1989,9 @@ async function makeIfNotExist(path: string, verbose = false): Promise<string> {
  * @param echo
  */
 async function rexec(cmd: string, verbose = false): Promise<string> {
+  if (verbose) {
+    console.log(`Ovary: rexec(${cmd})`)
+  }
   const echo = Utils.setEcho(verbose)
 
   const check = await exec(cmd, echo)
