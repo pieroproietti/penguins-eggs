@@ -373,7 +373,7 @@ unknown target format aarch64-efi
    static getVolid(volid = 'unknown') {
       // // 28 +  4 .iso = 32 lunghezza max di volid
       if (volid.length >= 32) {
-         volid = volid.substr(0, 32)
+         volid = volid.substring(0, 32)
       }
       return volid
    }
