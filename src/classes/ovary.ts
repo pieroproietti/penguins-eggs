@@ -339,13 +339,13 @@ export default class Ovary {
      * Creo le directory di destinazione per boot, efi, isolinux e live
      */
     if (!fs.existsSync(this.settings.iso_work)) {
-      cmd = `mkdir -p ${this.settings.iso_work}/boot/grub/${Utils.machineUEFI()}`
+      cmd = `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.machineUEFI()}`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.iso_work}/efi/boot`
+      cmd = `mkdir -p ${this.settings.iso_work}efi/boot`
       this.tryCatch(cmd)
 
-      cmd = `mkdir -p ${this.settings.iso_work}/isolinux`
+      cmd = `mkdir -p ${this.settings.iso_work}isolinux`
       this.tryCatch(cmd)
 
       cmd = `mkdir -p ${this.settings.iso_work}live`
@@ -1702,7 +1702,7 @@ export default class Ovary {
       console.log('Ovary: makeDotDisk')
     }
 
-    const dotDisk = this.settings.iso_work + '/.disk'
+    const dotDisk = this.settings.iso_work + '.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
     }
@@ -1714,15 +1714,15 @@ export default class Ovary {
     let content = Utils.getVolid(this.settings.remix.name)
     fs.writeFileSync(file, content, 'utf-8')
     if (this.verbose) {
-      console.log(`file:` + file)
-      console.log(`content:` + content)
+      console.log(`file: ${file}`)
+      console.log(`content: ${content}`)
     }
 
     // .disk/mksquashfs
-    file = dotDisk + '/mkisofs'
+    file = dotDisk + '/mksquashfs'
     shx.cp(this.ovarium + 'mksquashfs', file)
     if (this.verbose) {
-      console.log(`file:` + file)
+      console.log(`file: ${file}`)
       console.log(`content: mksquashfs`)
     }
 
@@ -1731,8 +1731,8 @@ export default class Ovary {
     file = dotDisk + '/mkisofs'
     fs.writeFileSync(file, content, 'utf-8')
     if (this.verbose) {
-      console.log(`file:` + file)
-      console.log(`content:` + content)
+      console.log(`file: ${file}`)
+      console.log(`content: ${content}`)
     }
     return content
   }
