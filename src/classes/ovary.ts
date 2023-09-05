@@ -1713,14 +1713,27 @@ export default class Ovary {
     let file = dotDisk + '/info'
     let content = Utils.getVolid(this.settings.remix.name)
     fs.writeFileSync(file, content, 'utf-8')
+    if (this.verbose) {
+      console.log(`file:` + file)
+      console.log(`content:` + content)
+    }
 
     // .disk/mksquashfs
-    shx.cp(this.ovarium + 'mksquashfs', dotDisk + '/mksquashfs')
+    file = dotDisk + '/mkisofs'
+    shx.cp(this.ovarium + 'mksquashfs', file)
+    if (this.verbose) {
+      console.log(`file:` + file)
+      console.log(`content: mksquashfs`)
+    }
 
     // .disk/mkisofs
     content = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
     file = dotDisk + '/mkisofs'
     fs.writeFileSync(file, content, 'utf-8')
+    if (this.verbose) {
+      console.log(`file:` + file)
+      console.log(`content:` + content)
+    }
     return content
   }
 
