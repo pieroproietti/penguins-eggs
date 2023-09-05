@@ -34,53 +34,9 @@ NOTE: it is still possible to "dress" a naked configuration as colibri by runnin
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear colibri```
 
-# Installing eggs and producing an iso 
+# Installing eggs and producing an ISO
 
 Lately I added this short [guide](https://github.com/pieroproietti/penguins-eggs/discussions/276#discussioncomment-6904971), feel free to comment.
-
-
-## Using `Chaotic-AUR`.
-penguins-eggs and calamares are not present in the standard Arch repositories, while it is present in the chaotic-AUS repository, all we have to do is configure it:
-
-```
- pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
- pacman-key --lsign-key FBA220DFC880C036
- pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
-```
-
-At this point, we add the following text to the end of `/etc/pacman.conf`:
-```
-[chaotic-aur]
-Include = /etc/pacman.d/chaotic-mirrorlist
-```
-
-At this point we can install penguins-eggs with the command: ``sudo pacman -Sy penguins-eggs``
-
-## Using yay
-
-On Arch, You can use yay to install penguins-eggs:
-
-```
-yay penguins-eggs
-```
-or, more traditionally:
-
-```
-git clone https://aur.archlinux.org/penguins-eggs.git
-cd penguins-eggs
-makepkg -srcCi
-```
-
-eggs, is installed!
-
-# Calamares
-Use the command: `sudo eggs calamares --install` to install `calamares-eggs`. This is a custom calamares edition, hosted on sourceforge page of eggs, on the folder [PKGBUILD](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/).
-
-If you want calamares and eggs to be removed during system installation, simply use:
-
-```
-sudo eggs produce --release
-```
 
 # Creating naked starting from archiso
 
