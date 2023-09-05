@@ -757,7 +757,7 @@ export default class Ovary {
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
-      await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}/live/`, this.echo)
+      await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}live/`, this.echo)
     } else {
       Utils.error(`Cannot find ${this.settings.kernel_image}`)
       lackVmlinuzImage = true
