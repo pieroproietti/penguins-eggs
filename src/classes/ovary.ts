@@ -378,7 +378,7 @@ export default class Ovary {
    */
   async editLiveFs(clone = false, cryptedclone = false) {
     if (this.verbose) {
-      console.log('ovary: editLiveFs')
+      console.log('Ovary: editLiveFs')
     }
 
     /**
@@ -629,8 +629,7 @@ export default class Ovary {
    */
   async syslinux() {
     if (this.verbose) {
-      console.log('ovary: syslinux')
-      console.log('syslinux path: ' + this.settings.distro.syslinuxPath)
+      console.log('Ovary: syslinux')
     }
 
     await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
@@ -652,7 +651,7 @@ export default class Ovary {
    */
   async isolinux(theme = 'eggs') {
     if (this.verbose) {
-      console.log('ovary: isolinux')
+      console.log('Ovary: isolinux')
     }
 
     /**
@@ -745,7 +744,7 @@ export default class Ovary {
    */
   async kernelCopy() {
     if (this.verbose) {
-      console.log('ovary: kernelCopy')
+      console.log('Ovary: kernelCopy')
     }
 
     let lackVmlinuzImage = false
@@ -767,6 +766,11 @@ export default class Ovary {
    * necessita di echoYes
    */
   async initrdCreate() {
+    if (this.verbose) {
+      console.log('Ovary: initrdCreate')
+    }
+
+
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}/live/`)
@@ -799,6 +803,9 @@ export default class Ovary {
    * @returns
    */
   async initrdCopy(verbose = false) {
+    if (this.verbose) {
+      console.log('Ovary: initrdCopy')      
+    }
     let isCrypted = false
 
     Utils.warning('initrdCreate')
@@ -841,7 +848,7 @@ export default class Ovary {
    */
   async makeSquashfs(scriptOnly = false) {
     if (this.verbose) {
-      console.log('ovary: makeSquashfs')
+      console.log('Ovary: makeSquashfs')
     }
 
     /**
@@ -908,7 +915,10 @@ export default class Ovary {
    *
    * @param dir
    */
-  mergedAndOvelay(dir: string): boolean {
+  mergedAndOverlay(dir: string): boolean {
+    if (this.verbose) {
+      console.log('Ovary: mergedAndOverlay')
+    }
     const mountDirs = ['boot', 'etc', 'usr', 'var']
     let mountDir = ''
     let overlay = false
@@ -970,7 +980,7 @@ export default class Ovary {
    */
   async bindLiveFs() {
     if (this.verbose) {
-      console.log('ovary: bindLiveFs')
+      console.log('Ovary: bindLiveFs')
     }
 
     /**
@@ -995,7 +1005,7 @@ export default class Ovary {
         if (dir !== 'boot') {
           if (dir !== 'lost+found') {
             cmd = `# /${dir} is a directory`
-            if (this.mergedAndOvelay(dir)) {
+            if (this.mergedAndOverlay(dir)) {
               /**
                * mergedAndOverlay creazione directory, overlay e mount rw
                */
@@ -1063,7 +1073,7 @@ export default class Ovary {
    */
   async copyBoot() {
     if (this.verbose) {
-      console.log('ovary: copyBoot')
+      console.log('Ovary: copyBoot')
     }
     await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
   }
@@ -1075,7 +1085,7 @@ export default class Ovary {
    */
   async uBindLiveFs() {
     if (this.verbose) {
-      console.log('ovary: uBindLiveFs')
+      console.log('Ovary: uBindLiveFs')
     }
 
     const cmds: string[] = []
@@ -1092,7 +1102,7 @@ export default class Ovary {
         cmds.push('#############################################################')
         if (N8.isDirectory(dirname)) {
           cmds.push(`\n# directory: ${dirname}`)
-          if (this.mergedAndOvelay(dirname)) {
+          if (this.mergedAndOverlay(dirname)) {
             cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
             cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
             cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
@@ -1131,6 +1141,10 @@ export default class Ovary {
    * bind dei virtual file system
    */
   async bindVfs() {
+    if (this.verbose) {
+      console.log('Ovary: bindVfs')
+    }
+
     const cmds: string[] = []
     cmds.push(
       `mount -o bind /dev ${this.settings.work_dir.merged}/dev`,
@@ -1148,6 +1162,10 @@ export default class Ovary {
    * @param verbose
    */
   async ubindVfs() {
+    if (this.verbose) {
+      console.log('Ovary: ubindVfs')
+    }
+
     const cmds: string[] = []
     cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
     // Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
@@ -1159,6 +1177,10 @@ export default class Ovary {
    * @param verbose
    */
   async cleanUsersAccounts() {
+    if (this.verbose) {
+      console.log('Ovary: cleanUsersAccounts')
+    }
+
     /**
      * delete all user in chroot
      */
@@ -1183,7 +1205,7 @@ export default class Ovary {
    */
   async createUserLive() {
     if (this.verbose) {
-      console.log('ovary: createUserLive')
+      console.log('Ovary: createUserLive')
     }
 
     const cmds: string[] = []
@@ -1243,7 +1265,7 @@ export default class Ovary {
    */
   async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons, noicons = false) {
     if (this.verbose) {
-      console.log('ovary: createXdgAutostart()')
+      console.log('Ovary: createXdgAutostart()')
     }
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
@@ -1656,6 +1678,10 @@ export default class Ovary {
    * return mkiso
    */
   makeDotDisk(clone = false, cryptedclone = false): string {
+    if (this.verbose){
+      console.log('Ovary: makeDotDisk')
+    }
+
     const dotDisk = this.settings.iso_work + '/.disk'
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
@@ -1949,5 +1975,3 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   }
   return cmd
 }
-
-
