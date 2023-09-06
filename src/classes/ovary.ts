@@ -267,7 +267,8 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.ovarium}iso/live`, this.echo)
       }
 
-      const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
+      //const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
+      const xorrisoCommand = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -1277,7 +1278,7 @@ export default class Ovary {
    */
   async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons, noicons = false) {
     if (this.verbose) {
-      console.log('Ovary: createXdgAutostart()')
+      console.log('Ovary: createXdgAutostart')
     }
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
