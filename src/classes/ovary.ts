@@ -1719,7 +1719,7 @@ export default class Ovary {
 
     // .disk/mksquashfs
     file = dotDisk + '/mksquashfs'
-    shx.cp(this.ovarium + 'mksquashfs', file)
+    shx.cp(this.settings.work_dir.ovarium + 'mksquashfs', file)
     if (this.verbose) {
       console.log(`file: ${file}`)
       console.log(`content: mksquashfs`)
