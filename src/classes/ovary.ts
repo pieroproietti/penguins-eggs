@@ -268,7 +268,6 @@ export default class Ovary {
       }
 
       const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
-      // const xorrisoCommand = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -283,6 +282,7 @@ export default class Ovary {
           hashExt = '.md5'
         } 
         await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
+        // await exec(`ln -s ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)        
         await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)        
         await exec(`${hashCmd} ${this.settings.iso_work}${pathName}.sfs > ${this.settings.iso_work}${pathName}${hashExt}`, this.echo)
       }
@@ -851,7 +851,7 @@ export default class Ovary {
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(scriptOnly = false) {
+  async makeSquashfs(scriptOnly = false) : Promise <string>{
     if (this.verbose) {
       console.log('Ovary: makeSquashfs')
     }
@@ -907,6 +907,7 @@ export default class Ovary {
         process.exit()
       }
     }
+    return cmd
   }
 
   /**
@@ -1714,10 +1715,11 @@ export default class Ovary {
 
     // .disk/mksquashfs
     file = dotDisk + '/mksquashfs'
-    shx.cp(this.settings.work_dir.ovarium + 'mksquashfs', file)
+    content = 'intentionnaly blank!'
+    fs.writeFileSync(file, content, 'utf-8')
     if (this.verbose) {
       console.log(`file: ${file}`)
-      console.log(`content: mksquashfs`)
+      console.log(`content: ${content}`)
     }
 
     // .disk/mkisofs
