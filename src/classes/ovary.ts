@@ -267,8 +267,8 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.ovarium}iso/live`, this.echo)
       }
 
-      //const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
-      const xorrisoCommand = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
+      const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
+      // const xorrisoCommand = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -1227,7 +1227,9 @@ export default class Ovary {
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
-    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
+    
+    // da problemi con il mount sshfs
+    // cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
     // live password
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
@@ -1695,7 +1697,7 @@ export default class Ovary {
    * create .disk/info, .disk/mksquashfs, .disk/mkiso
    * return mkiso
    */
-  makeDotDisk(xorrisoCommand: string, clone = false, cryptedclone = false): string {
+  makeDotDisk(clone = false, cryptedclone = false): string {
     if (this.verbose){
       console.log('Ovary: makeDotDisk')
     }
@@ -1704,7 +1706,6 @@ export default class Ovary {
     if (fs.existsSync(dotDisk)) {
       shx.rm('-rf', dotDisk)
     }
-
     shx.mkdir('-p', dotDisk)
 
     // .disk/info
