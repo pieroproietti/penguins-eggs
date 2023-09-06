@@ -276,8 +276,10 @@ export default class Ovary {
       if (this.familyId === 'archlinux') {
         if (this.settings.distro.distroId === 'ManjaroLinux') {
           await exec(`mkdir ${this.settings.iso_work}manjaro/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}manjaro/x86_64/livefs.sfs`, this.echo)
+          await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}manjaro/x86_64/livefs.sfs`, this.echo)
+          // await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}manjaro/x86_64/livefs.sfs`, this.echo)
           await exec(`md5sum ${this.settings.iso_work}live/filesystem.squashfs > ${this.settings.iso_work}manjaro/x86_64/livefs.md5`, this.echo)
+
         } else if (
           this.settings.distro.distroId === 'Arch' ||
           this.settings.distro.distroId === 'blendOS' ||
@@ -286,9 +288,10 @@ export default class Ovary {
           this.settings.distro.distroId === 'RebornOS' ||
           this.settings.distro.distroId === 'EndeavourOS') {
           await exec(`mkdir ${this.settings.iso_work}arch/x86_64 -p`, this.echo)
-          await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs          ${this.settings.iso_work}arch/x86_64/airootfs.sfs`, this.echo)
+          await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs          ${this.settings.iso_work}arch/x86_64/airootfs.sfs`, this.echo)
+          // await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs          ${this.settings.iso_work}arch/x86_64/airootfs.sfs`, this.echo)
           await exec(`sha512sum ${this.settings.iso_work}live/filesystem.squashfs > ${this.settings.iso_work}arch/x86_64/airootfs.sha512`, this.echo)
-        }
+            }
       }
       await this.makeIso(xorrisoCommand, scriptOnly)
     }
@@ -1694,7 +1697,7 @@ export default class Ovary {
    * create .disk/info, .disk/mksquashfs, .disk/mkiso
    * return mkiso
    */
-  makeDotDisk(clone = false, cryptedclone = false): string {
+  makeDotDisk(xorrisoCommand: string, clone = false, cryptedclone = false): string {
     if (this.verbose){
       console.log('Ovary: makeDotDisk')
     }
