@@ -297,10 +297,10 @@ export default class Ovary {
    * Crea la struttura della workdir
    */
   async liveCreateStructure() {
-    // efi-work iso  memdiskDir sotto mountpoint
     if (this.verbose) {
       console.log('Ovary: liveCreateStructure')
     }
+    // efi-work iso  memdiskDir sotto mountpoint
 
     Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
 
@@ -781,7 +781,7 @@ export default class Ovary {
 
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}/live/`)
+    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
     const distroId = this.settings.distro.distroId
     let fileConf = 'archlinux'
     if (
@@ -803,7 +803,7 @@ export default class Ovary {
       fileConf = distroId.toLowerCase()
     }
     let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}/live/${initrdImg}`, Utils.setEcho(true))
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
@@ -1472,10 +1472,6 @@ export default class Ovary {
       console.log('Ovary: makeEfi')
     }
 
-    // const memdiskDir = this.settings.work_dir.path + 'memdiskDir'
-    // const efiWorkDir = this.settings.efi_work
-    // const isoDir = this.settings.iso_work
-
     const memdiskDir = this.settings.config.snapshot_mnt + 'memdiskDir'
     const efiWorkDir = this.settings.efi_work
     const isoDir = this.settings.iso_work
@@ -1522,16 +1518,16 @@ export default class Ovary {
 
     Utils.warning('creating efiWordDir: ' + efiWorkDir)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/efi`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/efi/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.machineUEFI()}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}efi/boot`, this.echo)
 
     /**
     * copy splash to efiWorkDir
     */
-    const splashDest = `${efiWorkDir}/boot/grub/splash.png`
+    const splashDest = `${efiWorkDir}boot/grub/splash.png`
     let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
     if (this.theme.includes('/')) {
       splashSrc = `${theme}/theme/livecd/splash.png`
@@ -1547,7 +1543,7 @@ export default class Ovary {
     /**
      * copy theme
      */
-    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
+    const themeDest = `${efiWorkDir}boot/grub/theme.cfg`
     let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
       themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
@@ -1566,10 +1562,10 @@ export default class Ovary {
     //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
     let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
     await exec(cmd, this.echo)
-    //     for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> boot/grub/x86_64-efi/grub.cfg ; done
-    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
+    //cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
+    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
     await exec(cmd, this.echo)
-    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/grub.cfg`, this.echo)
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg`, this.echo)
 
     /**
      * andiamo in memdiskDir
@@ -1598,53 +1594,53 @@ export default class Ovary {
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/efi/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}efi/boot`, this.echo)
 
     // #######################
 
     // Do the boot image "boot/grub/efiboot.img"
 
-    await exec(`dd if=/dev/zero of=${efiWorkDir}/boot/grub/efiboot.img bs=1K count=1440`, this.echo)
-    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}/boot/grub/efiboot.img`, this.echo)
+    await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
 
-    await exec(`mkdir ${efiWorkDir}/img-mnt`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
 
-    await exec(`mount -o loop ${efiWorkDir}/boot/grub/efiboot.img ${efiWorkDir}/img-mnt`, this.echo)
+    await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
 
-    await exec(`mkdir ${efiWorkDir}/img-mnt/efi`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/img-mnt/efi/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt/efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
     // era cp -r
-    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}/img-mnt/efi/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/bootx64.efi ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
     // #######################
 
     // copy modules and font
-    await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}/boot/grub/${Utils.machineUEFI()}/`, this.echo)
+    await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/`, this.echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
     if (fs.existsSync('/usr/share/grub/font.pf2')) {
-      await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+      await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
-      await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}/boot/grub/font.pf2`, this.echo)
+      await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     }
 
     // doesn't need to be root-owned
     // chown -R 1000:1000 $(pwd) 2>/dev/null
 
     // Cleanup efi temps
-    await exec(`umount ${efiWorkDir}/img-mnt`, this.echo)
-    await exec(`rmdir ${efiWorkDir}/img-mnt`, this.echo)
+    await exec(`umount ${efiWorkDir}img-mnt`, this.echo)
+    await exec(`rmdir ${efiWorkDir}img-mnt`, this.echo)
     await exec(`rm ${memdiskDir}/img-mnt -rf`, this.echo)
 
     //  popd
 
     // Copy efi files to iso
-    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-    await exec(`rsync -avx ${efiWorkDir}/efi  ${isoDir}/`, this.echo)
+    await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
+    await exec(`rsync -avx ${efiWorkDir}efi  ${isoDir}/`, this.echo)
 
     // Do the main grub.cfg (which gets loaded last):
 
