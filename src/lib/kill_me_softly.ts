@@ -16,6 +16,8 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
       Utils.warning(`You have binded dirs under ${eggsMnt}, kill is not possible!`)  
       process.exit(1)
     }
+    console.log('kill inibito')
+    process.exit()
 
     // cancello SOLO:
     await exec (`rm -rf ${eggsMnt}efi-work`)
