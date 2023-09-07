@@ -4,33 +4,36 @@ import Utils from "../classes/utils"
 import fs from 'fs'
 import { exec } from "./utils"
 
-
 /**
  *  
  */
 export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/home/eggs/mnt') {
   const echo = Utils.setEcho(false)
+  const liveFs = `${eggsMnt}filesystem.squashfs`
 
-  if (Utils.isMountpoint(eggsMnt)) {
-    if (isBinded(eggsMnt + `filesystem.squashfs`)){
-      Utils.warning(`You have binded dirs under ${eggsMnt}, kill is not possible!`)  
-      process.exit(1)
-    }
-    console.log('kill inibito')
-    process.exit()
-
-    // cancello SOLO:
-    await exec (`rm -rf ${eggsMnt}efi-work`)
-    await exec (`rm -rf ${eggsMnt}filesystem.squashfs`)
-    await exec (`rm -rf ${eggsMnt}iso`)
-    await exec (`rm -rf ${eggsMnt}memdiskDir`)
-    await exec (`rm -rf ${eggsRoot}ovarium`)
-    console.log(`\nJust cleaned!\nPlease, run:\nsudo umount ${eggsMnt}\nif you want to kill`)
-    process.exit(0)
+  /**
+   * refuse if /home/eggs/mnt/filesystem.squashfs
+   */
+  if (haveBindedDirs(liveFs)) {
+    Utils.warning(`You have binded dirs under ${liveFs}, kill is not possible!`)
+    process.exit(1)
   }
 
-  if (isBinded(eggsRoot)) {
-    console.log(`Please, run:\nsudo umount ${eggsRoot}\nbefore to kill`)
+  /**
+   * if eggsMnt is mountpoint
+   */
+  if (Utils.isMountpoint(eggsMnt)) {
+    // Just delete
+    await exec(`rm -rf ${eggsMnt}efi-work`)
+    await exec(`rm -rf ${eggsMnt}iso`)
+    await exec(`rm -rf ${eggsMnt}memdiskDir`)
+    await exec(`rm -rf ${eggsRoot}ovarium`)
+
+    // double check !haveBindedDirs
+    if (!haveBindedDirs(liveFs)) {
+      await exec(`rm -rf ${liveFs}`)
+    }
+    process.exit(0)
   }
   await exec(`rm ${eggsRoot} -rf`, echo)
 }
@@ -40,7 +43,7 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
  * @param path 
  * @returns 
  */
-function isBinded(path: string): Boolean {
+function haveBindedDirs(path: string): Boolean {
   let retVal = false
   const dirs = [
     'bin',

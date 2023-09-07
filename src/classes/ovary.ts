@@ -203,6 +203,7 @@ export default class Ovary {
        * put reCreate = true in release
        */
       const reCreate = true
+      let mksquashfsCmd = ''
       if (reCreate) { // start pre-clone
         /**
          * installer
@@ -255,7 +256,7 @@ export default class Ovary {
         }
 
         await this.editLiveFs(clone, cryptedclone)
-        await this.makeSquashfs(scriptOnly)
+        mksquashfsCmd = await this.makeSquashfs(scriptOnly)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
 
@@ -267,7 +268,9 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.ovarium}iso/live`, this.echo)
       }
 
-      const xorrisoCommand = this.makeDotDisk(clone, cryptedclone)
+      const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
+      const info = Utils.getVolid(this.settings.remix.name)
+      this.makeDotDisk(info, mksquashfsCmd, mkIsofsCmd)
 
       /**
        * patch to emulate miso/archiso on archilinux
@@ -280,13 +283,13 @@ export default class Ovary {
           pathName = `manjaro/x86_64/livefs`
           hashCmd = `md5sum`
           hashExt = '.md5'
-        } 
+        }
         await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
         // await exec(`ln -s ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)        
-        await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)        
+        await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
         await exec(`${hashCmd} ${this.settings.iso_work}${pathName}.sfs > ${this.settings.iso_work}${pathName}${hashExt}`, this.echo)
       }
-      await this.makeIso(xorrisoCommand, scriptOnly)
+      await this.makeIso(mkIsofsCmd, scriptOnly)
     }
   }
 
@@ -809,7 +812,7 @@ export default class Ovary {
    */
   async initrdCopy(verbose = false) {
     if (this.verbose) {
-      console.log('Ovary: initrdCopy')      
+      console.log('Ovary: initrdCopy')
     }
     let isCrypted = false
 
@@ -851,7 +854,7 @@ export default class Ovary {
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(scriptOnly = false) : Promise <string>{
+  async makeSquashfs(scriptOnly = false): Promise<string> {
     if (this.verbose) {
       console.log('Ovary: makeSquashfs')
     }
@@ -1223,7 +1226,7 @@ export default class Ovary {
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
-    
+
     // da problemi con il mount sshfs
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
@@ -1690,11 +1693,9 @@ export default class Ovary {
 
   /**
    * makeDotDisk
-   * create .disk/info, .disk/mksquashfs, .disk/mkiso
-   * return mkiso
    */
-  makeDotDisk(clone = false, cryptedclone = false): string {
-    if (this.verbose){
+  makeDotDisk(info = '', mksquashfs = '', mkisofs = '') {
+    if (this.verbose) {
       console.log('Ovary: makeDotDisk')
     }
 
@@ -1703,23 +1704,17 @@ export default class Ovary {
       shx.rm('-rf', dotDisk)
     }
     shx.mkdir('-p', dotDisk)
+    let text = `# Created at: ${Utils.formatDate(new Date())}\n`
+    text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
 
     // .disk/info
-    let file = dotDisk + '/info'
-    let content = Utils.getVolid(this.settings.remix.name)
-    fs.writeFileSync(file, content, 'utf-8')
+    fs.writeFileSync(dotDisk + '/info', info, 'utf-8')
 
     // .disk/mksquashfs
-    file = dotDisk + '/mksquashfs'
-    content = 'intentionnaly blank!'
-    fs.writeFileSync(file, content, 'utf-8')
+    fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
 
     // .disk/mkisofs
-    content = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
-    file = dotDisk + '/mkisofs'
-    fs.writeFileSync(file, content, 'utf-8')
-
-    return content
+    fs.writeFileSync(dotDisk + '/mkisofs', text + mkisofs, 'utf-8')
   }
 
   /**

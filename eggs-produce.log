@@ -1,0 +1,779 @@
+
+ E G G S: the reproductive system of penguins
+
+      penguins-eggs       Perri's Brewery edition        ver. 9.5.22       
+command: produce --addons,adapt,--verbose
+
+
+ E G G S: the reproductive system of penguins
+
+      penguins-eggs       Perri's Brewery edition        ver. 9.5.22       
+command: produce --addons,adapt,--verbose
+
+eggs >>> Produce an egg....
+Disk space used: 17.3 GB
+Space available: 14.5 GB
+There are 0 snapshots taking 0 GB of disk space.
+
+The free space should be sufficient to hold the
+compressed data from the system
+? Select yes to continue... (Use arrow keys)
+❯ No 
+  Yes [6D[6C[2K[1A[2K[1A[2K[G? Select yes to continue... 
+  No 
+❯ Yes [6D[6C[2K[1A[2K[1A[2K[G? Select yes to continue... Yes[31D[31C
+Ovary: liveCreateStructure
+eggs >>> Creating egg in /home/eggs/.
+Ovary: tryCatch
+cp /home/artisan/penguins-eggs/conf/README.md /home/eggs/README.md
+Ovary: tryCatch
+mkdir -p /home/eggs/ovarium/.overlay/lowerdir
+Ovary: tryCatch
+mkdir -p /home/eggs/ovarium/.overlay/upperdir
+Ovary: tryCatch
+mkdir -p /home/eggs/ovarium/.overlay/workdir
+Ovary: tryCatch
+mkdir -p /home/eggs/mnt/filesystem.squashfs
+Ovary: tryCatch
+mkdir -p /home/eggs/mnt/iso/boot/grub/x86_64-efi
+Ovary: tryCatch
+mkdir -p /home/eggs/mnt/iso/efi/boot
+Ovary: tryCatch
+mkdir -p /home/eggs/mnt/iso/isolinux
+Ovary: tryCatch
+mkdir -p /home/eggs/mnt/iso/live
+eggs >>> eggs will REMOVE users and users' data from live.
+calamares: create /etc/calamares/branding/eggs/branding.desc
+fisherman: welcome module in /etc/calamares/modules/welcome.conf
+fisherman: partition module in /etc/calamares/modules/partition.conf
+fisherman: mount module in /etc/calamares/modules/mount.conf
+fisherman: unpackfs module in /etc/calamares/modules/unpackfs.conf
+fisherman: fstab module in /etc/calamares/modules/fstab.conf
+fisherman: locale module in /etc/calamares/modules/locale.conf
+unchanged: keyboard
+unchanged: localecfg
+fisherman: users module in /etc/calamares/modules/users.conf
+fisherman: displaymanager module in /etc/calamares/modules/displaymanager.conf
+unchanged: networkcfg
+unchanged: hwclock
+unchanged: grubcf
+fisherman: bootloader module in /etc/calamares/modules/bootloader.conf
+fisherman: packages module in /etc/calamares/modules/packages.conf
+unchanged: luksbootkeyfile
+unchanged: plymouthcfg
+fisherman: removeuser module in /etc/calamares/modules/removeuser.conf
+fisherman: removelink shellprocess in /etc/calamares/modules/shellprocess_removelink.conf
+unchanged: umount
+fisherman: finished module in /etc/calamares/modules/finished.conf
+Ovary: syslinux
+cp /usr/lib/syslinux/bios//vesamenu.c32 /home/eggs/mnt/iso//isolinux/
+cp /usr/lib/syslinux/bios//chain.c32 /home/eggs/mnt/iso//isolinux/
+cp /usr/lib/syslinux/bios//ldlinux.c32 /home/eggs/mnt/iso//isolinux/
+cp /usr/lib/syslinux/bios//libcom32.c32 /home/eggs/mnt/iso//isolinux/
+cp /usr/lib/syslinux/bios//libutil.c32 /home/eggs/mnt/iso//isolinux/
+Ovary: isolinux
+cp /usr/lib/syslinux/bios//isolinux.bin /home/eggs/mnt/iso//isolinux/
+Ovary: kernelParameters
+Ovary: kernelCopy
+cp /boot/vmlinuz-linux /home/eggs/mnt/iso/live/
+Ovary: initrdCreate
+eggs >>> Creating initramfs-linux.img in /home/eggs/mnt/iso/live/.
+mkinitcpio -c /home/artisan/penguins-eggs/mkinitcpio/arch/live.conf -g /home/eggs/mnt/iso/live/initramfs-linux.img
+==> Starting build: '6.4.12-arch1-1'
+  -> Running build hook: [base]
+  -> Running build hook: [udev]
+  -> Running build hook: [modconf]
+  -> Running build hook: [memdisk]
+  -> Running build hook: [archiso]
+  -> Running build hook: [archiso_loop_mnt]
+  -> Running build hook: [archiso_pxe_common]
+  -> Running build hook: [archiso_pxe_nbd]
+  -> Running build hook: [archiso_pxe_http]
+  -> Running build hook: [archiso_pxe_nfs]
+  -> Running build hook: [kms]
+  -> Running build hook: [block]
+  -> Running build hook: [filesystems]
+  -> Running build hook: [keyboard]
+==> Generating module dependencies
+==> Creating zstd-compressed initcpio image: '/home/eggs/mnt/iso/live/initramfs-linux.img'
+==> Image generation successful
+Ovary: makeEfi
+eggs >>> creating memdiskDir: /home/eggs/mnt/memdiskDir.
+mkdir /home/eggs/mnt/memdiskDir/boot
+mkdir /home/eggs/mnt/memdiskDir/boot/grub
+eggs >>> creating efiWordDir: /home/eggs/mnt/efi-work/.
+mkdir /home/eggs/mnt/efi-work/
+mkdir /home/eggs/mnt/efi-work/boot
+mkdir /home/eggs/mnt/efi-work/boot/grub
+mkdir /home/eggs/mnt/efi-work/boot/grub/x86_64-efi
+mkdir /home/eggs/mnt/efi-work/efi
+mkdir /home/eggs/mnt/efi-work/efi/boot
+cp /home/artisan/penguins-eggs/addons/eggs/theme/livecd/splash.png /home/eggs/mnt/efi-work/boot/grub/splash.png
+cp /home/artisan/penguins-eggs/addons/eggs/theme/livecd/grub.theme.cfg /home/eggs/mnt/efi-work/boot/grub/theme.cfg
+for i in $(ls /usr/lib/grub/x86_64-efi|grep part_|grep .mod|sed 's/.mod//'); do echo "insmod $i" >> /home/eggs/mnt/efi-work/boot/grub/x86_64-efi/grub.cfg; done
+for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> /home/eggs/mnt/efi-work/boot/grub/x86_64-efi/grub.cfg ; done
+echo "source /boot/grub/grub.cfg" >> /home/eggs/mnt/efi-work/boot/grub/x86_64-efi/grub.cfg
+tar -cvf memdisk boot
+boot/
+boot/grub/
+boot/grub/grub.cfg
+grub-mkimage  -O "x86_64-efi" -m "/home/eggs/mnt/memdiskDir/memdisk" -o "/home/eggs/mnt/memdiskDir/bootx64.efi" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+cp /home/eggs/mnt/memdiskDir/bootx64.efi /home/eggs/mnt/efi-work/efi/boot
+dd if=/dev/zero of=/home/eggs/mnt/efi-work/boot/grub/efiboot.img bs=1K count=1440
+/sbin/mkdosfs -F 12 /home/eggs/mnt/efi-work/boot/grub/efiboot.img
+mkfs.fat 4.2 (2021-01-31)
+mkdir /home/eggs/mnt/efi-work/img-mnt
+mount -o loop /home/eggs/mnt/efi-work/boot/grub/efiboot.img /home/eggs/mnt/efi-work/img-mnt
+mkdir /home/eggs/mnt/efi-work/img-mnt/efi
+mkdir /home/eggs/mnt/efi-work/img-mnt/efi/boot
+cp /home/eggs/mnt/memdiskDir/bootx64.efi /home/eggs/mnt/efi-work/img-mnt/efi/boot
+cp -r /usr/lib/grub/x86_64-efi/* /home/eggs/mnt/efi-work/boot/grub/x86_64-efi/
+cp /usr/share/grub/unicode.pf2 /home/eggs/mnt/efi-work/boot/grub/font.pf2
+umount /home/eggs/mnt/efi-work/img-mnt
+rmdir /home/eggs/mnt/efi-work/img-mnt
+rm /home/eggs/mnt/memdiskDir/img-mnt -rf
+rsync -avx  /home/eggs/mnt/efi-work/boot /home/eggs/mnt/iso//
+sending incremental file list
+boot/
+boot/grub/
+boot/grub/efiboot.img
+boot/grub/font.pf2
+boot/grub/splash.png
+boot/grub/theme.cfg
+boot/grub/x86_64-efi/
+boot/grub/x86_64-efi/acpi.mod
+boot/grub/x86_64-efi/adler32.mod
+boot/grub/x86_64-efi/affs.mod
+boot/grub/x86_64-efi/afs.mod
+boot/grub/x86_64-efi/afsplitter.mod
+boot/grub/x86_64-efi/ahci.mod
+boot/grub/x86_64-efi/all_video.mod
+boot/grub/x86_64-efi/aout.mod
+boot/grub/x86_64-efi/appleldr.mod
+boot/grub/x86_64-efi/archelp.mod
+boot/grub/x86_64-efi/at_keyboard.mod
+boot/grub/x86_64-efi/ata.mod
+boot/grub/x86_64-efi/backtrace.mod
+boot/grub/x86_64-efi/bfs.mod
+boot/grub/x86_64-efi/bitmap.mod
+boot/grub/x86_64-efi/bitmap_scale.mod
+boot/grub/x86_64-efi/bli.mod
+boot/grub/x86_64-efi/blocklist.mod
+boot/grub/x86_64-efi/boot.mod
+boot/grub/x86_64-efi/boottime.mod
+boot/grub/x86_64-efi/bsd.mod
+boot/grub/x86_64-efi/bswap_test.mod
+boot/grub/x86_64-efi/btrfs.mod
+boot/grub/x86_64-efi/bufio.mod
+boot/grub/x86_64-efi/cacheinfo.mod
+boot/grub/x86_64-efi/cat.mod
+boot/grub/x86_64-efi/cbfs.mod
+boot/grub/x86_64-efi/cbls.mod
+boot/grub/x86_64-efi/cbmemc.mod
+boot/grub/x86_64-efi/cbtable.mod
+boot/grub/x86_64-efi/cbtime.mod
+boot/grub/x86_64-efi/chain.mod
+boot/grub/x86_64-efi/cmdline_cat_test.mod
+boot/grub/x86_64-efi/cmp.mod
+boot/grub/x86_64-efi/cmp_test.mod
+boot/grub/x86_64-efi/command.lst
+boot/grub/x86_64-efi/config.h
+boot/grub/x86_64-efi/configfile.mod
+boot/grub/x86_64-efi/cpio.mod
+boot/grub/x86_64-efi/cpio_be.mod
+boot/grub/x86_64-efi/cpuid.mod
+boot/grub/x86_64-efi/crc64.mod
+boot/grub/x86_64-efi/crypto.lst
+boot/grub/x86_64-efi/crypto.mod
+boot/grub/x86_64-efi/cryptodisk.mod
+boot/grub/x86_64-efi/cs5536.mod
+boot/grub/x86_64-efi/ctz_test.mod
+boot/grub/x86_64-efi/date.mod
+boot/grub/x86_64-efi/datehook.mod
+boot/grub/x86_64-efi/datetime.mod
+boot/grub/x86_64-efi/disk.mod
+boot/grub/x86_64-efi/diskfilter.mod
+boot/grub/x86_64-efi/div.mod
+boot/grub/x86_64-efi/div_test.mod
+boot/grub/x86_64-efi/dm_nv.mod
+boot/grub/x86_64-efi/echo.mod
+boot/grub/x86_64-efi/efi_gop.mod
+boot/grub/x86_64-efi/efi_uga.mod
+boot/grub/x86_64-efi/efifwsetup.mod
+boot/grub/x86_64-efi/efinet.mod
+boot/grub/x86_64-efi/efitextmode.mod
+boot/grub/x86_64-efi/ehci.mod
+boot/grub/x86_64-efi/elf.mod
+boot/grub/x86_64-efi/eval.mod
+boot/grub/x86_64-efi/exfat.mod
+boot/grub/x86_64-efi/exfctest.mod
+boot/grub/x86_64-efi/ext2.mod
+boot/grub/x86_64-efi/extcmd.mod
+boot/grub/x86_64-efi/f2fs.mod
+boot/grub/x86_64-efi/fat.mod
+boot/grub/x86_64-efi/fdt.lst
+boot/grub/x86_64-efi/file.mod
+boot/grub/x86_64-efi/fixvideo.mod
+boot/grub/x86_64-efi/font.mod
+boot/grub/x86_64-efi/fs.lst
+boot/grub/x86_64-efi/fshelp.mod
+boot/grub/x86_64-efi/functional_test.mod
+boot/grub/x86_64-efi/gcry_arcfour.mod
+boot/grub/x86_64-efi/gcry_blowfish.mod
+boot/grub/x86_64-efi/gcry_camellia.mod
+boot/grub/x86_64-efi/gcry_cast5.mod
+boot/grub/x86_64-efi/gcry_crc.mod
+boot/grub/x86_64-efi/gcry_des.mod
+boot/grub/x86_64-efi/gcry_dsa.mod
+boot/grub/x86_64-efi/gcry_idea.mod
+boot/grub/x86_64-efi/gcry_md4.mod
+boot/grub/x86_64-efi/gcry_md5.mod
+boot/grub/x86_64-efi/gcry_rfc2268.mod
+boot/grub/x86_64-efi/gcry_rijndael.mod
+boot/grub/x86_64-efi/gcry_rmd160.mod
+boot/grub/x86_64-efi/gcry_rsa.mod
+boot/grub/x86_64-efi/gcry_seed.mod
+boot/grub/x86_64-efi/gcry_serpent.mod
+boot/grub/x86_64-efi/gcry_sha1.mod
+boot/grub/x86_64-efi/gcry_sha256.mod
+boot/grub/x86_64-efi/gcry_sha512.mod
+boot/grub/x86_64-efi/gcry_tiger.mod
+boot/grub/x86_64-efi/gcry_twofish.mod
+boot/grub/x86_64-efi/gcry_whirlpool.mod
+boot/grub/x86_64-efi/gdb_helper.py
+boot/grub/x86_64-efi/geli.mod
+boot/grub/x86_64-efi/gettext.mod
+boot/grub/x86_64-efi/gfxmenu.mod
+boot/grub/x86_64-efi/gfxterm.mod
+boot/grub/x86_64-efi/gfxterm_background.mod
+boot/grub/x86_64-efi/gfxterm_menu.mod
+boot/grub/x86_64-efi/gptsync.mod
+boot/grub/x86_64-efi/grub.cfg
+boot/grub/x86_64-efi/gzio.mod
+boot/grub/x86_64-efi/halt.mod
+boot/grub/x86_64-efi/hashsum.mod
+boot/grub/x86_64-efi/hdparm.mod
+boot/grub/x86_64-efi/hello.mod
+boot/grub/x86_64-efi/help.mod
+boot/grub/x86_64-efi/hexdump.mod
+boot/grub/x86_64-efi/hfs.mod
+boot/grub/x86_64-efi/hfsplus.mod
+boot/grub/x86_64-efi/hfspluscomp.mod
+boot/grub/x86_64-efi/http.mod
+boot/grub/x86_64-efi/iorw.mod
+boot/grub/x86_64-efi/iso9660.mod
+boot/grub/x86_64-efi/jfs.mod
+boot/grub/x86_64-efi/jpeg.mod
+boot/grub/x86_64-efi/json.mod
+boot/grub/x86_64-efi/kernel.img
+boot/grub/x86_64-efi/keylayouts.mod
+boot/grub/x86_64-efi/keystatus.mod
+boot/grub/x86_64-efi/ldm.mod
+boot/grub/x86_64-efi/legacy_password_test.mod
+boot/grub/x86_64-efi/legacycfg.mod
+boot/grub/x86_64-efi/linux.mod
+boot/grub/x86_64-efi/linux16.mod
+boot/grub/x86_64-efi/loadbios.mod
+boot/grub/x86_64-efi/loadenv.mod
+boot/grub/x86_64-efi/loopback.mod
+boot/grub/x86_64-efi/ls.mod
+boot/grub/x86_64-efi/lsacpi.mod
+boot/grub/x86_64-efi/lsefi.mod
+boot/grub/x86_64-efi/lsefimmap.mod
+boot/grub/x86_64-efi/lsefisystab.mod
+boot/grub/x86_64-efi/lsmmap.mod
+boot/grub/x86_64-efi/lspci.mod
+boot/grub/x86_64-efi/lssal.mod
+boot/grub/x86_64-efi/luks.mod
+boot/grub/x86_64-efi/luks2.mod
+boot/grub/x86_64-efi/lvm.mod
+boot/grub/x86_64-efi/lzopio.mod
+boot/grub/x86_64-efi/macbless.mod
+boot/grub/x86_64-efi/macho.mod
+boot/grub/x86_64-efi/mdraid09.mod
+boot/grub/x86_64-efi/mdraid09_be.mod
+boot/grub/x86_64-efi/mdraid1x.mod
+boot/grub/x86_64-efi/memdisk.mod
+boot/grub/x86_64-efi/memrw.mod
+boot/grub/x86_64-efi/minicmd.mod
+boot/grub/x86_64-efi/minix.mod
+boot/grub/x86_64-efi/minix2.mod
+boot/grub/x86_64-efi/minix2_be.mod
+boot/grub/x86_64-efi/minix3.mod
+boot/grub/x86_64-efi/minix3_be.mod
+boot/grub/x86_64-efi/minix_be.mod
+boot/grub/x86_64-efi/mmap.mod
+boot/grub/x86_64-efi/moddep.lst
+boot/grub/x86_64-efi/modinfo.sh
+boot/grub/x86_64-efi/morse.mod
+boot/grub/x86_64-efi/mpi.mod
+boot/grub/x86_64-efi/msdospart.mod
+boot/grub/x86_64-efi/mul_test.mod
+boot/grub/x86_64-efi/multiboot.mod
+boot/grub/x86_64-efi/multiboot2.mod
+boot/grub/x86_64-efi/nativedisk.mod
+boot/grub/x86_64-efi/net.mod
+boot/grub/x86_64-efi/newc.mod
+boot/grub/x86_64-efi/nilfs2.mod
+boot/grub/x86_64-efi/normal.mod
+boot/grub/x86_64-efi/ntfs.mod
+boot/grub/x86_64-efi/ntfscomp.mod
+boot/grub/x86_64-efi/odc.mod
+boot/grub/x86_64-efi/offsetio.mod
+boot/grub/x86_64-efi/ohci.mod
+boot/grub/x86_64-efi/part_acorn.mod
+boot/grub/x86_64-efi/part_amiga.mod
+boot/grub/x86_64-efi/part_apple.mod
+boot/grub/x86_64-efi/part_bsd.mod
+boot/grub/x86_64-efi/part_dfly.mod
+boot/grub/x86_64-efi/part_dvh.mod
+boot/grub/x86_64-efi/part_gpt.mod
+boot/grub/x86_64-efi/part_msdos.mod
+boot/grub/x86_64-efi/part_plan.mod
+boot/grub/x86_64-efi/part_sun.mod
+boot/grub/x86_64-efi/part_sunpc.mod
+boot/grub/x86_64-efi/partmap.lst
+boot/grub/x86_64-efi/parttool.lst
+boot/grub/x86_64-efi/parttool.mod
+boot/grub/x86_64-efi/password.mod
+boot/grub/x86_64-efi/password_pbkdf2.mod
+boot/grub/x86_64-efi/pata.mod
+boot/grub/x86_64-efi/pbkdf2.mod
+boot/grub/x86_64-efi/pbkdf2_test.mod
+boot/grub/x86_64-efi/pcidump.mod
+boot/grub/x86_64-efi/pgp.mod
+boot/grub/x86_64-efi/plainmount.mod
+boot/grub/x86_64-efi/play.mod
+boot/grub/x86_64-efi/png.mod
+boot/grub/x86_64-efi/priority_queue.mod
+boot/grub/x86_64-efi/probe.mod
+boot/grub/x86_64-efi/procfs.mod
+boot/grub/x86_64-efi/progress.mod
+boot/grub/x86_64-efi/raid5rec.mod
+boot/grub/x86_64-efi/raid6rec.mod
+boot/grub/x86_64-efi/random.mod
+boot/grub/x86_64-efi/rdmsr.mod
+boot/grub/x86_64-efi/read.mod
+boot/grub/x86_64-efi/reboot.mod
+boot/grub/x86_64-efi/regexp.mod
+boot/grub/x86_64-efi/reiserfs.mod
+boot/grub/x86_64-efi/relocator.mod
+boot/grub/x86_64-efi/romfs.mod
+boot/grub/x86_64-efi/scsi.mod
+boot/grub/x86_64-efi/search.mod
+boot/grub/x86_64-efi/search_fs_file.mod
+boot/grub/x86_64-efi/search_fs_uuid.mod
+boot/grub/x86_64-efi/search_label.mod
+boot/grub/x86_64-efi/serial.mod
+boot/grub/x86_64-efi/setjmp.mod
+boot/grub/x86_64-efi/setjmp_test.mod
+boot/grub/x86_64-efi/setpci.mod
+boot/grub/x86_64-efi/sfs.mod
+boot/grub/x86_64-efi/shift_test.mod
+boot/grub/x86_64-efi/signature_test.mod
+boot/grub/x86_64-efi/sleep.mod
+boot/grub/x86_64-efi/sleep_test.mod
+boot/grub/x86_64-efi/smbios.mod
+boot/grub/x86_64-efi/spkmodem.mod
+boot/grub/x86_64-efi/squash4.mod
+boot/grub/x86_64-efi/strtoull_test.mod
+boot/grub/x86_64-efi/syslinuxcfg.mod
+boot/grub/x86_64-efi/tar.mod
+boot/grub/x86_64-efi/terminal.lst
+boot/grub/x86_64-efi/terminal.mod
+boot/grub/x86_64-efi/terminfo.mod
+boot/grub/x86_64-efi/test.mod
+boot/grub/x86_64-efi/test_blockarg.mod
+boot/grub/x86_64-efi/testload.mod
+boot/grub/x86_64-efi/testspeed.mod
+boot/grub/x86_64-efi/tftp.mod
+boot/grub/x86_64-efi/tga.mod
+boot/grub/x86_64-efi/time.mod
+boot/grub/x86_64-efi/tpm.mod
+boot/grub/x86_64-efi/tr.mod
+boot/grub/x86_64-efi/trig.mod
+boot/grub/x86_64-efi/true.mod
+boot/grub/x86_64-efi/udf.mod
+boot/grub/x86_64-efi/ufs1.mod
+boot/grub/x86_64-efi/ufs1_be.mod
+boot/grub/x86_64-efi/ufs2.mod
+boot/grub/x86_64-efi/uhci.mod
+boot/grub/x86_64-efi/usb.mod
+boot/grub/x86_64-efi/usb_keyboard.mod
+boot/grub/x86_64-efi/usbms.mod
+boot/grub/x86_64-efi/usbserial_common.mod
+boot/grub/x86_64-efi/usbserial_ftdi.mod
+boot/grub/x86_64-efi/usbserial_pl2303.mod
+boot/grub/x86_64-efi/usbserial_usbdebug.mod
+boot/grub/x86_64-efi/usbtest.mod
+boot/grub/x86_64-efi/video.lst
+boot/grub/x86_64-efi/video.mod
+boot/grub/x86_64-efi/video_bochs.mod
+boot/grub/x86_64-efi/video_cirrus.mod
+boot/grub/x86_64-efi/video_colors.mod
+boot/grub/x86_64-efi/video_fb.mod
+boot/grub/x86_64-efi/videoinfo.mod
+boot/grub/x86_64-efi/videotest.mod
+boot/grub/x86_64-efi/videotest_checksum.mod
+boot/grub/x86_64-efi/wrmsr.mod
+boot/grub/x86_64-efi/xfs.mod
+boot/grub/x86_64-efi/xnu.mod
+boot/grub/x86_64-efi/xnu_uuid.mod
+boot/grub/x86_64-efi/xnu_uuid_test.mod
+boot/grub/x86_64-efi/xzio.mod
+boot/grub/x86_64-efi/zfs.mod
+boot/grub/x86_64-efi/zfscrypt.mod
+boot/grub/x86_64-efi/zfsinfo.mod
+boot/grub/x86_64-efi/zstd.mod
+
+sent 6.814.747 bytes  received 5.508 bytes  13.640.510,00 bytes/sec
+total size is 6.795.054  speedup is 1,00
+rsync -avx /home/eggs/mnt/efi-work/efi  /home/eggs/mnt/iso//
+sending incremental file list
+efi/
+efi/boot/
+efi/boot/bootx64.efi
+
+sent 631.107 bytes  received 47 bytes  1.262.308,00 bytes/sec
+total size is 630.784  speedup is 1,00
+Ovary: kernelParameters
+Ovary: bindLiveFs
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/.snapshots)
+mkdir /home/eggs/mnt/filesystem.squashfs/.snapshots -p
+Ovary: rexec(mount --bind --make-slave /.snapshots /home/eggs/mnt/filesystem.squashfs/.snapshots)
+mount --bind --make-slave /.snapshots /home/eggs/mnt/filesystem.squashfs/.snapshots
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/.snapshots)
+mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/.snapshots
+Ovary: rexec(cp -r /bin /home/eggs/mnt/filesystem.squashfs)
+cp -r /bin /home/eggs/mnt/filesystem.squashfs
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/dev)
+mkdir /home/eggs/mnt/filesystem.squashfs/dev -p
+Ovary: mergedAndOverlay
+Ovary: rexec(mount --bind --make-slave /etc /home/eggs/ovarium/.overlay/lowerdir/etc)
+mount --bind --make-slave /etc /home/eggs/ovarium/.overlay/lowerdir/etc
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/etc)
+mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/etc
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/upperdir/etc)
+mkdir /home/eggs/ovarium/.overlay/upperdir/etc -p
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/workdir/etc)
+mkdir /home/eggs/ovarium/.overlay/workdir/etc -p
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/etc)
+mkdir /home/eggs/mnt/filesystem.squashfs/etc -p
+Ovary: rexec(mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/etc,upperdir=/home/eggs/ovarium/.overlay/upperdir/etc,workdir=/home/eggs/ovarium/.overlay/workdir/etc /home/eggs/mnt/filesystem.squashfs/etc)
+mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/etc,upperdir=/home/eggs/ovarium/.overlay/upperdir/etc,workdir=/home/eggs/ovarium/.overlay/workdir/etc /home/eggs/mnt/filesystem.squashfs/etc
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/home)
+mkdir /home/eggs/mnt/filesystem.squashfs/home -p
+Ovary: rexec(cp -r /lib /home/eggs/mnt/filesystem.squashfs)
+cp -r /lib /home/eggs/mnt/filesystem.squashfs
+Ovary: rexec(cp -r /lib64 /home/eggs/mnt/filesystem.squashfs)
+cp -r /lib64 /home/eggs/mnt/filesystem.squashfs
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/mnt)
+mkdir /home/eggs/mnt/filesystem.squashfs/mnt -p
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/opt)
+mkdir /home/eggs/mnt/filesystem.squashfs/opt -p
+Ovary: rexec(mount --bind --make-slave /opt /home/eggs/mnt/filesystem.squashfs/opt)
+mount --bind --make-slave /opt /home/eggs/mnt/filesystem.squashfs/opt
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/opt)
+mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/opt
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/proc)
+mkdir /home/eggs/mnt/filesystem.squashfs/proc -p
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/root)
+mkdir /home/eggs/mnt/filesystem.squashfs/root -p
+Ovary: rexec(mount --bind --make-slave /root /home/eggs/mnt/filesystem.squashfs/root)
+mount --bind --make-slave /root /home/eggs/mnt/filesystem.squashfs/root
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/root)
+mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/root
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/run)
+mkdir /home/eggs/mnt/filesystem.squashfs/run -p
+Ovary: rexec(cp -r /sbin /home/eggs/mnt/filesystem.squashfs)
+cp -r /sbin /home/eggs/mnt/filesystem.squashfs
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/srv)
+mkdir /home/eggs/mnt/filesystem.squashfs/srv -p
+Ovary: rexec(mount --bind --make-slave /srv /home/eggs/mnt/filesystem.squashfs/srv)
+mount --bind --make-slave /srv /home/eggs/mnt/filesystem.squashfs/srv
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/srv)
+mount -o remount,bind,ro /home/eggs/mnt/filesystem.squashfs/srv
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/sys)
+mkdir /home/eggs/mnt/filesystem.squashfs/sys -p
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/tmp)
+mkdir /home/eggs/mnt/filesystem.squashfs/tmp -p
+Ovary: mergedAndOverlay
+Ovary: rexec(mount --bind --make-slave /usr /home/eggs/ovarium/.overlay/lowerdir/usr)
+mount --bind --make-slave /usr /home/eggs/ovarium/.overlay/lowerdir/usr
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/usr)
+mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/usr
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/upperdir/usr)
+mkdir /home/eggs/ovarium/.overlay/upperdir/usr -p
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/workdir/usr)
+mkdir /home/eggs/ovarium/.overlay/workdir/usr -p
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/usr)
+mkdir /home/eggs/mnt/filesystem.squashfs/usr -p
+Ovary: rexec(mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/usr,upperdir=/home/eggs/ovarium/.overlay/upperdir/usr,workdir=/home/eggs/ovarium/.overlay/workdir/usr /home/eggs/mnt/filesystem.squashfs/usr)
+mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/usr,upperdir=/home/eggs/ovarium/.overlay/upperdir/usr,workdir=/home/eggs/ovarium/.overlay/workdir/usr /home/eggs/mnt/filesystem.squashfs/usr
+Ovary: mergedAndOverlay
+Ovary: rexec(mount --bind --make-slave /var /home/eggs/ovarium/.overlay/lowerdir/var)
+mount --bind --make-slave /var /home/eggs/ovarium/.overlay/lowerdir/var
+Ovary: rexec(mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/var)
+mount -o remount,bind,ro /home/eggs/ovarium/.overlay/lowerdir/var
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/upperdir/var)
+mkdir /home/eggs/ovarium/.overlay/upperdir/var -p
+Ovary: makeIfNotExist(/home/eggs/ovarium/.overlay/workdir/var)
+mkdir /home/eggs/ovarium/.overlay/workdir/var -p
+Ovary: makeIfNotExist(/home/eggs/mnt/filesystem.squashfs/var)
+mkdir /home/eggs/mnt/filesystem.squashfs/var -p
+Ovary: rexec(mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/var,upperdir=/home/eggs/ovarium/.overlay/upperdir/var,workdir=/home/eggs/ovarium/.overlay/workdir/var /home/eggs/mnt/filesystem.squashfs/var)
+mount -t overlay overlay -o lowerdir=/home/eggs/ovarium/.overlay/lowerdir/var,upperdir=/home/eggs/ovarium/.overlay/upperdir/var,workdir=/home/eggs/ovarium/.overlay/workdir/var /home/eggs/mnt/filesystem.squashfs/var
+Ovary: copyBoot
+Ovary: rexec(cp -r /boot /home/eggs/mnt/filesystem.squashfs)
+cp -r /boot /home/eggs/mnt/filesystem.squashfs
+Ovary: cleanUsersAccounts
+chroot /home/eggs/mnt/filesystem.squashfs getent passwd {1000..60000} |awk -F: '{print $1}'
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs userdel artisan)
+chroot /home/eggs/mnt/filesystem.squashfs userdel artisan
+Ovary: createUserLive
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs rm /home/live -rf)
+chroot /home/eggs/mnt/filesystem.squashfs rm /home/live -rf
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs mkdir /home/live)
+chroot /home/eggs/mnt/filesystem.squashfs mkdir /home/live
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs useradd live --home-dir /home/live --shell /bin/bash )
+chroot /home/eggs/mnt/filesystem.squashfs useradd live --home-dir /home/live --shell /bin/bash 
+Ovary: rexec(chroot  /home/eggs/mnt/filesystem.squashfs cp /etc/skel/. /home/live -R)
+chroot  /home/eggs/mnt/filesystem.squashfs cp /etc/skel/. /home/live -R
+Ovary: rexec(chroot  /home/eggs/mnt/filesystem.squashfs chown live:users /home/live -R)
+chroot  /home/eggs/mnt/filesystem.squashfs chown live:users /home/live -R
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs echo live:evolution| chroot /home/eggs/mnt/filesystem.squashfs chpasswd)
+chroot /home/eggs/mnt/filesystem.squashfs echo live:evolution| chroot /home/eggs/mnt/filesystem.squashfs chpasswd
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs echo root:evolution| chroot /home/eggs/mnt/filesystem.squashfs chpasswd)
+chroot /home/eggs/mnt/filesystem.squashfs echo root:evolution| chroot /home/eggs/mnt/filesystem.squashfs chpasswd
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs gpasswd -a live wheel)
+chroot /home/eggs/mnt/filesystem.squashfs gpasswd -a live wheel
+Aggiunta dell'utente live al gruppo wheel
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs getent group autologin || chroot /home/eggs/mnt/filesystem.squashfs groupadd autologin)
+chroot /home/eggs/mnt/filesystem.squashfs getent group autologin || chroot /home/eggs/mnt/filesystem.squashfs groupadd autologin
+autologin:x:968:
+Ovary: rexec(chroot /home/eggs/mnt/filesystem.squashfs gpasswd -a live autologin)
+chroot /home/eggs/mnt/filesystem.squashfs gpasswd -a live autologin
+Aggiunta dell'utente live al gruppo autologin
+Ovary: createXdgAutostart
+chmod a+x /usr/bin/penguins-links-add.sh
+Ovary: editLiveFs
+find /home/eggs/mnt/filesystem.squashfs/var/log -name "*gz" -print0 | xargs -0r rm -f
+find /home/eggs/mnt/filesystem.squashfs/var/log/ -type f -exec truncate -s 0 {} \;
+sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' /home/eggs/mnt/filesystem.squashfs/etc/ssh/sshd_config
+sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' /home/eggs/mnt/filesystem.squashfs/etc/ssh/sshd_config
+rm /home/eggs/mnt/filesystem.squashfs/etc/fstab
+touch /home/eggs/mnt/filesystem.squashfs/etc/fstab
+rm /home/eggs/mnt/filesystem.squashfs/etc/crypttab
+rm /home/eggs/mnt/filesystem.squashfs/etc/machine-id
+touch /home/eggs/mnt/filesystem.squashfs/etc/machine-id
+systemctl is-active systemd-resolved.service
+active
+systemctl stop systemd-resolved.service
+systemctl is-enabled systemd-networkd.service
+enabled
+systemctl is-enabled remote-cryptsetup.target
+disabled
+systemctl is-enabled speech-dispatcherd.service
+not-found
+systemctl is-enabled wpa_supplicant-nl80211@.service
+disabled
+systemctl is-enabled wpa_supplicant@.service
+disabled
+systemctl is-enabled wpa_supplicant-wired@.service
+disabled
+rm -f /home/eggs/mnt/filesystem.squashfs/var/lib/wicd/configurations/*
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/wicd/wireless-settings.conf
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/NetworkManager/system-connections/*
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/wifi/*
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/if-down.d/wpasupplicant
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/if-post-down.d/wpasupplicant
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/if-pre-up.d/wpasupplicant
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/if-up.d/wpasupplicant
+rm -f /home/eggs/mnt/filesystem.squashfs/etc/network/interfaces.d/wpasupplicant
+Ovary: makeSquashfs
+Ovary: addRemoveExclusion
+Ovary: addRemoveExclusion
+Ovary: addRemoveExclusion
+Ovary: addRemoveExclusion
+Ovary: addRemoveExclusion
+Ovary: addRemoveExclusion
+eggs >>> squashing filesystem: -comp zstd -b 256K -Xcompression-level 1.
+mksquashfs /home/eggs/mnt/filesystem.squashfs /home/eggs/mnt/iso/live/filesystem.squashfs -comp zstd -b 256K -Xcompression-level 1 -wildcards -ef /usr/local/share/penguins-eggs/exclude.list -e 'boot/efi/EFI' 'etc/fstab' 'etc/mtab' 'etc/udev/rules.d/70-persistent-cd.rules' 'etc/udev/rules.d/70-persistent-net.rules' 'home/eggs/' 
+Parallel mksquashfs: Using 4 processors
+Creating 4.0 filesystem on /home/eggs/mnt/iso/live/filesystem.squashfs, block size 262144.
+[/                                                           ]     0/10368   0%
+[=========================================================/] 176044/176044 100%
+
+Exportable Squashfs 4.0 filesystem, zstd compressed, data block size 262144
+	compressed data, compressed metadata, compressed fragments,
+	compressed xattrs, compressed ids
+	duplicates are removed
+Filesystem size 1804633.52 Kbytes (1762.34 Mbytes)
+	36.88% of uncompressed filesystem size (4892607.56 Kbytes)
+Inode table size 1752674 bytes (1711.60 Kbytes)
+	26.15% of uncompressed inode table size (6702242 bytes)
+Directory table size 2009361 bytes (1962.27 Kbytes)
+	39.72% of uncompressed directory table size (5058855 bytes)
+Xattr table size 281 bytes (0.27 Kbytes)
+	40.43% of uncompressed xattr table size (695 bytes)
+Number of duplicate files found 18721
+Number of inodes 197440
+Number of files 163806
+Number of fragments 6467
+Number of symbolic links 14100
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 19534
+Number of hard-links 2079
+Number of ids (unique uids + gids) 13
+Number of uids 7
+	root (0)
+	unknown (1000)
+	colord (970)
+	lightdm (969)
+	artisan (1001)
+	systemd-timesync (975)
+	tss (974)
+Number of gids 12
+	root (0)
+	polkitd (102)
+	unknown (1000)
+	users (984)
+	ftp (11)
+	dbus (81)
+	utmp (997)
+	games (50)
+	colord (970)
+	lightdm (969)
+	systemd-timesync (975)
+	tss (974)
+Ovary: uBindLiveFs
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/.snapshots)
+umount /home/eggs/mnt/filesystem.squashfs/.snapshots
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/.snapshots -rf)
+rm /home/eggs/mnt/filesystem.squashfs/.snapshots -rf
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/bin)
+rm /home/eggs/mnt/filesystem.squashfs/bin
+Ovary: mergedAndOverlay
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/boot)
+umount /home/eggs/mnt/filesystem.squashfs/boot
+Ovary: rexec(umount /home/eggs/ovarium/.overlay/lowerdir/boot)
+umount /home/eggs/ovarium/.overlay/lowerdir/boot
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/boot -rf)
+rm /home/eggs/mnt/filesystem.squashfs/boot -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/dev -rf)
+rm /home/eggs/mnt/filesystem.squashfs/dev -rf
+Ovary: mergedAndOverlay
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/etc)
+umount /home/eggs/mnt/filesystem.squashfs/etc
+Ovary: rexec(umount /home/eggs/ovarium/.overlay/lowerdir/etc)
+umount /home/eggs/ovarium/.overlay/lowerdir/etc
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/etc -rf)
+rm /home/eggs/mnt/filesystem.squashfs/etc -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/lib)
+rm /home/eggs/mnt/filesystem.squashfs/lib
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/lib64)
+rm /home/eggs/mnt/filesystem.squashfs/lib64
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/mnt -rf)
+rm /home/eggs/mnt/filesystem.squashfs/mnt -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/opt)
+umount /home/eggs/mnt/filesystem.squashfs/opt
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/opt -rf)
+rm /home/eggs/mnt/filesystem.squashfs/opt -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/proc -rf)
+rm /home/eggs/mnt/filesystem.squashfs/proc -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/root)
+umount /home/eggs/mnt/filesystem.squashfs/root
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/root -rf)
+rm /home/eggs/mnt/filesystem.squashfs/root -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/run -rf)
+rm /home/eggs/mnt/filesystem.squashfs/run -rf
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/sbin)
+rm /home/eggs/mnt/filesystem.squashfs/sbin
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/srv)
+umount /home/eggs/mnt/filesystem.squashfs/srv
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/srv -rf)
+rm /home/eggs/mnt/filesystem.squashfs/srv -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/sys -rf)
+rm /home/eggs/mnt/filesystem.squashfs/sys -rf
+Ovary: mergedAndOverlay
+Ovary: merged
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/tmp -rf)
+rm /home/eggs/mnt/filesystem.squashfs/tmp -rf
+Ovary: mergedAndOverlay
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/usr)
+umount /home/eggs/mnt/filesystem.squashfs/usr
+Ovary: rexec(umount /home/eggs/ovarium/.overlay/lowerdir/usr)
+umount /home/eggs/ovarium/.overlay/lowerdir/usr
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/usr -rf)
+rm /home/eggs/mnt/filesystem.squashfs/usr -rf
+Ovary: mergedAndOverlay
+Ovary: rexec(umount /home/eggs/mnt/filesystem.squashfs/var)
+umount /home/eggs/mnt/filesystem.squashfs/var
+Ovary: rexec(umount /home/eggs/ovarium/.overlay/lowerdir/var)
+umount /home/eggs/ovarium/.overlay/lowerdir/var
+Ovary: rexec(rm /home/eggs/mnt/filesystem.squashfs/var -rf)
+rm /home/eggs/mnt/filesystem.squashfs/var -rf
+Ovary: xorrisoCommand
+Ovary: makeDotDisk
+mkdir /home/eggs/mnt/iso/arch/x86_64/airootfs/x86_64 -p
+mv /home/eggs/mnt/iso/live/filesystem.squashfs /home/eggs/mnt/iso/arch/x86_64/airootfs.sfs
+sha512sum /home/eggs/mnt/iso/arch/x86_64/airootfs.sfs > /home/eggs/mnt/iso/arch/x86_64/airootfs.sha512
+Ovary: makeIso
+xorriso -as mkisofs -J -joliet-long -l -iso-level 3 -isohybrid-mbr /usr/lib/syslinux/bios/isohdpfx.bin -partition_offset 16 -V colibri -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot -o /home/eggs/mnt/egg-of-arch-colibri_amd64_2023-09-07_0945.iso /home/eggs/mnt/iso/
+
+ E G G S: the reproductive system of penguins
+
+      penguins-eggs       Perri's Brewery edition        ver. 9.5.22       
+command: produce
+
+eggs is finished!
+
+You can find the file iso: egg-of-arch-colibri_amd64_2023-09-07_0945.iso
+in the nest: /home/eggs/.
+
+Remember, on liveCD user = live/evolution
+                    root = root/evolution
