@@ -17,6 +17,16 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+
+# eggs-9.5.23
+* ovary: solved problems mounting local partition;
+* ovary: solved problems mounting sshfs;
+* ovary: rewrote makeDotDisk;
+* ovary: lot of bugfixes;
+* revisited again killMeSotly.
+
+We thank for cooperation the user @unibox who made his equipment and time available for the necessary usage test.
+
 # eggs-9.5.22
 * first positive remaster and reinstall Arch on btrfs;
 * ovary: actually `/boot`` is copied not more merged to let the use of `/boot`` on vfat possibile;
