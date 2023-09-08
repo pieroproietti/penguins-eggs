@@ -67,7 +67,7 @@ function blog() {
 
 ################################
 function documents() {
-	xdg-open "https://penguins-eggs.net/docs"
+	xdg-open "https://penguins-eggs.net/docs/Tutorial/eggs-users-guide"
 }
 
 ################################

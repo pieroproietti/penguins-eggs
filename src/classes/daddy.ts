@@ -7,16 +7,14 @@
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Settings from '../classes/settings'
-import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
-import killMeSoftly from '../lib/kill_me_softly'
-
 const inquirer = require('inquirer') 
 
 import {IEggsConfig} from '../interfaces/i-eggs-config'
-import {IMyAddons} from '../interfaces/index'
 import chalk from 'chalk'
-import {exec} from '../lib/utils'
+
+// libraries
+import { exec } from '../lib/utils'
 
 
 interface editConf {
@@ -64,12 +62,9 @@ export default class Daddy {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
           config.compression = 'fast'
         }
-
         jsonConf = JSON.stringify(config)
       }
-
       const newConf = JSON.parse(jsonConf)
-
       // salvo le modifiche
       config.snapshot_basename = newConf.snapshot_basename
       config.snapshot_prefix = newConf.snapshot_prefix
@@ -78,61 +73,24 @@ export default class Daddy {
       config.root_passwd = newConf.root_passwd
       config.theme = newConf.theme
 
-      /**
-       * Analisi del tipo di compressione disponibile
-       */
-      const compressors = new Compressors()
-      await compressors.populate()
-      config.compression = compressors.normal()
-      if (newConf.compression === 'fast') {
-        config.compression = compressors.fast()
-      } else if (newConf.compression === 'max') {
-        config.compression = compressors.max()
-      }
-
       await this.settings.save(config)
-
-      let flags = ''
-      if (loadDefault) {
-        await killMeSoftly(this.settings.config.snapshot_dir, this.settings.config.snapshot_mnt)
-      } else {
-        // Controllo se serve il kill
-        if (verbose) {
-          flags = '--verbose '
-        }
-
-        Utils.titles('kill' + flags)
-        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-        await this.settings.listFreeSpace()
-        if (await Utils.customConfirm()) {
-           await killMeSoftly(this.settings.config.snapshot_dir, this.settings.config.snapshot_mnt)
-        }
-
-        /**
-         * produce
-         */
-        if (loadDefault) {
-          verbose = false
-        }
-
-        flags += ' --' + newConf.compression
-        flags += ' --addons adapt'
-        Utils.titles('produce' + ' ' + flags)
-        console.log(chalk.cyan('Daddy, what else did you leave for me?'))
-        const myAddons = {} as IMyAddons
-        myAddons.adapt = true
-        const backup = false
-        const personal = false
-        const scriptOnly = false
-        const yolkRenew = false
-        const final = false
-        const ovary = new Ovary()
-        Utils.warning('Produce an egg...')
-        if (await ovary.fertilization(config.snapshot_prefix, config.snapshot_basename, config.theme, config.compression)) {
-          await ovary.produce(backup, personal, scriptOnly, yolkRenew, final, myAddons, verbose)
-          ovary.finished(scriptOnly)
-        }
-      }
+      console.clear()
+      Utils.titles('dad')
+      console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'))
+      console.log()
+      console.log(`You can create a new iso with: sudo eggs produce`)
+      console.log(`Or a complete personal clone:  sudo eggs produce --clone`)
+      console.log()
+      console.log(`If you are scarce of free space you can mount remote`)
+      console.log(`or local space. Follow the samples:`)
+      console.log(`First: create the eggs mountpoint`)
+      console.log(`sudo mkdir /home/eggs/mnt -p`)
+      console.log(`then, to use remote space:`)
+      console.log(chalk.whiteBright(`sudo sshfs -o allow_other root@192.168.1.2:/zfs/iso /home/eggs/mnt`))
+      console.log('or, for a local partition')
+      console.log(chalk.yellow(`sudo mount /dev/sdx1 /home/eggs/mnt`))
+      console.log()
+      // await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
     }
   }
 
@@ -141,7 +99,9 @@ export default class Daddy {
    * @param c
    */
   editConfig(c: IEggsConfig): Promise<string> {
-    console.log(chalk.cyan('Edit and save LiveCD parameters'))
+    Utils.titles('dad')
+    console.log(chalk.cyan('Edit and save Live system parameters'))
+    console.log()
     let compressionOpt = 0
     if (c.compression === 'xz') {
       compressionOpt = 1
@@ -186,16 +146,10 @@ export default class Daddy {
           default: c.root_passwd,
         },
         {
-          type: 'input',
-          name: 'theme',
-          message: 'LiveCD theme: ',
-          default: c.theme,
-        },
-        {
           type: 'list',
           name: 'compression',
           message: 'LiveCD compression: ',
-          choices: ['fast', 'normal', 'max'],
+          choices: ['fast', 'max'],
           default: compressionOpt,
         },
       ]
