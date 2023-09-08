@@ -23,7 +23,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * ovary: solved problems mounting sshfs;
 * ovary: rewrote makeDotDisk;
 * ovary: lot of bugfixes;
-* revisited again killMeSotly.
+* revisited again killMeSotly;
+* dad: suggests commands for producing a public live system or a private one (clone) and shows how to add free space - if needed - by remote or local mounting.
 
 We thank for cooperation the user @unibox who made his equipment and time available for the necessary usage test.
 
