@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * name: keyboard.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import {exec} from '../lib/utils'
 import fs from 'fs'
 import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'

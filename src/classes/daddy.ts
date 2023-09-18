@@ -1,5 +1,6 @@
 /**
- * penguins-eggs-v8
+ * penguins-eggs
+ * name: daddy.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

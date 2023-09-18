@@ -1,9 +1,11 @@
 /**
- * penguins-eggs-v7 based on Debian live
+ * penguins-eggs
+ * name: yolk.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import fs from 'fs'
 import Utils from './utils'
 import Pacman from './pacman'

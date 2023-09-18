@@ -1,9 +1,9 @@
 /**
- * penguins-eggss
+ * penguins-eggs
+ * name: pve.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
- * pve-live
  */
 
 /**

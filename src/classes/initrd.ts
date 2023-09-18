@@ -1,8 +1,9 @@
 /**
- * penguins-eggs: initrd
+ * penguins-eggs
+ * name: initrd.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
+ * email: piero.proietti@gmail.com
+ * license: MIT
  * Schema from "refractasnapshot-10.2.10 (20191218)"
  * Copyright: fsmithred@gmail.com 2011-2019
  */
