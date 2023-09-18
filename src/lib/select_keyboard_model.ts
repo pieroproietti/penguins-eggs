@@ -5,7 +5,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-c
+
 const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'
 import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'
