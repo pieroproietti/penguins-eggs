@@ -1,7 +1,7 @@
 /**
  /**
  * penguins-eggs
- * name: systemctl.ts
+ * class: systemctl.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * Presa da https://github.com/VolantisDev/node-systemctl

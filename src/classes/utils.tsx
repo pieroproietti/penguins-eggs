@@ -1,7 +1,7 @@
 /* eslint-disable valid-jsdoc */
 /**
  * penguins-eggs
- * name: utils.tsx
+ * class: utils.tsx
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

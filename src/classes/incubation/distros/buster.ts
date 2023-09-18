@@ -1,8 +1,11 @@
 /**
- * penguins-eggs: buster.ts
+ * penguins-eggs
+ * class / incubation: buster.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
-*/
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import CFS from '../../cfs'
 import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
 import Fisherman from '../fisherman'

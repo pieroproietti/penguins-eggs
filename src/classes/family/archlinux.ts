@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
 /**
- * penguins-eggs-v8
+ * penguins-eggs
+ * class / family: archilinux.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

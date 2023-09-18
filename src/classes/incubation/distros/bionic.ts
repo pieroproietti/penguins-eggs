@@ -1,7 +1,9 @@
 /**
- * penguins-eggs: bionic.ts
+ * penguins-eggs
+ * class / incubation: bionic.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import  CFS from '../../cfs'
 import { IInstaller, IRemix, IDistro } from '../../../interfaces/index'

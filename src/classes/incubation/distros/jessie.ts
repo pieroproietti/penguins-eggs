@@ -1,10 +1,9 @@
 /**
- * penguins-eggs: jessie.ts
- *
- * it work both: jessie
- *
+ * penguins-eggs
+ * class / incubation: jessie.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 import {IRemix, IDistro} from '../../../interfaces/index'

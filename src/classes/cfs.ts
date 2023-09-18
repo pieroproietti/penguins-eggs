@@ -1,7 +1,6 @@
 /**
  * penguins-eggs
- * name: cfs.ts 
- * (custom final steps)
+ * class: cfs.ts (custom final steps)
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

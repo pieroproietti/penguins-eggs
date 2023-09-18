@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: network.ts
+ * class: network.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

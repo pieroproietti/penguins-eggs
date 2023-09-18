@@ -1,8 +1,11 @@
 /**
- * penguins-eggs: focal.ts
+ * penguins-eggs
+ * class / incubation: focal.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
 import Fisherman from '../fisherman'
 import CFS from '../../cfs'
