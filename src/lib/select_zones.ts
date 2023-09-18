@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * lib: selsect_zones.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 'use strict'
 'use strict'
 const inquirer = require('inquirer') // inquirer from 

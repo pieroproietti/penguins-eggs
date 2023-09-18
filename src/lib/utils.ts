@@ -1,4 +1,12 @@
 /**
+ * penguins-eggs
+ * lib: utils.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+/**
  * Executes shell command as it would happen in BASH script
  * @param {string} command
  * @param {Object} [options] Object with options.

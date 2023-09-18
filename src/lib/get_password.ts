@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * lib: get_password.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 'use strict'
 // import { option } from '@oclif/command/lib/flags'
 const inquirer = require('inquirer') 

@@ -1,7 +1,11 @@
 /**
- * less /usr/share/i18n/SUPPORTED
+ * penguins-eggs
+ * lib: select_languages.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-const inquirer = require('inquirer') 
+cconst inquirer = require('inquirer') 
 import shx from 'shelljs'
 import Locales from '../classes/locales'
 
