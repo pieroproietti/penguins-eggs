@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * interface: i-branding.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 export interface IBranding {
   componentName: string
   welcomeStyleCalamares: boolean

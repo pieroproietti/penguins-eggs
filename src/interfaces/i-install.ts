@@ -1,9 +1,10 @@
-/*
-  penguins-eggs: Eggs.js
-  author: Piero Proietti
-  mail: piero.proietti@gmail.com
-*/
-
+/**
+ * penguins-eggs
+ * interface: i-install.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 export interface IInstall {
   distroTemplate: boolean
   efi: boolean

@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * interface: i-krill-config.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 export interface IKrillConfig {
     language: string
     region: string

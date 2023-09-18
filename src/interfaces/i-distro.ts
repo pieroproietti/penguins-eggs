@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * interface: i-distro.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 export interface IDistro {
   familyId: string
   distroId: string

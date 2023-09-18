@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * interface: i-krill.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 export interface IWelcome {
   language: string
 }
