@@ -1,5 +1,9 @@
 /**
- * selectInterface
+ * penguins-eggs
+ * lib: select_interface.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 const inquirer = require('inquirer') 
 

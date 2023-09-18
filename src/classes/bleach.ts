@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 /**
- * penguins-eggs: Bleach.ts
- *
+ * penguins-eggs
+ * name: bleach.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 import fs from 'node:fs'

@@ -1,5 +1,9 @@
 /**
- * Welcome
+ * penguins-eggs
+ * components: summary.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import React from 'react'
 import { Box, Text } from 'ink'

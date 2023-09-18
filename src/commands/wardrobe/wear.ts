@@ -1,5 +1,6 @@
 /**
- * penguins-eggs: wardrobe wear
+ * penguins-eggs
+ * command: wear.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

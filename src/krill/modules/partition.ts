@@ -1,9 +1,9 @@
 /**
- * krill: module partitions
- *
+ * penguins-eggs
+ * krill modules: partition.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
+ * email: piero.proietti@gmail.com
+ * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 

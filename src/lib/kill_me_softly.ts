@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * lib: kill_me_softly.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 'use strict'
 
 import Utils from "../classes/utils"

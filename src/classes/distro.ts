@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 /**
- * penguins-eggs: Distro.ts
- *
+ * penguins-eggs
+ * name: distro.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 'use strict'
 import fs from 'node:fs'
 import path from 'node:path'

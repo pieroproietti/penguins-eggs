@@ -1,5 +1,6 @@
 /**
- * tools
+ * penguins-eggs
+ * name: tools.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

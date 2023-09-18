@@ -1,5 +1,9 @@
 /**
- * Al momento
+ * penguins-eggs
+ * interface: i-analyze.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 export default class IAnalyze {
   login =''

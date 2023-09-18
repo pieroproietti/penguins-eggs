@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * interface: i-pxe.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 export interface ITftpOptions {
   host : string
   port : number

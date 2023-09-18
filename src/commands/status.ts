@@ -1,7 +1,10 @@
 /**
- * info
+ * penguins-eggs
+ * command: status.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 import {Command, Flags} from '@oclif/core'
 import {Example} from '@oclif/core/lib/interfaces'
 import information from '../components/elements/information'

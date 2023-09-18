@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * interface: i-xkd-model.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 export interface IXkbModel {
     code: string,
     description: string

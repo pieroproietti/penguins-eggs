@@ -1,5 +1,6 @@
 /**
  * penguins-eggs
+ * command: kill.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

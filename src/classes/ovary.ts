@@ -1,8 +1,9 @@
 /**
- * penguins-eggs: ovary.ts
+ * penguins-eggs
+ * name: ovary.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 // packages

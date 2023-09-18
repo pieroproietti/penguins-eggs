@@ -1,10 +1,13 @@
 /**
- * penguins-eggs: krill
- *
+ * penguins-eggs
+ * krill modules: krill-prepare.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
- * OEM Installation (https://github.com/calamares/calamares/issues/871)
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
+ */
+
+/** OEM Installation (https://github.com/calamares/calamares/issues/871)
  *
  * Thanks to Adriaan De Groot (calamares author)
  *

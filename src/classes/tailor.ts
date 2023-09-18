@@ -1,9 +1,11 @@
 /**
-* penguins-eggs: tailor.ts
-* author: Piero Proietti
-* mail: piero.proietti@gmail.com
-*
-*/
+ * penguins-eggs
+ * name: tailor.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import chalk from 'chalk'
 import Utils from './utils'
 import { IMateria, IEggsConfig } from '../interfaces/index'

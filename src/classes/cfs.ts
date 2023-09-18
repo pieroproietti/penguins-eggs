@@ -1,5 +1,10 @@
 /**
- * cfs: custom final steps
+ * penguins-eggs
+ * name: cfs.ts 
+ * (custom final steps)
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import { ISettings } from '../interfaces/i-settings'
 import fs from 'fs'

@@ -1,8 +1,10 @@
 /**
- * settings calamares
- * 
+ * penguins-eggs
+ * interface: i-settings.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 interface Iinstance {
   id: string      // 'before_bootloader_mkdirs'
   moduce: string  // 'contextualprocess',
