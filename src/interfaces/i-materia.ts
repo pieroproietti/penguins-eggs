@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * interface: i-materia.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 import {stringify} from 'node:querystring'
 
 export interface IRepos {

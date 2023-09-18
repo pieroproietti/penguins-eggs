@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * interface: i-eggs-config
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 export interface IEggsConfig {
   compression: string
   force_installer: boolean

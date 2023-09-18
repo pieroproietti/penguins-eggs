@@ -1,5 +1,9 @@
 /**
- * Al momento NON viene usata!
+ * penguins-eggs
+ * interface: i-drive-list.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 interface IMountPoint {

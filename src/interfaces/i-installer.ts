@@ -1,12 +1,9 @@
 /**
- * name  = 'calamares' oppure 'krill'
- * configuration = '/etc/calamares/' o '/etc/penguins-eggs.d/krill/'
- * modules = configuration + 'modules/'
- * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
- *
- * template = '/etc/penguins-eggs/' + .distro.codenameLikeId + '/' + installer + '/'
- * templateModules = template + '/modules/'
- * templateMultiarch = template + installer + '-modules/'
+ * penguins-eggs
+ * interface: i-installer.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 export interface IInstaller {
   name: string

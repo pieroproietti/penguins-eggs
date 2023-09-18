@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * interface: i-calamares-partition.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import { boolean } from "@oclif/core/lib/parser"
 
 export interface ICalamaresPartition {
