@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * command: stat.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 import {Command, Flags} from '@oclif/core'
 import Utils from '../../classes/utils'
 import axios from 'axios'

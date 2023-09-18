@@ -1,7 +1,10 @@
 /**
- * cuckoo: proxy
+ * penguins-eggs
+ * command: cuckoo.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 import {Command, Flags} from '@oclif/core'
 import network from '../classes/network'
 import Utils from '../classes/utils'

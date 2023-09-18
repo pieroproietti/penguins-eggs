@@ -1,5 +1,6 @@
 /**
- * penguins-eggs: adapt
+ * penguins-eggs
+ * command: adapt.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
