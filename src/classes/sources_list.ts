@@ -1,8 +1,9 @@
 /**
- * penguins-eggs: tailor.ts
+ * penguins-eggs
+ * name: sources_list.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 import chalk from 'chalk'

@@ -1,5 +1,6 @@
 /**
- * xdg-utils
+ * penguins-eggs
+ * name: xdg.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

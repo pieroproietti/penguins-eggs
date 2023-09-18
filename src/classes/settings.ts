@@ -1,8 +1,9 @@
 /**
- * penguins-eggs: ovary.ts VERSIONE DEBIAN-LIVE
+ * penguins-eggs
+ * name: settings.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
- *
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 // packages
@@ -226,60 +227,5 @@ export default class Settings {
     name = name.replace(/-/g, ' ').replace('egg of ', '')
     this.remix.fullname = name
     this.remix.versionName = name.toUpperCase()
-  }
-
-
-  
-  /**
-  * show NOT USED MORE
-  */
-  async show_not_used_more() {
-    console.log(`application_name:  ${this.app.name} ${this.app.version}`)
-    // console.log(`config_file:       ${config_file}`)
-    console.log(`snapshot_dir:      ${this.config.snapshot_dir}`)
-    if (this.config.snapshot_prefix === '') {
-      console.log('snapshot_prefix:   ' + chalk.bgYellow('no value') + ' run ' + chalk.cyan('sudo eggs dad') + ' or edit ' + chalk.cyan('/etc/penguins-eggs.d/eggs.yaml'))
-    } else {
-      console.log('snapshot_prefix:   ' + chalk.green(this.config.snapshot_prefix))
-    }
-
-    console.log(`snapshot_basename: ${this.config.snapshot_basename}`)
-    // console.log(`snapshot_excludes: ${this.config.snapshot_excludes}`)
-    if (fs.existsSync(this.kernel_image)) {
-      console.log('kernel_image:      ' + chalk.green(this.kernel_image))
-    } else {
-      console.log('kernel_image:      ' + chalk.red(this.kernel_image) + ' not found! Please edit /etc/penguins-eggs.d/eggs.yaml')
-    }
-
-    if (fs.existsSync(this.initrd_image)) {
-      console.log('initrd_image:      ' + chalk.green(this.initrd_image))
-    } else {
-      console.log('initrd_image:      ' + chalk.red(this.initrd_image) + ' not found! Please edit /etc/penguins-eggs.d/eggs.yaml')
-    }
-
-    console.log(`snapshot_dir:          ${this.config.snapshot_dir}`)
-    // console.log(`efi_work:          ${this.efi_work}`)
-    // console.log(`make_efi:          ${this.config.make_efi}`)
-    // console.log(`make_md5sum:       ${this.config.make_md5sum}`)
-    // console.log(`make_isohybrid:    ${this.config.make_isohybrid}`)
-    console.log(`compression:       ${this.config.compression}`)
-    // console.log(`force_installer:   ${this.config.force_installer}`)
-    console.log(`user_opt:          ${this.config.user_opt}`)
-    console.log(`locales:           ${this.config.locales}`)
-    console.log(`locale default:    ${this.config.locales_default}`)
-    // console.log(`ssh_pass:          ${this.config.ssh_pass}`)
-    if (this.config.make_efi) {
-      if (!Pacman.isUefi()) {
-        Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
-        Utils.error('Please install it before to create an UEFI image:')
-        Utils.warning('sudo apt install grub-efi-amd64-bin')
-        this.config.make_efi = false
-      } else if (!Pacman.packageIsInstalled('dosfstools')) {
-        Utils.error('You choose to create an UEFI image, but miss to install dosfstools package.')
-        Utils.error('Please install it before to create an UEFI image:')
-        Utils.warning('sudo apt install dosfstools')
-        this.config.make_efi = false
-      }
-    }
   }
 }

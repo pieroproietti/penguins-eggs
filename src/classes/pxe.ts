@@ -1,8 +1,11 @@
 /**
- * penguins-eggs: pxe.ts
+ * penguins-eggs
+ * name: pxe.ts
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 import {exec} from '../lib/utils'
 import {ITftpOptions, IDhcpOptions} from '../interfaces/i-pxe'
 import Distro from './distro'
