@@ -1,4 +1,11 @@
-'use strict'
+/**
+ * penguins-eggs
+ * lib: select_regiones.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+c'use strict'
 const inquirer = require('inquirer') 
 
 export default async function selectRegions(selected = ''): Promise<string> {

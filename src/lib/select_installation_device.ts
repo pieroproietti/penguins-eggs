@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * lib: select_installation_device.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 'use strict'
 const inquirer = require('inquirer') 
 import shx from 'shelljs'

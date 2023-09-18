@@ -1,4 +1,12 @@
 /**
+ * penguins-eggs
+ * lib: dependencies.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+/**
  * depCommon
  * depArch
  * depVersion
