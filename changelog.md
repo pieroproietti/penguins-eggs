@@ -17,6 +17,9 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.24
+* Just put a bit order inside the code, cutted some not-more-used parts and rewriting of all file headers;
+* I started a new project [denos'eggs](https://github.com/pieroproietti/denos-eggs) replacing [nodejs](https://nodejs.org/it) with [deno](https://deno.com/). This is not necessarily a definitive path, I am just looking around and seeking cooperation. Given the absolutely early state of the project it should be easier to come together and collaborate.
 
 # eggs-9.5.23
 * ovary: solved problems mounting local partition;
