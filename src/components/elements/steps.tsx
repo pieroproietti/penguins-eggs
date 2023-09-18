@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * components: steps.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 import React from 'react'
 import { render, Text, Box } from 'ink'
 
