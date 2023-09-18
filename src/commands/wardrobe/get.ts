@@ -1,10 +1,10 @@
 /**
- * penguins-eggs: wardrobe get
+ * penguins-eggs
+ * command: get.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
 import {Command, Flags} from '@oclif/core'
 import Utils from '../../classes/utils'
 import chalk from 'chalk'

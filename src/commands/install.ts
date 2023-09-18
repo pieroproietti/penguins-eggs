@@ -1,10 +1,10 @@
 /**
- * penguins-eggs-v7 based on Debian live
+ * penguins-eggs
+ * command: install.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
 import {Command, Flags, flush} from '@oclif/core'
 import Utils from '../classes/utils'
 import Krill from '../krill/krill-prepare'
