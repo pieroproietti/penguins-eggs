@@ -1,5 +1,6 @@
 /**
- * penguins-eggs-v9
+ * penguins-eggs
+ * command: syncto.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,6 +1,11 @@
 /**
- * calamares module packages
+ * penguins-eggs
+ * interface: i-packages.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 interface operations {
   packages: string[]
 }

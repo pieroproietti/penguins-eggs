@@ -1,7 +1,10 @@
 /**
- * User
+ * penguins-eggs
+ * components: users.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 import React, {useState, useEffect} from 'react'
 import { render, Text, Box } from 'ink'
 import Title from './elements/title'

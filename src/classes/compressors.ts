@@ -1,5 +1,10 @@
 /**
- * test available compressors
+ * penguins-eggs
+ * name: compressor.ts
+ * test available compressor
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import shx from 'shelljs'
 

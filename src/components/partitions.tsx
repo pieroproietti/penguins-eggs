@@ -1,5 +1,9 @@
 /**
- * Partitions
+ * penguins-eggs
+ * components: partitions.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import React from 'react'
 import { render, Text, Box, Newline } from 'ink'

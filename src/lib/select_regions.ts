@@ -1,3 +1,10 @@
+/**
+ * penguins-eggs
+ * lib: select_regiones.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
 'use strict'
 const inquirer = require('inquirer') 
 

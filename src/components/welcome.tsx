@@ -1,5 +1,9 @@
 /**
- * Welcome
+ * penguins-eggs
+ * components: welcome.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import React, { useState } from 'react'
 import { Box, Newline, Text } from 'ink'

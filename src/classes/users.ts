@@ -1,6 +1,11 @@
 /**
- * User
+ * penguins-eggs
+ * name: users.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 import {integer} from '@oclif/core/lib/parser/flags'
 import {flagUsage} from '@oclif/core/lib/parser/help'
 import fs from 'fs'

@@ -1,5 +1,9 @@
 /**
- * selectAddressType
+ * penguins-eggs
+ * lib: select_address_type.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 const inquirer = require('inquirer') 
 

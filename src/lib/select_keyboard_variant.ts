@@ -1,7 +1,9 @@
 /**
  * penguins-eggs
- * selectKeyboardVariant
+ * lib: select_keyboard_variant.ts
  * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'

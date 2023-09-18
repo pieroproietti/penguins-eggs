@@ -1,5 +1,9 @@
 /**
- *
+ * penguins-eggs
+ * command: iso.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
 import Tools from '../../classes/tools'

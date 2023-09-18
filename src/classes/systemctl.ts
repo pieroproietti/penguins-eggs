@@ -1,10 +1,11 @@
 /**
- * penguins-eggs-v7
+ /**
+ * penguins-eggs
+ * name: systemctl.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
- * license: MIT
- * gestione systemd
  * Presa da https://github.com/VolantisDev/node-systemctl
+ * license: MIT
  */
 
 import {exec} from '../lib/utils'

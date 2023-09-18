@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * interface: index.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 export {IAddons, IMyAddons} from './i-addons'
 export {IDevice, IDevices} from './i-devices'
 export {IRemix} from './i-remix'

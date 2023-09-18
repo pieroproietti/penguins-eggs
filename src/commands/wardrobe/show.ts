@@ -1,7 +1,10 @@
 /**
- * eggs wardrobe show
+ * penguins-eggs
+ * command: show.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-
 // libraries
 import { Command, Flags } from '@oclif/core'
 import yaml from 'js-yaml'

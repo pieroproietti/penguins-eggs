@@ -1,8 +1,11 @@
 /**
  * penguins-eggs
- * selectKeyboardModel
+ * lib: select_keyboard_model.ts
  * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'
 import {IXkbModel, IXkbLayout, IXkbVariant, IXkbOption} from '../interfaces/i-xkb-model'

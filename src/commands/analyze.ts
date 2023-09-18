@@ -1,5 +1,6 @@
 /**
- * penguins-eggs: analyze
+ * penguins-eggs
+ * command: analyze.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,5 +1,6 @@
 /**
- * penguins-eggs-v7 based on Debian live
+ * penguins-eggs
+ * command: calamares.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

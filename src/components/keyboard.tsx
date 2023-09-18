@@ -1,7 +1,11 @@
 /**
- * Keyboard
+ * penguins-eggs
+ * components: keyboard.tsx
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
- import React from 'react'
+import React from 'react'
  import { render, Text, Box, Newline } from 'ink'
  import Title from './elements/title'
  import Steps from './elements/steps'

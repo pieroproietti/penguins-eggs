@@ -1,3 +1,11 @@
+/**
+ * penguins-eggs
+ * lib: cli-autologin.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
 import shx from 'shelljs'
 import fs from 'fs'
 import path from 'path'
