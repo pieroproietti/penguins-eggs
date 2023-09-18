@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: users.ts
+ * class: users.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: settings.ts
+ * class: settings.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: compressor.ts
+ * class: compressor.ts
  * test available compressor
  * author: Piero Proietti
  * email: piero.proietti@gmail.com

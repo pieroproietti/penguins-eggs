@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: pxe.ts
+ * class: pxe.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

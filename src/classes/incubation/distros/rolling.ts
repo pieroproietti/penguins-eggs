@@ -1,5 +1,9 @@
 /**
- * penguins-eggs: rolling.ts
+ * penguins-eggs
+ * class / incubation: rolling.ts
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
 import Pacman from '../../pacman'

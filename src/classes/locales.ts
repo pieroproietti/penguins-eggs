@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: locales.ts
+ * class: locales.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

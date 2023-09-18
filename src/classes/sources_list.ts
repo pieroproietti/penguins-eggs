@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: sources_list.ts
+ * class: sources_list.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

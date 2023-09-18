@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: tailor.ts
+ * class: tailor.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

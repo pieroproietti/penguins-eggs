@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /**
  * penguins-eggs
- * name: distro.ts
+ * class: distro.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

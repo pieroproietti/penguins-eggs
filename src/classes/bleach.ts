@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /**
  * penguins-eggs
- * name: bleach.ts
+ * class: bleach.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,9 +1,11 @@
 /**
- * penguins-eggs-v8
+ * penguins-eggs
+ * class / family: fedora.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 
 import fs from 'node:fs'
 import shx from 'shelljs'

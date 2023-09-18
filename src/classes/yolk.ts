@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * name: yolk.ts
+ * class: yolk.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
