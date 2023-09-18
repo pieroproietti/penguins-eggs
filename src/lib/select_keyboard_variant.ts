@@ -5,7 +5,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-cconst inquirer = require('inquirer') 
+const inquirer = require('inquirer') 
 import Keyboards from '../classes/keyboards'
 import Utils from '../classes/utils'
 import selectKeyboardOption from './select_keyboard_option'

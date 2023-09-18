@@ -5,7 +5,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-cconst inquirer = require('inquirer') 
+const inquirer = require('inquirer') 
 import shx from 'shelljs'
 import Locales from '../classes/locales'
 

@@ -5,7 +5,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-c'use strict'
+'use strict'
 const inquirer = require('inquirer') 
 
 export default async function selectRegions(selected = ''): Promise<string> {
