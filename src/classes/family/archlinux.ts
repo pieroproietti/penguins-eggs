@@ -116,15 +116,6 @@ export default class Archlinux {
     } catch {
       Utils.error(`Cannot download ${cal_eggs}`) // + e.error)
     }
-
-    /*
-    const cmd = `pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`
-    try {
-      await exec(cmd, echo)
-    } catch {
-      Utils.error(`Archlinux.calamaresInstall(): ${cmd}`) // + e.error)
-    }
-    */
   }
 
   /**
@@ -143,16 +134,18 @@ export default class Archlinux {
 
     let removed = false
     const echo = Utils.setEcho(verbose)
-
-    if (await this.packagePacmanAvailable('calamares')) {
-      await exec('pacman -R calamares', echo)
-      removed = true
-    } else if (await this.packagePacmanAvailable('calamares-git')) {
-      await exec('pacman -R calamares-git', echo)
-      removed = true
-    } else if (await this.packagePacmanAvailable('calamares-eggs')) {
-      await exec('pacman -R calamares-eggs', echo)
-      removed = true
+    
+    let calPKGs = [
+      'calamares', 
+      'calamares-git', 
+      'calamares-eggs', 
+      'arco-calamares-git'
+    ]
+    for(const calPKG of calPKGs){
+      if (await this.packagePacmanAvailable(calPKG)) {
+        await exec(`pacman -R ${calPKG}`, echo)
+        removed = true
+      }
     }
 
     if (removed) {
