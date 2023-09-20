@@ -293,7 +293,7 @@ FLAGS
   -h, --help           Show CLI help.
   -i, --install        install calamares and its dependencies
   -n, --nointeractive  no user interaction
-  -N, --noicons        no icons  
+  -p, --policies       configure calamares policies
   -r, --release        release: remove calamares and all its dependencies after the installation
   -v, --verbose
   --remove             remove calamares and its dependencies
