@@ -19,7 +19,7 @@ export default class Calamares extends Command {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and its dependencies" }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    policies: Flags.boolean({ char: 'p', description: 'conficure policies calamares' }),
+    policies: Flags.boolean({ char: 'p', description: 'configure calamares policies' }),
     release: Flags.boolean({ char: 'r', description: "release: remove calamares and all its dependencies after the installation" }),
     remove: Flags.boolean({ description: "remove calamares and its dependencies" }),
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
@@ -82,50 +82,51 @@ export default class Calamares extends Command {
       }
 
       if (installer === 'calamares') {
-        if (remove) {
-          if (Pacman.calamaresExists()) {
-            await Pacman.calamaresRemove()
-            if (await this.settings.load()) {
-              this.settings.config.force_installer = false
-              this.settings.save(this.settings.config)
-            }
-          }
-        } else {
-          if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
-            /**
-             * Install calamares
-             */
-            if (install) {
-              Utils.warning('Installing calamares...')
-              await Pacman.calamaresInstall()
+        if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+          if (remove) {
+            if (Pacman.calamaresExists()) {
+              await Pacman.calamaresRemove()
               if (await this.settings.load()) {
-                this.settings.config.force_installer = true
+                this.settings.config.force_installer = false
                 this.settings.save(this.settings.config)
-                policies = true
               }
             }
+            process.exit()
+          }
 
-            /**
-             * policies applicata sia per flag
-             * sia perchè definita in install
-             */
-            if (policies) {
-              await Pacman.calamaresPolicies()
-            }
-
-            /**
-             * Configure calamares
-             */
+          /**
+           * Install
+           */
+          if (install) {
+            Utils.warning('Installing calamares...')
+            await Pacman.calamaresInstall()
             if (await this.settings.load()) {
-              Utils.warning('Configuring installer')
-              await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-              const isClone = false
-              this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
-              await this.incubator.config(release)
+              this.settings.config.force_installer = true
+              this.settings.save(this.settings.config)
+              policies = true
             }
+          }
+
+          /**
+           * Configure
+           */
+          if (await this.settings.load()) {
+            Utils.warning('Configuring installer')
+            await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+            const isClone = false
+            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
+            await this.incubator.config(release)
+          }
+
+          /**
+           * policies
+           */
+          if (policies) {
+            await Pacman.calamaresPolicies()
           }
         }
       }
     }
   }
 }
+
