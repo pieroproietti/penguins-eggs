@@ -105,7 +105,7 @@ There are more than a way to install eggs as .deb package, the most practical is
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.5.24_amd64.deb 
+sudo dpkg -i eggs_9.5.25_amd64.deb 
 ```
 
 or, on a i386 system:
