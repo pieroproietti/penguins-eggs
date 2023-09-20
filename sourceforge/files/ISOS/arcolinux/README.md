@@ -23,7 +23,7 @@ Remastering it will be an opportunity to get to know it better and follow Erik's
 
 I just remastered the xl version:
 
-* **egg-of-arcolinux-xfce** 
+* **egg-of-arcolinux-xfce** (just a remaster of arcolinuxs-v23.09.03-x86_64.iso)
 
 ![ArcoLinux](https://user-images.githubusercontent.com/958613/269377369-92211ec1-eee2-4301-91c6-eb64c52232a6.png)
 
