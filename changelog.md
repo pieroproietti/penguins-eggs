@@ -17,6 +17,15 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.25
+we have another catch in the hunting bag: [ArcoLinux](https://arcolinux.com/). 
+
+It happened that, looking for a solution for calamares - the version on [aur](https://aur.archlinux.org/packages/calamares) is unusable - I found [arcolinux-pkgbuild-calamares](https://github.com/arcolinux/arcolinux-pkgbuild-calamares) and, from this I had taken the PKGBUILD I used to build my previous calamares-eggs. 
+
+However, with the latest updates, this version also does not work and I had to restart from the original.
+
+At this point therefore. it was a must to invite [ArcoLinux](https://www.arcolinux.info/) on board and accommodate it, also to get familiar with it: remastering it - at last - it's just my way of studying it.
+
 # eggs-9.5.24
 * Just put a bit order inside the code, cutted some not-more-used parts and rewriting of all file headers;
 * I started a new project [denos'eggs](https://github.com/pieroproietti/denos-eggs) replacing [nodejs](https://nodejs.org/it) with [deno](https://deno.com/). This is not necessarily a definitive path, I am just looking around and seeking cooperation. Given the absolutely early state of the project it should be easier to come together and collaborate.
