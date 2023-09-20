@@ -96,13 +96,14 @@ export default class Archlinux {
   }
 
   /**
-   *
+   * Arch calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     // const cal_eggs = 'calamares-eggs-3.3.0.r10616.11e1659ca-1-x86_64.pkg.tar.zst'
-    const cal_eggs = 'calamares-eggs-3.3.0.r10707.4b3278058-1-x86_64.pkg.tar.zst' // 2023-09-04 
+    // const cal_eggs = 'calamares-eggs-3.3.0.r10707.4b3278058-1-x86_64.pkg.tar.zst' // 2023-09-04 
+    const cal_eggs = 'arco-calamares-git-3.3.0.r10680.9becd7d1b-1-x86_64.pkg.tar.zst' // 2023-09-20 
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
@@ -115,15 +116,6 @@ export default class Archlinux {
     } catch {
       Utils.error(`Cannot download ${cal_eggs}`) // + e.error)
     }
-
-    /*
-    const cmd = `pacman -Sy --noconfirm ${array2spaced(this.packs4calamares)}`
-    try {
-      await exec(cmd, echo)
-    } catch {
-      Utils.error(`Archlinux.calamaresInstall(): ${cmd}`) // + e.error)
-    }
-    */
   }
 
   /**
@@ -142,16 +134,18 @@ export default class Archlinux {
 
     let removed = false
     const echo = Utils.setEcho(verbose)
-
-    if (await this.packagePacmanAvailable('calamares')) {
-      await exec('pacman -R calamares', echo)
-      removed = true
-    } else if (await this.packagePacmanAvailable('calamares-git')) {
-      await exec('pacman -R calamares-git', echo)
-      removed = true
-    } else if (await this.packagePacmanAvailable('calamares-eggs')) {
-      await exec('pacman -R calamares-eggs', echo)
-      removed = true
+    
+    let calPKGs = [
+      'calamares', 
+      'calamares-git', 
+      'calamares-eggs', 
+      'arco-calamares-git'
+    ]
+    for(const calPKG of calPKGs){
+      if (await this.packagePacmanAvailable(calPKG)) {
+        await exec(`pacman -R ${calPKG}`, echo)
+        removed = true
+      }
     }
 
     if (removed) {

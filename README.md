@@ -105,7 +105,7 @@ There are more than a way to install eggs as .deb package, the most practical is
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.5.24_amd64.deb 
+sudo dpkg -i eggs_9.5.25_amd64.deb 
 ```
 
 or, on a i386 system:
@@ -293,7 +293,7 @@ FLAGS
   -h, --help           Show CLI help.
   -i, --install        install calamares and its dependencies
   -n, --nointeractive  no user interaction
-  -N, --noicons        no icons  
+  -p, --policies       configure calamares policies
   -r, --release        release: remove calamares and all its dependencies after the installation
   -v, --verbose
   --remove             remove calamares and its dependencies

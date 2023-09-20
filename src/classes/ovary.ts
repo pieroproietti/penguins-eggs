@@ -733,10 +733,11 @@ export default class Ovary {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (
         distroId === 'Arch' ||
+        distroId === 'ArcoLinux' ||
         distroId === 'blendOS' ||
+        distroId === 'EndeavourOS' ||
         distroId === 'Garuda' ||
         distroId === 'phyOS' ||
-        distroId === 'EndeavourOS' ||
         distroId === 'RebornOS'
       ) {
         kp += ` archisobasedir=arch archisolabel=${volid}`
@@ -787,6 +788,7 @@ export default class Ovary {
     let fileConf = 'archlinux'
     if (
       distroId === 'Arch' ||
+      distroId === 'ArcoLinux' ||
       distroId === 'Crystal' ||
       distroId === 'EndeavourOS' ||
       distroId === 'Garuda' ||
