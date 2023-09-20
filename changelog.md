@@ -24,7 +24,7 @@ It happened that, looking for a solution for calamares - the version on [aur](ht
 
 However, with the latest updates, this version also does not work and I had to restart from the original.
 
-At this point therefore. it was a must to invite [ArcoLinux](https://www.arcolinux.info/) on board and accommodate it, also to get familiar with it: remastering it - at last - it's just my way of studying it.
+At this point therefore, it was a must to invite [ArcoLinux](https://www.arcolinux.info/) on board and accommodate it, also to get familiar with it: remastering it - at last - it's just my way of studying it.
 
 # eggs-9.5.24
 * Just put a bit order inside the code, cutted some not-more-used parts and rewriting of all file headers;
