@@ -788,6 +788,7 @@ export default class Ovary {
     let fileConf = 'archlinux'
     if (
       distroId === 'Arch' ||
+      distroId === 'ArcoLinux' ||
       distroId === 'Crystal' ||
       distroId === 'EndeavourOS' ||
       distroId === 'Garuda' ||
