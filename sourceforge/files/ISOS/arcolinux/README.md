@@ -25,6 +25,8 @@ I just remastered the xl version:
 
 * **egg-of-arcolinux-xfce** 
 
+![ArcoLinux](https://user-images.githubusercontent.com/958613/269377369-92211ec1-eee2-4301-91c6-eb64c52232a6.png)
+
 # Installing ArcoLinux Linux via PXE
 
 One feature of ISO images made with eggs is the ability to be used for network installation . All you have to do is boot the ISO to be installed, open a terminal window and type the command: 
