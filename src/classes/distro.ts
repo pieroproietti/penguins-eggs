@@ -286,15 +286,6 @@ class Distro implements IDistro {
         }
 
         /**
-         * correzione path Manjaro
-         */
-        if (this.distroId === 'ManjaroLinux') {
-          this.liveMediumPath = '/run/miso/bootmnt/'
-          this.squashfs = 'manjaro/x86_64/livefs.sfs'
-        }
-
-
-        /**
          * patch per Roy
          */
         let found = false
@@ -317,6 +308,15 @@ class Distro implements IDistro {
             }
           }
         }
+
+        /**
+         * correzione path Manjaro
+         */
+        if (this.distroId === 'ManjaroLinux') {
+          this.liveMediumPath = '/run/miso/bootmnt/'
+          this.squashfs = 'manjaro/x86_64/livefs.sfs'
+        }
+
 
         if (!found) {
           console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
