@@ -112,7 +112,7 @@
 #
 # GARUDA
 #
--id: Raptor
+- id: Raptor
   family: archlinux
   distro: Garusa
   derivatives: 
