@@ -118,7 +118,6 @@
   derivatives: 
     - Raptor
 
-
 #
 # MANJARO
 #
@@ -157,5 +156,4 @@
   distro: ManjaroLinux
   derivatives: 
     - Uranos
-
 

@@ -115,7 +115,7 @@ class Distro implements IDistro {
     }
 
     /**
-     * Procedo analizzanto: codenameId
+     * Analisi: codenameId
      */
     switch (this.codenameId) {
       case 'jessie': {
@@ -352,11 +352,8 @@ class Distro implements IDistro {
       }
 
       // No default
-    }
-
-    /**
-     * Special cases
-     */
+      
+    } // Fine analisi codenameIS
 
     /**
      * Garuda
