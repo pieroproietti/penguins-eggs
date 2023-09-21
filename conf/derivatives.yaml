@@ -110,6 +110,16 @@
     - RebornOS
 
 #
+# GARUDA
+#
+-id: Raptor
+  family: archlinux
+  distro: Garusa
+  derivatives: 
+    - Raptor
+
+
+#
 # MANJARO
 #
 - id: Qonos
@@ -147,3 +157,5 @@
   distro: ManjaroLinux
   derivatives: 
     - Uranos
+
+
