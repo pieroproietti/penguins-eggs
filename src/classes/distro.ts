@@ -257,6 +257,7 @@ class Distro implements IDistro {
       break
     }
 
+    /*
     case 'Qonos':
     case 'Ruah':
     case 'Sikaris':
@@ -271,6 +272,7 @@ class Distro implements IDistro {
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
       break
     }
+    */
 
     default: {
         /**
@@ -297,6 +299,7 @@ class Distro implements IDistro {
         for (const distro of distros) {
           if (distro.derivatives !== undefined) {
             for (let n = 0; n < distro.derivatives.length; n++) {
+              console.log(distro.distro)
               if (this.codenameId === distro.derivatives[n]) {
                 found = true
                 this.distroLike = distro.distro
