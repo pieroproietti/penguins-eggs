@@ -64,7 +64,7 @@ dependencies:
     version: 0.8.5
   systeminformation:
     specifier: ^5.18.15
-    version: 5.21.6
+    version: 5.21.7
   tftp:
     specifier: ^0.1.2
     version: 0.1.2
@@ -6408,8 +6408,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  /systeminformation@5.21.6:
-    resolution: {integrity: sha512-wMf5w8ZtNCHhkSNVD/aEbg/5V4ke7XuCqTn+d9GcfZIce8VbeYtb8sQCz/L9LcK3O2QRPHxqWJnKyaAvGfsn2Q==}
+  /systeminformation@5.21.7:
+    resolution: {integrity: sha512-K3LjnajrazTLTD61+87DFg8IXFk5ljx6nSBqB8pQLtC1UPivAjDtTYGPZ8jaBFxcesPaCOkvLRtBq+RFscrsLw==}
     engines: {node: '>=8.0.0'}
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
