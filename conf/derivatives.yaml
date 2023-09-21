@@ -7,16 +7,16 @@
 #
 # buster derivated
 - id: buster
+  distroLike: Debian
   family: debian
-  distro: Debian
   derivatives:
     - debbie # LMDE4
     - siena # Ufficiozero siena
 
 # bullseye derivated
 - id: bullseye
+  distroLike: Debian
   family: debian
-  distro: Debian
   derivatives:
     - desktop # Netrunner Desktop 23
     - elsie # LMDE5
@@ -24,8 +24,8 @@
 
 # bookworm derivated
 - id: bookworm
+  distroLike: Debian
   family: debian
-  distro: Debian
   derivatives:
     - kali-rolling # kali
     - faye # LMDE 6
@@ -37,26 +37,25 @@
 #
 # beowulf derivated
 - id: beowulf
+  distroLike: Devuan
   family: debian
-  distro: Devuan
   derivatives:
     - roma # Ufficiozero roma
 
 # daedalus derivated
 - id: daedalus
+  distroLike: Devuan
   family: debian
-  distro: Devuan
   derivatives:
     - daedalus-ceres # "daedalus ceres"
-    # -"daedalus ceres" # NOTE: this not working, edit /etc/os-release
 
 #
 # UBUNTU
 #
 # bionic derivated
 - id: bionic
+  distroLike: Ubuntu
   family: debian
-  distro: Ubuntu
   derivatives:
     - hera # Elementary hera
     - tara # Linux Mint
@@ -67,15 +66,15 @@
 
 # focal derivated
 - id: focal
+  distroLike: Ubuntu
   family: debian
-  distro: Ubuntu
   derivatives:
     - tropea # UfficioZero tropea
 
 # jammy derivated
 - id: jammy
+  distroLike: Ubuntu
   family: debian
-  distro: Ubuntu
   derivatives:
     - horus # elementary OS 7 Horus
     - jolnir # Elementary jolnir
@@ -89,8 +88,8 @@
     - victoria # Linux Mint
 
 - id: devel
+  distroLike: Ubuntu
   family: debian
-  distro: Ubuntu
   derivatives:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
@@ -99,8 +98,8 @@
 # ARCH
 #
 - id: rolling
+  distroLike: Arch
   family: archlinux
-  distro: Arch
   derivatives:
     - ArcoLinux
     - Crystal
@@ -113,8 +112,8 @@
 # GARUDA
 #
 - id: Raptor
+  distroLike: Garuda
   family: archlinux
-  distro: Garuda
   derivatives: 
     - Raptor
 
@@ -122,38 +121,38 @@
 # MANJARO
 #
 - id: Qonos
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - Qonos
 
 - id: Ruah
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - Ruah
   
 - id: Sikaris
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - Sikaris
 
 - id: Talos
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - Talos
 
 - id: UltimaThule
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - UltimaThule
 
 - id: Uranos
+  distroLike: ManjaroLinux
   family: archlinux
-  distro: ManjaroLinux
   derivatives: 
     - Uranos
 

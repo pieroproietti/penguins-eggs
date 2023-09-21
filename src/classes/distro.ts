@@ -279,9 +279,9 @@ class Distro implements IDistro {
          * find in ./conf/derivaties
          */
         interface IDistros {
-          id: string,
+          id: string, // codenameId
+          distroLike: string,
           family: string,
-          distro: string,
           derivatives: string[]
         }
 
@@ -301,7 +301,7 @@ class Distro implements IDistro {
             for (let n = 0; n < distro.derivatives.length; n++) {
               if (this.codenameId === distro.derivatives[n]) {
                 found = true
-                this.distroLike = distro.distro
+                this.distroLike = distro.distroLike
                 this.codenameLikeId = distro.id
                 this.familyId = distro.family
               }
@@ -359,10 +359,10 @@ class Distro implements IDistro {
      * Garuda
      */
     if (this.distroId === 'Garuda') {
-      // this.familyId = 'archlinux'
-      // this.distroLike = 'Arch'
-      // this.codenameId = 'rolling'
-      // this.codenameLikeId = 'rolling'
+      this.familyId = 'archlinux'
+      this.distroLike = 'Arch'
+      this.codenameId = 'rolling'
+      this.codenameLikeId = 'rolling'
       this.liveMediumPath = '/run/archiso/bootmnt/'
       this.squashfs = `arch/x86_64/airootfs.sfs`
     }
@@ -372,6 +372,9 @@ class Distro implements IDistro {
      * ManjaroLinux
      */
     if (this.distroId === 'ManjaroLinux') {
+      this.familyId = 'archlinux'
+      this.distroLike = 'Arch'
+      this.codenameLikeId = 'rolling'
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
