@@ -294,14 +294,15 @@ class Distro implements IDistro {
 
         const content = fs.readFileSync(file, 'utf8')
         const distros = yaml.load(content) as IDistros[]
-        console.log(distros)
         for (const distro of distros) {
-          for (let n = 0; n < distro.derivatives.length; n++) {
-            if (this.codenameId === distro.derivatives[n]) {
-              found = true
-              this.distroLike = distro.distro
-              this.codenameLikeId = distro.id
-              this.familyId = distro.family
+          if (distro.derivatives !== undefined) {
+            for (let n = 0; n < distro.derivatives.length; n++) {
+              if (this.codenameId === distro.derivatives[n]) {
+                found = true
+                this.distroLike = distro.distro
+                this.codenameLikeId = distro.id
+                this.familyId = distro.family
+              }
             }
           }
         }
