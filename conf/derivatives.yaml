@@ -115,23 +115,29 @@
 - id: Qonos
   family: archlinux
   distro: ManjaroLinux
+  derivatives: Qonos
 
 - id: Ruah
   family: archlinux
   distro: ManjaroLinux
+  derivatives: Ruah
   
 - id: Sikaris
   family: archlinux
   distro: ManjaroLinux
+  derivatives: Sikaris
 
 - id: Talos
   family: archlinux
   distro: ManjaroLinux
+  derivatives: Talos
 
 - id: UltimaThule
   family: archlinux
   distro: ManjaroLinux
+  derivatives: UltimaThule
 
 - id: Uranos
   family: archlinux
   distro: ManjaroLinux
+  derivatives: Uranos
