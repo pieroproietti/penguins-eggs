@@ -263,7 +263,7 @@ class Distro implements IDistro {
     case 'Talos':
     case 'UltimaThule':
     case 'Uranos': {
-      // Manjaro Linux
+      // ManjaroLinux
       this.familyId = 'archlinux'
       this.distroLike = 'Arch'
       this.codenameLikeId = 'rolling'
@@ -300,7 +300,6 @@ class Distro implements IDistro {
               found = true
               this.distroLike = distro.distro
               this.codenameLikeId = distro.id
-              //this.familyId = 'debian'
               this.familyId = distro.family
             }
           }
