@@ -7,6 +7,7 @@
 #
 # buster derivated
 - id: buster
+  family: debian
   distro: Debian
   derivatives:
     - debbie # LMDE4
@@ -14,6 +15,7 @@
 
 # bullseye derivated
 - id: bullseye
+  family: debian
   distro: Debian
   derivatives:
     - desktop # Netrunner Desktop 23
@@ -22,6 +24,7 @@
 
 # bookworm derivated
 - id: bookworm
+  family: debian
   distro: Debian
   derivatives:
     - kali-rolling # kali
@@ -34,12 +37,14 @@
 #
 # beowulf derivated
 - id: beowulf
+  family: debian
   distro: Devuan
   derivatives:
     - roma # Ufficiozero roma
 
 # daedalus derivated
 - id: daedalus
+  family: debian
   distro: Devuan
   derivatives:
     - daedalus-ceres # "daedalus ceres"
@@ -50,6 +55,7 @@
 #
 # bionic derivated
 - id: bionic
+  family: debian
   distro: Ubuntu
   derivatives:
     - hera # Elementary hera
@@ -61,12 +67,14 @@
 
 # focal derivated
 - id: focal
+  family: debian
   distro: Ubuntu
   derivatives:
     - tropea # UfficioZero tropea
 
 # jammy derivated
 - id: jammy
+  family: debian
   distro: Ubuntu
   derivatives:
     - horus # elementary OS 7 Horus
@@ -81,7 +89,49 @@
     - victoria # Linux Mint
 
 - id: devel
+  family: debian
   distro: Ubuntu
   derivatives:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
+
+#
+# ARCH
+#
+- id: rolling
+  family: archlinux
+  distro: Arch
+  derivatives:
+    - ArcoLinux
+    - Crystal
+    - EndeavourOS
+    - Garuda
+    - phyOS
+    - RebornOS
+
+#
+# MANJARO
+#
+- id: Qonos
+  family: archlinux
+  distro: ManjaroLinux
+
+- id: Ruah
+  family: archlinux
+  distro: ManjaroLinux
+  
+- id: Sikaris
+  family: archlinux
+  distro: ManjaroLinux
+
+- id: Talos
+  family: archlinux
+  distro: ManjaroLinux
+
+- id: UltimaThule
+  family: archlinux
+  distro: ManjaroLinux
+
+- id: Uranos
+  family: archlinux
+  distro: ManjaroLinux

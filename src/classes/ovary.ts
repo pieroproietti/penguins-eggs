@@ -732,6 +732,7 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       const volid = Utils.getVolid(this.settings.remix.name)
       if (
+        // ArchisoCompatibles
         distroId === 'Arch' ||
         distroId === 'ArcoLinux' ||
         distroId === 'blendOS' ||
@@ -787,6 +788,7 @@ export default class Ovary {
     const distroId = this.settings.distro.distroId
     let fileConf = 'archlinux'
     if (
+      // ArchisoCompatibles
       distroId === 'Arch' ||
       distroId === 'ArcoLinux' ||
       distroId === 'Crystal' ||

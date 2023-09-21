@@ -278,6 +278,7 @@ class Distro implements IDistro {
          */
         interface IDistros {
           id: string,
+          family: string,
           distro: string,
           derivatives: string[]
         }
@@ -299,7 +300,8 @@ class Distro implements IDistro {
               found = true
               this.distroLike = distro.distro
               this.codenameLikeId = distro.id
-              this.familyId = 'debian'
+              //this.familyId = 'debian'
+              this.familyId = distro.family
             }
           }
         }
