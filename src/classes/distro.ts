@@ -247,6 +247,7 @@ class Distro implements IDistro {
         break
       }
 
+      /*
       case 'Raptor': {
         // Garuda
         this.familyId = 'archlinux'
@@ -257,7 +258,6 @@ class Distro implements IDistro {
         break
       }
 
-      /*
       case 'Qonos':
       case 'Ruah':
       case 'Sikaris':
@@ -282,11 +282,11 @@ class Distro implements IDistro {
           id: string,
           family: string,
           distro: string,
-          derivatives: string [] 
+          derivatives: string[]
         }
 
         /**
-         * patch per Roy
+         * patch per Roy VERIFICARE
          */
         let found = false
         let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
@@ -308,15 +308,6 @@ class Distro implements IDistro {
             }
           }
         }
-
-        /**
-         * correzione path Manjaro
-         */
-        if (this.distroId === 'ManjaroLinux') {
-          this.liveMediumPath = '/run/miso/bootmnt/'
-          this.squashfs = 'manjaro/x86_64/livefs.sfs'
-        }
-
 
         if (!found) {
           console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
@@ -364,8 +355,29 @@ class Distro implements IDistro {
     }
 
     /**
-     * Special cases...
+     * Special cases
      */
+
+    /**
+     * Garuda
+     */
+    if (this.distroId === 'Garuda') {
+      // this.familyId = 'archlinux'
+      // this.distroLike = 'Arch'
+      // this.codenameId = 'rolling'
+      // this.codenameLikeId = 'rolling'
+      this.liveMediumPath = '/run/archiso/bootmnt/'
+      this.squashfs = `arch/x86_64/airootfs.sfs`
+    }
+
+
+    /**
+     * ManjaroLinux
+     */
+    if (this.distroId === 'ManjaroLinux') {
+      this.liveMediumPath = '/run/miso/bootmnt/'
+      this.squashfs = 'manjaro/x86_64/livefs.sfs'
+    }
 
     /**
      * MX LINUX
