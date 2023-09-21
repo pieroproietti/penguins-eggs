@@ -17,6 +17,9 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.5.26
+I am taking distribution recognition out of the code, from the `distro.ts` class to the `derivatives.yaml` configuration file.
+
 # eggs-9.5.25
 we have another catch in the hunting bag: [ArcoLinux](https://arcolinux.com/). 
 
