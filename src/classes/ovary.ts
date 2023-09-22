@@ -1983,19 +1983,18 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
 function isArchiso(distro: string): boolean {
   let found = false
 
-  const distros = [
-    'ArcoLinux',
-    'blendOS', // blendOS
-    'EndeavourOS',
-    'Garuda',
-    'phyOS',
-    'RebornOS'
-  ]
+  let file = path.resolve(__dirname, '../../conf/archiso.yaml')
+  if (fs.existsSync('/etc/penguins-eggs.d/archiso.yaml')) {
+    file = '/etc/penguins-eggs.d/archiso.yaml'
+  }
 
+  const content = fs.readFileSync(file, 'utf8')
+  const distros = yaml.load(content) as string []
   for (const current of distros) {
     if (current === distro) {
       found = true
     }
   }
+
   return found
 }
