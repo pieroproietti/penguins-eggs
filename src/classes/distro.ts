@@ -247,33 +247,6 @@ class Distro implements IDistro {
         break
       }
 
-      /*
-      case 'Raptor': {
-        // Garuda
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/archiso/bootmnt/'
-        this.squashfs = `arch/x86_64/airootfs.sfs`
-        break
-      }
-
-      case 'Qonos':
-      case 'Ruah':
-      case 'Sikaris':
-      case 'Talos':
-      case 'UltimaThule':
-      case 'Uranos': {
-        // ManjaroLinux
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/miso/bootmnt/'
-        this.squashfs = 'manjaro/x86_64/livefs.sfs'
-        break
-      }
-      */
-
       default: {
         /**
          * find in ./conf/derivaties
@@ -282,7 +255,7 @@ class Distro implements IDistro {
           id: string, // codenameId
           distroLike: string,
           family: string,
-          derivatives: string[]
+          ids: string[]
         }
 
         /**
@@ -297,9 +270,9 @@ class Distro implements IDistro {
         const content = fs.readFileSync(file, 'utf8')
         const distros = yaml.load(content) as IDistros[]
         for (const distro of distros) {
-          if (distro.derivatives !== undefined) {
-            for (let n = 0; n < distro.derivatives.length; n++) {
-              if (this.codenameId === distro.derivatives[n]) {
+          if (distro.ids !== undefined) {
+            for (let n = 0; n < distro.ids.length; n++) {
+              if (this.codenameId === distro.ids[n]) {
                 found = true
                 this.distroLike = distro.distroLike
                 this.codenameLikeId = distro.id
@@ -356,6 +329,23 @@ class Distro implements IDistro {
     } // Fine analisi codenameIS
 
     /**
+     * STRANI CASI: Debian
+     */
+
+    /**
+     * MX LINUX
+     * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
+     */
+    if (fs.existsSync('/etc/antix-version')) {
+      this.distroId = 'MX'
+    }
+
+
+    /**
+     * STRANI CASI: Arch
+     */
+
+    /**
      * Garuda
      */
     if (this.distroId === 'Garuda') {
@@ -366,7 +356,6 @@ class Distro implements IDistro {
       this.liveMediumPath = '/run/archiso/bootmnt/'
       this.squashfs = `arch/x86_64/airootfs.sfs`
     }
-
 
     /**
      * ManjaroLinux
@@ -379,13 +368,6 @@ class Distro implements IDistro {
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
 
-    /**
-     * MX LINUX
-     * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
-     */
-    if (fs.existsSync('/etc/antix-version')) {
-      this.distroId = 'MX'
-    }
   }
 }
 
