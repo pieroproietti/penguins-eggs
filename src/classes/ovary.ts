@@ -731,16 +731,7 @@ export default class Ovary {
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
       const volid = Utils.getVolid(this.settings.remix.name)
-      if (
-        // ArchisoCompatibles
-        distroId === 'Arch' ||
-        distroId === 'ArcoLinux' ||
-        distroId === 'blendOS' ||
-        distroId === 'EndeavourOS' ||
-        distroId === 'Garuda' ||
-        distroId === 'phyOS' ||
-        distroId === 'RebornOS'
-      ) {
+      if (isArchiso(distroId)) {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       } else if (distroId === 'ManjaroLinux') {
         kp += ` misobasedir=manjaro misolabel=${volid}`
@@ -781,30 +772,12 @@ export default class Ovary {
       console.log('Ovary: initrdCreate')
     }
 
-
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
     const distroId = this.settings.distro.distroId
-    let fileConf = 'archlinux'
-    if (
-      // ArchisoCompatibles
-      distroId === 'Arch' ||
-      distroId === 'ArcoLinux' ||
-      distroId === 'Crystal' ||
-      distroId === 'EndeavourOS' ||
-      distroId === 'Garuda' ||
-      distroId === 'phyOS' ||
-      distroId === 'RebornOS'
-    ) {
-      /**
-       * Arch, EndeavoursOS and RebornOS use arch
-       */
-      fileConf = 'arch'
-    } else {
-      /**
-       * blendOS and ManjaroLinux have is own mkinitcpio
-       */
+    let fileConf = 'arch'
+    if (!isArchiso(distroId)) {
       fileConf = distroId.toLowerCase()
     }
     let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
@@ -2002,4 +1975,27 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
     }
   }
   return cmd
+}
+
+/**
+ * ManjaroLinux Not isArchiso
+ */
+function isArchiso(distro: string): boolean {
+  let found = false
+
+  const distros = [
+    'ArcoLinux',
+    'BlendOS',
+    'EndeavourOS',
+    'Garuda',
+    'phyOS',
+    'RebornOS'
+  ]
+
+  for (const current of distros) {
+    if (current === distro) {
+      found = true
+    }
+  }
+  return found
 }

@@ -12,7 +12,8 @@ import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
-const inquirer = require('inquirer') 
+import yaml from 'js-yaml'
+const inquirer = require('inquirer')
 import chalk from 'chalk'
 import Pacman from './pacman'
 import { ChildProcess, spawnSync } from 'child_process'
@@ -131,7 +132,7 @@ export default class Utils {
          console.log(vmlinuz + ' not exists!')
          process.exit()
       }
-      
+
       return vmlinuz
    }
 
@@ -260,7 +261,7 @@ export default class Utils {
          let nIsos = 0
          for (const f of files) {
             if (f.endsWith('.iso')) {
-               nIsos ++
+               nIsos++
             }
          }
          return nIsos
