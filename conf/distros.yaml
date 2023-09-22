@@ -1,0 +1,73 @@
+# distros.yaml
+---
+- family: debian
+  - distro: Debian
+    - id: buster
+      ids:
+        - debbie # LMDE4
+        - siena # Ufficiozero siena
+    - id: bullseye
+      ids:
+        - desktop # Netrunner Desktop 23
+        - elsie # LMDE5
+        - filadelfia, # SysLinuxOS filadelfia
+    - id: bookworm
+      ids:
+        - kali-rolling # kali
+        - faye # LMDE 6
+        - Sparky # SparkyLinux 7
+        - ara # Parrot ara
+  - distro: Devuan
+    - id: beowulf
+      ids:
+        - roma # Ufficiozero roma
+    - id: daedalus
+      ids:
+        - daedalus-ceres # "daedalus ceres"
+  - distro: Ubuntu
+    - id: bionic
+      ids:
+        - hera # Elementary hera
+        - tara # Linux Mint
+        - tessa # Linux Mint
+        - tina # Linux Mint
+        - tricia # Linux Mint
+        - vieste # Ufficiozero vieste
+    - id: focal
+      ids:
+        - tropea # UfficioZero tropea
+    - id: jammy
+      ids:
+        - horus # elementary OS 7 Horus
+        - jolnir # Elementary jolnir
+        - ShiFt # Makululu
+        - ulyana # Linux Mint
+        - ulyssa # Linux Mint
+        - uma # Linux Mint
+        - una # Linux Mint
+        - vanessa # Linux Mint
+        - vera # Linux Mint
+        - victoria # Linux Mint
+    - id: devel
+      ids:
+        - devel # Rhino
+        - lunar # Ubuntu lunar 23.04
+- family: archlinux
+  - distroId: Arch
+    - id: rolling
+      ids: 
+        - Raptor # Garuda Raptor
+        - Qonos # Manjaro 
+        - Ruah # Manjaro 
+        - Raptor # Manjaro 
+        - Sikaris # Manjaro 
+        - Talos # Manjaro 
+        - UltimaThule # Manjaro 
+        - Uranos # Manjaro 
+    distros:
+        - ArcoLinux
+        - Crystal
+        - EndeavourOS
+        - Garuda
+        - phyOS
+        - RebornOS

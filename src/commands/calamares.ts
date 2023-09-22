@@ -98,7 +98,7 @@ export default class Calamares extends Command {
            * Install
            */
           if (install) {
-            Utils.warning('Installing calamares...')
+            Utils.warning('Installing calamares')
             await Pacman.calamaresInstall()
             if (await this.settings.load()) {
               this.settings.config.force_installer = true
@@ -111,7 +111,7 @@ export default class Calamares extends Command {
            * Configure
            */
           if (await this.settings.load()) {
-            Utils.warning('Configuring installer')
+            Utils.warning('Configuring calamares')
             await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
             const isClone = false
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
@@ -122,6 +122,7 @@ export default class Calamares extends Command {
            * policies
            */
           if (policies) {
+            Utils.warning('Configuring policies')
             await Pacman.calamaresPolicies()
           }
         }

@@ -5,25 +5,26 @@
 #
 # DEBIAN
 #
-# buster derivated
 - id: buster
-  distro: Debian
-  derivatives:
+  distroLike: Debian
+  family: debian
+  ids:
     - debbie # LMDE4
     - siena # Ufficiozero siena
 
-# bullseye derivated
 - id: bullseye
-  distro: Debian
-  derivatives:
+  distroLike: Debian
+  family: debian
+  ids:
     - desktop # Netrunner Desktop 23
     - elsie # LMDE5
     - filadelfia, # SysLinuxOS filadelfia
 
 # bookworm derivated
 - id: bookworm
-  distro: Debian
-  derivatives:
+  distroLike: Debian
+  family: debian
+  ids:
     - kali-rolling # kali
     - faye # LMDE 6
     - Sparky # SparkyLinux 7
@@ -34,24 +35,26 @@
 #
 # beowulf derivated
 - id: beowulf
-  distro: Devuan
-  derivatives:
+  distroLike: Devuan
+  family: debian
+  ids:
     - roma # Ufficiozero roma
 
 # daedalus derivated
 - id: daedalus
-  distro: Devuan
-  derivatives:
+  distroLike: Devuan
+  family: debian
+  ids:
     - daedalus-ceres # "daedalus ceres"
-    # -"daedalus ceres" # NOTE: this not working, edit /etc/os-release
 
 #
 # UBUNTU
 #
 # bionic derivated
 - id: bionic
-  distro: Ubuntu
-  derivatives:
+  distroLike: Ubuntu
+  family: debian
+  ids:
     - hera # Elementary hera
     - tara # Linux Mint
     - tessa # Linux Mint
@@ -61,14 +64,16 @@
 
 # focal derivated
 - id: focal
-  distro: Ubuntu
-  derivatives:
+  distroLike: Ubuntu
+  family: debian
+  ids:
     - tropea # UfficioZero tropea
 
 # jammy derivated
 - id: jammy
-  distro: Ubuntu
-  derivatives:
+  distroLike: Ubuntu
+  family: debian
+  ids:
     - horus # elementary OS 7 Horus
     - jolnir # Elementary jolnir
     - ShiFt # Makululu
@@ -81,7 +86,24 @@
     - victoria # Linux Mint
 
 - id: devel
-  distro: Ubuntu
+  distroLike: Ubuntu
+  family: debian
   derivatives:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
+
+#
+# ARCH
+#
+- id: rolling
+  distroLike: Arch
+  family: archlinux
+  ids:
+    - Raptor # Garuda Raptor
+    - Qonos # Manjaro 
+    - Ruah # Manjaro 
+    - Raptor # Manjaro 
+    - Sikaris # Manjaro 
+    - Talos # Manjaro 
+    - UltimaThule # Manjaro 
+    - Uranos # Manjaro 
