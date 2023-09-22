@@ -329,7 +329,7 @@ class Distro implements IDistro {
     } // Fine analisi codenameIS
 
     /**
-     * STRANI CASI: Debian
+     * STRANI CASI: Debian/Arch
      */
 
     /**
@@ -341,23 +341,7 @@ class Distro implements IDistro {
     }
 
 
-    /**
-     * STRANI CASI: Arch
-     */
-
-    /**
-     * Garuda
-     */
-    // if (this.distroId === 'Garuda') {
-      // this.familyId = 'archlinux'
-      // this.distroLike = 'Arch'
-      // this.codenameId = 'rolling'
-      // this.codenameLikeId = 'rolling'
-      // this.liveMediumPath = '/run/archiso/bootmnt/'
-      // this.squashfs = `arch/x86_64/airootfs.sfs`
-    //}
-
-    /**
+   /**
      * ManjaroLinux
      */
     if (this.distroId === 'ManjaroLinux') {
