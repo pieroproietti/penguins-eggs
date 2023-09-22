@@ -1985,7 +1985,7 @@ function isArchiso(distro: string): boolean {
 
   const distros = [
     'ArcoLinux',
-    'BlendOS',
+    'blendOS', // blendOS
     'EndeavourOS',
     'Garuda',
     'phyOS',
