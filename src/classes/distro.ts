@@ -348,22 +348,19 @@ class Distro implements IDistro {
     /**
      * Garuda
      */
-    if (this.distroId === 'Garuda') {
-      this.familyId = 'archlinux'
-      this.distroLike = 'Arch'
-      this.codenameId = 'rolling'
-      this.codenameLikeId = 'rolling'
-      this.liveMediumPath = '/run/archiso/bootmnt/'
-      this.squashfs = `arch/x86_64/airootfs.sfs`
-    }
+    // if (this.distroId === 'Garuda') {
+      // this.familyId = 'archlinux'
+      // this.distroLike = 'Arch'
+      // this.codenameId = 'rolling'
+      // this.codenameLikeId = 'rolling'
+      // this.liveMediumPath = '/run/archiso/bootmnt/'
+      // this.squashfs = `arch/x86_64/airootfs.sfs`
+    //}
 
     /**
      * ManjaroLinux
      */
     if (this.distroId === 'ManjaroLinux') {
-      this.familyId = 'archlinux'
-      this.distroLike = 'Arch'
-      this.codenameLikeId = 'rolling'
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
