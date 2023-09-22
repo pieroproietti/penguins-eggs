@@ -18,7 +18,20 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.5.26
-I am taking distribution recognition out of the code, from the `distro.ts` class to the `derivatives.yaml` configuration file.
+I have been working on extending support for penguins-eggs compatibility regarding derivatives, in particular:
+* the file `derivatives.yaml` has been modified.
+* the file `archiso.yaml` was introduced.
+
+Additional distributions that are compatible with:
+
+* Debian (buster, bullseye, bookworm and trixie);
+* Devuan (beowulf, chimaera and daedalus);
+* Ubuntu (bionic, focal, jammy, devel);
+* Arch rolling
+ 
+can be added to `derivatives.yaml`
+
+In case of adding an Arch rolling compatible distribution, you must also include it in the file: `archiso.yaml`.
 
 # eggs-9.5.25
 we have another catch in the hunting bag: [ArcoLinux](https://arcolinux.com/). 
