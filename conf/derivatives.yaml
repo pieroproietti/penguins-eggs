@@ -99,6 +99,7 @@
   distroLike: Arch
   family: archlinux
   ids:
+    - n/a # Arch
     - Raptor # Garuda Raptor
     - Qonos # Manjaro 
     - Ruah # Manjaro 
