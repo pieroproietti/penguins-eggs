@@ -136,10 +136,10 @@ export default class Archlinux {
     const echo = Utils.setEcho(verbose)
     
     let calPKGs = [
-      'calamares', 
-      'calamares-git', 
+      'arco-calamares-git',
       'calamares-eggs', 
-      'arco-calamares-git'
+      'calamares-git', 
+      'calamares', 
     ]
     for(const calPKG of calPKGs){
       if (await this.packagePacmanAvailable(calPKG)) {
