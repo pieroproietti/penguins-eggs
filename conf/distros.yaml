@@ -1,4 +1,5 @@
 # distros.yaml
+# this is not used for now
 ---
 - family: debian
   - distro: Debian
