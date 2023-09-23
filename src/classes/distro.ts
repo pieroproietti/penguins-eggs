@@ -325,7 +325,7 @@ class Distro implements IDistro {
       }
 
       // No default
-      
+
     } // Fine analisi codenameIS
 
     /**
@@ -340,10 +340,9 @@ class Distro implements IDistro {
       this.distroId = 'MX'
     }
 
-
-   /**
-     * ManjaroLinux
-     */
+    /**
+      * ManjaroLinux
+      */
     if (this.distroId === 'ManjaroLinux') {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
