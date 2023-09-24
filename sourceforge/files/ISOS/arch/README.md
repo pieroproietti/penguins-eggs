@@ -21,7 +21,7 @@ penguins-eggs
 
 * **egg-of-arch-naked** Just the juice, without GUI. You can start here to build your revolution!
 * **egg-of-arch-colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
-* **egg-of-arch-btrfs-colibri** the same colibri, but on btrfs with timeshift and grub-btrfs.
+* **egg-of-arch-albatros** A light kde for developers you can easily start to improve eggs installing albatros.
 * **egg-of-arch-fringuello** using distrobox, fringuello is capable to produce eggs for Arch and Debian, more informations: [Alice in Wonderland
 ](https://penguins-eggs.net/blog/alice-in-wonderland).
 
@@ -29,19 +29,20 @@ penguins-eggs
 
 **naked** can be usefull to start everything: just add that you want, **colibri** is more a tool to hack with eggs than a real customization and perhaps can be used to test calamares too, **fringuello** is like colibri, with distrobox.
 
-NOTE: it is still possible to "dress" a naked configuration as colibri by running the following commands:
+NOTE: it is still possible to "dress" a naked configuration as colibri/albatros by running the following commands:
 
 * ```eggs wardrobe get```
 * ```sudo eggs wardrobe wear colibri```
 
-# Installing eggs and producing an ISO
+# Create a naked Arch starting with archiso
+Install a minimal configuration using the [traditional way](https://wiki.archlinux.org/title/installation_guide) or [archinstall](https://wiki.archlinux.org/title/archinstall) - personally I prefere archinstall - add packages: `git`, `lsb-release`, then reboot. 
 
-Lately I added this short [guide](https://github.com/pieroproietti/penguins-eggs/discussions/276#discussioncomment-6904971), feel free to comment.
+After booted, do:
 
-# Creating naked starting from archiso
+* `git clone https://github.com/pieroproietti/addaura`
+* `sudo addaura/addaura.sh`
 
-See [arch-naked](https://penguins--eggs-net.translate.goog/book/arch-naked?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en)
-
+Addaura will automatically add aur repository and penguins-eggs. 
 
 # Installing Arch Linux via PXE
 
