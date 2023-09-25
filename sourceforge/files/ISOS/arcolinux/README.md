@@ -21,12 +21,14 @@ penguins-eggs
 
 Remastering it will be an opportunity to get to know it better and follow Erik's courses, who is always very active.
 
-* **egg-of-arcolinux-xfce** (just a remaster of arcolinuxs-v23.09.03-x86_64.iso)
+Following are strange animals, where I used ArcoLinux as base in place of Arch, this is interesting to investigate that we can do!
 
-Following are strange animals, where I used ArcoLinux as base in place of common Arch, can be interesting to investigate that we can do!
-- **egg-of-arcolinux-naked** an arcolinuxd-v23.09.03-x86_64.iso remester
-* **egg-of-arcolinux-colibri** an arcolinuxd-v23.09.03-x86_64.iso remester dressed with colibri
-* **egg-of-arcolinux-colibri** an arcolinuxd-v23.09.03-x86_64.iso remester dressed with albatros
+- **egg-of-arcolinux-naked** just an arcolinuxd-v23.09.03-x86_64.iso remestered;
+* **egg-of-arcolinux-colibri** an arcolinuxd-v23.09.03-x86_64.iso remester dressed with colibri;
+
+This is a plain remaster of arcolinuxs-v23.09.03-x86_64.iso
+
+* **egg-of-arcolinux-xfce** 
 
 ![ArcoLinux](https://user-images.githubusercontent.com/958613/269377369-92211ec1-eee2-4301-91c6-eb64c52232a6.png)
 
