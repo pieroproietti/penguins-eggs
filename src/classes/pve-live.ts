@@ -72,7 +72,10 @@ export default class PveLive {
     // this.systemctl.start('pve-ha-lrm')
   }
 
+  /**
+   * 
+   */
   stop() {
-    this.systemctl.start('pve-live')
+    this.systemctl.stop('pve-live')
   }
 }
