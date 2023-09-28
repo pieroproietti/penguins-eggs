@@ -1275,7 +1275,9 @@ export default class Ovary {
        * creazione dei link in /usr/share/applications
        */
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
-
+      /**
+       * f=Scrivania/install-system.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}'
+       */
       let installerUrl = 'install-system.desktop'
       let installerIcon = 'install-system.sh'
       if (Pacman.calamaresExists()) {
