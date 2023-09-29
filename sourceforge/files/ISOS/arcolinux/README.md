@@ -23,12 +23,9 @@ Remastering it will be an opportunity to get to know it better and follow Erik's
 
 Following are strange animals, where I used ArcoLinux as base in place of Arch, this is interesting to investigate that we can do!
 
-- **egg-of-arcolinux-naked** just an arcolinuxd-v23.09.03-x86_64.iso remestered;
-* **egg-of-arcolinux-colibri** an arcolinuxd-v23.09.03-x86_64.iso remester dressed with colibri;
-
-This is a plain remaster of arcolinuxs-v23.09.03-x86_64.iso
-
-* **egg-of-arcolinux-xfce** 
+- **egg-of-arcolinux-naked** just an arcolinuxd-v23.10.01-x86_64.iso remestered;
+* **egg-of-arcolinux-colibri** an arcolinuxd-v23.10.01-x86_64.iso remester dressed with colibri (xfce + develop);
+* **egg-of-arcolinux-albatros** an arcolinuxd-v23.10.01-x86_64.iso remester dressed with albatros (plasma + develop);
 
 ![ArcoLinux](https://user-images.githubusercontent.com/958613/269377369-92211ec1-eee2-4301-91c6-eb64c52232a6.png)
 
