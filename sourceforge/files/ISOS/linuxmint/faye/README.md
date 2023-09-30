@@ -20,7 +20,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Linux Mint - faye
 
-* **egg-of-linuxmint-faye-cinnamon** - LMDE 5.0 (based on Debian bullseye), cinnamon
+* **egg-of-linuxmint-faye-cinnamon** 32bit - LMDE 5.0 (based on Debian bullseye), cinnamon
+* **egg-of-linuxmint-faye-cinnamon** 64bit - LMDE 5.0 (based on Debian bullseye), cinnamon
 
 # Installing LMDE 6.0 via PXE
 
