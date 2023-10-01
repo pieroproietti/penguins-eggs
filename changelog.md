@@ -17,6 +17,19 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+
+# eggs-9.5.26_i386
+This is a **great news**, I thought will be not possible, and initially I worked to restore eggs-8.17.17, but with more than same tricks, it is possible to get eggs x32, aligned with the x64 version. 
+
+This are the instructions to install it, I tested on LMDE6 x32:
+
+* download the package `eggs-9.5.26_i386.deb`
+* `sudo gdebi eggs_9.5.26_i386.deb`
+* `sudo rm /usr/lib/penguins-eggs/bin/node`
+* `sudo ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node`
+* `sudo eggs dad -d`
+
+
 # eggs-9.5.26
 I have been working on extending support for penguins-eggs compatibility regarding derivatives, in particular:
 * the file `derivatives.yaml` has been modified.

@@ -22,7 +22,9 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
 # Devuan daedalus
 
-## **naked** - just the juice, without GUI. You can start here to build your revolution!
+* **naked** - just the juice, without GUI. You can start here to build your revolution!
+*  **colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
+* **gnome** just a naked Devuan dressed with gnome, customize it!
 
 ## More informations:
 
