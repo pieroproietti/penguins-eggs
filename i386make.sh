@@ -1,6 +1,11 @@
 #!/bin/bash
+if [ "$EUID" -ne 0 ]; then 
+  echo "Please run as root: sudo ./i386make.sh 9.6.1"
+  exit
+fi
+
 FR="/home/artisan/penguins-eggs/perrisbrewery/workdir/"
-VER="9.6.1"
+VER=$1
 SRC="${FR}eggs_${VER}_amd64"
 DEST="${FR}eggs_${VER}_i386"
 rm -rf "DEST"
@@ -13,7 +18,7 @@ clear
 echo "Continue with following commands"
 echo ""
 echo "cd ${DEST}/usr/lib/penguins-eggs/bin"
-echo "sudo ln -s ../../../bin/node .node"
+echo "sudo ln -s ../../../bin/node ./node"
 echo "cd ${FR}"
 echo "sudo dpkg-deb --build eggs_${VER}_i386/"
 echo "eggs export deb -c"
