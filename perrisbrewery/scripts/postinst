@@ -71,12 +71,6 @@ case "$1" in
             cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
         fi
 
-        # i686 - remove original node and apply link
-        if [ $(uname -m) == "i686"; then
-            rm -f /usr/lib/penguins-eggs/bin/node
-            ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node 
-        fi
-
         eggs config --nointeractive
         echo "eggs was installed..." 
     ;;
