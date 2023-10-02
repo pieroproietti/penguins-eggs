@@ -121,7 +121,15 @@ Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti
 
 #### Using penguins-eggs-ppa (stable version)
 
-eggs have its repository ppa, You can use it, copy and paste in a terminal window the following two lines:
+You can use a little utility I wrote: `addaura`. Use it in this way:
+
+* `git clone https://github.com/pieroproietti/addaura`
+* `cd addaura`
+* `sudo ./addaura`
+
+On Debian, Devuan and Ubuntu addaura will add the ppa and install eggs.
+
+For derivatives of Debian, Devuan and Ubuntu, like Linuxmint, LMDE, etc, addaura will refuce to work but You can again copy and paste the following two lines in a terminal:
 
 ```
 curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
@@ -145,13 +153,13 @@ The development versions of penguins eggs and other PKGBUILDs are instead in my 
 ### Arch
 It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs`.
 
-You can use a little tool I wrote: `addaurs`. Use it in this way:
+You can use a little utility I wrote: `addaura`. Use it in this way:
 
 * `git clone https://github.com/pieroproietti/addaura`
-* `cd addauta`
+* `cd addaura`
 * `sudo ./addaura`
 
-Addaura will add AUR and install automatically penguins-eggs.
+Addaura will add AUR repository and install penguins-eggs.
 
 Of course you can also use yay: `yay penguins-eggs` or download the sources and run makepkg:
 
