@@ -18,7 +18,7 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-# # eggs-9.6.1
+# eggs-9.6.1
 Nicelly working on amd64 and i386 with the same - aligned - version. 
 
 No more differences for installation and usage beetwhen the two versions.
