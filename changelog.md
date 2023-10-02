@@ -15,20 +15,15 @@ penguins-eggs
 Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
 
-**NOTE on penguins-eggs i386**
-
-It was tested on Debian bookworm, Devuan daedalus, LMDE6. This are the instructions to install it:
-
-* download the package `eggs-9.5.26_i386.deb`
-* `sudo gdebi eggs_9.5.26_i386.deb`
-* `sudo rm /usr/lib/penguins-eggs/bin/node`
-* `sudo ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node`
-* `sudo eggs dad -d`
-
-
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# # eggs-9.6.1
+Nicelly working on amd64 and i386 with the same - aligned - version. 
+
+No more differences for installation and usage beetwhen the two versions.
+
+arm version is installable too and can run, but will not produce a regular ISO. If you are interested in support arm I need your help.
 
 # eggs-9.5.26_i386
 This is a **great news**, I thought will be not possible, and initially I worked to restore eggs-8.17.17, but with more than same tricks, it is possible to get eggs x32, aligned with the x64 version. 
