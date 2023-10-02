@@ -92,10 +92,14 @@ I added two built-in assistants with eggs: mom and dad. While mom is a script ba
 yolk - so called staying on the subject of eggs - is a local repository included in the livecd that contains a minimum of indispensable packages during installation. Thanks to yolk, you can safely install your system without the need of an active internet connection.
 
 # Packages
-Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages of eggs, while for Arch Linux and ManjaroLinux they use their PKGBUILDs.
+Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages for amd_64 and i386 architecture, while Arch and ManjaroLinux use their own PKGBUILDs.
 
 ## Debian families
-eggs is released as a deb package for amd64, armel and arm64 architectures. Because of eggs' features, they can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about version (buster, bullseye, bookworm, etc.) except for architecture. It includes standard scripts for preinst, postinst, prerm and postrm and man pages. 
+eggs is released as a deb package for amd64 and i386. It's released for armel architectures and its possible to add arm64 too, but I never had the occasion to try on this architectures and need help for them.
+
+Because of eggs' features, the packages can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about exact version (buster, bullseye, bookworm, trixie, chimaera, daedalus, bionic, focal and jammy) are reported to work, of course respect the processor architecture. 
+
+The packages includes standard scripts for preinst, postinst, prerm and postrm and man pages. 
 
 ### Install eggs
 There are more than a way to install eggs as .deb package, the most practical is to add and use penguins-eggs-ppa.
@@ -131,16 +135,23 @@ sudo apt update && sudo apt install eggs
 ```
 
 ### Upgrade eggs
-If you are using penguins-eggs-ppa You can ugrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_0.5.12_amd64.deb**.
-
+If you are using penguins-eggs-ppa You can upgrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.6.1_amd64.deb** or **gdebi eggs_9.6.1_i386.deb**.
 
 ## Arch families
 eggs has been present in [AUR](https://aur.archlinux.org/) for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
 
-The development versions of penguins eggs and other PKGBUILDs are instead in my [penguins-eggs-pkgbuilds](https://github.com/pieroproietti/penguins-eggs-pkgbuilds) repository.
+The development versions of penguins eggs and other PKGBUILDs are instead in my [eggs-pkgbuilds](https://github.com/pieroproietti/eggs-pkgbuilds) repository.
 
 ### Arch
 It's possible to install penguins-eggs from [AUR](https://aur.archlinux.org/packages/penguins-eggs) adding repo [Chaotic-AUR](https://aur.chaotic.cx/) and using `sudo pacman -Sy penguins-eggs`.
+
+You can use a little tool I wrote: `addaurs`. Use it in this way:
+
+* `git clone https://github.com/pieroproietti/addaura`
+* `cd addauta`
+* `sudo ./addaura`
+
+Addaura will add AUR and install automatically penguins-eggs.
 
 Of course you can also use yay: `yay penguins-eggs` or download the sources and run makepkg:
 
@@ -150,7 +161,9 @@ cd penguins-eggs
 makepkg -srcCi
 ```
 ### Manjaro
-From penguins-eggs v9.4.3 the package is part of the [Manjaro community](https://gitlab.manjaro.org/packages/community/penguins-eggs) repo and can be installed with `pamac install penguins-eggs`, alternatively you can download it and:
+From penguins-eggs v9.4.3 the package is part of the [Manjaro community](https://gitlab.manjaro.org/packages/community/penguins-eggs) repo and can be installed with `pamac install penguins-eggs`.
+
+Alternatively you can clone the package, and:
 ```
 git clone https://gitlab.manjaro.org/packages/community/penguins-eggs/
 cd penguins-eggs
