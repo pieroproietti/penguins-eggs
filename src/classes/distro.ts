@@ -309,6 +309,8 @@ class Distro implements IDistro {
         this.memdiskPath = '/usr/lib/syslinux/'
         if (process.arch === 'ia32') {
           this.usrLibPath = '/usr/lib/i386-linux-gnu/'
+        } else if (process.arch === 'arm64') {
+          this.usrLibPath = '/usr/lib/aarch64-linux-gnu/'
         }
 
         break
