@@ -17,8 +17,7 @@ rm -rf "DEST"
 rm -f "${SRC}*.deb"
 cp "${SRC}" "${DEST}" -R
 
-# remove isolinux, syslinux-common, syslinux
-sed -i 's/isolinux,//g' "${DEST}/DEBIAN/control"
+# remove syslinux-common, syslinux
 sed -i 's/syslinux-common,//g' "${DEST}/DEBIAN/control"
 sed -i 's/syslinux,//g' "${DEST}/DEBIAN/control"
 
