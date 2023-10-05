@@ -15,7 +15,7 @@ penguins-eggs
 Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
 # New architectures
-I'm building now for `arm64` architecture, the package install and create ISOs, but again is unable to boot. I'm cleaning and testing it. If you want to try and give suggestions, thanks!
+I'm building eggs for `arm64` architecture. The package install and create ISOs - on a VM `aarch64` installed with `debian-12.1.0-arm64-netinst.iso` - however the resulting ISO is unable to boot. If you want to try and give suggestions, thanks!
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 

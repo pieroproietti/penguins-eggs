@@ -346,7 +346,8 @@ unknown target format aarch64-efi
       } else if (process.arch === 'ia32') {
          arch = 'i386'
       } else if (process.arch === 'arm64') {
-         arch = 'arm64'
+         // arch = 'arm64'
+         arch = 'aarch64'
       } else if (process.arch === 'arm') {
          arch = 'armel'
       }
