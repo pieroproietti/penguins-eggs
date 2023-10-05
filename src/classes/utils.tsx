@@ -321,10 +321,12 @@ unknown target format aarch64-efi
       let machineUEFI = ''
       if (arch === 'amd64') {
          machineUEFI = 'x86_64-efi'
+      } else if (arch === 'arm64') {
+         machineUEFI = 'aarch64-efi'
       } else if (arch === 'armel') {
          machineUEFI = 'arm-efi'
-      }
-      if (Pacman.distro().familyId === 'fedora') {
+   }
+   if (Pacman.distro().familyId === 'fedora') {
          machineUEFI = 'i386-efi'
       } else if (Pacman.distro().familyId === 'suse') {
          machineUEFI = 'i386-efi'
