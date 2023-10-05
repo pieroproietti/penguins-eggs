@@ -287,9 +287,6 @@ export default class Utils {
 
    /**
     * machineArch
-    * arm-efi, arm64-efi,
-    * grub-mkimage -O aarch64-efi -m memdisk -o bootx64.efi -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-unknown target format aarch64-efi
     * @returns arch
     */
    static machineArch(): string {
@@ -298,61 +295,34 @@ unknown target format aarch64-efi
          arch = 'amd64'
       } else if (process.arch === 'ia32') {
          arch = 'i386'
-         // ma, se è installato node386 come in rasberry-desktop...
          if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
 
       } else if (process.arch === 'arm64') {
          arch = 'arm64'
-      } else if (process.arch === 'arm') {
-         arch = 'armel'
       }
       return arch
    }
 
    /**
-    * machineUEFI
-    * @returns machineArch
+    * i386-efi,
+    * x86_64-efi, 
+    * arm64-efi,
+    * riscv64-efi
     */
    static machineUEFI(): string {
-      // grub-mkimage vuole: i386-efi, x86_64-efi, arm-efi, arm64-efi,
-      let arch = this.machineArch()
-      let machineUEFI = ''
-      if (arch === 'amd64') {
-         machineUEFI = 'x86_64-efi'
-      } else if (arch === 'arm64') {
-         machineUEFI = 'aarch64-efi'
-      } else if (arch === 'armel') {
-         machineUEFI = 'arm-efi'
-   }
-   if (Pacman.distro().familyId === 'fedora') {
-         machineUEFI = 'i386-efi'
-      } else if (Pacman.distro().familyId === 'suse') {
-         machineUEFI = 'i386-efi'
-      }
-
-      return machineUEFI
-   }
-
-   /**
-    * eggsArch
-    * @returns
-    */
-   static eggsArch(): string {
-      let arch = ''
+      let efi =''
       if (process.arch === 'x64') {
-         arch = 'amd64'
+         efi = 'x86_64-efi'
       } else if (process.arch === 'ia32') {
-         arch = 'i386'
+         efi = ''
       } else if (process.arch === 'arm64') {
-         // arch = 'arm64'
-         arch = 'aarch64'
-      } else if (process.arch === 'arm') {
-         arch = 'armel'
+         efi = 'aarch64-efi'
       }
-      return arch
+      return efi
    }
+
 
    /**
     *
