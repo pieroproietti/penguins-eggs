@@ -1565,7 +1565,7 @@ export default class Ovary {
     process.chdir(currentDir)
 
     // make the grub image
-    let bootArchEfi = 'bootx32.efi'
+    let bootArchEfi = 'nothing.efi'
     if (process.arch === 'x64') {
       bootArchEfi = 'bootx64.efi'
     } else if (process.arch === 'arm') {
@@ -1578,8 +1578,8 @@ export default class Ovary {
     // -p, --prefix=DIR set prefix directory
     //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
     //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-    //                                   arm64-efi
-    await exec(`${grubName}-mkimage  -O "${Utils.machineArch()}-efi" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${bootArchEfi}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
+    //                                   arm64-efi 
+    await exec(`${grubName}-mkimage  -O "${Utils.machineUEFI()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${bootArchEfi}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
 
     // popd torna in efiWorkDir
 
@@ -1674,6 +1674,9 @@ export default class Ovary {
     * loopback.cfg
     */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
+
+    // console.log('end makeEfi')
+    // process.exit()
   }
 
   // #######################################################################################

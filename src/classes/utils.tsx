@@ -298,7 +298,6 @@ export default class Utils {
          if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
-
       } else if (process.arch === 'arm64') {
          arch = 'arm64'
       }
