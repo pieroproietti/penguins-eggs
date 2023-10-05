@@ -15,7 +15,7 @@ penguins-eggs
 Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
 # New architectures
-I'm building now for `arm64`, `armel` and `armhf` architectures, the packages must install - surely have problems - but we need to test. If you can try them, thanks!
+I'm building now for `arm64` architecture, the packages install and create ISO, I'm testing it. If you can try it, thanks!
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
