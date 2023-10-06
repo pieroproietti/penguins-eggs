@@ -311,15 +311,21 @@ export default class Utils {
     * arm64-efi,
     */
    static uefiFormat(): string {
-      let efi = ''
-      if (process.arch === 'ia32') {
-         efi = 'i386-efi'
-      } else if (process.arch === 'x64') {
-         efi = 'x86_64-efi'
-      } else if (process.arch === 'arm64') {
-         efi = 'arm64-efi'
-      }
-      return efi
+      return this.uefiArch() + '-efi'
+   }
+
+   /**
+    * 
+    * @returns 
+    */
+   static uefiBN() {
+    let bn = 'nothing.efi'
+    if (process.arch === 'x64') {
+      bn = 'bootx64.efi'
+    } else if (process.arch === 'arm') {
+      bn = 'bootaa64.efi'
+    }
+    return bn
    }
 
    /**
