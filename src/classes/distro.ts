@@ -12,6 +12,7 @@ import path from 'node:path'
 import shell from 'shelljs'
 import yaml from 'js-yaml'
 import { IRemix, IDistro } from '../interfaces/index'
+import Utils from './utils'
 
 /**
  * Classe
@@ -305,13 +306,8 @@ class Distro implements IDistro {
         this.isolinuxPath = '/usr/lib/ISOLINUX/'
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
         this.pxelinuxPath = '/usr/lib/PXELINUX/'
-        this.usrLibPath = '/usr/lib/x86_64-linux-gnu/'
         this.memdiskPath = '/usr/lib/syslinux/'
-        if (process.arch === 'ia32') {
-          this.usrLibPath = '/usr/lib/i386-linux-gnu/'
-        } else if (process.arch === 'arm64') {
-          this.usrLibPath = '/usr/lib/aarch64-linux-gnu/'
-        }
+        this.usrLibPath = Utils.usrLibPath()
 
         break
       }

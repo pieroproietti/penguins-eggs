@@ -317,10 +317,27 @@ export default class Utils {
       } else if (process.arch === 'x64') {
          efi = 'x86_64-efi'
       } else if (process.arch === 'arm64') {
-         //efi = 'aarch64-efi'
          efi = 'arm64-efi'
       }
       return efi
+   }
+
+   /**
+    * 
+    * @returns 
+    */
+   static usrLibPath() {
+      let path = ''
+      if (process.arch === 'ia32') {
+         path = 'i386-linux-gnu'
+      } else if (process.arch === 'x64') {
+         path = 'x86_64-linux-gnu'
+      } else if (process.arch === 'arm64') {
+         //efi = 'aarch64-efi'
+         path = 'aarch64-linux-gnu'
+      }
+
+      return path
    }
 
 
