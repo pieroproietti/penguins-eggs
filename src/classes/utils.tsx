@@ -311,7 +311,18 @@ export default class Utils {
     * arm64-efi,
     */
    static uefiFormat(): string {
-      return this.uefiArch() + '-efi'
+      let format = ''
+      if (process.arch === 'ia32') {
+         format = 'i386-efi'
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+            format = 'x86_64-efi'
+         }
+      } else if (process.arch === 'x64') {
+         format = 'x86_64-efi'
+      } else if (process.arch === 'arm64') {
+         format = 'arm64-efi'
+      }
+      return format
    }
 
    /**
