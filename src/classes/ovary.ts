@@ -1564,14 +1564,6 @@ export default class Ovary {
     await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
 
-    // make the grub image
-    let bootArchEfi = 'nothing.efi'
-    if (process.arch === 'x64') {
-      bootArchEfi = 'bootx64.efi'
-    } else if (process.arch === 'arm') {
-      bootArchEfi = 'bootaa64.efi'
-    }
-
     // -O, --format=FORMAT
     // -m --memdisk=FILE embed FILE as a memdisk image
     // -o, --output=FILE embed FILE as a memdisk image
@@ -1579,12 +1571,12 @@ export default class Ovary {
     //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
     //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
     //                                   arm64-efi 
-    await exec(`${grubName}-mkimage  -O "${Utils.uefiFormat()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${bootArchEfi}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
+    await exec(`${grubName}-mkimage  -O "${Utils.uefiFormat()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${Utils.uefiBN()}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
 
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${memdiskDir}/${bootArchEfi} ${efiWorkDir}efi/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}efi/boot`, this.echo)
 
     // #######################
 
@@ -1601,7 +1593,7 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
     // era cp -r
-    await exec(`cp ${memdiskDir}/${bootArchEfi} ${efiWorkDir}img-mnt/efi/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
     // #######################
 
