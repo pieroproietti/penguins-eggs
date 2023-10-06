@@ -24,6 +24,11 @@ If You want to try it, see if can be adapted to real hardware and give suggestio
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.2
+This is the first version, working and producing installable ISOs for the system on: amd64, i386 and arm64 architecture.
+
+To test on arm64 - just on Debian bookworm - I used a simple VM not real hardware, I'm not too expert of such architecture, but I hope can work on real hardware too, if it is compatible UEFI and grub.
+
 # eggs-9.6.1
 Nicelly working on amd64 and i386 with the same - aligned - version. 
 
