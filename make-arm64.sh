@@ -24,10 +24,10 @@ sed -i 's/syslinux,//g' "${DEST}/DEBIAN/control"
 sed -i 's/grub-efi-amd64-bin/nodejs/g' "${DEST}/DEBIAN/control"
 sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 
-
 rm -f "${DEST}/usr/lib/penguins-eggs/bin/node"
+
 clear
-echo "Continue with following commands"
+echo "cat and copy the following commands:"
 echo ""
 echo "cd ${DEST}/usr/lib/penguins-eggs/bin"
 echo "sudo ln -s ../../../bin/node ./node"
