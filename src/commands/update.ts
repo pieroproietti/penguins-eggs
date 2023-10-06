@@ -141,11 +141,11 @@ export default class Update extends Command {
     await Tu.loadSettings()
 
     Utils.warning('import from lan')
-    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.machineArch()}.deb /tmp`
+    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.uefiArch()}.deb /tmp`
     await exec(cmd, {echo: true, capture: true})
 
-    if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.machineArch()}.deb`)) {
-      await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.machineArch()}.deb`)
+    if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)) {
+      await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)
     }
   }
 

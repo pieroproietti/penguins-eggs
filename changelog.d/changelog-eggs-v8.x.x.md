@@ -158,7 +158,7 @@ This can impact in many cases becouse most configurations distros are just a dir
 * finished restucturation to include arm. Now we need two things: adapt krill installer to UEFI and finally make UEFI for arm. 
 
 ### eggs-8.0.5
-* added eggsArch and machineArch to respect rasberry-desktop-i386 but with kernel amd64
+* added eggsArch and uefiArch to respect rasberry-desktop-i386 but with kernel amd64
 
 ### eggs-8.0.4
 * added arm64 package and started test on arm64 and armel architectures.

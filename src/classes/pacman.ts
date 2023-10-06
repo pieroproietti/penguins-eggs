@@ -127,7 +127,7 @@ export default class Pacman {
   static isUefi(): boolean {
     let isUefi = false
     if (this.distro().familyId === 'debian') {
-      if (Utils.machineArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.machineArch() + '-bin')) {
+      if (Utils.uefiArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
         isUefi = true
       }
     } else if (Pacman.distro().familyId === 'fedora') {
@@ -369,7 +369,7 @@ export default class Pacman {
 
     if (!Pacman.isUefi()) {
       config.make_efi = false
-      console.log('Due the lacks of grub-efi-' + Utils.machineArch() + '-bin package set make_efi = false')
+      console.log('Due the lacks of grub-efi-' + Utils.uefiArch() + '-bin package set make_efi = false')
     }
 
     /**
