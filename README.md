@@ -95,7 +95,7 @@ yolk - so called staying on the subject of eggs - is a local repository included
 Supporting various distributions, we need to have different packages. Debian, Devuan and Ubuntu share the .deb packages for amd_64 and i386 architecture, while Arch and ManjaroLinux use their own PKGBUILDs.
 
 ## Debian families
-eggs is released as a deb package for amd64 and i386. It's released for armel architectures and its possible to add arm64 too, but I never had the occasion to try on this architectures and need help for them.
+eggs is released as a deb package for amd64, i386 and arm64 too.
 
 Because of eggs' features, the packages can be installed in Debian, Devuan, or Ubuntu-based distros without worrying about exact version (buster, bullseye, bookworm, trixie, chimaera, daedalus, bionic, focal and jammy) are reported to work, of course respect the processor architecture. 
 
@@ -109,12 +109,12 @@ There are more than a way to install eggs as .deb package, the most practical is
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.6.1_amd64.deb 
+sudo dpkg -i eggs_9.6.2_amd64.deb 
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_9.6.1_i386.deb
+sudo dpkg -i eggs_9.6.2_i386.deb
 ```
 
 Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) repository with the command: ```sudo eggs tools ppa --install```
@@ -143,7 +143,7 @@ sudo apt update && sudo apt install eggs
 ```
 
 ### Upgrade eggs
-If you are using penguins-eggs-ppa You can upgrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.6.1_amd64.deb** or **gdebi eggs_9.6.1_i386.deb**.
+If you are using penguins-eggs-ppa You can upgrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.6.2_amd64.deb** or **gdebi eggs_9.6.2_i386.deb**.
 
 ## Arch families
 eggs has been present in [AUR](https://aur.archlinux.org/) for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
