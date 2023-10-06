@@ -36,7 +36,7 @@ export default async function bootloaderConfigUbuntu(this: Sequence) {
   const aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
   if (this.efi) {
     try {
-      cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.machineArch()} --allow-unauthenticated ${this.toNull}`
+      cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.uefiArch()} --allow-unauthenticated ${this.toNull}`
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(error)

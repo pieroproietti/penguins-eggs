@@ -31,8 +31,8 @@ export default class Yolk {
     this.echo = Utils.setEcho(verbose)
     Utils.warning("Creating a local repo on /var/local/yolk")
 
-    if (Utils.machineArch() !== 'amd64') {
-      Utils.warning(`yolk is not applicable on the architecture ${Utils.machineArch()}`)
+    if (Utils.uefiArch() !== 'amd64') {
+      Utils.warning(`yolk is not applicable on the architecture ${Utils.uefiArch()}`)
     } else {
       Utils.warning('Updating system')
       if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
@@ -84,7 +84,7 @@ export default class Yolk {
 
       // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
       const now = shx.exec('date -R -u').stdout.trim()
-      const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.machineArch()} \nDate: ${now}\n`
+      const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.uefiArch()} \nDate: ${now}\n`
       Utils.warning('Writing Release')
       fs.writeFileSync('Release', content)
 

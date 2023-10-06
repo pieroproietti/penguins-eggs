@@ -307,7 +307,7 @@ class Distro implements IDistro {
         this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
         this.pxelinuxPath = '/usr/lib/PXELINUX/'
         this.memdiskPath = '/usr/lib/syslinux/'
-        this.usrLibPath = Utils.usrLibPath()
+        this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
 
         break
       }

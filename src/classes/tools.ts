@@ -71,7 +71,7 @@ export default class Tools {
       if (prefix.endsWith('rolling-')) {
         prefix = prefix.substring(0, prefix.indexOf('rolling-'))
       }
-      this.snapshot_name = prefix + settings.config.snapshot_basename + '_' // + Utils.machineArch() + '_'
+      this.snapshot_name = prefix + settings.config.snapshot_basename + '_' // + Utils.uefiArch() + '_'
       
     } else {
       console.log(`Can't find: ${this.tools_yaml}`)

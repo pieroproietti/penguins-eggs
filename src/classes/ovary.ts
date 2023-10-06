@@ -340,7 +340,7 @@ export default class Ovary {
      * Creo le directory di destinazione per boot, efi, isolinux e live
      */
     if (!fs.existsSync(this.settings.iso_work)) {
-      cmd = `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.machineUEFI()}`
+      cmd = `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}`
       this.tryCatch(cmd)
 
       cmd = `mkdir -p ${this.settings.iso_work}efi/boot`
@@ -1487,7 +1487,7 @@ export default class Ovary {
     let text = ''
     text += 'search --file --set=root /.disk/info\n'
     text += 'set prefix=($root)/boot/grub\n'
-    text += `source $prefix/${Utils.machineUEFI()}/grub.cfg\n`
+    text += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
     Utils.write(grubCfg, text)
 
     // #################################
@@ -1503,7 +1503,7 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
-    await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.machineUEFI()}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
     await exec(`mkdir ${efiWorkDir}efi`, this.echo)
     await exec(`mkdir ${efiWorkDir}efi/boot`, this.echo)
 
@@ -1543,12 +1543,12 @@ export default class Ovary {
      * second grub.cfg file in efiWork
      */
     //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
-    let cmd = `for i in $(ls /usr/lib/grub/${Utils.machineUEFI()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg; done`
+    let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
     await exec(cmd, this.echo)
-    //cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
-    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg ; done`
+    //cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
+    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
     await exec(cmd, this.echo)
-    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/grub.cfg`, this.echo)
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
 
     /**
      * andiamo in memdiskDir
@@ -1579,7 +1579,7 @@ export default class Ovary {
     //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
     //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
     //                                   arm64-efi 
-    await exec(`${grubName}-mkimage  -O "${Utils.machineUEFI()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${bootArchEfi}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
+    await exec(`${grubName}-mkimage  -O "${Utils.uefiFormat()}" -m "${memdiskDir}/memdisk" -o "${memdiskDir}/${bootArchEfi}" -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
 
     // popd torna in efiWorkDir
 
@@ -1606,7 +1606,7 @@ export default class Ovary {
     // #######################
 
     // copy modules and font
-    await exec(`cp -r /usr/lib/grub/${Utils.machineUEFI()}/* ${efiWorkDir}boot/grub/${Utils.machineUEFI()}/`, this.echo)
+    await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
     // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr

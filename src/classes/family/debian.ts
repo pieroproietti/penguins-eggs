@@ -64,7 +64,7 @@ export default class Debian {
       }
     }
 
-    const arch = Utils.machineArch()
+    const arch = Utils.uefiArch()
     for (const dep of depArch) {
       if (dep.arch.includes(arch)) {
         if (!this.packageIsInstalled(dep.package)) {

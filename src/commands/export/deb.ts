@@ -37,7 +37,7 @@ export default class ExportDeb extends Command {
     const echo = Utils.setEcho(flags.verbose)
 
     let script = ''
-    let arch = Utils.machineArch()
+    let arch = Utils.uefiArch()
     if (flags.all) {
       arch = '*'
     }

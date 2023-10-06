@@ -286,10 +286,10 @@ export default class Utils {
    }
 
    /**
-    * machineArch
+    * uefiArch
     * @returns arch
     */
-   static machineArch(): string {
+   static uefiArch(): string {
       let arch = ''
       if (process.arch === 'ia32') {
          arch = 'i386'
@@ -310,7 +310,7 @@ export default class Utils {
     * x86_64-efi, 
     * arm64-efi,
     */
-   static machineUEFI(): string {
+   static uefiFormat(): string {
       let efi = ''
       if (process.arch === 'ia32') {
          efi = 'i386-efi'
@@ -328,15 +328,11 @@ export default class Utils {
     */
    static usrLibPath() {
       let path = ''
-      if (process.arch === 'ia32') {
-         path = 'i386-linux-gnu'
-      } else if (process.arch === 'x64') {
+      if (process.arch === 'x64') {
          path = 'x86_64-linux-gnu'
       } else if (process.arch === 'arm64') {
-         //efi = 'aarch64-efi'
          path = 'aarch64-linux-gnu'
       }
-
       return path
    }
 
@@ -376,7 +372,7 @@ export default class Utils {
     * @returns eggName
     */
    static getPostfix(): string {
-      let postfix = '_' + this.machineArch() + '_' + Utils.formatDate(new Date()) + '.iso'
+      let postfix = '_' + this.uefiArch() + '_' + Utils.formatDate(new Date()) + '.iso'
       return postfix
    }
 
