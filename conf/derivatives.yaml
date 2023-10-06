@@ -88,6 +88,8 @@
 - id: devel
   distroLike: Ubuntu
   family: debian
+  ids:
+    - lunar
   derivatives:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
