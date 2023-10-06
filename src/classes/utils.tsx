@@ -291,13 +291,14 @@ export default class Utils {
     */
    static machineArch(): string {
       let arch = ''
-      if (process.arch === 'x64') {
-         arch = 'amd64'
-      } else if (process.arch === 'ia32') {
+      if (process.arch === 'ia32') {
          arch = 'i386'
+         // 
          if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
+      } else if (process.arch === 'x64') {
+         arch = 'amd64'
       } else if (process.arch === 'arm64') {
          arch = 'arm64'
       }
@@ -308,16 +309,16 @@ export default class Utils {
     * i386-efi,
     * x86_64-efi, 
     * arm64-efi,
-    * riscv64-efi
     */
    static machineUEFI(): string {
-      let efi =''
-      if (process.arch === 'x64') {
+      let efi = ''
+      if (process.arch === 'ia32') {
+         efi = 'i386-efi'
+      } else if (process.arch === 'x64') {
          efi = 'x86_64-efi'
-      } else if (process.arch === 'ia32') {
-         efi = ''
       } else if (process.arch === 'arm64') {
-         efi = 'aarch64-efi'
+         //efi = 'aarch64-efi'
+         efi = 'arm64-efi'
       }
       return efi
    }
