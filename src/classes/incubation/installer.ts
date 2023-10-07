@@ -28,11 +28,11 @@ export function installer(): IInstaller {
   if (Pacman.calamaresExists()) {
     installer.name = 'calamares'
     installer.configRoot = '/etc/calamares/'
-    installer.multiarch = multiarch() + 'calamares/'
+    installer.multiarch = Pacman.distro().usrLibPath + '/calamares/'
   } else {
     installer.name = 'krill'
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
-    installer.multiarch = multiarch() + 'krill/' 
+    installer.multiarch = Pacman.distro().usrLibPath + '/krill/' 
   }
 
   installer.modules = installer.configRoot + 'modules/'
@@ -58,12 +58,4 @@ export function installer(): IInstaller {
   }
 
   return installer
-}
-
-/**
- *
- * @returns
- */
-function multiarch(): string {
-  return Pacman.distro().usrLibPath
 }
