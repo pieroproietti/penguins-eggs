@@ -64,10 +64,8 @@ export default class Compressors {
   max(): string {
     const comp = 'xz -b 256K -Xbcj '
     const filter = 'x86'
-    if (process.arch === 'arm') {
-      const filter = 'ARM' // to check
-    } else if (process.arch === 'arm64') {
-      const filter = 'ARM64' // to check
+    if (process.arch === 'arm64') {
+      const filter = 'arm64'
     }
 
     return comp + filter
