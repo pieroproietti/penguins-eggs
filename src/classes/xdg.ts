@@ -295,7 +295,13 @@ export default class Xdg {
     }
 
     // Manuel Senpai suggestion
-    await exec(`grep -IE -r /etc/skel -e ${user}`)
+    // await exec(`grep -IE -r /etc/skel -e ${user}`)
+    if (fs.existsSync('/etc/skel/.local/share/recently-used.xbel')) {
+      await exec(`rm -r /etc/skel/.local/share/recently-used.xbel`)
+    }
+    if (fs.existsSync('/etc/skel/.config/xfce4/desktop/')) {
+      await exec(`rm -rf /etc/skel/.config/xfce4/desktop/`)
+    }
     
   }
 }
