@@ -65,7 +65,7 @@ export default class Compressors {
     const comp = 'xz -b 256K -Xbcj '
     let filter = 'x86'
     if (process.arch === 'arm64') {
-      filter = 'arm64'
+      filter = 'arm' // arm64 it not recconized!
     }
 
     return comp + filter
