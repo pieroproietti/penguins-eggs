@@ -62,13 +62,12 @@ export default class Compressors {
    * @returns
    */
   max(): string {
-    const comp = 'xz -b 256K -Xbcj '
-    let filter = 'x86'
+    let comp = 'xz -b 256K -Xbcj x86'
     if (process.arch === 'arm64') {
-      filter = 'arm' // arm64 it not recconized!
+      comp = 'xz'
     }
 
-    return comp + filter
+    return comp
   }
 
   private async prepareCheck() {
