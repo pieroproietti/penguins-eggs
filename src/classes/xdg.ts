@@ -283,10 +283,20 @@ export default class Xdg {
     /**
      * ALL Desktops:
      */
-    // Emer Chen suggestions
-    await exec(`rm -r /etc/skel/.config/user-dirs.dirs`)
-    await exec(`rm -r /etc/skel/.config/user-dirs.locale`)
-    await exec(`rm -rf /etc/skel/.config/gtk-3.0/bookmarks`)
+    // Emer Chen suggestion
+    if (fs.existsSync('/etc/skel/.config/user-dirs.dirs')) {
+      await exec(`rm -r /etc/skel/.config/user-dirs.dirs`)
+    }
+    if (fs.existsSync('/etc/skel/.config/user-dirs.locale')) {
+      await exec(`rm -r /etc/skel/.config/user-dirs.locale`)
+    }
+    if (fs.existsSync('/etc/skel/.config/gtk-3.0/bookmarks')) {
+      await exec(`rm -rf /etc/skel/.config/gtk-3.0/bookmarks`)
+    }
+
+    // Manuel Senpai suggestion
+    await exec(`grep -IE -r /etc/skel -e ${user}`)
+    
   }
 }
 
