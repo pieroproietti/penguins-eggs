@@ -41,7 +41,6 @@ export default class Compressors {
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }
-
     return comp
   }
 
@@ -53,7 +52,6 @@ export default class Compressors {
     } else {
       comp = 'xz -b 256K'
     }
-
     return comp
   }
 
@@ -64,9 +62,8 @@ export default class Compressors {
   max(): string {
     let comp = 'xz -b 256K -Xbcj x86'
     if (process.arch === 'arm64') {
-      comp = 'xz'
+      comp = 'xz -b 256K' // -Xbcj arm  NOT work 
     }
-
     return comp
   }
 
