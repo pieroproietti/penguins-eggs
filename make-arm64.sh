@@ -27,10 +27,12 @@ sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 rm -f "${DEST}/usr/lib/penguins-eggs/bin/node"
 
 clear
-echo "cat and copy the following commands:"
+RUNME="runme-arm64.sh"
+echo "# cat and copy the following commands:"   #> ${RUNME}
 echo ""
-echo "cd ${DEST}/usr/lib/penguins-eggs/bin"
-echo "sudo ln -s ../../../bin/node ./node"
-echo "cd ${FR}"
-echo "sudo dpkg-deb --build eggs_${VER}_arm64/"
-echo "eggs export deb -a"
+echo "cd ${DEST}/usr/lib/penguins-eggs/bin"     #>> ${RUNME}
+echo "sudo ln -s ../../../bin/node ./node"      #>> ${RUNME}
+echo "cd ${FR}"                                 #>> ${RUNME}
+echo "sudo dpkg-deb --build eggs_${VER}_arm64/" #>> ${RUNME}
+echo "eggs export deb -a" >> ${RUNME}
+#chmod +x "${RUNME}"
