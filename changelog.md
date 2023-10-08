@@ -24,6 +24,9 @@ If You can and want try it, see if can be adapted to real hardware and give sugg
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.3
+* calamares: just a fix on a bug in calamares configuration introduced with version 9.6.2.
+
 # eggs-9.6.2
 This is the first version, working and producing installable ISOs for the system on: amd64, i386 and arm64 architecture.
 
