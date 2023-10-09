@@ -284,25 +284,14 @@ export default class Xdg {
      * ALL Desktops:
      */
     // Emer Chen suggestion
-    if (fs.existsSync('/etc/skel/.config/user-dirs.dirs')) {
-      await exec(`rm -r /etc/skel/.config/user-dirs.dirs`)
-    }
-    if (fs.existsSync('/etc/skel/.config/user-dirs.locale')) {
-      await exec(`rm -r /etc/skel/.config/user-dirs.locale`)
-    }
-    if (fs.existsSync('/etc/skel/.config/gtk-3.0/bookmarks')) {
-      await exec(`rm -rf /etc/skel/.config/gtk-3.0/bookmarks`)
-    }
+    await rmIfExist('/etc/skel/.config/user-dirs.dirs')
+    await rmIfExist('/etc/skel/.config/user-dirs.locale')
+    await rmIfExist('/etc/skel/.config/gtk-3.0/bookmarks/','r')
 
-    // Manuel Senpai suggestion
-    // await exec(`grep -IE -r /etc/skel -e ${user}`)
-    if (fs.existsSync('/etc/skel/.local/share/recently-used.xbel')) {
-      await exec(`rm -r /etc/skel/.local/share/recently-used.xbel`)
-    }
-    if (fs.existsSync('/etc/skel/.config/xfce4/desktop/')) {
-      await exec(`rm -rf /etc/skel/.config/xfce4/desktop/`)
-    }
-    
+    // Manuel Senpai suggestion     // await exec(`grep -IE -r /etc/skel -e ${user}`)
+    await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
+    await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
+    await rmIfExist('/etc/skel/.config/xfce4/desktop/', 'r')
   }
 }
 
@@ -329,3 +318,18 @@ async function rsyncIfExist(source: string, dest = '/etc/skel/', verbose = false
     await exec(`rsync -avx ${source} ${dest}`, echo)
   }
 }
+
+/**
+ * 
+ * @param file2Remove 
+ * @param recursive 
+ */
+async function rmIfExist(file2Remove: string, recursive = '') {
+  if (fs.existsSync(file2Remove)) {
+    await exec(`rm -f${recursive} ${file2Remove}`)
+  }
+}
+
+
+
+
