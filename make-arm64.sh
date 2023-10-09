@@ -24,15 +24,11 @@ sed -i 's/syslinux,//g' "${DEST}/DEBIAN/control"
 sed -i 's/grub-efi-amd64-bin/nodejs/g' "${DEST}/DEBIAN/control"
 sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 
+# Remove node inside bin
 rm -f "${DEST}/usr/lib/penguins-eggs/bin/node"
+# and replace with ln -s /bin/node
+ln -s /bin/node "${DEST}/usr/lib/penguins-eggs/bin/node"
 
-clear
-RUNME="runme-arm64.sh"
-echo "# cat and copy the following commands:"   #> ${RUNME}
-echo ""
-echo "cd ${DEST}/usr/lib/penguins-eggs/bin"     #>> ${RUNME}
-echo "sudo ln -s ../../../bin/node ./node"      #>> ${RUNME}
-echo "cd ${FR}"                                 #>> ${RUNME}
-echo "sudo dpkg-deb --build eggs_${VER}_arm64/" #>> ${RUNME}
-echo "eggs export deb -a" >> ${RUNME}
-#chmod +x "${RUNME}"
+# build package
+cd ${FR}
+sudo dpkg-deb --build eggs_${VER}_arm64/
