@@ -1276,7 +1276,7 @@ export default class Ovary {
        */
       shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
       /**
-       * f=Scrivania/install-system.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}'
+       * Scrivania/install-system.desktop
        */
       let installerUrl = 'install-system.desktop'
       let installerIcon = 'install-system.sh'
@@ -1387,6 +1387,11 @@ export default class Ovary {
           text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
           text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
           text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
+        } else if (Pacman.packageIsInstalled('xfce4-session')) {
+
+          // f=FILE; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"
+          text += 'chmod +x "$DESKTOP"/*.desktop'
+          // await exec(`f="$DESKTOP"/*.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"`)
         } else {
           // OTHERS: CINNAMON/KDE/ETC
           text += 'chmod +x "$DESKTOP"/*.desktop'
@@ -1997,7 +2002,7 @@ function isArchiso(distro: string): boolean {
   }
 
   const content = fs.readFileSync(file, 'utf8')
-  const distros = yaml.load(content) as string []
+  const distros = yaml.load(content) as string[]
   for (const current of distros) {
     if (current === distro) {
       found = true
