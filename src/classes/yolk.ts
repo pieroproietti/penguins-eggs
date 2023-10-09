@@ -29,11 +29,11 @@ export default class Yolk {
   async create(verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
-    Utils.warning("Creating a local repo on /var/local/yolk")
-
     if (Utils.uefiArch() !== 'amd64') {
-      Utils.warning(`yolk is not applicable on the architecture ${Utils.uefiArch()}`)
+      Utils.warning(`yolk is not used on the architecture ${Utils.uefiArch()}`)
     } else {
+      Utils.warning("Creating a local repo on /var/local/yolk")
+
       Utils.warning('Updating system')
       if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
         Utils.warning(`I cannot find the command dpkg-scanpackages`)
