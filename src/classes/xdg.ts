@@ -329,7 +329,3 @@ async function rmIfExist(file2Remove: string, recursive = '') {
     await exec(`rm -f${recursive} ${file2Remove}`)
   }
 }
-
-
-
-

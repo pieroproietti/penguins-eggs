@@ -12,7 +12,6 @@ import path from 'path'
 import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import chalk from 'chalk'
-const pjson = require('../../package.json')
 
 // libraries
 import { exec } from '../lib/utils'
