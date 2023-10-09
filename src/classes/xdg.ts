@@ -288,7 +288,8 @@ export default class Xdg {
     await rmIfExist('/etc/skel/.config/user-dirs.locale')
     await rmIfExist('/etc/skel/.config/gtk-3.0/bookmarks/','r')
 
-    // Manuel Senpai suggestion     // await exec(`grep -IE -r /etc/skel -e ${user}`)
+    // Manuel Senpai suggestion     
+    // await exec(`grep -IE -r /etc/skel -e ${user}`)
     await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
     await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
     await rmIfExist('/etc/skel/.config/xfce4/desktop/', 'r')
