@@ -1728,7 +1728,7 @@ export default class Ovary {
 
     let typology = ''
     // typology is applied only with standard egg-of
-    if (prefix.slice(0, 7) === 'egg-of-') {
+    if (prefix.slice(0, 7) === 'egg-of_') {
       if (clone) {
         typology = '_clone'
       } else if (cryptedclone) {
