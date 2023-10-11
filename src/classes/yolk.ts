@@ -29,7 +29,7 @@ export default class Yolk {
   async create(verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
-    if (Utils.uefiArch() !== 'amd64') {
+    if (Utils.uefiArch() === 'i386') {
       Utils.warning(`yolk is not used on the architecture ${Utils.uefiArch()}`)
     } else {
       Utils.warning("Creating a local repo on /var/local/yolk")
@@ -59,12 +59,17 @@ export default class Yolk {
       // packages we need
       const pkgs = [
         'cryptsetup',
-        //      'grub-efi-amd64-bin',
-        'grub-efi-amd64',
         'grub-pc',
         'keyutils',
         'shim-signed',
       ]
+
+      // Il default è su amd64
+      let grubEfiArch = 'grub-efi-amd64'
+      if (Utils.uefiArch() === 'arm64') {
+        grubEfiArch ='grub-efi-arm64'
+      }
+      pkgs.push(grubEfiArch)
 
       process.chdir(this.yolkDir)
       Utils.warning(`Downloading packages and its dependencies`)

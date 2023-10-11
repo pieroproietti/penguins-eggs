@@ -291,7 +291,6 @@ export default class Xdg {
     // Manuel Senpai suggestion     
     // await exec(`grep -IE -r /etc/skel -e ${user}`)
     await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
-    await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
     await rmIfExist('/etc/skel/.config/xfce4/desktop/', 'r')
   }
 }
