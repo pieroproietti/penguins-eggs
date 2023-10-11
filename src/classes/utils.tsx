@@ -40,7 +40,7 @@ export default class Utils {
     * @param codenameId
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
-      let result = 'egg-of-' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
+      let result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
       result = result.replace(`/`, '-')
       return result
    }
@@ -362,10 +362,10 @@ export default class Utils {
     */
    static getPrefix(prefix: string, backup = false) {
       if (backup) {
-         if (prefix.substring(0, 7) === 'egg-of-') {
-            prefix = 'egg-EB-' + prefix.substring(7)
+         if (prefix.substring(0, 7) === 'egg-of_') {
+            prefix = 'egg-bk_' + prefix.substring(7)
          } else {
-            prefix = 'egg-EB-' + prefix
+            prefix = 'egg-bk_' + prefix
          }
       }
       return prefix
