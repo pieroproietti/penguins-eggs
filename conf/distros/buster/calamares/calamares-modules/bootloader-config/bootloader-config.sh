@@ -25,7 +25,15 @@ echo "Running bootloader-config..."
 
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
-    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-efi-amd64 cryptsetup keyutils
+    MACHINE=$(uname -m)
+    if [[ "$MACHINE" == x86_64* ]]; then
+        arch="amd64"
+    elif [[ "$MACHINE" == i*86 ]]; then
+        arch=""
+    elif  [[ "$MACHINE" == arm* ]]; then
+        arch="arm64"
+    fi
+    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-efi-${arch} cryptsetup keyutils
 else
     echo " * install grub... (bios)"
     DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-pc cryptsetup
