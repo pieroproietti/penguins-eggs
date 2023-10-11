@@ -25,7 +25,9 @@ If You can and want try it, see if can be adapted to real hardware and give sugg
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.4
-* yolk: introduced yolk on arm64 architecture;
+* introduced yolk for arm64 architecture;
+* successfull remaster and installing on Raspberry 4 UEFI;
+* naming changed to: egg-of_distro-codename-name_arch_data-time.
 
 # eggs-9.6.3
 * calamares: just a fix on a bug in calamares configuration introduced with version 9.6.2.
