@@ -389,7 +389,7 @@ export default class Utils {
     * @returns eggName
     */
    static getPostfix(): string {
-      let postfix = '_' + this.uefiArch() + '_' + Utils.formatDate(new Date()) + '.iso'
+      let postfix = '_' + Utils.formatDate(new Date()) + '.iso'
       return postfix
    }
 

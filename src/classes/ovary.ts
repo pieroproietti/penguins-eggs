@@ -877,8 +877,23 @@ export default class Ovary {
     if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
       fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
     }
+
     const compression = `-comp ${this.settings.config.compression}`
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+
+    /**
+    * limit: patch per Raspberry
+    */
+    let limit = ''
+    if (Utils.uefiArch() === 'arm64') {
+      limit = ' -processors 2 -mem 1024M'
+    }
+   
+    // SYNTAX: mksquashfs source1 source2 ...  
+    // FILESYSTEM [OPTIONS] 
+    // [-e list of exclude dirs/files]
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+
+
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
@@ -1741,7 +1756,7 @@ export default class Ovary {
     }
 
     const postfix = Utils.getPostfix()
-    this.settings.isoFilename = prefix + volid + typology + postfix
+    this.settings.isoFilename = prefix + volid + '_' + Utils.uefiArch() + typology + postfix
     // 
     const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
 
