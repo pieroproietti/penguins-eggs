@@ -24,9 +24,9 @@ If You can and want try it, see if can be adapted to real hardware and give sugg
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-# eggs-9.6.4
+# eggs-9.6.4-3
 * introduced yolk for arm64 architecture;
-* successfull remaster and installing on Raspberry 4 UEFI;
+* using  `-processor 2` and `-mem 1024M` limit on mksquashfs in Raspberry;
 * naming changed to: egg-of_distro-codename-name_arch_data-time.
 
 # eggs-9.6.3
