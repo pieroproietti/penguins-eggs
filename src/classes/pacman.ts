@@ -367,7 +367,7 @@ export default class Pacman {
       console.log('Due the lacks of calamares package set force_installer = false')
     }
 
-    if (!Pacman.isUefi()) {
+    if (!Pacman.isUefi() && Utils.uefiArch() !=="i386") {
       config.make_efi = false
       console.log('Due the lacks of grub-efi-' + Utils.uefiArch() + '-bin package set make_efi = false')
     }
