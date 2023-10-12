@@ -24,10 +24,11 @@ If You can and want try it, see if can be adapted to real hardware and give sugg
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-# eggs-9.6.4-3
+# eggs-9.6.4
 * introduced yolk for arm64 architecture;
-* using  `-processor 2` and `-mem 1024M` limit on mksquashfs in Raspberry;
-* naming changed to: egg-of_distro-codename-name_arch_data-time.
+* using  `-processor 2` and `-mem 1024M` limit on mksquashfs on arm64 for Raspberry;
+* naming changed to: egg-of_distro-codename-name_arch_data-time;
+* need confirm for installation, remastering and production on RPi 4.
 
 # eggs-9.6.3
 * calamares: just a fix on a bug in calamares configuration introduced with version 9.6.2.
