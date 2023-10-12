@@ -224,7 +224,7 @@ export default class Settings {
 
     this.remix.name = this.config.snapshot_basename
     let name = this.config.snapshot_prefix + this.config.snapshot_basename
-    name = name.replace(/-/g, ' ').replace('egg of ', '')
+    name = name.replace(/-/g, ' ').replace(/_/g, ' ').replace('egg of ', '')
     this.remix.fullname = name
     this.remix.versionName = name.toUpperCase()
   }
