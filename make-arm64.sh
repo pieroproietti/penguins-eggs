@@ -21,7 +21,7 @@ cp "${SRC}" "${DEST}" -R
 sed -i 's/syslinux-common,//g' "${DEST}/DEBIAN/control"
 sed -i 's/syslinux,//g' "${DEST}/DEBIAN/control"
 
-sed -i 's/grub-efi-amd64-bin/nodejs/g' "${DEST}/DEBIAN/control"
+sed -i 's/grub-efi-amd64-bin/grub-efi-arm64-bin nodejs/g' "${DEST}/DEBIAN/control"
 sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 
 # Remove node inside bin
