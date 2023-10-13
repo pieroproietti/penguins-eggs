@@ -885,7 +885,7 @@ export default class Ovary {
     */
     let limit = ''
     if (Utils.uefiArch() === 'arm64') {
-      limit = ' -processors 2 -mem 1024M'
+      // limit = ' -processors 2 -mem 1024M'
     }
    
     // SYNTAX: mksquashfs source1 source2 ...  
