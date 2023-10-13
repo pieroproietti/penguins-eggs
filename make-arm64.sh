@@ -29,7 +29,7 @@ sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 # Remove node inside bin
 rm -f "${DEST}/usr/lib/penguins-eggs/bin/node"
 # and replace with ln -s /bin/node
-ln -s /bin/node "${DEST}/usr/lib/penguins-eggs/bin/node"
+ln -s /usr/bin/node "${DEST}/usr/lib/penguins-eggs/bin/node"
 
 # build package
 cd ${FR}
