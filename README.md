@@ -42,11 +42,13 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 
 eggs is written mostly in typescript and ideally can be used with different Linux distributions. Yes, there are big differences in terms of package manager used, path, etc, but basically the various programs used to build the live are the same. 
 
-Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml).
+Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml); eggs currently support amd64, i386 and arm64. 
+
+About arm64 on Raspberry Pi 4 and , some informations can be found on the post: [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
+
 
 You can read more on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
-Regarding architectures eggs currently support amd64, i386 and arm64. some informations can be found on the post: [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
 # Features
 
