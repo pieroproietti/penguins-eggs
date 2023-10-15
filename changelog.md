@@ -24,6 +24,9 @@ If You can and want try it, see if can be adapted to real hardware and give sugg
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.6
+* patch for humans: same users tend to set `user_opt` as the real username, this is not necessary in cases of `--clone`;
+
 # eggs-9.6.5
 * changed ln node from /bin/node to /usr/bin/node to solve problem in Devuan i386;
 * added grub-efi-arm64-bin to dependencies for arm64.
