@@ -89,8 +89,6 @@
   distroLike: Ubuntu
   family: debian
   ids:
-    - mantic
-  derivatives:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
     - mantic # Ubuntu lunar 23.10
