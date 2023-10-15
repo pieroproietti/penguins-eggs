@@ -190,6 +190,12 @@ export default class Ovary {
 
         // CLONE
       } else if (this.clone) {
+        // Patch for humans users used to
+        // set user_opt as real user when
+        // create a clone
+        this.settings.config.user_opt = 'live'
+        this.settings.config.user_opt_passwd = 'evolution'
+        this.settings.config.root_passwd ='evolution'
         Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
 
         // NORMAL
