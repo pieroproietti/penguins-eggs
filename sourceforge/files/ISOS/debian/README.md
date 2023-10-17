@@ -15,6 +15,10 @@ penguins-eggs
 
 All ISOs are based on Debian various versions
 
+Since version `9.6.2` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems like Raspberry Pi. Read on my the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
+
+![arm](https://penguins-eggs.net/assets/images/arm64-first-egg-born-3f2dcb6a790a22d56e71dc5862fc5dc9.jpeg)
+
 # user/password
 * ```live/evolution```
 * ```root/evolution```
