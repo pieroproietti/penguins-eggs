@@ -11,7 +11,9 @@ penguins-eggs.net/sources-documentation/index.html)
 
 # Debian remastered ISOs
 
-All ISOs are based on Debian bookworm
+All ISOs are based on Debian bookworm.
+
+Since version `9.6.2` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems like Raspberry Pi. Read on my the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
 # user/password
 * ```live/evolution```
@@ -24,7 +26,7 @@ Just the juice, without GUI. You can start here to build your revolution!
 ##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
+![arm](https://penguins-eggs.net/assets/images/arm64-first-egg-born-3f2dcb6a790a22d56e71dc5862fc5dc9.jpeg)
 
 ##  **wagtail**
 A light wayland/gnome/waydroid for developers
