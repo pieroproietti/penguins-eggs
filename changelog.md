@@ -14,12 +14,8 @@ penguins-eggs
 
 Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
-# New architecture **arm64**
-I'm building eggs for `arm64` architecture. The package install, create ISOs and the ISOs created are installable - on a VM `aarch64` installed with `debian-12.1.0-arm64-netinst.iso`.
-
-The first working release can be downloaded here as `eggs_9.6.2_arm64.deb`, it's possible to to try the resulting ISO `egg-of-debian-bookworm-naked_arm64_2023-10-06_1225.iso` from [Debian bookworm folder](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/).
-
-If You can and want try it, see if can be adapted to real hardware and give suggestions: thanks! Read on my blog [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault)
+# Architectures
+Since version `9.6.2` Penguins' eggs is released - as Debian packages - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems. Read on my blog [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault)
 
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
