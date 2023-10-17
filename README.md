@@ -46,8 +46,7 @@ Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www
 
 You can read more on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
-About arm64 on Raspberry Pi 4, a review can be found on the post: [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
-
+Since version `9.6.2` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems. Read on my blog [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
 # Features
 
