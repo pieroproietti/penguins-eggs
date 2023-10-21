@@ -49,7 +49,6 @@ No more differences for installation and usage beetwhen the two versions.
 
 arm version is installable too and can run, but will not produce a regular ISO. If you are interested in support arm I need your help.
 
-
 # changelog.d
 [Old changelogs](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
 
