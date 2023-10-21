@@ -14,7 +14,7 @@ requirements:
     - storage
     - ram
     - power
-    - internet
+    # internet
     - root
   required:
     - root
