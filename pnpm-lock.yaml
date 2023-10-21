@@ -3737,7 +3737,7 @@ packages:
       lodash: 4.17.21
       patch-console: 1.0.0
       react: 18.2.0
-      react-devtools-core: 4.28.0
+      react-devtools-core: 4.28.4
       react-reconciler: 0.26.2(react@18.2.0)
       scheduler: 0.20.2
       signal-exit: 3.0.7
@@ -5673,8 +5673,8 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /react-devtools-core@4.28.0:
-    resolution: {integrity: sha512-E3C3X1skWBdBzwpOUbmXG8SgH6BtsluSMe+s6rRcujNKG1DGi8uIfhdhszkgDpAsMoE55hwqRUzeXCmETDBpTg==}
+  /react-devtools-core@4.28.4:
+    resolution: {integrity: sha512-IUZKLv3CimeM07G3vX4H4loxVpByrzq3HvfTX7v9migalwvLs9ZY5D3S3pKR33U+GguYfBBdMMZyToFhsSE/iQ==}
     dependencies:
       shell-quote: 1.8.1
       ws: 7.5.9
