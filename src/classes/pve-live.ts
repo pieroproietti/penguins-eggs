@@ -26,55 +26,33 @@ export default class PveLive {
     this.systemctl = new Systemctl()
   }
 
-  /**
-   * enable PveLIve
-   */
-  enable() {
-    this.systemctl.enable('pve-live')
-  }
-
-  /**
-   * disable
-   */
-  disable() {
-    this.systemctl.disable('pve-live')
-  }
-
   create(root = '/') {
     this.createScript(root)
     this.createService(root)
   }
 
-  /**
-   *
-   */
-  createScript(root = '/') {
-    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), root + '/usr/bin/')
+  private createScript(root = '/') {
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), `${root}usr/bin/`)
+    shx.chmod('x',`${root}usr/bin/pve-live.sh`)
   }
 
-  /**
-   *
-   */
-  createService(root = '/') {
-    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), root + '/lib/systemd/system/')
+  private createService(root = '/') {
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), `${root}lib/systemd/system/`)
+    shx.chmod('x',`${root}lib/systemd/system/pve-live.service`)
   }
 
-  /**
-   *
-   */
+  enable() {
+    this.systemctl.enable('pve-live')
+  }
+
+  disable() {
+    this.systemctl.disable('pve-live')
+  }
+
   start() {
     this.systemctl.start('pve-live')
-    // this.systemctl.start('lxcfs')
-    // this.systemctl.start('pve-cluster')
-    // this.systemctl.start('pve-firewall')
-    // this.systemctl.start('pve-guests')
-    // this.systemctl.start('pve-ha-crm')
-    // this.systemctl.start('pve-ha-lrm')
   }
 
-  /**
-   * 
-   */
   stop() {
     this.systemctl.stop('pve-live')
   }
