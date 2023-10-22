@@ -27,16 +27,9 @@ export default class PveLive {
   }
 
   create(root = '/') {
-    this.createScript(root)
-    this.createService(root)
-  }
-
-  private createScript(root = '/') {
     shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), `${root}usr/bin/`)
     shx.chmod('x',`${root}usr/bin/pve-live.sh`)
-  }
 
-  private createService(root = '/') {
     shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), `${root}lib/systemd/system/`)
     shx.chmod('x',`${root}lib/systemd/system/pve-live.service`)
   }
