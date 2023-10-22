@@ -18,6 +18,7 @@
 import Systemctl from './systemctl'
 import path from 'path'
 import shx from 'shelljs'
+import Utils from './utils'
 
 export default class PveLive {
   systemctl = {} as Systemctl
@@ -27,11 +28,20 @@ export default class PveLive {
   }
 
   create(root = '/') {
-    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), `${root}usr/bin/`)
-    shx.chmod('x',`${root}usr/bin/pve-live.sh`)
+    // console.log("root:" + root)
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.sh'), `${root}/usr/bin/`)
+    shx.exec(`chmod +x ${root}/usr/bin/pve-live.sh`)
+    // console.log(`pve-live: ${root}/usr/bin/pve-live.sh`)
 
-    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), `${root}lib/systemd/system/`)
-    shx.chmod('x',`${root}lib/systemd/system/pve-live.service`)
+    shx.cp(path.resolve(__dirname, '../../scripts/pve-live.service'), `${root}/lib/systemd/system/`)
+    shx.exec(`chmod +x ${root}/lib/systemd/system/pve-live.service`)
+    // console.log(`pve-service: ${root}lib/systemd/system/pve-live.service`)
+
+    // enable service
+    const src = `${root}/usr/lib/systemd/system`
+    const dest = `${root}/etc/systemd/system/multi-user.target.wants`
+    shx.exec(`ln -s ${src}/pve-live.service ${dest}/pve-live.service`)
+    //Utils.pressKeyToExit("check it!",true)
   }
 
   enable() {
