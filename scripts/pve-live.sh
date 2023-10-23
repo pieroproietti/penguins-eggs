@@ -1,6 +1,6 @@
 #!/bin/bash
 HOSTNAME=$(hostname)
-IPADDRESS=$(hostname -i)
+IPADDRESS=$(hostname -I| awk '{print $1;}')
 cat <<EOF >/etc/hosts
 127.0.0.1 localhost localhost.localdomain
 ${IPADDRESS} ${HOSTNAME} ${HOSTNAME}.local.only pvelocalhost
