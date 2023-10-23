@@ -1,9 +1,9 @@
 #!/bin/bash
-IP=$(hostname -I)
 HOSTNAME=$(hostname)
+IPADDRESS=$(hostname -i)
 cat <<EOF >/etc/hosts
 127.0.0.1 localhost localhost.localdomain
-${IP} ${HOSTNAME} pvelocalhost
+${IPADDRESS} ${HOSTNAME} ${HOSTNAME}.local.only pvelocalhost
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback
 fe00::0 ip6-localnet
