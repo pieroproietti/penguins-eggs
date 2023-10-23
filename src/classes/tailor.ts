@@ -266,10 +266,10 @@ export default class Tailor {
         Utils.warning(step)
         for (const script of this.materials.sequence.preinst) {
           if (fs.existsSync(`${this.costume}/${script}`)) {
-            await exec(`${this.costume}/${script}`, Utils.setEcho(true))
+            await exec(`${this.costume}/${script} ${this.materials.name}`, Utils.setEcho(true))
           } else {
             // exec script real env
-            await exec(`${script}`, Utils.setEcho(true))
+            await exec(`${script} ${this.materials.name}`, Utils.setEcho(true))
           }
         }
       }
