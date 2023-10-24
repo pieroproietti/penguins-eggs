@@ -131,7 +131,7 @@ export default class Krill {
   unattended = false
 
   nointeractive = false
-  
+
   halt = false
 
   /**
@@ -199,87 +199,87 @@ export default class Krill {
       process.exit(1)
     }
 
-    this.krillConfig = krillConfig // yaml.load(fs.readFileSync(config_file, 'utf-8')) as IKrillConfig
+    this.krillConfig = krillConfig
 
-    if (this.unattended) {
-      oWelcome = { language: this.krillConfig.language }
+    oWelcome = { language: this.krillConfig.language }
 
-      oLocation = {
-        language: this.krillConfig.language,
-        region: this.krillConfig.region,
-        zone: this.krillConfig.zone
-      }
+    oLocation = {
+      language: this.krillConfig.language,
+      region: this.krillConfig.region,
+      zone: this.krillConfig.zone
+    }
 
-      oKeyboard = {
-        keyboardModel: this.krillConfig.keyboardModel,
-        keyboardLayout: this.krillConfig.keyboardLayout,
-        keyboardVariant: this.krillConfig.keyboardVariant,
-        keyboardOption: this.krillConfig.keyboardOption
-      }
+    oKeyboard = {
+      keyboardModel: this.krillConfig.keyboardModel,
+      keyboardLayout: this.krillConfig.keyboardLayout,
+      keyboardVariant: this.krillConfig.keyboardVariant,
+      keyboardOption: this.krillConfig.keyboardOption
+    }
 
-      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-      const driveList: string[] = []
-      drives.forEach((element: string) => {
-        driveList.push('/dev/' + element)
-      })
+    const driveList: string[] = []
+    drives.forEach((element: string) => {
+      driveList.push('/dev/' + element)
+    })
 
-      let installationDevice = driveList[0]
-      if (driveList.length > 1) {
-        installationDevice = await selectInstallationDevice()        
-      }
+    let installationDevice = driveList[0]
+    if (driveList.length > 1) {
+      installationDevice = await selectInstallationDevice()
+    }
 
-      oPartitions = {
-        installationDevice: installationDevice,
-        installationMode: this.krillConfig.installationMode,
-        filesystemType: this.krillConfig.filesystemType,
-        userSwapChoice: this.krillConfig.userSwapChoice
-      }
-      if (suspend) {
-        oPartitions.userSwapChoice = 'suspend'
-      } else if (small) {
-        oPartitions.userSwapChoice = 'small'
-      } else if (none) {
-        oPartitions.userSwapChoice = 'none'
-      }
+    oPartitions = {
+      installationDevice: installationDevice,
+      installationMode: this.krillConfig.installationMode,
+      filesystemType: this.krillConfig.filesystemType,
+      userSwapChoice: this.krillConfig.userSwapChoice
+    }
+    if (suspend) {
+      oPartitions.userSwapChoice = 'suspend'
+    } else if (small) {
+      oPartitions.userSwapChoice = 'small'
+    } else if (none) {
+      oPartitions.userSwapChoice = 'none'
+    }
 
-      let hostname = this.krillConfig.hostname
-      if (hostname === '') {
-        hostname = shx.exec('cat /etc/hostname').trim()
-      }
+    let hostname = this.krillConfig.hostname
+    if (hostname === '') {
+      hostname = shx.exec('cat /etc/hostname').trim()
+    }
 
-      if (ip) {
-        hostname = 'ip-' + Utils.address().replaceAll('.', '-')
-      }
+    if (ip) {
+      hostname = 'ip-' + Utils.address().replaceAll('.', '-')
+    }
 
-      if (random) {
-        const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
-        const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).trim()
-        const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
-        hostname = `${os.hostname()}-${fl}${n}${sl}`
-      }
+    if (random) {
+      const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
+      const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).trim()
+      const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
+      hostname = `${os.hostname()}-${fl}${n}${sl}`
+    }
 
-      oUsers = {
-        name: this.krillConfig.name,
-        fullname: this.krillConfig.fullname,
-        password: this.krillConfig.password,
-        rootPassword: this.krillConfig.rootPassword,
-        autologin: this.krillConfig.autologin,
-        hostname: hostname
-      }
+    oUsers = {
+      name: this.krillConfig.name,
+      fullname: this.krillConfig.fullname,
+      password: this.krillConfig.password,
+      rootPassword: this.krillConfig.rootPassword,
+      autologin: this.krillConfig.autologin,
+      hostname: hostname
+    }
 
-      oNetwork =
-      {
-        iface: await Utils.iface(),
-        addressType: this.krillConfig.addressType,
-        address: Utils.address(),
-        netmask: Utils.netmask(),
-        gateway: Utils.gateway(),
-        dns: Utils.getDns(),
-        domain: Utils.getDomain()
-      }
-      // end unattended!
+    oNetwork =
+    {
+      iface: await Utils.iface(),
+      addressType: this.krillConfig.addressType,
+      address: Utils.address(),
+      netmask: Utils.netmask(),
+      gateway: Utils.gateway(),
+      dns: Utils.getDns(),
+      domain: Utils.getDomain()
+    }
 
-    } else {
+    /**
+     * interactive
+     */
+    if (!this.unattended) {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
       oKeyboard = await this.keyboard()
@@ -287,10 +287,6 @@ export default class Krill {
       oUsers = await this.users()
       oNetwork = await this.network()
     }
-
-    /**
-     * summary
-     */
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
     /**
@@ -334,18 +330,20 @@ export default class Krill {
       zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
 
-    // Try to auto-configure timezone by internet
-    const url = `https://geoip.kde.org/v1/calamares`
-    try {
-      const response = await axios.get(url)
-      if (response.statusText === 'OK') {
-        const data = JSON.stringify(response.data)
-        const obj = JSON.parse(data)
-        region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
-        zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+    if (zone === '') {
+      // Try to auto-configure timezone by internet
+      const url = `https://geoip.kde.org/v1/calamares`
+      try {
+        const response = await axios.get(url)
+        if (response.statusText === 'OK') {
+          const data = JSON.stringify(response.data)
+          const obj = JSON.parse(data)
+          region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
+          zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+        }
+      } catch (error) {
+        console.error('error: ' + error)
       }
-    } catch (error) {
-      console.error('error: ' + error)
     }
 
     let locationElem: JSX.Element
@@ -584,7 +582,7 @@ export default class Krill {
    * SUMMARY
    */
   async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
-      let summaryElem: JSX.Element
+    let summaryElem: JSX.Element
 
     let message = "Double check the installation disk: " + partitions.installationDevice
     if (this.unattended && this.nointeractive) {
