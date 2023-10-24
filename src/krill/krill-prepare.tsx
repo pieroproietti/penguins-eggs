@@ -289,6 +289,7 @@ export default class Krill {
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
+    process.exit()
     /**
      * INSTALL
      */
@@ -302,7 +303,7 @@ export default class Krill {
   async welcome(): Promise<IWelcome> {
 
     let language = this.krillConfig.language
-    if (language === '') {
+    if (language === '' || language === undefined) {
       language = await this.locales.getDefault() // 'en_US.UTF-8'
     }
 
@@ -322,11 +323,11 @@ export default class Krill {
    */
   async location(language: string): Promise<ILocation> {
     let region = this.krillConfig.region
-    if (region === '') {
+    if (region === '' || region === undefined) {
       let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
     let zone = this.krillConfig.zone
-    if (zone === '') {
+    if (zone === '' || zone === undefined) {
       zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
 
@@ -366,22 +367,22 @@ export default class Krill {
   */
   async keyboard(): Promise<IKeyboard> {
     let keyboardModel = this.krillConfig.keyboardModel
-    if (keyboardModel === '') {
+    if (keyboardModel === '' || keyboardModel === undefined) {
       keyboardModel = await this.keyboards.getModel()
     }
 
     let keyboardLayout = this.krillConfig.keyboardLayout
-    if (keyboardLayout === '') {
+    if (keyboardLayout === '' || keyboardLayout === undefined) {
       keyboardLayout = await this.keyboards.getLayout()
     }
 
     let keyboardVariant = this.krillConfig.keyboardVariant
-    if (keyboardVariant === '') {
+    if (keyboardVariant === '' || keyboardVariant === undefined) {
       keyboardVariant = await this.keyboards.getVariant()
     }
 
     let keyboardOption = this.krillConfig.keyboardOption
-    if (keyboardOption === '') {
+    if (keyboardOption === '' || keyboardOption === undefined) {
       keyboardOption = await this.keyboards.getOption()
     }
 
@@ -477,27 +478,27 @@ export default class Krill {
   async users(): Promise<IUsers> {
 
     let name = this.krillConfig.name
-    if (name === '') {
+    if (name === '' || name === undefined) {
       name = 'artisan'
     }
 
     let fullname = this.krillConfig.fullname
-    if (fullname === '') {
+    if (fullname === '' || fullname === undefined) {
       fullname = 'artisan'
     }
 
     let password = this.krillConfig.password
-    if (password === '') {
+    if (password === '' || password === undefined) {
       password = 'evolution'
     }
 
     let rootPassword = this.krillConfig.rootPassword
-    if (rootPassword === '') {
+    if (rootPassword === '' || rootPassword === undefined) {
       rootPassword = 'evolution'
     }
 
     let hostname = this.krillConfig.hostname
-    if (hostname === '') {
+    if (hostname === '' || hostname === undefined) {
       hostname = shx.exec('cat /etc/hostname').trim()
     }
 

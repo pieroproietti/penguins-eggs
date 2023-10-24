@@ -108,7 +108,7 @@ export default class Install extends Command {
     const verbose = flags.verbose
 
     if (Utils.isRoot()) {
-      if (Utils.isLive()) {
+      if (!Utils.isLive()) {
         const krill = new Krill(unattended, nointeractive, halt)
         await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
       } else {
