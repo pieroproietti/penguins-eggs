@@ -429,7 +429,7 @@ export default class Krill {
     let installationDevice = driveList[0] // it was just /dev/sda before
 
     let installationMode = this.krillConfig.installationMode
-    if (installationMode === '') {
+    if (installationMode === '' || installationMode === undefined) {
       installationMode = 'standard'
     }
     if (crypted) {
