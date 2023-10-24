@@ -289,7 +289,6 @@ export default class Krill {
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
-    process.exit()
     /**
      * INSTALL
      */
