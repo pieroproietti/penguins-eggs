@@ -330,20 +330,18 @@ export default class Krill {
       zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
 
-    if (zone === '') {
-      // Try to auto-configure timezone by internet
-      const url = `https://geoip.kde.org/v1/calamares`
-      try {
-        const response = await axios.get(url)
-        if (response.statusText === 'OK') {
-          const data = JSON.stringify(response.data)
-          const obj = JSON.parse(data)
-          region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
-          zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
-        }
-      } catch (error) {
-        console.error('error: ' + error)
+    // Try to auto-configure timezone by internet
+    const url = `https://geoip.kde.org/v1/calamares`
+    try {
+      const response = await axios.get(url)
+      if (response.statusText === 'OK') {
+        const data = JSON.stringify(response.data)
+        const obj = JSON.parse(data)
+        region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
+        zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
       }
+    } catch (error) {
+      console.error('error: ' + error)
     }
 
     let locationElem: JSX.Element
