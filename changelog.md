@@ -21,7 +21,7 @@ Since version `9.6.2` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.7
-A lot of work on compatibility with [Proxmox-VE](https://www.proxmox.com/en/proxmox-virtual-environment/overview), we now have two different ISOs for amd64 and arm64. The new eagles come with xfce4, virt-viewer and proxmox-ve installed; they can be tested either live or installed. The version for arm64, is build with [Proxmox-Port](https://github.com/jiangcuo/Proxmox-Port) repository by [jiangcuo](https://github.com/jiangcuo), a great work!
+A lot of work on compatibility with [Proxmox-VE](https://www.proxmox.com/en/proxmox-virtual-environment/overview), we now have two different ISOs for amd64 and arm64. The new [eagles](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/) come with xfce4, virt-viewer and proxmox-ve installed; they can be tested either live or installed. The version for arm64, is build with [Proxmox-Port](https://github.com/jiangcuo/Proxmox-Port) repository by [jiangcuo](https://github.com/jiangcuo), a great work!
 
 # eggs-9.6.6
 * patch for humans: users tend to set `user_opt` as real username, this is NOT NECESSARY AT ALL and in cases of `--clone` will create problems. To prevent that, eggs reset `user_opt` to standard when a `-clone` is request;
