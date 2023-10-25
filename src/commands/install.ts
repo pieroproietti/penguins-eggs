@@ -66,7 +66,6 @@ export default class Install extends Command {
     let krillConfig = {} as IKrillConfig
     if (custom !== undefined) {
       const fname = path.basename(custom)
-      unattended = true
       const url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
       let res: AxiosResponse
       await axios.get(url, {httpsAgent: agent})
