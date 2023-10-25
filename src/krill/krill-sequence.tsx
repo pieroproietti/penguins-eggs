@@ -268,7 +268,7 @@ export default class Sequence {
          } else {
             await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
          }
-      } 
+      }
 
       this.unattended = unattended
       this.nointeractive = nointeractive
