@@ -62,11 +62,6 @@ arm version is installable too and can run, but will not produce a regular ISO. 
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
 
-## Packages armel/arm64
-eggs is compiled for armel and could also be released for arm64, however actually it is not tested.
-
-I am releasing it to look for someone who has the skills and the will to collaborate for testing support and suggestions.
-
 # That's all Folks!
 No need other configurations, penguins-eggs are battery included or better, as in the real, live is inside! :-D
 
