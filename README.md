@@ -44,9 +44,9 @@ eggs is written mostly in typescript and ideally can be used with different Linu
 
 Currently eggs supports: [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml); regarding architectures eggs currently support amd64, i386 and arm64. 
 
-Since version `9.6.2` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems like Raspberry Pi. Read on my the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
+Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board ARM systems like Raspberry Pi. Read more on the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
-You can read more on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
+You can get more informations on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
 
 # Features
