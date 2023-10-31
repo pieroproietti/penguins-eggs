@@ -305,6 +305,7 @@ export default class Krill {
     if (language === '' || language === undefined) {
       language = await this.locales.getDefault() // 'en_US.UTF-8'
     }
+    
 
     let welcomeElem: JSX.Element
     while (true) {
