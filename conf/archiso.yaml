@@ -1,8 +1,11 @@
 # Archiso compatible
+#
+# DOVRA' essere eliminato!!!
 ---
 - Arch
 - ArcoLinux
 - blendOS
+- Crystal
 - EndeavourOS
 - Garuda
 - phyOS
