@@ -56,14 +56,13 @@ export default class Locales {
   async getDefault(): Promise<string> {
     const file = '/etc/default/locale'
     const cmd = `grep LANG < ${file}|cut -f2 -d=`
-    let defaultLanguage = ''
+    let defaultLanguage = 'en_US.UTF-8'
     if (fs.existsSync(file)) {
       const result = await exec(cmd, {capture: true, echo: false, ignore: false})
       if (result.code === 0) {
         defaultLanguage = result.data.replace(/"/g, '').replace(/'/g, '').trim()
       }
     }
-
     return defaultLanguage
   }
 }

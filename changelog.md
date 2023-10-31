@@ -20,6 +20,14 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.9
+* eggs: tested on arch, arcolinux, bhodi, blendos, debian, deepin, 
+ devuan, educaandos, elementary, endeavourOS, garuda, kali, lds, lilidog, 
+ linuxfx, linuxlite, linuxmint, luberri, manjaro, mx-linux, neon,
+ neptune, netrunner, parrotos, plastilinux, pop-os, rebornos,
+ rhino, siduction, sparkylinux, spirallinux, syslinuxos, ubuntu
+ and waydroid;
+ 
 # eggs-9.6.8
 * krill: a lot of work on krill to reestablish its functionality, especially the detection and selection of languages, keyboards, etc. that had skipped in recent versions;
 * calamares: given the work to introduce plasma 6 on Arch linux, some packages were renamed and involved calamares. The affected packages are: kdbusaddons5, kconfig5, kcoreaddons5, kiconthemes5, ki18n5, kio5, solid5 and plasma-framework5. It was necessary, therefore to update calamares.
