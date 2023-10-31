@@ -2016,6 +2016,12 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
  */
 function isArchiso(distro: string): boolean {
   let found = false
+  if (distro !== 'ManjaroLinux') {
+    found = true
+  }
+  return found
+
+  // EXCLUDED
 
   let file = path.resolve(__dirname, '../../conf/archiso.yaml')
   if (fs.existsSync('/etc/penguins-eggs.d/archiso.yaml')) {
