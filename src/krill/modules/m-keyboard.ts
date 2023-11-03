@@ -9,7 +9,7 @@
 
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
-import {exec} from '../../lib/utils'
+import { exec } from '../../lib/utils'
 import fs from 'fs'
 
 /**
@@ -46,36 +46,44 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     * force change /etc/vconsole.conf
     * force change /etc/X11/xorg.conf.d/00-keyboard.conf
     */
-  if (Utils.isSystemd()) {
-    let content = '# KEYBOARD CONFIGURATION FILE\n\n'
-    content += '# Consult the keyboard(5) manual page.\n\n'
-    content += '# See penguins-eggs/src/krill/modules/m-keyboard.ts\n\n'
-    content += 'XKBMODEL="' + this.keyboardModel + '"\n'
-    content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
-    content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
-    content += 'XKBOPTIONS=""\n'
-    content += '\n'
-    content += 'BACKSPACE="guess"\n'
-    Utils.write(this.installTarget + '/etc/default/keyboard', content)
+  let content = '# KEYBOARD CONFIGURATION FILE\n\n'
+  content += '# Consult the keyboard(5) manual page.\n\n'
+  content += '# See penguins-eggs/src/krill/modules/m-keyboard.ts\n\n'
+  content += 'XKBMODEL="' + this.keyboardModel + '"\n'
+  content += 'XKBLAYOUT="' + this.keyboardLayout + '"\n'
+  content += 'XKBVARIANT="' + this.keyboardVariant + '"\n'
+  content += 'XKBOPTIONS=""\n'
+  content += '\n'
+  content += 'BACKSPACE="guess"\n'
+  Utils.write(this.installTarget + '/etc/default/keyboard', content)
 
+  /**
+   * vconsole.conf: dovrebbe dipendere sia da systemd che da X
+   */
+  if (Utils.isSystemd()) {
     content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
     content += 'KEYMAP="' + this.keyboardLayout + '"\n'
     content += 'FONT=\n'
     content += 'FONT_MAP=\n'
-    Utils.write(this.installTarget + '/etc/vconsole.conf', content)
-
-    content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
-    content += '# Read and parsed by systemd-localed. It\'s probably wise not to edit this file\n'
-    content += '# manually too freely.\n'
-    content += 'Section "InputClass"\n'
-    content += '        Identifier "system-keyboard"\n'
-    content += '        MatchIsKeyboard "on"\n'
-    content += '        Option "XkbLayout" "' + this.keyboardLayout + '"\n'
-    content += 'EndSection\n'
-    // Not always exist /etc/X11/xorg.conf.d
-    if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
-      Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
+    if (fs.existsSync(this.installTarget + '/etc/vconsole.conf')) {
+      Utils.write(this.installTarget + '/etc/vconsole.conf', content)
     }
+  }
+
+  /**
+   * 00-keyboard.conf: dovrebbe dipendere da X
+   */
+  content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
+  content += '# Read and parsed by systemd-localed. It\'s probably wise not to edit this file\n'
+  content += '# manually too freely.\n'
+  content += 'Section "InputClass"\n'
+  content += '        Identifier "system-keyboard"\n'
+  content += '        MatchIsKeyboard "on"\n'
+  content += '        Option "XkbLayout" "' + this.keyboardLayout + '"\n'
+  content += 'EndSection\n'
+  // Not always exist /etc/X11/xorg.conf.d
+  if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
+    Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
   }
 }
 
