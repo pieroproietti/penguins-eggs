@@ -11,7 +11,6 @@ import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
 import Pacman from '../../classes/pacman'
 import Systemctl from '../../classes/systemctl'
-import fs from 'fs'
 import { exec } from '../../lib/utils'
 
 /**
@@ -45,17 +44,11 @@ export default async function networkCfg(this: Sequence) {
   }
 
   /**
-     * resolv.conf 
-     */
+  * resolv.conf 
+  */
+  console.log(this.network.addressType)
+  process.exit()
   if (this.network.addressType !== 'dhcp') {
-    const file = this.installTarget + '/etc/resolv.conf'
-    let content = '# created by eggs\n\n'
-    content += 'domain ' + this.network.domain + '\n'
-    for (const element of this.network.dns) {
-      content += 'nameserver ' + element + '\n'
-    }
-    Utils.write(file, content)
-
     /**
      * Franco Conidi: se è installato resolvconf
      */
@@ -63,6 +56,14 @@ export default async function networkCfg(this: Sequence) {
     if (await systemdCtl.isActive('resolvconf.service')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
       await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
+    } else {
+      const file = this.installTarget + '/etc/resolv.conf'
+      let content = '# created by eggs\n\n'
+      content += 'domain ' + this.network.domain + '\n'
+      for (const element of this.network.dns) {
+        content += 'nameserver ' + element + '\n'
+      }
+      Utils.write(file, content)
     }
   }
 }
