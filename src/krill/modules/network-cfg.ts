@@ -10,6 +10,7 @@
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
 import Pacman from '../../classes/pacman'
+import Systemctl from '../../classes/systemctl'
 import fs from 'fs'
 import { exec } from '../../lib/utils'
 
@@ -58,7 +59,8 @@ export default async function networkCfg(this: Sequence) {
     /**
      * Franco Conidi: se è installato resolvconf
      */
-    if (Pacman.packageIsInstalled('resolvconf')) {
+    const systemdCtl = new Systemctl()
+    if (await systemdCtl.isActive('resolvconf.service')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
       await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
     }
