@@ -46,8 +46,8 @@ export default async function networkCfg(this: Sequence) {
   }
 
   /**
-   * resolv.conf
-   */
+   * THIS IS EXCLUDED ACTUALLY
+   * 
   if (this.network.addressType === 'dhcp') {
     const systemdCtl = new Systemctl()
     if (await systemdCtl.isActive('resolvconf.service')) {
@@ -63,4 +63,5 @@ export default async function networkCfg(this: Sequence) {
       Utils.write(file, content)
     }
   }
+  */
 }

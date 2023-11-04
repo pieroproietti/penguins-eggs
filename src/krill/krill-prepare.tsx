@@ -282,6 +282,7 @@ export default class Krill {
     if (!this.unattended) {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
+      //let kl = oWelcome.language.substring(oWelcome.language.indexOf('_'),2).toLowerCase()
       oKeyboard = await this.keyboard()
       oPartitions = await this.partitions(cryped, pve)
       oUsers = await this.users()
