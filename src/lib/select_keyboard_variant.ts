@@ -17,7 +17,7 @@ export default async function selectKeyboardVariant(keyboardLayout = ''): Promis
   const keyboards = new Keyboards()
   const variants = keyboards.getVariants(keyboardLayout)
   const supported : string [] = []
-  supported.push('') // inserisce una varian nulla
+  supported.push('') // inserisce una variant nulla
   for (const v of variants) {
     supported.push(v.code)
   }

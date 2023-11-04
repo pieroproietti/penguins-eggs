@@ -10,19 +10,23 @@
 import Sequence from '../krill-sequence'
 import Utils from '../../classes/utils'
 import Pacman from '../../classes/pacman'
+import Systemctl from '../../classes/systemctl'
+import { exec } from '../../lib/utils'
 
-/**
 /**
  * networkcfg
  *
- * we have:
  * - debian: /etc/network/interface
  * - ubuntu: netplan
- * - manjaro: ? // ip address add 192.168.61/24 + dev enp6s18
+ * - arch: 
+ * 
+ * - all: /etc/resolv.conf
  */
 export default async function networkCfg(this: Sequence) {
-  if (this.distro.familyId === 'debian' && // if netplan, don't create entries in /etc/network/interfaces
-        !Pacman.packageIsInstalled('netplan.io')) {
+  /**
+   * debian: /etc/network/interfaces
+   */
+  if (this.distro.familyId === 'debian' && !Pacman.packageIsInstalled('netplan.io')) {
     const file = this.installTarget + '/etc/network/interfaces'
     let content = '# created by eggs\n\n'
     content += 'auto lo\n'
@@ -34,21 +38,30 @@ export default async function networkCfg(this: Sequence) {
       content += '    netmask ' + this.network.netmask + '\n'
       content += '    gateway ' + this.network.gateway + '\n'
     }
-
     Utils.write(file, content)
+  } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
+    // ubuntu: netplan
+  } else if (this.distro.familyId === 'arch') {
+    // arch: 
   }
 
   /**
-     * resolv.conf
-     */
-  if (this.network.addressType !== 'dhcp') {
-    const file = this.installTarget + '/etc/resolv.conf'
-    let content = '# created by eggs\n\n'
-    content += 'domain ' + this.network.domain + '\n'
-    for (const element of this.network.dns) {
-      content += 'nameserver ' + element + '\n'
+   * THIS IS EXCLUDED ACTUALLY
+   * 
+  if (this.network.addressType === 'dhcp') {
+    const systemdCtl = new Systemctl()
+    if (await systemdCtl.isActive('resolvconf.service')) {
+      await exec(`rm ${this.installTarget}/etc/resolv.conf`)
+      await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
+    } else {
+      const file = this.installTarget + '/etc/resolv.conf'
+      let content = '# created by eggs\n\n'
+      content += 'domain ' + this.network.domain + '\n'
+      for (const element of this.network.dns) {
+        content += 'nameserver ' + element + '\n'
+      }
+      Utils.write(file, content)
     }
-
-    Utils.write(file, content)
   }
+  */
 }

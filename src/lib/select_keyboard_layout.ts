@@ -19,6 +19,8 @@ export default async function selectKeyboardLayout(selected = ''): Promise<strin
   for (const l of layouts) {
     supported.push(l.code)
   }
+  // sord keyboard layouts
+  supported.sort()
 
   const questions: Array<Record<string, any>> = [
     {
