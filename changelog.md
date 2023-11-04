@@ -21,7 +21,8 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.10
-* krill: sort dei layout della tastiera e fix selezione layout in Devuan;
+* krill: sort of keyboard layouts and fix layout selection in Devuan;
+* krill: module network-cfg, removed /etc/resolv.conf build
 
 # eggs-9.6.9
 * eggs: a lot of little bugfixes due various tests on arch, arcolinux, bhodi, blendos, debian, deepin, devuan, educaandos, elementary, endeavourOS, garuda, kali, lds, lilidog, linuxfx, linuxlite, linuxmint, luberri, manjaro, mx-linux, neon,  neptune, netrunner, parrotos, plastilinux, pop-os, rebornos, rhino, siduction, sparkylinux, spirallinux, syslinuxos, ubuntu and waydroid;
