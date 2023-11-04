@@ -58,7 +58,7 @@ export default async function networkCfg(this: Sequence) {
     /**
      * Franco Conidi: se è installato resolvconf
      */
-    if (Pacman.packageIsInstalled('resolvconf') {
+    if (Pacman.packageIsInstalled('resolvconf')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
       await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
     }
