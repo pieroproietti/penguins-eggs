@@ -58,16 +58,14 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
   Utils.write(this.installTarget + '/etc/default/keyboard', content)
 
   /**
-   * vconsole.conf: dovrebbe dipendere sia da systemd che da X
+   * vconsole.conf: dovrebbe dipendere da systemd
    */
   if (Utils.isSystemd()) {
     content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
     content += 'KEYMAP="' + this.keyboardLayout + '"\n'
     content += 'FONT=\n'
     content += 'FONT_MAP=\n'
-    if (fs.existsSync(this.installTarget + '/etc/vconsole.conf')) {
-      Utils.write(this.installTarget + '/etc/vconsole.conf', content)
-    }
+    Utils.write(this.installTarget + '/etc/vconsole.conf', content)
   }
 
   /**
