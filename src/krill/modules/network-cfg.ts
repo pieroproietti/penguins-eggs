@@ -14,17 +14,17 @@ import Systemctl from '../../classes/systemctl'
 import { exec } from '../../lib/utils'
 
 /**
-/**
  * networkcfg
  *
- * we have:
  * - debian: /etc/network/interface
  * - ubuntu: netplan
- * - manjaro: ? // ip address add 192.168.61/24 + dev enp6s18
+ * - arch: 
+ * 
+ * - all: /etc/resolv.conf
  */
 export default async function networkCfg(this: Sequence) {
   /**
-   * debian 
+   * debian: /etc/network/interfaces
    */
   if (this.distro.familyId === 'debian' && !Pacman.packageIsInstalled('netplan.io')) {
     const file = this.installTarget + '/etc/network/interfaces'
@@ -39,19 +39,16 @@ export default async function networkCfg(this: Sequence) {
       content += '    gateway ' + this.network.gateway + '\n'
     }
     Utils.write(file, content)
+  } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
+    // ubuntu: netplan
   } else if (this.distro.familyId === 'arch') {
-    // do nothing? 
+    // arch: 
   }
 
   /**
-  * resolv.conf 
-  */
-  console.log(this.network.addressType)
-  process.exit()
-  if (this.network.addressType !== 'dhcp') {
-    /**
-     * Franco Conidi: se è installato resolvconf
-     */
+   * resolv.conf
+   */
+  if (this.network.addressType === 'dhcp') {
     const systemdCtl = new Systemctl()
     if (await systemdCtl.isActive('resolvconf.service')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
