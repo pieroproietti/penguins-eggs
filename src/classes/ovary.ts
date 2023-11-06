@@ -2002,10 +2002,10 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   const check = await exec(cmd, echo)
   if (!cmd.startsWith('umount')) { // skip umount errors
     if (check.code !== 0) {
-      // Utils.titles() 
+      console.log("eggs caused an error")
       console.log(`command:\n${chalk.cyan(cmd)}\nended with code ${chalk.cyan(check.code)}`)
       console.log()
-      await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
+      await Utils.pressKeyToExit("press Enter to continue", true)
     }
   }
   return cmd
