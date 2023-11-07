@@ -26,13 +26,12 @@ Just the juice, without GUI. You can start here to build your revolution!
 ##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
+# Plastilinux
+In [plastilunux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/) You can find other ISOs Debian bookworm.
+
+
 ![arm](https://penguins-eggs.net/assets/images/arm64-first-egg-born-3f2dcb6a790a22d56e71dc5862fc5dc9.jpeg)
 
-##  **wagtail**
-A light wayland/gnome/waydroid for developers
-
-##  **warbler**
-A light wayland/kde/waydroid for developers
 
 
 ## More informations:
