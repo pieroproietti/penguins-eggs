@@ -41,10 +41,10 @@ export default async function networkCfg(this: Sequence) {
     Utils.write(file, content)
 
     // trixie use systemd-networkd
-    const systemdCtl = new Systemctl()
-    if (await systemdCtl.isActive('systemd-networkd.service')) {
-      // await exec (`rm ${file}`)
-    }
+    // const systemdCtl = new Systemctl()
+    // if (await systemdCtl.isActive('systemd-networkd.service')) {
+    //  await exec (`rm ${file}`)
+    // }
 
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // ubuntu: netplan
