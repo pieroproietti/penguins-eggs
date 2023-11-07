@@ -608,17 +608,15 @@ export default class Sequence {
 
          /**
           *
-          * if calamares is present: remove GUI installer link
+          * remove CLI/GUI installer link
           */
-         if (Pacman.calamaresExists()) {
-            message = "remove GUI installer link"
-            percent = 0.92
-            try {
-               await redraw(<Install message={message} percent={percent} />)
-               await this.removeInstallerLink()
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
-            }
+         message = "remove GUI installer link"
+         percent = 0.92
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.removeInstallerLink()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
          // remove /etc/penguins_eggs.d/is_clone*

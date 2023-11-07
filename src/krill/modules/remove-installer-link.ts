@@ -22,7 +22,7 @@ export default async function removeInstallerLink(this: Sequence): Promise<void>
     for (let i = 0; i < lines.length; i++) {
       if (lines[i]) {
         if (lines[i].search('penguins-krill.desktop') !== -1) {
-          lines[i] += '#'
+          lines[i] = '#' + lines[i]
         }
 
         if (lines[i].search('penguins-clinstaller.desktop') !== -1) {

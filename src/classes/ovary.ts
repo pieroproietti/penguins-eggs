@@ -39,6 +39,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
+import { captureRejectionSymbol } from 'events'
 
 /**
  * Ovary:
@@ -2002,10 +2003,7 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   const check = await exec(cmd, echo)
   if (!cmd.startsWith('umount')) { // skip umount errors
     if (check.code !== 0) {
-      Utils.titles()
-      console.log(`command:'\n${chalk.cyan(cmd)}\n\nended with code ${chalk.cyan(check.code)}`)
-      console.log()
-      await Utils.pressKeyToExit("eggs caused an error in the previous operation, press enter to continue", true)
+      console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
     }
   }
   return cmd
