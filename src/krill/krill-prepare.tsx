@@ -202,7 +202,19 @@ export default class Krill {
     this.krillConfig = krillConfig
 
     oWelcome = { language: this.krillConfig.language }
-
+    // Try to auto-configure timezone by internet
+    const url = `https://geoip.kde.org/v1/calamares`
+    try {
+      const response = await axios.get(url)
+      if (response.statusText === 'OK') {
+        const data = JSON.stringify(response.data)
+        const obj = JSON.parse(data)
+        this.krillConfig.region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
+        this.krillConfig.zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+      }
+    } catch (error) {
+      console.error('error: ' + error)
+    }
     oLocation = {
       language: this.krillConfig.language,
       region: this.krillConfig.region,

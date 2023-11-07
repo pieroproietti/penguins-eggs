@@ -20,6 +20,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.11
+* krill: changed the way to visualize errors on function `rexec()` during installation, without clear and stop the execution;
+* krill: hide desktop link to krill on installed systems;
+* krill: always set zone/region to local using geoip.
+
 # eggs-9.6.10
 * krill: sort of keyboard layouts and fix layout selection in Devuan;
 * krill: module network-cfg, removed /etc/resolv.conf build
