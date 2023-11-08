@@ -12,19 +12,10 @@ penguins-eggs
 # Plastilinux
 Plastilinux would like to become a meta-distribution for school and be based on different custom Linux distributions using the [wardrobe](https://github.com/pieroproietti/penguins-wardrobe/tree/main/DOCUMENTATION#penguins-wardrobe) of [eggs](https://github.com/pieroproietti/penguins-eggs).
 
-![chicks](https://penguins-eggs.net/images/chicks.png)
-
 ## chicks
 XFCE4, light customization office, code, nodejs and school programs.
 
 ![chicks](https://penguins-eggs.net/images/chicks-245x183.png)
-
-Available as: 
-
-* Arch Linux
-* Debian bullseye
-* Ubuntu jammy.
-
 
 ## Integration with epoptes.
 I have included in eggs an integration function with [epoptes](https://epoptes.org/), thanks to which from an installed machine, creating an image with ``sudo eggs produce`` and starting ``sudo eggs cuckoo`` the machines started via PXE can be controlled with [epoptes](https://epoptes.org/).
@@ -32,49 +23,6 @@ I have included in eggs an integration function with [epoptes](https://epoptes.o
 * user/password
 * ```live/evolution``
 * ```root/evolution```
-
-## Create your own image.
-
-It is possible to create and customize these images from the original distributions and using eggs and wardrobe.
-
-#### Arch chicks
-* install a minimum configuration of Arch Linux or `eggs-of-arch-rolling-naked`
-* install penguins-eggs using yay, if not already installed
-* `eggs wardrobe get`
-* `cd .wardrobe/costumes/chicks`
-* `sudo ./arch_colibri.sh`
-
-#### Debian bullseye chicks
-* install a minimum configuration of Debian bullseye or `eggs-of-debian-bullseye-naked`
-* download and install eggs, if not already installed
-* `eggs wardrobe get`
-* `sudo eggs wardrobe wear chicks`
-
-#### Ubuntu jammy chicks.
-* install minimum configuration of xubuntu 22.04 or `eggs-of-ubuntu-jammy-naked`
-* download and install eggs
-* `eggs wardrobe get`
-* `cd .wardrobe/costumes/chicks`
-* `sudo ./ubuntu-jammy_colibri.sh`
-
-
-### NOTE
-I'm refactoring wardrobe, including the main originals distros: Arch, Debian/Devuan and Ubuntu.
-
-At the moment I'm using YAML configurations files for Debian/Devuan and simple Bash files for Arch and Ubuntu, this in future will change try to uniform all the distros. 
-
-I'm think to use for every costume/accessory:
-
-* `README.md` 
-* `index.yaml`
-* `distro-version_costume.sh`
-
-And let to call them with: `sudo eggs wardrobe wear [costume]`, at the moment we are in transiction.
-
-
-# Other images plastilinux
-Trying to get the same remaster from 3 or 4 differents original distros: Arch Linux, Debian, Devuan and Ubuntu.
-
 
 ## **colibri**
 A light xfce4 for developers you can easily start to improve eggs by installing colibri.
@@ -120,6 +68,9 @@ There is a [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutori
 * [sources](https://github.com/pieroproietti/penguins-krill)
 
 You can contact me at pieroproietti@gmail.com or [meet me](https://meet.jit.si/PenguinsEggsMeeting)
+
+# You can find other ISOs Debian bookworm under [bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm).
+
 
 ## Copyright and licenses
 Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
