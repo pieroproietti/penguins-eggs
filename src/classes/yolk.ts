@@ -29,75 +29,73 @@ export default class Yolk {
   async create(verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
-    if (Utils.uefiArch() !== 'amd64') {      
-      Utils.warning(`yolk is not used on the architecture ${Utils.uefiArch()}`)
-    } else {
-      Utils.warning("Creating a local repo on /var/local/yolk")
 
-      Utils.warning('Updating system')
-      if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
-        Utils.warning(`I cannot find the command dpkg-scanpackages`)
-        process.exit(0)
-      }
-
-      let cmd = ''
-      try {
-        cmd = 'apt-get update --yes'
-        await exec(cmd, this.echo)
-      } catch (error) {
-        console.log(error)
-        await Utils.pressKeyToExit(cmd)
-      }
-
-      if (!this.yolkExists()) {
-        await exec(`mkdir ${this.yolkDir} -p`, this.echo)
-        await exec(`chown _apt:root ${this.yolkDir} -R`, this.echo)
-      } else {
-        await this.yolkClean()
-      }
-
-      // packages we need
-      const pkgs = [
-        'cryptsetup',
-        'grub-pc',
-        'keyutils',
-        'shim-signed',
-      ]
-
-      // Il default è su amd64
-      let grubEfiArch = 'grub-efi-amd64'
-      if (Utils.uefiArch() === 'arm64') {
-        grubEfiArch ='grub-efi-arm64'
-      }
-      pkgs.push(grubEfiArch)
-
-      process.chdir(this.yolkDir)
-      Utils.warning(`Downloading packages and its dependencies`)
-
-      for (const pkg of pkgs) {
-        Utils.warning(`- ${pkg}`)
-        cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${pkg} | grep "^\\w" | sort -u`
-        let depends = pkg + '\n'
-        depends += (await exec(cmd, { echo: false, capture: true })).data
-        await this.installDeps(depends.split('\n'))
-      }
-
-      // create Package.gz
-      cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
-      Utils.warning(cmd)
-      await exec(cmd, { echo: false, capture: true })
-
-      // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
-      const now = shx.exec('date -R -u').stdout.trim()
-      const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.uefiArch()} \nDate: ${now}\n`
-      Utils.warning('Writing Release')
-      fs.writeFileSync('Release', content)
-
-      // Cleaning
-      Utils.warning('Cleaning apt cache')
-      const bleach = new Bleach()
-      await bleach.clean(verbose)
+    if (Utils.uefiArch() !== 'amd64') {
+      Utils.warning(`yolk is not used on ${Utils.uefiArch()} architecture`)
+      process.exit(0)
     }
+
+
+    Utils.warning(`Creating a local repo on ${this.yolkDir}`)
+
+    Utils.warning('Updating system')
+    if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
+      Utils.warning(`I cannot find the command dpkg-scanpackages`)
+      process.exit(0)
+    }
+
+    let cmd = ''
+    try {
+      cmd = 'apt-get update --yes'
+      await exec(cmd, this.echo)
+    } catch (error) {
+      console.log(error)
+      await Utils.pressKeyToExit(cmd)
+      process.exit(0)
+    }
+
+    if (!this.yolkExists()) {
+      await exec(`mkdir ${this.yolkDir} -p`, this.echo)
+      await exec(`chown _apt:root ${this.yolkDir} -R`, this.echo)
+    } else {
+      await this.yolkClean()
+    }
+
+    // packages we need
+    const pkgs = [
+      'cryptsetup',
+      'grub-efi-amd64',
+      'grub-pc',
+      'keyutils',
+      'shim-signed',
+    ]
+
+    process.chdir(this.yolkDir)
+    Utils.warning(`Downloading packages and its dependencies`)
+
+    for (const pkg of pkgs) {
+      Utils.warning(`- ${pkg}`)
+      cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${pkg} | grep "^\\w" | sort -u`
+      let depends = pkg + '\n'
+      depends += (await exec(cmd, { echo: false, capture: true })).data
+      await this.installDeps(depends.split('\n'))
+    }
+
+    // create Package.gz
+    cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
+    Utils.warning(cmd)
+    await exec(cmd, { echo: false, capture: true })
+
+    // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
+    const now = shx.exec('date -R -u').stdout.trim()
+    const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.uefiArch()} \nDate: ${now}\n`
+    Utils.warning('Writing Release')
+    fs.writeFileSync('Release', content)
+
+    // Cleaning
+    Utils.warning('Cleaning apt cache')
+    const bleach = new Bleach()
+    await bleach.clean(verbose)
   }
 
   /**
