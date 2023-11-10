@@ -19,13 +19,13 @@ iface lo inet loopback
 
 iface enp0s31f6 inet manual
 
-iface enp0s20f0u11 inet manual
+iface enx36f459e5c251 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-	address 192.168.42.188/24
+	address 192.168.42.216/24
 	gateway 192.168.42.129
-	bridge-ports enp0s20f0u11
+	bridge-ports enx36f459e5c251
 	bridge-stp off
 	bridge-fd 0
 ```

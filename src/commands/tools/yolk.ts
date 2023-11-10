@@ -14,7 +14,7 @@ import Yolk from '../../classes/yolk'
 /**
  *
  */
-export default class DevYolk extends Command {
+export default class ToolsYolk extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     verbose: Flags.boolean({char: 'v'}),
@@ -33,7 +33,7 @@ export default class DevYolk extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const {flags} = await this.parse(DevYolk)
+    const {flags} = await this.parse(ToolsYolk)
 
     let verbose = false
     if (flags.verbose) {
@@ -41,8 +41,8 @@ export default class DevYolk extends Command {
     }
 
     if (Utils.isRoot()) {
-      if (fs.existsSync(DevYolk.dir)) {
-        shx.exec(`rm ${DevYolk.dir} -rf `)
+      if (fs.existsSync(ToolsYolk.dir)) {
+        shx.exec(`rm ${ToolsYolk.dir} -rf `)
       }
 
       const yolk = new Yolk()
