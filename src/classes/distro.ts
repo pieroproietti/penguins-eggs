@@ -290,9 +290,6 @@ class Distro implements IDistro {
           console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
           console.log('If you can create your new iso, you can contribute to the project')
           console.log('by suggesting your modification.')
-          console.log('')
-          console.log('Note: adding derivatives is supported on Debian, Devuan and Ubuntu,')
-          console.log('      but not for the Arch family.')
           process.exit(0)
         }
       }
