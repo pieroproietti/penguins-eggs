@@ -21,7 +21,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.12
-* yolk: removed check and build for local yolk repository on armd64 and i386;
+* yolk: removed check and build for local yolk repository on `arm64` and `i386`;
 * manjaro: added `vulcan` version.
 
 # eggs-9.6.11
