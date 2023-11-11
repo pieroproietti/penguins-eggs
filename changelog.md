@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.12
+* yolk: removed check and build yolk repo on armd64;
+
 # eggs-9.6.11
 * krill: changed the way to visualize errors on function `rexec()` during installation, without clear and stop the execution;
 * krill: hide desktop link to krill on installed systems;
