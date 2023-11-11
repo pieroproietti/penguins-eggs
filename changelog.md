@@ -22,6 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # eggs-9.6.12
 * yolk: removed check and build for local yolk repository on armd64 and i386;
+* manjaro: added `vulcan` version.
 
 # eggs-9.6.11
 * krill: changed the way to visualize errors on function `rexec()` during installation, without clear and stop the execution;
