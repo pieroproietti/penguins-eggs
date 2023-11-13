@@ -18,12 +18,13 @@ function produce {
 
 # main
 clear
-echo ">>> LOVE: the simplest way to get a child!"
+echo ">>> L O V E :  the simplest way to get a child!"
 echo
 echo "1) sudo eggs kill"
 echo "2) sudo eggs dad --default"
 echo "3) sudo eggs tools clean"
 echo "4) sudo eggs produce"
+echo
 press_a_key_to_continue
 kill
 produce
