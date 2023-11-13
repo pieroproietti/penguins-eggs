@@ -75,8 +75,9 @@ export default class Daddy {
       config.theme = newConf.theme
 
       await this.settings.save(config)
-      console.clear()
-      Utils.titles('dad')
+      // console.clear()
+      // Utils.titles('dad')
+      console.log()
       console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'))
       console.log()
       console.log(chalk.cyan(`You can create a clean ISO with: `) + chalk.white(`sudo eggs produce`))
@@ -101,7 +102,7 @@ export default class Daddy {
    * @param c
    */
   editConfig(c: IEggsConfig): Promise<string> {
-    Utils.titles('dad')
+    // Utils.titles('dad')
     console.log(chalk.cyan('Edit and save Live system parameters'))
     console.log()
     let compressionOpt = 0
