@@ -22,6 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # eggs-9.6.13
 * v9.6.12 deprecated: due a bug introduced on the previous version v9.6.12 is unable to produce on i386 and arm64 architectures;
+* eggs dad -a: now don't clear more eventually errors from the screen;
 * love: an one shot script to get live child systems;
 * exclude.list: we get a new, more functional exclude.list, thanks to twallace51@gmail.com.
 

@@ -124,11 +124,13 @@ export default class Settings {
     }
 
     if (this.config.make_efi && !Pacman.isUefi()) {
-      Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
-      Utils.error('Please install it before to create an UEFI image:')
-      Utils.warning('sudo apt install grub-efi-amd64-bin')
-      Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
-      this.config.make_efi = false
+      if (Utils.uefiArch() === 'amd64') {
+        Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
+        Utils.error('Please install it before to create an UEFI image:')
+        Utils.warning('sudo apt install grub-efi-amd64-bin')
+        Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
+        this.config.make_efi = false
+      }
     }
 
     this.kernel_image = this.config.vmlinuz
