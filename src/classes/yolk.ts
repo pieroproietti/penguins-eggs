@@ -32,7 +32,7 @@ export default class Yolk {
 
     if (Utils.uefiArch() !== 'amd64') {
       Utils.warning(`yolk is not used on ${Utils.uefiArch()} architecture`)
-      process.exit(0)
+      return
     }
 
 
