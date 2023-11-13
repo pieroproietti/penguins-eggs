@@ -21,6 +21,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.13
+* v9.6.12 deprecated: due a bug introduced on the previous version v9.6.12 was unable to produce on i386 and arm64 architectures;
 * love: an one shot script to get live child systems;
 * exclude.list: we get a new, more functional exclude.list, thanks to twallace51@gmail.com.
 
