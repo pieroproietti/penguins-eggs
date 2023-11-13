@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.13
+* love: an one shot script to get live child systems;
+* exclude.list: we get a new, more functional exclude.list, thanks to twallace51@gmail.com.
+
 # eggs-9.6.12
 * yolk: removed check and build for local yolk repository on `arm64` and `i386`;
 * manjaro: added `vulcan` version.
