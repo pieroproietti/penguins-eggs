@@ -20,9 +20,14 @@ set -e
 
 case "$1" in
     configure)
-        # adapt 
+        # adapt in /usr/bin
         if [ -f "/usr/lib/penguins-eggs/addons/eggs/adapt/bin/adapt" ]; then
             install /usr/lib/penguins-eggs/addons/eggs/adapt/bin/adapt /usr/bin
+        fi
+
+        # love in /usr/bin
+        if [ -f "/usr/lib/penguins-eggs/scripts/love" ]; then
+            install /usr/lib/penguins-eggs/scripts/love /usr/bin
         fi
 
         # resy

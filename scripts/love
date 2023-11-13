@@ -1,4 +1,6 @@
 #!/bin/bash -e
+clear
+echo ">>> LOVE: A fast way to get a child"
 
 function kill {
     sudo eggs kill
