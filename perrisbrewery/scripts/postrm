@@ -34,6 +34,7 @@ case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
         # scripts
         rm -f /usr/bin/adapt
+        rm -f /usr/bin/love
         rm -f /usr/sbin/resy
 
         # sanitize /usr/lib/penguins-eggs/
