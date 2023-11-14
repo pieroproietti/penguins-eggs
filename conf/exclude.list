@@ -1,148 +1,74 @@
-# I started from https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
-# converting it from rsync - not more used - to mksquashfs
-# https://github.com/pieroproietti
+# Based on:    https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
 
-# Following customized for producing an egg based my current personalized linux installation - less any personal/private info
-# Also,  root/.local/share/* was itemized below - since Typora and Dolphin configurations were being lost in root's Desktop
+# Updated for penguins-eggs - when using   eggs produce --clone
+# to clone everything in /home,  including downloads, media, personal files, password files,  everything
 
-# twallace51@gmail.com
+# Location: /usr/local/share/penguins-eggs/exclude.list
 
-# SYSTEM - Following required for one reason or another,  you probably shouldn't change them.
+# Exclude:
 
-.snapshot/*        # https://wiki.archlinux.org/title/System_backup#Snapshots_and_/boot_partition
-blissos/data.img   # https://blissos.org/
+# SYSTEM - Exclude some system files - These are required, and you probably shouldn't change them.
+# They are temporary files only created on bootup - otherwise would waste space on a clone
 
-boot/*.bak
-boot/*.old-dkms
-boot/grub/device.map
+dev/*
+cdrom/*
+media/*
+swapfile
+sys/*
+proc/*
+tmp/*
+
+# MOUNTS - temporarily mounted files, especially ones that can cause infinite looping during cloning
+
+mnt/*
+
+# HARDWARE dependant files - created/updated during restoration of clone  by Calamares
+
 boot/grub/grub.cfg
 boot/grub/menu.lst
-cdrom/*
-dev/*
-etc/apt/sources.list~
-etc/blkid.tab
-etc/blkid.tab.old
-etc/crypttab
+boot/grub/device.map
 etc/fstab
 etc/fstab.d/*
-etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
-etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 etc/mtab
-etc/popularity-contest.conf
-etc/ssh/ssh_host_*_key*
-etc/ssh/ssh_host_key*
-etc/udev/rules.d/70-persistent-cd.rules
-etc/udev/rules.d/70-persistent-net.rules
-lib/live/image
-lib/live/mount
-lib/live/overlay
-lib/live/rootfs
-live
-media/*
-mnt/*
-persistence.conf
-proc/*
-run/*
-swap/*
-sys/*
-tmp/*
-usr/lib/live/image
-usr/lib/live/mount
-usr/lib/live/overlay
-usr/lib/live/rootfs
-usr/share/icons/*/icon-theme.cache
-var/backups/*.bak
-var/backups/*.gz
-var/cache/apt/apt-file/*
+etc/blkid.tab
+etc/blkid.tab.old
+
+# SPECIFIC excludes
+
+home/eggs
+home/snapshot
+
+#CACHES - that tend to be very large and unneeded - only for Arch and Debian based Linuxes
+
 var/cache/apt/archives/*.deb
 var/cache/apt/pkgcache.bin
 var/cache/apt/srcpkgcache.bin
+var/cache/apt/apt-file/*
 var/cache/debconf/*~old
-var/cache/pacman/pkg/*
+
+var/cache/pacman/pkgcache
+home/*/.local/share/yay
+
+# MISC (needed?)
+
+live
+persistence.conf
+boot/*.bak
+boot/*.old-dkms
+etc/udev/rules.d/70-persistent-cd.rules
+etc/udev/rules.d/70-persistent-net.rules
+etc/apt/sources.list~
+etc/crypttab
+etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
+etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
+etc/popularity-contest.conf
+
+var/lib/apt/lists/*
 var/lib/apt/*~
 var/lib/apt/cdroms.list
-var/lib/apt/lists/*
 var/lib/aptitude/*.old
-var/lib/dbus/machine-id
 var/lib/dhcp/*
 var/lib/dpkg/*~old
+var/lib/dbus/machine-id
 var/lib/live/config/*
-var/mail/*
-var/spool/mail/*
-
-root/.aptitude
-root/.disk-manager.conf
-root/.fstab.log
-root/.ICEauthority
-root/.lesshst
-#root/.local/share/*   # too inclusive - for example,  excludes configurations for Dolphin and Typora in root Desktop
-root/.ssh
-root/.synaptic
-root/.VirtualBox
-root/.Xauthority
-
-home/.snapshot
-home/*/.adobe
-home/*/.aptitude
-home/*/.bash_history
-home/*/.cache
-home/*/.cache/yay/*
-home/*/.config/hexchat
-home/*/.dbus
-home/*/.gksu*
-home/*/.gvfs
-home/*/.ICEauthority
-home/*/.lesshst
-home/*/.macromedia
-home/*/.nano_history
-home/*/.pulse*
-home/*/.ssh
-home/*/.thumbnails/fail/*
-home/*/.thumbnails/large/*
-home/*/.thumbnails/normal/*
-home/*/.vbox*
-home/*/.wine
-home/*/.Xauthority
-home/*/.xchat2
-home/*/.xsession-errors*
-home/*/VirtualBox              # https://www.virtualbox.org/
-
-# PRIVATE - remove this section, for an egg with full copy of current personalized installation
-
-root/.bash_history
-root/.local/share/ark
-root/.local/share/RecentDocuments
-root/.local/share/recently-used.xbel
-root/.local/share/Trash/*
-root/.local/share/user-places.*
-root/.log
-root/.mozilla/*/Cache/*
-root/.mozilla/*/cookies.sqlite
-root/.mozilla/*/downloads.sqlite
-root/.mozilla/*/formhistory.sqlite
-root/.mozilla/*/places.sqlite
-root/.mozilla/*/signons.sqlite
-root/.mozilla/*/urlclassifier3.sqlite
-root/.nano_history
-root/.zhistory
-
-home/*/.cache/yay/*
-home/*/.config/kwalletrc
-home/*/.gnupg
-home/*/.local/share/ark
-home/*/.local/share/kwalletd/*
-home/*/.local/share/RecentDocuments
-home/*/.local/share/recently-used.xbel
-home/*/.local/share/Trash/*
-home/*/.local/share/user-places.*
-home/*/.log
-home/*/.mozilla/*/Cache/*
-home/*/.mozilla/*/cookies.sqlite
-home/*/.mozilla/*/downloads.sqlite
-home/*/.mozilla/*/formhistory.sqlite
-home/*/.mozilla/*/places.sqlite
-home/*/.mozilla/*/signons.sqlite
-home/*/.mozilla/*/urlclassifier3.sqlite
-home/*/.nano_history
-home/*/.password-store
-home/*/.zhistory
+var/log/*
