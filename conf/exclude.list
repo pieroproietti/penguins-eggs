@@ -9,7 +9,7 @@
 
 
 ######################################################################################################
-# SYSTEM - Exclude some system files - These are required, and you probably shouldn't change them.
+# SYSTEM:  Exclude some system files - These are required, and you probably shouldn't change them.
 #          They are temporary files only created on bootup - otherwise would waste space on a clone
 cdrom/*
 dev/*
@@ -21,7 +21,7 @@ sys/*
 tmp/*
 
 ######################################################################################################
-# LIVE STUFFS - files depending on live
+# LIVE STUFFS: files depending on live
 etc/udev/rules.d/70-persistent-cd.rules
 etc/udev/rules.d/70-persistent-net.rules
 lib/live/*
@@ -30,7 +30,7 @@ persistence.conf
 var/lib/live/config/*
 
 ######################################################################################################
-# HARDWARE - dependant files - created/updated during restoration of clone  by Calamares
+# HARDWARE DEPENDAND FILES: created/updated during restoration of clone by calamares
 boot/grub/device.map
 boot/grub/grub.cfg
 boot/grub/menu.lst
@@ -41,7 +41,7 @@ etc/fstab.d/*
 etc/mtab
 
 ######################################################################################################
-# CACHES - that tend to be very large and unneeded - only for Arch and Debian based Linuxes
+# CACHES: that tend to be very large and unneeded - only for Arch and Debian based Linuxes
 
 # Arch family
 home/*/.local/share/yay # arch
@@ -55,7 +55,7 @@ var/cache/apt/srcpkgcache.bin
 var/cache/debconf/*~old
 
 ######################################################################################################
-# MISC - miscellanea
+# MISC: miscellanea
 etc/crypttab
 etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
 etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
@@ -70,8 +70,13 @@ var/lib/dpkg/*~old
 var/log/*
 
 ######################################################################################################
-# CUSTOM - nest usually /home/eggs is automatically excluded 
+# CUSTOM:  nest - usually /home/eggs - is automatically excluded!
 .snapshots/*
 swap/*
 swapfile
 blissos/data.img # blissos
+
+
+######################################################################################################
+# TESTING:  only for testing
+# home/artisan/*
