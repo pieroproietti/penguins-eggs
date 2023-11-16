@@ -5,8 +5,9 @@
 # Authors: fsmithred (original), Piero Proietti, Tim Wallace
 #
 # NOTE: all is alfabetic sorted with code->command palette->sortes lines ascending
-#       moved /mnt/ is SYSTEM: always we have, created LIVE STUFFS and CUSTOM
-
+#
+#       - moved /mnt/* under SYSTEM
+#       - created LIVE STUFFS, CUSTOM and TESTING
 
 ######################################################################################################
 # SYSTEM:  Exclude some system files - These are required, and you probably shouldn't change them.
