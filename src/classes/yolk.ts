@@ -35,8 +35,7 @@ export default class Yolk {
       return
     }
 
-
-    Utils.warning(`Creating a local repo on ${this.yolkDir}`)
+    Utils.warning(`Creating yolk on ${this.yolkDir}`)
 
     Utils.warning('Updating system')
     if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
@@ -54,11 +53,11 @@ export default class Yolk {
       process.exit(0)
     }
 
-    if (!this.yolkExists()) {
+    if (!this.exists()) {
       await exec(`mkdir ${this.yolkDir} -p`, this.echo)
       await exec(`chown _apt:root ${this.yolkDir} -R`, this.echo)
     } else {
-      await this.yolkClean()
+      await this.erase()
     }
 
     // packages we need
@@ -124,7 +123,7 @@ export default class Yolk {
   /**
   * Check if yoil exists and it's a repo
   */
-  yolkExists(): boolean {
+  exists(): boolean {
     const check = `${this.yolkDir}/Packages.gz`
     return fs.existsSync(check)
   }
@@ -132,7 +131,7 @@ export default class Yolk {
   /**
    * Svuota la repo yolk
    */
-  async yolkClean() {
+  async erase() {
     await exec(`rm ${this.yolkDir}/*`, this.echo)
   }
 }

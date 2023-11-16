@@ -135,14 +135,14 @@ export default class Ovary {
 
     // let luksMountpoint = `/mnt`
 
-    if (this.familyId === 'debian') {
+    if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
       const yolk = new Repo()
-      if (!yolk.yolkExists()) {
-        Utils.warning('Creating yolk')
+      if (!yolk.exists()) {
+        Utils.warning('Create yolk')
         await yolk.create(verbose)
       } else if (yolkRenew) {
         Utils.warning('Renew yolk')
-        yolk.yolkClean()
+        await yolk.erase()
         await yolk.create(verbose)
       } else {
         Utils.warning('Using preesixent yolk')
@@ -734,6 +734,7 @@ export default class Ovary {
       console.log('Ovary: kernelParameters')
     }
 
+    // GRUB_CMDLINE_LINUX='ipv6.disable=1'
     const distroId = this.settings.distro.distroId
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
