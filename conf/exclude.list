@@ -3,6 +3,10 @@
 # Location: /usr/local/share/penguins-eggs/exclude.list
 #
 # Authors: fsmithred (original), Piero Proietti, Tim Wallace
+#
+# NOTE: all is alfabetic sorted with code->command palette->sortes lines ascending
+#       moved /mnt/ is SYSTEM: always we have, created LIVE STUFFS and CUSTOM
+
 
 ######################################################################################################
 # SYSTEM - Exclude some system files - These are required, and you probably shouldn't change them.
@@ -17,10 +21,13 @@ sys/*
 tmp/*
 
 ######################################################################################################
-# LIVE STUFFS
-live
+# LIVE STUFFS - files depending on live
+etc/udev/rules.d/70-persistent-cd.rules
+etc/udev/rules.d/70-persistent-net.rules
 lib/live/*
+live
 persistence.conf
+var/lib/live/config/*
 
 ######################################################################################################
 # HARDWARE - dependant files - created/updated during restoration of clone  by Calamares
@@ -48,13 +55,11 @@ var/cache/apt/srcpkgcache.bin
 var/cache/debconf/*~old
 
 ######################################################################################################
-# MISC
+# MISC - miscellanea
 etc/crypttab
 etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
 etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
 etc/popularity-contest.conf
-etc/udev/rules.d/70-persistent-cd.rules
-etc/udev/rules.d/70-persistent-net.rules
 var/lib/apt/*~
 var/lib/apt/cdroms.list
 var/lib/apt/lists/*
@@ -62,11 +67,10 @@ var/lib/aptitude/*.old
 var/lib/dbus/machine-id
 var/lib/dhcp/*
 var/lib/dpkg/*~old
-var/lib/live/config/*
 var/log/*
 
 ######################################################################################################
-# CUSTOM - penguins-eggs, nest usually /home/eggs is automatically excluded
+# CUSTOM - nest usually /home/eggs is automatically excluded 
 .snapshots/*
 swap/*
 swapfile
