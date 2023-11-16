@@ -25,6 +25,7 @@ Il progetto si rivolge ai liberi professionisti, partite iva, enti privati e sta
 
 
 * **egg-of-uzl-faye-desktop** - a remaster of [UZL-11-desktop-x86](https://sourceforge.net/projects/ufficiozero/files/11-desktop/x86/iso/UZL-11-desktop-x86.iso)
+* **egg-of-uzl-victoria-desktop** - a remaster of [UZL-11-desktop-x86_64](https://sourceforge.net/projects/ufficiozero/files/11-desktop/x86_64/iso/UZL-11-desktop-x86_64.iso)
 
 
 # Calamares notes
