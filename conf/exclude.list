@@ -1,74 +1,73 @@
-# Based on:    https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
-
-# Updated for penguins-eggs - when using   eggs produce --clone
-# to clone everything in /home,  including downloads, media, personal files, password files,  everything
-
+# Based on: https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
+#
 # Location: /usr/local/share/penguins-eggs/exclude.list
+#
+# Authors: fsmithred (original), Piero Proietti, Tim Wallace
 
-# Exclude:
-
+######################################################################################################
 # SYSTEM - Exclude some system files - These are required, and you probably shouldn't change them.
-# They are temporary files only created on bootup - otherwise would waste space on a clone
-
-dev/*
+#          They are temporary files only created on bootup - otherwise would waste space on a clone
 cdrom/*
+dev/*
 media/*
+mnt/*
+proc/*
 swapfile
 sys/*
-proc/*
 tmp/*
 
-# MOUNTS - temporarily mounted files, especially ones that can cause infinite looping during cloning
+######################################################################################################
+# LIVE STUFFS
+live
+lib/live/*
+persistence.conf
 
-mnt/*
-
-# HARDWARE dependant files - created/updated during restoration of clone  by Calamares
-
+######################################################################################################
+# HARDWARE - dependant files - created/updated during restoration of clone  by Calamares
+boot/grub/device.map
 boot/grub/grub.cfg
 boot/grub/menu.lst
-boot/grub/device.map
+etc/blkid.tab
+etc/blkid.tab.old
 etc/fstab
 etc/fstab.d/*
 etc/mtab
-etc/blkid.tab
-etc/blkid.tab.old
 
-# SPECIFIC excludes
+######################################################################################################
+# CACHES - that tend to be very large and unneeded - only for Arch and Debian based Linuxes
 
-home/eggs
-home/snapshot
+# Arch family
+home/*/.local/share/yay # arch
+var/cache/pacman/pkgcache # arch
 
-#CACHES - that tend to be very large and unneeded - only for Arch and Debian based Linuxes
-
+# Debian family
+var/cache/apt/apt-file/*
 var/cache/apt/archives/*.deb
 var/cache/apt/pkgcache.bin
 var/cache/apt/srcpkgcache.bin
-var/cache/apt/apt-file/*
 var/cache/debconf/*~old
 
-var/cache/pacman/pkgcache
-home/*/.local/share/yay
-
-# MISC (needed?)
-
-live
-persistence.conf
-boot/*.bak
-boot/*.old-dkms
+######################################################################################################
+# MISC
+etc/crypttab
+etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
+etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
+etc/popularity-contest.conf
 etc/udev/rules.d/70-persistent-cd.rules
 etc/udev/rules.d/70-persistent-net.rules
-etc/apt/sources.list~
-etc/crypttab
-etc/initramfs-tools/conf.d/resume     # see remove-cryptroot and nocrypt.sh
-etc/initramfs-tools/conf.d/cryptroot  # see remove-cryptroot and nocrypt.sh
-etc/popularity-contest.conf
-
-var/lib/apt/lists/*
 var/lib/apt/*~
 var/lib/apt/cdroms.list
+var/lib/apt/lists/*
 var/lib/aptitude/*.old
+var/lib/dbus/machine-id
 var/lib/dhcp/*
 var/lib/dpkg/*~old
-var/lib/dbus/machine-id
 var/lib/live/config/*
 var/log/*
+
+######################################################################################################
+# CUSTOM - penguins-eggs, nest usually /home/eggs is automatically excluded
+.snapshots/*
+swap/*
+swapfile
+blissos/data.img # blissos
