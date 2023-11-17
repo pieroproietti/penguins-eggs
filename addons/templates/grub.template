@@ -19,13 +19,13 @@ set theme=/boot/grub/theme.cfg
 menuentry "{{{fullname}}}" {
     set gfxpayload=keep
     {{{rmModules}}}
-    linux {{{vmlinuz}}} {{{kernel_parameters}}} quiet splash
+    linux {{{vmlinuz}}} {{{kernel_parameters}}} ipv6.disable=1 quiet splash
     initrd {{{initrdImg}}}
 }
 
 menuentry "{{{fullname}}} safe" {
   set gfxpayload=keep
   {{{rmModules}}}
-  linux {{{vmlinuz}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal 
+  linux {{{vmlinuz}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal ipv6.disable=1
   initrd {{{initrdImg}}}
 }

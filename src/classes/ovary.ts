@@ -435,18 +435,29 @@ export default class Ovary {
       await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, this.echo)
     }
 
-    // Enable or disable password login through ssh for users (not root)
     // Remove obsolete live-config file
     if (fs.existsSync(`${this.settings.work_dir.merged}lib/live/config/1161-openssh-server`)) {
-      await exec('rm -f "$work_dir"/myfs/lib/live/config/1161-openssh-server', this.echo)
+      await exec(`rm -f ${this.settings.work_dir.merged}/lib/live/config/1161-openssh-server`, this.echo)
     }
 
+    /**
+     * disable the SSH root login
+     */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
       await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+      // Enable or disable password login through ssh for users (not root)
       await (this.settings.config.ssh_pass ?
-        exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo) :
-        exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
+        await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo) :
+        await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
     }
+
+    /**
+     * ufw reset
+     */
+    if (Pacman.packageIsInstalled('ufw')) {
+      await exec('ufw reset')
+    }
+    
 
     /**
      * /etc/fstab should exist, even if it's empty,
