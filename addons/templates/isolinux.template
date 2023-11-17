@@ -14,13 +14,13 @@ label GUI
   menu default
   say "Booting {{{fullname}}} GNU/Linux Live (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}}
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} ipv6.disable=1
 
 label SAFE
   menu label {{{fullname}}} SAFE
   say "Booting {{{fullname}}} GNU/Linux Live safe mode (kernel {{{kernel}}})"
   linux {{{vmlinuz}}} 
-  append initrd={{{initrdImg}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal 
+  append initrd={{{initrdImg}}} {{{kernel_parameters}}} apparmor=0 net.ifnames=0 noapic noapm nodma nomce nolapic nosmp vga=normal ipv6.disable=1
 
 label Boot from local
   com32 chain.c32
