@@ -444,14 +444,14 @@ export default class Ovary {
       /**
        * enable/disable SSH root/users login
        */
+      await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+      await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       if (this.settings.config.ssh_pass) {
-        // enable root and users
-        await exec(`sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)        
-        await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+        await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       } else {
-        // disable root and users
-        await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-        await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       }
     }
 
