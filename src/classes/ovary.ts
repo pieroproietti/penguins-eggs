@@ -455,7 +455,7 @@ export default class Ovary {
      * ufw reset
      */
     if (Pacman.packageIsInstalled('ufw')) {
-      await exec('ufw reset')
+      await exec('ufw reset --force')
     }
     
 
