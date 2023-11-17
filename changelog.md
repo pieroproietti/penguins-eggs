@@ -22,9 +22,10 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 # eggs-9.6.14
-* ovary: enable/disable SSH root/users password login;
-* grub/isolinux: ipv6.enable=0, exclude ipv6;
-* exclude.list: a rewrite of exclude.list.
+* ovary: enable/disable root and users password ssh connnections;
+* grub/isolinux: added `ipv6.enable=0` excluded ipv6;
+* yolk: typos and fixes;
+* exclude.list: again a rewrite of exclude.list. including twallace51@gmail.com updates.
 
 # eggs-9.6.13
 * v9.6.12 deprecated: due a bug introduced on the previous version v9.6.12 is unable to produce on i386 and arm64 architectures;
