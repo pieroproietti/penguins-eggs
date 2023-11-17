@@ -20,6 +20,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+
+# eggs-9.6.14
+* ovary: enable/disable SSH root/users password login;
+* exclude.list: a rewrite of.
+
 # eggs-9.6.13
 * v9.6.12 deprecated: due a bug introduced on the previous version v9.6.12 is unable to produce on i386 and arm64 architectures;
 * eggs dad -a: now don't clear more eventually errors from the screen;
