@@ -442,7 +442,7 @@ export default class Ovary {
 
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
       /**
-       * enable/disable SSH root/users login
+       * enable/disable SSH root/users password login
        */
       await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
