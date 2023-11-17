@@ -445,18 +445,21 @@ export default class Ovary {
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
       await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+
       // Enable or disable password login through ssh for users (not root)
-      await (this.settings.config.ssh_pass ?
-        await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo) :
-        await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo))
+      if (this.settings.config.ssh_pass) {
+        await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+      } else {
+        await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+      }
     }
 
     /**
-     * ufw reset
+     * ufw --force reset 
      */
-    if (Pacman.packageIsInstalled('ufw')) {
-      await exec('ufw --force reset')
-    }
+    // if (Pacman.packageIsInstalled('ufw')) {
+    //    await exec('ufw --force reset')
+    // }
     
 
     /**
