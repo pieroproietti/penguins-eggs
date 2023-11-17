@@ -440,16 +440,17 @@ export default class Ovary {
       await exec(`rm -f ${this.settings.work_dir.merged}/lib/live/config/1161-openssh-server`, this.echo)
     }
 
-    /**
-     * disable the SSH root login
-     */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
-      await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-
-      // Enable or disable password login through ssh for users (not root)
+      /**
+       * enable/disable SSH root/users login
+       */
       if (this.settings.config.ssh_pass) {
+        // enable root and users
+        await exec(`sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)        
         await exec(`sed -i 's|.*PasswordAuthentication.*no|PasswordAuthentication yes|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       } else {
+        // disable root and users
+        await exec(`sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
         await exec(`sed -i 's|.*PasswordAuthentication.*yes|PasswordAuthentication no|' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       }
     }
