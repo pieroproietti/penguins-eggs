@@ -46,7 +46,7 @@ etc/mtab
 
 # Arch family
 home/*/.local/share/yay # arch
-var/cache/pacman/pkgcache # arch
+var/cache/pacman/pkg # arch
 
 # Debian family
 var/cache/apt/apt-file/*
