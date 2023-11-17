@@ -45,8 +45,9 @@ etc/mtab
 # CACHES: that tend to be very large and unneeded - only for Arch and Debian based Linuxes
 
 # Arch family
-home/*/.local/share/yay # arch
-var/cache/pacman/pkg # arch
+home/*/.local/share/yay
+var/cache/pacman/pkg
+var/cache/private/yay
 
 # Debian family
 var/cache/apt/apt-file/*
