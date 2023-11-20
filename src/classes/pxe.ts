@@ -15,6 +15,7 @@ import nodeStatic from 'node-static'
 import path, { dirname } from 'node:path'
 import Settings from './settings'
 import Utils from './utils'
+// @ts-ignore
 import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'
@@ -221,8 +222,8 @@ export default class Pxe {
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     if (this.settings.distro.familyId === 'debian') {
       /**
-               * DEBIAN
-               */
+      * DEBIAN
+      */
       const clid = this.settings.distro.codenameLikeId
       if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
         content += 'kernel vmlinuz\n'
@@ -306,8 +307,8 @@ export default class Pxe {
          */
     if (this.settings.distro.familyId === 'debian') {
       /**
-               * DEBIAN
-               */
+      * DEBIAN
+      */
       content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
     } else if (this.settings.distro.familyId === 'archlinux') {
       /**
