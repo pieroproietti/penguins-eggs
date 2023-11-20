@@ -447,6 +447,7 @@ USAGE
 
 FLAGS
   -c, --clean    delete old ISOs before to copy
+  -C --checksum  export checksums md5 and sha256
   -h, --help     Show CLI help.
   -v, --verbose  verbose
 
