@@ -13,6 +13,7 @@ import {exec} from '../../lib/utils'
 export default class ExportIso extends Command {
   static flags = {
     clean: Flags.boolean({char: 'c', description: 'delete old ISOs before to copy'}),
+    checksum: Flags.boolean({char: 'C', description: 'export checksums md5 and sha256'}),
     help: Flags.help({char: 'h'}),
     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
@@ -35,24 +36,28 @@ export default class ExportIso extends Command {
 
     const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `rm -f ${rmount}\n`
-    const filter = '*.iso'
+    let filters=['*.iso', '*.md5', '*.sha256']
     cmd += `mkdir ${rmount}\n`
     cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso} ${rmount}\n`
     if (flags.clean) {
       cmd += `rm -f ${rmount}/${Tu.snapshot_name}*\n`
     }
 
-    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filter} ${rmount}\n`
+    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[0]} ${rmount}\n`
+    if (flags.checksum) {
+      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[1]} ${rmount}\n`
+      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[2]} ${rmount}\n`
+    }
     cmd += 'sync\n'
     cmd += `umount ${rmount}\n`
     cmd += `rm -f ${rmount}\m`
 
     if (!flags.verbose) {
       if (flags.clean) {
-        console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filter}`)
+        console.log(`remove  ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filters[0]}`)
+        console.log(`export  ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[1]}/${filters[2]} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
       }
-
-      console.log(`copy: ${Tu.config.localPathIso}/${Tu.snapshot_name}${filter} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
+      console.log(`scp     ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[0]} ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
     }
 
     await exec(cmd, echo)

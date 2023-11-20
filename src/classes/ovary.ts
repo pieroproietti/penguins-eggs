@@ -1929,10 +1929,16 @@ export default class Ovary {
         process.exit()
       }
 
+
       // Create link to iso
       const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
       await exec(`ln -s ${src} ${dest}`)
+
+      // Create md5sum, sha256sum
+      Utils.warning('creating md5, sha256')
+      await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
+      await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
     }
   }
 

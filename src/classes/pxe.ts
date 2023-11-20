@@ -15,6 +15,7 @@ import nodeStatic from 'node-static'
 import path, { dirname } from 'node:path'
 import Settings from './settings'
 import Utils from './utils'
+// @ts-ignore
 import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'
@@ -75,16 +76,17 @@ export default class Pxe {
     this.pxeRoot = this.nest + '/pxe'
 
     /**
-         * se pxeRoot non esiste viene creato
-         */
+    * se pxeRoot non esiste viene creato
+    */
     if (!fs.existsSync(this.pxeRoot)) {
       await exec(`mkdir ${this.pxeRoot} -p`)
     }
 
     /**
-         * Ricerca delle uova
-         */
+    * Ricerca delle ISOs
+    */
     const isos: string[] = []
+
     /*
     if (!Utils.isLive()) {
       const isos = fs.readdirSync(this.nest)
@@ -99,9 +101,9 @@ export default class Pxe {
     */
 
     /**
-         * installed: /home/eggs/mnt/iso/live
-         * live: this.iso/live
-         */
+    * installed: /home/eggs/mnt/iso/live
+    * live: this.iso/live
+    */
     const pathFiles = this.eggRoot + 'live'
     const files = fs.readdirSync(pathFiles)
     for (const file of files) {
@@ -125,8 +127,8 @@ export default class Pxe {
     }
 
     /**
-         * bootLabel
-         */
+    * bootLabel
+    */
     this.bootLabel = 'not found'
     if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
       const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf-8')
@@ -220,8 +222,8 @@ export default class Pxe {
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     if (this.settings.distro.familyId === 'debian') {
       /**
-               * DEBIAN
-               */
+      * DEBIAN
+      */
       const clid = this.settings.distro.codenameLikeId
       if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
         content += 'kernel vmlinuz\n'
@@ -235,15 +237,7 @@ export default class Pxe {
       * ARCH LINUX
       */
       let tool = 'archiso'
-      if (
-        // ManjaroCodenames
-        distro.codenameId === 'Qonos' || 
-        distro.codenameId === 'Ruah' ||
-        distro.codenameId === 'Sikaris' || 
-        distro.codenameId === 'Talos' ||
-        distro.codenameId === 'UltimaThule' ||
-        distro.codenameId === 'Uranos'
-      ) {
+      if (distro.distroId === 'ManjaroLinux') {
         tool = 'miso'
       }
 
@@ -313,8 +307,8 @@ export default class Pxe {
          */
     if (this.settings.distro.familyId === 'debian') {
       /**
-               * DEBIAN
-               */
+      * DEBIAN
+      */
       content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
     } else if (this.settings.distro.familyId === 'archlinux') {
       /**
