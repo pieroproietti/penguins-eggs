@@ -75,16 +75,17 @@ export default class Pxe {
     this.pxeRoot = this.nest + '/pxe'
 
     /**
-         * se pxeRoot non esiste viene creato
-         */
+    * se pxeRoot non esiste viene creato
+    */
     if (!fs.existsSync(this.pxeRoot)) {
       await exec(`mkdir ${this.pxeRoot} -p`)
     }
 
     /**
-         * Ricerca delle uova
-         */
+    * Ricerca delle ISOs
+    */
     const isos: string[] = []
+
     /*
     if (!Utils.isLive()) {
       const isos = fs.readdirSync(this.nest)
@@ -99,9 +100,9 @@ export default class Pxe {
     */
 
     /**
-         * installed: /home/eggs/mnt/iso/live
-         * live: this.iso/live
-         */
+    * installed: /home/eggs/mnt/iso/live
+    * live: this.iso/live
+    */
     const pathFiles = this.eggRoot + 'live'
     const files = fs.readdirSync(pathFiles)
     for (const file of files) {
@@ -125,8 +126,8 @@ export default class Pxe {
     }
 
     /**
-         * bootLabel
-         */
+    * bootLabel
+    */
     this.bootLabel = 'not found'
     if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
       const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf-8')
@@ -235,15 +236,7 @@ export default class Pxe {
       * ARCH LINUX
       */
       let tool = 'archiso'
-      if (
-        // ManjaroCodenames
-        distro.codenameId === 'Qonos' || 
-        distro.codenameId === 'Ruah' ||
-        distro.codenameId === 'Sikaris' || 
-        distro.codenameId === 'Talos' ||
-        distro.codenameId === 'UltimaThule' ||
-        distro.codenameId === 'Uranos'
-      ) {
+      if (distro.distroId === 'ManjaroLinux') {
         tool = 'miso'
       }
 
