@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.15
+* ovary: added creation checksums .md5 and sha256;
+* export iso: added checksums export.
 
 # eggs-9.6.14
 * ovary: enable/disable root and users password ssh connnections;
