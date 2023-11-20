@@ -58,6 +58,7 @@ calamares)
     "--help[Show CLI help.]"
 "--install[install calamares and its dependencies]"
 "--nointeractive[no user interaction]"
+"--policies[configure calamares policies]"
 "--release[release: remove calamares and all its dependencies after the installation]"
 "--remove[remove calamares and its dependencies]"
 "--theme=-[theme/branding for eggs and calamares]:"
@@ -102,6 +103,7 @@ export:deb)
 export:iso)
   _command_flags=(
     "--clean[delete old ISOs before to copy]"
+"--checksum[export checksums md5 and sha256]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )

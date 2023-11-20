@@ -54,9 +54,10 @@ export default class ExportIso extends Command {
 
     if (!flags.verbose) {
       if (flags.clean) {
-        console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filters[0]}`)
+        console.log(`remove  ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filters[0]}`)
+        console.log(`export  ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[1]}/${filters[2]} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
       }
-      console.log(`scp ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[0]} ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
+      console.log(`scp     ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[0]} ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
     }
 
     await exec(cmd, echo)
