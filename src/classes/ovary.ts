@@ -1935,9 +1935,10 @@ export default class Ovary {
       const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
       await exec(`ln -s ${src} ${dest}`)
 
-      // Create md5sum
-      const md5 = await exec(`md5sum ${src} > ${dest}.md5`)
-      const sha256 = await exec(`sha256sum ${src} > ${dest}.sha256`)
+      // Create md5sum, sha256sum
+      console.log('creating md5, sha256')
+      await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
+      await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
       
     }
   }
