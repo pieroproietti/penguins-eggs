@@ -13,12 +13,12 @@ _eggs_autocomplete()
   local commands="
 adapt --help --verbose
 analyze --help --verbose
-calamares --help --install --nointeractive --release --remove --theme --verbose
+calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --noicons --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
-export:iso --clean --help --verbose
+export:iso --clean --checksum --help --verbose
 install --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --nointeractive --verbose
 mom --help
