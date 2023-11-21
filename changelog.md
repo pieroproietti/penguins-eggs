@@ -25,7 +25,7 @@ FROM eggs v9.6.16 I changed a bit, hide mnt to .mnt, and create links to iso and
 ## nest (/home/eggs)
 
 # eggs-9.6.16
-I make a bit of refactoring under the nest `/home/eggs`, virtually all remain unchanged, but now we have more clear picture:
+* nest: I make a bit of refactoring on the nest (`/home/eggs`) - under the hood virtually all remain unchanged - but we get more clear vision:
 ```
 - iso -> .mnt/iso
 - livefs -> .mnt/filesystem.squashfs
@@ -35,7 +35,10 @@ I make a bit of refactoring under the nest `/home/eggs`, virtually all remain un
 - egg-of_image.md5
 - egg-of_image.sha256
 ```
-On the nest there are two hidden dirs too: `./mnt`, `./overlay`, where happen the magic.
+In addiction, there are two hidden dirs too: `./mnt`, `./overlay`, where happen the magic.
+* kill: added --isos to force erase of ISOs on remote share;
+* dad: changed suggestions in accord.
+ 
 
 # eggs-9.6.15
 * ovary: added creation checksums .md5 and sha256;
