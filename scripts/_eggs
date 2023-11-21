@@ -132,6 +132,7 @@ kill)
   _command_flags=(
     "--help[Show CLI help.]"
 "--nointeractive[no user interaction]"
+"--isos[erase all ISOs on remote mount]"
 "--verbose[verbose]"
   )
 ;;
