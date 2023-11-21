@@ -44,7 +44,12 @@ export default class Kill extends Command {
       const settings = new Settings()
       await settings.load()
       await settings.listFreeSpace()
-      if (nointeractive || await Utils.customConfirm()) {
+      if (Utils.isMountpoint(settings.config.snapshot_mnt)) {
+        console.log('==========================================')
+        Utils.warning('You are working on a mountpoint')
+        console.log('==========================================')
+      }
+    if (nointeractive || await Utils.customConfirm()) {
         await killMeSoftly(settings.config.snapshot_dir, settings.config.snapshot_mnt, isos)
       }
     } else {
