@@ -527,7 +527,8 @@ export default class Krill {
       }
       name = await getUsername(name)
       fullname = await getUserfullname(fullname)
-      password = await getPassword(password)
+      password = await getPassword(name, password)
+      rootPassword = await getPassword('root', password)
       hostname = await getHostname(hostname)
     }
 

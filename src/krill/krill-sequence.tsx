@@ -515,7 +515,7 @@ export default class Sequence {
             }
 
             // changePassword root
-            message = "Add user password"
+            message = "Add root password"
             percent = 0.77
             try {
                await redraw(<Install message={message} percent={percent} />)
