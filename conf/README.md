@@ -50,7 +50,7 @@ You already knw boot and efi, are necessary for UEFI and consist in the copy of 
 * mkisofs
 * mksquashfs
 * ubind
-* .overlay
+* .overlay (moved under nest 2023-11-21)
 
 ## Customize your image before to generate it
 if you want more control on the production of your iso, try the new --dry flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create iso.
