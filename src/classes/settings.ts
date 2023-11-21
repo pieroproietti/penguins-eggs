@@ -105,14 +105,17 @@ export default class Settings {
     }
 
     this.work_dir.ovarium = this.config.snapshot_dir + 'ovarium/'
-    this.work_dir.lowerdir = this.work_dir.ovarium + '.overlay/lowerdir'
-    this.work_dir.upperdir = this.work_dir.ovarium + '.overlay/upperdir'
-    this.work_dir.workdir = this.work_dir.ovarium + '.overlay/workdir'
 
-    this.config.snapshot_mnt = this.config.snapshot_dir + 'mnt/'
+    // hidden .mnt under nest
+    this.config.snapshot_mnt = this.config.snapshot_dir + '.mnt/'
     if (!this.config.snapshot_mnt.endsWith('/')) {
       this.config.snapshot_mnt += '/'
     }
+
+    // hidden .overlay under nest was under ovarium
+    this.work_dir.lowerdir = this.config.snapshot_dir + '.overlay/lowerdir'
+    this.work_dir.upperdir = this.config.snapshot_dir + '.overlay/upperdir'
+    this.work_dir.workdir = this.config.snapshot_dir + '.overlay/workdir'
 
     this.work_dir.merged = this.config.snapshot_mnt + 'filesystem.squashfs'
     this.efi_work = this.config.snapshot_mnt + 'efi-work/'

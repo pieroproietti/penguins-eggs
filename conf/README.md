@@ -1,6 +1,21 @@
 # Penguins' eggs 
 
-## mnt
+FROM eggs v9.6.16 I changed a bit, hide mnt to .mnt, and create links to iso and filesystem.squashfs on the nest. Re have a more logic structure, build on the provious one, unchanged.
+
+## nest (/home/eggs)
+
+* iso -> .mnt/iso
+* livefs -> .mnt/filesystem.squashfs
+* ovarium
+* README.md
+* egg-of_image.iso
+* egg-of_image.md5
+* egg-of_image.sha256
+
+
+Under the hood all remain unchanged, but the importants things now are more visible.
+
+## .mnt
 * efi-work
 * filesystem.squashfs
 * iso
@@ -35,7 +50,7 @@ You already knw boot and efi, are necessary for UEFI and consist in the copy of 
 * mkisofs
 * mksquashfs
 * ubind
-* .overlay
+* .overlay (moved under nest 2023-11-21)
 
 ## Customize your image before to generate it
 if you want more control on the production of your iso, try the new --dry flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create iso.
@@ -50,5 +65,3 @@ if you want more control on the production of your iso, try the new --dry flag, 
 Feel free to contact me for any suggestions.
 
 https://github.com/pieroproietti/penguins-eggs
-
- 
