@@ -112,12 +112,12 @@ There are more than a way to install eggs as .deb package, the most practical is
 The simplest way to install eggs is download the [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) from [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/) and install it
 
 ```
-sudo dpkg -i eggs_9.6.15_amd64.deb 
+sudo dpkg -i eggs_9.6.16_amd64.deb 
 ```
 
 or, on a i386 system:
 ```
-sudo dpkg -i eggs_9.6.15_i386.deb
+sudo dpkg -i eggs_9.6.16_i386.deb
 ```
 
 Once eggs is installed you can add the [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa) repository with the command: ```sudo eggs tools ppa --install```
@@ -146,7 +146,7 @@ sudo apt update && sudo apt install eggs
 ```
 
 ### Upgrade eggs
-If you are using penguins-eggs-ppa You can upgrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.6.15_amd64.deb** or **gdebi eggs_9.6.15_i386.deb**.
+If you are using penguins-eggs-ppa You can upgrade eggs as others packages just: **sudo apt upgrade**, else simply download new versions of eggs from [sourgeforge page](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it with the standard command **sudo dpkg -i eggs_9.6.16_amd64.deb** or **gdebi eggs_9.6.16_i386.deb**.
 
 ## Arch families
 eggs has been present in [AUR](https://aur.archlinux.org/) for a long time, even without my knowledge thanks the support of Arch peoples. I am currently directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs) and I'm participating in the [Manjaro Community Repository](https://gitlab.manjaro.org/packages/community/penguins-eggs).
