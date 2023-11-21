@@ -37,9 +37,9 @@ FROM eggs v9.6.16 I changed a bit, hide mnt to .mnt, and create links to iso and
 ```
 In addiction, there are two hidden dirs too: `./mnt`, `./overlay`, where happen the magic.
 * kill: added --isos to force erase of ISOs on remote share;
-* dad: changed suggestions in accord.
+* dad: changed suggestions in accord;
+* info: restored info on `.disk` of the ISO created.
  
-
 # eggs-9.6.15
 * ovary: added creation checksums .md5 and sha256;
 * export iso: added checksums export.
