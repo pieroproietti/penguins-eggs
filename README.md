@@ -527,6 +527,7 @@ USAGE
 
 FLAGS
   -h, --help           Show CLI help.
+  -i, --isos           erase all ISOs on remote mount
   -n, --nointeractive  no user interaction
   -v, --verbose        verbose
 

@@ -18,6 +18,7 @@ export default class Kill extends Command {
   static flags = {
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    isos: Flags.boolean({ char: 'i', description: 'erase all ISOs on remote mount' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
@@ -34,13 +35,9 @@ export default class Kill extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Kill)
-    let verbose = false
-    if (flags.verbose) {
-      verbose = true
-    }
-
+    const verbose = flags.verbose
+    const isos = flags.isos
     const nointeractive = flags.nointeractive
-
     const echo = Utils.setEcho(verbose)
 
     if (Utils.isRoot()) {
@@ -48,7 +45,7 @@ export default class Kill extends Command {
       await settings.load()
       await settings.listFreeSpace()
       if (nointeractive || await Utils.customConfirm()) {
-        await killMeSoftly(settings.config.snapshot_dir, settings.config.snapshot_mnt)
+        await killMeSoftly(settings.config.snapshot_dir, settings.config.snapshot_mnt, isos)
       }
     } else {
       Utils.useRoot(this.id)
