@@ -1750,7 +1750,7 @@ export default class Ovary {
     text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
 
     // .disk/info
-    fs.writeFileSync(dotDisk + '/info', info, 'utf-8')
+    fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
 
     // .disk/mksquashfs
     fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
@@ -1934,14 +1934,13 @@ export default class Ovary {
     if (this.verbose) {
       console.log('Ovary: makeIso')
     }
-    //Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
+
     Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
     if (!scriptOnly) {
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
         process.exit()
       }
-
 
       // Create link to iso
       const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
@@ -1953,6 +1952,9 @@ export default class Ovary {
       await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
       await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
     }
+
+
+
   }
 
   /**
