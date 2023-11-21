@@ -308,7 +308,6 @@ export default class Ovary {
     if (this.verbose) {
       console.log('Ovary: liveCreateStructure')
     }
-    // efi-work iso  memdiskDir sotto mountpoint
 
     Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
 
@@ -359,6 +358,14 @@ export default class Ovary {
       cmd = `mkdir -p ${this.settings.iso_work}live`
       this.tryCatch(cmd)
     }
+
+    // ln iso
+    cmd = `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso`
+    this.tryCatch(cmd)
+
+    // ln livefs
+    cmd = `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
+    this.tryCatch(cmd)
   }
 
   /**

@@ -109,7 +109,8 @@ export default class Settings {
     this.work_dir.upperdir = this.work_dir.ovarium + '.overlay/upperdir'
     this.work_dir.workdir = this.work_dir.ovarium + '.overlay/workdir'
 
-    this.config.snapshot_mnt = this.config.snapshot_dir + 'mnt/'
+    // hidden ./mnt
+    this.config.snapshot_mnt = this.config.snapshot_dir + '.mnt/'
     if (!this.config.snapshot_mnt.endsWith('/')) {
       this.config.snapshot_mnt += '/'
     }
