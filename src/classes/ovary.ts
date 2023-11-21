@@ -308,7 +308,6 @@ export default class Ovary {
     if (this.verbose) {
       console.log('Ovary: liveCreateStructure')
     }
-    // efi-work iso  memdiskDir sotto mountpoint
 
     Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
 
@@ -320,6 +319,12 @@ export default class Ovary {
 
     if (!fs.existsSync(this.settings.config.snapshot_dir + '/README.md')) {
       cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md`
+      this.tryCatch(cmd)
+    }
+
+    // Ovarium 
+    if (!fs.existsSync(this.settings.work_dir.ovarium)) {
+      cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
       this.tryCatch(cmd)
     }
 
@@ -359,6 +364,14 @@ export default class Ovary {
       cmd = `mkdir -p ${this.settings.iso_work}live`
       this.tryCatch(cmd)
     }
+
+    // ln iso
+    cmd = `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso`
+    this.tryCatch(cmd)
+
+    // ln livefs
+    cmd = `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
+    this.tryCatch(cmd)
   }
 
   /**
@@ -1737,7 +1750,7 @@ export default class Ovary {
     text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
 
     // .disk/info
-    fs.writeFileSync(dotDisk + '/info', info, 'utf-8')
+    fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
 
     // .disk/mksquashfs
     fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
@@ -1921,14 +1934,13 @@ export default class Ovary {
     if (this.verbose) {
       console.log('Ovary: makeIso')
     }
-    //Utils.writeX(`${this.settings.config.snapshot_dir}mkisofs`, cmd)
+
     Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
     if (!scriptOnly) {
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
         process.exit()
       }
-
 
       // Create link to iso
       const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
@@ -1940,6 +1952,9 @@ export default class Ovary {
       await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
       await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
     }
+
+
+
   }
 
   /**

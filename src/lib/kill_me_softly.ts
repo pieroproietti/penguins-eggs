@@ -15,7 +15,7 @@ import { exec } from "./utils"
 /**
  *  
  */
-export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/home/eggs/mnt') {
+export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/home/eggs/.mnt', isos = false) {
   const echo = Utils.setEcho(false)
   const liveFs = `${eggsMnt}filesystem.squashfs`
 
@@ -36,6 +36,11 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
     await exec(`rm -rf ${eggsMnt}iso`)
     await exec(`rm -rf ${eggsMnt}memdiskDir`)
     await exec(`rm -rf ${eggsRoot}ovarium`)
+
+    // Remove all ISOs if --isos
+    if (isos) {
+      await exec(`rm -rf ${eggsMnt}*.iso`)
+    }
 
     // double check !haveBindedDirs
     if (!haveBindedDirs(liveFs)) {

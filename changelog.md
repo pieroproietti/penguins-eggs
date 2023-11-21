@@ -20,6 +20,26 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+FROM eggs v9.6.16 I changed a bit, hide mnt to .mnt, and create links to iso and filesystem.squashfs on the nest. Re have a more logic structure, build on the provious one, unchanged.
+
+## nest (/home/eggs)
+
+# eggs-9.6.16
+* nest: I make a bit of refactoring on the nest (`/home/eggs`) - under the hood virtually all remain unchanged - but we get more clear vision:
+```
+- iso -> .mnt/iso
+- livefs -> .mnt/filesystem.squashfs
+- ovarium
+- README.md
+- egg-of_image.iso
+- egg-of_image.md5
+- egg-of_image.sha256
+```
+In addiction, there are two hidden dirs too: `./mnt`, `./overlay`, where happen the magic.
+* kill: added --isos to force erase of ISOs on remote share;
+* dad: changed suggestions in accord;
+* info: restored info on `.disk` of the ISO created.
+ 
 # eggs-9.6.15
 * ovary: added creation checksums .md5 and sha256;
 * export iso: added checksums export.
