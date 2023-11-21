@@ -322,6 +322,12 @@ export default class Ovary {
       this.tryCatch(cmd)
     }
 
+    // Ovarium 
+    if (!fs.existsSync(this.settings.work_dir.ovarium)) {
+      cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
+      this.tryCatch(cmd)
+    }
+
     if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
       cmd = `mkdir -p ${this.settings.work_dir.lowerdir}`
       this.tryCatch(cmd)
