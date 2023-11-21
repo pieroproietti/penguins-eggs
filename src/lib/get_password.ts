@@ -21,14 +21,14 @@ export default async function getPassword(user = 'root', initial: string): Promi
     const questions: Array<Record<string, any>> = [
       {
         type: 'password',
-        message: `Choose a password for [${user}]: `,
+        message: `Choose a password for ${user}: `,
         name: 'password',
         default: initial,
         // validate: requireLetterAndNumber,
       },
       {
         type: 'password',
-        message: `Confirm your [${user}] password: `,
+        message: `Confirm your ${user} password: `,
         name: 'confirmPassword',
         default: initial,
         // validate: requireLetterAndNumber,
