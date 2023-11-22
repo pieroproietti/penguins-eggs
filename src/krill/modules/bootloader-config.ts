@@ -8,8 +8,6 @@
  */
 
 import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import Utils from '../../classes/utils'
 
 /**
  *
@@ -17,11 +15,7 @@ import Utils from '../../classes/utils'
  */
 export default async function bootloaderConfig(this: Sequence): Promise<void> {
   if (this.distro.familyId === 'debian') {
-    if (this.distro.distroLike === 'ubuntu') {
-      this.bootloaderConfigUbuntu()
-    } else {
       this.bootloaderConfigDebian()
-    }
   } else if (this.distro.familyId === 'archlinux') {
     this.bootloaderConfigArch() 
   }
