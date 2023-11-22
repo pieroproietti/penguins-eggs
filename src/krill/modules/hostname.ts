@@ -30,10 +30,16 @@ export default async function hostname(this: Sequence, domain = ''): Promise<voi
      */
   {
     const file = this.installTarget + '/etc/hosts'
+
+    if (domain === '(none)') {
+      domain = ''
+    }
+
     let text = '127.0.0.1 localhost localhost.localdomain\n'
     if (this.network.addressType === 'static') {
       text += `${this.network.address} ${hostname} ${hostname}${domain} pvelocalhost pvelocalhost.pvelocaldomain\n`
     } else {
+      
       if (domain !== '') {
         text += `127.0.1.1 ${hostname} ${hostname}${domain}\n`
       } else {
