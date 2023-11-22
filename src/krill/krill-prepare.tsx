@@ -112,9 +112,6 @@ import Sequence from './krill-sequence'
 import { INet } from '../interfaces/index'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
 
-import si from 'systeminformation'
-
-
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
 /**

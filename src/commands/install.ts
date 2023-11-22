@@ -90,7 +90,7 @@ export default class Install extends Command {
     const ip = flags.ip
     const random = flags.random
 
-    let domain = '.local'
+    let domain = ''
     if (flags.domain) {
       domain = flags.domain!
     }
