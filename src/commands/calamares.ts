@@ -106,17 +106,17 @@ export default class Calamares extends Command {
               policies = true
             }
           }
+        }
 
-          /**
-           * Configure
-           */
-          if (await this.settings.load()) {
-            Utils.warning('Configuring calamares')
-            await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
-            const isClone = false
-            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
-            await this.incubator.config(release)
-          }
+        /**
+        * Configure
+        */
+        if (await this.settings.load()) {
+          Utils.warning(`Configuring ${installer}`)
+          await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
+          const isClone = false
+          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
+          await this.incubator.config(release)
 
           /**
            * policies

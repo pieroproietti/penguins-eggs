@@ -20,8 +20,17 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.17
+A lot of little adjustments on `eggs install` aka krill:
+* added krill alias to command `eggs install`;
+* user/password and root/password fixes;
+* hostname, domain fixes;
+* others.
+
+The only solution to put krill in order it to use it, I always use it with option --unattended to save time, sorry if I forgot some bugs again.
+
 # eggs-9.6.16
-FROM eggs v9.6.16 I make a bit of refactoring on the nest (`/home/eggs`) - under the hood virtually all remain unchanged - but we get more clear vision:
+I make a bit of refactoring on the nest (`/home/eggs`) - under the hood virtually all remain unchanged - but we get more clear vision:
 ```
 - iso -> .mnt/iso
 - livefs -> .mnt/filesystem.squashfs
