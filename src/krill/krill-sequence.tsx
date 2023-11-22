@@ -91,7 +91,6 @@ import networkCfg from './modules/network-cfg'
 import bootloaderConfig from './modules/bootloader-config'
 import bootloaderConfigArch from './modules/bootloader-config-arch'
 import bootloaderConfigDebian from './modules/bootloader-config-debian'
-import bootloaderConfigUbuntu from './modules/bootloader-config-ubuntu'
 //
 import grubcfg from './modules/grubcfg'
 import bootloader from './modules/bootloader'
@@ -140,7 +139,6 @@ export default class Sequence {
    public bootloaderConfig = bootloaderConfig
    public bootloaderConfigArch = bootloaderConfigArch
    public bootloaderConfigDebian = bootloaderConfigDebian
-   public bootloaderConfigUbuntu = bootloaderConfigUbuntu
    //
    public grubcfg = grubcfg
    public bootloader = bootloader
