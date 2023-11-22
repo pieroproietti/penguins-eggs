@@ -13,7 +13,7 @@ import fs from 'fs'
 /**
  * hostname
  */
-export default async function hostname(this: Sequence, domain = 'localdomain'): Promise<void> {
+export default async function hostname(this: Sequence, domain = ''): Promise<void> {
   const hostname = this.users.hostname
 
   /**
