@@ -19,7 +19,7 @@ export default async function bootloaderConfigArch(this: Sequence) {
   let cmd = ''
   if (this.efi) {
     try {
-      cmd = `chroot ${this.installTarget} pacman -S grub-efi-${Utils.uefiArch()} ${this.toNull}`
+      cmd = `chroot ${this.installTarget} pacman -Sy grub efibootmgr} ${this.toNull}`
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(error)
@@ -27,7 +27,7 @@ export default async function bootloaderConfigArch(this: Sequence) {
     }
   } else {
     try {
-      cmd = `chroot ${this.installTarget} pacman -S grub-pc ${this.toNull}`
+      cmd = `chroot ${this.installTarget} pacman -Sy grub ${this.toNull}`
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(error)
