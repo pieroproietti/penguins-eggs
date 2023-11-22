@@ -14,7 +14,6 @@ import Utils from '../../classes/utils'
  *
  * @param this
  */
-
 export default async function bootloaderConfigUbuntu(this: Sequence) {
   let cmd = ''
   try {
@@ -70,14 +69,6 @@ export default async function bootloaderConfigUbuntu(this: Sequence) {
 
   try {
     cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
-    await exec(cmd, this.echo)
-  } catch (error) {
-    console.log(error)
-    await Utils.pressKeyToExit(cmd, true)
-  }
-
-  try {
-    cmd = `chroot ${this.installTarget} update-grub ${this.toNull}`
     await exec(cmd, this.echo)
   } catch (error) {
     console.log(error)
