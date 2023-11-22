@@ -726,7 +726,7 @@ export default class Utils {
     * getDomain
     */
    static getDomain(): string {
-      return shx.exec('dnsdomainname', { silent: true }).stdout.trim()
+      return shx.exec('domainname', { silent: true }).stdout.trim()
       // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
@@ -735,7 +735,8 @@ export default class Utils {
     * @returns gateway
     */
    static gateway(): string {
-      return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+      return shx.exec(`ip r | grep 'default' | awk '{print $3}'`, { silent: true }).stdout.trim()
+      //return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
    }
 
    /**
