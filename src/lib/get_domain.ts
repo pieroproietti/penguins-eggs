@@ -8,7 +8,7 @@
 'use strict'
 const inquirer = require('inquirer') 
 
-export default async function getDomain(initial: string): Promise<string> {
+export default async function getDomain(initial = ''): Promise<string> {
   return new Promise(function (resolve) {
     const questions: Array<Record<string, any>> = [
       {
