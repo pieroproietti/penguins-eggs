@@ -257,7 +257,7 @@ export default class Sequence {
     * @param umount
     * @returns
     */
-   async start(domain = 'localdomain', unattended = false, nointeractive = false, halt = false, verbose = false) {
+   async start(domain = '', unattended = false, nointeractive = false, halt = false, verbose = false) {
 
       /**
        * To let krill to work with Arch we need:
