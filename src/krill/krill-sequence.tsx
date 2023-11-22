@@ -259,6 +259,14 @@ export default class Sequence {
     */
    async start(domain = '', unattended = false, nointeractive = false, halt = false, verbose = false) {
 
+      // Imposta il domain per flag
+      if (domain !== '') {
+         if (domain.at(0)!=='.') {
+            domain = '.' + domain 
+         }
+         this.network.domain = domain
+      }
+
       /**
        * To let krill to work with Arch we need:
        */
@@ -417,7 +425,7 @@ export default class Sequence {
          percent = 0.64
          try {
             await redraw(<Install message={message} percent={percent} />)
-            await this.hostname(domain)
+            await this.hostname(this.network.domain)
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }

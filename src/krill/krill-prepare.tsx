@@ -575,6 +575,9 @@ export default class Krill {
         i.netmask = await getNetmask(i.netmask)
         i.gateway = await getGateway(i.gateway)
         i.domain = await getDomain(i.domain)
+        if (i.domain.at(0)!=='.') {
+          i.domain = '.' + i.domain
+        }
         i.dns = (await getDns(dnsString)).split(';')
         dnsString = ''
         for (let c = 0; c < i.dns.length; c++) {
