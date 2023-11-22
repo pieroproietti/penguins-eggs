@@ -23,7 +23,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       this.execCalamaresModule('bootloader-config')
     }
   } else if (this.distro.familyId === 'archlinux') {
-    // nothing
+    // bootloaderConfigArch() 
   }
 }
 
