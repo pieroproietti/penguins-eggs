@@ -33,7 +33,7 @@
  *  - networkcfg:    networkcfg
  *  - hwclock:
  *  - services-systemd:
- *  - bootloader-config: execCalamaresModule('bootloader-config')
+ *  - bootloader-config: bootloader-config-arch / bootloader-config-debian
  *  - grubcfg:       grubcfg
  *  - bootloader:    bootloaded
  *  - packages:      removeInstaller
@@ -91,7 +91,6 @@ import networkCfg from './modules/network-cfg'
 import bootloaderConfig from './modules/bootloader-config'
 import bootloaderConfigArch from './modules/bootloader-config-arch'
 import bootloaderConfigDebian from './modules/bootloader-config-debian'
-//
 import grubcfg from './modules/grubcfg'
 import bootloader from './modules/bootloader'
 import packages from './modules/packages'
