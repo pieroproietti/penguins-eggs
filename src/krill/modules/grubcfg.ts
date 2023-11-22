@@ -12,12 +12,13 @@ import Utils from '../../classes/utils'
 import fs from 'fs'
 
 /**
-    * grubcfg
-    * - open /etc/default/grub
-    * - find GRUB_CMDLINE_LINUX_DEFAULT=
-    * - replace with GRUB_CMDLINE_LINUX_DEFAULT=
-    * 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
-    */
+* grubcfg
+* - open /etc/default/grub
+* - find GRUB_CMDLINE_LINUX_DEFAULT=
+* - replace with GRUB_CMDLINE_LINUX_DEFAULT=
+* 's/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=/g'
+*/
+
 export default async function grubcfg(this: Sequence) {
   const file = `${this.installTarget}/etc/default/grub`
   let content = ''

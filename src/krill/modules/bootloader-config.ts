@@ -8,6 +8,8 @@
  */
 
 import Sequence from '../krill-sequence'
+import { exec } from '../../lib/utils'
+import Utils from '../../classes/utils'
 
 /**
  *
@@ -19,5 +21,41 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   } else if (this.distro.familyId === 'archlinux') {
     this.bootloaderConfigArch() 
   }
+
+  /*
+  // This is common all
+  let cmd =''
+  try {
+    cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
+    await exec(cmd, this.echo)
+  } catch (error) {
+    console.log(error)
+    await Utils.pressKeyToExit(cmd, true)
+  }
+
+  try {
+    cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
+    await exec(cmd, this.echo)
+  } catch (error) {
+    console.log(error)
+    await Utils.pressKeyToExit(cmd, true)
+  }
+
+  try {
+    cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
+    await exec(cmd, this.echo)
+  } catch (error) {
+    console.log(error)
+    await Utils.pressKeyToExit(cmd, true)
+  }
+
+  try {
+    cmd = `chroot ${this.installTarget} sleep 1 ${this.toNull}`
+    await exec(cmd, this.echo)
+  } catch (error) {
+    console.log(error)
+    await Utils.pressKeyToExit(cmd, true)
+  }
+  */
 }
 

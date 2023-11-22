@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.18
+Again on krill:
+* fixed bootloader problems on Debian and Arch;
+
 # eggs-9.6.17
 A lot of little adjustments on `eggs install` aka krill:
 * added krill alias to command `eggs install`;
