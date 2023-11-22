@@ -34,7 +34,11 @@ export default async function hostname(this: Sequence, domain = 'localdomain'): 
     if (this.network.addressType === 'static') {
       text += `${this.network.address} ${hostname}${domain} pvelocalhost\n`
     } else {
-      text += `127.0.1.1 ${hostname}${domain} ${hostname}\n`
+      if (domain !== '') {
+        text += `127.0.1.1 ${hostname}${domain} ${hostname}\n`
+      } else {
+        text += `127.0.1.1 ${hostname}\n`        
+      }
     }
 
     text += '# The following lines are desirable for IPv6 capable hosts\n'

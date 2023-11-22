@@ -159,7 +159,7 @@ export default class Krill {
    * @param pve 
    * @param verbose 
    */
-  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = 'local', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
     /**
      * Check for disk presence
      */
