@@ -22,10 +22,12 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # eggs-9.6.18
 Again working on `eggs install` aka krill:
+
 * fixed bootloader problems on Arch, Debian, Devuan and Ubuntu.
 
 # eggs-9.6.17
 A lot of little adjustments on `eggs install` aka krill:
+
 * added krill alias to command `eggs install`;
 * user/password and root/password fixes;
 * hostname, domain fixes;
