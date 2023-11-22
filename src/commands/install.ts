@@ -39,6 +39,8 @@ export default class Install extends Command {
     verbose: Flags.boolean({char: 'v', description: 'Verbose'}),
   }
 
+  static aliases = ['krill']
+
   static description = 'krill: the CLI system installer - the egg became a penguin!'
 
   static examples = [

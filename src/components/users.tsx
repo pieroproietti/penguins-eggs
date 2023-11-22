@@ -77,11 +77,12 @@ export default function Users({ name, fullname, password, rootPassword, hostname
                     <Box flexDirection="row">
                         <Steps step={5} />
                         <Box flexDirection="column">
-                            <Box><Text>username </Text><Text color="cyan">{name}</Text></Box>
-                            <Box><Text>full username </Text><Text color="cyan">{fullname}</Text></Box>
-                            <Box><Text>user password </Text><Text color="cyan">{password}</Text></Box>
-                            <Box><Text>root password </Text><Text color="cyan" >{rootPassword}</Text></Box>
-                            <Box><Text>hostname </Text><Text color="cyan">{hostname}</Text></Box>
+                            <Box><Text>username     : </Text><Text color="cyan">{name}</Text></Box>
+                            <Box><Text>full username: </Text><Text color="cyan">{fullname}</Text></Box>
+                            <Box><Text>user password: </Text><Text color="cyan">{password}</Text></Box>
+                            <Box></Box>
+                            <Box><Text>root password: </Text><Text color="cyan" >{rootPassword}</Text></Box>
+                            <Box><Text>hostname     : </Text><Text color="cyan">{hostname}</Text></Box>
                             <Box><Text> </Text><Text color="cyan">{charAutologin}</Text></Box>
                         </Box>
                     </Box>

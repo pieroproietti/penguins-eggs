@@ -13,7 +13,7 @@ import fs from 'fs'
 /**
  * hostname
  */
-export default async function hostname(this: Sequence, domain = 'local'): Promise<void> {
+export default async function hostname(this: Sequence, domain = 'localdomain'): Promise<void> {
   const hostname = this.users.hostname
 
   /**
@@ -32,9 +32,9 @@ export default async function hostname(this: Sequence, domain = 'local'): Promis
     const file = this.installTarget + '/etc/hosts'
     let text = '127.0.0.1 localhost localhost.localdomain\n'
     if (this.network.addressType === 'static') {
-      text += `${this.network.address} ${hostname} pvelocalhost\n`
+      text += `${this.network.address} ${hostname}${domain} pvelocalhost\n`
     } else {
-      text += `127.0.1.1 ${hostname}.${domain} ${hostname} \n`
+      text += `127.0.1.1 ${hostname}${domain} ${hostname}\n`
     }
 
     text += '# The following lines are desirable for IPv6 capable hosts\n'
