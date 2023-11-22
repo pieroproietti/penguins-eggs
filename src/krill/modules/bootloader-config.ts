@@ -20,10 +20,10 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     if (this.distro.distroLike === 'ubuntu') {
       this.bootloaderConfigUbuntu()
     } else {
-      this.execCalamaresModule('bootloader-config')
+      this.bootloaderConfigDebian()
     }
   } else if (this.distro.familyId === 'archlinux') {
-    // bootloaderConfigArch() 
+    this.bootloaderConfigArch() 
   }
 }
 
