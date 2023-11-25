@@ -52,6 +52,13 @@ menuentry "{{{fullname}}} NoAcpi Mode" {
     initrd {{{initrdImg}}}
 }
 
+menuentry "{{{fullname}}} ACPI-off Mode" {
+    set gfxpayload=keep
+    {{{rmModules}}}
+    linux {{{vmlinuz}}} {{{kernel_parameters}}} auto noprompt priority=critical acpi=off mitigations=off amd_pstate.enable=0 intel_pstate=disable loglevel=0 nowatchdog elevator=noop slab_nomerge init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off oops=panic module.sig_enforce=1 lockdown=confidentiality mce=0 loglevel=0 fsck.mode=skip quiet splash
+    initrd {{{initrdImg}}}
+}
+
 menuentry "{{{fullname}}} iommu Mode" {
     set gfxpayload=keep
     {{{rmModules}}}
@@ -67,6 +74,12 @@ menuentry "{{{fullname}}} Encrypted Mode" {
     initrd {{{initrdImg}}}
 }
 
+menuentry "{{{fullname}}} Rescue mode" {
+    set gfxpayload=keep
+    {{{rmModules}}}
+    linux {{{vmlinuz}}} {{{kernel_parameters}}} rescue priority=critical mitigations=off amd_pstate.enable=0 intel_pstate=disable loglevel=0 nowatchdog elevator=noop slab_nomerge init_on_alloc=1 init_on_free=1 page_alloc.shuffle=1 pti=on vsyscall=none debugfs=off oops=panic module.sig_enforce=1 lockdown=confidentiality mce=0 loglevel=0 fsck.mode=skip quiet splash
+    initrd {{{initrdImg}}}
+}
 
 menuentry "{{{fullname}}} Recovery mode" {
     set gfxpayload=keep
