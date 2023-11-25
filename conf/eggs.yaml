@@ -36,6 +36,9 @@ make_efi: true
 # Create md5sum file, default true
 make_md5sum: true
 
+# Create sha256 file, default true
+make_sha256: true
+
 # make_isohybrid, default true
 make_isohybrid: true
 
