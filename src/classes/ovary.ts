@@ -1923,8 +1923,30 @@ export default class Ovary {
      -o ${output} ${this.settings.iso_work}`
 
     return command
-  }
+    }
 
+/**
+*Use 'genisoiamge' and options for creating the iso larger than 4.700 MB(UDF FileSystem) instead of xorriso.
+    * command = `genisoimage \
+    * -iso-level 3 \
+    * -allow-limited-size \
+    * -r \
+    * -V "-V2.5.5" \
+    * -cache-inodes \
+    * -J \
+    * -l \
+    * -b isolinux/isolinux.bin \
+    * -c isolinux/boot.cat \
+    * -no-emul-boot \
+    * -boot-load-size 4 \
+    * -boot-info-table \
+    * -eltorito-alt-boot \
+    * -e boot/grub/efiboot.img \
+    * -o ${output} ${this.settings.iso_work}`;
+    * return command;
+*/
+
+  
   /**
    * makeIso
    * cmd: cmd 4 xorirriso
