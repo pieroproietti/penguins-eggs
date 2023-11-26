@@ -716,10 +716,15 @@ export default class Ovary {
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
     /**
-     * isolinux.cfg from isolinux.template.cfg
+     * isolinux.cfg from isolinux.main.cfg
      */
-    const isolinuxDest = this.settings.iso_work + 'isolinux/isolinux.cfg'
-    const isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.template')
+    const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
+    this.settings.iso_work + 'isolinux/isolinux.cfg'
+    let isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
+    if (!fs.existsSync(isolinuxTemplate)) {
+      isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.main.cfg')
+    }
+
     if (!fs.existsSync(isolinuxTemplate)) {
       Utils.warning('Cannot find: ' + isolinuxTemplate)
       process.exit()
@@ -1701,9 +1706,14 @@ export default class Ovary {
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
     /**
-    * prepare grub.cfg from grub.template.cfg
+    * prepare grub.cfg from grub.main.cfg
     */
-    const grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.template')
+    // const grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
+
+    let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
+    if (!fs.existsSync(grubTemplate)) {
+      grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
+    }
 
     if (!fs.existsSync(grubTemplate)) {
       Utils.warning('Cannot find: ' + grubTemplate)

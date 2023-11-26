@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.19
+* themes: we now have the ability to customize grub and isolinux themes, not only for graphics but also for menus. Take a look on theme predator on [wardrobe](https://github.com/pieroproietti/penguins-wardrobe). Thanks to Hosein Sellany of [PredatorOS](https://predator-os.ir/). 
+
 # eggs-9.6.18
 Again working on `eggs install` aka krill:
 
