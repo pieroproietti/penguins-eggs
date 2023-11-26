@@ -722,7 +722,8 @@ export default class Ovary {
     this.settings.iso_work + 'isolinux/isolinux.cfg'
     let isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
     if (!fs.existsSync(isolinuxTemplate)) {
-      isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.main.cfg')
+      //isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.main.cfg')
+      isolinuxTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/isolinux.main.cfg')
     }
 
     if (!fs.existsSync(isolinuxTemplate)) {
@@ -1708,11 +1709,12 @@ export default class Ovary {
     /**
     * prepare grub.cfg from grub.main.cfg
     */
-    // const grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
 
     let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
     if (!fs.existsSync(grubTemplate)) {
-      grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
+      // grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
+      grubTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/grub.main.cfg')
+      
     }
 
     if (!fs.existsSync(grubTemplate)) {
