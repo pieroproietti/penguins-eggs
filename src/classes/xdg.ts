@@ -88,12 +88,19 @@ export default class Xdg {
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (Pacman.isInstalledGui()) {
       /**
-       * SLIM
+       * SLIM & SLIMSKI
        */
+      let slimConf = ''
       if (Pacman.packageIsInstalled('slim')) {
-        shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/slim.conf`)
-        shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/slim.conf`)
+        slimConf = 'slim.conf'
+      } else (Pacman.packageIsInstalled('slimski')) {
+        slimConf = 'slimski.conf'
       }
+      if (slimConf !== '') {
+        shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/${slimConf}`)
+        shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/${slimConf}`)
+      }
+
 
       /**
        * LIGHTDM

@@ -35,6 +35,23 @@ const pjson = require('../../package.json')
 export default class Utils {
 
    /**
+    * 
+    * @param file 
+    * @param search 
+    * @returns value
+    */
+   static searchOnFile(file = '', search = ''): string {
+      const lines = fs.readFileSync(file, 'utf8').split("\n")
+      let value = ''
+      lines.forEach(line => {
+         if (line.includes(search)) {
+            value = line.substring(line.indexOf('=') + 1)
+         }
+      })
+      return value.trim()
+    }
+
+   /**
     * Restituisce il prefisso della iso
     * @param distroId
     * @param codenameId
