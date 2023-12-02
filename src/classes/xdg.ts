@@ -93,7 +93,7 @@ export default class Xdg {
       let slimConf = ''
       if (Pacman.packageIsInstalled('slim')) {
         slimConf = 'slim.conf'
-      } else (Pacman.packageIsInstalled('slimski')) {
+      } else if (Pacman.packageIsInstalled('slimski')) {
         slimConf = 'slimski.conf'
       }
       if (slimConf !== '') {
