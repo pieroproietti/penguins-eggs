@@ -295,8 +295,7 @@ export default class Ovary {
         content +=`md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
         content +=`md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
         content +=`md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
-  
-        content +='minstall\n'
+        content +='minstall --no-media-check\n'
         let file = `${this.settings.iso_work}antix-mx-installer`
         fs.writeFileSync(file, content)
         await exec(`chmod +x ${file}`)
