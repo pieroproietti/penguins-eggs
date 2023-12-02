@@ -281,6 +281,15 @@ export default class Ovary {
       this.makeDotDisk(info, mksquashfsCmd, mkIsofsCmd)
 
       /**
+       * AntiX/MX LINUX
+       */
+      if (fs.existsSync('/etc/antix-version')) {
+        if (fs.existsSync('/run/live/medium/live/filesystem.squashfs')) {
+          await exec(`ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs`)
+        }
+      }
+
+      /**
        * patch to emulate miso/archiso on archilinux
        */
       if (this.familyId === 'archlinux') {
@@ -299,6 +308,7 @@ export default class Ovary {
       }
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
+
   }
 
   /**
@@ -1714,7 +1724,6 @@ export default class Ovary {
     if (!fs.existsSync(grubTemplate)) {
       // grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
       grubTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/grub.main.cfg')
-      
     }
 
     if (!fs.existsSync(grubTemplate)) {

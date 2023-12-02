@@ -91,10 +91,10 @@ export default class Xdg {
        * SLIM & SLIMSKI
        */
       let slimConf = ''
-      if (Pacman.packageIsInstalled('slim')) {
-        slimConf = 'slim.conf'
-      } else if (Pacman.packageIsInstalled('slimski')) {
+      if (Pacman.packageIsInstalled('slimski')) {
         slimConf = 'slimski.conf'
+      } else if (Pacman.packageIsInstalled('slim')) {
+        slimConf = 'slim.conf'
       }
       if (slimConf !== '') {
         shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/${slimConf}`)

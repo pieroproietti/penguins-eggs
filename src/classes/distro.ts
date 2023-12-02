@@ -321,26 +321,16 @@ class Distro implements IDistro {
 
       // No default
 
-    } // Fine analisi codenameIS
+    } // Fine analisi codenameId
 
-
+    
     /**
      * if lsb-release exists
      */
-    const lsbConfig ='/etc/lsb-release'
+    const lsbConfig = '/etc/lsb-release'
     if (fs.existsSync(lsbConfig)) {
       this.distroId = Utils.searchOnFile(lsbConfig, `DISTRIB_ID`)
       this.codenameId = Utils.searchOnFile(lsbConfig, `DISTRIB_CODENAME`)
-    }
-
-    /**
-     * AntiX/MX LINUX
-     * ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs
-     */
-    if (fs.existsSync('/etc/antix-version')) {
-      if (fs.existsSync('/run/live/medium/live/filesystem.squashfs')) {
-        shell.exec(`ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs`)
-      }
     }
 
     /**
