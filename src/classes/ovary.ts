@@ -284,16 +284,22 @@ export default class Ovary {
        * AntiX/MX LINUX
        */
       if (fs.existsSync('/etc/antix-version')) {
-        const uname = await exec('uname -r', {capture:true})
+        let uname = (await exec('uname -r', {capture:true})).data
+        uname = uname.replaceAll('\n','')
 
         let content = ''
-        content +='mkdir /live/boot-dev/antiX -p'
-        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs'
-        content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz`
-        content +=`ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz`
-        content +='minstall'
+        content +='mkdir /live/boot-dev/antiX -p\n'
+        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
+        content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz\n`
+        content +=`ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz\n`
+        content +=`md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
+        content +=`md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
+        content +=`md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
+  
+        content +='minstall\n'
         let file = `${this.settings.iso_work}antix-mx-installer`
-        fs.writeFileSync(file, content)          
+        fs.writeFileSync(file, content)
+        await exec(`chmod +x ${file}`)
       }
 
       /**
