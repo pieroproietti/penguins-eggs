@@ -44,11 +44,12 @@ export default class Utils {
       const lines = fs.readFileSync(file, 'utf8').split("\n")
       let value = ''
       lines.forEach(line => {
+         line = line.replace(/\s+/g, ' ') // Remove multiple spaces with single space
          if (line.includes(search)) {
             value = line.substring(line.indexOf('=') + 1)
          }
       })
-      value = value.replaceAll('"', '')
+      value = value.replaceAll('"', '') // Remove "
       return value.trim()
    }
 
