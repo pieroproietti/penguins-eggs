@@ -87,14 +87,22 @@ export default class Xdg {
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (Pacman.isInstalledGui()) {
+
       /**
        * SLIM & SLIMSKI
        */
       let slimConf = ''
+      if (Pacman.packageIsInstalled('slim')) {
+        slimConf = 'slim.conf'
+        if (fs.existsSync('/etc/slim.local.conf')) {
+          slimConf = 'slim.local.conf'
+        }
+      }
       if (Pacman.packageIsInstalled('slimski')) {
         slimConf = 'slimski.conf'
-      } else if (Pacman.packageIsInstalled('slim')) {
-        slimConf = 'slim.conf'
+        if (fs.existsSync('/etc/slimski.local.conf')) {
+          slimConf = 'slimski.local.conf'
+        }
       }
       if (slimConf !== '') {
         shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/${slimConf}`)
