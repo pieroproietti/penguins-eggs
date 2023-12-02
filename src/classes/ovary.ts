@@ -284,9 +284,16 @@ export default class Ovary {
        * AntiX/MX LINUX
        */
       if (fs.existsSync('/etc/antix-version')) {
-        if (fs.existsSync('/run/live/medium/live/filesystem.squashfs')) {
-          await exec(`ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs`)
-        }
+        const uname = await exec('uname -r', {capture:true})
+
+        let content = ''
+        content +='mkdir /live/boot-dev/antiX -p'
+        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs'
+        content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz`
+        content +=`ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz`
+        content +='minstall'
+        let file = `${this.settings.iso_work}antix-mx-installer`
+        fs.writeFileSync(file, content)          
       }
 
       /**

@@ -48,8 +48,9 @@ export default class Utils {
             value = line.substring(line.indexOf('=') + 1)
          }
       })
+      value = value.replaceAll('"', '')
       return value.trim()
-    }
+   }
 
    /**
     * Restituisce il prefisso della iso
@@ -347,13 +348,13 @@ export default class Utils {
     * @returns 
     */
    static uefiBN() {
-    let bn = 'nothing.efi'
-    if (process.arch === 'x64') {
-      bn = 'bootx64.efi'
-    } else if (process.arch === 'arm64') {
-      bn = 'bootaa64.efi'
-    }
-    return bn
+      let bn = 'nothing.efi'
+      if (process.arch === 'x64') {
+         bn = 'bootx64.efi'
+      } else if (process.arch === 'arm64') {
+         bn = 'bootaa64.efi'
+      }
+      return bn
    }
 
    /**
