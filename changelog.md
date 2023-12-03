@@ -25,11 +25,11 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 For those who want to use eggs for their remastering, I have tried to improve compatibility.
 
-So, I added, a better distro recognition - previously both antix and MX linux were recognized as MX - and added a command that makes it possible to use `minstall`` for installation: `sudo /lib/live/mount/medium/antix-mx-installer`
+So, I added, a better distro recognition - previously both antix and MX linux were recognized as MX - and added a command that makes it possible to use their `minstall` for installation: `sudo /lib/live/mount/medium/antix-mx-installer`
 
-You can of course use again krill for installation: `sudo eggs install`, calamares - strange to discover - work fine on MX Linux but not on antiX.
+You can of course use again krill for installation: `sudo eggs install` as calamares - strange to discover - work fine on MX Linux but not on antiX.
 
-Note: I was able to remaster `antiX-23_x64-full.iso`, but not the `antiX-23_x64-base.iso` version. Again, to improve compatibility use `demo` as name for the live user; share your ideas/experiences on [penguins-eggs](https://t.me/penguins_eggs).
+Note: I was able to remaster `antiX-23_x64-full.iso`, but not the `antiX-23_x64-base.iso` version. Again, to improve compatibility use `demo` as name for the live user and share your ideas/experiences on [penguins-eggs](https://t.me/penguins_eggs).
 
 # eggs-9.6.19
 * themes: we now have the ability to customize grub and isolinux themes, not only for graphics but also for menus. Take a look on theme predator on [wardrobe](https://github.com/pieroproietti/penguins-wardrobe). Thanks to Hosein Sellany of [PredatorOS](https://predator-os.ir/). 
