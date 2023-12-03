@@ -289,6 +289,7 @@ export default class Ovary {
 
         let content = ''
         content +='mkdir /live/bin -p\n'
+        content +='cp /usr/lib/penguins-eggs/scripts/non-live-cmdline /live/bin -p\n'
         content +='mkdir /live/boot-dev/antiX -p\n'
         content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
         content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz\n`
