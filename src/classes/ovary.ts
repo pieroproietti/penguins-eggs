@@ -288,15 +288,17 @@ export default class Ovary {
         uname = uname.replaceAll('\n','')
 
         let content = ''
+        content +='mkdir /live/bin -p\n'
         content +='mkdir /live/boot-dev/antiX -p\n'
         content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
         content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz\n`
         content +=`ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz\n`
-        content +=`md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
-        content +=`md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
-        content +=`md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
-        content +=`# /live/aufs is a need too\n`
-        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/aufs\n'
+        content +=`# md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
+        content +=`# md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
+        content +=`# md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
+        content +=`# /live/aufs -> /run/live/rootfs/filesystem.squashfs\n`
+        content +='ln -s /run/live/rootfs/filesystem.squashfs /live/aufs\n'
+        content +=`# use: minstall -no-media-check\n`        
         content +='minstall --no-media-check\n'
         let file = `${this.settings.iso_work}antix-mx-installer`
         fs.writeFileSync(file, content)
