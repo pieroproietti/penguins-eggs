@@ -295,6 +295,8 @@ export default class Ovary {
         content +=`md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
         content +=`md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
         content +=`md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
+        content +=`# /live/aufs is a need too\n`
+        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/aufs\n'
         content +='minstall --no-media-check\n'
         let file = `${this.settings.iso_work}antix-mx-installer`
         fs.writeFileSync(file, content)
@@ -1433,7 +1435,7 @@ export default class Ovary {
       const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
       if (fs.existsSync(dirAutostart)) {
 
-        // Creo l'avviatore xdg DEVE essere add-penguins-links.desktop
+        // Creo l'avviatore xdg: DEVE essere add-penguins-links.desktop
         shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
 
         // create /usr/bin/penguins-links-add.sh
