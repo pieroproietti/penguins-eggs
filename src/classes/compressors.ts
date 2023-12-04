@@ -56,13 +56,13 @@ export default class Compressors {
   }
 
   /**
-   * max
+   * max high rate compressing of iso file with these options: "xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments"
    * @returns
    */
   max(): string {
-    let comp = 'xz -b 256K -Xbcj x86'
+    let comp = 'xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments'
     if (process.arch === 'arm64') {
-      comp = 'xz -b 256K' // -Xbcj arm  NOT work 
+      comp = 'xz x86 -b 1M -no-duplicates -no-recovery -always-use-fragments' // -Xbcj arm  NOT work 
     }
     return comp
   }
