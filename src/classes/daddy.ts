@@ -91,7 +91,7 @@ export default class Daddy {
       console.log(chalk.white(`sudo mount /dev/sdx1 /home/eggs/.mnt`))
       console.log()
       console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
-      await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
+      // await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
     }
   }
 
