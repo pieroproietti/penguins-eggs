@@ -107,7 +107,6 @@ usr/share/eclipse/*
 usr/share/gimp/2.0/help/en/images/*
 usr/share/gtk-doc/html/*
 usr/share/krita/*
-usr/share/man/*
 usr/share/texmf/*
 usr/share/xemacs21/*
 usr/x86_64-w64-mingw32/*
