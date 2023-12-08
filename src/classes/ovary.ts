@@ -116,7 +116,7 @@ export default class Ovary {
    *
    * @param basename
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, noicons = false, verbose = false) {
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -264,7 +264,7 @@ export default class Ovary {
         }
 
         await this.editLiveFs(clone, cryptedclone)
-        mksquashfsCmd = await this.makeSquashfs(scriptOnly)
+        mksquashfsCmd = await this.makeSquashfs(scriptOnly, unsecure)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup
       }
 
@@ -904,7 +904,7 @@ export default class Ovary {
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(scriptOnly = false): Promise<string> {
+  async makeSquashfs(scriptOnly = false, unsecure = false): Promise<string> {
     if (this.verbose) {
       console.log('Ovary: makeSquashfs')
     }
@@ -938,6 +938,15 @@ export default class Ovary {
           }
         }
       }
+    }
+
+    /**
+     * secure
+     */
+    if (!unsecure) {
+      this.addRemoveExclusion(true, `home/*/*`)
+      this.addRemoveExclusion(true, `root/*`)
+      this.addRemoveExclusion(true, `root/.*`)
     }
 
     if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
