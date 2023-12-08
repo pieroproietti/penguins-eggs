@@ -60,6 +60,9 @@ export default class Utils {
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
+      if (codenameId === '') {
+         result = 'egg-of_' + distroId.toLowerCase()
+      }
       result = result.replace(`/`, '-')
       return result
    }
