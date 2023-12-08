@@ -39,10 +39,11 @@ Install a minimal configuration using the [traditional way](https://wiki.archlin
 
 After booted, do:
 
-* `git clone https://github.com/pieroproietti/addaura`
-* `sudo addaura/addaura.sh`
+* `git clone https://github.com/pieroproietti/get-eggs`
+* `cd get-eggs`
+* `sudo get-eggs.sh`
 
-Addaura will automatically add aur repository and penguins-eggs. 
+get-eggs will automatically add aur repository and penguins-eggs. 
 
 # Installing Arch Linux via PXE
 
