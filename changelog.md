@@ -21,7 +21,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.21
-* produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it;
+* produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it.
 * produce: new string for max compression `xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments`
 
 Thanks to Hosein Seilany author of [Predator-OS](https://predator-os.ir/) and [Emperor-OS](https://emperor-os.ir/) for the great collaboration.
