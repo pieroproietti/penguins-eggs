@@ -579,8 +579,9 @@ FLAGS
   -n, --nointeractive   no user interaction
   -p, --prefix=<value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
+  -u, --unsecure        include /home/* and full /root contents on live
   -v, --verbose         verbose
-  -y, --yolk            -y force yolk renew
+  -y, --yolk            force yolk renew
   --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=<value>    basename
   --release             release: max compression, remove penguins-eggs and calamares after installation
