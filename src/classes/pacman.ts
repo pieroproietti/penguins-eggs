@@ -20,10 +20,10 @@ import { execSync } from 'node:child_process'
 import { IEggsConfig } from '../interfaces/index'
 import { exec } from '../lib/utils'
 
-import Debian from './family/debian'
-import Fedora from './family/fedora'
-import Archlinux from './family/archlinux'
-import Suse from './family/suse'
+import Debian from './families/debian'
+import Fedora from './families/fedora'
+import Archlinux from './families/archlinux'
+import Suse from './families/suse'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
