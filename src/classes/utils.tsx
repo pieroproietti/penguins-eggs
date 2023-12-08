@@ -59,9 +59,11 @@ export default class Utils {
     * @param codenameId
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
-      let result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
+      let result = ''
       if (codenameId === '') {
-         result = 'egg-of_' + distroId.toLowerCase()
+         result = 'egg-of_' + distroId.toLowerCase()+ '-'
+      } else {
+         result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
       }
       result = result.replace(`/`, '-')
       return result
