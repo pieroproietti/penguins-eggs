@@ -75,8 +75,6 @@ export default class Daddy {
       config.theme = newConf.theme
 
       await this.settings.save(config)
-      // console.clear()
-      // Utils.titles('dad')
       console.log()
       console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'))
       console.log()
@@ -93,7 +91,7 @@ export default class Daddy {
       console.log(chalk.white(`sudo mount /dev/sdx1 /home/eggs/.mnt`))
       console.log()
       console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
-      // await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
+      await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
     }
   }
 

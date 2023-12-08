@@ -8,8 +8,6 @@
 
 
 import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'

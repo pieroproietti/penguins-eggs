@@ -109,9 +109,9 @@ class Distro implements IDistro {
      *  -c, --codename     show code name of this distribution
      */
     if (this.distroId === 'Debian' && this.releaseId === 'unstable' && this.codenameId === 'sid') {
-      this.codenameId = 'bookworm'
+      this.codenameId = 'trixie'
     } else if (this.distroId === 'Debian' && this.releaseId === 'testing/unstable') {
-      this.codenameId = 'bookworm'
+      this.codenameId = 'trixie'
       this.releaseLike = 'unstable'
     }
 
