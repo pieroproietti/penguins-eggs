@@ -24,7 +24,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it;
 * produce: new string for max compression `xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments`
 
-Thanks to Hosein Seilany from [Predator-OS](https://predator-os.ir/) for the help.
+Thanks to Hosein Seilany author of [Predator-OS](https://predator-os.ir/) and [Emperor-OS](https://emperor-os.ir/) for the great collaboration.
 
 
 # eggs-9.6.20
