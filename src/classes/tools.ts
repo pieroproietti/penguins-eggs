@@ -68,9 +68,6 @@ export default class Tools {
       this.snapshot_dir = settings.config.snapshot_dir
 
       let prefix = settings.config.snapshot_prefix
-      if (prefix.endsWith('rolling-')) {
-        prefix = prefix.substring(0, prefix.indexOf('rolling-'))
-      }
       this.snapshot_name = prefix + settings.config.snapshot_basename + '_' + Utils.uefiArch()
       
     } else {

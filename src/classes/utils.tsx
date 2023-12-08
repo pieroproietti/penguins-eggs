@@ -60,7 +60,7 @@ export default class Utils {
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = ''
-      if (codenameId === '') {
+      if (codenameId === 'rolling' || codenameId === '') {
          result = 'egg-of_' + distroId.toLowerCase()+ '-'
       } else {
          result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
