@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.6.16</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.6.21</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i eggs_9.6.16_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.6.21_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.6.16 linux-x64 node-v18.17.1
+penguins-eggs/9.6.21 linux-x64 node-v18.17.1
 $ eggs --help [COMMAND]
 
 USAGE
@@ -273,7 +273,7 @@ FLAGS
 DESCRIPTION
   Display help for eggs.
 </code></pre>
-    <h2><code>eggs install</code></h2>
+    <h2><code>eggs install</code> or <code>eggs krill</code></h2>
     <p>krill: the CLI system installer - the egg became a penguin!</p>
     <pre><code>USAGE
   $ eggs install [-k] [-c &#x3C;value>] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
@@ -351,8 +351,9 @@ FLAGS
   -n, --nointeractive   no user interaction
   -p, --prefix=&#x3C;value>  prefix
   -s, --script          script mode. Generate scripts to manage iso build
+  -u, --unsecure        include /home/* and full /root contents on live
   -v, --verbose         verbose
-  -y, --yolk            -y force yolk renew
+  -y, --yolk            force yolk renew
   --addons=&#x3C;value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=&#x3C;value>    basename
   --release             release: max compression, remove penguins-eggs and calamares after installation
