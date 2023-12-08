@@ -16,6 +16,7 @@ _eggs () {
 "export\:deb:export deb/docs/iso to the destination host"
 "export\:iso:export iso in the destination host"
 "install:krill: the CLI system installer - the egg became a penguin!"
+"krill:krill: the CLI system installer - the egg became a penguin!"
 "kill:kill the eggs/free the nest"
 "mom:ask help from mommy - TUI helper"
 "produce:produce a live image from your system whithout your data"
@@ -128,6 +129,25 @@ install)
   )
 ;;
 
+krill)
+  _command_flags=(
+    "--crypted[Crypted CLI installation]"
+"--custom=-[custom unattended configuration]:"
+"--domain=-[Domain name, defult: .local]:"
+"--halt[Halt the system after installation]"
+"--help[Show CLI help.]"
+"--ip[hostname as ip, eg: ip-192-168-1-33]"
+"--nointeractive[no user interaction]"
+"--none[Swap none: 256M]"
+"--pve[Proxmox VE install]"
+"--random[Add random to hostname, eg: colibri-ay412dt]"
+"--small[Swap small: RAM]"
+"--suspend[Swap suspend: RAM x 2]"
+"--unattended[Unattended installation]"
+"--verbose[Verbose]"
+  )
+;;
+
 kill)
   _command_flags=(
     "--help[Show CLI help.]"
@@ -151,15 +171,16 @@ produce)
 "--cryptedclone[crypted clone]"
 "--help[Show CLI help.]"
 "--max[max compression]"
-"--nointeractive[no user interaction]"
 "--noicons[no icons on desktop]"
+"--nointeractive[no user interaction]"
 "--prefix=-[prefix]:"
 "--release[release: max compression, remove penguins-eggs and calamares after installation]"
 "--script[script mode. Generate scripts to manage iso build]"
 "--standard[standard compression]"
 "--theme=-[theme for livecd, calamares branding and partitions]:"
+"--unsecure[include /home/* and full /root contents on live]"
 "--verbose[verbose]"
-"--yolk[-y force yolk renew]"
+"--yolk[force yolk renew]"
   )
 ;;
 

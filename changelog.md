@@ -21,7 +21,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.21
-* exclude.list: we have an improved version of it, more scrictly
+* produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it;
+* produce: new string for max compression `xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments`
+
+Thanks to Hosein Seilany from [Predator-OS](https://predator-os.ir/) for the help.
+
 
 # eggs-9.6.20
 [antiX](https://antixlinux.com/) is a wonderful Linux distribution and shares with [MX Linux](https://mxlinux.org/) everything needed for remastering: `antix-remaster` and `antix-Installer`. I have always envied them the wonderful installer, which is lightweight, graphical and easy to use. 

@@ -14,6 +14,7 @@ import chalk from 'chalk'
 import { IMyAddons } from '../interfaces/index'
 import fs from 'node:fs'
 import path from 'node:path'
+import { create } from 'axios'
 
 export default class Produce extends Command {
   static flags = {
@@ -23,16 +24,16 @@ export default class Produce extends Command {
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     prefix: Flags.string({ char: 'p', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
+    unsecure: Flags.boolean({ char: 'u', description: 'include /home/* and full /root contents on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: '-y force yolk renew' }),
-    unsecure: Flags.boolean({ char: 'u', description: '-u include homes and root configuration' }),
+    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
   }
 
   static description = 'produce a live image from your system whithout your data'
@@ -120,7 +121,8 @@ export default class Produce extends Command {
 
       const noicons = flags.noicons
 
-      const unsecure = flags.unsecure
+      // if clone or cryptedclone unsecure = true
+      const unsecure = flags.unsecure || clone || cryptedclone
 
       /**
        * theme: if not defined will use eggs
