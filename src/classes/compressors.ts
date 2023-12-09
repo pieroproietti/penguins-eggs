@@ -43,7 +43,7 @@ export default class Compressors {
   fast(): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
-      comp = 'zstd -b 1M -Xcompression-level 1'
+      comp = 'zstd -b 256K -Xcompression-level 1'
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }
@@ -55,7 +55,7 @@ export default class Compressors {
    * @returns 
    */
   standard(): string {
-    let comp = 'xz -b 1M'
+    let comp = 'xz -b 256K'
     return comp
   }
 
@@ -64,9 +64,13 @@ export default class Compressors {
    * @returns
    */
   max(): string {
-    let comp = 'xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments'
+    let comp = 'xz -Xbcj x86 -b 256K -no-duplicates -no-recovery -always-use-fragments'
     if (process.arch === 'arm64') {
-      comp = 'xz -b 1M -no-duplicates -no-recovery -always-use-fragments'
+      /**
+       * comp = 'xz -Xbcj arm -b 1M -no-duplicates -no-recovery -always-use-fragments' 
+       *      I removed -Xbcj arm per problemi di memoria
+       */
+      comp = 'xz -b 256K -no-duplicates -no-recovery -always-use-fragments'
     }
     return comp
   }
