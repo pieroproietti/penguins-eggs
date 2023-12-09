@@ -39,7 +39,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
-import { captureRejectionSymbol } from 'events'
+
 
 /**
  * Ovary:
@@ -113,10 +113,30 @@ export default class Ovary {
   }
 
   /**
-   *
-   * @param basename
+   * produce
+   * @param clone 
+   * @param cryptedclone 
+   * @param scriptOnly 
+   * @param yolkRenew 
+   * @param release 
+   * @param myAddons 
+   * @param nointeractive 
+   * @param noicons 
+   * @param unsecure 
+   * @param verbose 
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IMyAddons, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+  async produce(
+    clone = false,
+    cryptedclone = false,
+    scriptOnly = false,
+    yolkRenew = false,
+    release = false,
+    myAddons: IMyAddons,
+    nointeractive = false,
+    noicons = false,
+    unsecure = false,
+    verbose = false) {
+
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -138,14 +158,14 @@ export default class Ovary {
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
       const yolk = new Repo()
       if (!yolk.exists()) {
-        Utils.warning('Create yolk')
+        Utils.warning('creating yolk')
         await yolk.create(verbose)
       } else if (yolkRenew) {
-        Utils.warning('Renew yolk')
+        Utils.warning('refreshing yolk')
         await yolk.erase()
         await yolk.create(verbose)
       } else {
-        Utils.warning('Using preesixent yolk')
+        Utils.warning('using preesixent yolk')
       }
     }
 
@@ -191,12 +211,11 @@ export default class Ovary {
 
         // CLONE
       } else if (this.clone) {
-        // Patch for humans users used to
-        // set user_opt as real user when
-        // create a clone
-        this.settings.config.user_opt = 'live'
+        // users tent to set user_opt = real
+        // user when create a clone
+        this.settings.config.user_opt = 'live' // patch for humans 
         this.settings.config.user_opt_passwd = 'evolution'
-        this.settings.config.root_passwd ='evolution'
+        this.settings.config.root_passwd = 'evolution'
         Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
 
         // NORMAL
@@ -227,9 +246,9 @@ export default class Ovary {
          * initrd for different familis
          */
         if (this.familyId === 'debian') {
-          await this.initrdCopy()
+          await this.initrdDebian()
         } else if (this.familyId === 'archlinux') {
-          await this.initrdCreate()
+          await this.initrdArch()
         }
 
         if (this.settings.config.make_efi) {
@@ -284,26 +303,26 @@ export default class Ovary {
        * AntiX/MX LINUX
        */
       if (fs.existsSync('/etc/antix-version')) {
-        let uname = (await exec('uname -r', {capture:true})).data
-        uname = uname.replaceAll('\n','')
+        let uname = (await exec('uname -r', { capture: true })).data
+        uname = uname.replaceAll('\n', '')
 
         let content = ''
-        content +='mkdir /live/bin -p\n'
-        content +='## \n'
-        content +='cp /usr/lib/penguins-eggs/scripts/non-live-cmdline /live/bin -p\n'
-        content +='chmod +x /live/bin/non-live-cmdline\n'
-        content +='## \n'
-        content +='mkdir /live/boot-dev/antiX -p\n'
-        content +='ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
-        content +=`ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz\n`
-        content +=`ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz\n`
-        content +=`# md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
-        content +=`# md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
-        content +=`# md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
-        content +=`# /live/aufs -> /run/live/rootfs/filesystem.squashfs\n`
-        content +='ln -s /run/live/rootfs/filesystem.squashfs /live/aufs\n'
-        content +=`# use: minstall -no-media-check\n`        
-        content +='minstall --no-media-check\n'
+        content += 'mkdir /live/bin -p\n'
+        content += '## \n'
+        content += 'cp /usr/lib/penguins-eggs/scripts/non-live-cmdline /live/bin -p\n'
+        content += 'chmod +x /live/bin/non-live-cmdline\n'
+        content += '## \n'
+        content += 'mkdir /live/boot-dev/antiX -p\n'
+        content += 'ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
+        content += `ln -s /run/live/medium/live/initrd.img-${uname} /live/boot-dev/antiX/initrd.gz\n`
+        content += `ln -s /run/live/medium/live/vmlinuz-${uname} /live/boot-dev/antiX/vmlinuz\n`
+        content += `# md5sum /live/boot-dev/antiX/linuxfs > /live/boot-dev/antiX/linuxfs.md5\n`
+        content += `# md5sum /live/boot-dev/antiX/initrd.gz > /live/boot-dev/antiX/initrd.gz.md5\n`
+        content += `# md5sum /live/boot-dev/antiX/vmlinuz > /live/boot-dev/antiX/vmlinuz.md5\n`
+        content += `# /live/aufs -> /run/live/rootfs/filesystem.squashfs\n`
+        content += 'ln -s /run/live/rootfs/filesystem.squashfs /live/aufs\n'
+        content += `# use: minstall -no-media-check\n`
+        content += 'minstall --no-media-check\n'
         let file = `${this.settings.iso_work}antix-mx-installer`
         fs.writeFileSync(file, content)
         await exec(`chmod +x ${file}`)
@@ -322,13 +341,11 @@ export default class Ovary {
           hashExt = '.md5'
         }
         await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
-        // await exec(`ln -s ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)        
         await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
         await exec(`${hashCmd} ${this.settings.iso_work}${pathName}.sfs > ${this.settings.iso_work}${pathName}${hashExt}`, this.echo)
       }
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
-
   }
 
   /**
@@ -339,7 +356,7 @@ export default class Ovary {
       console.log('Ovary: liveCreateStructure')
     }
 
-    Utils.warning(`Creating egg in ${this.settings.config.snapshot_dir}`)
+    Utils.warning(`creating egg in ${this.settings.config.snapshot_dir}`)
 
     let cmd
     if (!fs.existsSync(this.settings.config.snapshot_dir)) {
@@ -504,7 +521,7 @@ export default class Ovary {
     // if (Pacman.packageIsInstalled('ufw')) {
     //    await exec('ufw --force reset')
     // }
-    
+
 
     /**
      * /etc/fstab should exist, even if it's empty,
@@ -519,7 +536,6 @@ export default class Ovary {
      */
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
       await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, this.echo)
-      // await exec(`touch ${this.settings.work_dir.merged}/etc/crypttab`, echo)
     }
 
     /**
@@ -683,13 +699,14 @@ export default class Ovary {
       }
 
       /**
-       * Assegno 1777 a /tmp
-       * creava problemi con MXLINUX
+       * creo /tmp
        */
       if (!fs.existsSync(`${this.settings.work_dir.merged}/tmp`)) {
         await exec(`mkdir ${this.settings.work_dir.merged}/tmp`, this.echo)
       }
-
+      /**
+      * Assegno 1777 a /tmp creava problemi con MXLINUX 
+      */
       await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, this.echo)
     }
   }
@@ -814,12 +831,10 @@ export default class Ovary {
   }
 
   /**
-   * copy kernel
+   * kernelCopy
    */
   async kernelCopy() {
-    if (this.verbose) {
-      console.log('Ovary: kernelCopy')
-    }
+    Utils.warning(`copying ${path.basename(this.settings.kernel_image)} to ISO`)
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
@@ -837,12 +852,11 @@ export default class Ovary {
   }
 
   /**
+   * initrdArch()
    * necessita di echoYes
    */
-  async initrdCreate() {
-    if (this.verbose) {
-      console.log('Ovary: initrdCreate')
-    }
+  async initrdArch() {
+    Utils.warning('creating Arch initramfs')
 
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
@@ -860,13 +874,10 @@ export default class Ovary {
    * We must upgrade to initrdCreate for Debian/Ubuntu
    * @returns
    */
-  async initrdCopy(verbose = false) {
-    if (this.verbose) {
-      console.log('Ovary: initrdCopy')
-    }
-    let isCrypted = false
+  async initrdDebian(verbose = false) {
+    Utils.warning('creating Debian/Devuan/Ubuntu initrd.img')
 
-    Utils.warning('initrdCreate')
+    let isCrypted = false
 
     if (fs.existsSync('/etc/crypttab')) {
       isCrypted = true
@@ -878,27 +889,6 @@ export default class Ovary {
     if (isCrypted) {
       await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
-
-    /*
-  
-    Utils.warning(`initrdCopy`)
-    if (this.verbose) {
-      console.log('ovary: initrdCopy')
-    }
-    let lackInitrdImage = false
-    if (fs.existsSync(this.settings.initrd_image)) {
-      await exec(`cp ${this.settings.initrd_image} ${this.settings.iso_work}/live/`, this.echo)
-    } else {
-      Utils.error(`Cannot find ${this.settings.initrdImg}`)
-      lackInitrdImage = true
-    }
-  
-    if (lackInitrdImage) {
-      Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
-      Utils.warning(`initrd_img: ${this.settings.initrd_image}`)
-      process.exit(1)
-    }
-    */
   }
 
   /**
@@ -968,12 +958,16 @@ export default class Ovary {
     if (Utils.uefiArch() === 'arm64') {
       // limit = ' -processors 2 -mem 1024M'
     }
-   
-    // SYNTAX: mksquashfs source1 source2 ...  
-    // FILESYSTEM [OPTIONS] 
-    // [-e list of exclude dirs/files]
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
+    /**
+     * mksquashfs
+     * 
+     * SYNTAX: mksquashfs source1 source2 ...  
+     * FILESYSTEM [OPTIONS] 
+     * [-ef exclude.list]
+     * [-e list of exclude dirs/files]
+     */
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
@@ -1002,7 +996,8 @@ export default class Ovary {
     if (this.verbose) {
       console.log('Ovary: mergedAndOverlay')
     }
-    const mountDirs = ['boot', 'etc', 'usr', 'var']
+    // boot viene copiato... non ricordo perchè
+    const mountDirs = ['etc', 'usr', 'var']
     let mountDir = ''
     let overlay = false
     for (mountDir of mountDirs) {
@@ -1157,6 +1152,8 @@ export default class Ovary {
 
   /**
    * copyBoot
+   * 
+   * necessario: prima era merged
    */
   async copyBoot() {
     if (this.verbose) {
@@ -1994,9 +1991,11 @@ export default class Ovary {
       await exec(`ln -s ${src} ${dest}`)
 
       // Create md5sum, sha256sum
-      Utils.warning('creating md5, sha256')
-      await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
-      await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
+      if (this.settings.config.make_md5sum) {
+        Utils.warning('creating md5, sha256')
+        await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
+        await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
+      }
     }
 
 
@@ -2100,22 +2099,5 @@ function isArchiso(distro: string): boolean {
   if (distro !== 'ManjaroLinux') {
     found = true
   }
-  return found
-
-  // EXCLUDED
-
-  let file = path.resolve(__dirname, '../../conf/archiso.yaml')
-  if (fs.existsSync('/etc/penguins-eggs.d/archiso.yaml')) {
-    file = '/etc/penguins-eggs.d/archiso.yaml'
-  }
-
-  const content = fs.readFileSync(file, 'utf8')
-  const distros = yaml.load(content) as string[]
-  for (const current of distros) {
-    if (current === distro) {
-      found = true
-    }
-  }
-
   return found
 }
