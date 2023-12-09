@@ -48,9 +48,9 @@ export default class Compressors {
   normal(): string {
     let comp = 'xz'
     if (this.isEnabled.zstd) {
-      comp = 'zstd -b 256K -Xcompression-level 20'
+      comp = 'zstd -b 1M -Xcompression-level 20'
     } else {
-      comp = 'xz -b 256K'
+      comp = 'xz -b 1M'
     }
     return comp
   }
@@ -62,7 +62,7 @@ export default class Compressors {
   max(): string {
     let comp = 'xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments'
     if (process.arch === 'arm64') {
-      comp = 'xz -b 1M -no-duplicates -no-recovery -always-use-fragments' // -Xbcj arm  NOT work 
+      comp = 'xz -b 1M -no-duplicates -no-recovery -always-use-fragments'
     }
     return comp
   }
