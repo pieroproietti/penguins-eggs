@@ -14,3 +14,7 @@ I'm commenting and I will refactoring a bit this sources directory, with the hop
 * gentoo
 * opensuse
 * void linux
+
+# mockup
+I'm trying to reorganize a bit and have a clean mockup to follow.
+
