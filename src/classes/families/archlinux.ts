@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /**
  * penguins-eggs
- * class / family: archilinux.ts
+ * classes/families: archilinux.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -15,14 +15,14 @@ import { array2spaced } from '../../lib/dependencies'
 import { exec } from '../../lib/utils'
 
 /**
- * Utils: general porpourse utils
+ * Archlinux
  * @remarks all the utilities
  */
 export default class Archlinux {
   static packs4calamares = ['calamares-eggs']  // , 'calamares', 'calamares-git']
 
   /**
-   * check if it's installed xorg
+   * Archlinux: isInstalledXorg
    * @returns true if xorg is installed
    */
   static isInstalledXorg(): boolean {
@@ -30,22 +30,18 @@ export default class Archlinux {
   }
 
   /**
-   * check if it's installed wayland
-   * @returns true if wayland
+   * Archlinux: isInstalledWayland
+   * @returns true if wayland is installed
    */
   static isInstalledWayland(): boolean {
     return this.packageIsInstalled('xwayland')
   }
 
   /**
-   * Crea array pacchetti da installare/rimuovere
+   * Archlinux: packages
+   * Create array packages to install/remove
    */
   static packages(remove = false, verbose = false): string[] {
-    /**
-     * praticamente non serve, perche prende dal pacchetto o da pkgbuild
-     */
-    // non può essere pacman è universalmente presente
-    // 'pacman', 'awk', 'dosfstools'
     const packages = [''] // 'arch-install-scripts',  'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
 
     const toInstall: string[] = []
@@ -67,7 +63,7 @@ export default class Archlinux {
   }
 
   /**
-   *
+   * Archlinux: prerequisitesInstall
    */
   static async prerequisitesInstall(verbose = true): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
@@ -96,7 +92,7 @@ export default class Archlinux {
   }
 
   /**
-   * Arch calamaresInstall
+   * Archlinux: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
@@ -120,7 +116,7 @@ export default class Archlinux {
   }
 
   /**
-   * calamaresPolicies
+   * Archlinux: calamaresPolicies
    */
   static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
@@ -128,7 +124,7 @@ export default class Archlinux {
   }
 
   /**
-   *
+   * Archlinux: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
     verbose = true // serve per pacman
@@ -158,6 +154,7 @@ export default class Archlinux {
   }
 
   /**
+   * Archlinux: packageIsInstalled
    * restuisce VERO se il pacchetto è installato
    * @param packageName
    */
@@ -173,6 +170,7 @@ export default class Archlinux {
   }
 
   /**
+   * Archlinux: packageInstall
    * Install the package packageName
    * @param packageName {string} Pacchetto Debian da installare
    * @returns {boolean} True if success
@@ -187,6 +185,7 @@ export default class Archlinux {
   }
 
   /**
+   * Archlinux: packagePacmanAvailable
    * restuisce VERO se il pacchetto è installato
    * @param packageName
    */
@@ -201,7 +200,7 @@ export default class Archlinux {
   }
 
   /**
-   *
+   * Archlinux: packagePacmanLast
    * @param packageName
    * @returns
    */

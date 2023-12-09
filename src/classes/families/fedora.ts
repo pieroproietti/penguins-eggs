@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * class / family: fedora.ts
+ * classes/families: fedora.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -124,7 +124,8 @@ export default class Fedora {
     if (fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
-
+    
+    // yay???
     await exec('yay -Rns calamares', echo)
     return retVal
   }
