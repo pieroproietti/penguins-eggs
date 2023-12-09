@@ -62,7 +62,7 @@ export default class Compressors {
   max(): string {
     let comp = 'xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments'
     if (process.arch === 'arm64') {
-      comp = 'xz x86 -b 1M -no-duplicates -no-recovery -always-use-fragments' // -Xbcj arm  NOT work 
+      comp = 'xz -b 1M -no-duplicates -no-recovery -always-use-fragments' // -Xbcj arm  NOT work 
     }
     return comp
   }
