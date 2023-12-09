@@ -55,7 +55,7 @@ export default class Compressors {
    * @returns 
    */
   standard(): string {
-    let comp = 'xz -b 256K'
+    let comp = 'xz -b 1M'
     return comp
   }
 
@@ -64,14 +64,11 @@ export default class Compressors {
    * @returns
    */
   max(): string {
-    let comp = 'xz -Xbcj x86 -b 256K -no-duplicates -no-recovery -always-use-fragments'
+    let filter = 'x86'
     if (process.arch === 'arm64') {
-      /**
-       * comp = 'xz -Xbcj arm -b 1M -no-duplicates -no-recovery -always-use-fragments' 
-       *      I removed -Xbcj arm per problemi di memoria
-       */
-      comp = 'xz -b 256K -no-duplicates -no-recovery -always-use-fragments'
+      filter = 'arm'
     }
+    let comp = `xz -Xbcj ${filter} -b 1M -no-duplicates -no-recovery -always-use-fragments`
     return comp
   }
 
