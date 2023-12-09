@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.22
+* produce: due a bug on versions i386 and arm64 I released again.
+
 # eggs-9.6.21
 * produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it.
 * produce: new string for max compression `xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments`
