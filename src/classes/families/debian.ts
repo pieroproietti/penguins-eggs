@@ -1,11 +1,10 @@
 /**
  * penguins-eggs
- * class / family: debian.ts
+ * classes/families: debian.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
 
 import fs from 'node:fs'
 import shx from 'shelljs'
@@ -15,39 +14,31 @@ import {exec} from '../../lib/utils'
 import {array2spaced, depCommon, depArch, depVersions, depInit} from '../../lib/dependencies'
 
 /**
- * Utils: general porpourse utils
+ * Debian
  * @remarks all the utilities
  */
 export default class Debian {
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
 
   /**
-   * check if it's installed xorg
+   * Debian: isInstalledXorg
    * @returns true if xorg is installed
    */
   static isInstalledXorg(): boolean {
-    const test = 'xserver-xorg-core'
-    // if (Pacman.distro().codenameLikeId === 'bionic') {
-    /*
-       * BUT_ on Ubuntu bionic we have:
-       * xserver-xorg-core-hwe-18.04
-       */
-    // test = 'xserver-xorg-core-hwe-18.04'
-    // }
-
-    return this.packageIsInstalled(test)
+    return this.packageIsInstalled('xserver-xorg-core')
   }
 
   /**
-   * check if it's installed wayland
-   * @returns true if wayland
+   * Debian: isInstalledWayland
+   * @returns true if wayland is installed
    */
   static isInstalledWayland(): boolean {
     return this.packageIsInstalled('xwayland')
   }
 
   /**
-   * Crea array packages dei pacchetti da installare
+   * Debian: packages
+   * Create array packages to install/remove
    */
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
@@ -73,6 +64,9 @@ export default class Debian {
       }
     }
 
+    /**
+     * depending on init/systemd
+     */
     const initType: string = shx.exec('ps --no-headers -o comm 1', {silent: !verbose}).trim()
     for (const dep of depInit) {
       if (dep.init.includes(initType)) {
@@ -93,7 +87,8 @@ export default class Debian {
   }
 
   /**
-   *
+   * Debian: prerequisitesInstall
+   * install prerequisites
    */
   static async prerequisitesInstall(verbose = true): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
@@ -122,15 +117,7 @@ export default class Debian {
   }
 
   /**
-   *
-   */
-  static async liveInstallerPolicies() {
-    const policyFile = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
-  }
-
-  /**
-   *
+   * Debian: calamaresInstall
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
@@ -148,7 +135,7 @@ export default class Debian {
   }
 
   /**
-   * calamaresPolicies
+   * Debian: calamaresPolicies
    */
   static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
@@ -156,7 +143,7 @@ export default class Debian {
   }
 
   /**
-   *
+   * Debian: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
@@ -172,6 +159,16 @@ export default class Debian {
   }
 
   /**
+   * Debian: liveInstallerPolicies
+   * liveInstallerPolicies is NOT USED
+   */
+  static async liveInstallerPolicies() {
+    const policyFile = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+  }
+
+  /**
+   * Debian: packageIsInstalled
    * restuisce VERO se il pacchetto è installato
    * @param debPackage
    */
@@ -187,7 +184,7 @@ export default class Debian {
   }
 
   /**
-   * Install the package packageName
+   * Debian: packageInstall
    * @param packageName {string} Pacchetto Debian da installare
    * @returns {boolean} True if success
    */
@@ -201,7 +198,8 @@ export default class Debian {
   }
 
   /**
-   * restuisce VERO se il pacchetto è installato
+   * Debian: packageAptAvailable
+   * return TRUE if package is present on repository
    * @param debPackage
    */
   static async packageAptAvailable(packageName: string): Promise<boolean> {
@@ -216,6 +214,11 @@ export default class Debian {
     return available
   }
 
+  /**
+   * Debian: packageAptLast
+   * @param debPackage 
+   * @returns version
+   */
   static async packageAptLast(debPackage: string): Promise<string> {
     let version = ''
     const cmd = `apt-cache show ${debPackage} | grep Version:`

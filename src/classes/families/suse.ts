@@ -1,6 +1,6 @@
 /**
  * penguins-eggs
- * class / family: suse.ts
+ * classes/families: suse.ts
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
