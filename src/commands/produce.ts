@@ -102,7 +102,7 @@ export default class Produce extends Command {
       if (flags.max) {
         compression = compressors.max()
       } else if (flags.standard) {
-        compression = compressors.normal()
+        compression = compressors.standard()
       }
 
       const release = flags.release

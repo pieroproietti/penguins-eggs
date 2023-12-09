@@ -22,6 +22,9 @@ export default class Compressors {
   source = '/tmp/eggs-mksquash-test'
   dest = '/tmp/eggs-mksquash-dest'
 
+  /**
+   * populate
+   */
   async populate() {
     await this.prepareCheck()
     this.isEnabled.error = await this.check('error')
@@ -33,7 +36,10 @@ export default class Compressors {
     await this.removeCheck()
   }
 
-  // fastest
+  /**
+   * fast
+   * @returns 
+   */
   fast(): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
@@ -44,19 +50,17 @@ export default class Compressors {
     return comp
   }
 
-  // normal
-  normal(): string {
-    let comp = 'xz'
-    if (this.isEnabled.zstd) {
-      comp = 'zstd -b 1M -Xcompression-level 20'
-    } else {
-      comp = 'xz -b 1M'
-    }
+  /**
+   * standard
+   * @returns 
+   */
+  standard(): string {
+    let comp = 'xz -b 1M'
     return comp
   }
 
   /**
-   * max high rate compressing of iso file with these options: "xz -Xbcj x86 -b 1M -no-duplicates -no-recovery -always-use-fragments"
+   * max 
    * @returns
    */
   max(): string {
@@ -67,16 +71,27 @@ export default class Compressors {
     return comp
   }
 
+  /**
+   * prepareCheck
+   */
   private async prepareCheck() {
     shx.exec('rm -rf ' + this.source, {silent: true})
     shx.exec('mkdir ' + this.source, {silent: true})
   }
 
+  /**
+   * removeCheck
+   */
   private async removeCheck() {
     shx.exec('rm -rf ' + this.source, {silent: true})
     shx.exec('rm -f  ' + this.dest, {silent: true})
   }
 
+  /**
+   * check mksquashfs exists
+   * @param compressor 
+   * @returns 
+   */
   private async check(compressor: string): Promise<boolean> {
     let result = false
 
@@ -84,7 +99,6 @@ export default class Compressors {
     if (stderr === '') {
       result = true
     }
-
     return result
   }
 }
