@@ -49,6 +49,10 @@ export default class Pacman {
     return distro
   }
 
+  /**
+   * 
+   * @returns grub
+   */
   static whichGrubIsInstalled(): string {
     let grubInstalled = ''
     if (this.distro().familyId === 'debian') {
@@ -72,24 +76,26 @@ export default class Pacman {
 
   /**
    * check if it's installed xorg
-   * @returns true if xorg is installed
+   * @returns 
    */
   static isInstalledXorg(): boolean {
     let installed = false
     if (this.distro().familyId === 'debian') {
-      if (Debian.isInstalledXorg()) {
+      if (Debian.packageIsInstalled('xserver-xorg-core')) {
         installed = true
       }
     } else if (this.distro().familyId === 'fedora') {
-      if (Fedora.isInstalledXorg()) {
+      if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
         installed = true
       }
     } else if (this.distro().familyId === 'archlinux') {
-      if (Archlinux.isInstalledXorg()) {
+      if (Archlinux.packageIsInstalled('xorg-server-common')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'suse' && Suse.isInstalledXorg()) {
-      installed = true
+    } else if (this.distro().familyId === 'suse') {
+      if (Suse.packageIsInstalled('xorg-x11-server')) {
+        installed = true
+      } 
     }
 
     return installed
@@ -102,21 +108,22 @@ export default class Pacman {
   static isInstalledWayland(): boolean {
     let installed = false
     if (this.distro().familyId === 'debian') {
-      if (Debian.isInstalledWayland()) {
+      if (Debian.packageIsInstalled('xwayland')) {
         installed = true
       }
     } else if (this.distro().familyId === 'fedora') {
-      if (Fedora.isInstalledWayland()) {
+      if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
         installed = true
       }
     } else if (this.distro().familyId === 'archlinux') {
-      if (Archlinux.isInstalledWayland()) {
+      if (Archlinux.packageIsInstalled('xwayland')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'suse' && Suse.isInstalledWayland()) {
-      installed = true
+    } else if (this.distro().familyId === 'suse') {
+      if (Suse.packageIsInstalled('xwayland*')) {
+        installed = true
+      }
     }
-
     return installed
   }
 
@@ -137,7 +144,6 @@ export default class Pacman {
     } else if (Pacman.distro().familyId === 'suse') {
       isUefi = true
     }
-
     return isUefi
   }
 
@@ -224,7 +230,6 @@ export default class Pacman {
     } else if (this.distro().familyId === 'suse') {
       retVal = await Suse.prerequisitesInstall(verbose)
     }
-
     return retVal
   }
 
