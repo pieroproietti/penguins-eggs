@@ -37,7 +37,7 @@ export default class Compressors {
   fast(): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
-      comp = 'zstd -b 256K -Xcompression-level 1'
+      comp = 'zstd -b 1M -Xcompression-level 1'
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }
