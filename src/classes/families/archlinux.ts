@@ -7,7 +7,7 @@
  * license: MIT
  */
 
-import fs, { truncate } from 'node:fs'
+import fs from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
