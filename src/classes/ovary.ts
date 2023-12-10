@@ -834,7 +834,7 @@ export default class Ovary {
    * kernelCopy
    */
   async kernelCopy() {
-    Utils.warning(`copying ${path.basename(this.settings.kernel_image)} to ISO`)
+    Utils.warning(`copying ${path.basename(this.settings.kernel_image)} on ISO/live`)
 
     let lackVmlinuzImage = false
     if (fs.existsSync(this.settings.kernel_image)) {
@@ -856,7 +856,7 @@ export default class Ovary {
    * necessita di echoYes
    */
   async initrdArch() {
-    Utils.warning('creating Arch initramfs')
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
 
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
@@ -875,7 +875,7 @@ export default class Ovary {
    * @returns
    */
   async initrdDebian(verbose = false) {
-    Utils.warning('creating Debian/Devuan/Ubuntu initrd.img')
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
 
     let isCrypted = false
 
