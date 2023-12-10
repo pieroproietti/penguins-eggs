@@ -935,7 +935,7 @@ export default class Ovary {
      * secure
      */
     if (!unsecure) {
-      this.addRemoveExclusion(true, `home/*/*`)
+      //this.addRemoveExclusion(true, `home/*/*`)
       this.addRemoveExclusion(true, `root/*`)
       this.addRemoveExclusion(true, `root/.*`)
     }
@@ -973,7 +973,8 @@ export default class Ovary {
     cmd = cmd.replace(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
-      Utils.warning('squashing filesystem: ' + compression)
+      Utils.warning('creating filesystem.squashfs on ISO/live')
+      // Utils.warning(`compression: ` + compression)
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
         process.exit()
@@ -1574,7 +1575,7 @@ export default class Ovary {
       await exec(`rm ${memdiskDir} -rf`, this.echo)
     }
 
-    Utils.warning('creating temporary memdiskDir on: ' + memdiskDir)
+    Utils.warning('creating temporary memdiskDir on ' + memdiskDir)
     await exec(`mkdir ${memdiskDir}`)
     await exec(`mkdir ${memdiskDir}/boot`, this.echo)
     await exec(`mkdir ${memdiskDir}/boot/grub`, this.echo)
@@ -1598,7 +1599,7 @@ export default class Ovary {
       await exec(`rm ${efiWorkDir} -rf`, this.echo)
     }
 
-    Utils.warning('creating temporary efiWordDir on: ' + efiWorkDir)
+    Utils.warning('creating temporary efiWordDir on ' + efiWorkDir)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
@@ -1998,9 +1999,6 @@ export default class Ovary {
         await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
       }
     }
-
-
-
   }
 
   /**
@@ -2051,7 +2049,15 @@ export default class Ovary {
 
     return usersArray
   }
+
+  /**
+   * END CLASS ovary
+   */
 }
+
+/**
+ * FUNCTIONS
+ */
 
 /**
  * Crea il path se non esiste

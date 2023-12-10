@@ -70,7 +70,7 @@ export default class Compressors {
     }
     let options = '-b 1M -no-duplicates -no-recovery -always-use-fragments'
     if (process.arch === 'ia32') {
-      options = '-b 256K'
+      // options = '-b 1M'
     }
     let comp = `xz -Xbcj ${filter} ${options}`
     return comp
