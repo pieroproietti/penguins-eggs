@@ -194,6 +194,7 @@ export default class Pacman {
    */
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
+    /*
     if (this.distro().familyId === 'debian') {
       packages = Debian.packages(remove, verbose)
     } else if (this.distro().familyId === 'fedora') {
@@ -203,7 +204,7 @@ export default class Pacman {
     } else if (this.distro().familyId === 'suse') {
       packages = Suse.packages(remove, verbose)
     }
-
+    */
     return packages
   }
   
