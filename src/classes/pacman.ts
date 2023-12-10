@@ -134,8 +134,10 @@ export default class Pacman {
   static isUefi(): boolean {
     let isUefi = false
     if (this.distro().familyId === 'debian') {
-      if (Utils.uefiArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
-        isUefi = true
+      if (Utils.uefiArch() !== 'i386') {
+        if (this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
+          isUefi = true
+        }
       }
     } else if (Pacman.distro().familyId === 'fedora') {
       isUefi = true
