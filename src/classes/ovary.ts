@@ -307,10 +307,11 @@ export default class Ovary {
         uname = uname.replaceAll('\n', '')
 
         let content = ''
+        content = '#!/usr/bin/env bash'
         content += 'mkdir /live/bin -p\n'
         content += '## \n'
-        content += 'cp /usr/lib/penguins-eggs/scripts/non-live-cmdline /live/bin -p\n'
-        content += 'chmod +x /live/bin/non-live-cmdline\n'
+        content += '# cp /usr/lib/penguins-eggs/scripts/non-live-cmdline /live/bin -p\n'
+        content += '# chmod +x /live/bin/non-live-cmdline\n'
         content += '## \n'
         content += 'mkdir /live/boot-dev/antiX -p\n'
         content += 'ln -s /run/live/medium/live/filesystem.squashfs /live/boot-dev/antiX/linuxfs\n'
@@ -1573,7 +1574,7 @@ export default class Ovary {
       await exec(`rm ${memdiskDir} -rf`, this.echo)
     }
 
-    Utils.warning('creating memdiskDir: ' + memdiskDir)
+    Utils.warning('creating temporary memdiskDir on: ' + memdiskDir)
     await exec(`mkdir ${memdiskDir}`)
     await exec(`mkdir ${memdiskDir}/boot`, this.echo)
     await exec(`mkdir ${memdiskDir}/boot/grub`, this.echo)
@@ -1597,7 +1598,7 @@ export default class Ovary {
       await exec(`rm ${efiWorkDir} -rf`, this.echo)
     }
 
-    Utils.warning('creating efiWordDir: ' + efiWorkDir)
+    Utils.warning('creating temporary efiWordDir on: ' + efiWorkDir)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
