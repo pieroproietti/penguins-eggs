@@ -110,6 +110,10 @@ export default class Utils {
       cmdline.forEach(cmd => {
          if (cmd.includes('BOOT_IMAGE')) {
             vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
+
+            if (!fs.existsSync(vmlinuz) && fs.existsSync(`/boot${vmlinuz}`)) {
+               vmlinuz = `/boot${vmlinuz}`
+            }
          }
       })
 
