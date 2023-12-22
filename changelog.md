@@ -21,7 +21,12 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.22
-* produce: due a bug on versions i386 and arm64 I released again.
+To meet the needs of those who use eggs to clone their systems, I varied the exclude.list configuration again. With the occasion I have also varied the path, the `exclude.list` now  is located in the canonical path `/etc/penguins-eggs.d`. In addition, since the mksquash command allows only one file for the exclude list, I thought of generating it dynamically from a template and the exclusions for the users' homes. 
+
+So we also have in `/etc/penguins-eggs.d` an `exclude.list.d` directory in which there are currently two files: `exclude.list.template` and `exclude.list.homes`. 
+
+When we launch `sudo eggs produce` the real `exclude.list` file will be generated on `/etc/penguins-eggs.d`from the templates and used.
+
 
 # eggs-9.6.21
 * produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it.

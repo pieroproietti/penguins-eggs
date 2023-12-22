@@ -25,7 +25,6 @@ case "$1" in
     purge)
         # eggs configurazione
         rm -rf /etc/penguins-eggs.d/
-        rm -rf /usr/local/share/penguins-eggs/
 
         # calamares config
         rm -rf /etc/calamares/

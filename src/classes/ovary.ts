@@ -191,7 +191,19 @@ export default class Ovary {
         }
       }
 
-      // CRYPTEDCLONE
+      /**
+       * define behaviour and exclude.list
+       */
+      let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
+      let excludeListTemplate = excludeListTemplateDir + 'exclude.list.template'
+      if (!fs.existsSync(excludeListTemplate)) {
+        Utils.warning('Cannot find: ' + excludeListTemplate)
+        process.exit(1)
+      }
+      let excludeHomes = ''
+      /**
+       * cryptedclone
+       */
       if (cryptedclone) {
         console.log('eggs will SAVE users and users\' data ENCRYPTED on LUKS volume within the live')
         const users = await this.usersFill()
@@ -201,27 +213,38 @@ export default class Ovary {
             if (Number.parseInt(user.uid) < 1000) {
               utype = 'service'
             }
-
             console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
             if (user.login !== 'root') {
               this.addRemoveExclusion(true, user.home)
             }
           }
         }
-
-        // CLONE
-      } else if (this.clone) {
-        // users tent to set user_opt = real
-        // user when create a clone
+      /**
+       * clone
+       * 
+       * users tend to set user_opt as 
+       * real user when create a clone,
+       * this is WRONG here we correct 
+       */
+    } else if (this.clone) {
         this.settings.config.user_opt = 'live' // patch for humans 
         this.settings.config.user_opt_passwd = 'evolution'
         this.settings.config.root_passwd = 'evolution'
         Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
-
-        // NORMAL
+      /**
+       * normal
+       */
       } else {
+        excludeHomes = fs.readFileSync(`${excludeListTemplateDir}exclude.list.homes`, 'utf8')
         Utils.warning('eggs will REMOVE users and users\' data from live')
       }
+      /**
+       * create exclude.list
+       */
+      let view = { homes_exclude_list: excludeHomes }
+      const template = fs.readFileSync(excludeListTemplate, 'utf8')
+      fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
+
 
       /**
        * NOTE: reCreate = false
@@ -1856,7 +1879,7 @@ export default class Ovary {
       }
     }
 
-    // uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    // uefi_opt="-excludeListTemplateorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
     let uefi_elToritoAltBoot = ''
     let uefi_e = ''
     let uefi_isohybridGptBasdat = ''
@@ -1898,7 +1921,7 @@ export default class Ovary {
       * -boot-load-size 4
       * -boot-info-table
       * -no-emul-boot
-      * -eltorito-alt-boot
+      * -excludeListTemplateorito-alt-boot
       * -e boot/grub/efi.img
       * -no-emul-boot
       * -isohybrid-gpt-basdat
@@ -1919,7 +1942,7 @@ export default class Ovary {
      -boot-load-size 4 \
      -boot-info-table \
      -no-emul-boot \
-     ${uefi_elToritoAltBoot} \
+     ${uefi_excludeListTemplateoritoAltBoot} \
      ${uefi_e} \
      ${uefi_noEmulBoot} \
      ${uefi_isohybridGptBasdat}
@@ -1930,7 +1953,7 @@ export default class Ovary {
      * how is made in refracta
      *
      * -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
-     * uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+     * uefi_opt="-excludeListTemplateorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
      *
      * xorriso -as mkisofs -r \
      * -J \
