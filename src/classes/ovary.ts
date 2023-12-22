@@ -1879,7 +1879,7 @@ export default class Ovary {
       }
     }
 
-    // uefi_opt="-excludeListTemplateorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
     let uefi_elToritoAltBoot = ''
     let uefi_e = ''
     let uefi_isohybridGptBasdat = ''
@@ -1921,7 +1921,7 @@ export default class Ovary {
       * -boot-load-size 4
       * -boot-info-table
       * -no-emul-boot
-      * -excludeListTemplateorito-alt-boot
+      * -uefi_elToritoAltBoot-alt-boot
       * -e boot/grub/efi.img
       * -no-emul-boot
       * -isohybrid-gpt-basdat
@@ -1942,7 +1942,7 @@ export default class Ovary {
      -boot-load-size 4 \
      -boot-info-table \
      -no-emul-boot \
-     ${uefi_excludeListTemplateoritoAltBoot} \
+     ${uefi_eltoritoAltBoot} \
      ${uefi_e} \
      ${uefi_noEmulBoot} \
      ${uefi_isohybridGptBasdat}
@@ -1953,7 +1953,7 @@ export default class Ovary {
      * how is made in refracta
      *
      * -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin
-     * uefi_opt="-excludeListTemplateorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+     * uefi_opt="-eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
      *
      * xorriso -as mkisofs -r \
      * -J \
