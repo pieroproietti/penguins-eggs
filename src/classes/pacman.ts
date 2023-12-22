@@ -329,8 +329,7 @@ export default class Pacman {
    */
   static configurationCheck(): boolean {
     const confExists = fs.existsSync(config_file)
-    const listExists = fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')
-    return confExists && listExists
+    return confExists
   }
 
   /**
@@ -356,7 +355,7 @@ export default class Pacman {
     config.version = Utils.getPackageVersion()
     config.snapshot_dir = '/home/eggs'
     config.snapshot_prefix = ''
-    config.snapshot_excludes = '/usr/local/share/penguins-eggs/exclude.list'
+    config.snapshot_excludes = '/etc/penguins-eggs.d/exclude.list'
     config.snapshot_basename = '' // before default was hostname
     config.user_opt = 'live'
     config.user_opt_passwd = 'evolution'
@@ -440,9 +439,10 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/init/cuckoo.sh'), '/etc/penguins-eggs.d/init')
     shx.chmod('+x', '/etc/penguins-eggs.d/init/cuckoo.sh')
 
-    // creazione del file delle esclusioni
-    shx.mkdir('-p', '/usr/local/share/penguins-eggs/')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list'), '/usr/local/share/penguins-eggs')
+    // creazione cartella exclude.list.d
+    execSync(`mkdir -p /etc/penguins-eggs.d/exclude.list.d`)
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.template'), '/etc/penguins-eggs.d/exclude.list.d')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.homes'), '/etc/penguins-eggs.d/exclude.list.d')
 
     await this.configurationFresh()
   }
@@ -455,10 +455,6 @@ export default class Pacman {
 
     if (fs.existsSync('/etc/penguins-eggs.d')) {
       await exec('rm /etc/penguins-eggs.d -rf', echo)
-    }
-
-    if (fs.existsSync('/usr/local/share/penguins-eggs/exclude.list')) {
-      await exec('rm /usr/local/share/penguins-eggs/exclude.list', echo)
     }
 
     if (fs.existsSync('/etc/calamares')) {

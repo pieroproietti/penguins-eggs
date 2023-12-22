@@ -10,7 +10,7 @@ snapshot_dir: /home/eggs/
 snapshot_prefix: ''
 
 # You can edit this rsync excludes file
-snapshot_excludes: /usr/local/share/penguins-eggs/exclude.list
+snapshot_excludes: /etc/penguins-eggs.d/exclude.list
 
 # snapshot_basename, default: ''
 snapshot_basename: '' # max 32 chars  [A-Z0-9_]

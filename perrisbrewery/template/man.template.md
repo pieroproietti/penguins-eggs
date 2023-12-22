@@ -80,7 +80,7 @@ The scope of this project is to implement the process of remastering your versio
       /etc/penguins-eggs.d
         all eggs configurations are here
 
-      /usr/local/share/penguins-eggs/exclude.list
+      /etc/penguins-eggs.d/exclude.list
         exclude.list rsync
 
       /usr/lib/penguins-eggs (deb package)
