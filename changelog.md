@@ -21,12 +21,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.22
-To meet the needs of those who use eggs to clone their systems, I varied the exclude.list configuration again. With the occasion I have also varied the path, the `exclude.list` now  is located in the canonical path `/etc/penguins-eggs.d`. In addition, since the mksquash command allows only one file for the exclude list, I thought of generating it dynamically from a template and the exclusions for the users' homes.
+To meet the needs of those who use eggs to clone their systems, I varied the exclude.list configuration. With the occasion I have also varied the path of it: the `exclude.list` now  is created in the canonical path `/etc/penguins-eggs.d`. In addition, since the mksquash command allows only one file for the exclude list, I thought of generating it dynamically from a template and others specific exclusions.
 
-So we also have in `/etc/penguins-eggs.d` an `exclude.list.d` directory in which there are currently two files: `exclude.list.template` and `exclude.list.homes`. 
+So we also have in `/etc/penguins-eggs.d` an `exclude.list.d` directory in which there are currently just three files: `exclude.list.template`, `exclude.list.custom` and `exclude.list.homes`. 
 
-When we launch `sudo eggs produce` the real `exclude.list` file will be generated on `/etc/penguins-eggs.d`from the templates and used, depending on operation of clone or not, `exclude.list.homes` will be included.
+When we launch `sudo eggs produce` the real `exclude.list` file will be generated on `/etc/penguins-eggs.d`from the templates depending on the filters chosen: `custom`, `dev` and `homes`.
 
+So, in this way, by doing a clone, we can decide whether or not to filter user's `homes`, use our own `custom` list, or - as in my case during development - exclude the current user's home using `dev`.
 
 # eggs-9.6.21
 * produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it.
