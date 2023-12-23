@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.6.21</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.6.22</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i eggs_9.6.21_amd64.deb
+    <pre><code>$ sudo dpkg -i eggs_9.6.22_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.6.21 linux-x64 node-v18.17.1
+penguins-eggs/9.6.22 linux-x64 node-v18.17.1
 $ eggs --help [COMMAND]
 
 USAGE
@@ -356,6 +356,7 @@ FLAGS
   -y, --yolk            force yolk renew
   --addons=&#x3C;value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=&#x3C;value>    basename
+  --filters=&#x3C;value>...  filters to be used: custom. dev, homes
   --release             release: max compression, remove penguins-eggs and calamares after installation
   --theme=&#x3C;value>       theme for livecd, calamares branding and partitions
 
@@ -646,7 +647,7 @@ EXAMPLES
     <pre><code>  /etc/penguins-eggs.d
     all eggs configurations are here
 
-  /penguins-eggs.d/exclude.list
+  /etc/penguins-eggs.d/exclude.list
     exclude.list rsync
 
   /usr/lib/penguins-eggs (deb package)
