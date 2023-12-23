@@ -253,7 +253,7 @@ EXAMPLES
   $ eggs adapt
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/blob/master/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/adapt.ts)
 
 ## `eggs analyze`
 
@@ -274,7 +274,7 @@ EXAMPLES
   sudo eggs analyze
 ```
 
-_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/blob/master/src/commands/analyze.ts)_
+_See code: [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/analyze.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -336,7 +336,7 @@ EXAMPLES
   sudo eggs calamares --remove
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/blob/master/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -363,7 +363,7 @@ EXAMPLES
   sudo eggs config --clean --nointeractive
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/blob/master/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/config.ts)_
 
 ## `eggs cuckoo`
 
@@ -383,7 +383,7 @@ EXAMPLES
   sudo eggs cuckoo
 ```
 
-_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/blob/master/src/commands/cuckoo.ts)_
+_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/cuckoo.ts)_
 
 ## `eggs dad`
 
@@ -410,7 +410,7 @@ EXAMPLES
   sudo dad --default
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/blob/master/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/dad.ts)_
 
 ## `eggs export deb`
 
@@ -515,7 +515,7 @@ EXAMPLES
   sudo eggs install --custom it
 ```
 
-_See code: [src/commands/install.ts](https://github.com/pieroproietti/blob/master/src/commands/install.ts)_
+_See code: [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/install.ts)_
 
 ## `eggs kill`
 
@@ -538,7 +538,7 @@ EXAMPLES
   sudo eggs kill
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/blob/master/src/commands//kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands//kill.ts)_
 
 ## `eggs mom`
 
@@ -558,7 +558,7 @@ EXAMPLES
   $ eggs mom
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/blob/master/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -609,7 +609,7 @@ EXAMPLES
   sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/blob/master/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/produce.ts)_
 
 ## `eggs status`
 
@@ -630,7 +630,7 @@ EXAMPLES
   $ eggs status
 ```
 
-_See code: [src/commands/status.ts](https://github.com/pieroproietti/blob/master/src/commands/status.ts)_
+_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/status.ts)_
 
 ## `eggs syncfrom`
 
@@ -656,7 +656,7 @@ EXAMPLES
   sudo eggs syncfrom --file /path/to/fileLUKS
 ```
 
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/blob/master/src/commands/syncfrom.ts)_
+_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/syncfrom.ts)_
 
 ## `eggs syncto`
 
@@ -681,7 +681,7 @@ EXAMPLES
   sudo eggs syncto --file /path/to/fileLUKS
 ```
 
-_See code: [src/commands/syncto.js](https://github.com/pieroproietti/blob/master/src/commands/syncto.ts)_
+_See code: [src/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 
@@ -703,7 +703,7 @@ EXAMPLES
   sudo eggs tools clean
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/blob/master/src/commands/tools/clean.ts)_
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/clean.ts)_
 
 ## `eggs tools ppa`
 
@@ -813,7 +813,7 @@ EXAMPLES
   $ eggs update
 ```
 
-_See code: [src/update.js](https://github.com/pieroproietti/blob/master/src/commands//update.ts)_
+_See code: [src/update.js](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands//update.ts)_
 
 ## `eggs version`
 
