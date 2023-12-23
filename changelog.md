@@ -29,7 +29,7 @@ When we launch `sudo eggs produce` the real `exclude.list` file will be generate
 
 So, in this way, by doing a clone, we can decide whether or not to filter user's `homes`, use your own `custom` list, or - as in my case during development - exclude completely the current user's home using `dev`.
 
-Another addition has been made to the [README](README.md#commands) of penguins-eggs: as you scroll through the various commands, a link to the code for the command itself appears below them. This can be very useful for those who want to try their hand at modifying or integrating penguins-eggs itself or simply have a curiosity to know how it works.
+Another addition has been made to the [README](https://github.com/pieroproietti/penguins-eggs?tab=readme-ov-file#commands) of penguins-eggs: as you scroll through the various commands, a link to the code for the command itself appears below them. This can be very useful for those who want to try their hand at modifying or integrating penguins-eggs itself or simply have a curiosity to know how it works.
 
 # eggs-9.6.21
 * produce: we have a new default with a new **strictly** exclude.list, but you can use the new flag `--unsecure`, to bypass it.
