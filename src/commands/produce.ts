@@ -11,7 +11,7 @@ import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk from 'chalk'
-import { IMyAddons } from '../interfaces/index'
+import { IFilters, IAddons } from '../interfaces/index'
 import fs from 'node:fs'
 import path from 'node:path'
 import { create } from 'axios'
@@ -22,6 +22,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
+    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
@@ -31,7 +32,7 @@ export default class Produce extends Command {
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    unsecure: Flags.boolean({ char: 'u', description: 'include /home/* and full /root contents on live' }),
+    unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
   }
@@ -85,6 +86,23 @@ export default class Produce extends Command {
        * composizione dei flag
        */
 
+      // filters
+      const filters = {} as IFilters
+      filters.homes = false
+      filters.dev = false
+      filters.custom = false
+      if (flags.filters) {
+        if (flags.filters.includes('homes')) {
+          filters.homes = true
+        }
+        if (flags.filters.includes('dev')) {
+          filters.dev = true
+        }
+        if (flags.filters.includes('custom')) {
+          filters.custom = true
+        }
+      }
+
       let prefix = ''
       if (flags.prefix !== undefined) {
         prefix = flags.prefix
@@ -135,8 +153,8 @@ export default class Produce extends Command {
             theme = theme.substring(0, theme.length - 1)
           }
         } else {
-          const wpath  = `/home/${await Utils.getPrimaryUser()}/.wardrobe/vendors/`
-          theme = wpath + flags.theme 
+          const wpath = `/home/${await Utils.getPrimaryUser()}/.wardrobe/vendors/`
+          theme = wpath + flags.theme
         }
 
         theme = path.resolve(theme)
@@ -151,7 +169,7 @@ export default class Produce extends Command {
         await Config.install(i, nointeractive, noicons, verbose)
       }
 
-      const myAddons = {} as IMyAddons
+      const myAddons = {} as IAddons
       if (flags.addons != undefined) {
         if (flags.addons.includes('adapt')) {
           myAddons.adapt = true
@@ -174,7 +192,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, nointeractive, noicons, unsecure, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, filters, nointeractive, noicons, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

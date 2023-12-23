@@ -5,11 +5,10 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-export interface IAddons {
-  adapt: boolean
-  ichoice: boolean
-  rsupport: boolean
-  pve: boolean
+export interface IFilters {
+  custom: boolean
+  dev: boolean
+  homes: boolean
 }
 
-// export interface IAddons {}
+//export interface IFilters { }

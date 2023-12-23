@@ -6,7 +6,9 @@
  * license: MIT
  */
 
-export {IAddons, IMyAddons} from './i-addons'
+export {IAddons} from './i-addons'
+export {IFilters} from './i-filters'
+
 export {IDevice, IDevices} from './i-devices'
 export {IRemix} from './i-remix'
 export {IUser} from './i-user'

@@ -1,3 +1,5 @@
+######################################################################################################
+# HOMES: filters users' homes
 home/*/.adobe
 home/*/.aptitude
 home/*/.bash_history

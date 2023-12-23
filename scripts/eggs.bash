@@ -23,7 +23,7 @@ install --crypted --custom --domain --halt --help --ip --nointeractive --none --
 krill --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --nointeractive --isos --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --help --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --filters --help --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose

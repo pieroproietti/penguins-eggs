@@ -431,8 +431,7 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
-    // shx.cp(path.resolve(__dirname, '../../conf/archiso.yaml'), confRoot)
-
+    
     // init
     shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')
     shx.chmod('+x', '/etc/penguins-eggs.d/init/unattended.sh')
@@ -442,6 +441,7 @@ export default class Pacman {
     // creazione cartella exclude.list.d
     execSync(`mkdir -p /etc/penguins-eggs.d/exclude.list.d`)
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.template'), '/etc/penguins-eggs.d/exclude.list.d')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.custom'), '/etc/penguins-eggs.d/exclude.list.d')
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.homes'), '/etc/penguins-eggs.d/exclude.list.d')
 
     await this.configurationFresh()
