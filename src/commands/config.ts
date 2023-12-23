@@ -168,7 +168,7 @@ export default class Config extends Command {
 
       if (i.configurationInstall) {
         console.log('- creating/updating configuration')
-        console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml') + ' and ' + chalk.yellow('/penguins-eggs/exclude.list\n'))
+        console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml'))
       } else if (i.configurationRefresh) {
         console.log('- refreshing configuration for new machine')
       }

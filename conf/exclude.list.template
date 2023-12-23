@@ -132,15 +132,9 @@ var/spool/*
 var/tmp/*
 
 
-######################################################################################################
-# CUSTOM: the nest - usually /home/eggs - is automatically excluded!
-blissos/data.img
+{{{exclude_list_custom}}}
 
+{{{exclude_list_dev}}}
 
-######################################################################################################
-# HOMES: filters users' homes
-{{{homes_exclude_list}}}
+{{{exclude_list_homes}}}
 
-######################################################################################################
-# DEVS: uncomment to test --clone when is too big
-# home/artisan/*

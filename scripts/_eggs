@@ -169,6 +169,7 @@ produce)
 "--basename=-[basename]:"
 "--clone[clone]"
 "--cryptedclone[crypted clone]"
+"--filters=-[filters to be used: homes]:"
 "--help[Show CLI help.]"
 "--max[max compression]"
 "--noicons[no icons on desktop]"

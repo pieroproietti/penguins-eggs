@@ -17,7 +17,7 @@ import mustache from 'mustache'
 import PveLive from './pve-live'
 
 // interfaces
-import { IMyAddons, IUser } from '../interfaces/index'
+import { IAddons, IFilters } from '../interfaces/index'
 
 // libraries
 import { exec } from '../lib/utils'
@@ -39,6 +39,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
+import { IfStatement } from 'typescript'
 
 
 /**
@@ -131,7 +132,8 @@ export default class Ovary {
     scriptOnly = false,
     yolkRenew = false,
     release = false,
-    myAddons: IMyAddons,
+    myAddons: IAddons,
+    filters: IFilters,
     nointeractive = false,
     noicons = false,
     unsecure = false,
@@ -192,16 +194,6 @@ export default class Ovary {
       }
 
       /**
-       * define behaviour and exclude.list
-       */
-      let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
-      let excludeListTemplate = excludeListTemplateDir + 'exclude.list.template'
-      if (!fs.existsSync(excludeListTemplate)) {
-        Utils.warning('Cannot find: ' + excludeListTemplate)
-        process.exit(1)
-      }
-      let excludeHomes = ''
-      /**
        * cryptedclone
        */
       if (cryptedclone) {
@@ -219,29 +211,51 @@ export default class Ovary {
             }
           }
         }
-      /**
-       * clone
-       * 
-       * users tend to set user_opt as 
-       * real user when create a clone,
-       * this is WRONG here we correct 
-       */
-    } else if (this.clone) {
+        /**
+         * clone
+         * 
+         * users tend to set user_opt as 
+         * real user when create a clone,
+         * this is WRONG here we correct 
+         */
+      } else if (this.clone) {
         this.settings.config.user_opt = 'live' // patch for humans 
         this.settings.config.user_opt_passwd = 'evolution'
         this.settings.config.root_passwd = 'evolution'
         Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
-      /**
-       * normal
-       */
+        /**
+         * normal
+         */
       } else {
-        excludeHomes = fs.readFileSync(`${excludeListTemplateDir}exclude.list.homes`, 'utf8')
         Utils.warning('eggs will REMOVE users and users\' data from live')
       }
+
       /**
-       * create exclude.list
+       * exclude.list
        */
-      let view = { homes_exclude_list: excludeHomes }
+      let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
+      let excludeListTemplate = excludeListTemplateDir + 'exclude.list.template'
+      if (!fs.existsSync(excludeListTemplate)) {
+        Utils.warning('Cannot find: ' + excludeListTemplate)
+        process.exit(1)
+      }
+      let excludeCustom = ''
+      let excludeDev = ''
+      let excludeHomes = ''
+      if (filters.custom) {
+        excludeCustom = fs.readFileSync(`${excludeListTemplateDir}exclude.list.custom`, 'utf8')
+      }
+      if (filters.dev) {
+        excludeDev = `home/${await Utils.getPrimaryUser()}/*`
+      }
+      if (filters.homes) {
+        excludeHomes = fs.readFileSync(`${excludeListTemplateDir}exclude.list.homes`, 'utf8')
+      }
+      let view = {
+        exclude_list_custom: excludeCustom,
+        exclude_list_dev: excludeDev,
+        exclude_list_homes: excludeHomes,
+      }
       const template = fs.readFileSync(excludeListTemplate, 'utf8')
       fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
 
@@ -958,7 +972,6 @@ export default class Ovary {
      * secure
      */
     if (!unsecure) {
-      //this.addRemoveExclusion(true, `home/*/*`)
       this.addRemoveExclusion(true, `root/*`)
       this.addRemoveExclusion(true, `root/.*`)
     }
@@ -1374,7 +1387,7 @@ export default class Ovary {
   /**
    *
    */
-  async createXdgAutostart(theme = 'eggs', myAddons: IMyAddons, noicons = false) {
+  async createXdgAutostart(theme = 'eggs', myAddons: IAddons, noicons = false) {
     if (this.verbose) {
       console.log('Ovary: createXdgAutostart')
     }

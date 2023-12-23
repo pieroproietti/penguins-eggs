@@ -253,7 +253,7 @@ EXAMPLES
   $ eggs adapt
 ```
 
-_See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/adapt.js)_
+_See code: [dist/commands/adapt.js](https://github.com/pieroproietti/penguins-eggs/src/commands/adapt.js)_
 
 ## `eggs analyze`
 
@@ -274,7 +274,7 @@ EXAMPLES
   sudo eggs analyze
 ```
 
-_See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/analyze.js)_
+_See code: [dist/commands/analyze.js](https://github.com/pieroproietti/penguins-eggs/src/commands/analyze.js)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -336,7 +336,7 @@ EXAMPLES
   sudo eggs calamares --remove
 ```
 
-_See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/calamares.js)_
+_See code: [dist/commands/calamares.js](https://github.com/pieroproietti/penguins-eggs/src/commands/calamares.js)_
 
 ## `eggs config`
 
@@ -363,7 +363,7 @@ EXAMPLES
   sudo eggs config --clean --nointeractive
 ```
 
-_See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/config.js)_
+_See code: [dist/commands/config.js](https://github.com/pieroproietti/penguins-eggs/src/commands/config.js)_
 
 ## `eggs cuckoo`
 
@@ -383,7 +383,7 @@ EXAMPLES
   sudo eggs cuckoo
 ```
 
-_See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/cuckoo.js)_
+_See code: [dist/commands/cuckoo.js](https://github.com/pieroproietti/penguins-eggs/src/commands/cuckoo.js)_
 
 ## `eggs dad`
 
@@ -410,7 +410,7 @@ EXAMPLES
   sudo dad --default
 ```
 
-_See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/dad.js)_
+_See code: [dist/commands/dad.js](https://github.com/pieroproietti/penguins-eggs/src/commands/dad.js)_
 
 ## `eggs export deb`
 
@@ -515,7 +515,7 @@ EXAMPLES
   sudo eggs install --custom it
 ```
 
-_See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/install.js)_
+_See code: [dist/commands/install.js](https://github.com/pieroproietti/penguins-eggs/src/commands/install.js)_
 
 ## `eggs kill`
 
@@ -538,7 +538,7 @@ EXAMPLES
   sudo eggs kill
 ```
 
-_See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/kill.js)_
+_See code: [dist/commands/kill.js](https://github.com/pieroproietti/penguins-eggs/src/commands/kill.js)_
 
 ## `eggs mom`
 
@@ -558,7 +558,7 @@ EXAMPLES
   $ eggs mom
 ```
 
-_See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/mom.js)_
+_See code: [dist/commands/mom.js](https://github.com/pieroproietti/penguins-eggs/src/commands/mom.js)_
 
 ## `eggs produce`
 
@@ -584,6 +584,7 @@ FLAGS
   -y, --yolk            force yolk renew
   --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=<value>    basename
+  --filters=<value>...  filters to be used: custom. dev, homes
   --release             release: max compression, remove penguins-eggs and calamares after installation
   --theme=<value>       theme for livecd, calamares branding and partitions
 
@@ -608,7 +609,7 @@ EXAMPLES
   sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
 ```
 
-_See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/produce.js)_
+_See code: [dist/commands/produce.js](https://github.com/pieroproietti/penguins-eggs/src/commands/produce.js)_
 
 ## `eggs status`
 
@@ -629,7 +630,7 @@ EXAMPLES
   $ eggs status
 ```
 
-_See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/status.js)_
+_See code: [dist/commands/status.js](https://github.com/pieroproietti/penguins-eggs/src/commands/status.js)_
 
 ## `eggs syncfrom`
 
@@ -655,7 +656,7 @@ EXAMPLES
   sudo eggs syncfrom --file /path/to/fileLUKS
 ```
 
-_See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/syncfrom.js)_
+_See code: [dist/commands/syncfrom.js](https://github.com/pieroproietti/penguins-eggs/src/commands/syncfrom.js)_
 
 ## `eggs syncto`
 
@@ -680,7 +681,7 @@ EXAMPLES
   sudo eggs syncto --file /path/to/fileLUKS
 ```
 
-_See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/syncto.js)_
+_See code: [dist/commands/syncto.js](https://github.com/pieroproietti/penguins-eggs/src/commands/syncto.js)_
 
 ## `eggs tools clean`
 
@@ -810,7 +811,7 @@ EXAMPLES
   $ eggs update
 ```
 
-_See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/blob/v9.4.0/dist/commands/update.js)_
+_See code: [dist/commands/update.js](https://github.com/pieroproietti/penguins-eggs/src/commands/update.js)_
 
 ## `eggs version`
 
