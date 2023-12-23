@@ -437,6 +437,8 @@ EXAMPLES
   $ eggs export deb --all
 ```
 
+_See code: [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/deb.ts)_
+
 ## `eggs export iso`
 
 export iso in the destination host
