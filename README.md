@@ -462,6 +462,8 @@ EXAMPLES
   $ eggs export iso --clean
 ```
 
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/iso.ts)_
+
 ## `eggs help [COMMAND]`
 
 Display help for eggs.
@@ -730,6 +732,7 @@ EXAMPLES
 
   sudo eggs tools ppa --remove
 ```
+_See code: [src/commands/tools/ppa.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/ppa.ts)_
 
 ## `eggs tools skel`
 
@@ -752,6 +755,8 @@ EXAMPLES
 
   sudo eggs tools skel --user user-to-be-copied
 ```
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/skel.ts)_
+
 
 ## `eggs tools stat`
 
@@ -777,6 +782,9 @@ EXAMPLES
   $ eggs tools stat --year
 ```
 
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/stat.ts)_
+
+
 ## `eggs tools yolk`
 
 configure eggs to install without internet
@@ -795,6 +803,8 @@ DESCRIPTION
 EXAMPLES
   sudo eggs tools yolk
 ```
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/yolk.ts)_
+
 
 ## `eggs update`
 
@@ -861,6 +871,9 @@ EXAMPLES
   $ eggs wardrobe get your-wardrobe
 ```
 
+_See code: [src/commands/wardrobe/get.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/get.ts)_
+
+
 ## `eggs wardrobe list [WARDROBE]`
 
 list costumes and accessoires in wardrobe
@@ -884,6 +897,9 @@ EXAMPLES
 
   $ eggs wardrobe list your-wardrobe
 ```
+
+_See code: [src/commands/wardrobe/list.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/list.ts)_
+
 
 ## `eggs wardrobe show [COSTUME]`
 
@@ -912,6 +928,7 @@ EXAMPLES
 
   $ eggs wardrobe show accessories/
 ```
+_See code: [src/commands/wardrobe/show.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/show.ts)_
 
 ## `eggs wardrobe wear [COSTUME]`
 
@@ -942,6 +959,9 @@ EXAMPLES
 
   sudo eggs wardrobe wear wagtail/waydroid
 ```
+
+_See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/wear.ts)_
+
 <!-- commandsstop -->
 
 # Penguins' eggs official guide
