@@ -100,7 +100,8 @@ export default class Archlinux {
     // const cal_eggs = 'calamares-eggs-3.3.0.r10616.11e1659ca-1-x86_64.pkg.tar.zst'
     // const cal_eggs = 'calamares-eggs-3.3.0.r10707.4b3278058-1-x86_64.pkg.tar.zst' // 2023-09-04 
     // const cal_eggs = 'arco-calamares-git-3.3.0.r10680.9becd7d1b-1-x86_64.pkg.tar.zst' // 2023-09-20 
-    const cal_eggs = 'arco-calamares-3.3.0.alpha5-02-x86_64.pkg.tar.zst' // 2023-10-25
+    //const cal_eggs = 'arco-calamares-3.3.0.alpha5-02-x86_64.pkg.tar.zst' // 2023-10-25
+    const cal_eggs = 'arco-calamares-3.3.0.alpha10-03-x86_64.pkg.tar.zst' // 2023-12-23
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
