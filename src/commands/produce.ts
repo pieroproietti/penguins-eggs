@@ -22,7 +22,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes' }),
+    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes, usr' }),
     help: Flags.help({ char: 'h' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
@@ -88,18 +88,22 @@ export default class Produce extends Command {
 
       // filters
       const filters = {} as IFilters
-      filters.homes = false
-      filters.dev = false
       filters.custom = false
+      filters.dev = false
+      filters.homes = false
+      filters.usr = false
       if (flags.filters) {
-        if (flags.filters.includes('homes')) {
-          filters.homes = true
+        if (flags.filters.includes('custom')) {
+          filters.custom = true
         }
         if (flags.filters.includes('dev')) {
           filters.dev = true
         }
-        if (flags.filters.includes('custom')) {
-          filters.custom = true
+        if (flags.filters.includes('homes')) {
+          filters.homes = true
+        }
+        if (flags.filters.includes('usr')) {
+          filters.usr = true
         }
       }
 

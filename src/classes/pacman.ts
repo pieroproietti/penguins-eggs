@@ -443,6 +443,7 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.template'), '/etc/penguins-eggs.d/exclude.list.d')
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.custom'), '/etc/penguins-eggs.d/exclude.list.d')
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.homes'), '/etc/penguins-eggs.d/exclude.list.d')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.usr'), '/etc/penguins-eggs.d/exclude.list.d')
 
     await this.configurationFresh()
   }
