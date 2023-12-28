@@ -33,9 +33,9 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"autocomplete:display autocomplete installation instructions"
-"help:Display help for <%= config.bin %>."
 "version:"
+"help:Display help for <%= config.bin %>."
+"autocomplete:display autocomplete installation instructions"
   )
 
   _set_flags () {
@@ -169,7 +169,7 @@ produce)
 "--basename=-[basename]:"
 "--clone[clone]"
 "--cryptedclone[crypted clone]"
-"--filters=-[filters to be used: homes]:"
+"--filters=-[filters can be used: custom. dev, homes, usr]:"
 "--help[Show CLI help.]"
 "--max[max compression]"
 "--noicons[no icons on desktop]"
@@ -179,7 +179,7 @@ produce)
 "--script[script mode. Generate scripts to manage iso build]"
 "--standard[standard compression]"
 "--theme=-[theme for livecd, calamares branding and partitions]:"
-"--unsecure[include /home/* and full /root contents on live]"
+"--unsecure[/root contents are included on live]"
 "--verbose[verbose]"
 "--yolk[force yolk renew]"
   )
@@ -293,9 +293,10 @@ wardrobe:wear)
   )
 ;;
 
-autocomplete)
+version)
   _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+    "--json[Format output as json.]"
+"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
   )
 ;;
 
@@ -305,10 +306,9 @@ help)
   )
 ;;
 
-version)
+autocomplete)
   _command_flags=(
-    "--json[Format output as json.]"
-"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
   )
 ;;
 

@@ -20,6 +20,15 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.23
+Again on the `exclude.list`. 
+
+I received this [issue 325](https://github.com/pieroproietti/penguins-eggs/discussions/325) so I decided to update again the exclude.list, creating a separate `exclude.list.usr` with he actual exclusions for usr.
+
+If you want to continua to filter /usr, just add `--filters usr ` to command `eggs produce`. The default will not filter on /usr more.
+
+With the occasion I removed the conflict with resolvconf as requested on [issue 324](https://github.com/pieroproietti/penguins-eggs/issues/324)
+
 # eggs-9.6.22
 To meet the needs of those who use eggs to clone their systems, I varied the exclude.list configuration. With the occasion I have also varied the path of it: the `exclude.list` now  is created in the canonical path `/etc/penguins-eggs.d`. In addition, since the mksquash command allows only one file for the exclude list, I thought of generating it dynamically from a template and others specific exclusions.
 

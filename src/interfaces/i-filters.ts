@@ -9,6 +9,7 @@ export interface IFilters {
   custom: boolean
   dev: boolean
   homes: boolean
+  usr: boolean
 }
 
 //export interface IFilters { }

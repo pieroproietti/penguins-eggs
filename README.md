@@ -588,7 +588,7 @@ FLAGS
   -y, --yolk            force yolk renew
   --addons=<value>...   addons to be used: adapt, ichoice, pve, rsupport
   --basename=<value>    basename
-  --filters=<value>...  filters to be used: custom. dev, homes
+  --filters=<value>...  filters to be used: custom. dev, homes, usr
   --release             release: max compression, remove penguins-eggs and calamares after installation
   --theme=<value>       theme for livecd, calamares branding and partitions
 
@@ -598,19 +598,17 @@ DESCRIPTION
 EXAMPLES
   sudo eggs produce
 
-  sudo eggs produce --standard
-
   sudo eggs produce --max
 
-  sudo eggs produce --max --basename=colibri
-
-  sudo eggs produce --cryptedclone
-
   sudo eggs produce --clone
-
+  
+  sudo eggs produce --clone --max
+  
   sudo eggs produce --basename=colibri
 
-  sudo eggs produce --basename=colibri --theme /path/to/theme --addons adapt
+  sudo eggs produce --filters custom homes usr
+
+  sudo eggs produce --theme /path/to/theme --addons adapt
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/produce.ts)_

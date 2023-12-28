@@ -242,6 +242,7 @@ export default class Ovary {
       let excludeCustom = ''
       let excludeDev = ''
       let excludeHomes = ''
+      let excludeUsr = ''
       if (filters.custom) {
         excludeCustom = fs.readFileSync(`${excludeListTemplateDir}exclude.list.custom`, 'utf8')
       }
@@ -251,10 +252,14 @@ export default class Ovary {
       if (filters.homes) {
         excludeHomes = fs.readFileSync(`${excludeListTemplateDir}exclude.list.homes`, 'utf8')
       }
+      if (filters.usr) {
+        excludeUsr = fs.readFileSync(`${excludeListTemplateDir}exclude.list.usr`, 'utf8')
+      }
       let view = {
         exclude_list_custom: excludeCustom,
         exclude_list_dev: excludeDev,
         exclude_list_homes: excludeHomes,
+        exclude_list_usr: excludeUsr
       }
       const template = fs.readFileSync(excludeListTemplate, 'utf8')
       fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
