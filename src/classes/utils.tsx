@@ -34,6 +34,23 @@ const pjson = require('../../package.json')
  */
 export default class Utils {
 
+     /**
+   * Custom function to sort object keys
+   * @param obj 
+   * @returns 
+   */
+  // 
+  static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
+   const sorted: { [key: string]: any } = {};
+   Object.keys(obj)
+     .sort()
+     .forEach(key => {
+       sorted[key] = obj[key];
+     });
+   return sorted;
+ }
+
+
    /**
     * 
     * @param file 
