@@ -366,11 +366,15 @@ export default class Pacman {
     config.make_md5sum = false
     config.make_isohybrid = true
     config.compression = 'xz'
-    config.ssh_pass = true
-    config.timezone = 'America/New_York'
-    const env = process.env
-    config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
-    config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
+    config.ssh_pass = false
+    config.timezone = 'Europe/Rome'
+    //config.locales_default = '__NOT_USED_MORE'
+    //config.locales = ['__NOT_USED_MORE']
+
+    // config.timezone = 'America/New_York'
+    // const env = process.env
+    // config.locales_default = env.LANG !== undefined ? env.LANG : 'en_US.UTF-8'
+    // config.locales = config.locales_default === 'en_US.UTF-8' ? ['en_US.UTF-8'] : [config.locales_default, 'en_US.UTF-8']
     config.pmount_fixed = false
 
     if (!this.calamaresExists()) {

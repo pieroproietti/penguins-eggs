@@ -102,6 +102,9 @@
   ids:
     - n/a # Arch
 
+    # BluestarLinux
+    - BluestarLinux
+
     # Garuda
     - Raptor
     - Spizaetus
