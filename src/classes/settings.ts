@@ -81,8 +81,8 @@ export default class Settings {
    * @param config
    */
   async save(config: IEggsConfig) {
-    // Vedere se si possono ordinare
-    fs.writeFileSync(config_file, yaml.dump(config), 'utf-8')
+    const ordered = Utils.sortObjectKeys(config)
+    fs.writeFileSync(config_file, yaml.dump(ordered), 'utf-8')
   }
 
   /**
