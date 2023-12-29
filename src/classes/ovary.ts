@@ -550,7 +550,9 @@ export default class Ovary {
       await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       if (this.settings.config.ssh_pass) {
-        await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        /** removed on 2023-12-28 
+        * await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        */
         await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       } else {
         await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)

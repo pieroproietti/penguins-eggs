@@ -34,7 +34,7 @@ force_installer: true
 make_efi: true
 
 # Create md5sum file, default true
-make_md5sum: true
+make_md5sum: false
 
 # make_isohybrid, default true
 make_isohybrid: true
@@ -43,17 +43,10 @@ make_isohybrid: true
 compression: xz
 
 # Allow password login to ssh for users (not root).
-ssh_pass: true
+ssh_pass: false
 
 # timezone
 timezone: Europe/Rome
-
-# locales_default, default env.LANG or en_US.UTF-8
-locales_default: 
-
-# locales, default: locales_default + en_US.UTF-8
-locales:
-  - en_US.UTF-8
 
 # it's still used?
 pmount_fixed: false
