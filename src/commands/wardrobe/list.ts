@@ -137,6 +137,6 @@ export default class List extends Command {
       }
     }
     console.log()
-
+    await Utils.pressKeyToExit()
   }
 }

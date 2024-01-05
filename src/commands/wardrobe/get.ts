@@ -7,7 +7,6 @@
  */
 import {Command, Flags} from '@oclif/core'
 import Utils from '../../classes/utils'
-import chalk from 'chalk'
 
 // libraries
 import {exec} from '../../lib/utils'
@@ -58,5 +57,6 @@ export default class Get extends Command {
     if (result.code === 0) {
       Utils.warning(`you get new wardrobe from repo: ${repo} in ${await Utils.wardrobe()}`)
     }
+    await Utils.pressKeyToExit()
   }
 }

@@ -102,6 +102,7 @@ export default class Show extends Command {
     } else {
       console.log(yaml.dump(materials))
     }
+    await Utils.pressKeyToExit()
   }
 }
 
