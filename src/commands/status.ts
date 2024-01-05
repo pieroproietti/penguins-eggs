@@ -6,8 +6,8 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import {Example} from '@oclif/core/lib/interfaces'
 import information from '../components/elements/information'
+import Utils from '../classes/utils'
 
 /**
  *
@@ -35,5 +35,6 @@ export default class Status extends Command {
     }
 
     await information(verbose)
+    await Utils.pressKeyToExit()    
   }
 }
