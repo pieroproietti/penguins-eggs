@@ -21,7 +21,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.25
-* Not really a new version, I just added a "press key to continue" to the commands `eggs status`, `eggs wardrobe list`, `eggs wardrobe show`.
+* Not really a new version, I just added a "press key to continue" to the commands `eggs status`, `eggs wardrobe list`, `eggs wardrobe show` to better integrate eggs and [penGUI](https://sourceforge.net/projects/penguins-eggs/files/penGUI/).
 
 # eggs-9.6.24
 Just a small revision of eggs.yaml with removal of some variables no longer used. With the occasion I set by default `ssh_pass: false` previously it was true.
