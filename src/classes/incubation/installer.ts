@@ -47,7 +47,8 @@ export function installer(): IInstaller {
   if (distro.isCalamaresAvailable) {
     installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares/'
     if (distro.distroId === 'ManjaroLinux') {
-      //installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares-32/'      
+      // We must to check this line... 
+      installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares-32/'      
     }
     installer.templateModules = installer.template + 'modules/'
     installer.templateMultiarch = installer.template + 'calamares-modules/'

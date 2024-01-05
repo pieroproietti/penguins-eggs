@@ -48,6 +48,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 
 You can get more informations on the [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs), some examples of iso images remastered with eggs are in the [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
+**penGUI take cure of eggs!**
+
+![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
+
+The development of a GUI for penguins-eggs has only recently begun with the [penGUI](https://github.com/pieroproietti/pengui) project, however, it is progressing quickly.
 
 # Features
 
