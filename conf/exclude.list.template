@@ -76,17 +76,16 @@ var/lib/apt/*~
 var/lib/apt/cdroms.list
 var/lib/apt/lists/*
 var/lib/aptitude/*.old
-var/lib/cache
+var/lib/cache/*
 var/lib/dbus/machine-id
 var/lib/dhcp/*
 var/lib/dkms/wireguard/*
 var/lib/dpkg/*~old
 var/lib/gems/2.7.0/cache/*
 var/lib/snapd/*
-var/log/*
-var/log/kern.log
-var/log/lastlog
-var/log/syslog
+var/log/*.log
+var/log/*.log.?
+var/log/*/*
 var/spool/*
 var/tmp/*
 
