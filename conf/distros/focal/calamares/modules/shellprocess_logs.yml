@@ -3,4 +3,4 @@
 dontChroot: true
 timeout: 30
 script:
-    - calamares-logs-helper @@ROOT@@
+    - calamares-logs-helper ${ROOT}
