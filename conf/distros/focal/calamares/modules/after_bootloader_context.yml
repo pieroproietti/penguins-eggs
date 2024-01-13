@@ -7,4 +7,13 @@
 dontChroot: false
 timeout: 120
 firmwareType:
-    "*": "-for i in `ls ${ROOT}/home/`; do rm ${ROOT}/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
+    efi:
+    # grub hack
+    - -mkdir /boot/efi/EFI/ubuntu
+    - -cp /boot/efi/EFI/neon/grub.cfg /boot/efi/EFI/ubuntu/
+    - command: -apt-get update
+      timeout: 60
+
+    bios:
+    - command: -apt-get update
+      timeout: 60

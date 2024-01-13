@@ -9,13 +9,13 @@ extraMounts:
       mountPoint: /sys
     - device: /dev
       mountPoint: /dev
-      options: [ bind ]
+      options: {{{options}}}
     - device: tmpfs
       fs: tmpfs
       mountPoint: /run
     - device: /run/udev
       mountPoint: /run/udev
-      options: [ bind ]
+      options: {{{options}}}
 
 extraMountsEfi:
     - device: efivarfs

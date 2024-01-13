@@ -8,6 +8,7 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 import path from 'node:path'
+import mustache from 'mustache'
 
 import { IRemix, IDistro } from '../../interfaces/index'
 import chalk from 'chalk'
@@ -107,14 +108,24 @@ export default class Fisherman {
         moduleSource = customModuleSource
       }
     }
-
     const moduleDest = this.installer.modules + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) {
         this.show(name, 'module', moduleDest)
       }
-
-      shx.cp(moduleSource, moduleDest)
+      // We need to adapt just mount.conf
+      if (name==='mount') {
+        let calamaresVersion = (await exec('calamares --version', { echo: false, ignore: false, capture: true })).data.trim().substring(10,13)
+        let options='[ bind ]'
+        if (calamaresVersion==='3.2') {
+          options='bind'
+        }
+        let view = { options: options}
+        const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
+        fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
+      } else {
+        shx.cp(moduleSource, moduleDest)
+      }
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
     }
