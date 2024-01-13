@@ -7,4 +7,4 @@
 dontChroot: false
 timeout: 120
 firmwareType:
-    "*": "-for i in `ls @@ROOT@@/home/`; do rm @@ROOT@@/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"
+    "*": "-for i in `ls ${ROOT}/home/`; do rm ${ROOT}/home/$i/Desktop/lubuntu-calamares.desktop || exit 0; done"

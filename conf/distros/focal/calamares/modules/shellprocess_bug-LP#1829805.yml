@@ -2,4 +2,4 @@
 dontChroot: false
 timeout: 30
 script:
-    - "touch @@ROOT@@/boot/initrd.img-$(uname -r)"
+    - "touch ${ROOT}/boot/initrd.img-$(uname -r)"
