@@ -20,6 +20,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.27
+eggs now correctly configures calamares depending on the version: 3.2.x or 3.3.x, this allows calamares to be used also for Debian trixe, KDE neon and those distributions of the Debian family already upgraded to calamares 3.3.
+
+On Arch it was already possible to use calamares 3.3, while Manjaro currently still uses version 3.2.
+
 # eggs-9.6.26
 * added Ubuntu noble;
 * because some software, specify their log folders in subfolders of `/var/log` and, these, if not present do not allow them to start, I mofified the filter for `/var/log`` from `var/log/*`` to `var/log/*/*` and added some filter for `var/*.log` and `var/*.log.?`.
