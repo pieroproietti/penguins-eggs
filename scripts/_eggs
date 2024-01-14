@@ -33,9 +33,9 @@ _eggs () {
 "wardrobe\:list:list costumes and accessoires in wardrobe"
 "wardrobe\:show:show costumes/accessories in wardrobe"
 "wardrobe\:wear:wear costume/accessories from wardrobe"
-"version:"
-"help:Display help for <%= config.bin %>."
 "autocomplete:display autocomplete installation instructions"
+"help:Display help for <%= config.bin %>."
+"version:"
   )
 
   _set_flags () {
@@ -171,6 +171,7 @@ produce)
 "--cryptedclone[crypted clone]"
 "--filters=-[filters can be used: custom. dev, homes, usr]:"
 "--help[Show CLI help.]"
+"--links=-[desktop links]:"
 "--max[max compression]"
 "--noicons[no icons on desktop]"
 "--nointeractive[no user interaction]"
@@ -293,10 +294,9 @@ wardrobe:wear)
   )
 ;;
 
-version)
+autocomplete)
   _command_flags=(
-    "--json[Format output as json.]"
-"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
+    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
   )
 ;;
 
@@ -306,9 +306,10 @@ help)
   )
 ;;
 
-autocomplete)
+version)
   _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
+    "--json[Format output as json.]"
+"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
   )
 ;;
 

@@ -23,7 +23,7 @@ install --crypted --custom --domain --halt --help --ip --nointeractive --none --
 krill --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --nointeractive --isos --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --filters --help --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --filters --help --links --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --delete --file --help --verbose
@@ -37,9 +37,9 @@ wardrobe:get --help --verbose
 wardrobe:list --help --distro --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-version --json --verbose
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
+version --json --verbose
 "
 
   function __trim_colon_commands()
