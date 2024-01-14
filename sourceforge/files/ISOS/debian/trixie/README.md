@@ -26,14 +26,8 @@ Just the juice, without GUI. You can start here to build your revolution!
 ##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
-![arm](https://penguins-eggs.net/assets/images/arm64-first-egg-born-3f2dcb6a790a22d56e71dc5862fc5dc9.jpeg)
-
-##  **wagtail**
-A light wayland/gnome/waydroid for developers
-
-##  **warbler**
-A light wayland/kde/waydroid for developers
-
+##  **penguins-court**
+A light xfce4 for developers with [boxes](https://help.gnome.org/users/gnome-boxes/stable/) for virtualization: you can grow up your ISOs inside it!
 
 ## More informations:
 

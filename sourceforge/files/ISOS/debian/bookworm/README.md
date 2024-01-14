@@ -26,6 +26,9 @@ Just the juice, without GUI. You can start here to build your revolution!
 ##  **colibri**
 A light xfce4 for developers you can easily start to improve eggs installing colibri.
 
+##  **penguins-court**
+A light xfce4 for developers with [boxes](https://help.gnome.org/users/gnome-boxes/stable/) for virtualization: you can grow up your ISOs inside it!
+
 # You can find other ISOs Debian bookworm under [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/).
 
 
