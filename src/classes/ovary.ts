@@ -133,6 +133,7 @@ export default class Ovary {
     yolkRenew = false,
     release = false,
     myAddons: IAddons,
+    myLinks: string[],
     filters: IFilters,
     nointeractive = false,
     noicons = false,
@@ -307,7 +308,7 @@ export default class Ovary {
           await this.cleanUsersAccounts()
           await this.createUserLive()
           if (Pacman.isInstalledGui()) {
-            await this.createXdgAutostart(this.settings.config.theme, myAddons, noicons)
+            await this.createXdgAutostart(this.settings.config.theme, myAddons, myLinks, noicons)
 
             /**
              * GUI installed but NOT Desktop Manager: just create motd and issue
@@ -1394,14 +1395,14 @@ export default class Ovary {
   /**
    *
    */
-  async createXdgAutostart(theme = 'eggs', myAddons: IAddons, noicons = false) {
+  async createXdgAutostart(theme = 'eggs', myAddons: IAddons, myLinks: string[]=[], noicons = false) {
     if (this.verbose) {
       console.log('Ovary: createXdgAutostart')
     }
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
-    if (noicons) { // NO icone
+    if (noicons) { // NO icons
       shx.rm(`${this.settings.work_dir.merged}/etc/xdg/autostart/penguins-links-add.desktop`)
     } else { // VOGLIO le icone
       // Copia icona penguins-eggs
@@ -1509,6 +1510,11 @@ export default class Ovary {
           if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
         } else {
           text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+          if (myLinks.length>0) {
+            for (const link of myLinks) {
+              text += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
+            }
+          }
           if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n'
           if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n'
           if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n'

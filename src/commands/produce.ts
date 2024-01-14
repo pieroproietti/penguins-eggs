@@ -12,7 +12,7 @@ import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk from 'chalk'
 import { IFilters, IAddons } from '../interfaces/index'
-import fs from 'node:fs'
+import fs, { link } from 'node:fs'
 import path from 'node:path'
 import { create } from 'axios'
 
@@ -24,6 +24,7 @@ export default class Produce extends Command {
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes, usr' }),
     help: Flags.help({ char: 'h' }),
+    links:  Flags.string({ multiple: true, description: 'desktop links' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
@@ -81,6 +82,20 @@ export default class Produce extends Command {
           }
         }
       }
+
+      // links check
+      let myLinks: string[]=[]
+      if (flags.links) {
+        const links = flags.links
+        for (let i=0; i<links.length; i++) {
+          if (fs.existsSync(`/usr/share/applications/${links[i]}.desktop`)) {
+            myLinks.push(links[i])
+          } else {
+            Utils.warning('desktop link: ' + chalk.white('/usr/share/applications/'+links[i] + '.desktop') + ' not found!')
+          }
+        }
+      }
+    
 
       /**
        * composizione dei flag
@@ -196,7 +211,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, filters, nointeractive, noicons, unsecure, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, filters, nointeractive, noicons, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
