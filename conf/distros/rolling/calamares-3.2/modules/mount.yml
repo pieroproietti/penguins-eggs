@@ -1,5 +1,5 @@
 # Manjaro
-# calamares-3.2
+# calamares-3.2/3.3
 # mount
 # Mount filesystems in the target (generally, before treating the
 # target as a usable chroot / "live" system). Filesystems are
@@ -25,13 +25,13 @@ extraMounts:
     mountPoint: /sys
   - device: /dev
     mountPoint: /dev
-    options: bind
+    options: {{{options}}}
   - device: tmpfs
     fs: tmpfs
     mountPoint: /run
   - device: /run/udev
     mountPoint: /run/udev
-    options: bind
+    options: {{{options}}}
 
 extraMountsEfi:
   - device: efivarfs
