@@ -22,7 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # eggs-9.6.28
 
-* calamares: I found another difference on the configuration of calamares on `/etc/calamares/modules/bootloaded.cond` now variable `installEFIFallback: true` before was setted to false;
+* calamares: I found another difference on the configuration of calamares on `/etc/calamares/modules/bootloader.conf` now variable `installEFIFallback: true` before was setted to false;
 * calamares: changed the colors of the default brand for calamares, now calamares steps remain visible.
 
 # eggs-9.6.27
