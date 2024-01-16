@@ -53,4 +53,5 @@ efiBootloaderId: "Debian"
 # seems to be the only one). If you set this to false, take care
 # to add another module to optionally install the fallback on those
 # boards that need it.
-installEFIFallback: false
+# NOTE: eggs unti calamres 3.2 was installEFIFallback: false
+installEFIFallback: true

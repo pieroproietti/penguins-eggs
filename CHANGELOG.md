@@ -20,6 +20,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.28
+
+* calamares: I found another difference on the configuration of calamares on `/etc/calamares/modules/bootloaded.cond` now variable `installEFIFallback: true` before was setted to false;
+* calamares: changed the colors of the default brand for calamares, now calamares steps remain visible.
+
 # eggs-9.6.27
 eggs now correctly configures calamares depending on the version: 3.2.x or 3.3.x, this allows calamares to be used also for Debian trixe, KDE neon and those distributions of the Debian family already upgraded to calamares 3.3.
 
