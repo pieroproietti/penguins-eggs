@@ -83,9 +83,10 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     slideshowAPI: 1,
     slideshow: slideshow,
     style: {
-      sidebarBackground: '#2c3133',
-      sidebarText: '#FFFFFF',
-      sidebarTextSelect: '#4d7079',
+      SidebarBackground:    "#010027",
+      SidebarText:          "#FFFFFF",
+      SidebarTextCurrent:   "#fbfbfb",
+      SidebarBackgroundCurrent: "#017877"
     },
   }
   return yaml.dump(branding)
