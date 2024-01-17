@@ -110,13 +110,20 @@ For detailed instructions on using a wardrobe, please consult the wardrobe users
 ## Clone/Cryptedclone
 When creating a live distribution of your system, you have different options to consider: the default mode, clone, and cryptedclone.
 •	The default mode, achieved by using the command "eggs produce," completely removes user data from the live distribution. This ensures that no private data remains in the live system.
-•	The "eggs produce --clone" command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable for sensitive information.
+
+•	The "eggs produce --clone" command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the 
+user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable for sensitive information.
+
 •	On the other hand, the "eggs produce --cryptedclone" command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
 
 To summarize the available options:
+
 •	"eggs produce" (default): All private data is removed from the live system.
+
 •	"eggs produce --clone": All user data is included unencrypted directly in the live system.
+
 •	"eggs produce --cryptedclone": All user data is included encrypted within a LUKS volume inside the ISO.
+
 
 During the installation process, you can use the "krill" installer to restore your crypted data automatically. By running the command "sudo eggs install" with the "krill" installer, your encrypted data will be securely transferred and made available in the installed system.
 
