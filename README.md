@@ -106,26 +106,19 @@ Furthermore, addons, predominantly themes, have been organized under the vendor'
 For detailed instructions on using a wardrobe, please consult the wardrobe users' guide  [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)..
 
 
-## clone/cryptedclone
-You can create your live to distribute it - the default mode - or with datas using clone and clonecrypted:
 
-```eggs produce``` 
+## Clone/Cryptedclone
+When creating a live distribution of your system, you have different options to consider: the default mode, clone, and cryptedclone.
+The default mode, achieved by using the command "eggs produce," completely removes user data from the live distribution. This ensures that no private data remains in the live system.
+The "eggs produce --clone" command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable for sensitive information.
+On the other hand, the "eggs produce --cryptedclone" command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "Krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
+To summarize the available options:
+"eggs produce" (default): All private data is removed from the live system.
+"eggs produce --clone": All user data is included unencrypted directly in the live system.
+"eggs produce --cryptedclone": All user data is included encrypted within a LUKS volume inside the ISO.
+During the installation process, you can use the "Krill" installer to restore your encrypted data automatically. By running the command "sudo eggs install" with the "krill" installer, your encrypted data will be securely transferred and made available in the installed system.
 
-Completely removes user data from live, this is the preset mode
 
-```eggs produce --clone``` 
-
-Saves our users and our data directly in the generated iso. The data will be visible directly from the live and accessible to anyone who gets a copy.
-
-```eggs produce --cryptedclone``` 
-
-Saves our data within the generated iso using a LUKS volume. Our data will NOT be visible in the live system but can be reinstalled automatically with krill installer. Even having the generated image available, our data will be protected by the LUKS passphrase.
-
-* ```eggs produce``` this is the default: all private data are removed on the live.
-* ```eggs produce --clone``` include all users data UNCRYPTED directly on the live.
-* ```eggs produce --cryptedclone``` include all users data CRYPTED on a LUKS volume inside the iso.
-
-Using krill: ```sudo eggs install``` will automaticaly restore your CRYPTED data during the installation.
 
 ## calamares and krill
 eggs was developed to use [calamares](https://calamares.io) as the system installer and allows its customization with themes. It also includes its own installer, called krill, which allows you to produce and install CLI systems such as servers. krill uses a CLI interface that mimics calamares and uses the same configuration files created by eggs for calamares. This provides a "roughly similar" installation experience for both desktop and server installations. With krill it is also possible to have unattended installations, simply by adding the ``--unattended`` flag, the configuration values can be changed in ``/etc/penguins-eggs.d/krill.yaml`` and will then be used for automatic installation.
