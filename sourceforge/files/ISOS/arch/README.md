@@ -19,11 +19,18 @@ penguins-eggs
 
 [Arch](https://archlinux.org/) a simple, lightweight distribution.
 
-* **egg-of-arch-naked** Just the juice, without GUI. You can start here to build your revolution!
-* **egg-of-arch-colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
-* **egg-of-arch-albatros** A light kde for developers you can easily start to improve eggs installing albatros.
-* **egg-of-arch-fringuello** using distrobox, fringuello is capable to produce eggs for Arch and Debian, more informations: [Alice in Wonderland
-](https://penguins-eggs.net/blog/alice-in-wonderland).
+## **naked**
+Just the juice, without GUI. You can start here to build your revolution!
+
+## **albatros**
+A light kde for developers you can easily start to improve eggs installing albatros.
+
+##  **colibri**
+A light xfce4 for developers you can easily start to improve eggs installing colibri.
+
+##  **court**
+A light xfce4 for developers with [boxes](https://help.gnome.org/users/gnome-boxes/stable/) for virtualization: you can grow up your ISOs inside it!
+
 
 # USE
 
