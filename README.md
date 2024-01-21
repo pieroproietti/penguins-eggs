@@ -106,8 +106,8 @@ Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to si
 
 Safe: only use the original distro's packages, without any modification in your repository lists. Penguins Eggs Linux embarks on a steadfast commitment to user security and system integrity through its default practice of exclusively utilizing original distributions’ packages without any modifications in the repository lists. This resolute dedication to maintaining the pristine authenticity of packages reinforces Penguins Eggs’ fundamental ethos of safety and reliability, fostering an environment characterized by unwavering trust in the integrity of the software ecosystem.
 
-## more features 
-[https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d]
+## More features
+You can consult [CHANGELOG](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md) and [old CHANGELOGS](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
 
 
 ## Wardrobe, Themes, and Addons
@@ -120,7 +120,7 @@ Colibri, Duck, Eagle, and Owl, which provides further insights into its features
 
 Furthermore, addons, predominantly themes, have been organized under the vendor's folder in the penguin's wardrobe. I encourage utilizing your wardrobe for all your customization needs to maintain consistency and organization throughout your work.
 
-For detailed instructions on using a wardrobe, please consult the wardrobe users' guide  [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)..
+For detailed instructions on using a wardrobe, please consult the wardrobe users' guide  [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide).
 
 
 ## Clone/Cryptedclone
