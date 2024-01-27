@@ -26,9 +26,10 @@
   family: debian
   ids:
     - kali-rolling # kali
-    - faye # LMDE 6
-    - Sparky # SparkyLinux 7
-    - ara # Parrot ara
+    - faye    # LMDE 6
+    - Sparky  # SparkyLinux 7
+    - ara     # Parrot ara
+    - lory    # Parrot lory
 
 # trixie
 - id: trixie
