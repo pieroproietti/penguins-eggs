@@ -100,7 +100,7 @@ Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to si
 Safe: only use the original distro's packages, without any modification in your repository lists. Penguins Eggs Linux embarks on a steadfast commitment to user security and system integrity through its default practice of exclusively utilizing original distributions’ packages without any modifications in the repository lists. This resolute dedication to maintaining the pristine authenticity of packages reinforces Penguins Eggs’ fundamental ethos of safety and reliability, fostering an environment characterized by unwavering trust in the integrity of the software ecosystem.
 
 ## more features 
-[https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d]
+[More feautures](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
 
 
 ## Wardrobe, Themes, and Addons
