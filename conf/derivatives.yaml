@@ -53,6 +53,13 @@
   ids:
     - daedalus-ceres # "daedalus ceres"
 
+# excalibur derivated
+- id: excalibur
+  distroLike: Devuan
+  family: debian
+  ids:
+    - "excalibur ceres # "excalibur ceres"
+
 #
 # UBUNTU
 #
@@ -90,6 +97,7 @@
     - vanessa # Linux Mint
     - vera # Linux Mint
     - victoria # Linux Mint
+    - virginia #LinuxMint
 
 - id: devel
   distroLike: Ubuntu
