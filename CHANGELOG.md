@@ -21,7 +21,8 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.29
-* added Parrot lory;
+* completely rewritten [README.md](./README.md) fron [Hosein Seilany](https://github.com/hosseinseilani);
+* added Linuxmint victoria and Parrot lory;
 
 # eggs-9.6.28
 * calamares: I found another difference on the configuration of calamares on `/etc/calamares/modules/bootloader.conf` now variable `installEFIFallback: true` before was setted to false;
