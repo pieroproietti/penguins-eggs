@@ -35,9 +35,10 @@ The concept behind Penguins’ Eggs stems from the idea of “reproduction” an
 <p align="justify">
 Considered a work-in-progress, the ultimate goal for Penguins’ Eggs is to implement a PXE server for local network distribution, drawing inspiration from the behavior of the cuckoo bird, which relies on others to hatch its eggs. Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible with various Linux distributions, despite differences in package managers, file paths, and more. The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. With the release of version 9.6.x, Penguins’ Eggs is now available as a Debian package, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. For more information and updates, visit the Penguins’ Eggs official website.</p>
 
-<p align="justify">
+
  > [!TIP]
-> "Penguins-eggs" is an actively developed console tool designed to help you customize and distribute your system as live images on USB sticks or through PXE. By using this tool, you can remaster your system according to your preferences.</p>
+>  <p align="justify"> "Penguins-eggs" is an actively developed console tool designed to help you customize and distribute your system as live images on USB sticks or through PXE. By using this tool, you can remaster your system according to your preferences.</p>
+
 > [!TIP]
 > By default, "penguins-eggs" completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the "--clone" flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the "--cryptedclone" flag.
 > [!TIP]
