@@ -22,7 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # eggs-9.6.29
 * completely rewritten [README.md](./README.md) fron [Hosein Seilany](https://github.com/hosseinseilani);
-* added Linuxmint victoria and Parrot lory;
+* added Linuxmint victoria and Parrot lory (thanks to [Roy Reynolds](https://github.com/rreyn331).
 
 # eggs-9.6.28
 * calamares: I found another difference on the configuration of calamares on `/etc/calamares/modules/bootloader.conf` now variable `installEFIFallback: true` before was setted to false;
