@@ -364,7 +364,7 @@ makepkg -srcCi
 
 
 # Usage
-Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, and typing ```eggs produce --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. You can also use the ```eggs mom``` command that interactively allows you to consult the help for all commands and online documentation.
+<p align="justify"> Once the package has been installed, you can have the new ```eggs``` command. Typing ```eggs``` will get the list of commands, and typing ```eggs produce --help``` will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing ```man eggs``` you will get that help as well. You can also use the ```eggs mom``` command that interactively allows you to consult the help for all commands and online documentation.</p>
 
 ## Examples
 Here are some examples of how to use penguins-eggs to create live systems with different configurations:
