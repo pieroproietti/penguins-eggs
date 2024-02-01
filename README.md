@@ -392,8 +392,7 @@ By default, penguins-eggs uses fast compression for efficiency during the creati
 sudo eggs produce --max
 ```
 > [!TIP]
-> This command will apply maximum compression to the ISO file, resulting in a smaller file size.
-In addition to the command descriptions provided in this README, you can refer to the [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed information on how to use penguins-eggs and its various features. The official guide offers comprehensive documentation to help you make the most out of this tool.
+> <p align="justify"> This command will apply maximum compression to the ISO file, resulting in a smaller file size. In addition to the command descriptions provided in this README, you can refer to the [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed information on how to use penguins-eggs and its various features. The official guide offers comprehensive documentation to help you make the most out of this tool.</p>
 
 # Commands
 <!-- commands -->
@@ -454,15 +453,13 @@ To use the command, you simply need to run `eggs adapt` in the terminal. There a
 $ eggs adapt
 ```
 > [!TIP]
-> By running this command, the monitor resolution will be adjusted specifically for the virtual machine environment.
-The `eggs adapt` command is particularly useful when working with VMs, as it allows you to optimize the display settings to match your specific requirements. Whether you need to adjust the resolution for better readability or to ensure compatibility with certain applications, the `eggs adapt` command provides a straightforward way to achieve the desired monitor configuration within your VM.
+> <p align="justify"> By running this command, the monitor resolution will be adjusted specifically for the virtual machine environment. The `eggs adapt` command is particularly useful when working with VMs, as it allows you to optimize the display settings to match your specific requirements. Whether you need to adjust the resolution for better readability or to ensure compatibility with certain applications, the `eggs adapt` command provides a straightforward way to achieve the desired monitor configuration within your VM.</p>
 
 _See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/adapt.ts)
 
 
 ## `eggs analyze`
-The `eggs analyze` command is used to perform an analysis specifically for the syncto feature. It provides a way to examine and gather information related to the syncto functionality in the penguins-eggs tool.
-Here is the usage information for the `eggs analyze` command:
+<p align="justify"> The `eggs analyze` command is used to perform an analysis specifically for the syncto feature. It provides a way to examine and gather information related to the syncto functionality in the penguins-eggs tool. Here is the usage information for the `eggs analyze` command:</p>
 
 ```
 USAGE
@@ -486,14 +483,15 @@ Here is an example of how to use the `eggs analyze` command:
 sudo eggs analyze
 ```
 
-By running this command with `sudo`, you initiate the analysis process specifically for the syncto feature.
-The `eggs analyze` command is a powerful tool for examining and gathering information related to syncto in penguins-eggs. It allows you to gain insights into the synchronization mechanism and analyze its behavior within your system. The analysis can help identify potential issues, optimize performance, and ensure the smooth operation of the syncto feature.
+<p align="justify"> By running this command with `sudo`, you initiate the analysis process specifically for the syncto feature. The `eggs analyze` command is a powerful tool for examining and gathering information related to syncto in penguins-eggs. It allows you to gain insights into the synchronization mechanism and analyze its behavior within your system. The analysis can help identify potential issues, optimize performance, and ensure the smooth operation of the syncto feature.</p>
+
 > [!TIP]
 > To explore the code implementation of the `eggs analyze` command, you can refer to the [src/commands/analyze.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/analyze.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs analyze` functionality, providing a deeper understanding of how the command is implemented and executed.
 
 
 ## `eggs autocomplete [SHELL]`
-The `eggs autocomplete` command is used to display installation instructions for setting up autocomplete functionality with the penguins-eggs tool in your preferred shell. Autocomplete allows you to conveniently auto-fill commands and options as you type, enhancing your productivity and reducing errors.
+<p align="justify"> The `eggs autocomplete` command is used to display installation instructions for setting up autocomplete functionality with the penguins-eggs tool in your preferred shell. Autocomplete allows you to conveniently auto-fill commands and options as you type, enhancing your productivity and reducing errors.</p>
+
 > [!TIP]
 > Here is the usage information for the `eggs autocomplete` command:
 
@@ -540,7 +538,7 @@ This command refreshes the cache for autocomplete, without displaying any instal
 > To explore the code implementation of the `eggs autocomplete` command, you can refer to the [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v1.3.8/src/commands/autocomplete/index.ts) repository. This repository contains the source code responsible for the autocomplete functionality, providing a deeper understanding of its implementation and how it integrates with the penguins-eggs tool.
  
 ## `eggs calamares`
-The `eggs calamares` command is used to configure, install, or remove the Calamares tool. Calamares is a powerful installation framework that simplifies the process of setting up operating systems on various platforms. With the `eggs calamares` command, you can easily manage Calamares and its associated tasks.
+<p align="justify"> The `eggs calamares` command is used to configure, install, or remove the Calamares tool. Calamares is a powerful installation framework that simplifies the process of setting up operating systems on various platforms. With the `eggs calamares` command, you can easily manage Calamares and its associated tasks.</p>
 
 Here is the usage information for the `eggs calamares` command:
 
@@ -598,10 +596,10 @@ sudo eggs calamares --remove
 This command removes Calamares and its dependencies from your system.
 
 > [!TIP]
-> To explore the code implementation of the `eggs calamares` command, you can refer to the [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/calamares.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs calamares` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs calamares` command, you can refer to the [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/calamares.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs calamares` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs config`
- The `eggs config` command is used to configure and install the necessary Debian packages required to run the `eggs` tool. The `eggs` tool is a versatile utility that helps manage various tasks related to system configuration and administration. By running the `eggs config` command, you can easily set up the prerequisites and dependencies needed for the smooth execution of the `eggs` tool.
+ <p align="justify"> The `eggs config` command is used to configure and install the necessary Debian packages required to run the `eggs` tool. The `eggs` tool is a versatile utility that helps manage various tasks related to system configuration and administration. By running the `eggs config` command, you can easily set up the prerequisites and dependencies needed for the smooth execution of the `eggs` tool.</p>
 
 Here is the usage information for the `eggs config` command:
 
@@ -649,7 +647,7 @@ This command removes the old configuration and performs a fresh setup without re
 
 
 ## `eggs cuckoo`
-The `eggs cuckoo` command is used to initiate a PXE start with proxy-dhcp using the `eggs` tool. PXE (Preboot Execution Environment) is a technology that allows computers to boot and install an operating system over a network connection. The `eggs` tool leverages this functionality to facilitate the PXE start process with the help of a proxy-dhcp server.
+<p align="justify"> The `eggs cuckoo` command is used to initiate a PXE start with proxy-dhcp using the `eggs` tool. PXE (Preboot Execution Environment) is a technology that allows computers to boot and install an operating system over a network connection. The `eggs` tool leverages this functionality to facilitate the PXE start process with the help of a proxy-dhcp server.</p>
 
 Here is the usage information for the `eggs cuckoo` command:
 
@@ -679,10 +677,10 @@ sudo eggs cuckoo
 
 This command initiates the PXE start process with proxy-dhcp by leveraging the `eggs` tool. It ensures that the necessary configurations are in place to facilitate the booting and installation of an operating system over the network.
 > [!TIP]
-> To explore the code implementation of the `eggs cuckoo` command, you can refer to the [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/cuckoo.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs cuckoo` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs cuckoo` command, you can refer to the [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/cuckoo.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs cuckoo` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs dad`
-The `eggs dad` command is used to seek assistance from a "daddy" figure, acting as a TUI (Text User Interface) configuration helper within the `eggs` tool. This command allows users to get guidance and support for configuring their system settings and options. By running the `eggs dad` command, users can interact with the TUI configuration helper to receive help and make necessary changes.
+<p align="justify"> The `eggs dad` command is used to seek assistance from a "daddy" figure, acting as a TUI (Text User Interface) configuration helper within the `eggs` tool. This command allows users to get guidance and support for configuring their system settings and options. By running the `eggs dad` command, users can interact with the TUI configuration helper to receive help and make necessary changes.</p>
 
 Here is the usage information for the `eggs dad` command:
 
@@ -726,10 +724,10 @@ sudo eggs dad --default
 ```
 This command removes the old configuration and enforces the default settings, reverting back to the default configuration.
 > [!TIP]
-> To explore the code implementation of the `eggs dad` command, you can refer to the [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/dad.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs dad` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify">  To explore the code implementation of the `eggs dad` command, you can refer to the [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/dad.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs dad` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs export deb`
-The `eggs export deb` command is used to export Debian packages (`deb`), documentation files (`docs`), or ISO images to a specified destination host using the `eggs` tool. This command enables users to transfer these files from one system to another conveniently. By running the `eggs export deb` command, users can export the desired files to the destination host.
+<p align="justify"> The `eggs export deb` command is used to export Debian packages (`deb`), documentation files (`docs`), or ISO images to a specified destination host using the `eggs` tool. This command enables users to transfer these files from one system to another conveniently. By running the `eggs export deb` command, users can export the desired files to the destination host.</p>
 
 Here is the usage information for the `eggs export deb` command:
 
@@ -755,7 +753,6 @@ DESCRIPTION
 - `-v` or `--verbose`: Including this flag enables verbose mode, providing more detailed information during the export process.
 
 The `eggs export deb` command facilitates the export of Debian packages, documentation files, or ISO images to the destination host. This allows users to transfer these files conveniently and efficiently.
-
 Here are some examples of how to use the `eggs export deb` command:
 
 ```
@@ -773,10 +770,10 @@ eggs export deb --all
 ```
 This command exports the files for all available architectures, facilitating the transfer of files for multiple architectures simultaneously.
 > [!TIP]
-> To explore the code implementation of the `eggs export deb` command, you can refer to the [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/deb.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs export deb` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs export deb` command, you can refer to the [src/commands/export/deb.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/deb.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs export deb` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs export iso`
-The `eggs export iso` command is used to export ISO images to a specified destination host using the `eggs` tool. This command allows users to transfer ISO images from one system to another conveniently. By running the `eggs export iso` command, users can export the desired ISO image to the destination host.
+<p align="justify"> The `eggs export iso` command is used to export ISO images to a specified destination host using the `eggs` tool. This command allows users to transfer ISO images from one system to another conveniently. By running the `eggs export iso` command, users can export the desired ISO image to the destination host.</p>
 
 Here is the usage information for the `eggs export iso` command:
 
@@ -814,11 +811,12 @@ This command exports the specified ISO image to the destination host.
 eggs export iso --clean
 ```
 This command deletes the old ISO images before copying the new ones, ensuring a clean transfer of ISO images to the destination host.
+
 > [!TIP]
-> To explore the code implementation of the `eggs export iso` command, you can refer to the [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/iso.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs export iso` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs export iso` command, you can refer to the [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/export/iso.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs export iso` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs help [COMMAND]`
-The `eggs help [COMMAND]` command is used to display help information for the `eggs` tool. This command provides users with detailed instructions and explanations on how to use specific commands or the `eggs` tool in general. By running the `eggs help [COMMAND]` command, users can access comprehensive documentation and guidance.
+<p align="justify"> The `eggs help [COMMAND]` command is used to display help information for the `eggs` tool. This command provides users with detailed instructions and explanations on how to use specific commands or the `eggs` tool in general. By running the `eggs help [COMMAND]` command, users can access comprehensive documentation and guidance.</p>
 
 Here is the usage information for the `eggs help [COMMAND]` command:
 
@@ -843,10 +841,10 @@ DESCRIPTION
 
 The primary purpose of the `eggs help [COMMAND]` command is to provide users with detailed guidance and documentation for the `eggs` tool. It allows users to access comprehensive information about commands, their usage, and available options.
 > [!TIP]
-> To explore the code implementation of the `eggs help [COMMAND]` command, you can refer to the [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.23/src/commands/help.ts) file in the plugin-help GitHub repository. This file contains the source code responsible for the `eggs help [COMMAND]` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs help [COMMAND]` command, you can refer to the [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.23/src/commands/help.ts) file in the plugin-help GitHub repository. This file contains the source code responsible for the `eggs help [COMMAND]` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs install` or `eggs krill`
-The `eggs install` or `eggs krill` command is used to install the CLI system installer called "krill" using the `eggs` tool. This command allows users to conveniently install the krill CLI system installer, which is represented metaphorically as an egg transforming into a penguin. The installation process provides various options and configurations to cater to different installation requirements.
+<p align="justify"> The `eggs install` or `eggs krill` command is used to install the CLI system installer called "krill" using the `eggs` tool. This command allows users to conveniently install the krill CLI system installer, which is represented metaphorically as an egg transforming into a penguin. The installation process provides various options and configurations to cater to different installation requirements.</p>
 
 Here is the usage information for the `eggs install` or `eggs krill` command:
 
@@ -908,9 +906,9 @@ This command performs an unattended installation of the krill CLI system install
 ```
 sudo eggs install --custom it
 ```
-This command performs the installation of the krill CLI system installer using a custom unattended configuration named "it".
+This command installs the krill CLI system installer using a custom unattended configuration named "it".
 > [!TIP]
-> To explore the code implementation of the `eggs install` or `eggs krill` command, you can refer to the [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/install.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs install` or `eggs krill` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs install` or `eggs krill` command, you can refer to the [src/commands/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/install.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs install` or `eggs krill` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs kill`
 The `eggs kill` command is used to terminate and remove eggs, metaphorically representing freeing the nest. This command allows users to delete eggs and perform additional actions related to the nest.
@@ -945,10 +943,10 @@ Here is an example of how to use the `eggs kill` command:
 ```
 sudo eggs kill
 ```
-
 This command terminates and removes eggs, freeing the nest.
+
 > [!TIP]
-> To explore the code implementation of the `eggs kill` command, you can refer to the [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/kill.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs kill` functionality, providing a deeper understanding of how the command is implemented and executed.
+> <p align="justify"> To explore the code implementation of the `eggs kill` command, you can refer to the [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/kill.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for the `eggs kill` functionality, providing a deeper understanding of how the command is implemented and executed.</p>
 
 ## `eggs mom`
 The `eggs mom` command is a feature that allows users to seek assistance from a "mommy" helper in a TUI (Text-based User Interface) environment. By invoking this command, users can request help and guidance from the "mommy" helper, who is specifically designed to provide support and aid within the TUI context.
@@ -980,11 +978,11 @@ $ eggs mom
 
 Executing this command allows users to seek help and guidance from the "mommy" helper within the TUI environment.
 > [!TIP]
-> If you are interested in exploring the code implementation of the `eggs mom` command, you can refer to the [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/mom.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for implementing the functionality of the `eggs mom` command. By examining this code, you can gain a deeper understanding of how the command interacts with the "mommy" helper and facilitates user assistance within the TUI.
+> <p align="justify"> If you are interested in exploring the code implementation of the `eggs mom` command, you can refer to the [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/mom.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for implementing the functionality of the `eggs mom` command. By examining this code, you can gain a deeper understanding of how the command interacts with the "mommy" helper and facilitates user assistance within the TUI.</p>
 
 
 ## `eggs produce`
-The `eggs produce` command is a powerful feature that allows users to generate a live image from their system, excluding their personal data. This command enables users to create a self-contained image of their system, which can be used for various purposes such as system backup, distribution, or testing.
+<p align="justify"> The `eggs produce` command is a powerful feature that allows users to generate a live image from their system, excluding their personal data. This command enables users to create a self-contained image of their system, which can be used for various purposes such as system backup, distribution, or testing.</p>
 
 Here is the usage information for the `eggs produce` command:
 
@@ -1046,7 +1044,7 @@ EXAMPLES
 
 The `eggs produce` command is highly customizable and offers flexibility in generating live images according to specific needs. It provides a comprehensive set of options and flags to tailor the output image and its behavior.
 > [!TIP]
-> If you are interested in exploring the code implementation of the `eggs produce` command, you can refer to the [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/produce.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for implementing the functionality of the `eggs produce` command. Examining this code can provide further insights into the inner workings of the command and its interaction with the system to generate the live image.
+> <p align="justify">  If you are interested in exploring the code implementation of the `eggs produce` command, you can refer to the [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/produce.ts) file in the penguins-eggs GitHub repository. This file contains the source code responsible for implementing the functionality of the `eggs produce` command. Examining this code can provide further insights into the inner workings of the command and its interaction with the system to generate the live image.</p>
 
 ## `eggs status`
  The `eggs status` command provides information about the status of eggs. It is a command-line interface (CLI) command that can be executed with various options. Here is a breakdown of the command's usage:
@@ -1102,7 +1100,7 @@ This example executes the `eggs syncfrom` command while specifying the file path
 > To learn more about the implementation and source code of the `eggs syncfrom` command, you can visit the following link: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/syncfrom.ts)
 
 ## `eggs syncto`
- The `eggs syncto` command is designed to save users and user data in a LUKS (Linux Unified Key Setup) volume located inside the iso. It is a command-line interface (CLI) command that can be executed with various options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs syncto` command is designed to save users and user data in a LUKS (Linux Unified Key Setup) volume located inside the iso. It is a command-line interface (CLI) command that can be executed with various options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1147,9 +1145,7 @@ eggs tools clean [-h] [-n] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs tools clean` command is designed to remove unnecessary files and clean up system logs and apt cache. By executing this command, you can free up disk space and improve system performance by removing temporary files, log files, and cached package files.
-
-The cleaning process may include deleting system logs, which contain records of system events and activities. It may also involve cleaning up the apt cache, which stores downloaded package files. By removing these files, you can reclaim disk space and ensure that your system operates more efficiently.
+<p align="justify"> The `eggs tools clean` command is designed to remove unnecessary files and clean up system logs and apt cache. By executing this command, you can free up disk space and improve system performance by removing temporary files, log files, and cached package files. The cleaning process may include deleting system logs, which contain records of system events and activities. It may also involve cleaning up the apt cache, which stores downloaded package files. By removing these files, you can reclaim disk space and ensure that your system operates more efficiently.</p>
 
 **EXAMPLES**
 ```
@@ -1160,7 +1156,7 @@ This example executes the `eggs tools clean` command with default options.
 **To gain a deeper understanding of the implementation and view the source code of the `eggs tools clean` command, you can refer to the following link:** [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/clean.ts)
 
 ## `eggs tools ppa`
- The `eggs tools ppa` command is used to add or remove PPA (Personal Package Archive) repositories in the Debian family of operating systems. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs tools ppa` command is used to add or remove PPA (Personal Package Archive) repositories in the Debian family of operating systems. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1175,10 +1171,7 @@ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs tools ppa` command allows users to manage PPA repositories in the Debian family of operating systems. PPA repositories are external software repositories that provide additional packages and updates not found in the official Debian repositories. By adding or removing PPA repositories, users can access a wider range of software packages and ensure their system stays up to date.
-
-To add a PPA repository, you can use the `-a` or `--add` flag. This will add the penguins-eggs PPA repository to your system, allowing you to install software packages from that repository.
-To remove a PPA repository, you can use the `-r` or `--remove` flag. This will remove the penguins-eggs PPA repository from your system, preventing you from installing or updating packages from that repository.
+<p align="justify"> The `eggs tools ppa` command allows users to manage PPA repositories in the Debian family of operating systems. PPA repositories are external software repositories that provide additional packages and updates not found in the official Debian repositories. By adding or removing PPA repositories, users can access a wider range of software packages and ensure their system stays up to date. To add a PPA repository, you can use the `-a` or `--add` flag. This will add the penguins-eggs PPA repository to your system, allowing you to install software packages from that repository. To remove a PPA repository, you can use the `-r` or `--remove` flag. This will remove the penguins-eggs PPA repository from your system, preventing you from installing or updating packages from that repository.</p>
 
 **EXAMPLES**
 ```
@@ -1194,7 +1187,7 @@ This example removes the penguins-eggs PPA repository from the system.
 > **To gain a deeper understanding of the implementation and view the source code of the `eggs tools ppa` command, you can refer to the following link:** [src/commands/tools/ppa.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/tools/ppa.ts)
 
 ## `eggs tools skel`
- The `eggs tools skel` command is used to update the "skel" directory with the configuration files from the user's home directory. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs tools skel` command is used to update the "skel" directory with the configuration files from the user's home directory. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1207,9 +1200,7 @@ eggs tools skel [-h] [-u <value>] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs tools skel` command is designed to update the "skel" directory with configuration files from a user's home directory. The "skel" directory, short for "skeleton," is a directory in Linux systems that contains default configuration files and directories used as templates when creating new user accounts.
-
-By executing the `eggs tools skel` command, you can update the "skel" directory with the latest configuration files from a specified user's home directory. This ensures that new user accounts created on the system will have the same configuration settings as the specified user.
+<p align="justify"> The `eggs tools skel` command is designed to update the "skel" directory with configuration files from a user's home directory. The "skel" directory, short for "skeleton," is a directory in Linux systems that contains default configuration files and directories used as templates when creating new user accounts.By executing the `eggs tools skel` command, you can update the "skel" directory with the latest configuration files from a specified user's home directory. This ensures that new user accounts created on the system will have the same configuration settings as the specified user.</p>
 
 **EXAMPLES**
 ```
@@ -1226,7 +1217,7 @@ This example updates the "skel" directory with the configuration files from the 
 
 
 ## `eggs tools stat`
- The `eggs tools stat` command is used to retrieve statistics from SourceForge. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs tools stat` command is used to retrieve statistics from SourceForge. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1239,7 +1230,7 @@ eggs tools stat [-h] [-m] [-y]
 - `-y, --year`: Retrieves statistics for the current year.
 
 **DESCRIPTION**
-The `eggs tools stat` command allows users to obtain statistics from SourceForge, a web-based service that provides version control, collaboration, and distribution tools for software development projects. By executing this command, users can retrieve various metrics and data related to their projects hosted on SourceForge.
+<p align="justify"> The `eggs tools stat` command allows users to obtain statistics from SourceForge, a web-based service that provides version control, collaboration, and distribution tools for software development projects. By executing this command, users can retrieve various metrics and data related to their projects hosted on SourceForge.</p>
 
 **EXAMPLES**
 ```
@@ -1272,9 +1263,7 @@ eggs tools yolk [-h] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs tools yolk` command allows users to configure the "eggs" tool to enable installation without requiring an internet connection. The "eggs" tool is a software package manager or installer that is designed to simplify the process of installing and managing software packages on a computer system.
-
-By executing the `eggs tools yolk` command with the appropriate options, users can set up the "eggs" tool to work in an offline mode. This means that it will be able to install software packages from local sources, such as a local repository or package cache, without needing to connect to the internet.
+<p align="justify"> The `eggs tools yolk` command allows users to configure the "eggs" tool to enable installation without requiring an internet connection. The "eggs" tool is a software package manager or installer that is designed to simplify the process of installing and managing software packages on a computer system. By executing the `eggs tools yolk` command with the appropriate options, users can set up the "eggs" tool to work in an offline mode. This means that it will be able to install software packages from local sources, such as a local repository or package cache, without needing to connect to the internet.</p>
 
 **EXAMPLES**
 ```
@@ -1297,9 +1286,7 @@ eggs update [-h] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs update` command allows users to update the Penguins' eggs tool to the latest version. The Penguins' eggs tool is a software utility or package manager that is specifically designed for managing and installing software packages related to the Penguins project.
-
-By executing the `eggs update` command, users can check for updates to the Penguins' eggs tool and install the latest version if available. This ensures that users have the most up-to-date features, bug fixes, and improvements for the Penguins' eggs tool.
+<p align="justify"> The `eggs update` command allows users to update the Penguins' eggs tool to the latest version. The Penguins' eggs tool is a software utility or package manager that is specifically designed for managing and installing software packages related to the Penguins project. By executing the `eggs update` command, users can check for updates to the Penguins' eggs tool and install the latest version if available. This ensures that users have the most up-to-date features, bug fixes, and improvements for the Penguins' eggs tool.</p>
 
 **EXAMPLES**
 ```
@@ -1311,7 +1298,7 @@ This example checks for updates to the Penguins' eggs tool and installs the late
 
 
 ## `eggs version`
- The `eggs version` command is used to retrieve information about the version of the "eggs" command-line interface (CLI). It is a command-line command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+<p align="justify"> The `eggs version` command is used to retrieve information about the version of the "eggs" command-line interface (CLI). It is a command-line command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1336,7 +1323,7 @@ Additionally, you can use the `--json` flag to format the output as JSON, which 
 
 
 ## `eggs wardrobe get [REPO]`
- The `eggs wardrobe get [REPO]` command is used to retrieve a wardrobe from a repository. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs wardrobe get [REPO]` command is used to retrieve a wardrobe from a repository. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1351,9 +1338,7 @@ eggs wardrobe get [REPO] [-h] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs wardrobe get [REPO]` command allows users to retrieve a wardrobe from a repository. A wardrobe, in this context, refers to a collection of clothing items that are stored and managed in a repository.
-
-By executing the `eggs wardrobe get [REPO]` command, users can specify the repository from which they want to retrieve the wardrobe. This allows users to access and view the clothing items stored in the specified repository.
+<p align="justify">  The `eggs wardrobe get [REPO]` command allows users to retrieve a wardrobe from a repository. A wardrobe, in this context, refers to a collection of clothing items that are stored and managed in a repository. By executing the `eggs wardrobe get [REPO]` command, users can specify the repository from which they want to retrieve the wardrobe. This allows users to access and view the clothing items stored in the specified repository.</p>
 
 **EXAMPLES**
 ```
@@ -1369,7 +1354,7 @@ This example retrieves a wardrobe from a specific repository called "your-wardro
 > **To gain a deeper understanding of the implementation and view the source code related to the `eggs wardrobe get [REPO]` command, you can refer to the following link:** [src/commands/wardrobe/get.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/get.ts)
 
 ## `eggs wardrobe list [WARDROBE]`
- The `eggs wardrobe list [WARDROBE]` command is used to list costumes and accessories stored in a wardrobe. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify">  The `eggs wardrobe list [WARDROBE]` command is used to list costumes and accessories stored in a wardrobe. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1384,10 +1369,10 @@ eggs wardrobe list [WARDROBE] [-h] [-v]
 - `-v, --verbose`: Enables verbose mode, providing more detailed output.
 
 **DESCRIPTION**
-The `eggs wardrobe list [WARDROBE]` command allows users to view a list of costumes and accessories stored in a wardrobe. A wardrobe, in this context, is a collection of clothing items and accessories that can be used for various purposes, such as dressing up or creating outfits.
+<p align="justify"> The `eggs wardrobe list [WARDROBE]` command allows users to view a list of costumes and accessories stored in a wardrobe. A wardrobe, in this context, is a collection of clothing items and accessories that can be used for various purposes, such as dressing up or creating outfits.</p>
 
 > [!NOTE]
-> By executing the `eggs wardrobe list [WARDROBE]` command, users can specify the wardrobe they want to list costumes and accessories from. This command provides a convenient way to view the items available in a specific wardrobe.
+> <p align="justify">  By executing the `eggs wardrobe list [WARDROBE]` command, users can specify the wardrobe they want to list costumes and accessories from. This command provides a convenient way to view the items available in a specific wardrobe.</p>
 
 **EXAMPLES**
 ```
@@ -1404,7 +1389,7 @@ This example lists costumes and accessories from a specific wardrobe called "you
 
 
 ## `eggs wardrobe show [COSTUME]`
-The `eggs wardrobe show [COSTUME]` command is used to display costumes and accessories stored in a wardrobe. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:
+<p align="justify"> The `eggs wardrobe show [COSTUME]` command is used to display costumes and accessories stored in a wardrobe. It is a command-line interface (CLI) command that can be executed with different options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1421,8 +1406,9 @@ eggs wardrobe show [COSTUME] [-h] [-j] [-v] [-w <value>]
 - `-w, --wardrobe=<value>`: Specifies the wardrobe to show costumes and accessories from.
 
 **DESCRIPTION**
-The `eggs wardrobe show [COSTUME]` command allows users to view details and information about specific costumes and accessories stored in a wardrobe. A wardrobe, in this context, is a collection of clothing items and accessories.
-> [!NOTE]
+<p align="justify">  The `eggs wardrobe show [COSTUME]` command allows users to view details and information about specific costumes and accessories stored in a wardrobe. A wardrobe, in this context, is a collection of clothing items and accessories.</p>
+
+  > [!NOTE]
 > By executing the `eggs wardrobe show [COSTUME]` command, users can specify the costume or accessory they want to view. This command provides a way to retrieve information about a particular item in the wardrobe.
 
 **EXAMPLES**
@@ -1445,7 +1431,7 @@ This example shows all available costumes and accessories within the "accessorie
 
 
 ## `eggs wardrobe wear [COSTUME]`
- The `eggs wardrobe wear [COSTUME]` command is used to wear costumes and accessories from a wardrobe. It is a command-line interface (CLI) command that can be executed with various options. Here is an expanded and rewritten explanation of the command:
+ <p align="justify"> The `eggs wardrobe wear [COSTUME]` command is used to wear costumes and accessories from a wardrobe. It is a command-line interface (CLI) command that can be executed with various options. Here is an expanded and rewritten explanation of the command:</p>
 
 **USAGE**
 ```
@@ -1464,7 +1450,7 @@ eggs wardrobe wear [COSTUME] [-h] [-a] [-f] [-s] [-v] [-w <value>]
 - `-w, --wardrobe=<value>`: Specifies the wardrobe to wear costumes and accessories from.
 
 **DESCRIPTION**
-The `eggs wardrobe wear [COSTUME]` command allows users to wear specific costumes and accessories from a wardrobe. By executing this command, users can choose a costume or accessory they want to wear, and it will be applied or installed accordingly.
+<p align="justify"> The `eggs wardrobe wear [COSTUME]` command allows users to wear specific costumes and accessories from a wardrobe. By executing this command, users can choose a costume or accessory they want to wear, and it will be applied or installed accordingly.</p>
 
 The command provides flexibility with the following options:
 - The `-a, --no_accessories` flag can be used to exclude installing accessories when wearing the costume.
@@ -1495,16 +1481,17 @@ This example wears the "waydroid" costume from the "wagtail" category.
 
 # Penguins' eggs official guide 
 **Penguins' Eggs Official Guide and Resources**
-
+<p align="justify"> 
 Welcome to the Penguins' Eggs Official Guide! This comprehensive manual provides detailed instructions on using Penguins' Eggs, a software tool designed to facilitate various tasks. Initially released in Italian, the guide can be translated into other languages using machine translation for wider accessibility.
 
 To access the guide, click [here](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). It offers valuable information and step-by-step tutorials to help users navigate through the software's features. However, please note that some of the terminal samples in the guide may need updating.
 
 For a visual demonstration of Penguins' Eggs in action, check out these helpful [terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true). They provide a practical overview of how to use the tool effectively.
+</p>
 
 ## That's all, Folks!
 
-One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! :-D
+<p align="justify"> One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! </p>
 
 ## More Information
 
@@ -1513,8 +1500,8 @@ In addition to the official guide, there are other resources available for Pengu
 Some noteworthy documents include:
 - [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md): A brief guide on using Penguins' Eggs in Debian, Arch, and Manjaro.
 - [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html): A blog post detailing how to create an Arch naked live, install it, and customize the resulting system into a graphics development station.
-
-If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my blog [here](https://penguins-eggs.net) or connecting with me on [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61), [Telegram](https://t.me/penguins_eggs), or [Twitter](https://twitter.com/pieroproietti).
+<p align="justify"> 
+If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my blog [here](https://penguins-eggs.net) or connecting with me on [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61), [Telegram](https://t.me/penguins_eggs), or [Twitter](https://twitter.com/pieroproietti).</p>
 
 
 # Copyright and licenses
