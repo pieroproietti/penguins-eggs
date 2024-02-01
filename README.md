@@ -29,7 +29,7 @@ penguins-eggs
 # Introduction
 
 <p align="justify">
-<b>penguins-eggs</b> is a <font color="red"> console </font>tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
+<b>penguins-eggs</b> is a <font color="red"> console </font> tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
 The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident. The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. Initially built with node.js and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as “produce” for creating the eggs, “hatch” for installation, and other commands like “kill” for removing produced ISOs, “update” for software updates, and “install” for configuring the graphical installer. It also has prerequisites to install the .deb packages necessary for the process, namely, calamares.</p>
 
 <p align="justify">
