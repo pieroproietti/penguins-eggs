@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if running as root
-if [ "$EUID" -ne 0 ]; then  echo "Please run as root:do ${0} 9..1"
+if [ "$EUID" -ne 0 ]; then  echo "Please run this script as root"
   exit 1
 fi
 
