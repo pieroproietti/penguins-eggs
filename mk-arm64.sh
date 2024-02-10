@@ -1,36 +1,38 @@
 #!/bin/bash
-if [ "$EUID" -ne 0 ]; then 
-  echo "Please run as root: sudo ${0} 9.6.1"
-  exit
+
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then  echo "Please run as root:do ${0} 9..1"
+  exit 1
 fi
 
-if [ $# -eq 0 ]; then
+# Check if version is provided
+if [ "$#" -eq 0 ]; then
   echo "You need to specify version, ex: 9.6.1"
-  exit
+  exit 1
 fi
 
-FR="/home/artisan/penguins-eggs/perrisbrewery/workdir/"
+WORKDIR="/home/artisan/penguins-eggs/perrisbrewery/workdir/"
 VER=$1
-SRC="${FR}eggs_${VER}_amd64"
-DEST="${FR}eggs_${VER}_arm64"
-rm -rf "DEST"
-rm -f "${SRC}*.deb"
-cp "${SRC}" "${DEST}" -R
+SRC="${WORKDIR}eggs_${VER}_amd64"
+DEST="${WORKDIR}eggs_${VER}_arm64"
 
-# remove syslinux-common, syslinux
+# Clean up previous build
+rm -rf "${DEST}"
+rm -f "${SRC}*.deb"
+
+# Copy source directory to destination
+cp -R "${SRC}" "${DEST}"
+
+# Update DEBIAN/control file
 sed -i 's/syslinux-common,//g' "${DEST}/DEBIAN/control"
 sed -i 's/syslinux,//g' "${DEST}/DEBIAN/control"
-
-#sed -i 's/grub-efi-amd64-bin/nodejs/g' "${DEST}/DEBIAN/control"
 sed -i 's/grub-efi-amd64-bin/grub-efi-arm64-bin, nodejs/g' "${DEST}/DEBIAN/control"
-
 sed -i 's/amd64/arm64/g' "${DEST}/DEBIAN/control"
 
-# Remove node inside bin
+# Replace node binary
 rm -f "${DEST}/usr/lib/penguins-eggs/bin/node"
-# and replace with ln -s /bin/node
 ln -s /usr/bin/node "${DEST}/usr/lib/penguins-eggs/bin/node"
 
-# build package
-cd ${FR}
-sudo dpkg-deb --build eggs_${VER}_arm64/
+# Build package
+cd "${WORKDIR}" || exit
+dpkg-deb --build "eggs_${VER}_arm64"
