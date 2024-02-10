@@ -1,5 +1,5 @@
 ######################################################################################################
-# usr: use this exclusions, can lead to lost something
+# usr: use this exclusions, attention this can lead to lost something
 usr/bin/x86_64-w64-mingw32-cpp-win32
 usr/bin/x86_64-w64-mingw32-gcc-12-win32
 usr/bin/x86_64-w64-mingw32-gcc-ar-win32
