@@ -16,7 +16,7 @@ fi
 
 workdir="/home/artisan/penguins-eggs/perrisbrewery/workdir/"
 ver=$1
-ver="${workdir}eggs_${ver}_amd64"
+src="${workdir}eggs_${ver}_amd64"
 dest="${workdir}eggs_${ver}_arm64"
 
 # Clean up previous build
@@ -24,7 +24,7 @@ rm -rf "${dest}"
 rm -f "${ver}*.deb"
 
 # Copy source directory to destination
-cp -R "${ver}" "${dest}"
+cp -R "${src}" "${dest}"
 
 # Update DEBIAN/control file
 sed -i 's/syslinux-common,//g' "${dest}/DEBIAN/control"
