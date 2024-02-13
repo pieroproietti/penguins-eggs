@@ -58,7 +58,7 @@
   distroLike: Devuan
   family: debian
   ids:
-    - "excalibur ceres # "excalibur ceres"
+    - "excalibur"
 
 #
 # UBUNTU
