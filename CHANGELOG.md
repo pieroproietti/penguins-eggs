@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.30
+* just a little bugfix on derivatives.yaml
+
 # eggs-9.6.29
 * completely rewritten [README.md](./README.md) fron [Hosein Seilany](https://github.com/hosseinseilani);
 * added Linuxmint victoria and Parrot lory (thanks to [Roy Reynolds](https://github.com/rreyn331)).
