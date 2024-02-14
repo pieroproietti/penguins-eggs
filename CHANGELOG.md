@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.31
+* just a little bugfix on calamares manjaro configuration; thanks @Unibox
+
 # eggs-9.6.30
 * just a little bugfix on derivatives.yaml
 
