@@ -34,10 +34,9 @@ export default async function initramfs(this: Sequence) {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
-    if (this.distro.distroId === 'Manjaro') {
+    if (this.distro.distroId === 'Manjaro' ) {
       cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
     }
-
     try {
       await exec(cmd, Utils.setEcho(true))
     } catch {

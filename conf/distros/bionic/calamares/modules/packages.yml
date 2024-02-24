@@ -1,1 +1,6 @@
-../../../buster/calamares/modules/packages.yml
+# Debian/Buster et others
+# packages
+---
+backend: apt
+
+{{operations}}

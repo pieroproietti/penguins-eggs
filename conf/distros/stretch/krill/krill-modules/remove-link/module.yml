@@ -1,0 +1,9 @@
+# Debian Buster
+# remove-link
+---
+type: "job"
+name: "remove-link"
+interface: "process"
+chroot: false
+command: "/usr/sbin/remove-link.sh"
+timeout: 8

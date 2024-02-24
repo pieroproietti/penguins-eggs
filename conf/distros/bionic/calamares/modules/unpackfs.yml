@@ -1,1 +1,6 @@
-../../../buster/calamares/modules/unpackfs.yml
+# Debian/bookworm
+---
+unpack:
+    -   source: {{source}}
+        sourcefs: "squashfs"
+        destination: ""
