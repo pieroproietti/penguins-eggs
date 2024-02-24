@@ -102,7 +102,7 @@ export default class Archlinux {
     // const cal_eggs = 'arco-calamares-3.3.0.alpha5-02-x86_64.pkg.tar.zst' // 2023-10-25
     // const cal_eggs = 'arco-calamares-3.3.0.alpha10-03-x86_64.pkg.tar.zst' // 2023-12-23
     const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
-
+    
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
