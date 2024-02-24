@@ -1,7 +1,0 @@
-# Manjaro
-# Calamares 3.2
----
-unpack:
-    -   source: /run/miso/bootmnt/manjaro/x86_64/livefs.sfs
-        sourcefs: "squashfs"
-        destination: ""
