@@ -20,6 +20,16 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.33
+The autologin configuration for the live user, depends on the setting of the user running eggs: if the user is configured with autologin then, the live user is also configured with autologin.
+
+This configuration is handled by the various desktop managers, eggs only handles it for the most common ones: lightdm. gnome, sddm and slim.
+
+I simply used regexes to remove spaces in the configuration of these desktop managers, previously using double spaces led to nonrecognition of the line.
+
+The special thing is mostly that - to do this - I used in eggs for the first time Artificial Intelligence, in this case Copilot from github.
+
+
 # eggs-9.6.32
 * added a new distribution [biglinux](https://www.biglinux.com.br/), a really nice manjaro based distro dressiang a wondowful plasma desktop.
 
