@@ -336,7 +336,8 @@ class Distro implements IDistro {
     /**
       * ManjaroLinux and BigLinux
       */
-    if (this.distroId === 'ManjaroLinux' || this.distroId.includes("BigLinux"))  {
+    
+    if (this.distroId === 'ManjaroLinux' || this.distroId.toLowerCase().includes("biglinux"))  {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
