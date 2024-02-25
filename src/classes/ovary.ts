@@ -911,8 +911,9 @@ export default class Ovary {
   let fileConf = 'arch'
   if (isMiso(distroId)) {
     fileConf="manjarolinux"
-    if (distroId.includes("BigLinux"))
-    fileConf="biglinux"
+    if (distroId.toLowerCase().includes("biglinux"))  {
+      fileConf="biglinux"
+    }
   }
 
   let pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
@@ -2156,18 +2157,17 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
 function isMiso(distro: string): boolean {
   let found = false
   if ( (distro.includes('ManjaroLinux')) || 
-        distro.includes("BigLinux") ) {
+        distro.toLowerCase().includes("biglinux") ) {
     found = true
   }
   return found
 }
 
-
+/**
+ * se non zuppa, pan bagnato
+ * @param distro 
+ * @returns 
+ */
 function isArchiso(distro: string): boolean {
-  let found = false
-  if (distro !== 'ManjaroLinux') {
-    found = true
-  }
-
-  return found
+  return ! isMiso(distro) 
 }
