@@ -135,10 +135,12 @@ export default class Xdg {
         let sddmChanged = false
         const curFile = `${chroot}/etc/sddm.conf`
         if (fs.existsSync(curFile)) {
-          const content = fs.readFileSync(curFile, 'utf8')
+          let content = fs.readFileSync(curFile, 'utf8')
           const find = '[Autologin]'
           if (content.includes(find)) {
-            shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+            const regex = new RegExp(`User\\s*=\\s*${olduser}`, 'g') // replace space
+            content = content.replace(regex, `User=${newuser}`)
+            fs.writeFileSync(curFile, content, 'utf8')
             sddmChanged = true
           }
         }
@@ -149,10 +151,12 @@ export default class Xdg {
             const files = fs.readdirSync(dc)
             for (const elem of files) {
               const curFile = dc + elem
-              const content = fs.readFileSync(curFile, 'utf8')
+              let content = fs.readFileSync(curFile, 'utf8')
               const find = '[Autologin]'
               if (content.includes(find)) {
-                shx.sed('-i', `User=${olduser}`, `User=${newuser}`, curFile)
+                const regex = new RegExp(`User\\s*=\\s*${olduser}`, 'g') // replace space
+                content = content.replace(regex, `User=${newuser}`)
+                fs.writeFileSync(curFile, content, 'utf8')
                 sddmChanged = true
               }
             }
