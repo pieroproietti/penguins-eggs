@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.34
+* created another package, based on node16. called eggs-bionic to continue to support (Ubuntu bionic)[https://ubuntu.com/18-04] and old distros;
+* removed from the exclude.list snapd, so now snaps will be copied of the live and viceversa.
+
 # eggs-9.6.33
 The autologin configuration for the live user, depends on the setting of the user running eggs: if the user is configured with autologin then, the live user is also configured with autologin.
 
