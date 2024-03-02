@@ -84,7 +84,7 @@ var/lib/dhcp/*
 var/lib/dkms/wireguard/*
 var/lib/dpkg/*~old
 var/lib/gems/2.7.0/cache/*
-var/lib/snapd/*
+#var/lib/snapd/*
 var/log/*.log
 var/log/*.log.?
 var/log/*/*
