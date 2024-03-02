@@ -1,5 +1,6 @@
 ######################################################################################################
 # usr: use this exclusions, attention this can lead to lost something
+#usr/lib/snapd/*
 usr/bin/x86_64-w64-mingw32-cpp-win32
 usr/bin/x86_64-w64-mingw32-gcc-12-win32
 usr/bin/x86_64-w64-mingw32-gcc-ar-win32
@@ -20,7 +21,6 @@ usr/lib/i386-linux-gnu/libLLVM-12.so.1
 usr/lib/llvm-11/*
 usr/lib/llvm-9/*
 usr/lib/mono/*
-usr/lib/snapd/*
 usr/lib/x86_64-linux-gnu/libLLVM-10.so
 usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
 usr/lib/x86_64-linux-gnu/libLLVM-11.so

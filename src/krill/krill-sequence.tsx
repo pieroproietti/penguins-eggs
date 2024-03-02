@@ -107,8 +107,6 @@ import mTimezone from './modules/m-timezone'
 import umount from './modules/umount'
 import mkfs from './modules/mkfs'
 import hostname from './modules/hostname'
-import { ReadableByteStreamController } from 'stream/web';
-import { createCompilerHost } from 'typescript';
 
 import CFS from '../classes/cfs'
 
