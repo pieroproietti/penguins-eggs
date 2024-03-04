@@ -107,6 +107,7 @@
     - lunar # Ubuntu lunar 23.04
     - mantic # Ubuntu lunar 23.10
     - noble # Ubuntu noble
+    - wilma # Linux Mint 22
 
 #
 # ARCH
