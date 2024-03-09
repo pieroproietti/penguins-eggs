@@ -23,6 +23,7 @@ import {IKrillConfig} from '../interfaces/i-krill-config'
  */
 export default class Install extends Command {
   static flags = {
+    btrfs: Flags.boolean({char: 'b', description: 'Format btrfs'}),
     crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
     custom: Flags.string({char: 'c', description: 'custom unattended configuration'}),
     domain: Flags.string({char: 'd', description: 'Domain name, defult: .local'}),
@@ -112,7 +113,7 @@ export default class Install extends Command {
     if (Utils.isRoot()) {
       if (Utils.isLive()) {
         const krill = new Krill(unattended, nointeractive, halt)
-        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, verbose)
+        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }

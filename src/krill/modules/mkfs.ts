@@ -45,13 +45,13 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
   } else if (this.partitions.filesystemType === 'btrfs') {
     await exec(`mkfs.btrfs -f ${this.devices.root.name} ${this.toNull}`, this.echo)
     //  create subvolumes
-    await exec(`btrfs subvolume create /.snapshots ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /home ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /root ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /var/log ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /var/lib/AccountsService ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /var/lib/blueman ${this.toNull}`, this.echo)
-    await exec(`btrfs subvolume create /tmp ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /.snapshots ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /home ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /root ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /var/log ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /var/lib/AccountsService ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /var/lib/blueman ${this.toNull}`, this.echo)
+    // await exec(`btrfs subvolume create /tmp ${this.toNull}`, this.echo)
 
   }
 

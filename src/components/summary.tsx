@@ -28,6 +28,7 @@ type SummaryProps = {
   //keyboardVariant: string,
   //keyboardOptions: string,
   installationDevice: string,
+  filesystemType: string,
   // filesystemType: string,
   // userSwapChoice: string,
   name: string,
@@ -41,7 +42,7 @@ type SummaryProps = {
   message: string
 }
 
-export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, message }: SummaryProps) {
+export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, filesystemType, message }: SummaryProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -85,7 +86,10 @@ export default function Summary({ name, password, rootPassword, hostname, region
                 <Text>layout </Text>
                 <Text color="green">{keyboardLayout}</Text>
               </Box>
-              <Box><Text bold={true}>Erase disk </Text><Text color="green">{installationDevice}</Text></Box>
+              <Box>
+                <Text bold={true}>Erase disk </Text>
+                <Text>{installationDevice} formatting: {filesystemType}</Text>
+              </Box>
               <Box><Text color="red">{message}</Text></Box>
             </Box>
           </Box>
