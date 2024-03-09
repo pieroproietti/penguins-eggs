@@ -54,41 +54,62 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   let mountOptsEfi = ''
   let mountOptsSwap = ''
 
-  if (await isRotational(installDevice)) {
-    mountOptsRoot = 'defaults,relatime 0 1'
-    mountOptsBoot = 'defaults,relatime 0 1'
-    mountOptsData = 'defaults,relatime 0 1'
-    mountOptsEfi = 'defaults,relatime 0 2'
-    mountOptsSwap = 'defaults,relatime 0 2'
-  } else {
-    mountOptsRoot = 'defaults,noatime 0 1'
-    mountOptsBoot = 'defaults,noatime 0 1'
-    mountOptsData = 'defaults,noatime 0 1'
-    mountOptsEfi = 'defaults,noatime 0 2'
-    mountOptsSwap = 'defaults,noatime 0 2'
+  if (this.partitions.filesystemType === 'ext4') {
+    if (await isRotational(installDevice)) {
+      mountOptsRoot = 'defaults,relatime 0 1'
+      mountOptsBoot = 'defaults,relatime 0 1'
+      mountOptsData = 'defaults,relatime 0 1'
+      mountOptsEfi = 'defaults,relatime 0 2'
+      mountOptsSwap = 'defaults,relatime 0 2'
+    } else {
+      mountOptsRoot = 'defaults,noatime 0 1'
+      mountOptsBoot = 'defaults,noatime 0 1'
+      mountOptsData = 'defaults,noatime 0 1'
+      mountOptsEfi = 'defaults,noatime 0 2'
+      mountOptsSwap = 'defaults,noatime 0 2'
+    }
+
+    text = ''
+    text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+
+    if (this.devices.boot.name !== 'none') {
+      text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
+      text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
+    }
+
+    if (this.devices.data.name !== 'none') {
+      text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+      text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+    }
+
+    if (this.efi) {
+      text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+    }
+    text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+  
+  } else if (this.partitions.filesystemType === 'btrfs') {
+    let base                    = '/                         btrfs  subvol=/@,defaults 0 0'
+    let snapshots               = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
+    let home                    = '/home                     btrfs  subvol=/@home,defaults 0 0'
+    let root                    = '/root                     btrfs  subvol=/@root,defaults 0 0'
+    let var_log                 = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
+    let var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
+    let var_lib_blueman         = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
+    let tmp                     = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
+    text = ''
+    text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
+    text += `UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
   }
-
-  text = ''
-  text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
-  text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
-
-  if (this.devices.boot.name !== 'none') {
-    text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
-    text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
-  }
-
-  if (this.devices.data.name !== 'none') {
-    text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
-    text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
-  }
-
-  if (this.efi) {
-    text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
-    text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
-  }
-
-  text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-  text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
   Utils.write(fstab, text)
 }
 
