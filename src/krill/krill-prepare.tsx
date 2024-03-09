@@ -243,6 +243,10 @@ export default class Krill {
       userSwapChoice: this.krillConfig.userSwapChoice
     }
 
+    if (btrfs) {
+      oPartitions.filesystemType='btrfs'
+    }
+
     if (suspend) {
       oPartitions.userSwapChoice = 'suspend'
     } else if (small) {
