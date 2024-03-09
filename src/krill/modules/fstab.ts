@@ -13,6 +13,7 @@ import {exec} from '../../lib/utils'
 import Utils from '../../classes/utils'
 import shx from 'shelljs'
 import { util } from 'chai'
+import Pacman from '../../classes/pacman'
 
 /**
    * fstab()
@@ -22,8 +23,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   let text = ''
 
   /**
-     * crypttab
-     */
+  * crypttab
+  */
   if (this.partitions.installationMode === 'full-encrypted') {
     const crypttab = this.installTarget + '/etc/crypttab'
     text += '# /etc/crypttab: mappings for encrypted partitions.\n'
@@ -47,12 +48,22 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     Utils.write(crypttab, text)
   }
 
+
+  /**
+   * fstab
+   */
+  if (!Pacman.packageIsInstalled('btrfs-progs')) {
+    this.partitions.filesystemType === 'ext4'
+  }
+
   const fstab = this.installTarget + '/etc/fstab'
   let mountOptsRoot = ''
   let mountOptsBoot = ''
   let mountOptsData = ''
   let mountOptsEfi = ''
   let mountOptsSwap = ''
+
+
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
