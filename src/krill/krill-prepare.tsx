@@ -156,7 +156,7 @@ export default class Krill {
    * @param pve 
    * @param verbose 
    */
-  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, verbose = false) {
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, btrfs=false, verbose = false) {
     /**
      * Check for disk presence
      */
@@ -241,6 +241,11 @@ export default class Krill {
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice
     }
+
+    if (btrfs) {
+      oPartitions.filesystemType = 'btrfs'
+    }
+
     if (suspend) {
       oPartitions.userSwapChoice = 'suspend'
     } else if (small) {
@@ -293,7 +298,7 @@ export default class Krill {
       oLocation = await this.location(oWelcome.language)
       //let kl = oWelcome.language.substring(oWelcome.language.indexOf('_'),2).toLowerCase()
       oKeyboard = await this.keyboard()
-      oPartitions = await this.partitions(cryped, pve)
+      oPartitions = await this.partitions(cryped, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
     }
@@ -430,7 +435,7 @@ export default class Krill {
   /**
   * PARTITIONS
   */
-  async partitions(crypted = false, pve = false): Promise<IPartitions> {
+  async partitions(crypted = false, pve = false, btrfs=false): Promise<IPartitions> {
     // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     const driveList: string[] = []
@@ -465,7 +470,11 @@ export default class Krill {
         } else if (pve) {
           installationMode = 'lvm2'
         }
-        filesystemType = ''
+        if (btrfs) {
+          filesystemType = 'btrfs'
+        } else {
+          filesystemType = 'ext4'
+        }
         userSwapChoice = ''
       }
 
@@ -604,7 +613,7 @@ export default class Krill {
 
 
     while (true) {
-      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} message={message} />
+      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} />
       if (this.unattended && this.nointeractive) {
         redraw(summaryElem)
         await sleep(5000)

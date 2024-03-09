@@ -26,7 +26,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
      */
   if (this.partitions.installationMode === 'full-encrypted') {
     const crypttab = this.installTarget + '/etc/crypttab'
-    text = ''
     text += '# /etc/crypttab: mappings for encrypted partitions.\n'
     text += '#\n'
     text += '# Each mapped device will be created in /dev/mapper, so your /etc/fstab\n'
@@ -91,7 +90,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
   
   } else if (this.partitions.filesystemType === 'btrfs') {
-    let base                    = '/                         btrfs  subvol=/@,defaults 0 0'
+    let base                    = '/        btrfs  subvol=/@,defaults 0 0'
     let snapshots               = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
     let home                    = '/home                     btrfs  subvol=/@home,defaults 0 0'
     let root                    = '/root                     btrfs  subvol=/@root,defaults 0 0'
@@ -99,16 +98,16 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     let var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
     let var_lib_blueman         = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
     let tmp                     = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
-    text = ''
-    text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+
+    text += `# ${this.devices.root.name}  btrfs ${this.devices.root.mountPoint} subvol\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
-    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
+    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
     
   }
   Utils.write(fstab, text)
