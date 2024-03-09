@@ -68,6 +68,7 @@ import fs from 'fs'
 import Systemctl from '../classes/systemctl'
 import Locales from '../classes/locales'
 import Keyboards from '../classes/keyboards'
+import Pacman from '../classes/pacman'
 
 // libraries
 const exec = require('../lib/utils').exec
@@ -240,10 +241,6 @@ export default class Krill {
       installationMode: this.krillConfig.installationMode,
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice
-    }
-
-    if (btrfs) {
-      oPartitions.filesystemType = 'btrfs'
     }
 
     if (suspend) {
@@ -455,6 +452,9 @@ export default class Krill {
     }
 
     let filesystemType = 'ext4'
+    if (Pacman.packageIsInstalled("btrfs-progs")) {
+      filesystemType = 'btrfs'
+    }
     let userSwapChoice = 'small'
 
     let partitionsElem: JSX.Element

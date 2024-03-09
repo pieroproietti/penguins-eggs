@@ -10,6 +10,7 @@ const inquirer = require('inquirer')
 import shx from 'shelljs'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
+import Pacman from '../classes/pacman'
 import {IPartitions} from '../interfaces/index'
 
 export default async function selectFileSystemType(): Promise<string> {
@@ -20,12 +21,16 @@ export default async function selectFileSystemType(): Promise<string> {
     partitions.defaultFileSystemType = 'ext4'
   }
 
+  partitions.defaultFileSystemType = 'ext4'
+  if (Pacman.packageIsInstalled('btrfs-progs')) {
+    partitions.defaultFileSystemType = 'btrfs'
+  }
+
   const questions: Array<Record<string, any>> = [
     {
       type: 'list',
       name: 'fileSystemChoices',
       message: 'Select file system tyèe',
-      //choices: ['btrfs', 'ext', 'ext2', 'ext3', 'ext4', 'ReiserFS', 'Reiser4', 'zfs'],
       choices: ['btrfs', 'ext4'],
       default: partitions.defaultFileSystemType,
     },
