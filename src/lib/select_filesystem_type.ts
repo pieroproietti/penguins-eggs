@@ -26,7 +26,7 @@ export default async function selectFileSystemType(): Promise<string> {
       name: 'fileSystemChoices',
       message: 'Select file system tyèe',
       //choices: ['btrfs', 'ext', 'ext2', 'ext3', 'ext4', 'ReiserFS', 'Reiser4', 'zfs'],
-      choices: ['btrfs', 'ext4', 'zfs'],
+      choices: ['btrfs', 'ext4'],
       default: partitions.defaultFileSystemType,
     },
   ]
