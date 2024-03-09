@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.36
+* others adaptments to get btrfs on eggs krill, added --btrfs option, checks and defaults.
+
 # eggs-9.6.35
 * eggs now is capable to work on btrfs, both for mastering and installing both, with krill and calamres.
 
