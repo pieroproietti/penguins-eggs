@@ -17,29 +17,42 @@ import Utils from '../../classes/utils'
 export default async function mkfs(this: Sequence): Promise<boolean> {
   const result = true
 
-  if (this.efi) {
-    await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
-  }
-
-  if (this.devices.boot.name !== 'none') {
-    if (this.devices.boot.fsType === undefined) {
-      this.devices.boot.fsType = 'ext2'
-      this.devices.boot.mountPoint = '/boot'
+  if (this.partitions.filesystemType === 'ext4') {
+    if (this.efi) {
+      await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
     }
 
-    await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
-  }
+    if (this.devices.boot.name !== 'none') {
+      if (this.devices.boot.fsType === undefined) {
+        this.devices.boot.fsType = 'ext2'
+        this.devices.boot.mountPoint = '/boot'
+      }
 
-  if (this.devices.root.name !== 'none') {
-    await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
-  }
+      await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
+    }
 
-  if (this.devices.data.name !== 'none') {
-    await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
-  }
+    if (this.devices.root.name !== 'none') {
+      await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
+    }
 
-  if (this.devices.swap.name !== 'none') {
-    await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+    if (this.devices.data.name !== 'none') {
+      await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
+    }
+
+    if (this.devices.swap.name !== 'none') {
+      await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+    }
+  } else if (this.partitions.filesystemType === 'btrfs') {
+    await exec(`mkfs.btrfs -f ${this.devices.root.name} ${this.toNull}`, this.echo)
+    //  create subvolumes
+    await exec(`btrfs subvolume create /.snapshots ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /home ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /root ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /var/log ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /var/lib/AccountsService ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /var/lib/blueman ${this.toNull}`, this.echo)
+    await exec(`btrfs subvolume create /tmp ${this.toNull}`, this.echo)
+
   }
 
   return result

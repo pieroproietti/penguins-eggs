@@ -12,6 +12,7 @@ import Sequence from '../krill-sequence'
 import {exec} from '../../lib/utils'
 import Utils from '../../classes/utils'
 import shx from 'shelljs'
+import { util } from 'chai'
 
 /**
    * fstab()
@@ -53,7 +54,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   let mountOptsData = ''
   let mountOptsEfi = ''
   let mountOptsSwap = ''
-
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
@@ -102,13 +102,14 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text = ''
     text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
+    text += `#UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
+    
   }
   Utils.write(fstab, text)
 }
