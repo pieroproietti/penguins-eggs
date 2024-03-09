@@ -2,7 +2,7 @@
 ---
 mountOptions:
   default: defaults,noatime
-  btrfs: defaults,noatime,space_cache,autodefrag
+  btrfs: defaults   #,noatime,space_cache,autodefrag
 ssdExtraMountOptions:
   ext4: discard
   jfs: discard
