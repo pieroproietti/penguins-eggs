@@ -98,7 +98,8 @@ export default class Archlinux {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     // const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
-    const cal_eggs = 'arco-calamares-3.3.6-01-x86_64.pkg.tar.zst' // 2024-03-10
+    const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
+    //const cal_eggs = 'arco-calamares-3.3.6-01-x86_64.pkg.tar.zst' // 2024-03-10
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
