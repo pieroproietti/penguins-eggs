@@ -97,12 +97,8 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
-    // const cal_eggs = 'calamares-eggs-3.3.0.r10707.4b3278058-1-x86_64.pkg.tar.zst' // 2023-09-04 
-    // const cal_eggs = 'arco-calamares-git-3.3.0.r10680.9becd7d1b-1-x86_64.pkg.tar.zst' // 2023-09-20 
-    // const cal_eggs = 'arco-calamares-3.3.0.alpha5-02-x86_64.pkg.tar.zst' // 2023-10-25
-    // const cal_eggs = 'arco-calamares-3.3.0.alpha10-03-x86_64.pkg.tar.zst' // 2023-12-23
-    const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
-    
+    // const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
+    const cal_eggs = 'arco-calamares-3.3.6-01-x86_64.pkg.tar.zs' // 2024-03-10
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
