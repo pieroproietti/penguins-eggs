@@ -107,7 +107,6 @@ export default class Ovary {
       if (await Utils.customConfirm('Select yes to continue...')) {
         return true
       }
-      this.settings.work_dir.ovarium = this.settings.config.snapshot_dir + 'ovarium/'
     }
 
     return false
