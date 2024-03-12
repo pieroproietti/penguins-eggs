@@ -22,7 +22,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes, usr' }),
+    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, homes, usr, cryptedclone' }),
     help: Flags.help({ char: 'h' }),
     links:  Flags.string({ multiple: true, description: 'desktop links' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -48,6 +48,7 @@ export default class Produce extends Command {
     'sudo eggs produce --clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
+    'sudo eggs produce --filters=custom --filters=homes'
   ]
 
   async run(): Promise<void> {
@@ -107,6 +108,8 @@ export default class Produce extends Command {
       filters.dev = false
       filters.homes = false
       filters.usr = false
+      filters.cryptedclone = false
+
       if (flags.filters) {
         if (flags.filters.includes('custom')) {
           filters.custom = true
@@ -119,6 +122,9 @@ export default class Produce extends Command {
         }
         if (flags.filters.includes('usr')) {
           filters.usr = true
+        }
+        if (flags.filters.includes('cryptedclone')) {
+          filters.cryptedclone = true
         }
       }
 

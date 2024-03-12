@@ -6,6 +6,7 @@
  * license: MIT
  */
 export interface IFilters {
+  cryptedclone: boolean
   custom: boolean
   dev: boolean
   homes: boolean
