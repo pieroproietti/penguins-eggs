@@ -72,7 +72,7 @@ export default class Ovary {
 
   cliAutologin = new CliAutologin()
 
-  ovarium = ''
+  nest = ''
 
   /**
    * @returns {boolean} success
@@ -82,6 +82,7 @@ export default class Ovary {
 
     if (await this.settings.load()) {
       this.familyId = this.settings.distro.familyId
+      this.nest = this.settings.config.snapshot_mnt
 
       if (snapshot_prefix !== '') {
         this.settings.config.snapshot_prefix = snapshot_prefix
@@ -107,7 +108,6 @@ export default class Ovary {
       if (await Utils.customConfirm('Select yes to continue...')) {
         return true
       }
-      this.settings.work_dir.ovarium = this.settings.config.snapshot_dir + 'ovarium/'
     }
 
     return false
@@ -332,10 +332,10 @@ export default class Ovary {
 
       if (cryptedclone) {
         await exec('eggs syncto', Utils.setEcho(true))
-        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.ovarium}iso/live`)
+        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.nest}iso/live`)
         await exec('sleep 10', Utils.setEcho(false))
-        Utils.warning(`moving ${luksFile} in ${this.ovarium}iso/live`)
-        await exec(`mv ${luksFile} ${this.ovarium}iso/live`, this.echo)
+        Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
+        await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }
 
       const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')
