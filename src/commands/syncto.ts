@@ -41,6 +41,7 @@ export default class Syncto extends Command {
     static flags = {
       delete: Flags.string({description: 'rsync --delete delete extraneous files from dest dirs'}),
       file: Flags.string({char: 'f', description: 'file LUKS volume encrypted'}),
+      exclusion: Flags.boolean({char: 'e', description: 'exclude files using exclude.list.cryptedclone template' }),
       help: Flags.help({char: 'h'}),
       verbose: Flags.boolean({char: 'v', description: 'verbose'}),
     }
@@ -49,6 +50,7 @@ export default class Syncto extends Command {
     static examples = [
       'sudo eggs syncto',
       'sudo eggs syncto --file /path/to/fileLUKS',
+      'sudo eggs syncto -e'
     ]
 
     verbose = false
@@ -62,6 +64,8 @@ export default class Syncto extends Command {
     luksDevice = `/dev/mapper/${this.luksName}`
 
     luksMountpoint = '/tmp/eggs-backup'
+
+    exclude_file = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
     /**
      *
@@ -85,6 +89,11 @@ export default class Syncto extends Command {
         destDelete = true
       }
 
+      let excludeFiles = false
+      if (flags.exclusion) {
+        excludeFiles = true
+      }
+
       if (Utils.isRoot()) {
         /**
              * restore con file
@@ -105,7 +114,7 @@ export default class Syncto extends Command {
 
         if (fs.existsSync(fileVolume)) {
           await this.luksOpen()
-          await this.backup(destDelete)
+          await this.backup(destDelete, excludeFiles)
           await this.luksClose()
         }
       } else {
@@ -116,7 +125,7 @@ export default class Syncto extends Command {
     /**
      *
      */
-    async backup(destDelete = false) {
+    async backup(destDelete = false, excludeFiles = false) {
       if (this.verbose) {
         Utils.warning('backup')
       }
@@ -129,10 +138,18 @@ export default class Syncto extends Command {
           const source = element.home
           let dest = this.luksMountpoint + '/ROOT' + element.home
           dest = dest.slice(0, Math.max(0, dest.lastIndexOf('/')))
-          let cmd = `rsync --archive ${source} ${dest}`
-          if (destDelete) {
-            cmd = `rsync --archive --delete ${source} ${dest}`
+
+          let cmd = "rsync --archive"
+
+          if (excludeFiles) {
+            cmd += ` --exclude-from ${this.exclude_file}`
           }
+
+          if (destDelete) {
+            cmd += ` --delete`
+          }
+
+          cmd += ` ${source} ${dest}`
 
           await exec(cmd, this.echo)
         }
