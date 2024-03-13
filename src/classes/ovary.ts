@@ -331,7 +331,13 @@ export default class Ovary {
       }
 
       if (cryptedclone) {
-        await exec('eggs syncto', Utils.setEcho(true))
+        let synctoCmd = `eggs syncto -f ${luksFile}`
+
+        if (filters.cryptedclone) {
+          synctoCmd += ' -e'
+        }
+
+        await exec(`${synctoCmd}`, Utils.setEcho(true))
         Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.nest}iso/live`)
         await exec('sleep 10', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
@@ -1558,44 +1564,44 @@ merged(dir: string): boolean {
    * @param icon
    */
   private lxdeLink(file: string, name: string, icon: string): string {
-  if (this.verbose) {
-    console.log('Ovary: lxdeLink')
+    if (this.verbose) {
+      console.log('Ovary: lxdeLink')
+    }
+
+    const lnk = `lnk-${file}`
+
+    let text = ''
+    text += `echo "[Desktop Entry]" >$DESKTOP/${lnk}\n`
+    text += `echo "Type=Link" >> $DESKTOP/${lnk}\n`
+    text += `echo "Name=${name}" >> $DESKTOP/${lnk}\n`
+    text += `echo "Icon=${icon}" >> $DESKTOP/${lnk}\n`
+    text += `echo "URL=/usr/share/applications/${file}" >> $DESKTOP/${lnk}\n\n`
+
+    return text
   }
 
-  const lnk = `lnk-${file}`
+  /**
+   * Add or remove exclusion
+   * @param add {boolean} true = add, false remove
+   * @param exclusion {string} path to add/remove
+   */
+  addRemoveExclusion(add: boolean, exclusion: string): void {
+    if(this.verbose) {
+      console.log('Ovary: addRemoveExclusion')
+    }
 
-  let text = ''
-  text += `echo "[Desktop Entry]" >$DESKTOP/${lnk}\n`
-  text += `echo "Type=Link" >> $DESKTOP/${lnk}\n`
-  text += `echo "Name=${name}" >> $DESKTOP/${lnk}\n`
-  text += `echo "Icon=${icon}" >> $DESKTOP/${lnk}\n`
-  text += `echo "URL=/usr/share/applications/${file}" >> $DESKTOP/${lnk}\n\n`
+    if (exclusion.startsWith('/')) {
+      exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
+    }
 
-  return text
-}
-
-/**
- * Add or remove exclusion
- * @param add {boolean} true = add, false remove
- * @param exclusion {atring} path to add/remove
- */
-addRemoveExclusion(add: boolean, exclusion: string): void {
-  if(this.verbose) {
-  console.log('Ovary: addRemoveExclusion')
-}
-
-if (exclusion.startsWith('/')) {
-  exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
-}
-
-if (add) {
-  this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
-} else {
-  this.settings.session_excludes.replace(` '${exclusion}'`, '')
-  if (this.settings.session_excludes === '-e') {
-    this.settings.session_excludes = ''
-  }
-}
+    if (add) {
+      this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
+    } else {
+      this.settings.session_excludes.replace(` '${exclusion}'`, '')
+      if (this.settings.session_excludes === '-e') {
+        this.settings.session_excludes = ''
+      }
+    }
   }
 
   // #######################################################################################
