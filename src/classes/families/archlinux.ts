@@ -98,8 +98,8 @@ export default class Archlinux {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     // const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
-    const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
-    //const cal_eggs = 'arco-calamares-3.3.6-01-x86_64.pkg.tar.zst' // 2024-03-10
+    //const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
+    const cal_eggs = 'calamares-garuda-3.3.5.r19.g10acebff4-1-x86_64.pkg.tar.zst' // 2024-03-10
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
       await exec(cmd, echo)
@@ -133,9 +133,8 @@ export default class Archlinux {
     
     let calPKGs = [
       'arco-calamares',
-      'arco-calamares-git',
       'calamares', 
-      'calamares-git', 
+      'calamares-garuda', 
     ]
     for(const calPKG of calPKGs){
       if (await this.packagePacmanAvailable(calPKG)) {
