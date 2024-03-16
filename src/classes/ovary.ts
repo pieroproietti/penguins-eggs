@@ -379,7 +379,7 @@ export default class Ovary {
       }
 
       /**
-       * patch to emulate miso/archiso on archilinux
+       * patch to emulate miso/archiso on archilinux family
        */
       if (this.familyId === 'archlinux') {
         let pathName = `arch/x86_64/airootfs`
