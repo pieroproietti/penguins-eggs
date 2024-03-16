@@ -391,12 +391,7 @@ export default class Ovary {
           hashExt = '.md5'
         }
         await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
-        await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
-        // added
-        let curDir=process.cwd()
-        await exec(`cd ${this.settings.iso_work}live/`, this.echo)
-        await exec(`ln -s ..${pathName}.sfs filesystem.squashfs`, this.echo)
-        await exec(`cd ${curDir}`, this.echo)
+        fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}${pathName}.sfs`)
       }
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
