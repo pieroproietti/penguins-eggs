@@ -21,12 +21,14 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.37
-* One of the features of eggs is to allow the creation of ISOs that also contain sensitive data. It is done via a LUKS volume within the ISO itself, which, upon installation, knowing the password will restore encrypted accounts and user data. On the subject I received a substantial [pull request](https://github.com/pieroproietti/penguins-eggs/pull/344) from [Marco](https://github.com/markoceri), he added an apposite exclude.list for the cryptedclone and corrected some errors.
-* Ho modificato il comportamento per la produzione dell
+* One of the features of eggs is to allow the creation of ISOs that also contain sensitive data. It is done via a LUKS volume within the ISO itself, which, upon installation, knowing the password will restore encrypted accounts and user data. On the subject I received a substantial [pull request](https://github.com/pieroproietti/penguins-eggs/pull/344) from [Marco](https://github.com/markoceri), he added an apposite exclude.list for the cryptedclone and corrected some errors. Cryptedclone can be useful for safely transferring an image of a server or desktop system over the Internet. 
 
 * I have changed the behavior for producing the ISO as far as the Arch family is concerned. Previously I used to move the resulting `/live/filesystem.squashfs` to `/arch/x64_amd/airoot.sfs` or, on manjaro: `/manjaro/x86_64/livefs.sfs`, now I just create a hardlink.
 
-* Using this version, I was then able to successfully remaster and reinstall garuda linux, I point out, however, that I had to install the `calamares-garuda` package instead of the `arco-calamares` package from arcolinux.
+* Using this version, I was then able to successfully remaster and reinstall garuda linux, I point out, however, that I had to install the `calamares-garuda` package instead of the `arco-calamares` package from arcolinux. 
+
+* At last I decided to give a try to calamares-garuda, it work on arch too, so in eggs v9.6.37 you will find arco-calamares replaced from calamares-garuda.
+
 
 # eggs-9.6.36
 * others adaptments to get btrfs on eggs krill, added --btrfs option, checks and defaults.
