@@ -40,6 +40,7 @@ import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
 import { IfStatement } from 'typescript'
+import { cwd } from 'process'
 
 /**
  * Ovary:
@@ -392,8 +393,10 @@ export default class Ovary {
         await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
         await exec(`mv ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
         // added
-        await exec(`ln -s ${this.settings.iso_work}${pathName}.sfs ${this.settings.iso_work}live/filesystem.squashfs`, this.echo)
-        await exec(`${hashCmd} ${this.settings.iso_work}${pathName}.sfs > ${this.settings.iso_work}${pathName}${hashExt}`, this.echo)
+        let curDir=process.cwd()
+        await exec(`cd ${this.settings.iso_work}live/`, this.echo)
+        await exec(`ln -s ..${pathName}.sfs filesystem.squashfs`, this.echo)
+        await exec(`cd ${curDir}`, this.echo)
       }
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
