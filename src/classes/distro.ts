@@ -233,11 +233,12 @@ class Distro implements IDistro {
       }
 
       /**
-         * Arch Linux
+         * Arch Linux/Garuda
          */
+      case 'Spizaetus':
       case 'n/a':
       case 'rolling': {
-        // Arch, BlendOS, RebornOS, EndeavourOS, ArcoLinux
+        // Arch,  ArcoLinux, BlendOS, EndeavourOS, Garuda, RebornOS
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
