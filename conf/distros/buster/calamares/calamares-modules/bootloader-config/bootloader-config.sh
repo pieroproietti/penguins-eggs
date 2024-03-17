@@ -12,7 +12,7 @@ fi
 chroot $CHROOT dpkg --configure -a
 
 # eseguo apt update
-chroot $CHROOT apt-get -y --allow-unauthenticated update
+chroot $CHROOT apt-get --yes --allow-unauthenticated update
 # Set secure permissions for the initramfs if we're configuring
 # full-disk-encryption. The initramfs is re-generated later in the
 # installation process so we only set the permissions snippet without
@@ -33,8 +33,8 @@ if [ -d /sys/firmware/efi/efivars ]; then
     elif  [[ "$MACHINE" == arm* ]]; then
         arch="arm64"
     fi
-    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-efi-${arch} cryptsetup keyutils
+    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get --yes --allow-unauthenticated --no-install-recommends install grub-efi-${arch} cryptsetup keyutils
 else
     echo " * install grub... (bios)"
-    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get -y --allow-unauthenticated install grub-pc cryptsetup
+    DEBIAN_FRONTEND=nointeractive chroot $CHROOT apt-get --yes --allow-unauthenticated --no-install-recommends install grub-pc cryptsetup
 fi

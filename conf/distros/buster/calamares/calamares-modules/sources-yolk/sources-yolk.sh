@@ -64,7 +64,7 @@ yolk() {
     mkdir -p "$LIST_D"
     echo "deb [trusted=yes] file:/var/local/yolk ./" > "$LIST_D/yolk.list"
     touch "$LIST"
-    chroot "$CHROOT" apt-get update
+    chroot "$CHROOT" apt-get --yes update
 }
 
 #
