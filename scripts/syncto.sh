@@ -1,7 +1,8 @@
 #!/bin/sh
 #
-BACKUP_FOLDER="/home /etc/passwd /etc/group /etc/shadow"
-IMAGE_FILE="/luks-eggs-backup"
+BACKUP_FOLDER="/home"
+BACKUP_FILES="/etc/passwd /etc/group /etc/shadow"
+IMAGE_FILE="/home/eggs/iso/live/luks-eggs-backup"
 MAX_SIZE="15G"
 LUKS_NAME="Payload"
 # squashfs pads to 4096bytes (see mksquashfs manpage)
