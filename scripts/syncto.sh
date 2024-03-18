@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-BACKUP_FOLDER="/home"
+BACKUP_FOLDER="/home/artisan"
 BACKUP_FILES="/etc/passwd /etc/group /etc/shadow"
 IMAGE_FILE="/home/eggs/iso/live/luks-eggs-backup"
 MAX_SIZE="15G"
-LUKS_NAME="Payload"
+LUKS_NAME="eggs"
 # squashfs pads to 4096bytes (see mksquashfs manpage)
 BLOCK_SIZE=4096
 # even when the LUKS volume uses a different block size,
