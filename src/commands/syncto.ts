@@ -24,8 +24,10 @@
  */
 import { Command, Flags } from '@oclif/core'
 import path from 'path'
+import fs from 'fs'
 import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
+import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 
 /**
@@ -68,7 +70,7 @@ export default class Syncto extends Command {
   nest = '/home/eggs'
 
   compression = '-comp=xz'
-  
+
 
   /**
    *
@@ -130,56 +132,71 @@ export default class Syncto extends Command {
     Utils.warning(`Open LUKS volume`)
     await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
 
+    const compressors = new Compressors()
+    await compressors.populate()
+
+    // twisted, confirmed!
+    this.settings = new Settings()
+    let e = '' // exclude nest
+    let c = '' // compression
+    if (await this.settings.load()) {
+      let compression = compressors.fast()
+      if (this.settings.config.compression==`max`) {
+        compression = compressors.max()
+      } else if (this.settings.config.compression==`standard`) {
+        compression = compressors.standard()
+      }
+
+      // Se non existe non lo metto!
+      if (fs.existsSync(this.settings.config.snapshot_mnt)) {
+        e = `-e ${this.settings.config.snapshot_mnt}`
+      }
+      c = `-comp ${compression}`
+    }
+    let ef = ''  // exclude file
+    if (this.excludeFiles) {
+      ef = `-ef ${this.excludeFile}`
+    }
+
     Utils.warning(`Create a dummy filesystem for /etc`)
     let dummy_fs = "/tmp/dummy_fs"
     await exec(`mkdir -p ${dummy_fs}/etc`)
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}/etc`)
-    await exec(`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${this.compression} -progress -noappend`)
+    await exec(`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -progress -noappend`)
     await exec(`rm -rf ${dummy_fs}`)
 
     Utils.warning(`Appending /home`)
     let srcHome = "/home/"
 
-    let e = '' // exclude nest
-    let c = '' // compression
-    if (await this.settings.load()) {
-      e = `-e ${this.settings.config.snapshot_mnt}`
-      c = `-comp ${this.settings.config.compression}`
+    await exec(`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory -progress `)
+
+    Utils.warning(`Calculate used up space of squashfs`)
+    let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
+    let sizeString = (await exec(cmd, { echo: false, capture: true })).data
+    let size = parseInt(sizeString)
+    Utils.warning(`Squashfs size: ${size} bytes`)
+
+    const blockSize = 131072
+    // get number of blocks and pad squashfs
+    let blocks = size / blockSize
+    if (blocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
+      blocks = Math.ceil(blocks); // Arrotonda all'intero successivo
+      size = blocks * blockSize; // Calcola la nuova dimensione
     }
+    Utils.warning(`Padded squashfs on device, size ${size} bytes, bloks: ${blocks} of ${blockSize} bytes `)
 
-    let ef = ''  // exclude file
-    if (this.excludeFiles) {
-      ef = `-ef ${this.excludeFile}`
+    // Shrink LUKS volume
+    let luksBlockSize = 512
+    let luksBlocks = size / luksBlockSize
+    Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
+    await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`)
 
-      await exec(`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} -keep-as-directory -progress ${e} ${ef}`)
-
-      Utils.warning(`Calculate used up space of squashfs`)
-      let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
-      let sizeString = (await exec(cmd, { echo: false, capture: true })).data
-      let size = parseInt(sizeString)
-      Utils.warning(`Squashfs size: ${size} bytes`)
-
-      const blockSize = 131072
-      // get number of blocks and pad squashfs
-      let blocks = size / blockSize
-      if (blocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
-        blocks = Math.ceil(blocks); // Arrotonda all'intero successivo
-        size = blocks * blockSize; // Calcola la nuova dimensione
-      }
-      Utils.warning(`Padded squashfs on device, size ${size} bytes, bloks: ${blocks} of ${blockSize} bytes `)
-
-      // Shrink LUKS volume
-      let luksBlockSize = 512
-      let luksBlocks = size / luksBlockSize
-      Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
-      await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`)
-
-      // # Get final size and shrink image file
-      let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
-      let finalSize = luksOffset * luksBlockSize + size
-      await exec(`cryptsetup luksClose ${this.luksName}`)
-      await exec(`truncate -s ${finalSize} ${this.luksFile}`)
-      Utils.warning(`Final size is ${finalSize} bytes`)
-    }
+    // # Get final size and shrink image file
+    let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
+    let finalSize = luksOffset * luksBlockSize + size
+    await exec(`cryptsetup luksClose ${this.luksName}`)
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`)
+    Utils.warning(`Final size is ${finalSize} bytes`)
   }
 }
+
