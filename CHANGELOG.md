@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.38
+I have rewritten, almost completely, the syncto command, prompted also by the recent patch received.
+One of the problems with the previous version was that I had to calculate a priori the space needed for the LUKS device, now I use another technique that allows me to avoid.
+
 # eggs-9.6.37
 * One of the features of eggs is to allow the creation of ISOs that also contain sensitive data. It is done via a LUKS volume within the ISO itself, which, upon installation, knowing the password will restore encrypted accounts and user data. On the subject I received a substantial [pull request](https://github.com/pieroproietti/penguins-eggs/pull/344) from [Marco](https://github.com/markoceri), he added an apposite exclude.list for the cryptedclone and corrected some errors. Cryptedclone can be useful for safely transferring an image of a server or desktop system over the Internet. 
 
