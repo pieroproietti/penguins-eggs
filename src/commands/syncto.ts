@@ -185,72 +185,47 @@ export default class Syncto extends Command {
      *
      */
     async luksCreate() {
-      Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
+      let maxSize="10G"
+      Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
+      await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
-      let totalSize = 0
-      console.log('I will extimate volume size from your private data:')
-      const users = await this.usersFill()
-      for (const user of users) {
-        if (user.login !== 'root' && user.saveIt) {
-          let utype = 'user   '
-          if (Number.parseInt(user.uid) < 1000) {
-            utype = 'service'
-          }
+      Utils.warning(`Set up encryption`)
+      await exec(`cryptsetup luksFormat ${this.luksFile}`)
+      
+      Utils.warning(`Open LUKS volume`)
+      await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
 
-          console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home} \tsize: ${Utils.formatBytes(user.size)} \tBytes: ${user.size} `)
-          totalSize += user.size
-        }
+      Utils.warning(`Creating squashfs containing /home`)
+      await exec(`mksquashfs /home /dev/mapper/${this.luksName}" -progress -noappend`)
+      await exec(`mksquashfs /etc/group /dev/mapper/${this.luksName}" -progress`)
+      await exec(`mksquashfs /etc/passwd /dev/mapper/${this.luksName}" -progress`)
+      await exec(`mksquashfs /etc/shadow /dev/mapper/${this.luksName}" -progress`)
+
+      Utils.warning(`Calculate used up space of squashfs`)
+      let size=+(await exec(`unsquashfs -s "/dev/mapper/${this.luksName}" | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`)).data
+      console.log(`Squashfs size: ${size} bytes`)
+      const blockSize=4096 
+      let blocks= +size / blockSize
+      if (blocks % blockSize !=0) {
+        blocks +=1
+        size= blocks * blockSize
       }
+      console.log(`Padded squashfs size on device: ${size} bytes`)
+      await exec(`truncate -s ${size} "/dev/mapper/${this.luksName}"`)      
+      
+      // Shrink LUKS volume
+      let luksBlockSize=512
+      let luksBlocks=size / luksBlockSize
+      console.log(`Shrinking LUKS volume to ${blocks} blocks of ${luksBlockSize} bytes`)
+      await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`)
 
-      console.log(`Total\t\t\t\t\t\t\tsize: ${Utils.formatBytes(totalSize)} \tBytes: ${totalSize}`)
+      // Get final size and shrink image file
+      let luksOffset=await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`)
+      let finalSize=luksOffset * luksBlockSize + size
+      await exec(`cryptsetup luksClose ${this.luksName}`)
+      await exec(`truncate -s ${finalSize} ${this.luksFile}`)
+      console.log(`Final size is ${finalSize} bytes)
 
-      /**
-         * after we get size, we can start building luks-volume
-         */
-      const binaryHeaderSize = 4_194_304
-      const volumeSize = totalSize * 1.5 + binaryHeaderSize
-
-      // Deciding blockSize and blocks
-      const blockSize = 512
-      let blocks = Math.ceil(volumeSize / blockSize)
-
-      // We need a minimum size of 32 MB
-      const minimunSize = 134_217_728 // 128 * 1024 *1024
-      if (totalSize < minimunSize) {}
-
-      if (blocks * blockSize < minimunSize) {
-        blocks = Math.ceil(minimunSize / blockSize)
-      }
-
-      Utils.warning(`Creating an encrypted file ${this.luksFile} blocks=${blocks}, block size: ${blockSize}, size: ${Utils.formatBytes(blocks * blockSize)}`)
-      await exec(`dd if=/dev/zero of=${this.luksFile} bs=${blockSize} count=${blocks}`, this.echo)
-
-      // find first unused device
-      const findFirstUnusedDevice = await exec('losetup -f', {echo: this.verbose, ignore: false, capture: true})
-      let firstUnusedDevice = ''
-      if (findFirstUnusedDevice.code !== 0) {
-        Utils.pressKeyToExit(`Error: ${findFirstUnusedDevice.code} ${findFirstUnusedDevice.data}`)
-      } else {
-        firstUnusedDevice = findFirstUnusedDevice.data.trim()
-      }
-
-      await exec(`losetup ${firstUnusedDevice} ${this.luksFile}`, this.echo)
-
-      // Utils.warning('Enter a large string of random text below to setup the pre-encryption')
-      await exec(`cryptsetup -y -v --type luks2 luksFormat  ${this.luksFile}`, Utils.setEcho(true))
-
-      // Utils.warning(`Enter the desired passphrase for the encrypted ${this.luksName} below`)
-      const crytoSetup = await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
-      if (crytoSetup.code !== 0) {
-        Utils.pressKeyToExit(`Error: ${crytoSetup.code} ${crytoSetup.data}`)
-      }
-
-      Utils.warning(`Formatting ${this.luksDevice} to ext2`)
-      const formatting = await exec(`sudo mkfs.ext2 ${this.luksDevice}`, this.echo)
-      if (formatting.code !== 0) {
-        Utils.pressKeyToExit(`Error: ${formatting.code} ${formatting.data}`)
-      }
-      // this.luksClose()
     }
 
     /**
