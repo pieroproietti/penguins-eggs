@@ -135,7 +135,7 @@ export default class Syncfrom extends Command {
     Utils.warning('Restoring crypted data')
     let cmd = `rsync -a ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
     if (destDelete) {
-      cmd = `rsync --archive --delete ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
+      cmd = `rsync --archive --delete ${this.luksMountpoint}/home/ ${this.rootDir}/home`
     }
 
     await exec(cmd, this.echo)
