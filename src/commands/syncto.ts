@@ -162,13 +162,16 @@ export default class Syncto extends Command {
     let dummy_fs = "/tmp/dummy_fs"
     await exec(`mkdir -p ${dummy_fs}/etc`)
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}/etc`)
-    await exec(`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -progress -noappend`)
+    let cmdSquashFsEtc =`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -noappend`
+    console.log(cmdSquashFsEtc)
+    await exec(cmdSquashFsEtc)
     await exec(`rm -rf ${dummy_fs}`)
 
     Utils.warning(`Appending /home`)
     let srcHome = "/home/"
-
-    await exec(`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory -progress `)
+    let cmdSquashFsHome =`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
+    console.log(cmdSquashFsHome)
+    await exec(cmdSquashFsHome)
 
     Utils.warning(`Calculate used up space of squashfs`)
     let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
