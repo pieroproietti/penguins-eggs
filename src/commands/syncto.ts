@@ -32,7 +32,7 @@ import {exec} from '../lib/utils'
 import {access} from 'fs/promises'
 import {constants} from 'fs'
 import Users from '../classes/users'
-import {use} from 'chai'
+import { collapseTextChangeRangesAcrossMultipleVersions } from 'typescript'
 
 /**
  *
@@ -106,85 +106,21 @@ export default class Syncto extends Command {
         this.luksFile = fileVolume
         this.luksDevice = `/dev/mapper/${this.luksName}`
         this.luksMountpoint = '/tmp/eggs-data'
-        if (!fs.existsSync(fileVolume)) {
-          await this.luksCreate()
-        } else {
-          Utils.warning(`LUKS volume: ${this.luksFile} exist, don't need create`)
-        }
-
-        if (fs.existsSync(fileVolume)) {
-          await this.luksOpen()
-          await this.backup(destDelete, excludeFiles)
-          await this.luksClose()
-        }
+        await this.luksCreate()
       } else {
         Utils.useRoot(this.id)
       }
     }
 
-    /**
-     *
-     */
-    async backup(destDelete = false, excludeFiles = false) {
-      if (this.verbose) {
-        Utils.warning('backup')
-      }
-
-      Utils.warning(`Saving users' data on ${this.luksFile}`)
-      const usersArray = await this.usersFill()
-      for (const element of usersArray) {
-        if (element.saveIt && fs.existsSync(element.home)) {
-          await exec(`mkdir -p ${this.luksMountpoint}/ROOT${element.home}`, this.echo)
-          const source = element.home
-          let dest = this.luksMountpoint + '/ROOT' + element.home
-          dest = dest.slice(0, Math.max(0, dest.lastIndexOf('/')))
-
-          let cmd = "rsync --archive"
-
-          if (excludeFiles) {
-            cmd += ` --exclude-from ${this.exclude_file}`
-          }
-
-          if (destDelete) {
-            cmd += ` --delete`
-          }
-
-          cmd += ` ${source} ${dest}`
-
-          await exec(cmd, this.echo)
-        }
-      }
-
-      Utils.warning(`Saving users' accounts on ${this.luksFile}`)
-      await exec(`mkdir -p ${this.luksMountpoint}/etc`, this.echo)
-      await exec(`cp /etc/passwd ${this.luksMountpoint}/etc`, this.echo)
-      await exec(`cp /etc/shadow ${this.luksMountpoint}/etc`, this.echo)
-      await exec(`cp /etc/group ${this.luksMountpoint}/etc`, this.echo)
-    }
-
-    /**
-    * usersFill
-    */
-    async usersFill(): Promise<Users[]> {
-      const usersArray = []
-      await access('/etc/passwd', constants.R_OK | constants.W_OK)
-      const passwd = fs.readFileSync('/etc/passwd', 'utf-8').split('\n')
-      for (const element of passwd) {
-        const line = element.split(':')
-        const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
-        await users.getValues()
-        if (users.password !== undefined) {
-          usersArray.push(users)
-        }
-      }
-
-      return usersArray
-    }
 
     /**
      *
      */
     async luksCreate() {
+      Utils.warning(`Erasing previous LUKS Volume on ${this.luksFile}`)
+      let clean=`rm -rf /tmp/${this.luksName}`
+      await exec(clean)
+
       let maxSize="10G"
       Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
       await exec(`truncate -s ${maxSize} ${this.luksFile}`)
@@ -195,37 +131,52 @@ export default class Syncto extends Command {
       Utils.warning(`Open LUKS volume`)
       await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
 
-      Utils.warning(`Creating squashfs containing /home`)
-      await exec(`mksquashfs /home /dev/mapper/${this.luksName}" -progress -noappend`)
-      await exec(`mksquashfs /etc/group /dev/mapper/${this.luksName}" -progress`)
-      await exec(`mksquashfs /etc/passwd /dev/mapper/${this.luksName}" -progress`)
-      await exec(`mksquashfs /etc/shadow /dev/mapper/${this.luksName}" -progress`)
+      let destHome="/home"
+      let destEtc = "/etc"
+
+      Utils.warning(`Create a dummy filesystem`)
+      let dummy_fs="/tmp/dummy_fs"
+      await exec(`mkdir -p ${dummy_fs}${destEtc}`)
+      await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}${destEtc}`)
+      //await exec(`mkdir -p ${dummy_fs}${destHome}`)
+      //await exec(`touch ${dummy_fs}${destHome}.keepIt`)
+      await exec(`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} -progress -noappend`)     
+      await exec(`rm -rf ${dummy_fs}`)
+
+      Utils.warning(`Appending /home`)
+      let srcHome="/home/"
+      await exec(`mksquashfs ${srcHome} /dev/mapper/${this.luksName} -keep-as-directory -progress -e /home/eggs -ef /etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone`)
 
       Utils.warning(`Calculate used up space of squashfs`)
-      let size=+(await exec(`unsquashfs -s "/dev/mapper/${this.luksName}" | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`)).data
-      console.log(`Squashfs size: ${size} bytes`)
-      const blockSize=4096 
-      let blocks= +size / blockSize
-      if (blocks % blockSize !=0) {
-        blocks +=1
-        size= blocks * blockSize
+      let cmd=`unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
+      let sizeString = (await exec(cmd, { echo: false, capture: true })).data
+      let size=parseInt(sizeString)
+      Utils.warning(`Squashfs size: ${size} bytes`)
+
+      const blockSize=131072
+      // get number of blocks and pad squashfs
+      let blocks=size / blockSize
+      if (blocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
+        blocks = Math.ceil(blocks); // Arrotonda all'intero successivo
+        size = blocks * blockSize; // Calcola la nuova dimensione
       }
-      console.log(`Padded squashfs size on device: ${size} bytes`)
-      await exec(`truncate -s ${size} "/dev/mapper/${this.luksName}"`)      
-      
+      Utils.warning(`Padded squashfs on device, size ${size} bytes, bloks: ${blocks} of ${blockSize} bytes `)
+
       // Shrink LUKS volume
       let luksBlockSize=512
       let luksBlocks=size / luksBlockSize
-      console.log(`Shrinking LUKS volume to ${blocks} blocks of ${luksBlockSize} bytes`)
+      Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
       await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`)
 
-      // Get final size and shrink image file
-      let luksOffset=await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`)
+      // # Get final size and shrink image file
+      let luksOffset=+(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, {echo:false, capture:true})).data
       let finalSize=luksOffset * luksBlockSize + size
       await exec(`cryptsetup luksClose ${this.luksName}`)
       await exec(`truncate -s ${finalSize} ${this.luksFile}`)
-      console.log(`Final size is ${finalSize} bytes)
+      Utils.warning(`Final size is ${finalSize} bytes`)
 
+      // Moving the file to the right place
+      await exec(`mv ${this.luksFile} /run/live/medium/live/`)
     }
 
     /**
