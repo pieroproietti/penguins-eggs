@@ -164,13 +164,13 @@ export default class Syncto extends Command {
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}/etc`)
     let cmdSquashFsEtc =`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -noappend`
     console.log(cmdSquashFsEtc)
-    await exec(cmdSquashFsEtc)
+    await exec(cmdSquashFsEtc, Utils.setEcho(true))
     await exec(`rm -rf ${dummy_fs}`)
 
     Utils.warning(`Appending /home`)
     let srcHome = "/home/"
     let cmdSquashFsHome =`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
-    console.log(cmdSquashFsHome)
+    console.log(cmdSquashFsHome, Utils.setEcho(true))
     await exec(cmdSquashFsHome)
 
     Utils.warning(`Calculate used up space of squashfs`)
