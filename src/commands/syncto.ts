@@ -145,7 +145,7 @@ export default class Syncto extends Command {
     //==========================================================================
     // Create squashfs
     //==========================================================================
-    Utils.titles(this.id + ' ' + this.argv + ' Create squashfs')
+    // Utils.titles(this.id + ' ' + this.argv + ' Create squashfs')
     const compressors = new Compressors()
     await compressors.populate()
 
