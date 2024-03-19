@@ -39,8 +39,6 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
-import { IfStatement } from 'typescript'
-import { cwd } from 'process'
 
 /**
  * Ovary:
@@ -337,13 +335,12 @@ export default class Ovary {
       if (cryptedclone) {
         let synctoCmd = `eggs syncto -f ${luksFile}`
 
-        // if (filters.cryptedclone) {
-        // synctoCmd += ' -e'
-        // }
-
+        if (filters.cryptedclone) {
+         synctoCmd += ' --exclusion' // from Marco
+        }
         await exec(synctoCmd, Utils.setEcho(true))
-        Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.nest}iso/live`)
-        await exec('sleep 10', Utils.setEcho(false))
+        Utils.warning(`Waiting 5s, before to move ${luksFile} in ${this.nest}iso/live`)
+        await exec('sleep 5', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
         await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }

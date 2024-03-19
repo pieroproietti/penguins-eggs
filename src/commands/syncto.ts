@@ -11,7 +11,6 @@
  * syncfrom (restore)
  * --include-from file.list // if only include is provided everything from the list if used to update the system.
  * --exclude-from file-list // it just updates the system
- * --delete
  *
 * If both options are provided then it works as a combination as provided in the link above.
 * https://stackoverflow.com/questions/19296190/rsync-include-from-vs-exclude-from-what-is-the-actual-difference
@@ -25,28 +24,27 @@
 import { Command, Flags } from '@oclif/core'
 import path from 'path'
 import fs from 'fs'
-import Utils from '../classes/utils'
 import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
+import Utils from '../classes/utils'
 
 /**
  *
  */
 export default class Syncto extends Command {
   static flags = {
-    delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
-    file: Flags.string({ char: 'f', description: 'file LUKS volume encrypted' }),
+    file: Flags.string({ char: 'f', description: 'file LUKS encrypted' }),
     exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.cryptedclone template' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
-  static description = 'saves users and user data in a LUKS volume inside the iso'
+  static description = 'Save users and users\' data ENCRYPTED'
   static examples = [
     'sudo eggs syncto',
     'sudo eggs syncto --file /path/to/fileLUKS',
-    'sudo eggs syncto -e'
+    'sudo eggs syncto --exclusion'
   ]
 
   verbose = false
@@ -67,10 +65,6 @@ export default class Syncto extends Command {
 
   settings = {} as Settings
 
-  nest = '/home/eggs'
-
-  compression = '-comp=xz'
-
 
   /**
    *
@@ -86,14 +80,9 @@ export default class Syncto extends Command {
 
     this.echo = Utils.setEcho(this.verbose)
 
-    let fileVolume = ''
+    let fileLuks = ''
     if (flags.file) {
-      fileVolume = flags.file
-    }
-
-    let destDelete = false
-    if (flags.delete) {
-      destDelete = true
+      fileLuks = flags.file
     }
 
     if (flags.exclusion) {
@@ -101,12 +90,12 @@ export default class Syncto extends Command {
     }
 
     if (Utils.isRoot()) {
-      if (fileVolume === '') {
-        fileVolume = '/tmp/luks-eggs-data'
+      if (fileLuks === '') {
+        fileLuks = '/tmp/luks-eggs-data'
       }
 
-      this.luksName = path.basename(fileVolume)
-      this.luksFile = fileVolume
+      this.luksFile = fileLuks
+      this.luksName = path.basename(this.luksFile)
       this.luksDevice = `/dev/mapper/${this.luksName}`
       this.luksMountpoint = '/tmp/eggs-data'
       await this.luksCreate()
@@ -131,13 +120,36 @@ export default class Syncto extends Command {
     Utils.warning(`Set up encryption`)
     await exec(`cryptsetup luksFormat ${this.luksFile}`)
 
-    Utils.warning(`Open LUKS volume`)
-    await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
+    //==========================================================================
+    // Open created LUKS volume
+    //==========================================================================
+    Utils.titles(this.id + ' ' + this.argv + ' Open LUKS volume')
 
+    let res=await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
+    if (res.code==0) {
+      console.log('device opened')
+    } else if (res.code==1) {
+      console.log('wrong parameters')
+    } else if (res.code==2) {
+      console.log('no permission (bad passphrase)')
+    } else if (res.code==3) {
+      console.log('out of memory')
+    } else if (res.code==4) {
+      console.log('wrong device specified')
+    } else if (res.code==5) {
+      console.log('device already exists or device is busy')
+    }
+    // wait until device is ready
+    await exec('udevadm settle', Utils.setEcho(false))
+    
+    //==========================================================================
+    // Create squashfs
+    //==========================================================================
+    Utils.titles(this.id + ' ' + this.argv + ' Create squashfs')
     const compressors = new Compressors()
     await compressors.populate()
 
-    // E un casino, confermo!
+    // E' orribile, confermo!
     this.settings = new Settings()
     let e = '' // exclude nest
     let c = '' // compression
@@ -154,22 +166,28 @@ export default class Syncto extends Command {
       }
       c = `-comp ${compression}`
     }
+
+    // Create dummy_root
+    let dummy_root = "/tmp/dummy_root"
+    await exec(`mkdir -p ${dummy_root}/etc`)
+    await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_root}/etc`)
+
+    Utils.warning(`Creating squashfs with /etc`)
+    let cmdSquashFsRoot =`mksquashfs ${dummy_root} /dev/mapper/${this.luksName} ${c} ${e} -noappend`
+    await exec(cmdSquashFsRoot, Utils.setEcho(true))
+
     let ef = ''  // exclude file
     if (this.excludeFiles) {
       ef = `-ef ${this.excludeFile}`
     }
 
-    Utils.warning(`Create a dummy filesystem for /etc`)
-    let dummy_fs = "/tmp/dummy_fs"
-    await exec(`mkdir -p ${dummy_fs}/etc`)
-    await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}/etc`)
-    let cmdSquashFsEtc =`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -noappend`
-    await exec(cmdSquashFsEtc, Utils.setEcho(true))
-
-    Utils.warning(`Appending /home`)
+    Utils.warning(`Appending /home to squashfs`)
     let cmdSquashFsHome =`mksquashfs /home /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
     await exec(cmdSquashFsHome, Utils.setEcho(true))
 
+    //==========================================================================
+    // Shrink LUKS volume
+    //==========================================================================
     Utils.warning(`Calculate used up space of squashfs`)
     let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
     let sizeString = (await exec(cmd, { echo: false, capture: true })).data
@@ -189,13 +207,13 @@ export default class Syncto extends Command {
     let luksBlockSize = 512
     let luksBlocks = size / luksBlockSize
     Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
-    await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`)
+    await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
     // # Get final size and shrink image file
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + size
-    await exec(`cryptsetup luksClose ${this.luksName}`)
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`)
+    await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(false))
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(false))
     Utils.warning(`Final size is ${finalSize} bytes`)
   }
 }
