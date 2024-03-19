@@ -59,7 +59,7 @@ export default async function networkCfg(this: Sequence) {
   if (this.network.addressType === 'dhcp') {
     if (await systemdCtl.isActive('resolvconf.service')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
-      await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
+      await exec(`ln -s usr/lib/systemd/resolv.conf /etc/resolv.conf`)
     } else {
       const file = this.installTarget + '/etc/resolv.conf'
       let content = '# created by eggs\n\n'
