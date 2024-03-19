@@ -194,11 +194,12 @@ export default class Ovary {
         }
       }
 
+      if (cryptedclone) {
       /**
        * cryptedclone
        */
-      if (cryptedclone) {
-        console.log('eggs will SAVE users and users\' data ENCRYPTED on LUKS volume within the live')
+      console.log('eggs will SAVE users and users\' data ENCRYPTED')
+        /*
         const users = await this.usersFill()
         for (const user of users) {
           if (user.saveIt) {
@@ -206,12 +207,15 @@ export default class Ovary {
             if (Number.parseInt(user.uid) < 1000) {
               utype = 'service'
             }
-            console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
+            //console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
             if (user.login !== 'root') {
               this.addRemoveExclusion(true, user.home)
             }
           }
         }
+        */
+
+      } else if (this.clone) {
         /**
          * clone
          * 
@@ -219,15 +223,15 @@ export default class Ovary {
          * real user when create a clone,
          * this is WRONG here we correct 
          */
-      } else if (this.clone) {
         this.settings.config.user_opt = 'live' // patch for humans 
         this.settings.config.user_opt_passwd = 'evolution'
         this.settings.config.root_passwd = 'evolution'
         Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
+
+      } else {
         /**
          * normal
          */
-      } else {
         Utils.warning('eggs will REMOVE users and users\' data from live')
       }
 
@@ -333,11 +337,11 @@ export default class Ovary {
       if (cryptedclone) {
         let synctoCmd = `eggs syncto -f ${luksFile}`
 
-        if (filters.cryptedclone) {
-          synctoCmd += ' -e'
-        }
+        // if (filters.cryptedclone) {
+        // synctoCmd += ' -e'
+        // }
 
-        await exec(`${synctoCmd}`, Utils.setEcho(true))
+        await exec(synctoCmd, Utils.setEcho(true))
         Utils.warning(`Waiting 10s, before to move ${luksFile} in ${this.nest}iso/live`)
         await exec('sleep 10', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
