@@ -69,6 +69,7 @@ export default class Install extends Command {
     let krillConfig = {} as IKrillConfig
     const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
     krillConfig = yaml.load(content) as IKrillConfig
+    /* removed
     if (custom !== undefined) {
       const fname = path.basename(custom)
       const url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
@@ -82,6 +83,8 @@ export default class Install extends Command {
         krillConfig = yaml.load(content) as IKrillConfig
       })
     }
+  }
+  end removed */
 
     // nointeractive
     const nointeractive = flags.nointeractive
