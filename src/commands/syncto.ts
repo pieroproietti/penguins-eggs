@@ -76,6 +76,8 @@ export default class Syncto extends Command {
    *
    */
   async run(): Promise<void> {
+    Utils.titles(this.id + ' ' + this.argv)
+
     const { flags } = await this.parse(Syncto)
 
     if (flags.verbose) {
@@ -135,7 +137,7 @@ export default class Syncto extends Command {
     const compressors = new Compressors()
     await compressors.populate()
 
-    // twisted, confirmed!
+    // E un casino, confermo!
     this.settings = new Settings()
     let e = '' // exclude nest
     let c = '' // compression
@@ -147,9 +149,8 @@ export default class Syncto extends Command {
         compression = compressors.standard()
       }
 
-      // Se non existe non lo metto!
-      if (fs.existsSync(this.settings.config.snapshot_mnt)) {
-        e = `-e ${this.settings.config.snapshot_mnt}`
+      if (fs.existsSync(this.settings.work_dir.workdir)) {
+        e = `-e ${this.settings.config.snapshot_dir}`
       }
       c = `-comp ${compression}`
     }
@@ -163,15 +164,11 @@ export default class Syncto extends Command {
     await exec(`mkdir -p ${dummy_fs}/etc`)
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_fs}/etc`)
     let cmdSquashFsEtc =`mksquashfs ${dummy_fs} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -noappend`
-    console.log(cmdSquashFsEtc)
     await exec(cmdSquashFsEtc, Utils.setEcho(true))
-    await exec(`rm -rf ${dummy_fs}`)
 
     Utils.warning(`Appending /home`)
-    let srcHome = "/home/"
-    let cmdSquashFsHome =`mksquashfs ${srcHome} /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
-    console.log(cmdSquashFsHome, Utils.setEcho(true))
-    await exec(cmdSquashFsHome)
+    let cmdSquashFsHome =`mksquashfs /home /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
+    await exec(cmdSquashFsHome, Utils.setEcho(true))
 
     Utils.warning(`Calculate used up space of squashfs`)
     let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
