@@ -23,6 +23,8 @@ import { exec } from '../../lib/utils'
  * - all: /etc/resolv.conf
  */
 export default async function networkCfg(this: Sequence) {
+  const systemdCtl = new Systemctl()
+
   /**
    * debian: /etc/network/interfaces
    */
@@ -40,26 +42,24 @@ export default async function networkCfg(this: Sequence) {
     }
     Utils.write(file, content)
 
-    // trixie use systemd-networkd
-    // const systemdCtl = new Systemctl()
-    // if (await systemdCtl.isActive('systemd-networkd.service')) {
-    //  await exec (`rm ${file}`)
-    // }
+    // trixie
+    if (await systemdCtl.isActive('systemd-networkd.service')) {
+      await exec (`rm ${file}`)
+    }
 
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
-    // ubuntu: netplan
+    // netplan: to do
   } else if (this.distro.familyId === 'arch') {
-    // arch: 
+    // arch: seem to work
   }
 
   /**
-   * THIS IS EXCLUDED ACTUALLY
-   * 
+   * resolv.conf
+   */
   if (this.network.addressType === 'dhcp') {
-    const systemdCtl = new Systemctl()
     if (await systemdCtl.isActive('resolvconf.service')) {
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
-      await exec(`ln -s /run/resolvconf/resolv.conf ${this.installTarget}/etc/resolv.conf`)
+      await exec(`ln -s usr/lib/systemd/resolv.conf /etc/resolv.conf`)
     } else {
       const file = this.installTarget + '/etc/resolv.conf'
       let content = '# created by eggs\n\n'
@@ -70,5 +70,4 @@ export default async function networkCfg(this: Sequence) {
       Utils.write(file, content)
     }
   }
-  */
 }

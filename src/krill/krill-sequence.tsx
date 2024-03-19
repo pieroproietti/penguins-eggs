@@ -203,7 +203,7 @@ export default class Sequence {
    luksMountpoint = `/mnt`
 
    // Clone (Uncrypted)
-   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
+   is_clone = fs.existsSync('penguins-eggs.d/is_clone')
 
    is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
 
