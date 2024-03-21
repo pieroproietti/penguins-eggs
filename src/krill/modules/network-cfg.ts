@@ -43,9 +43,9 @@ export default async function networkCfg(this: Sequence) {
     Utils.write(file, content)
 
     // trixie
-    if (await systemdCtl.isActive('systemd-networkd.service')) {
-      await exec (`rm ${file}`)
-    }
+    //if (await systemdCtl.isActive('systemd-networkd.service')) {
+    //  await exec (`rm ${file}`)
+    //}
 
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
