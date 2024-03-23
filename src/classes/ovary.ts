@@ -193,26 +193,10 @@ export default class Ovary {
       }
 
       if (cryptedclone) {
-      /**
-       * cryptedclone
-       */
-      console.log('eggs will SAVE users and users\' data ENCRYPTED')
-        /*
-        const users = await this.usersFill()
-        for (const user of users) {
-          if (user.saveIt) {
-            let utype = 'user   '
-            if (Number.parseInt(user.uid) < 1000) {
-              utype = 'service'
-            }
-            //console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
-            if (user.login !== 'root') {
-              this.addRemoveExclusion(true, user.home)
-            }
-          }
-        }
-        */
-
+        /**
+         * cryptedclone
+         */
+        console.log('eggs will SAVE users and users\' data ENCRYPTED')
       } else if (this.clone) {
         /**
          * clone
