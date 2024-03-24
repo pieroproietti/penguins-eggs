@@ -22,12 +22,14 @@
  * this should not be available by default
  */
 import { Command, Flags } from '@oclif/core'
-import path from 'path'
 import fs from 'fs'
 import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
+import yaml from 'js-yaml'
+import { IEggsConfig } from '../interfaces/index'
+const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
 /**
  *
@@ -53,13 +55,13 @@ export default class Syncto extends Command {
 
   privateName="eggs-private"
 
-  privateExt=".tar.gz.gpg"
-
-  privateFile=`${this.privateName}${this.privateExt}`
+  privateFile=`${this.privateName}`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
   applyExclude = false
+
+  _config = {} as IEggsConfig
 
   settings = {} as Settings
 
@@ -109,14 +111,51 @@ export default class Syncto extends Command {
     //==========================================================================
     Utils.titles(this.id + ' ' + this.argv)
 
+    const compressors = new Compressors()
+    await compressors.populate()
+    this.settings = new Settings()
+    let e = '' // exclude nest
+    let compression = compressors.fast()
+    if (await this.settings.load()) {
+      if (this.settings.config.compression==`max`) {
+        compression = compressors.max()
+      } else if (this.settings.config.compression==`standard`) {
+        compression = compressors.standard()
+      }
+    }
+    this._config = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IEggsConfig
+
     let ef = ''  // exclude file
     if (this.applyExclude) {
       ef = `-X ${this.excludeFile}`
     }
-    // uso: tar [OPZIONE...] [FILE]...
-    let cmd = `tar czvpf -e /home/eggs ${ef} /home /etc/group /etc/passwd /etc/shadow | gpg --symmetric --cipher-algo aes256 -o /tmp/${this.privateFile}`
-    Utils.warning(cmd)
-    await exec(cmd, Utils.setEcho(this.verbose))
+
+    let tar=`tar -cf /tmp/${this.privateFile}.tar --exclude=${this._config.snapshot_dir} ${ef}  /home /etc/group /etc/passwd /etc/shadow`
+    tar += ' | pv -p -b -t -e -r'
+    console.log(tar)
+    await exec(tar, Utils.setEcho(true))
+
+    let zstd=`zstd -c /tmp/${this.privateFile}.tar | pv -p -b -t -e -r > /tmp/${this.privateFile}.tar.zsd`
+    console.log(zstd)
+    await exec(zstd, Utils.setEcho(true))
+
+    let gpg=`openssl enc -aes256 -salt -in /tmp/${this.privateFile}.tar.zsd > /tmp/${this.privateFile}.tar.zsd.enc`
+    console.log(gpg)
+    await exec(gpg, Utils.setEcho(true))
+
+    let rm=`rm /tmp/${this.privateFile}.tar /tmp/${this.privateFile}.tar.zsd`
+    console.log(rm)
+    await exec(rm, Utils.setEcho(true))
+
+    if (! fs.existsSync(`${this._config.snapshot_mnt}iso/live/`)) {
+      let mkdir=`mkdir -p ${this._config.snapshot_mnt}iso/live`
+      console.log(mkdir)
+      await exec(mkdir, Utils.setEcho(true))
+    }
+
+    let mv=`mv /tmp/${this.privateFile}.tar.zsd.enc ${this._config.snapshot_mnt}iso/live`
+    console.log(mv)
+    await exec(mv, Utils.setEcho(true))
   }
 }
 
