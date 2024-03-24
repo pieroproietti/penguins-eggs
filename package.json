@@ -26,7 +26,6 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
-        "progress-stream": "^2.0.0",
         "react": "^18.2.0",
         "shelljs": "0.8.5",
         "systeminformation": "^5.21.24",

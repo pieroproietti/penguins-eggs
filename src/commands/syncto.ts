@@ -36,7 +36,7 @@ const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
  */
 export default class Syncto extends Command {
   static flags = {
-    file: Flags.string({ char: 'f', description: 'file LUKS encrypted' }),
+    file: Flags.string({ char: 'f', description: 'private-file encrypted' }),
     exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.cryptedclone template' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
@@ -45,7 +45,7 @@ export default class Syncto extends Command {
   static description = 'Save users and users\' data ENCRYPTED'
   static examples = [
     'sudo eggs syncto',
-    'sudo eggs syncto --file /path/to/fileLUKS',
+    'sudo eggs syncto --file /path/to/private-file',
     'sudo eggs syncto --exclusion'
   ]
 
@@ -53,9 +53,7 @@ export default class Syncto extends Command {
 
   echo = {}
 
-  privateName="eggs-private"
-
-  privateFile=`${this.privateName}`
+  privateFile="eggs-private"
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
@@ -80,7 +78,7 @@ export default class Syncto extends Command {
     this.echo = Utils.setEcho(this.verbose)
 
     if (flags.file) {
-      this.privateName = flags.file
+      this.privateFile = flags.file
     }
 
     this.applyExclude = true
@@ -132,29 +130,29 @@ export default class Syncto extends Command {
 
     let tar=`tar -cf /tmp/${this.privateFile}.tar --exclude=${this._config.snapshot_dir} ${ef}  /home /etc/group /etc/passwd /etc/shadow`
     tar += ' | pv -p -b -t -e -r'
-    console.log(tar)
+    //console.log(tar)
     await exec(tar, Utils.setEcho(true))
 
     let zstd=`zstd -c /tmp/${this.privateFile}.tar | pv -p -b -t -e -r > /tmp/${this.privateFile}.tar.zsd`
-    console.log(zstd)
+    //console.log(zstd)
     await exec(zstd, Utils.setEcho(true))
 
     let gpg=`openssl enc -aes256 -salt -in /tmp/${this.privateFile}.tar.zsd > /tmp/${this.privateFile}.tar.zsd.enc`
-    console.log(gpg)
+    //console.log(gpg)
     await exec(gpg, Utils.setEcho(true))
 
     let rm=`rm /tmp/${this.privateFile}.tar /tmp/${this.privateFile}.tar.zsd`
-    console.log(rm)
+    //console.log(rm)
     await exec(rm, Utils.setEcho(true))
 
     if (! fs.existsSync(`${this._config.snapshot_mnt}iso/live/`)) {
       let mkdir=`mkdir -p ${this._config.snapshot_mnt}iso/live`
-      console.log(mkdir)
+      //console.log(mkdir)
       await exec(mkdir, Utils.setEcho(true))
     }
 
     let mv=`mv /tmp/${this.privateFile}.tar.zsd.enc ${this._config.snapshot_mnt}iso/live`
-    console.log(mv)
+    //console.log(mv)
     await exec(mv, Utils.setEcho(true))
   }
 }

@@ -18,7 +18,7 @@ import {exec} from '../lib/utils'
 export default class Syncfrom extends Command {
   static flags = {
     delete: Flags.string({description: 'rsync --delete delete extraneous files from dest dirs'}),
-    file: Flags.string({char: 'f', description: 'file LUKS volume encrypted'}),
+    file: Flags.string({ char: 'f', description: 'file private encrypted' }),    
     help: Flags.help({char: 'h'}),
     rootdir: Flags.string({char: 'r', description: 'rootdir of the installed system, when used from live'}),
     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
@@ -27,7 +27,7 @@ export default class Syncfrom extends Command {
   static description = 'restore users and user data from a LUKS volumes'
   static examples = [
     'sudo eggs syncfrom',
-    'sudo eggs syncfrom --file /path/to/fileLUKS',
+    'sudo eggs syncfrom --file /path/to/private-file',
   ]
 
   verbose = false
@@ -36,13 +36,9 @@ export default class Syncfrom extends Command {
 
   rootDir = '/'
 
-  luksName = 'luks-eggs-data'
+  privateFile = 'eggs-private'
 
-  luksFile = `/run/live/medium/live/${this.luksName}`
 
-  luksDevice = `/dev/mapper/${this.luksName}`
-
-  luksMountpoint = '/tmp/eggs-data'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(Syncfrom)
@@ -53,9 +49,8 @@ export default class Syncfrom extends Command {
 
     this.echo = Utils.setEcho(this.verbose)
 
-    let fileVolume = ''
     if (flags.file) {
-      fileVolume = flags.file
+      this.privateFile = flags.file
     }
 
     let destDelete = false
@@ -72,35 +67,22 @@ export default class Syncfrom extends Command {
     }
 
     if (Utils.isRoot()) {
-      if (fileVolume === '') {
-        fileVolume = '/run/live/medium/live/luks-eggs-dada'
-      }
-
       if (!Utils.isLive()) {
         /**
          * WORKING FROM INSTALLED
          */
-        if (fs.existsSync(fileVolume)) {
-          this.luksName = path.basename(fileVolume)
-          this.luksFile = fileVolume
-          this.luksDevice = `/dev/mapper/${this.luksName}`
-          this.luksMountpoint = '/tmp/eggs-data'
-
+        if (fs.existsSync(this.privateFile)) {
           await this.restorePrivateData()
           if (await Utils.customConfirm('Your system was updated! Press a key to reboot')) {
             await exec('reboot')
           }
         } else {
-          Utils.pressKeyToExit(`Can't find ${this.luksFile}`)
+          Utils.pressKeyToExit(`Can't find ${this.privateFile}`)
         }
       } else {
         /**
          * WORKING FROM LIVE
          */
-        this.luksName = path.basename(fileVolume)
-        this.luksFile = fileVolume
-        this.luksDevice = `/dev/mapper/${this.luksName}`
-        this.luksMountpoint = '/tmp/eggs-data'
         await this.restorePrivateData()
       }
     } else {
@@ -113,12 +95,6 @@ export default class Syncfrom extends Command {
    * @param verbose
    */
   private async restorePrivateData(destDelete = false) {
-    if (!fs.existsSync(this.luksMountpoint)) {
-      await exec(`mkdir ${this.luksMountpoint}`, this.echo)
-    }
-
-    await this.luksOpen()
-
     /**
      * ONLY FROM LIVE
      * rm home, subst /etc/passwd, /etc/shadow, /etc/groups
@@ -126,58 +102,26 @@ export default class Syncfrom extends Command {
     if (Utils.isLive() && this.rootDir !== '/') {
       Utils.warning('Removing live user on destination system')
       await exec(`rm -rf ${this.rootDir}/home/*`, this.echo)
-      Utils.warning('Restoring accounts')
-      await exec(`cp ${this.luksMountpoint}/etc/passwd ${this.rootDir}/etc/`, this.echo)
-      await exec(`cp ${this.luksMountpoint}/etc/shadow ${this.rootDir}/etc/`, this.echo)
-      await exec(`cp ${this.luksMountpoint}/etc/group ${this.rootDir}/etc/`, this.echo)
     }
 
     Utils.warning('Restoring crypted data')
-    let cmd = `rsync -a ${this.luksMountpoint}/ROOT/ ${this.rootDir}/`
-    if (destDelete) {
-      cmd = `rsync --archive --delete ${this.luksMountpoint}/home/ ${this.rootDir}/home`
-    }
 
-    await exec(cmd, this.echo)
+    // Decrypt the file
+    let decrypt = `openssl enc -aes256 -d -salt -in /tmp/${this.privateFile}.tar.zsd.enc -out /tmp/${this.privateFile}.tar.zsd`;
+    await exec(decrypt, Utils.setEcho(true));
 
-    await this.luksClose()
-  }
+    // Decompress the file
+    let decompress = `zstd -d /tmp/${this.privateFile}.tar.zsd -o /tmp/${this.privateFile}.tar`;
+    await exec(decompress, Utils.setEcho(true));
 
-  /**
-   *
-   */
-  async luksOpen() {
-    if (!fs.existsSync(this.luksDevice)) {
-      Utils.warning(`LUKS open volume: ${this.luksName}`)
-      await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
-    } else {
-      Utils.warning(`LUKS volume: ${this.luksName} already open`)
-    }
+    // Extract the tar file
+    let extract = `tar -xf /tmp/${this.privateFile}.tar -C /`;
+    await exec(extract, Utils.setEcho(true));
 
-    if (!fs.existsSync(this.luksMountpoint)) {
-      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
-    }
+    // Remove the temporary files
+    let rm = `rm /tmp/${this.privateFile}.tar /tmp/${this.privateFile}.tar.zsd`;
+    await exec(rm, Utils.setEcho(true));
 
-    if (!Utils.isMountpoint(this.luksMountpoint)) {
-      Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, this.echo)
-    } else {
-      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
-    }
-  }
-
-  /**
-  *
-  */
-  async luksClose() {
-    if (Utils.isMountpoint(this.luksMountpoint)) {
-      await exec(`umount ${this.luksMountpoint}`, this.echo)
-    }
-
-    if (fs.existsSync(this.luksDevice)) {
-      Utils.warning(`LUKS close volume: ${this.luksName}`)
-      await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
-    }
   }
 }
 
