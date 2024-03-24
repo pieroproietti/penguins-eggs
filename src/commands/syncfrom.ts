@@ -108,21 +108,24 @@ export default class Syncfrom extends Command {
     Utils.warning('Restoring crypted data')
 
     // Decrypt the file
-    let decrypt = `openssl enc -aes256 -d -salt -in /tmp/${this.privateFile}.tar.zsd.enc -out /tmp/${this.privateFile}.tar.zsd`;
+    let decrypt = `openssl enc -aes256 -d -salt -in ${this.privateFile}.tar.zsd.enc -out /tmp/${this.privateName}.tar.zsd`;
     await exec(decrypt, Utils.setEcho(true));
+    let rmEnc = `rm ${this.privateFile}.tar.zsd.enc`
+    await exec(rmEnc, Utils.setEcho(true));
 
     // Decompress the file
-    let decompress = `zstd -d /tmp/${this.privateFile}.tar.zsd -o /tmp/${this.privateFile}.tar`;
+    let decompress = `zstd -d /tmp/${this.privateName}.tar.zsd -o /tmp/${this.privateName}.tar`;
     await exec(decompress, Utils.setEcho(true));
+    let rmZsd = `rm ${this.privateFile}.tar.zsd`
+    await exec(rmZsd, Utils.setEcho(true))
 
     // Extract the tar file
-    let extract = `tar -xf /tmp/${this.privateFile}.tar -C /`;
+    let extract = `tar -xf /tmp/${this.privateName}.tar -C ${this.rootDir}`
     await exec(extract, Utils.setEcho(true));
 
-    // Remove the temporary files
-    let rm = `rm /tmp/${this.privateFile}.tar /tmp/${this.privateFile}.tar.zsd`;
-    await exec(rm, Utils.setEcho(true));
-
+    // Remove the tar file
+    let rmTar = `rm /tmp/${this.privateName}.tar`
+    await exec(rmTar, Utils.setEcho(true))
   }
 }
 

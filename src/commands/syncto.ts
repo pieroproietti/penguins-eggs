@@ -53,9 +53,9 @@ export default class Syncto extends Command {
 
   echo = {}
 
-  privateName = 'eggs-private.tar.zsd.enc'
+  privateName = 'eggs-private'
 
-  privateFile = `/run/live/medium/live/${this.privateName}`
+  privateFile = `${this.privateName}`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
@@ -100,9 +100,9 @@ export default class Syncto extends Command {
    *
    */
   async privateCreate() {
-    if (fs.existsSync(`/tmp/${this.privateFile}`)) {
-      Utils.warning(`Erasing previous private data on /tmp/${this.privateFile}`)
-      let clean = `rm -rf /tmp/${this.privateFile}`
+    if (fs.existsSync(`/tmp/${this.privateFile}.tar.zsd.enc`)) {
+      Utils.warning(`Erasing previous private data on /tmp/${this.privateFile}.tar.zsd.enc`)
+      let clean = `rm -rf /tmp/${this.privateFile}.tar.zsd.enc`
       await exec(clean)
     }
 
