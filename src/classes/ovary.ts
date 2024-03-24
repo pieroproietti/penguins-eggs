@@ -39,6 +39,7 @@ import { access } from 'fs/promises'
 import { constants } from 'fs'
 import Users from './users'
 import CliAutologin from '../lib/cli-autologin'
+import { ProgramUpdateLevel } from 'typescript'
 
 /**
  * Ovary:
@@ -148,13 +149,7 @@ export default class Ovary {
 
     this.cryptedclone = cryptedclone
 
-    const luksName = 'luks-eggs-data'
-
-    const luksFile = `/tmp/${luksName}`
-
-    // let luksDevice = `/dev/mapper/${this.luksName}`
-
-    // let luksMountpoint = `/mnt`
+    const privateFile = 'eggs-private'
 
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
       const yolk = new Repo()
@@ -317,16 +312,16 @@ export default class Ovary {
       }
 
       if (cryptedclone) {
-        let synctoCmd = `eggs syncto -f ${luksFile}`
+        let synctoCmd = `eggs syncto -f ${privateFile}`
 
         if (filters.cryptedclone) {
          synctoCmd += ' --exclusion' // from Marco
         }
         await exec(synctoCmd, Utils.setEcho(true))
-        Utils.warning(`Waiting 5s, before to move ${luksFile} in ${this.nest}iso/live`)
-        await exec('sleep 5', Utils.setEcho(false))
-        Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
-        await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
+        // Utils.warning(`Waiting 5s, before to move ${privateFile} in ${this.nest}iso/live`)
+        // await exec('sleep 5', Utils.setEcho(false))
+        // Utils.warning(`moving ${privateFile} in ${this.nest}iso/live`)
+        // await exec(`mv ${privateFile} ${this.nest}iso/live`, this.echo)
       }
 
       const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')

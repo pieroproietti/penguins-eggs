@@ -130,29 +130,23 @@ export default class Syncto extends Command {
 
     let tar=`tar -cf /tmp/${this.privateFile}.tar --exclude=${this._config.snapshot_dir} ${ef}  /home /etc/group /etc/passwd /etc/shadow`
     tar += ' | pv -p -b -t -e -r'
-    //console.log(tar)
     await exec(tar, Utils.setEcho(true))
 
     let zstd=`zstd -c /tmp/${this.privateFile}.tar | pv -p -b -t -e -r > /tmp/${this.privateFile}.tar.zsd`
-    //console.log(zstd)
     await exec(zstd, Utils.setEcho(true))
 
     let gpg=`openssl enc -aes256 -salt -in /tmp/${this.privateFile}.tar.zsd > /tmp/${this.privateFile}.tar.zsd.enc`
-    //console.log(gpg)
     await exec(gpg, Utils.setEcho(true))
 
     let rm=`rm /tmp/${this.privateFile}.tar /tmp/${this.privateFile}.tar.zsd`
-    //console.log(rm)
     await exec(rm, Utils.setEcho(true))
 
     if (! fs.existsSync(`${this._config.snapshot_mnt}iso/live/`)) {
       let mkdir=`mkdir -p ${this._config.snapshot_mnt}iso/live`
-      //console.log(mkdir)
       await exec(mkdir, Utils.setEcho(true))
     }
 
     let mv=`mv /tmp/${this.privateFile}.tar.zsd.enc ${this._config.snapshot_mnt}iso/live`
-    //console.log(mv)
     await exec(mv, Utils.setEcho(true))
   }
 }
