@@ -5,22 +5,6 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
-/**
- *
- * syncfrom (restore)
- * --include-from file.list // if only include is provided everything from the list if used to update the system.
- * --exclude-from file-list // it just updates the system
- *
-* If both options are provided then it works as a combination as provided in the link above.
-* https://stackoverflow.com/questions/19296190/rsync-include-from-vs-exclude-from-what-is-the-actual-difference
-*
- * The same logic is applied for the syncto also.
- *
- * On top of all of this the --delete option
- * if needed to be passed so that everything else is removed, but this
- * this should not be available by default
- */
 import { Command, Flags } from '@oclif/core'
 import path from 'path'
 import fs from 'fs'
@@ -51,13 +35,15 @@ export default class Syncto extends Command {
 
   echo = {}
 
-  luksName = 'luks-eggs-backup'
+  luksName = 'volume'
 
-  luksFile = `/run/live/medium/live/${this.luksName}`
+  luksFile = `/tmp/${this.luksName}`
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksMountpoint = '/tmp/eggs-backup'
+  luksMountpoint = `/mnt/${this.luksName}`
+
+  luksSquashfs = `${this.luksName}.squashfs`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
@@ -90,14 +76,6 @@ export default class Syncto extends Command {
     }
 
     if (Utils.isRoot()) {
-      if (fileLuks === '') {
-        fileLuks = '/tmp/luks-eggs-data'
-      }
-
-      this.luksFile = fileLuks
-      this.luksName = path.basename(this.luksFile)
-      this.luksDevice = `/dev/mapper/${this.luksName}`
-      this.luksMountpoint = '/tmp/eggs-data'
       await this.luksCreate()
     } else {
       Utils.useRoot(this.id)
@@ -110,37 +88,39 @@ export default class Syncto extends Command {
    */
   async luksCreate() {
     Utils.warning(`Erasing previous LUKS Volume on ${this.luksFile}`)
-    let clean = `rm -rf /tmp/${this.luksName}`
+    let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
     let maxSize = "10G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
-    Utils.warning(`Set up encryption`)
-    await exec(`cryptsetup luksFormat ${this.luksFile}`)
+    Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
+    await exec(`cryptsetup luksFormat ${this.luksFile}`, Utils.setEcho(true))
 
     //==========================================================================
     // Open created LUKS volume
     //==========================================================================
     Utils.titles(this.id + ' ' + this.argv + ' Open LUKS volume')
 
-    let res=await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`)
-    if (res.code==0) {
-      console.log('device opened')
-    } else if (res.code==1) {
-      console.log('wrong parameters')
-    } else if (res.code==2) {
-      console.log('no permission (bad passphrase)')
-    } else if (res.code==3) {
-      console.log('out of memory')
-    } else if (res.code==4) {
-      console.log('wrong device specified')
-    } else if (res.code==5) {
-      console.log('device already exists or device is busy')
+    // open LUKS volume
+    await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+    await exec('udevadm settle', Utils.setEcho(true))
+
+    // formatta ext4 il volume
+    await exec(`mkfs.ext4 ${this.luksDevice}`, Utils.setEcho(true))
+
+    // mount LUKS volume
+    if (!fs.existsSync(this.luksMountpoint)) {
+      await exec(`mkdir -p ${this.luksMountpoint}`, Utils.setEcho(true))
     }
-    // wait until device is ready
-    await exec('udevadm settle', Utils.setEcho(false))
+    if (!Utils.isMountpoint(this.luksMountpoint)) {
+      Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))
+    } else {
+      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
+    }
+
     
     //==========================================================================
     // Create squashfs
@@ -173,7 +153,7 @@ export default class Syncto extends Command {
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_root}/etc`)
 
     Utils.warning(`Creating squashfs with /etc`)
-    let cmdSquashFsRoot =`mksquashfs ${dummy_root} /dev/mapper/${this.luksName} ${c} ${e} -noappend`
+    let cmdSquashFsRoot =`mksquashfs ${dummy_root} ${this.luksMountpoint}/${this.luksSquashfs} ${c} ${e} -noappend`
     await exec(cmdSquashFsRoot, Utils.setEcho(true))
 
     let ef = ''  // exclude file
@@ -182,14 +162,14 @@ export default class Syncto extends Command {
     }
 
     Utils.warning(`Appending /home to squashfs`)
-    let cmdSquashFsHome =`mksquashfs /home /dev/mapper/${this.luksName} ${c} ${e} ${ef} -keep-as-directory`
+    let cmdSquashFsHome =`mksquashfs /home ${this.luksMountpoint}/${this.luksSquashfs} ${c} ${e} ${ef} -keep-as-directory`
     await exec(cmdSquashFsHome, Utils.setEcho(true))
 
     //==========================================================================
     // Shrink LUKS volume
     //==========================================================================
     Utils.warning(`Calculate used up space of squashfs`)
-    let cmd = `unsquashfs -s /dev/mapper/${this.luksName} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
+    let cmd = `unsquashfs -s ${this.luksMountpoint}/${this.luksSquashfs} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
     let sizeString = (await exec(cmd, { echo: false, capture: true })).data
     let size = parseInt(sizeString)
     Utils.warning(`Squashfs size: ${size} bytes`)
@@ -209,12 +189,18 @@ export default class Syncto extends Command {
     Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
-    // # Get final size and shrink image file
+    // Get final size and shrink image file
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + size
-    await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(false))
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(false))
-    Utils.warning(`Final size is ${finalSize} bytes`)
+
+    // Unmount LUKS volume
+    await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
+
+    // Close LUKS volume
+    await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
+
+    // Shrink image file
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
 }
-
