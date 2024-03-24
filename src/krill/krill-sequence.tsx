@@ -194,13 +194,9 @@ export default class Sequence {
    distro = {} as IDistro
 
    // Crypted Clone
-   luksName = 'luks-eggs-data'
+   privateName = 'eggs-private'
 
-   luksFile = `/run/live/medium/live/${this.luksName}`
-
-   luksDevice = `/dev/mapper/${this.luksName}`
-
-   luksMountpoint = `/mnt`
+   privateFile = `/run/live/medium/live/${this.privateName}`
 
    // Clone (Uncrypted)
    is_clone = fs.existsSync('penguins-eggs.d/is_clone')
@@ -395,9 +391,10 @@ export default class Sequence {
           */
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
-            if (fs.existsSync(this.luksFile)) {
+            if (fs.existsSync(`${this.privateFile}.tar.zsd.enc`)) {
                percent = 0.55
-               let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
+               //let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.privateName}`
+               let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/`
                try {
                   await redraw(<Install message={message} percent={percent} spinner={true} />)
                   await exec(cmd, Utils.setEcho(true))
@@ -406,7 +403,7 @@ export default class Sequence {
                   await Utils.pressKeyToExit(cmd)
                }
             } else {
-               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)
+               await Utils.pressKeyToExit(`Cannot find private file ${this.privateFile}.tar.zsd.enc`)
             }
          }
 

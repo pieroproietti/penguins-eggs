@@ -36,8 +36,9 @@ export default class Syncfrom extends Command {
 
   rootDir = '/'
 
-  privateFile = 'eggs-private'
-
+  privateName = 'eggs-private'
+  
+  privateFile = `/run/live/medium/live/eggs-private`
 
 
   async run(): Promise<void> {

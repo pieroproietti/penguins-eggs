@@ -53,7 +53,9 @@ export default class Syncto extends Command {
 
   echo = {}
 
-  privateFile="eggs-private"
+  privateName = 'eggs-private.tar.zsd.enc'
+
+  privateFile = `/run/live/medium/live/${this.privateName}`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
