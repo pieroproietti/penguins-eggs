@@ -148,13 +148,9 @@ export default class Ovary {
 
     this.cryptedclone = cryptedclone
 
-    const luksName = 'luks-eggs-data'
+    const luksName = 'luks-volume'
 
     const luksFile = `/tmp/${luksName}`
-
-    // let luksDevice = `/dev/mapper/${this.luksName}`
-
-    // let luksMountpoint = `/mnt`
 
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
       const yolk = new Repo()
