@@ -35,7 +35,7 @@ export default class Syncto extends Command {
 
   echo = {}
 
-  luksName = 'volume'
+  luksName = 'luks-volume'
 
   luksFile = `/tmp/${this.luksName}`
 
@@ -43,7 +43,7 @@ export default class Syncto extends Command {
 
   luksMountpoint = `/mnt/${this.luksName}`
 
-  luksSquashfs = `${this.luksName}.squashfs`
+  privateSquashfs = `private.squashfs`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
 
@@ -153,7 +153,7 @@ export default class Syncto extends Command {
     await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_root}/etc`)
 
     Utils.warning(`Creating squashfs with /etc`)
-    let cmdSquashFsRoot =`mksquashfs ${dummy_root} ${this.luksMountpoint}/${this.luksSquashfs} ${c} ${e} -noappend`
+    let cmdSquashFsRoot =`mksquashfs ${dummy_root} ${this.luksMountpoint}/${this.privateSquashfs} ${c} ${e} -noappend`
     await exec(cmdSquashFsRoot, Utils.setEcho(true))
 
     let ef = ''  // exclude file
@@ -162,14 +162,14 @@ export default class Syncto extends Command {
     }
 
     Utils.warning(`Appending /home to squashfs`)
-    let cmdSquashFsHome =`mksquashfs /home ${this.luksMountpoint}/${this.luksSquashfs} ${c} ${e} ${ef} -keep-as-directory`
+    let cmdSquashFsHome =`mksquashfs /home ${this.luksMountpoint}/${this.privateSquashfs} ${c} ${e} ${ef} -keep-as-directory`
     await exec(cmdSquashFsHome, Utils.setEcho(true))
 
     //==========================================================================
     // Shrink LUKS volume
     //==========================================================================
     Utils.warning(`Calculate used up space of squashfs`)
-    let cmd = `unsquashfs -s ${this.luksMountpoint}/${this.luksSquashfs} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
+    let cmd = `unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
     let sizeString = (await exec(cmd, { echo: false, capture: true })).data
     let size = parseInt(sizeString)
     Utils.warning(`Squashfs size: ${size} bytes`)
@@ -200,7 +200,8 @@ export default class Syncto extends Command {
     await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
 
     // Shrink image file
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    //await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    //console.log(`truncate -s ${finalSize} ${this.luksFile}`)
     Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
 }
