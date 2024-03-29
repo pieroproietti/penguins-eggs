@@ -155,16 +155,17 @@ export default class Syncto extends Command {
     }
 
     let mkPrivateSquashfs =`mksquashfs \
-                                  /etc/passwd \
-                                  /etc/group \
-                                  /etc/shadow \
+                                  /etc/lightdm/lightdm.conf \
+                                  /etc/passwd \ # users
+                                  /etc/group \ # groups
+                                  /etc/shadow \ # passwords
                                   /home \
                                   ${this.luksMountpoint}/${this.privateSquashfs} \
                                   ${comp} \
                                   ${exclude} \
                                   ${exclude_file} \
-                                  -m \
-                                  -keep-as-directory \
+                                  -m \ 
+                                  -keep-as-directory \ 
                                   -noappend`
                                   
     mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)

@@ -124,6 +124,12 @@ export default class Syncfrom extends Command {
       let squashfsMountpoint = `/tmp/private.squashfs`
       await exec(`mkdir -p ${squashfsMountpoint}`, this.echo)
       await exec(`mount ${this.luksMountpoint}/private.squashfs ${squashfsMountpoint}`, this.echo)
+      // Rimozione dei file esistenti
+      await exec(`rm -rf ${this.rootDir}/etc/lightdm/lightdm.conf`, this.echo)      
+      await exec(`rm -rf ${this.rootDir}/etc/passwd`, this.echo)
+      await exec(`rm -rf ${this.rootDir}/etc/group`, this.echo)
+      await exec(`rm -rf ${this.rootDir}/etc/shadow`, this.echo)
+      await exec(`rm -rf ${this.rootDir}/home/*`, this.echo)
       await exec(`rsync -a ${squashfsMountpoint}/ ${this.rootDir}`, this.echo)      
     }
     await this.luksClose()
