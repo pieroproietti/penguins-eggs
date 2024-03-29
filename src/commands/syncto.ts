@@ -156,9 +156,9 @@ export default class Syncto extends Command {
 
     let mkPrivateSquashfs =`mksquashfs \
                                   /etc/lightdm/lightdm.conf \
-                                  /etc/passwd \ # users
-                                  /etc/group \ # groups
-                                  /etc/shadow \ # passwords
+                                  /etc/passwd \
+                                  /etc/group \
+                                  /etc/shadow \
                                   /home \
                                   ${this.luksMountpoint}/${this.privateSquashfs} \
                                   ${comp} \
