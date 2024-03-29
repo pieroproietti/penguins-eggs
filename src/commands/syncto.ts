@@ -18,7 +18,7 @@ import Utils from '../classes/utils'
  */
 export default class Syncto extends Command {
   static flags = {
-    file: Flags.string({ char: 'f', description: 'file LUKS encrypted' }),
+    file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
     exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.cryptedclone template' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
@@ -27,7 +27,7 @@ export default class Syncto extends Command {
   static description = 'Save users and users\' data ENCRYPTED'
   static examples = [
     'sudo eggs syncto',
-    'sudo eggs syncto --file /path/to/fileLUKS',
+    'sudo eggs syncto --file /path/to/luks-volume',
     'sudo eggs syncto --exclusion'
   ]
 
@@ -186,7 +186,7 @@ export default class Syncto extends Command {
     // Shrink LUKS volume
     let luksBlockSize = 512
     let luksBlocks = size / luksBlockSize
-    Utils.warning(`Shrinking LUKS volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
+    Utils.warning(`Shrinking luks-volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
     // Get final size and shrink image file

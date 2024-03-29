@@ -37,7 +37,6 @@
  *  - grubcfg:       grubcfg
  *  - bootloader:    bootloaded
  *  - packages:      removeInstaller
- *  - luksbootkeyfile:
  *  - plymouthcfg;
  *  - initramfscfg:  initramfscfg
  *  - initramfs:     initramfs
@@ -95,8 +94,6 @@ import grubcfg from './modules/grubcfg'
 import bootloader from './modules/bootloader'
 import packages from './modules/packages'
 import removeInstallerLink from './modules/remove-installer-link'
-// luksbootkeyfile:
-// plymouthcfg;
 import initramfsCfg from './modules/initramfs-cfg'
 import initramfs from './modules/initramfs'
 import delLiveUser from './modules/del-live-user'
@@ -194,7 +191,7 @@ export default class Sequence {
    distro = {} as IDistro
 
    // Crypted Clone
-   luksName = 'luks-eggs-data'
+   luksName = 'luks-volume'
 
    luksFile = `/run/live/medium/live/${this.luksName}`
 
@@ -406,7 +403,7 @@ export default class Sequence {
                   await Utils.pressKeyToExit(cmd)
                }
             } else {
-               await Utils.pressKeyToExit(`Cannot find LUKS file ${this.luksFile}`)
+               await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
             }
          }
 
