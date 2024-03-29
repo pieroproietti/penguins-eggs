@@ -125,14 +125,13 @@ export default class Syncto extends Command {
     //==========================================================================
     // Create squashfs
     //==========================================================================
-    // Utils.titles(this.id + ' ' + this.argv + ' Create squashfs')
+    Utils.warning(`Creating private.squashfs inside luks-volume`)
     const compressors = new Compressors()
     await compressors.populate()
 
-    // E' orribile, confermo!
+    // comp
+    let comp = ''
     this.settings = new Settings()
-    let e = '' // exclude nest
-    let c = '' // compression
     if (await this.settings.load()) {
       let compression = compressors.fast()
       if (this.settings.config.compression==`max`) {
@@ -140,30 +139,34 @@ export default class Syncto extends Command {
       } else if (this.settings.config.compression==`standard`) {
         compression = compressors.standard()
       }
-
-      if (fs.existsSync(this.settings.work_dir.workdir)) {
-        e = `-e ${this.settings.config.snapshot_dir}`
-      }
-      c = `-comp ${compression}`
+      comp = `-comp ${compression}`
     }
 
-    // Create dummy_root
-    let dummy_root = "/tmp/dummy_root"
-    await exec(`mkdir -p ${dummy_root}/etc`)
-    await exec(`cp /etc/group /etc/passwd /etc/shadow ${dummy_root}/etc`)
+    // exclude /home/eggs
+    let exclude = ''
+    if (fs.existsSync(this.settings.work_dir.workdir)) {
+      exclude = `-e ${this.settings.config.snapshot_dir}`
+    }
 
-    Utils.warning(`Creating squashfs with /etc`)
-    let cmdSquashFsRoot =`mksquashfs ${dummy_root} ${this.luksMountpoint}/${this.privateSquashfs} ${c} ${e} -noappend`
-    await exec(cmdSquashFsRoot, Utils.setEcho(true))
-
-    let ef = ''  // exclude file
+    // exclude fil
+    let exclude_file = ''
     if (this.excludeFiles) {
-      ef = `-ef ${this.excludeFile}`
+      exclude_file = `-ef ${this.excludeFile}`
     }
 
-    Utils.warning(`Appending /home to squashfs`)
-    let cmdSquashFsHome =`mksquashfs /home ${this.luksMountpoint}/${this.privateSquashfs} ${c} ${e} ${ef} -keep-as-directory`
-    await exec(cmdSquashFsHome, Utils.setEcho(true))
+    let mkPrivateSfs =`mksquashfs /etc/passwd \
+                                  /etc/group \
+                                  /etc/shadow \
+                                  /home \
+                                  ${this.luksMountpoint}/${this.privateSquashfs} \
+                                  ${comp} \
+                                  ${exclude} \
+                                  ${exclude_file} \
+                                  -m \
+                                  -noappend`
+                                  
+    mkPrivateSfs=mkPrivateSfs.replace(/\s\s+/g, ` `)
+    await exec(mkPrivateSfs, Utils.setEcho(true))
 
     //==========================================================================
     // Shrink LUKS volume
