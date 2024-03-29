@@ -91,7 +91,7 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "10G"
+    let maxSize = "5G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
@@ -154,7 +154,8 @@ export default class Syncto extends Command {
       exclude_file = `-ef ${this.excludeFile}`
     }
 
-    let mkPrivateSfs =`mksquashfs /etc/passwd \
+    let mkPrivateSquashfs =`mksquashfs \
+                                  /etc/passwd \
                                   /etc/group \
                                   /etc/shadow \
                                   /home \
@@ -163,10 +164,11 @@ export default class Syncto extends Command {
                                   ${exclude} \
                                   ${exclude_file} \
                                   -m \
+                                  -keep-as-directory \
                                   -noappend`
                                   
-    mkPrivateSfs=mkPrivateSfs.replace(/\s\s+/g, ` `)
-    await exec(mkPrivateSfs, Utils.setEcho(true))
+    mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
+    await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
     //==========================================================================
     // Shrink LUKS volume
