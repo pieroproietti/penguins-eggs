@@ -120,9 +120,11 @@ export default class Syncfrom extends Command {
     await this.luksOpen()
 
     if (Utils.isLive() && this.rootDir !== '/') {
-
       Utils.warning('Restoring crypted data')
-      await exec(`unsquash -f -d  ${this.rootDir} ${this.luksMountpoint}/private.squashfs`, this.echo)
+      let squashfsMountpoint = `/tmp/private.squashfs`
+      await exec(`mkdir -p ${squashfsMountpoint}`, this.echo)
+      await exec(`mount ${this.luksMountpoint}/private.squashfs ${squashfsMountpoint}`, this.echo)
+      await exec(`rsync -a ${squashfsMountpoint}/ ${this.rootDir}`, this.echo)      
     }
     await this.luksClose()
   }
