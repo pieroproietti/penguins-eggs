@@ -173,7 +173,7 @@ export default class Syncto extends Command {
     await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc/lightdm/`, this.echo)  // lightdm  
 
     let mkPrivateSquashfs =`mksquashfs \
-                                  /tmp/tmpfs/ \
+                                  /tmp/tmpfs/etc \
                                   /home \
                                   ${this.luksMountpoint}/${this.privateSquashfs} \
                                   ${comp} \
