@@ -131,7 +131,7 @@ export default class Syncfrom extends Command {
 
       // unsquashfs
       const cmd = `unsquashfs -d ${this.rootDir} -f ${this.luksMountpoint}/private.squashfs`
-      await exec(cmd, this.echo)
+      await exec(cmd, Utils.setEcho(true))
     }
     await this.luksClose()
   }
