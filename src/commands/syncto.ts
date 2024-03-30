@@ -19,7 +19,7 @@ import Utils from '../classes/utils'
 export default class Syncto extends Command {
   static flags = {
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
-    exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.cryptedclone template' }),
+    exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.d/clone.list' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -45,7 +45,7 @@ export default class Syncto extends Command {
 
   privateSquashfs = `private.squashfs`
 
-  excludeFile = '/etc/penguins-eggs.d/exclude.list.d/exclude.list.cryptedclone'
+  excludeFile = '/etc/penguins-eggs.d/exclude.list.d/clone.list'
 
   excludeFiles = false
 
@@ -91,7 +91,7 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "10G"
+    let maxSize = "2G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
