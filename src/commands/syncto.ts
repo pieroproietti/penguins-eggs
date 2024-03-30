@@ -92,7 +92,7 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "2G"
+    let maxSize = "10G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
@@ -190,29 +190,35 @@ export default class Syncto extends Command {
     // Shrink LUKS volume
     //==========================================================================
     Utils.warning(`Calculate used up space of squashfs`)
+
+    // Get squashfs size
     let cmd = `unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
     let sizeString = (await exec(cmd, { echo: false, capture: true })).data
-    let size = parseInt(sizeString)
-    Utils.warning(`Squashfs size: ${size} bytes`)
+    let squashfsSize = parseInt(sizeString)
+    Utils.warning(`Squashfs size: ${squashfsSize} bytes`)
 
-    const blockSize = 131072
+    // Get squashfs block size
+    cmd=`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Block size"| sed -e 's/.*size //' -e 's/ .*//'`
+    let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
+    const squashfsBlockSize = parseInt(blockSizeString)
+
     // get number of blocks and pad squashfs
-    let blocks = size / blockSize
-    if (blocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
-      blocks = Math.ceil(blocks); // Arrotonda all'intero successivo
-      size = blocks * blockSize; // Calcola la nuova dimensione
+    let squashfsBlocks = squashfsSize / squashfsBlockSize
+    if (squashfsBlocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
+      squashfsBlocks = Math.ceil(squashfsBlocks); // Arrotonda all'intero successivo
+      squashfsSize = squashfsBlocks * squashfsBlockSize; // Calcola la nuova dimensione
     }
-    Utils.warning(`Padded squashfs on device, size ${size} bytes, bloks: ${blocks} of ${blockSize} bytes `)
+    Utils.warning(`Padded squashfs on device, size ${squashfsSize} bytes, bloks: ${squashfsBlocks} of ${squashfsBlockSize} bytes `)
 
     // Shrink LUKS volume
     let luksBlockSize = 512
-    let luksBlocks = size / luksBlockSize
+    let luksBlocks = squashfsSize / luksBlockSize
     Utils.warning(`Shrinking luks-volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
     // Get final size and shrink image file
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
-    let finalSize = luksOffset * luksBlockSize + size
+    let finalSize = luksOffset * luksBlockSize + squashfsSize
   
 
     // Unmount LUKS volume
@@ -222,7 +228,7 @@ export default class Syncto extends Command {
     await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
 
     // Shrink image file
-    // await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
     Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
 }

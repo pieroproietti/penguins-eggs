@@ -21,9 +21,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.39
-* again on syncto e syncfrom: this time I decided to have a 2GB luks-volume inside the iso, under `/live`. Within the LUKS volume is created `private.squashfs` containing the data from `/home` and some significant `/etc` files;
+* again on syncto e syncfrom: this time I decided to create until 10GB luks-volume inside the iso, under `/live`. Within the LUKS volume is created `private.squashfs` containing the data from `/home` and some significant `/etc` files;
+* After the `private.squashfs` file has been created, the strict necessary size of the luks-volume file to contain it is determined. At this point `luks-volume` is truncated to the minimum size.
 * Using krill for installation, the passfrase will be requested and the existing private data copied;
-* It remains only to examine the possibility of truncating the `luks-volume` to the size of the `private.squashfs` file. I have made a few attempts without success.
 
 # eggs-9.6.38
 * syncto e syncfrom [#347](https://github.com/pieroproietti/penguins-eggs/issues/347) I have rewritten - almost completely - the syncto command, there are again problems I was unable to create a complete ISO filled with luks-eggs-data, but the command work and create it. Waiting suggestions, I decided to release it;
