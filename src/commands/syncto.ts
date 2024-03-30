@@ -92,7 +92,7 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "5G"
+    let maxSize = "2G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate -s ${maxSize} ${this.luksFile}`)
 
@@ -169,13 +169,11 @@ export default class Syncto extends Command {
     await exec(`cp -a /etc/passwd /tmp/tmpfs/etc`, this.echo)
     await exec(`cp -a /etc/group /tmp/tmpfs/etc`, this.echo)
     await exec(`cp -a /etc/shadow /tmp/tmpfs/etc`, this.echo)
-
-    // lightdm
-    await exec(`mkdir -p /tmp/tmpfs/etc/lightdm`, this.echo)
-    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc`, this.echo)
+    await exec(`mkdir -p /tmp/tmpfs/etc/lightdm`, this.echo)                          // lightdm
+    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc/lightdm/`, this.echo)  // lightdm  
 
     let mkPrivateSquashfs =`mksquashfs \
-                                  /tmp/tmpfs \
+                                  /tmp/tmpfs/ \
                                   /home \
                                   ${this.luksMountpoint}/${this.privateSquashfs} \
                                   ${comp} \
@@ -215,8 +213,7 @@ export default class Syncto extends Command {
     // Get final size and shrink image file
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + size
-
-    
+  
 
     // Unmount LUKS volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
@@ -225,7 +222,7 @@ export default class Syncto extends Command {
     await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
 
     // Shrink image file
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    // await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
     Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
 }
