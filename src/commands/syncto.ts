@@ -12,6 +12,7 @@ import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
+import { escape } from 'querystring'
 
 /**
  *
@@ -104,7 +105,11 @@ export default class Syncto extends Command {
     Utils.titles(this.id + ' ' + this.argv + ' Open LUKS volume')
 
     // open LUKS volume
-    await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+    let code=(await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))).code
+    if (code != 0) {
+      Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
+      process.exit(code)
+    }
     await exec('udevadm settle', Utils.setEcho(true))
 
     // formatta ext4 il volume
@@ -116,16 +121,21 @@ export default class Syncto extends Command {
     }
     if (!Utils.isMountpoint(this.luksMountpoint)) {
       Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))
+      let code = (await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))).code
+      if (code != 0) {
+        Utils.error(`mount ${this.luksDevice} ${this.luksMountpoint} failed`)
+        process.exit(code)
+      }
     } else {
-      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
+      Utils.warning(`mounting volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}, cleaning`)
+      await exec(`rm -f ${this.privateSquashfs}`, Utils.setEcho(true))
     }
 
     
     //==========================================================================
     // Create squashfs
     //==========================================================================
-    Utils.warning(`Creating private.squashfs inside luks-volume`)
+    Utils.warning(`Creating private.squashfs`)
     const compressors = new Compressors()
     await compressors.populate()
 
@@ -148,17 +158,24 @@ export default class Syncto extends Command {
       exclude = `-e ${this.settings.config.snapshot_dir}`
     }
 
-    // exclude fil
+    // exclude file
     let exclude_file = ''
     if (this.excludeFiles) {
       exclude_file = `-ef ${this.excludeFile}`
     }
 
+    // creato tmpfs per /etc/
+    await exec(`mkdir -p /tmp/tmpfs/etc`, this.echo)
+    await exec(`cp -a /etc/passwd /tmp/tmpfs/etc`, this.echo)
+    await exec(`cp -a /etc/group /tmp/tmpfs/etc`, this.echo)
+    await exec(`cp -a /etc/shadow /tmp/tmpfs/etc`, this.echo)
+
+    // lightdm
+    await exec(`mkdir -p /tmp/tmpfs/etc/lightdm`, this.echo)
+    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc`, this.echo)
+
     let mkPrivateSquashfs =`mksquashfs \
-                                  /etc/lightdm/lightdm.conf \
-                                  /etc/passwd \
-                                  /etc/group \
-                                  /etc/shadow \
+                                  /tmp/tmpfs \
                                   /home \
                                   ${this.luksMountpoint}/${this.privateSquashfs} \
                                   ${comp} \
@@ -199,6 +216,8 @@ export default class Syncto extends Command {
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + size
 
+    
+
     // Unmount LUKS volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
 
@@ -206,8 +225,7 @@ export default class Syncto extends Command {
     await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
 
     // Shrink image file
-    //await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
-    //console.log(`truncate -s ${finalSize} ${this.luksFile}`)
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
     Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
 }

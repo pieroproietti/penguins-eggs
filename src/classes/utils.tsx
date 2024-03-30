@@ -625,6 +625,19 @@ export default class Utils {
    }
 
    /**
+    * 
+    * @param device 
+    * @returns 
+    */
+   static isBlockDevice(device = ''): boolean { // /dev/sda
+      const cmd = `lsblk -d -o name | grep ${device}`
+      const result: number = shx.exec(cmd, { silent: true }).code
+      return result === 0
+   }
+      
+
+
+   /**
     * return true if eggs run as root
     * @returns isRoot
     */
