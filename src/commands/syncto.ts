@@ -42,7 +42,7 @@ export default class Syncto extends Command {
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksMountpoint = `/mnt/${this.luksName}`
+  luksMountpoint = `/tmp/mountpoint/${this.luksName}`
 
   privateSquashfs = `private.squashfs`
 
