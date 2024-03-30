@@ -178,12 +178,10 @@ export default class Syncto extends Command {
                               ${comp} \
                               ${exclude_nest} \
                               ${exclude_file} \
-                              -m \ 
                               -keep-as-directory \ 
                               -noappend`
-    mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
-    console.log(mkPrivateSquashfs)
 
+    mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
     //==========================================================================
@@ -234,7 +232,8 @@ export default class Syncto extends Command {
 
     // Shrink file
     // await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
-    Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}, you can shrink it with truncate -s ${finalSize} ${this.luksFile}`)
+    Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}`)
+    Utils.warning(`you can try to shrink it with truncate -s ${finalSize} ${this.luksFile}`)
   }
 }
 
