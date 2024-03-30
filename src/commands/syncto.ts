@@ -19,7 +19,7 @@ import Utils from '../classes/utils'
 export default class Syncto extends Command {
   static flags = {
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
-    exclusion: Flags.boolean({ char: 'e', description: 'exclude files using exclude.list.d/clone.list' }),
+    exclusion: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/clone.list' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -152,9 +152,9 @@ export default class Syncto extends Command {
     }
 
     // exclude /home/eggs
-    let exclude = ''
+    let exclude_nest = ''
     if (fs.existsSync(this.settings.work_dir.workdir)) {
-      exclude = `-e ${this.settings.config.snapshot_dir}`
+      exclude_nest = `-e ${this.settings.config.snapshot_dir}`
     }
 
     // exclude file
@@ -172,17 +172,18 @@ export default class Syncto extends Command {
     await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc/lightdm/`, this.echo)  // lightdm  
 
     let mkPrivateSquashfs =`mksquashfs \
-                                  /tmp/tmpfs/etc \
-                                  /home \
-                                  ${this.luksMountpoint}/${this.privateSquashfs} \
-                                  ${comp} \
-                                  ${exclude} \
-                                  ${exclude_file} \
-                                  -m \ 
-                                  -keep-as-directory \ 
-                                  -noappend`
-                                  
+                              /tmp/tmpfs/etc \
+                              /home \
+                              ${this.luksMountpoint}/${this.privateSquashfs} \
+                              ${comp} \
+                              ${exclude_nest} \
+                              ${exclude_file} \
+                              -m \ 
+                              -keep-as-directory \ 
+                              -noappend`
     mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
+    console.log(mkPrivateSquashfs)
+
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
     //==========================================================================
@@ -204,28 +205,43 @@ export default class Syncto extends Command {
 
     // get number of blocks and pad squashfs
     let squashfsBlocks = squashfsSize / squashfsBlockSize
-    if (squashfsBlocks % 1 != 0) { // Se il numero di blocchi non è un numero intero
-      squashfsBlocks = Math.ceil(squashfsBlocks); // Arrotonda all'intero successivo
-      squashfsSize = squashfsBlocks * squashfsBlockSize; // Calcola la nuova dimensione
+    if (squashfsBlocks % 1 != 0) { 
+      squashfsBlocks = Math.ceil(squashfsBlocks)
+      squashfsSize = squashfsBlocks * squashfsBlockSize
     }
     Utils.warning(`Padded squashfs on device, size ${squashfsSize} bytes, bloks: ${squashfsBlocks} of ${squashfsBlockSize} bytes `)
 
     // Shrink LUKS volume
     let luksBlockSize = 512
     let luksBlocks = squashfsSize / luksBlockSize
+    if (luksBlocks % 1 != 0) { 
+      luksBlocks = Math.ceil(luksBlocks)
+    }
+
     Utils.warning(`Shrinking luks-volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
     // Get final size and shrink luks-volume
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + squashfsSize
-    Utils.warning(`Final size: ${finalSize} bytes`)
+    Utils.warning(`Final size is ${bytesToGB(finalSize)}`)
 
     // Unmount luks-volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
 
+    // close luks-volume
+    await exec(`cryptsetup close ${this.luksName}`, Utils.setEcho(true))
+
     // Shrink file
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
-    Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
+    // await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}, you can shrink it with truncate -s ${finalSize} ${this.luksFile}`)
   }
+}
+
+/**
+ * Convert bytes to gigabytes
+ */
+function bytesToGB(bytes: number): string {
+  const gigabytes = bytes / 1073741824;
+  return gigabytes.toFixed(2) + ' GB';
 }
