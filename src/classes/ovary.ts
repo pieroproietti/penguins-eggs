@@ -233,32 +233,33 @@ export default class Ovary {
        * exclude.list
        */
       let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
-      let excludeListTemplate = excludeListTemplateDir + 'exclude.list.template'
+      let excludeListTemplate = excludeListTemplateDir + 'master.list'
       if (!fs.existsSync(excludeListTemplate)) {
         Utils.warning('Cannot find: ' + excludeListTemplate)
         process.exit(1)
       }
       let excludeCustom = ''
-      let excludeDev = ''
-      let excludeHomes = ''
+      let excludeClone = ''
+      let excludeDevHome = ''
       let excludeUsr = ''
       if (filters.custom) {
-        excludeCustom = fs.readFileSync(`${excludeListTemplateDir}exclude.list.custom`, 'utf8')
+        excludeCustom = fs.readFileSync(`${excludeListTemplateDir}custom.list`, 'utf8')
       }
+      if (filters.custom) {
+        excludeClone = fs.readFileSync(`${excludeListTemplateDir}clone.list`, 'utf8')
+      }
+
       if (filters.dev) {
-        excludeDev = `home/${await Utils.getPrimaryUser()}/*`
-      }
-      if (filters.homes) {
-        excludeHomes = fs.readFileSync(`${excludeListTemplateDir}exclude.list.homes`, 'utf8')
+        excludeDevHome = `home/${await Utils.getPrimaryUser()}/*`
       }
       if (filters.usr) {
-        excludeUsr = fs.readFileSync(`${excludeListTemplateDir}exclude.list.usr`, 'utf8')
+        excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
       }
       let view = {
-        exclude_list_custom: excludeCustom,
-        exclude_list_dev: excludeDev,
-        exclude_list_homes: excludeHomes,
-        exclude_list_usr: excludeUsr
+        custom_list: excludeCustom,
+        clone_list: excludeClone,
+        dev_home_list: excludeDevHome,
+        usr_list: excludeUsr
       }
       const template = fs.readFileSync(excludeListTemplate, 'utf8')
       fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
@@ -330,8 +331,7 @@ export default class Ovary {
 
       if (cryptedclone) {
         let synctoCmd = `eggs syncto -f ${luksFile}`
-
-        if (filters.cryptedclone) {
+        if (filters.clone) {
          synctoCmd += ' --exclusion' // from Marco
         }
         await exec(synctoCmd, Utils.setEcho(true))

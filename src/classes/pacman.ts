@@ -444,11 +444,7 @@ export default class Pacman {
 
     // creazione cartella exclude.list.d
     execSync(`mkdir -p /etc/penguins-eggs.d/exclude.list.d`)
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.cryptedclone'), '/etc/penguins-eggs.d/exclude.list.d')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.template'), '/etc/penguins-eggs.d/exclude.list.d')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.custom'), '/etc/penguins-eggs.d/exclude.list.d')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.homes'), '/etc/penguins-eggs.d/exclude.list.d')
-    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.usr'), '/etc/penguins-eggs.d/exclude.list.d')
+    shx.cp(path.resolve(__dirname, '../../conf/exclude.list.d/*'), '/etc/penguins-eggs.d/exclude.list.d')
 
     await this.configurationFresh()
   }
