@@ -42,7 +42,7 @@ export default class Syncfrom extends Command {
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksMountpoint = `/tmp/mountpoint/${this.luksName}`
+  luksMountpoint = `/tmp/mnt/${this.luksName}`
 
   async run(): Promise<void> {
     const {flags} = await this.parse(Syncfrom)
