@@ -12,7 +12,6 @@ import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
-import { escape } from 'querystring'
 
 /**
  *
@@ -42,7 +41,7 @@ export default class Syncto extends Command {
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksMountpoint = `/tmp/mountpoint/${this.luksName}`
+  luksMountpoint = `/tmp/mnt/${this.luksName}`
 
   privateSquashfs = `private.squashfs`
 
@@ -201,6 +200,7 @@ export default class Syncto extends Command {
     cmd=`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Block size"| sed -e 's/.*size //' -e 's/ .*//'`
     let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
     const squashfsBlockSize = parseInt(blockSizeString)
+    Utils.warning(`Squashfs block size: ${squashfsBlockSize} bytes`)
 
     // get number of blocks and pad squashfs
     let squashfsBlocks = squashfsSize / squashfsBlockSize
@@ -216,18 +216,15 @@ export default class Syncto extends Command {
     Utils.warning(`Shrinking luks-volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
-    // Get final size and shrink image file
+    // Get final size and shrink luks-volume
     let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
     let finalSize = luksOffset * luksBlockSize + squashfsSize
-  
+    Utils.warning(`Final size: ${finalSize} bytes`)
 
-    // Unmount LUKS volume
+    // Unmount luks-volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
 
-    // Close LUKS volume
-    await exec(`cryptsetup luksClose ${this.luksName}`, Utils.setEcho(true))
-
-    // Shrink image file
+    // Shrink file
     await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
     Utils.warning(`${this.luksFile} final size is ${finalSize} bytes`)
   }
