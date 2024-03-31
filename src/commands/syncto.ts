@@ -16,6 +16,8 @@ import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
 
+import * as readline from 'readline'
+
 /**
  *
  */
@@ -97,12 +99,12 @@ export default class Syncto extends Command {
     await exec(`truncate --size ${luksMaxSize} ${this.luksFile}`, this.echo)
 
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
-    await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true)) 
+    await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true))
     console.log('')
 
     // open LUKS volume
     Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
-    let code=(await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true)) ).code
+    let code = (await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))).code
     if (code != 0) {
       Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
       process.exit(code)
@@ -128,7 +130,7 @@ export default class Syncto extends Command {
       await exec(`rm -f ${this.privateSquashfs}`, Utils.setEcho(true))
     }
 
-    
+
     //==========================================================================
     // Create squashfs
     //==========================================================================
@@ -141,9 +143,9 @@ export default class Syncto extends Command {
     this.settings = new Settings()
     if (await this.settings.load()) {
       let compression = compressors.fast()
-      if (this.settings.config.compression==`max`) {
+      if (this.settings.config.compression == `max`) {
         compression = compressors.max()
-      } else if (this.settings.config.compression==`standard`) {
+      } else if (this.settings.config.compression == `standard`) {
         compression = compressors.standard()
       }
       comp = `-comp ${compression}`
@@ -169,7 +171,7 @@ export default class Syncto extends Command {
     await exec(`mkdir -p /tmp/tmpfs/etc/lightdm`, this.echo)                          // lightdm
     await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc/lightdm/`, this.echo)  // lightdm  
 
-    let mkPrivateSquashfs =`mksquashfs \
+    let mkPrivateSquashfs = `mksquashfs \
                               /tmp/tmpfs/etc \
                               /home \
                               ${this.luksMountpoint}/${this.privateSquashfs} \
@@ -179,7 +181,7 @@ export default class Syncto extends Command {
                               -keep-as-directory \ 
                               -noappend`
 
-    mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
+    mkPrivateSquashfs = mkPrivateSquashfs.replace(/\s\s+/g, ` `)
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
     await exec(`rm -rf /tmp/tmpfs`, this.echo)
@@ -207,13 +209,36 @@ export default class Syncto extends Command {
     await exec(`cryptsetup close ${this.luksName}`, this.echo)
     await exec('udevadm settle', this.echo)
 
+    // Want to try shrinking /tmp/luks-volume?
+
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+
+    rl.question('Want to try shrinking /tmp/luks-volume? (y/n): ', (answer) => {
+      if (answer.toLowerCase() === 'y') {
+        this.shrinkFile()
+      } else {
+        console.log('You chose not to do the volume resizing, this is safer.');
+      }
+      rl.close();
+    })
+
+  }
+
+  /**
+   * Shrink file
+   */
+  async shrinkFile() {
+    // shrink file    
     Utils.warning(`Shrinking file ${this.luksFile} using dd`)
-    let tmpFile=`${this.luksFile}.temp`
+    let tmpFile = `${this.luksFile}.temp`
     await exec(`mv ${this.luksFile} ${tmpFile}`, this.echo)
-    let sizeString=(await exec(`ls ${tmpFile} -s|awk '{print $1}'`, {echo: false, capture: true})).data
-    let size=parseInt(sizeString)
-    let count= Math.ceil(size/1024)
-    let dd=`dd if=${tmpFile} of=${this.luksFile} bs=1M count=${count}`
+    let sizeString = (await exec(`ls ${tmpFile} -s|awk '{print $1}'`, { echo: false, capture: true })).data
+    let size = parseInt(sizeString)
+    let count = Math.ceil(size / 1024)
+    let dd = `dd if=${tmpFile} of=${this.luksFile} bs=1M count=${count}`
     await exec(dd, Utils.setEcho(true))
   }
 }
