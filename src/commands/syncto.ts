@@ -94,9 +94,9 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "2G"
+    let maxSize = "10G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
-    await exec(`truncate -s ${maxSize} ${this.luksFile}`)
+    await exec(`truncate --size ${maxSize} ${this.luksFile}`)
 
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
     await exec(`cryptsetup luksFormat ${this.luksFile}`, Utils.setEcho(true))
@@ -204,9 +204,9 @@ export default class Syncto extends Command {
 
     // Get squashfs block size
     cmd=`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Block size"| sed -e 's/.*size //' -e 's/ .*//'`
-    // let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
-    //const squashfsBlockSize = parseInt(blockSizeString)
-    const squashfsBlockSize=4096
+    let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
+    const squashfsBlockSize = parseInt(blockSizeString)
+    //const squashfsBlockSize=4096
     Utils.warning(`Squashfs block size: ${squashfsBlockSize} bytes`)
 
     // get number of blocks and pad squashfs
@@ -236,14 +236,25 @@ export default class Syncto extends Command {
     // Unmount luks-volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
 
-    // close luks-volume
-    await exec(`cryptsetup close ${this.luksName}`, Utils.setEcho(true))
-
     /**
      * Shrink file
      * https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
+     * https://blog.thomasdamgaard.dk/posts/2022/09/27/shrink-luks-volume-with-ext4-filesystem/
      */
-     await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+
+    // await exec(`e2fsck -f ${this.luksDevice}`, Utils.setEcho(true)) No altrimenti si allarga
+    
+    await exec(`resize2fs -p ${this.luksDevice} ${finalSize}`, Utils.setEcho(true))
+
+    // close luks-volume
+    await exec(`cryptsetup close ${this.luksName}`, Utils.setEcho(true))
+
+    // truncate file
+
+    finalSize = finalSize + 4096
+    await exec(`truncate --size ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    //await exec(`truncate --io-blocks ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    
     Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}`)
   }
 }
@@ -255,3 +266,4 @@ function bytesToGB(bytes: number): string {
   const gigabytes = bytes / 1073741824;
   return gigabytes.toFixed(2) + ' GB';
 }
+
