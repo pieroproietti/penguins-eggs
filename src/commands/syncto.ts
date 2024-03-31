@@ -92,12 +92,13 @@ export default class Syncto extends Command {
   async luksCreate() {
     await exec(`rm -rf ${this.luksFile}`)
 
-    let luksMaxSize = "12G"
+    let luksMaxSize = "2G"
     Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${luksMaxSize}`)
     await exec(`truncate --size ${luksMaxSize} ${this.luksFile}`, this.echo)
 
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
     await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true)) 
+    console.log('')
 
     // open LUKS volume
     Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
@@ -107,9 +108,9 @@ export default class Syncto extends Command {
       process.exit(code)
     }
     await exec('udevadm settle', this.echo)
-
     // formatta ext4 il volume
     await exec(`mkfs.ext4 ${this.luksDevice}`, this.echo)
+    console.log('')
 
     // mount LUKS volume
     if (!fs.existsSync(this.luksMountpoint)) {
