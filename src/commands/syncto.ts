@@ -90,36 +90,30 @@ export default class Syncto extends Command {
    *
    */
   async luksCreate() {
-    Utils.warning(`Erasing previous LUKS Volume on ${this.luksFile}`)
-    let clean = `rm -rf ${this.luksFile}`
-    await exec(clean)
+    await exec(`rm -rf ${this.luksFile}`)
 
-    let maxSize = "1G"
-    Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
-    await exec(`truncate --size ${maxSize} ${this.luksFile}`)
+    let luksMaxSize = "12G"
+    Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${luksMaxSize}`)
+    await exec(`truncate --size ${luksMaxSize} ${this.luksFile}`, this.echo)
 
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
-    await exec(`cryptsetup luksFormat ${this.luksFile}`, Utils.setEcho(true))
-
-    //==========================================================================
-    // Open created LUKS volume
-    //==========================================================================
-    Utils.titles(this.id + ' ' + this.argv + ' Open LUKS volume')
+    await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true)) 
 
     // open LUKS volume
-    let code=(await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))).code
+    Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
+    let code=(await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true)) ).code
     if (code != 0) {
       Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
       process.exit(code)
     }
-    await exec('udevadm settle', Utils.setEcho(true))
+    await exec('udevadm settle', this.echo)
 
     // formatta ext4 il volume
-    await exec(`mkfs.ext4 ${this.luksDevice}`, Utils.setEcho(true))
+    await exec(`mkfs.ext4 ${this.luksDevice}`, this.echo)
 
     // mount LUKS volume
     if (!fs.existsSync(this.luksMountpoint)) {
-      await exec(`mkdir -p ${this.luksMountpoint}`, Utils.setEcho(true))
+      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
     }
     if (!Utils.isMountpoint(this.luksMountpoint)) {
       Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
@@ -189,52 +183,13 @@ export default class Syncto extends Command {
 
     await exec(`rm -rf /tmp/tmpfs`, this.echo)
 
-    await exec(`cp ${this.luksMountpoint}/${this.privateSquashfs} /tmp`, this.echo)
-
     //==========================================================================
     // Shrink LUKS volume
     //==========================================================================
     Utils.warning(`Calculate used up space of squashfs`)
 
-    // Get squashfs size
-    let cmd = `unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Filesystem size"| sed -e 's/.*size //' -e 's/ .*//'`
-    let sizeString = (await exec(cmd, { echo: false, capture: true })).data
-    let squashfsSize = parseInt(sizeString)
-    Utils.warning(`Squashfs size: ${squashfsSize} bytes`)
-
-    // Get squashfs block size
-    cmd=`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Block size"| sed -e 's/.*size //' -e 's/ .*//'`
-    let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
-    const squashfsBlockSize = parseInt(blockSizeString)
-    //const squashfsBlockSize=4096
-    Utils.warning(`Squashfs block size: ${squashfsBlockSize} bytes`)
-
-    // get number of blocks and pad squashfs
-    let squashfsBlocks = squashfsSize / squashfsBlockSize
-    if (squashfsBlocks % 1 != 0) { 
-      squashfsBlocks = Math.ceil(squashfsBlocks)
-      squashfsSize = squashfsBlocks * squashfsBlockSize
-    }
-    Utils.warning(`Padded squashfs on device, size ${squashfsSize} bytes, bloks: ${squashfsBlocks} of ${squashfsBlockSize} bytes `)
-
-    // Shrink LUKS volume
-    let luksBlockSize = 512
-    let luksBlocks = squashfsSize / luksBlockSize
-    if (luksBlocks % 1 != 0) { 
-      luksBlocks = Math.ceil(luksBlocks)
-    }
-
-    Utils.warning(`Shrinking luks-volume to ${luksBlocks} blocks of ${luksBlockSize} bytes`)
-    await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
-
-    // Get final size and shrink luks-volume
-    let luksOffset = +(await exec(`cryptsetup status ${this.luksDevice} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
-    Utils.warning(`LUKS offset: ${luksOffset}`)
-    let finalSize = squashfsSize + (luksOffset * luksBlockSize)
-    Utils.warning(`Final size is ${finalSize} bytes, equal to ${bytesToGB(finalSize)}`)
-
     // Unmount luks-volume
-    await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
+    await exec(`umount ${this.luksMountpoint}`, this.echo)
 
     /**
      * Shrink file
@@ -242,20 +197,26 @@ export default class Syncto extends Command {
      * https://blog.thomasdamgaard.dk/posts/2022/09/27/shrink-luks-volume-with-ext4-filesystem/
      */
 
-    // await exec(`e2fsck -f ${this.luksDevice}`, Utils.setEcho(true)) No altrimenti si allarga
-    
-    await exec(`resize2fs -p ${this.luksDevice} ${finalSize}`, Utils.setEcho(true))
+    Utils.warning(`Shrink LUKS volume`)
+    await exec(`e2fsck -f ${this.luksDevice}`, this.echo)
+    await exec(`resize2fs -M ${this.luksDevice}`, this.echo)
 
     // close luks-volume
-    await exec(`cryptsetup close ${this.luksName}`, Utils.setEcho(true))
+    Utils.warning(`Closing LUKS Volume`)
+    await exec(`cryptsetup close ${this.luksName}`, this.echo)
+    await exec('udevadm settle', this.echo)
 
-    // truncate file
+    Utils.warning(`Shrinking file ${this.luksFile}`)
+    let tmpFile=`${this.luksFile}.temp`
+    await exec(`mv ${this.luksFile} ${tmpFile}`, this.echo)
+    let sizeString=(await exec(`ls ${tmpFile} -s|awk '{print $1}'`, {echo: false, capture: true})).data
+    let size=parseInt(sizeString)+4096
+    let count= Math.ceil(size/1024)
+    let dd=`dd if=${tmpFile} of=${this.luksFile} bs=1M count=${count}`
+    console.log(dd)
+    await exec(dd, Utils.setEcho(true))
+    //await exec(`rm -f ${tmpFile}`, this.echo)
 
-    finalSize = finalSize + 4096
-    await exec(`truncate --size ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
-    //await exec(`truncate --io-blocks ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
-    
-    Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}`)
   }
 }
 

@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.40
+* again on syncto e syncfrom: I am still trying to find a way to reduce the volume LUKS to the bare minimum. With the latest changes it seems to work, the `luks-volume` file actually turns out to be the optimal size, but - for some reason - generating the ISO this comes out as if it was the original size (2 GB), further investigation will be needed;
+* meanwhile, I avoided the introduction of the passphrase three times during the creation and opening of the LUKS volume.
+
 # eggs-9.6.39
 * again on syncto e syncfrom: this time I decided to create until 2GB luks-volume inside the iso, under `/live`. Within the LUKS volume is created `private.squashfs` containing the data from `/home` and some significant `/etc` files;
 * After the `private.squashfs` file has been created, the strict necessary size of the luks-volume file to contain it is determined. At this point `luks-volume` can be truncated to the minimum size. (I have tried many times to truncate the resulting file, sometimes successfully, sometimes not.)

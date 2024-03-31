@@ -1,0 +1,79 @@
+RESIZE2FS(8)                                                                 System Manager's Manual                                                                RESIZE2FS(8)
+
+NNAAMMEE
+       resize2fs - ext2/ext3/ext4 file system resizer
+
+SSYYNNOOPPSSIISS
+       rreessiizzee22ffss [ --ffFFppPPMMbbss ] [ --dd _d_e_b_u_g_-_f_l_a_g_s ] [ --SS _R_A_I_D_-_s_t_r_i_d_e ] [ --zz _u_n_d_o___f_i_l_e ] _d_e_v_i_c_e [ _s_i_z_e ]
+
+DDEESSCCRRIIPPTTIIOONN
+       The  rreessiizzee22ffss program will resize ext2, ext3, or ext4 file systems.  It can be used to enlarge or shrink an unmounted file system located on _d_e_v_i_c_e.  If the file system
+       is mounted, it can be used to expand the size of the mounted file system, assuming the kernel and the file system supports on-line resizing.  (Modern Linux  2.6  kernels
+       will support on-line resize for file systems mounted using ext3 and ext4; ext3 file systems will require the use of file systems with the resize_inode feature enabled.)
+
+       The _s_i_z_e parameter specifies the requested new size of the file system.  If no units are specified, the units of the _s_i_z_e parameter shall be the file system blocksize of
+       the file system.  Optionally, the _s_i_z_e parameter may be suffixed by one of the following units designators: 'K', 'M', 'G', 'T' (either upper-case or lower-case)  or  's'
+       for power-of-two kilobytes, megabytes, gigabytes, terabytes or 512 byte sectors respectively. The _s_i_z_e of the file system may never be larger than the size of the parti‐
+       tion.  If _s_i_z_e parameter is not specified, it will default to the size of the partition.
+
+       The rreessiizzee22ffss program does not manipulate the size of partitions.  If you wish to enlarge a file system, you must make sure you can expand the  size  of  the  underlying
+       partition first.  This can be done using ffddiisskk(8) by deleting the partition and recreating it with a larger size or using llvveexxtteenndd(8), if you're using the logical volume
+       manager llvvmm(8).  When recreating the partition, make sure you create it with the same starting disk cylinder as before!  Otherwise, the resize operation  will  certainly
+       not  work,  and you may lose your entire file system.  After running ffddiisskk(8), run resize2fs to resize the ext2 file system to use all of the space in the newly enlarged
+       partition.
+
+       If you wish to shrink an ext2 partition, first use rreessiizzee22ffss to shrink the size of file system.  Then you may use ffddiisskk(8) to shrink the size  of  the  partition.   When
+       shrinking the size of the partition, make sure you do not make it smaller than the new size of the ext2 file system!
+
+       The  --bb  and --ss options enable and disable the 64bit feature, respectively.  The resize2fs program will, of course, take care of resizing the block group descriptors and
+       moving other data blocks out of the way, as needed.  It is not possible to resize the file system concurrent with changing the 64bit status.
+
+OOPPTTIIOONNSS
+       --bb     Turns on the 64bit feature, resizes the group descriptors as necessary, and moves other metadata out of the way.
+
+       --dd _d_e_b_u_g_-_f_l_a_g_s
+              Turns on various resize2fs debugging features, if they have been compiled into the binary.  _d_e_b_u_g_-_f_l_a_g_s should be computed by adding the numbers  of  the  desired
+              features from the following list:
+                   2    - Debug block relocations
+                   4    - Debug inode relocations
+                   8    - Debug moving the inode table
+                   16   - Print timing information
+                   32   - Debug minimum file system size (-M) calculation
+
+       --ff     Forces resize2fs to proceed with the file system resize operation, overriding some safety checks which resize2fs normally enforces.
+
+       --FF     Flush the file system device's buffer caches before beginning.  Only really useful for doing rreessiizzee22ffss time trials.
+
+       --MM     Shrink the file system to minimize its size as much as possible, given the files stored in the file system.
+
+       --pp     Print  out  percentage completion bars for each rreessiizzee22ffss phase during an offline (non-trivial) resize operation, so that the user can keep track of what the pro‐
+              gram is doing.  (For very fast resize operations, no progress bars may be displayed.)
+
+       --PP     Print an estimate of the number of file system blocks in the file system if it is shrunk using rreessiizzee22ffss's --MM option and then exit.
+
+       --ss     Turns off the 64bit feature and frees blocks that are no longer in use.
+
+       --SS _R_A_I_D_-_s_t_r_i_d_e
+              The rreessiizzee22ffss program will heuristically determine the RAID stride that was specified when the file system was created.  This option allows the user to explicitly
+              specify a RAID stride setting to be used by resize2fs instead.
+
+       --zz _u_n_d_o___f_i_l_e
+              Before  overwriting  a  file system block, write the old contents of the block to an undo file.  This undo file can be used with e2undo(8) to restore the old con‐
+              tents of the file system should something go wrong.  If the empty string is passed as the undo_file argument, the undo file will be written to a  file  named  re‐
+              size2fs-_d_e_v_i_c_e.e2undo in the directory specified via the _E_2_F_S_P_R_O_G_S___U_N_D_O___D_I_R environment variable.
+
+              WARNING: The undo file cannot be used to recover from a power or system crash.
+
+KKNNOOWWNN BBUUGGSS
+       The minimum size of the file system as estimated by resize2fs may be incorrect, especially for file systems with 1k and 2k blocksizes.
+
+AAUUTTHHOORR
+       rreessiizzee22ffss was written by Theodore Ts'o <tytso@mit.edu>.
+
+CCOOPPYYRRIIGGHHTT
+       Resize2fs is Copyright 1998 by Theodore Ts'o and PowerQuest, Inc.  All rights reserved.  As of April, 2000 RReessiizzee22ffss may be redistributed under the terms of the GPL.
+
+SSEEEE AALLSSOO
+       ffddiisskk(8), ee22ffsscckk(8), mmkkee22ffss(8), llvvmm(8), llvveexxtteenndd(8)
+
+E2fsprogs version 1.47.0                                                          February 2023                                                                     RESIZE2FS(8)
