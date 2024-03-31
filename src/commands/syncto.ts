@@ -24,6 +24,7 @@ import * as readline from 'readline'
 export default class Syncto extends Command {
   static flags = {
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
+    size: Flags.string({ char: 's', description: 'size of luks-volume' }),
     exclusion: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/clone.list' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
@@ -47,6 +48,8 @@ export default class Syncto extends Command {
   luksDevice = `/dev/mapper/${this.luksName}`
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
+
+  luksSize = "2G"
 
   privateSquashfs = `private.squashfs`
 
@@ -76,6 +79,11 @@ export default class Syncto extends Command {
       fileLuks = flags.file
     }
 
+    let fileLuksSize = ''
+    if (flags.size) {
+      this.luksSize = flags.size
+    }
+
     if (flags.exclusion) {
       this.excludeFiles = true
     }
@@ -87,16 +95,14 @@ export default class Syncto extends Command {
     }
   }
 
-
   /**
    *
    */
   async luksCreate() {
     await exec(`rm -rf ${this.luksFile}`)
 
-    let luksMaxSize = "2G"
-    Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${luksMaxSize}`)
-    await exec(`truncate --size ${luksMaxSize} ${this.luksFile}`, this.echo)
+    Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${this.luksSize}`)
+    await exec(`truncate --size ${this.luksSize} ${this.luksFile}`, this.echo)
 
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
     await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true))
@@ -210,7 +216,6 @@ export default class Syncto extends Command {
     await exec('udevadm settle', this.echo)
 
     // Want to try shrinking /tmp/luks-volume?
-
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
