@@ -206,17 +206,14 @@ export default class Syncto extends Command {
     await exec(`cryptsetup close ${this.luksName}`, this.echo)
     await exec('udevadm settle', this.echo)
 
-    Utils.warning(`Shrinking file ${this.luksFile}`)
+    Utils.warning(`Shrinking file ${this.luksFile} using dd`)
     let tmpFile=`${this.luksFile}.temp`
     await exec(`mv ${this.luksFile} ${tmpFile}`, this.echo)
     let sizeString=(await exec(`ls ${tmpFile} -s|awk '{print $1}'`, {echo: false, capture: true})).data
-    let size=parseInt(sizeString)+4096
+    let size=parseInt(sizeString)
     let count= Math.ceil(size/1024)
     let dd=`dd if=${tmpFile} of=${this.luksFile} bs=1M count=${count}`
-    console.log(dd)
     await exec(dd, Utils.setEcho(true))
-    //await exec(`rm -f ${tmpFile}`, this.echo)
-
   }
 }
 
