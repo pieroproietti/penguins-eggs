@@ -23,7 +23,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 # eggs-9.6.40
 * again on syncto e syncfrom: I am still trying to find a way to reduce the volume LUKS to the bare minimum. With the latest changes it seems to work, the `luks-volume` file actually turns out to be the optimal size, but - for some reason - generating the ISO this comes out as if it was the original size (2 GB). In the end I left it up to the user to choose, also to allow you to experiment.
 * I added the ability to pass with the `--size` parameter to `syncto` the size of the luks volume to prepare, also the `--cryptedclone` flag became a string and it is possible use it like this:`eggs produce --cryptedclone 1G` to pass the size of the luks volume to prepare.
-* meanwhile, I avoided the introduction of the passphrase three times during the creation and opening of the LUKS volume.
+* meanwhile, I avoided the introduction of the passphrase three times during the creation and opening of the LUKS volume;
+* And if you're wondering why I released 4 eggs_9.6.40 versions on Easter Day, well, let's just say I wanted you to find a surprise in the egg!
 
 # eggs-9.6.39
 * again on syncto e syncfrom: this time I decided to create until 2GB luks-volume inside the iso, under `/live`. Within the LUKS volume is created `private.squashfs` containing the data from `/home` and some significant `/etc` files;

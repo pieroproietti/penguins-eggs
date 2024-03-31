@@ -335,7 +335,7 @@ export default class Ovary {
       }
 
       if (cryptedclone) {
-        let synctoCmd = `eggs syncto -f ${luksFile} -s ${this.cryptedcloneSize} -d ${this.nest}iso/live`
+        let synctoCmd = `eggs syncto  -f ${luksFile} -s ${this.cryptedcloneSize}`
         if (filters.clone) {
          synctoCmd += ' --exclusion' // from Marco
         }
