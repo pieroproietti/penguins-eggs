@@ -5,6 +5,9 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
+// https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
+
 import { Command, Flags } from '@oclif/core'
 import path from 'path'
 import fs from 'fs'
@@ -184,6 +187,10 @@ export default class Syncto extends Command {
     mkPrivateSquashfs=mkPrivateSquashfs.replace(/\s\s+/g, ` `)
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
+    await exec(`rm -rf /tmp/tmpfs`, this.echo)
+
+    await exec(`cp ${this.luksMountpoint}/${this.privateSquashfs} /tmp`, this.echo)
+
     //==========================================================================
     // Shrink LUKS volume
     //==========================================================================
@@ -197,8 +204,9 @@ export default class Syncto extends Command {
 
     // Get squashfs block size
     cmd=`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Block size"| sed -e 's/.*size //' -e 's/ .*//'`
-    let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
-    const squashfsBlockSize = parseInt(blockSizeString)
+    // let blockSizeString = (await exec(cmd, { echo: false, capture: true })).data
+    //const squashfsBlockSize = parseInt(blockSizeString)
+    const squashfsBlockSize=4096
     Utils.warning(`Squashfs block size: ${squashfsBlockSize} bytes`)
 
     // get number of blocks and pad squashfs
@@ -220,9 +228,10 @@ export default class Syncto extends Command {
     await exec(`cryptsetup resize ${this.luksName} -b ${luksBlocks}`, Utils.setEcho(false))
 
     // Get final size and shrink luks-volume
-    let luksOffset = +(await exec(`cryptsetup status ${this.luksName} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
-    let finalSize = luksOffset * luksBlockSize + squashfsSize
-    Utils.warning(`Final size is ${bytesToGB(finalSize)}`)
+    let luksOffset = +(await exec(`cryptsetup status ${this.luksDevice} | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
+    Utils.warning(`LUKS offset: ${luksOffset}`)
+    let finalSize = squashfsSize + (luksOffset * luksBlockSize)
+    Utils.warning(`Final size is ${finalSize} bytes, equal to ${bytesToGB(finalSize)}`)
 
     // Unmount luks-volume
     await exec(`umount ${this.luksMountpoint}`, Utils.setEcho(true))
@@ -230,10 +239,12 @@ export default class Syncto extends Command {
     // close luks-volume
     await exec(`cryptsetup close ${this.luksName}`, Utils.setEcho(true))
 
-    // Shrink file
-    // await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
+    /**
+     * Shrink file
+     * https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
+     */
+     await exec(`truncate -s ${finalSize} ${this.luksFile}`, Utils.setEcho(true))
     Utils.warning(`${this.luksFile} final size is ${bytesToGB(finalSize)}`)
-    Utils.warning(`you can try to shrink it with truncate -s ${finalSize} ${this.luksFile}`)
   }
 }
 
