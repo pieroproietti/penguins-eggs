@@ -21,7 +21,8 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.6.40
-* again on syncto e syncfrom: I am still trying to find a way to reduce the volume LUKS to the bare minimum. With the latest changes it seems to work, the `luks-volume` file actually turns out to be the optimal size, but - for some reason - generating the ISO this comes out as if it was the original size (2 GB), further investigation will be needed;
+* again on syncto e syncfrom: I am still trying to find a way to reduce the volume LUKS to the bare minimum. With the latest changes it seems to work, the `luks-volume` file actually turns out to be the optimal size, but - for some reason - generating the ISO this comes out as if it was the original size (2 GB). In the end I left it up to the user to choose, also to allow you to experiment.
+* I added the ability to pass with the `--size` parameter to `syncto` the size of the luks volume to prepare, also the `--cryptedclone` flag became a string and it is possible use it like this:`eggs produce --cryptedclone 1G` to pass the size of the luks volume to prepare.
 * meanwhile, I avoided the introduction of the passphrase three times during the creation and opening of the LUKS volume.
 
 # eggs-9.6.39

@@ -21,7 +21,7 @@ export default class Produce extends Command {
     addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
+    cryptedclone: Flags.string({ char: 'C', description: 'crypted clone' }),
     filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, usr, clone' }),
     help: Flags.help({ char: 'h' }),
     links:  Flags.string({ multiple: true, description: 'desktop links' }),
@@ -44,7 +44,7 @@ export default class Produce extends Command {
     'sudo eggs produce --standard',
     'sudo eggs produce --max',
     'sudo eggs produce --max --basename=colibri',
-    'sudo eggs produce --cryptedclone',
+    'sudo eggs produce --cryptedclone 4G',
     'sudo eggs produce --clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
@@ -96,7 +96,6 @@ export default class Produce extends Command {
           }
         }
       }
-    
 
       /**
        * composizione dei flag
@@ -146,7 +145,18 @@ export default class Produce extends Command {
 
       const release = flags.release
 
-      const cryptedclone = flags.cryptedclone
+      let cryptedclone = flags.cryptedclone !== undefined
+
+      let cryptedcloneSize="2G"
+      // determine if cryptedclone is defined
+      if (flags.cryptedclone !== undefined) {
+        if (isValidSize(flags.cryptedclone)) {
+          cryptedcloneSize = flags.cryptedclone
+        } else {
+          console.log('Invalid size for cryptedclone size: use 100M, 1G, 2G ...' + flags.cryptedclone)
+          process.exit()
+        }
+      }
 
       const clone = flags.clone
 
@@ -213,11 +223,17 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, filters, nointeractive, noicons, unsecure, verbose)
+        await ovary.produce(clone, cryptedclone, cryptedcloneSize, scriptOnly, yolkRenew, release, myAddons, myLinks, filters, nointeractive, noicons, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
       Utils.useRoot(this.id)
     }
   }
+}
+
+const validSizePattern = /^(\d+)([MG]?)$/;
+
+function isValidSize(input: string): boolean {
+  return validSizePattern.test(input);
 }
