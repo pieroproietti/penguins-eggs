@@ -94,7 +94,7 @@ export default class Syncto extends Command {
     let clean = `rm -rf ${this.luksFile}`
     await exec(clean)
 
-    let maxSize = "10G"
+    let maxSize = "1G"
     Utils.warning(`Creating LUKS Volume on ${this.luksFile}, size ${maxSize}`)
     await exec(`truncate --size ${maxSize} ${this.luksFile}`)
 
