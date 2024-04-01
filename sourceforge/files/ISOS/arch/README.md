@@ -9,6 +9,11 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
+
+# NOTE
+I removed previous ISO from installation medium 2024.03.01 becouse [xz package backdoored](https://archlinux.org/news/the-xz-package-has-been-backdoored/)
+
+
 # Penguins' eggs remastered ISOs
 
 # user/password
