@@ -16,8 +16,6 @@ import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
 
-import * as readline from 'readline'
-
 /**
  *
  */
@@ -49,7 +47,7 @@ export default class Syncto extends Command {
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
-  luksSize = "2G"
+  luksSize = "32G"
 
   privateSquashfs = `private.squashfs`
 
@@ -192,59 +190,24 @@ export default class Syncto extends Command {
 
     await exec(`rm -rf /tmp/tmpfs`, this.echo)
 
-    //==========================================================================
-    // Shrink LUKS volume
-    //==========================================================================
-    Utils.warning(`Calculate used up space of squashfs`)
+    // Shrink file
+    this.echo = Utils.setEcho(true)
+    
+    // calculate size of the file
+    let sizeString = (await exec(`ls ${this.luksFile} -s|awk '{print $1}'`, { echo: false, capture: true })).data
+    let size = parseInt(sizeString)+2048
 
-    // Unmount luks-volume
+    // umount /dev/mapper/luks-volume
     await exec(`umount ${this.luksMountpoint}`, this.echo)
+    
+    // cryptsetup resize /dev/mapper/luks-volume size
+    await exec(`cryptsetup resize ${this.luksDevice} ${size}`, this.echo) 
 
-    /**
-     * Shrink file
-     * https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
-     * https://blog.thomasdamgaard.dk/posts/2022/09/27/shrink-luks-volume-with-ext4-filesystem/
-     */
+    // fsck /dev/mapper/luks-volume
+    await exec(`fsck ${this.luksDevice}`, this.echo)
 
-    Utils.warning(`Shrink LUKS volume`)
-    await exec(`e2fsck -f ${this.luksDevice}`, this.echo)
-    await exec(`resize2fs -M ${this.luksDevice}`, this.echo)
-
-    // close luks-volume
-    Utils.warning(`Closing LUKS Volume`)
-    await exec(`cryptsetup close ${this.luksName}`, this.echo)
-    await exec('udevadm settle', this.echo)
-
-    // Want to try shrinking /tmp/luks-volume?
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout
-    })
-
-    rl.question('Want to try shrinking /tmp/luks-volume? (y/n): ', (answer) => {
-      if (answer.toLowerCase() === 'y') {
-        this.shrinkFile()
-      } else {
-        console.log('You chose not to do the volume resizing, this is safer.');
-      }
-      rl.close();
-    })
-
-  }
-
-  /**
-   * Shrink file
-   */
-  async shrinkFile() {
-    // shrink file    
-    Utils.warning(`Shrinking file ${this.luksFile} using dd`)
-    let tmpFile = `${this.luksFile}.temp`
-    await exec(`mv ${this.luksFile} ${tmpFile}`, this.echo)
-    let sizeString = (await exec(`ls ${tmpFile} -s|awk '{print $1}'`, { echo: false, capture: true })).data
-    let size = parseInt(sizeString)
-    let count = Math.ceil(size / 1024)
-    let dd = `dd if=${tmpFile} of=${this.luksFile} bs=1M count=${count}`
-    await exec(dd, Utils.setEcho(true))
+    // close LUKS volume
+    await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)  
   }
 }
 
