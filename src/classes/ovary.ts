@@ -68,8 +68,6 @@ export default class Ovary {
 
   cryptedclone = false
 
-  cryptedcloneSize = '2G'
-
   cliAutologin = new CliAutologin()
 
   nest = ''
@@ -129,7 +127,6 @@ export default class Ovary {
   async produce(
     clone = false,
     cryptedclone = false,
-    criptedcloneSize="2G",
     scriptOnly = false,
     yolkRenew = false,
     release = false,
@@ -150,8 +147,6 @@ export default class Ovary {
     this.clone = clone
 
     this.cryptedclone = cryptedclone
-
-    this.cryptedcloneSize = criptedcloneSize
 
     const luksName = 'luks-volume'
 
@@ -335,7 +330,7 @@ export default class Ovary {
       }
 
       if (cryptedclone) {
-        let synctoCmd = `eggs syncto  -f ${luksFile} -s ${this.cryptedcloneSize}`
+        let synctoCmd = `eggs syncto  -f ${luksFile}`
         if (filters.clone) {
          synctoCmd += ' --exclusion' // from Marco
         }

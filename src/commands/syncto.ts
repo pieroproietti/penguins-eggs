@@ -22,7 +22,6 @@ import Utils from '../classes/utils'
 export default class Syncto extends Command {
   static flags = {
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
-    size: Flags.string({ char: 's', description: 'size of luks-volume' }),
     exclusion: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/clone.list' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
@@ -47,7 +46,7 @@ export default class Syncto extends Command {
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
-  luksSize = "32G"
+  luksSize = ""
 
   privateSquashfs = `private.squashfs`
 
@@ -77,14 +76,17 @@ export default class Syncto extends Command {
       fileLuks = flags.file
     }
 
-    let fileLuksSize = ''
-    if (flags.size) {
-      this.luksSize = flags.size
-    }
-
     if (flags.exclusion) {
       this.excludeFiles = true
     }
+
+    /* leggo lo spazio libero su /tmp */
+    let tmp = (await exec(`df /tmp -B 1 | tail -1 | awk '{print $4}'`, { echo: false, capture: true })).data
+    let tmpSize = parseInt(tmp)
+    let gb=1024*1024*1024
+    let iso=gb*2
+    let size = Math.floor((tmpSize/2-iso)/gb)
+    this.luksSize = `${size}G`
 
     if (Utils.isRoot()) {
       await this.luksCreate()
@@ -218,4 +220,3 @@ function bytesToGB(bytes: number): string {
   const gigabytes = bytes / 1073741824;
   return gigabytes.toFixed(2) + ' GB';
 }
-
