@@ -337,8 +337,8 @@ export default class Ovary {
         await exec(synctoCmd, Utils.setEcho(true))
         Utils.warning(`Waiting 3s, before to copy ${luksFile} in ${this.nest}iso/live`)
         await exec('sleep 3', Utils.setEcho(false))
-        Utils.warning(`copyng ${luksFile} in ${this.nest}iso/live`)
-        await exec(`cp ${luksFile} ${this.nest}iso/live`, this.echo)
+        Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
+        await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }
 
       const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replace(/\s\s+/g, ' ')

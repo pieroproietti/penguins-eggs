@@ -84,8 +84,10 @@ export default class Syncto extends Command {
     let tmp = (await exec(`df /tmp -B 1 | tail -1 | awk '{print $4}'`, { echo: false, capture: true })).data
     let tmpSize = parseInt(tmp)
     let gb=1024*1024*1024
-    let iso=gb*2
-    let size = Math.floor((tmpSize/2-iso)/gb)
+    let size = Math.floor((tmpSize)/gb)
+    if (size > 14) {
+      size = 14
+    }
     this.luksSize = `${size}G`
 
     if (Utils.isRoot()) {

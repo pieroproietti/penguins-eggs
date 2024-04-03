@@ -20,6 +20,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.6.41
+Finally we have `sudo eggs produce --cryptedcloen` working, adapting the final LUKS volume to the compressed /home contents. 
+
+We have about 14 GB compressend for our home, enought to most work, included with the ISO. 
+
+To restore it - at the moment - use `sudo eggs install`, calamares module is in project.
+
 # eggs-9.6.40
 * again on syncto e syncfrom: I am still trying to find a way to reduce the volume LUKS to the bare minimum. With the latest changes it seems to work, the `luks-volume` file actually turns out to be the optimal size, but - for some reason - generating the ISO this comes out as if it was the original size (2 GB). In the end I left it up to the user to choose, also to allow you to experiment.
 * I added the ability to pass with the `--size` parameter to `syncto` the size of the luks volume to prepare, also the `--cryptedclone` flag became a string and it is possible use it like this:`eggs produce --cryptedclone 1G` to pass the size of the luks volume to prepare.
