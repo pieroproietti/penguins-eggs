@@ -15,6 +15,7 @@ import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
+import { util } from 'chai'
 
 /**
  *
@@ -199,19 +200,21 @@ export default class Syncto extends Command {
     
     // calculate size of the file
     let sizeString = (await exec(`ls ${this.luksFile} -s|awk '{print $1}'`, { echo: false, capture: true })).data
-    let size = parseInt(sizeString)+2048
-
-    // umount /dev/mapper/luks-volume
-    await exec(`umount ${this.luksMountpoint}`, this.echo)
     
-    // cryptsetup resize /dev/mapper/luks-volume size
+    let size = parseInt(sizeString)+2048
+    Utils.warning(`size: ${size}`)
+    
+    let truncateSize=size*1024
+    Utils.warning(`truncateSize: ${truncateSize}`)
+
+    await exec(`fstrim ${this.luksMountpoint}`, this.echo)
+    await exec(`umount ${this.luksMountpoint}`, this.echo)
     await exec(`cryptsetup resize ${this.luksDevice} ${size}`, this.echo) 
-
-    // fsck /dev/mapper/luks-volume
+    await exec(`resize2fs ${this.luksDevice} -s ${size}`, this.echo)
     await exec(`fsck ${this.luksDevice}`, this.echo)
-
-    // close LUKS volume
     await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)  
+
+    Utils.pressKeyToExit(`Done`)
   }
 }
 
