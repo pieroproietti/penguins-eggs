@@ -1930,7 +1930,7 @@ xorrisoCommand(clone = false, cryptedclone = false): string {
     -allow-limited-size \
     -joliet-long \
     -r \
-    --V "-V3.0" \
+    -V "-V3.0" \
     -cache-inodes \
     -J \
     -l \
