@@ -146,10 +146,15 @@ export default class Syncto extends Command {
     // remove dummyfs
     await exec (`rm /tmp/dummyfs/ -rf`, this.echo)
 
-    // Determina la dimesione di private.squashfs
+    //==========================================================================
+    // Create LUKS volume
+    //==========================================================================
+    Utils.titles("Creating LUKS Volume")
+
+    // calcolo size
     let sizeString=(await exec(`unsquashfs -s /tmp/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { echo: false, capture: true })).data
     let size = parseInt(sizeString) + 2048
-    console.log("size private.squashfs:", size, bytesToGB(size))
+    console.log("size private.squashfs:", bytesToGB(size), size)
 
     let luksBlockSize = 512
     let luksBlocks = Math.ceil(size / luksBlockSize)
@@ -157,7 +162,9 @@ export default class Syncto extends Command {
 
     // Aggiungo un 20% in più per ottenere luksSize
     let luksSize = Math.ceil((size)*1.20)
-    console.log("luksSize:", luksSize, bytesToGB(luksSize))
+    console.log("luksSize:", bytesToGB(luksSize), luksSize)
+
+    // truncate * 2048 è cruciale
     let truncateAt=luksSize*2048
     
     Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${truncateAt}`)
@@ -195,8 +202,8 @@ export default class Syncto extends Command {
     }
 
     // copy private.squashfs
-    Utils.warning(`copynkg /tmp/${this.privateSquashfs} to ${this.luksMountpoint}`)
-    await exec(`rsync -avx /tmp/${this.privateSquashfs} ${this.luksMountpoint}`, this.echo)
+    Utils.warning(`moving /tmp/${this.privateSquashfs} to ${this.luksMountpoint}`)
+    await exec(`mv /tmp/${this.privateSquashfs} ${this.luksMountpoint}`, this.echo)
 
     Utils.warning(`Umounting ${this.luksMountpoint}`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
