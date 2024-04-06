@@ -15,7 +15,7 @@ import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
 import Settings from '../classes/settings'
 import Utils from '../classes/utils'
-import { util } from 'chai'
+
 
 /**
  *
@@ -84,8 +84,8 @@ export default class Syncto extends Command {
     /* leggo lo spazio libero su /tmp */
     let tmp = (await exec(`df /tmp -B 1 | tail -1 | awk '{print $4}'`, { echo: false, capture: true })).data
     let tmpSize = parseInt(tmp)
-    let gb=1024*1024*1024
-    let size = Math.floor((tmpSize)/gb)
+    let gb = 1024 * 1024 * 1024
+    let size = Math.floor((tmpSize) / gb)
     if (size > 14) {
       size = 14
     }
@@ -193,28 +193,31 @@ export default class Syncto extends Command {
     mkPrivateSquashfs = mkPrivateSquashfs.replace(/\s\s+/g, ` `)
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
-    await exec(`rm -rf /tmp/tmpfs`, this.echo)
+    // Determina la dimesione di private.squashfs
+    //let sizeString = (await exec(`ls ${this.luksMountpoint}/${this.privateSquashfs} -s|awk '{print $1}'`, { echo: false, capture: true })).data
+    let sizeString=(await exec(`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { echo: false, capture: true })).data
+    let size = parseInt(sizeString) + 2048
+    console.log("size private.squashfs:", size, bytesToGB(size))
 
-    // Shrink file
+    let luksBlockSize = 512
+    let luksBlocks = Math.ceil(size / luksBlockSize)
+    size=luksBlockSize*luksBlocks
+
+    // get final size
     this.echo = Utils.setEcho(true)
-    
-    // calculate size of the file
-    let sizeString = (await exec(`ls ${this.luksFile} -s|awk '{print $1}'`, { echo: false, capture: true })).data
-    
-    let size = parseInt(sizeString)+2048
-    Utils.warning(`size: ${size}`)
-    
-    let truncateSize=size*1024
-    Utils.warning(`truncateSize: ${truncateSize}`)
+    console.log("size:", size, bytesToGB(size))
+    await exec(`cryptsetup resize ${this.luksDevice} -b ${luksBlocks}`, this.echo)
+    let luksOffsetString = (await exec(`cryptsetup status "${this.luksName}" | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
+    let luksOffset = parseInt(luksOffsetString)
+    console.log('luksOffset:', luksOffset)
+    // 10% in più
+    let finalSize = Math.ceil((luksOffset + size)*1.05)
 
-    await exec(`fstrim ${this.luksMountpoint}`, this.echo)
+    console.log("finalSize:", finalSize, bytesToGB(finalSize))
     await exec(`umount ${this.luksMountpoint}`, this.echo)
-    await exec(`cryptsetup resize ${this.luksDevice} ${size}`, this.echo) 
-    await exec(`resize2fs ${this.luksDevice} -s ${size}`, this.echo)
-    await exec(`fsck ${this.luksDevice}`, this.echo)
-    await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)  
-
-    Utils.pressKeyToExit(`Done`)
+    await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
+    let truncateAt=finalSize*2048
+    await exec(`truncate -s ${finalSize} ${this.luksFile}`, this.echo)
   }
 }
 
