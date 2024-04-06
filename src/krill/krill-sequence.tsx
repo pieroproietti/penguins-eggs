@@ -243,6 +243,7 @@ export default class Sequence {
 
       this.distro = new Distro(this.remix)
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
+      this.luksFile=`${this.distro.liveMediumPath}live/${this.luksName}`
    }
 
    /**
