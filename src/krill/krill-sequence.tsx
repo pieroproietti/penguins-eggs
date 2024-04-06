@@ -195,7 +195,7 @@ export default class Sequence {
    
    // per arch luksFile viene variato linea 247
    luksFile = `/run/live/medium/live/${this.luksName}` // debian
-
+   
    luksDevice = `/dev/mapper/${this.luksName}`
 
    luksMountpoint = `/mnt`
