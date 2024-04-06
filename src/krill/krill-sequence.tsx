@@ -391,7 +391,6 @@ export default class Sequence {
          /**
           * CryptedClone exec eggs syncfrom
           */
-         this.luksFile =`${distro.liveMediumPath}${this.luksName}`
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
             if (fs.existsSync(this.luksFile)) {
