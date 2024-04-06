@@ -11,6 +11,8 @@ import fs from 'fs'
 import path  from 'path'
 import Utils from '../classes/utils'
 import {exec} from '../lib/utils'
+import Distro from '../classes/distro'
+import { IRemix } from '../interfaces/index'
 
 /**
  *
@@ -38,11 +40,13 @@ export default class Syncfrom extends Command {
 
   luksName = 'luks-volume'
 
-  luksFile = `/run/live/medium/live/${this.luksName}`
+  luksFile = "" 
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
+
+  remix = {} as IRemix
 
   async run(): Promise<void> {
     const {flags} = await this.parse(Syncfrom)
@@ -73,7 +77,8 @@ export default class Syncfrom extends Command {
 
     if (Utils.isRoot()) {
       if (fileVolume === '') {
-        fileVolume = '/run/live/medium/live/luks-volume'
+        let distro = new Distro(this.remix)
+        fileVolume=`${distro.liveMediumPath}live/${this.luksName}`
       }
 
       if (!Utils.isLive()) {

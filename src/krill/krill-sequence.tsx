@@ -193,8 +193,7 @@ export default class Sequence {
    // Crypted Clone
    luksName = 'luks-volume'
    
-   // per arch luksFile viene variato linea 247
-   luksFile = `/run/live/medium/live/${this.luksName}` // debian
+   luksFile = ``
    
    luksDevice = `/dev/mapper/${this.luksName}`
 
@@ -244,8 +243,6 @@ export default class Sequence {
 
       this.distro = new Distro(this.remix)
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
-      this.luksFile =`${this.distro.liveMediumPath}live/${this.luksName}`
-
    }
 
    /**
@@ -749,4 +746,3 @@ function sleep(ms = 0) {
       setTimeout(resolve, ms);
    });
 }
-
