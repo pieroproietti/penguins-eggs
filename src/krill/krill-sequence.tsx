@@ -192,8 +192,9 @@ export default class Sequence {
 
    // Crypted Clone
    luksName = 'luks-volume'
-
-   luksFile = `/run/live/medium/live/${this.luksName}`
+   
+   // per arch luksFile viene variato linea 247
+   luksFile = `/run/live/medium/live/${this.luksName}` // debian
 
    luksDevice = `/dev/mapper/${this.luksName}`
 
@@ -242,8 +243,8 @@ export default class Sequence {
       this.devices.swap = {} as IDevice
 
       this.distro = new Distro(this.remix)
-
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
+      this.luksFile =`${this.distro.liveMediumPath}${this.luksName}`
 
    }
 
@@ -390,6 +391,7 @@ export default class Sequence {
          /**
           * CryptedClone exec eggs syncfrom
           */
+         this.luksFile =`${distro.liveMediumPath}${this.luksName}`
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
             if (fs.existsSync(this.luksFile)) {
