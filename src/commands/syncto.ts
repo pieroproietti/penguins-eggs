@@ -9,7 +9,6 @@
 // https://gist.github.com/ansemjo/6f1cf9d9b8f7ce8f70813f52c63b74a6
 
 import { Command, Flags } from '@oclif/core'
-import path from 'path'
 import fs from 'fs'
 import { exec } from '../lib/utils'
 import Compressors from '../classes/compressors'
@@ -47,8 +46,6 @@ export default class Syncto extends Command {
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
-  luksSize = ""
-
   privateSquashfs = `private.squashfs`
 
   excludeFile = '/etc/penguins-eggs.d/exclude.list.d/clone.list'
@@ -80,16 +77,6 @@ export default class Syncto extends Command {
     if (flags.exclusion) {
       this.excludeFiles = true
     }
-
-    /* leggo lo spazio libero su /tmp */
-    let tmp = (await exec(`df /tmp -B 1 | tail -1 | awk '{print $4}'`, { echo: false, capture: true })).data
-    let tmpSize = parseInt(tmp)
-    let gb = 1024 * 1024 * 1024
-    let size = Math.floor((tmpSize) / gb)
-    if (size > 14) {
-      size = 14
-    }
-    this.luksSize = `${size}G`
 
     if (Utils.isRoot()) {
       await this.luksCreate()
@@ -135,16 +122,16 @@ export default class Syncto extends Command {
       exclude_file = `-ef ${this.excludeFile}`
     }
 
-    // creato tmpfs per /etc/
-    await exec(`mkdir -p /tmp/tmpfs/etc`, this.echo)
-    await exec(`cp -a /etc/passwd /tmp/tmpfs/etc`, this.echo)
-    await exec(`cp -a /etc/group /tmp/tmpfs/etc`, this.echo)
-    await exec(`cp -a /etc/shadow /tmp/tmpfs/etc`, this.echo)
-    await exec(`mkdir -p /tmp/tmpfs/etc/lightdm`, this.echo)                          // lightdm
-    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/tmpfs/etc/lightdm/`, this.echo)  // lightdm  
+    // creato dummyfs per /etc/
+    await exec(`mkdir -p /tmp/dummyfs/etc`, this.echo)
+    await exec(`cp -a /etc/passwd /tmp/dummyfs/etc`, this.echo)
+    await exec(`cp -a /etc/group /tmp/dummyfs/etc`, this.echo)
+    await exec(`cp -a /etc/shadow /tmp/dummyfs/etc`, this.echo)
+    await exec(`mkdir -p /tmp/dummyfs/etc/lightdm`, this.echo)                          // lightdm
+    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/dummyfs/etc/lightdm/`, this.echo)  // lightdm  
 
     let mkPrivateSquashfs = `mksquashfs \
-                              /tmp/tmpfs/etc \
+                              /tmp/dummyfs/etc \
                               /home \
                               /tmp/${this.privateSquashfs} \
                               ${comp} \
@@ -156,8 +143,10 @@ export default class Syncto extends Command {
     mkPrivateSquashfs = mkPrivateSquashfs.replace(/\s\s+/g, ` `)
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
+    // remove dummyfs
+    await exec (`rm /tmp/dummyfs/ -rf`, this.echo)
+
     // Determina la dimesione di private.squashfs
-    //let sizeString = (await exec(`ls ${this.luksMountpoint}/${this.privateSquashfs} -s|awk '{print $1}'`, { echo: false, capture: true })).data
     let sizeString=(await exec(`unsquashfs -s /tmp/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { echo: false, capture: true })).data
     let size = parseInt(sizeString) + 2048
     console.log("size private.squashfs:", size, bytesToGB(size))
@@ -166,9 +155,8 @@ export default class Syncto extends Command {
     let luksBlocks = Math.ceil(size / luksBlockSize)
     size=luksBlockSize*luksBlocks
 
-    // get final size
+    // Aggiungo un 20% in più per ottenere luksSize
     let luksSize = Math.ceil((size)*1.20)
-
     console.log("luksSize:", luksSize, bytesToGB(luksSize))
     let truncateAt=luksSize*2048
     
