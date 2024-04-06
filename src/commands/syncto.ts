@@ -103,43 +103,6 @@ export default class Syncto extends Command {
    */
   async luksCreate() {
     await exec(`rm -rf ${this.luksFile}`)
-
-    Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${this.luksSize}`)
-    await exec(`truncate --size ${this.luksSize} ${this.luksFile}`, this.echo)
-
-    Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
-    await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true))
-    console.log('')
-
-    // open LUKS volume
-    Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
-    let code = (await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))).code
-    if (code != 0) {
-      Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
-      process.exit(code)
-    }
-    await exec('udevadm settle', this.echo)
-    // formatta ext4 il volume
-    await exec(`mkfs.ext4 ${this.luksDevice}`, this.echo)
-    console.log('')
-
-    // mount LUKS volume
-    if (!fs.existsSync(this.luksMountpoint)) {
-      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
-    }
-    if (!Utils.isMountpoint(this.luksMountpoint)) {
-      Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-      let code = (await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))).code
-      if (code != 0) {
-        Utils.error(`mount ${this.luksDevice} ${this.luksMountpoint} failed`)
-        process.exit(code)
-      }
-    } else {
-      Utils.warning(`mounting volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}, cleaning`)
-      await exec(`rm -f ${this.privateSquashfs}`, Utils.setEcho(true))
-    }
-
-
     //==========================================================================
     // Create squashfs
     //==========================================================================
@@ -183,7 +146,7 @@ export default class Syncto extends Command {
     let mkPrivateSquashfs = `mksquashfs \
                               /tmp/tmpfs/etc \
                               /home \
-                              ${this.luksMountpoint}/${this.privateSquashfs} \
+                              /tmp/${this.privateSquashfs} \
                               ${comp} \
                               ${exclude_nest} \
                               ${exclude_file} \
@@ -195,7 +158,7 @@ export default class Syncto extends Command {
 
     // Determina la dimesione di private.squashfs
     //let sizeString = (await exec(`ls ${this.luksMountpoint}/${this.privateSquashfs} -s|awk '{print $1}'`, { echo: false, capture: true })).data
-    let sizeString=(await exec(`unsquashfs -s ${this.luksMountpoint}/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { echo: false, capture: true })).data
+    let sizeString=(await exec(`unsquashfs -s /tmp/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { echo: false, capture: true })).data
     let size = parseInt(sizeString) + 2048
     console.log("size private.squashfs:", size, bytesToGB(size))
 
@@ -204,20 +167,53 @@ export default class Syncto extends Command {
     size=luksBlockSize*luksBlocks
 
     // get final size
-    this.echo = Utils.setEcho(true)
-    console.log("size:", size, bytesToGB(size))
-    await exec(`cryptsetup resize ${this.luksDevice} -b ${luksBlocks}`, this.echo)
-    let luksOffsetString = (await exec(`cryptsetup status "${this.luksName}" | grep offset | sed -e 's/ sectors$//' -e 's/.* //'`, { echo: false, capture: true })).data
-    let luksOffset = parseInt(luksOffsetString)
-    console.log('luksOffset:', luksOffset)
-    // 10% in più
-    let finalSize = Math.ceil((luksOffset + size)*1.05)
+    let luksSize = Math.ceil((size)*1.20)
 
-    console.log("finalSize:", finalSize, bytesToGB(finalSize))
+    console.log("luksSize:", luksSize, bytesToGB(luksSize))
+    let truncateAt=luksSize*2048
+    
+    Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${truncateAt}`)
+    await exec(`truncate --size ${luksSize} ${this.luksFile}`, this.echo)
+
+    Utils.warning(`Creating LUKS Volume on ${this.luksFile}`)
+    await exec(`cryptsetup --batch-mode luksFormat ${this.luksFile}`, Utils.setEcho(true))
+    console.log('')
+
+    // open LUKS volume temp
+    Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
+    let code = (await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))).code
+    if (code != 0) {
+      Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
+      process.exit(code)
+    }
+    await exec('udevadm settle', this.echo)
+
+    // formatta ext4 il volume
+    await exec(`mkfs.ext4 ${this.luksDevice}`, this.echo)
+    console.log('')
+
+    // mount LUKS volume
+    if (!fs.existsSync(`this.luksMountpoint)`)) {
+      Utils.warning(`creating mountpoint ${this.luksMountpoint}`)
+      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
+    }
+    if (!Utils.isMountpoint(`${this.luksMountpoint}`)) {
+      Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+      let code = (await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))).code
+      if (code != 0) {
+        Utils.error(`mount ${this.luksDevice} ${this.luksMountpoint} failed`)
+        process.exit(code)
+      }
+    }
+
+    // copy private.squashfs
+    Utils.warning(`copynkg /tmp/${this.privateSquashfs} to ${this.luksMountpoint}`)
+    await exec(`rsync -avx /tmp/${this.privateSquashfs} ${this.luksMountpoint}`, this.echo)
+
+    Utils.warning(`Umounting ${this.luksMountpoint}`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
+    Utils.warning(`Vlosing ${this.luksMountpoint}`)
     await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
-    let truncateAt=finalSize*2048
-    await exec(`truncate -s ${finalSize} ${this.luksFile}`, this.echo)
   }
 }
 
