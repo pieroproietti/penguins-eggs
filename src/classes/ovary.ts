@@ -17,7 +17,7 @@ import mustache from 'mustache'
 import PveLive from './pve-live'
 
 // interfaces
-import { IAddons, IFilters } from '../interfaces/index'
+import { IAddons, IExcludes } from '../interfaces/index'
 
 // libraries
 import { exec } from '../lib/utils'
@@ -132,7 +132,7 @@ export default class Ovary {
     release = false,
     myAddons: IAddons,
     myLinks: string[],
-    filters: IFilters,
+    excludes: IExcludes,
     nointeractive = false,
     noicons = false,
     unsecure = false,
@@ -239,27 +239,31 @@ export default class Ovary {
         process.exit(1)
       }
       let excludeCustom = ''
-      let excludeClone = ''
       let excludeDevHome = ''
+      let excludeHome = ''
       let excludeUsr = ''
-      if (filters.custom) {
+      let excludeVar = ''
+      if (excludes.custom) {
         excludeCustom = fs.readFileSync(`${excludeListTemplateDir}custom.list`, 'utf8')
       }
-      if (filters.custom) {
-        excludeClone = fs.readFileSync(`${excludeListTemplateDir}clone.list`, 'utf8')
-      }
-
-      if (filters.dev) {
+      if (excludes.dev) {
         excludeDevHome = `home/${await Utils.getPrimaryUser()}/*`
       }
-      if (filters.usr) {
+      if (excludes.home) {
+        excludeHome = fs.readFileSync(`${excludeListTemplateDir}home.list`, 'utf8')
+      }
+      if (excludes.usr) {
         excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
+      }
+      if (excludes.var) {
+        excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
       }
       let view = {
         custom_list: excludeCustom,
-        clone_list: excludeClone,
         dev_home_list: excludeDevHome,
-        usr_list: excludeUsr
+        home_list: excludeHome,
+        usr_list: excludeUsr,
+        var_list: excludeVar
       }
       const template = fs.readFileSync(excludeListTemplate, 'utf8')
       fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
@@ -331,12 +335,10 @@ export default class Ovary {
 
       if (cryptedclone) {
         let synctoCmd = `eggs syncto  -f ${luksFile}`
-        if (filters.clone) {
+        if (excludes.home) {
          synctoCmd += ' --exclusion' // from Marco
         }
         await exec(synctoCmd, Utils.setEcho(true))
-        Utils.warning(`Waiting 3s, before to copy ${luksFile} in ${this.nest}iso/live`)
-        await exec('sleep 3', Utils.setEcho(false))
         Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
         await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }

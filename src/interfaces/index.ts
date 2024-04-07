@@ -7,7 +7,7 @@
  */
 
 export {IAddons} from './i-addons'
-export {IFilters} from './i-filters'
+export {IExcludes} from './i-excludes'
 
 export {IDevice, IDevices} from './i-devices'
 export {IRemix} from './i-remix'

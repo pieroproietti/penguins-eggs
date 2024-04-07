@@ -5,11 +5,10 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-export interface IFilters {
-  clone: boolean
+export interface IExcludes {
   custom: boolean
   dev: boolean
+  home: boolean
   usr: boolean
+  var: boolean
 }
-
-//export interface IFilters { }

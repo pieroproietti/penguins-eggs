@@ -19,14 +19,14 @@ cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
 export:iso --clean --checksum --help --verbose
-install --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
-krill --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+install --btrfs --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+krill --btrfs --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --nointeractive --isos --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --filters --help --links --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
-syncto --delete --file --help --verbose
+syncto --file --exclusion --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:ppa --add --help --nointeractive --remove --verbose
 tools:skel --help --user --verbose

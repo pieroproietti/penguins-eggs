@@ -22,7 +22,7 @@ _eggs () {
 "produce:produce a live image from your system whithout your data"
 "status:informations about eggs status"
 "syncfrom:restore users and user data from a LUKS volumes"
-"syncto:saves users and user data in a LUKS volume inside the iso"
+"syncto:Save users and users' data ENCRYPTED"
 "tools\:clean:clean system log, apt, etc"
 "tools\:ppa:add/remove repo"
 "tools\:skel:update skel from home configuration"
@@ -112,7 +112,8 @@ export:iso)
 
 install)
   _command_flags=(
-    "--crypted[Crypted CLI installation]"
+    "--btrfs[Format btrfs]"
+"--crypted[Crypted CLI installation]"
 "--custom=-[custom unattended configuration]:"
 "--domain=-[Domain name, defult: .local]:"
 "--halt[Halt the system after installation]"
@@ -131,7 +132,8 @@ install)
 
 krill)
   _command_flags=(
-    "--crypted[Crypted CLI installation]"
+    "--btrfs[Format btrfs]"
+"--crypted[Crypted CLI installation]"
 "--custom=-[custom unattended configuration]:"
 "--domain=-[Domain name, defult: .local]:"
 "--halt[Halt the system after installation]"
@@ -169,7 +171,7 @@ produce)
 "--basename=-[basename]:"
 "--clone[clone]"
 "--cryptedclone[crypted clone]"
-"--filters=-[filters can be used: custom. dev, homes, usr]:"
+"--excludes=-[can be used: custom, home, var, usr]:"
 "--help[Show CLI help.]"
 "--links=-[desktop links]:"
 "--max[max compression]"
@@ -196,7 +198,7 @@ status)
 syncfrom)
   _command_flags=(
     "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
-"--file=-[file LUKS volume encrypted]:"
+"--file=-[file containing luks-volume encrypted]:"
 "--help[Show CLI help.]"
 "--rootdir=-[rootdir of the installed system, when used from live]:"
 "--verbose[verbose]"
@@ -205,8 +207,8 @@ syncfrom)
 
 syncto)
   _command_flags=(
-    "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
-"--file=-[file LUKS volume encrypted]:"
+    "--file=-[file luks-volume encrypted]:"
+"--exclusion[use: exclude.list.d/clone.list]"
 "--help[Show CLI help.]"
 "--verbose[verbose]"
   )

@@ -74,8 +74,10 @@ swapfile
 
 {{{custom_list}}}
 
+{{{dev_home_list}}}
+
 {{{home_list}}}
 
-{{{var_list}}}
-
 {{{usr_list}}}
+
+{{{var_list}}}
