@@ -11,7 +11,7 @@ import Ovary from '../classes/ovary'
 import Compressors from '../classes/compressors'
 import Config from './config'
 import chalk from 'chalk'
-import { IFilters, IAddons } from '../interfaces/index'
+import { IExcludes, IAddons } from '../interfaces/index'
 import fs, { link } from 'node:fs'
 import path from 'node:path'
 import { create } from 'axios'
@@ -22,7 +22,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    filters: Flags.string({ multiple: true, description: 'filters can be used: custom. dev, usr, clone' }),
+    excludes: Flags.string({ multiple: true, description: 'can be used: custom, home, var, usr' }),
     help: Flags.help({ char: 'h' }),
     links:  Flags.string({ multiple: true, description: 'desktop links' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -48,7 +48,7 @@ export default class Produce extends Command {
     'sudo eggs produce --clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
-    'sudo eggs produce --filters=custom --filters=homes'
+    'sudo eggs produce --excludes=custom --excludes=var'
   ]
 
   async run(): Promise<void> {
@@ -101,25 +101,29 @@ export default class Produce extends Command {
        * composizione dei flag
        */
 
-      // filters
-      const filters = {} as IFilters
-      filters.custom = false
-      filters.dev = false
-      filters.usr = false
-      filters.clone = false
+      // excludes
+      const excludes = {} as IExcludes
+      excludes.custom = false
+      excludes.dev = false
+      excludes.home = false
+      excludes.usr = false
+      excludes.var = false
 
-      if (flags.filters) {
-        if (flags.filters.includes('custom')) {
-          filters.custom = true
+      if (flags.excludes) {
+        if (flags.excludes.includes('custom')) {
+          excludes.custom = true
         }
-        if (flags.filters.includes('dev')) {
-          filters.dev = true
+        if (flags.excludes.includes('dev')) {
+          excludes.dev = true
         }
-        if (flags.filters.includes('usr')) {
-          filters.usr = true
+        if (flags.excludes.includes('home')) {
+          excludes.home = true
         }
-        if (flags.filters.includes('clone')) {
-          filters.clone = true
+        if (flags.excludes.includes('usr')) {
+          excludes.usr = true
+        }
+        if (flags.excludes.includes('var')) {
+          excludes.var = true
         }
       }
 
@@ -212,7 +216,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, filters, nointeractive, noicons, unsecure, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicons, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
