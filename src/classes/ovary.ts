@@ -232,41 +232,43 @@ export default class Ovary {
       /**
        * exclude.list
        */
-      let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
-      let excludeListTemplate = excludeListTemplateDir + 'master.list'
-      if (!fs.existsSync(excludeListTemplate)) {
-        Utils.warning('Cannot find: ' + excludeListTemplate)
-        process.exit(1)
+      if (excludes.static) {
+        let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
+        let excludeListTemplate = excludeListTemplateDir + 'master.list'
+        if (!fs.existsSync(excludeListTemplate)) {
+          Utils.warning('Cannot find: ' + excludeListTemplate)
+          process.exit(1)
+        }
+        let excludeCustom = ''
+        let excludeHome = ''
+        let excludeMine = ''
+        let excludeUsr = ''
+        let excludeVar = ''
+        if (excludes.custom) {
+          excludeCustom = fs.readFileSync(`${excludeListTemplateDir}custom.list`, 'utf8')
+        }
+        if (excludes.mine) {
+          excludeMine = `home/${await Utils.getPrimaryUser()}/*`
+        }
+        if (excludes.home) {
+          excludeHome = fs.readFileSync(`${excludeListTemplateDir}home.list`, 'utf8')
+        }
+        if (excludes.usr) {
+          excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
+        }
+        if (excludes.var) {
+          excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
+        }
+        let view = {
+          custom_list: excludeCustom,
+          home_list: excludeHome,
+          mine_list: excludeMine,
+          usr_list: excludeUsr,
+          var_list: excludeVar
+        }
+        const template = fs.readFileSync(excludeListTemplate, 'utf8')
+        fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
       }
-      let excludeCustom = ''
-      let excludeDevHome = ''
-      let excludeHome = ''
-      let excludeUsr = ''
-      let excludeVar = ''
-      if (excludes.custom) {
-        excludeCustom = fs.readFileSync(`${excludeListTemplateDir}custom.list`, 'utf8')
-      }
-      if (excludes.dev) {
-        excludeDevHome = `home/${await Utils.getPrimaryUser()}/*`
-      }
-      if (excludes.home) {
-        excludeHome = fs.readFileSync(`${excludeListTemplateDir}home.list`, 'utf8')
-      }
-      if (excludes.usr) {
-        excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
-      }
-      if (excludes.var) {
-        excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
-      }
-      let view = {
-        custom_list: excludeCustom,
-        dev_home_list: excludeDevHome,
-        home_list: excludeHome,
-        usr_list: excludeUsr,
-        var_list: excludeVar
-      }
-      const template = fs.readFileSync(excludeListTemplate, 'utf8')
-      fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
 
 
       /**
