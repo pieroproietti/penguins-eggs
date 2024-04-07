@@ -230,23 +230,19 @@ export default class Ovary {
       }
 
       /**
-       * exclude.list
+       * create exclude.list in not exists or static
        */
-      if (excludes.static) {
+      if (!fs.existsSync("/etc/penguins-eggs/exclude.list") || excludes.custom) {
         let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
         let excludeListTemplate = excludeListTemplateDir + 'master.list'
         if (!fs.existsSync(excludeListTemplate)) {
           Utils.warning('Cannot find: ' + excludeListTemplate)
           process.exit(1)
         }
-        let excludeCustom = ''
         let excludeHome = ''
         let excludeMine = ''
         let excludeUsr = ''
         let excludeVar = ''
-        if (excludes.custom) {
-          excludeCustom = fs.readFileSync(`${excludeListTemplateDir}custom.list`, 'utf8')
-        }
         if (excludes.mine) {
           excludeMine = `home/${await Utils.getPrimaryUser()}/*`
         }
@@ -260,7 +256,6 @@ export default class Ovary {
           excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
         }
         let view = {
-          custom_list: excludeCustom,
           home_list: excludeHome,
           mine_list: excludeMine,
           usr_list: excludeUsr,
@@ -269,7 +264,6 @@ export default class Ovary {
         const template = fs.readFileSync(excludeListTemplate, 'utf8')
         fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
       }
-
 
       /**
        * NOTE: reCreate = false
