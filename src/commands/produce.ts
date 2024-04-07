@@ -22,7 +22,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    excludes: Flags.string({ multiple: true, description: 'can be used: custom, home, var, usr' }),
+    excludes: Flags.string({ multiple: true, description: 'use: custom, home, mine, static, usr, var' }),
     help: Flags.help({ char: 'h' }),
     links:  Flags.string({ multiple: true, description: 'desktop links' }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
@@ -103,6 +103,7 @@ export default class Produce extends Command {
 
       // excludes
       const excludes = {} as IExcludes
+      excludes.static = false
       excludes.custom = false
       excludes.dev = false
       excludes.home = false
@@ -118,6 +119,9 @@ export default class Produce extends Command {
         }
         if (flags.excludes.includes('home')) {
           excludes.home = true
+        }
+        if (flags.excludes.includes('static')) {
+          excludes.static = true
         }
         if (flags.excludes.includes('usr')) {
           excludes.usr = true
