@@ -133,7 +133,7 @@ export default class Ovary {
     myAddons: IAddons,
     myLinks: string[],
     excludes: IExcludes,
-    nointeractive = false,
+    nointeractive = false, 
     noicons = false,
     unsecure = false,
     verbose = false) {
@@ -232,7 +232,7 @@ export default class Ovary {
       /**
        * create exclude.list in not exists or static
        */
-      if (!fs.existsSync("/etc/penguins-eggs/exclude.list") || excludes.custom) {
+      if (!fs.existsSync("/etc/penguins-eggs/exclude.list") || excludes.static) {
         let excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
         let excludeListTemplate = excludeListTemplateDir + 'master.list'
         if (!fs.existsSync(excludeListTemplate)) {
