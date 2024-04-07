@@ -105,8 +105,8 @@ export default class Produce extends Command {
       const excludes = {} as IExcludes
       excludes.static = false
       excludes.custom = false
-      excludes.dev = false
       excludes.home = false
+      excludes.mine = false
       excludes.usr = false
       excludes.var = false
 
@@ -114,11 +114,11 @@ export default class Produce extends Command {
         if (flags.excludes.includes('custom')) {
           excludes.custom = true
         }
-        if (flags.excludes.includes('dev')) {
-          excludes.dev = true
-        }
         if (flags.excludes.includes('home')) {
           excludes.home = true
+        }
+        if (flags.excludes.includes('mine')) {
+          excludes.mine = true
         }
         if (flags.excludes.includes('static')) {
           excludes.static = true
