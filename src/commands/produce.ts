@@ -48,7 +48,8 @@ export default class Produce extends Command {
     'sudo eggs produce --clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
-    'sudo eggs produce --excludes=custom --excludes=var'
+    'sudo eggs produce --excludes=usr var',
+    'sudo eggs produce --excludes=static'
   ]
 
   async run(): Promise<void> {
@@ -103,15 +104,15 @@ export default class Produce extends Command {
 
       // excludes
       const excludes = {} as IExcludes
-      excludes.custom = false
+      excludes.static = false
       excludes.home = false
       excludes.mine = false
       excludes.usr = false
       excludes.var = false
 
       if (flags.excludes) {
-        if (flags.excludes.includes('custom')) {
-          excludes.custom = true
+        if (flags.excludes.includes('static')) {
+          excludes.static = true
         }
         if (flags.excludes.includes('home')) {
           excludes.home = true

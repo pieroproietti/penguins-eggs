@@ -6,7 +6,7 @@
  * license: MIT
  */
 export interface IExcludes {
-  custom: boolean
+  static: boolean
   home: boolean
   mine: boolean
   usr: boolean
