@@ -57,6 +57,5 @@ export default class Get extends Command {
     if (result.code === 0) {
       Utils.warning(`you get new wardrobe from repo: ${repo} in ${await Utils.wardrobe()}`)
     }
-    await Utils.pressKeyToExit()
   }
 }
