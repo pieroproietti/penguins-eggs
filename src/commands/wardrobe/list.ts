@@ -136,7 +136,5 @@ export default class List extends Command {
         console.log('- ' + chalk.cyan(vendor)) 
       }
     }
-    console.log()
-    await Utils.pressKeyToExit()
   }
 }

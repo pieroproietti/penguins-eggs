@@ -35,6 +35,5 @@ export default class Status extends Command {
     }
 
     await information(verbose)
-    await Utils.pressKeyToExit()    
   }
 }
