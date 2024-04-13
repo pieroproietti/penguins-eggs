@@ -22,7 +22,7 @@ import Utils from '../classes/utils'
 export default class Syncto extends Command {
   static flags = {
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
-    exclusion: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/clone.list' }),
+    excludes: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/home.list' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
@@ -31,7 +31,7 @@ export default class Syncto extends Command {
   static examples = [
     'sudo eggs syncto',
     'sudo eggs syncto --file /path/to/luks-volume',
-    'sudo eggs syncto --exclusion'
+    'sudo eggs syncto --excludes'
   ]
 
   verbose = false
@@ -48,9 +48,9 @@ export default class Syncto extends Command {
 
   privateSquashfs = `private.squashfs`
 
-  excludeFile = '/etc/penguins-eggs.d/exclude.list.d/clone.list'
+  excludeHome = '/etc/penguins-eggs.d/exclude.list.d/home.list'
 
-  excludeFiles = false
+  exclude = false
 
   settings = {} as Settings
 
@@ -74,8 +74,8 @@ export default class Syncto extends Command {
       fileLuks = flags.file
     }
 
-    if (flags.exclusion) {
-      this.excludeFiles = true
+    if (flags.excludes) {
+      this.exclude = true
     }
 
     if (Utils.isRoot()) {
@@ -117,9 +117,9 @@ export default class Syncto extends Command {
     }
 
     // exclude file
-    let exclude_file = ''
-    if (this.excludeFiles) {
-      exclude_file = `-ef ${this.excludeFile}`
+    let exclude_home = ''
+    if (this.exclude) {
+      exclude_home = `-ef ${this.excludeHome}`
     }
 
     // creato dummyfs per /etc/
@@ -136,7 +136,7 @@ export default class Syncto extends Command {
                               /tmp/${this.privateSquashfs} \
                               ${comp} \
                               ${exclude_nest} \
-                              ${exclude_file} \
+                              ${exclude_home} \
                               -keep-as-directory \ 
                               -noappend`
 

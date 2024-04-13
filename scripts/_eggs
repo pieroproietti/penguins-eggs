@@ -171,7 +171,7 @@ produce)
 "--basename=-[basename]:"
 "--clone[clone]"
 "--cryptedclone[crypted clone]"
-"--excludes=-[can be used: custom, home, var, usr]:"
+"--excludes=-[use: custom, home, mine, usr, var]:"
 "--help[Show CLI help.]"
 "--links=-[desktop links]:"
 "--max[max compression]"

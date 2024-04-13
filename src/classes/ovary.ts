@@ -332,7 +332,7 @@ export default class Ovary {
       if (cryptedclone) {
         let synctoCmd = `eggs syncto  -f ${luksFile}`
         if (excludes.home) {
-         synctoCmd += ' --exclusion' // from Marco
+         synctoCmd += ' --excludes' // from Marco, usa home.list 
         }
         await exec(synctoCmd, Utils.setEcho(true))
         Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
