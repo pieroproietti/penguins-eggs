@@ -22,11 +22,12 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 # eggs-9.7.2
-Not so much differences, but now work fine with pengui-0.7.2.
-
-* renamed the produce flag --filters to --excludes, this is more clear;
+* renamed the produce flag `--filters` to `--excludes`, this is more clear;
 * removed all the press a key after the commands. I put them just for pengui, but now it's included in pengui, so this is not more necessary;
-* exclude.list change the name, was too long before, we have now: `master.list`, `home.list`, `usr.list` and `var.list`. Of course `home.list` becouse the way of work of eggs, it's used just for clone - it's included on master.list - or with criptedclone. Again, with `--excludes mine`, the entire home of the main user can be excluded. This is usefull almost for me, to test clone without get a lot of space.
+* exclude.list change the name, was too long before, we have now: `master.list`, `home.list`, `usr.list` and `var.list`. Of course `home.list` becouse the way of work of eggs, it's used just for clone - it's included on master.list - or with criptedclone. 
+* again, with `--excludes mine`, the entire home of the main user can be excluded. This is usefull almost for me, to test clone without get a lot of space.
+
+But perhaps the best of this version, is the fact penGUI is starting to be usable!
 
 # eggs-9.6.41
 Finally we have `sudo eggs produce --cryptedclone` working and adapting the final LUKS volume to the compressed contents. 
