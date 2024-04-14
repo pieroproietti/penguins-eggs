@@ -27,8 +27,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * exclude.list change the name, was too long before, we have now: `master.list`, `home.list`, `usr.list` and `var.list`. Of course `home.list` becouse the way of work of eggs, it's used just for clone - it's included on master.list - or with criptedclone. 
 * `--excludes static` inhibits the creation of a new exclude.list and the present `/etc/penguins-eggs.d/exclude.list` will be used. This is convenient for working with a personal exclude.list. To avoid the risk of losing your laboriously created exclude.list, it may be advisable to use a symbolic link, eg: `ln -s /etc/penguins-eggs.d/exclude.list ~/personal_exclude.list`;
 * again, with `--excludes mine`, the entire home of the main user can be excluded. This is usefull almost for me, to test clone without get a lot of space.
-
-But perhaps the best of this version, is the fact penGUI is starting to be usable!
+* last but not least: probably the best of this version - expecially for new users coming - is the fact **penGUI**, a GUI for eggs, is finally usable!
 
 # eggs-9.6.41
 Finally we have `sudo eggs produce --cryptedclone` working and adapting the final LUKS volume to the compressed contents. 
