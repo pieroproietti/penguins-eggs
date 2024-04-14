@@ -1,8 +1,14 @@
 # Based on: https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
 #
-# Location: /usr/local/share/penguins-eggs/exclude.list
+# Location: /etc/penguins-eggs/exclude.list.d/master.list
 #
-# Authors: fsmithred (original), Piero Proietti, Tim Wallace, Hosein Seilany, wfrcrd@github.com
+# This is a template, from the original exclude.list of refracta-snapshot
+#
+# Authors: fsmithred (original)
+#          Hosein Seilany
+#          Piero Proietti, 
+#          Tim Wallace, 
+#          wfrcrd@github.com
 #
 # NOTE: all is alfabetic sorted using code->command palette->sortes lines ascending
 ######################################################################################################
