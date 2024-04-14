@@ -22,12 +22,14 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 
 # eggs-9.7.2
+Well, we passed to **9.7.x** releases! I chose to update the release number because of the many changes and the introduction of penGUI.
+
 * renamed the produce flag `--filters` to `--excludes`, this is more clear;
-* removed all the press a key after the commands. I put them just for pengui, but now it's included in pengui, so this is not more necessary;
-* exclude.list change the name, was too long before, we have now: `master.list`, `home.list`, `usr.list` and `var.list`. Of course `home.list` becouse the way of work of eggs, it's used just for clone - it's included on master.list - or with criptedclone. 
-* `--excludes static` inhibits the creation of a new exclude.list and the present `/etc/penguins-eggs.d/exclude.list` will be used. This is convenient for working with a personal exclude.list. To avoid the risk of losing your laboriously created exclude.list, it may be advisable to use a symbolic link, eg: `ln -s /etc/penguins-eggs.d/exclude.list ~/personal_exclude.list`;
+* excludes list changed the names, we have now: `master.list`, `home.list`, `usr.list` and `var.list` under `/etc/penguins-eggs.d/exlude.list.d`. You can choice that to exclude, using `sudo eggs produce --excludes ` or just use penGUI;
+* in addition, `--excludes static` inhibits the creation of a new exclude.list and the present `/etc/penguins-eggs.d/exclude.list` will be used. This is convenient for working with a personal exclude.list. To avoid the risk of losing your laboriously created exclude.list, it may be advisable to use a symbolic link, eg: `ln -s /etc/penguins-eggs.d/exclude.list ~/personal_exclude.list`;
 * again, with `--excludes mine`, the entire home of the main user can be excluded. This is usefull almost for me, to test clone without get a lot of space.
-* last but not least: probably the best of this version - expecially for new users coming - is the fact **penGUI**, a GUI for eggs, is finally usable!
+* I have removed "press a key to continue" from all eggs commands. They were included for ease of use with penGUI, but are no longer needed;
+* last but not least: probably the best of this version - expecially for new users coming - is the fact **penGUI** - a GUI for eggs - is finally usable!
 
 # eggs-9.6.41
 Finally we have `sudo eggs produce --cryptedclone` working and adapting the final LUKS volume to the compressed contents. 
@@ -48,7 +50,7 @@ This is a function designed specifically for servers, but a module for calamares
 * again on syncto e syncfrom: this time I decided to create until 2GB luks-volume inside the iso, under `/live`. Within the LUKS volume is created `private.squashfs` containing the data from `/home` and some significant `/etc` files;
 * After the `private.squashfs` file has been created, the strict necessary size of the luks-volume file to contain it is determined. At this point `luks-volume` can be truncated to the minimum size. (I have tried many times to truncate the resulting file, sometimes successfully, sometimes not.)
 * Using krill for installation, the passfrase will be requested and the existing private data copied;
-* I have renamed and reorganized the exclude.lists collected in /etc/penguins-eggs.d, and now we have: clone.list, clone.sample -- just an example --, custom.list, master.list, and usr.list. These lists are compiled under master.list when requested, and they make up the /etc/penguins-eggs.d/exclude.list used for iso production.
+* I have renamed and reorganized the exclude.lists collected in `/etc/penguins-eggs.d`, and now we have: `clone.list`, `clone.sample` -- just an example --, `custom.list`, `master.list`, and `usr.list`. These lists are compiled under master.list when requested, and they make up the `/etc/penguins-eggs.d/exclude.list` used for ISOs production.
 
 # eggs-9.6.38
 * syncto e syncfrom [#347](https://github.com/pieroproietti/penguins-eggs/issues/347) I have rewritten - almost completely - the syncto command, there are again problems I was unable to create a complete ISO filled with luks-eggs-data, but the command work and create it. Waiting suggestions, I decided to release it;
