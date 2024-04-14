@@ -1,5 +1,9 @@
 ######################################################################################################
-# HOMES: filters users' homes
+# home: will be used just on:
+# * --clone included in exclude.list
+# * --cryptedclone used by syncto --excludes (automatically passed from ovary)
+# 
+# 
 home/*/.adobe
 home/*/.aptitude
 home/*/.bash_history
