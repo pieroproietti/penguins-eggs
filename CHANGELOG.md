@@ -29,7 +29,7 @@ Well, we passed to **9.7.x** releases! I chose to update the release number beca
 * in addition, `--excludes static` inhibits the creation of a new exclude.list and the present `/etc/penguins-eggs.d/exclude.list` will be used. This is convenient for working with a personal exclude.list. To avoid the risk of losing your laboriously created exclude.list, it may be advisable to use a symbolic link, eg: `ln -s /etc/penguins-eggs.d/exclude.list ~/personal_exclude.list`;
 * again, with `--excludes mine`, the entire home of the main user can be excluded. This is usefull almost for me, to test clone without get a lot of space.
 * I have removed "press a key to continue" from all eggs commands. They were included for ease of use with penGUI, but are no longer needed;
-* last but not least: probably the best of this version - expecially for new users coming - is the fact **penGUI** - a GUI for eggs - is finally usable!
+* last but not least: probably the best of this version - expecially for new users coming - is the fact **[penGUI](https://github.com/pieroproietti/pengui?tab=readme-ov-file#pengui-take-cure-of-eggs)** - a GUI for eggs - is finally usable!
 
 # eggs-9.6.41
 Finally we have `sudo eggs produce --cryptedclone` working and adapting the final LUKS volume to the compressed contents. 
