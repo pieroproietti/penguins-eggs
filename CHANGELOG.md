@@ -21,7 +21,14 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # eggs-9.7.3
-* added, ad comment: `#ip=ens18:192.168.1.4:255.255.255.0:192.168.1.1:8.8.8.8` on the option to grub and isolinux for live. This is pratical in cases there is not a dhcp server availabe at live boot;
+* I added as a comment the ip settings as a kernel parameter `#ip=ens18:192.168.1.4:255.255.255.0:192.168.1.1:8.8.8` in the grub and isolinux options for the live. This is handy in case there is no dhcp server available when starting the live, just remove the # and set the appropriate values.
+
+The syntax looks like this, although it is reported differently on [kernel.org](https://www.kernel.org/doc/Documentation/filesystems/nfs/nfsroot.txt):
+
+`ip=device:address:netmask:gateway:nameserver`
+
+Example, for **eth0**:
+`ip=eth0:10.10.10.10:255.255.255.0:10.10.10.1:8.8.8.8`
 
 # eggs-9.7.2
 Well, we passed to **9.7.x** releases! I chose to update the release number because of the many changes and the introduction of penGUI.
