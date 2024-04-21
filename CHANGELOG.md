@@ -20,6 +20,8 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.7.3
+* added, ad comment: `#ip=ens18:192.168.1.4:255.255.255.0:192.168.1.1:8.8.8.8` on the option to grub and isolinux for live. This is pratical in cases there is not a dhcp server availabe at live boot;
 
 # eggs-9.7.2
 Well, we passed to **9.7.x** releases! I chose to update the release number because of the many changes and the introduction of penGUI.
