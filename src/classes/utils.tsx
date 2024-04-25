@@ -122,6 +122,8 @@ export default class Utils {
       let distro = new Distro()
       let vmlinuz = ''
 
+      // patch per raspberry arm64
+
       // find vmlinuz in /proc/cmdline
       const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
       cmdline.forEach(cmd => {
@@ -147,6 +149,11 @@ export default class Utils {
          if (fs.existsSync(`/boot${vmlinuz}`)) {
             vmlinuz = `/boot${vmlinuz}`
          }
+      }
+
+      if (process.arch === 'arm64') {
+         const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
+         vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
 
       /** 
