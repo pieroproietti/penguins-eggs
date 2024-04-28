@@ -20,6 +20,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.7.4
+* realigned the versions for Debian and Arch;
+* added a patch to detect vmlinuz path on raspberry. Currently generating an ISO on rasberry does not make booting possible, but includes the entire filestem to be placed on the rootfs partition, a prerequisite for generating images suitable for raspberry pi.
+
 # eggs-9.7.3
 * I added as a comment the ip settings as a kernel parameter `#ip=ens18:192.168.1.4:255.255.255.0:192.168.1.1:8.8.8` in the grub and isolinux options for the live. This is handy in case there is no dhcp server available when starting the live, just remove the # and set the appropriate values.
 
