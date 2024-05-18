@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.7.5
+* added ManjaroLinux/Wynsdey;
+
 # eggs-9.7.4
 * realigned the versions for Debian and Arch;
 * added a patch to detect vmlinuz path on raspberry. Currently generating an ISO on rasberry does not make booting possible, but includes the entire filestem to be placed on the rootfs partition, a prerequisite for generating images suitable for raspberry pi.
