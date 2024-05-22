@@ -86,7 +86,12 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
       sidebarBackground:    "#010027",
       sidebarText:          "#FFFFFF",
       sidebarTextCurrent:   "#fbfbfb",
-      sidebarBackgroundCurrent: "#017877"
+      sidebarBackgroundCurrent: "#017877",
+      // li ripeto per calamares 3.3
+      SidebarBackground:    "#010027",
+      SidebarText:          "#FFFFFF",
+      SidebarTextCurrent:   "#fbfbfb",
+      SidebarBackgroundCurrent: "#017877"
     },
   }
   return yaml.dump(branding)
