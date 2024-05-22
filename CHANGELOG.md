@@ -20,6 +20,22 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# eggs-9.7.7
+I had to duplicate in branding the style for calamares menus. Version 3.2.x wants the first letter lowercase, calamares version 3.3.x uppercase. While waiting to do better, I repeated the variables for the two versions in branding.ts.
+
+```
+    style: {
+      sidebarBackground: "#010027"
+      sidebarText: "#FFFFFF",
+      sidebarTextCurrent: "#fbfbfb",
+      sidebarBackgroundCurrent: "#017877",
+      // repeat them for calamares 3.3
+      SidebarBackground: "#010027"
+      SidebarText: "#FFFFFF",
+      SidebarTextCurrent: "#fbfbfb",
+      SidebarBackgroundCurrent: "#017877"
+    }...
+```
 # eggs-9.7.6
 * just a little bugfix on the menu of calamares 3.2.x;
 
