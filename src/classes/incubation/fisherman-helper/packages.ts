@@ -22,6 +22,10 @@ export function remove(distro: IDistro): string {
 
   if (distro.familyId === 'debian') {
     packages.push('eggs')
+    packages.push('live-boot')
+    packages.push('live-boot-doc')
+    packages.push('live-boot-initramfs-tools')
+    packages.push('live-tools')
   }
 
   let yaml = ''
