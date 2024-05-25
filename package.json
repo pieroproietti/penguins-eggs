@@ -9,12 +9,12 @@
   "type": "commonjs",
   "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
   "dependencies": {
-    "@oclif/core": "^3.26.6",
-    "@oclif/plugin-autocomplete": "3.0.18",
-    "@oclif/plugin-help": "^6.0.22",
-    "@oclif/plugin-version": "2.1.2",
-    "@oclif/plugin-warn-if-update-available": "^3.0.19",
-    "@oclif/test": "^4.0.2",
+    "@oclif/core": "^3",
+    "@oclif/plugin-autocomplete": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-version": "^2",
+    "@oclif/plugin-warn-if-update-available": "^3",
+    "@oclif/test": "^4",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
     "etrick": "0.0.4",
@@ -30,8 +30,7 @@
     "shelljs": "0.8.5",
     "systeminformation": "^5.22.9",
     "tftp": "^0.1.2",
-    "tslib": "^2.6.2",
-    "typescript": "^5.4.5"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.6",
@@ -50,15 +49,17 @@
     "@types/shelljs": "^0.8.15",
     "@typescript-eslint/parser": "^5.62.0",
     "chai": "^5.1.1",
-    "eslint": "^7.32.0",
-    "eslint-config-oclif": "^4.0.0",
-    "eslint-config-oclif-typescript": "^1.0.3",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9",
     "globby": "^11.1.0",
-    "mocha": "^10.4.0",
     "nyc": "^15.1.0",
-    "oclif": "^4.11.0",
+    "mocha": "^10",
+    "oclif": "^4",
     "perrisbrewery": "9.5.9",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10",
+    "typescript": "^5"    
   },
   "dirname": "eggs",
   "engines": {
