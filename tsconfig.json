@@ -9,7 +9,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "lib": ["es2021"],
+    "lib": ["es2022"],
     "target": "es2022",
     "resolveJsonModule": true
   },
