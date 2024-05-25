@@ -29,8 +29,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -68,8 +67,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -150,8 +148,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -212,8 +209,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -244,8 +240,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -298,8 +293,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -434,8 +428,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -487,8 +480,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -519,8 +511,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -679,8 +670,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -717,8 +707,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -780,8 +769,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -836,8 +824,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -875,8 +862,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -930,8 +916,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -985,8 +970,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1032,8 +1016,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1094,8 +1077,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1142,8 +1124,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1191,8 +1172,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1230,8 +1210,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "dir": "/var/local/yolk",
       "isESM": false,
       "relativePath": [
@@ -1277,8 +1256,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1332,8 +1310,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
@@ -1394,8 +1371,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "example": [
         "eggs wardrobe show colibri",
         "eggs wardrobe show accessories/firmwares",
@@ -1468,8 +1444,7 @@
       "pluginName": "penguins-eggs",
       "pluginType": "core",
       "strict": true,
-      "parse": true,
-      "parserOptions": {},
+      "enableJsonFlag": false,
       "isESM": false,
       "relativePath": [
         "dist",
