@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {integer} from '@oclif/core/lib/parser/flags'
+//import {integer} from '@oclif/core/lib/parser/flags'
 import {flagUsage} from '@oclif/core/lib/parser/help'
 import fs from 'fs'
 import {exec} from '../lib/utils'

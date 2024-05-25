@@ -1268,9 +1268,9 @@
     "wardrobe:list": {
       "aliases": [],
       "args": {
-        "wardrobe": {
-          "description": "wardrobe",
-          "name": "wardrobe",
+        "repo": {
+          "description": "wardrobe to get",
+          "name": "repo",
           "required": false
         }
       },
@@ -1322,9 +1322,9 @@
     "wardrobe:show": {
       "aliases": [],
       "args": {
-        "costume": {
-          "description": "costume",
-          "name": "costume",
+        "repo": {
+          "description": "costume to show",
+          "name": "repo",
           "required": false
         }
       },
@@ -1388,9 +1388,9 @@
     "wardrobe:wear": {
       "aliases": [],
       "args": {
-        "costume": {
-          "description": "costume",
-          "name": "costume",
+        "repo": {
+          "description": "costume to wear",
+          "name": "repo",
           "required": false
         }
       },

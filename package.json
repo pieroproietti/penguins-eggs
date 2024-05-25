@@ -17,7 +17,7 @@
     "@oclif/test": "^4",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
-    "etrick": "0.0.4",
+    "etrick": "0.0.3",
     "ink": "^3.2.0",
     "ink-big-text": "^1.2.0",
     "ink-gradient": "^2.0.0",
@@ -63,7 +63,7 @@
   },
   "dirname": "eggs",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "files": [
     ".oclif.manifest.json",
@@ -109,7 +109,7 @@
   "repository": "https://github.com/pieroproietti/penguins-eggs",
   "scripts": {
     "build": "tsc -p .",
-    "deb": "oclif pack:deb && pb deb ./",
+    "deb": "oclif pack:deb",
     "docs": "rm docs -rf && npx typedoc src --out docs",
     "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
     "lint": "eslint . --ext .ts --config .eslintrc",
