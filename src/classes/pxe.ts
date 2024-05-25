@@ -18,7 +18,7 @@ import Utils from './utils'
 // @ts-ignore
 import tftp from 'tftp'
 // @ts-ignore
-// import etrick from 'etrick'
+import etrick from 'etrick'
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from 'typescript'
 
 /**
@@ -384,7 +384,7 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    //new etrick(dhcpOptions)
+    new etrick(dhcpOptions)
   }
 
   /**

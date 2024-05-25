@@ -33,8 +33,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2
       etrick:
-        specifier: 0.0.4
-        version: 0.0.4
+        specifier: 0.0.3
+        version: 0.0.3
       ink:
         specifier: ^3.2.0
         version: 3.2.0(@types/react@18.3.3)(react@18.3.1)
@@ -1749,8 +1749,8 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
-  etrick@0.0.4:
-    resolution: {integrity: sha512-FmdzWJ9iYDEbp9qny/nZOLdRuahvsMI2bgVXfSWH2LRjp3BTIOTFA9jaRbk+xvK/1QtloMb2MWq1HxLP8qrkZg==}
+  etrick@0.0.3:
+    resolution: {integrity: sha512-RvlxDU9XQdaSmfocC7rg9uXahmrgmie/428IooSwGjakf5aMrqzQouNfgPw5O0om3kOFR5AUiyBPeY9BnTXdOA==}
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
@@ -6001,7 +6001,7 @@ snapshots:
 
   esutils@2.0.3: {}
 
-  etrick@0.0.4:
+  etrick@0.0.3:
     dependencies:
       tslib: 2.6.2
 

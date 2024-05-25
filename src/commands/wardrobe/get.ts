@@ -5,12 +5,12 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import Utils from '../../classes/utils'
 
 // libraries
 import {exec} from '../../lib/utils'
-import {basename} from 'path'
+import { basename } from 'path';
 
 /**
  *
@@ -21,7 +21,11 @@ export default class Get extends Command {
     verbose: Flags.boolean({char: 'v'}),
   }
 
-  static args = [{name: 'repo', description: 'repository to get', required: false}]
+  static args = {
+    repo: Args.string({name: 'repo', description: 'repository to get', required: false}),
+  }
+
+  //static args ={name: 'repo', description: 'repository to get', required: false}
   static description = 'get warorobe'
   static examples=[
     'eggs wardrobe get',

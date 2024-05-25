@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import { boolean } from "@oclif/core/lib/parser"
+//import { boolean } from "@oclif/core/lib/parser"
 
 export interface ICalamaresPartition {
     efiSystemPartition: string //    "/boot/efi"
