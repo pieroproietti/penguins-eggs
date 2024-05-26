@@ -1,5 +1,5 @@
 #!/bin/sh
-# preinst script for eggs-7.7.32
+# preinst script for penguins-eggs_9.7.8-1
 #
 # see: dh_installdeb(1)
 

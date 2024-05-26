@@ -1,10 +1,7 @@
 #!/bin/bash
-
-################################################
-# pre-remove script
-################################################
+# prerm script for penguins-eggs_9.7.8-1
+#
 #echo ">>> $0 $1 $2 $3 $4<<<"
-
 
 # sanitize /usr/lib/penguins-eggs/
 rm -rf /usr/lib/penguins-eggs/distros
@@ -20,6 +17,8 @@ fi
 if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
     rm -f /etc/bash_completion.d/eggs.bash
 fi
+
+if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
 
 # remove calamares customization
 FILE=/var/lib/dpkg/info/calamares.list
