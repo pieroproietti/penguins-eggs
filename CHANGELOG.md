@@ -29,10 +29,7 @@ Basically this version is different, although on the surface it does not seem di
 
 For that reason I decided to highlight the change by changing in addition to the release also the name of the package itself, no longer `eggs` but `penguins-eggs`, commands remain the same.
 
-This package I place in testing at the moment, it definitely needs same break-in, but it assures us to stay well anchored in the present...
-
-
-Translated with DeepL.com (free version)
+This package I place in testing at the moment, it definitely needs same break-in, but it assures us to stay well anchored in the present.
 
 # eggs-9.7.8
 * Added remotion of live-boot* packages on Debian, during installation wehen it's used flag --release;
