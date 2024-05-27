@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
 import Utils from '../../classes/utils'
 import path from 'path'
@@ -26,7 +26,9 @@ export default class Wear extends Command {
   }
 
   static description = 'wear costume/accessories from wardrobe'
-  static args = [{name: 'costume', description: 'costume', required: false}]
+  static args = {
+    repo: Args.string({name: 'costume', description: 'costume to wear', required: false}),
+  }
   static examples=[
     'sudo eggs wardrobe wear duck',
     'sudo eggs wardrobe wear accessories/firmwares',

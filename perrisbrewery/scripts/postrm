@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for eggs-7.7.32
+# postrm script for penguins-eggs_9.7.8-1
 #
 # see: dh_installdeb(1)
 
@@ -53,6 +53,10 @@ case "$1" in
         # sanitize others
         rm -f /usr/bin/pve-live.sh
         rm -f /etc/systemd/system/pve-live.service
+
+        # sanitize bash completion
+        rm -f /usr/share/bash-completion/completions/eggs.bash
+        rm -f /usr/share/zsh/functions/Completion/Zsh/_eggs
 
         # sanitize yolk
         rm -rf /var/local/yolk

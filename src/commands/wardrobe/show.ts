@@ -6,7 +6,7 @@
  * license: MIT
  */
 // libraries
-import { Command, Flags } from '@oclif/core'
+import { Args, Command, Flags } from '@oclif/core'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import path from 'path'
@@ -28,7 +28,11 @@ export default class Show extends Command {
   }
 
   static description = 'show costumes/accessories in wardrobe'
-  static args = [{ name: 'costume', description: 'costume', required: false }]
+  static args = {
+    repo: Args.string({name: 'costume', description: 'costume to show', required: false}),
+  }
+
+  //static args = [{ name: 'costume', description: 'costume', required: false }]
   static example = [
     'eggs wardrobe show colibri',
     'eggs wardrobe show accessories/firmwares',

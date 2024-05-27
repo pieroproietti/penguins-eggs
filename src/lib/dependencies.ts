@@ -64,6 +64,7 @@ export const depCommon = [
   'live-boot', // eggs
   'lsb-release', // eggs
   'lvm2', // pvdisplay in krill
+  'nodejs', // eggs
   'parted', // eggs
   'pxelinux', // cuckoo
   'rsync', // eggs

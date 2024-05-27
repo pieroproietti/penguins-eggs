@@ -6,7 +6,6 @@
  * license: MIT
  */
 import {Command, Flags} from '@oclif/core'
-import {Example} from '@oclif/core/lib/interfaces'
 import path from 'node:path'
 import Utils from '../classes/utils'
 

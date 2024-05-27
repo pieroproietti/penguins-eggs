@@ -36,34 +36,27 @@ export default class ExportDeb extends Command {
 
     const echo = Utils.setEcho(flags.verbose)
 
-    let script = ''
     let arch = Utils.uefiArch()
     if (flags.all) {
       arch = '*'
     }
+    arch += '.deb'
 
+    const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
+    let cmd = `mkdir ${remoteMountpoint}\n`
+    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${remoteMountpoint}\n`
     if (flags.clean) {
-      arch += '.deb'
-      script = String(script)
+      cmd += `rm -f ${remoteMountpoint}/${Tu.config.filterDeb}${arch}\n`
     }
 
-    const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
-    let cmd = `rm -f ${rmount}\n`
-    cmd += `mkdir ${rmount}\n`
-    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${rmount}\n`
-    if (flags.clean) {
-      cmd += `rm -f ${rmount}/${Tu.config.filterDeb}${arch}\n`
-    }
-
-    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${rmount}\n`
+    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${remoteMountpoint}\n`
     cmd += 'sync\n'
-    cmd += `umount ${rmount}\n`
-    cmd += `rm -f ${rmount}\m`
+    cmd += `umount ${remoteMountpoint}\n`
+    cmd += `rm -rf ${remoteMountpoint}\n`
     if (!flags.verbose) {
       if (flags.clean) {
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
       }
-
       console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
     }
 
