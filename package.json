@@ -57,7 +57,7 @@
     "mocha": "^10",
     "nyc": "^15.1.0",
     "oclif": "^4",
-    "perrisbrewery": "../perrisbrewery/",
+    "perrisbrewery": "^9.7.8",
     "ts-node": "^10",
     "typescript": "^5"
   },
