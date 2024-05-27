@@ -48,24 +48,22 @@ export default class ExportDeb extends Command {
     }
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
-    let cmd = `rm -f ${remoteMountpoint}\n`
-    cmd += `mkdir ${remoteMountpoint}\n`
+    let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${remoteMountpoint}\n`
     if (flags.clean) {
       cmd += `rm -f ${remoteMountpoint}/${Tu.config.filterDeb}${arch}\n`
     }
 
-    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}.deb  ${remoteMountpoint}\n`
+    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
-    cmd += `rm -f ${remoteMountpoint}\n`
+    cmd += `rm -rf ${remoteMountpoint}\n`
     if (!flags.verbose) {
       if (flags.clean) {
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
       }
 
       console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
-      //console.log(cmd)    
     }
 
     await exec(cmd, echo)
