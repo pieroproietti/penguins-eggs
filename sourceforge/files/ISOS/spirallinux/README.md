@@ -16,6 +16,15 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
+# warning
+--------------------------------------------------------------------------
+Actually this ISO can be installed just with: sudo eggs install -un
+
+Calamares give a problem with the script /usr/sbin/bootloader-config.sh, unfortunately I was not able to solve.
+
+Peoples can try to give back the solutions! ;-)
+--------------------------------------------------------------------------
+
 All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
 
 ```sudo eggs update```

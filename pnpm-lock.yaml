@@ -148,8 +148,8 @@ importers:
         specifier: ^4
         version: 4.11.3
       perrisbrewery:
-        specifier: ^9.7.8
-        version: 9.7.8
+        specifier: ^9.7.9
+        version: 9.7.9
       ts-node:
         specifier: ^10
         version: 10.9.2(@types/node@20.12.12)(typescript@5.4.5)
@@ -2719,8 +2719,8 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  perrisbrewery@9.7.8:
-    resolution: {integrity: sha512-wVX5M67s/49TqS1AiQNn8djwxZzR9+Lr/OKfky8tfYoyHIt5e+DDvhzr+eYw1ygzjl7EhmHN0fGa1XGXaLd0eQ==}
+  perrisbrewery@9.7.9:
+    resolution: {integrity: sha512-HY+KFvhaR8U5tZNACyhbLcZHDczNwyz9ShuER1iOyIoLfH/1yPK+480uv5w9TZezPUCaSKjy8C0vgpDYQiBpPA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6918,7 +6918,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  perrisbrewery@9.7.8:
+  perrisbrewery@9.7.9:
     dependencies:
       '@oclif/core': 3.26.6
       '@oclif/plugin-autocomplete': 3.0.18
