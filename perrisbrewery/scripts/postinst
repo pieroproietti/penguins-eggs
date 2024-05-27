@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for eggs-7.8.13
+# postinst script for penguins-eggs_9.7.8-1
 #
 # see: dh_installdeb(1)
 

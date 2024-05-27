@@ -5,7 +5,7 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Command, Flags } from '@oclif/core'
+import { Args, Command, Flags } from '@oclif/core'
 import Utils from '../../classes/utils'
 import path from 'path'
 import yaml from 'js-yaml'
@@ -26,8 +26,11 @@ export default class List extends Command {
     distro: Flags.string({ char: 'd', description: 'distro' }),
     verbose: Flags.boolean({ char: 'v' }),
   }
+  static args = {
+    repo: Args.string({name: 'wardrobe', description: 'wardrobe to get', required: false}),
+  }
 
-  static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
+  //static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
   static description = 'list costumes and accessoires in wardrobe'
   static examples = [
     'eggs wardrobe list',

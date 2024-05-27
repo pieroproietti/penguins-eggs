@@ -20,6 +20,17 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-9.8.0
+It had been a long time since I was forced to use an outdated version of [oclif](https://oclif.io/) because I had modified it to be able to use [pnpm](https://pnpm.io/it/) instead of [npm]().
+Recently, I think in March, with version 4 of oclif it is possible to use oclif with pnpm and I could then try to upgrade the package.
+The next step was to put the pieces back together, I do in fact use - in addition to oclif - another Debian package building tool called [perrisbrewery](https://github.com/pieroproietti/perrisbrewery) and, of course, I had to update/modify that as well.
+
+Basically this version is different, although on the surface it does not seem distant to the previous one.
+
+For that reason I decided to highlight the change by changing in addition to the release also the name of the package itself, no longer `eggs` but `penguins-eggs`, commands remain the same.
+
+This package I place in testing at the moment, it definitely needs same break-in, but it assures us to stay well anchored in the present.
+
 # eggs-9.7.8
 * Added remotion of live-boot* packages on Debian, during installation wehen it's used flag --release;
 

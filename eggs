@@ -1,1 +1,1 @@
-./bin/dev "$@"
+./bin/dev.js "$@"
