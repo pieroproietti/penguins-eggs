@@ -57,7 +57,7 @@
     "mocha": "^10",
     "nyc": "^15.1.0",
     "oclif": "^4",
-    "perrisbrewery": "9.5.9",
+    "perrisbrewery": "../perrisbrewery/",
     "ts-node": "^10",
     "typescript": "^5"
   },
@@ -109,7 +109,7 @@
   "repository": "https://github.com/pieroproietti/penguins-eggs",
   "scripts": {
     "build": "tsc -p .",
-    "deb": "oclif pack:deb",
+    "deb": "tsc -p . && pb deb",
     "docs": "rm docs -rf && npx typedoc src --out docs",
     "lint-and-fix": "eslint . --ext .ts --fix --config .eslintrc",
     "lint": "eslint . --ext .ts --config .eslintrc",

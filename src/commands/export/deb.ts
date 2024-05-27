@@ -47,18 +47,18 @@ export default class ExportDeb extends Command {
       script = String(script)
     }
 
-    const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
-    let cmd = `rm -f ${rmount}\n`
-    cmd += `mkdir ${rmount}\n`
-    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${rmount}\n`
+    const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
+    let cmd = `rm -f ${remoteMountpoint}\n`
+    cmd += `mkdir ${remoteMountpoint}\n`
+    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${remoteMountpoint}\n`
     if (flags.clean) {
-      cmd += `rm -f ${rmount}/${Tu.config.filterDeb}${arch}\n`
+      cmd += `rm -f ${remoteMountpoint}/${Tu.config.filterDeb}${arch}\n`
     }
 
-    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${rmount}\n`
+    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}.deb  ${remoteMountpoint}\n`
     cmd += 'sync\n'
-    cmd += `umount ${rmount}\n`
-    cmd += `rm -f ${rmount}\m`
+    cmd += `umount ${remoteMountpoint}\n`
+    cmd += `rm -f ${remoteMountpoint}\m`
     if (!flags.verbose) {
       if (flags.clean) {
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
