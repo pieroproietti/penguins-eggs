@@ -58,13 +58,14 @@ export default class ExportDeb extends Command {
     cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}.deb  ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
-    cmd += `rm -f ${remoteMountpoint}\m`
+    cmd += `rm -f ${remoteMountpoint}\n`
     if (!flags.verbose) {
       if (flags.clean) {
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
       }
 
       console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
+      console.log(cmd)    
     }
 
     await exec(cmd, echo)
