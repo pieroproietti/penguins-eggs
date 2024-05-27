@@ -65,7 +65,7 @@ export default class ExportDeb extends Command {
       }
 
       console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
-      console.log(cmd)    
+      //console.log(cmd)    
     }
 
     await exec(cmd, echo)
