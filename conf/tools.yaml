@@ -18,4 +18,4 @@ localPathDeb: /home/artisan/penguins-eggs/perrisbrewery/workdir/
 localPathIso: /home/eggs
 
 # filter package files
-filterDeb: penguins-eggs_9.*.*_
+filterDeb: penguins-eggs_9.?.*-?_

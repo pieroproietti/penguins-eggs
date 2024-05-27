@@ -36,16 +36,11 @@ export default class ExportDeb extends Command {
 
     const echo = Utils.setEcho(flags.verbose)
 
-    let script = ''
     let arch = Utils.uefiArch()
     if (flags.all) {
       arch = '*'
     }
-
-    if (flags.clean) {
-      arch += '.deb'
-      script = String(script)
-    }
+    arch += '.deb'
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
@@ -62,7 +57,6 @@ export default class ExportDeb extends Command {
       if (flags.clean) {
         console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
       }
-
       console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
     }
 
