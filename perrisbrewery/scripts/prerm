@@ -18,7 +18,6 @@ if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
     rm -f /etc/bash_completion.d/eggs.bash
 fi
 
-if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
 
 # remove calamares customization
 FILE=/var/lib/dpkg/info/calamares.list
