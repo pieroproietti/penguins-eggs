@@ -23,11 +23,13 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 # penguins-eggs-9.8.0
 It had been a long time since I was forced to use an outdated version of [oclif](https://oclif.io/) because I had modified it to be able to use [pnpm](https://pnpm.io/it/) instead of [npm]().
 Recently, I think in March, with version 4 of oclif it is possible to use oclif with pnpm and I could then try to upgrade the package.
-The next step was to put the pieces back together, I do in fact use - in addition to oclif - another Debian package building tool called [perrisbrewery](https://github.com/pieroproietti/perrisbrewery) and, of course, I had to update/modify that as well.
+The next step was to put the pieces back together. I do in fact use - in addition to oclif - another mine Debian package building tool called [perrisbrewery](https://github.com/pieroproietti/perrisbrewery) and, of course, I had to update/modify that as well.
 
-Basically this version is different, although on the surface it does not seem distant to the previous one.
+Basically this version is different, although on the surface it does not seem too distant to the previous one.
 
-For that reason I decided to highlight the change by changing in addition to the release also the name of the package itself, no longer `eggs` but `penguins-eggs`, commands remain the same.
+For that reason I decided to highlight the change by changing in addition to the release also the name of the package itself, no longer `eggs` but `penguins-eggs`. Commands and logic remain the same.
+
+I made a little update penGUI too to 0.7.9 to reflect the different package name.
 
 This package I place in testing at the moment, it definitely needs same break-in, but it assures us to stay well anchored in the present.
 
