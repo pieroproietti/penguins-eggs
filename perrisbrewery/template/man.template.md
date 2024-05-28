@@ -1,4 +1,4 @@
-eggs(1) -- the reproductive system of penguins: eggs v{{{sourceVersion}}}
+eggs(1) -- the reproductive system of penguins: eggs v{{{packageVersion}}}
 ==========================================================================
 
 {{toc}}
@@ -6,7 +6,7 @@ eggs(1) -- the reproductive system of penguins: eggs v{{{sourceVersion}}}
 # SYNOPSIS
 Install Debian families (debian/devuan/ubuntu)
 ```
-$ sudo dpkg -i eggs_{{{sourceVersion}}}_amd64.deb
+$ sudo dpkg -i {{{packageNameVersioned}}}.deb
 ```
 
 Install Arch families (Arch, manjaro Linux)
@@ -37,7 +37,7 @@ $ makepkg -si
 ```
 $ eggs (-v|--version|version)
 
-penguins-eggs/{{{sourceVersion}}} {{{linuxVersion}}} node-{{{nodeVersion}}}
+penguins-eggs/{{{packageVersion}}} {{{linuxVersion}}} {{{nodeVersion}}}
 $ eggs --help [COMMAND]
 
 USAGE
@@ -49,13 +49,13 @@ Most of the commands of eggs need sudo, but there are exceptions for export, inf
 examples:
 
 ```
-sudo eggs produce --fast
-sudo eggs produce --fast --clone
-sudo eggs produce --fast --backup
+sudo eggs produce
+sudo eggs produce --max
+sudo eggs produce --clone
 sudo eggs kill
 ```
 
-There are too, two interactive helpers:
+There are too two interactive helpers:
 
 ```
 eggs mom
