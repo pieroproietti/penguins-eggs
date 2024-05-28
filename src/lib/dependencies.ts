@@ -79,6 +79,14 @@ export const depCommon = [
  */
 export const depArch = [
   {
+    package: 'grub-efi-amd64-bin',
+    arch: ['amd64'],
+  },
+  {
+    package: 'grub-efi-i386-bin',
+    arch: ['i386'],
+  },
+  {
     package: 'syslinux',
     arch: ['amd64', 'i386'],
   },

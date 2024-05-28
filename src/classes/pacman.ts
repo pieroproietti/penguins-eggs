@@ -6,8 +6,6 @@
  * license: MIT
  */
 
-import { array2spaced, depCommon, depArch, depVersions, depInit } from '../lib/dependencies'
-
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
@@ -187,24 +185,10 @@ export default class Pacman {
 
 
   /**
-   * Crea array packages dei pacchetti da installare
-   * 
-   * probabilmente non usata
-   * 
+   * not used more
    */
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
-    /*
-    if (this.distro().familyId === 'debian') {
-      packages = Debian.packages(remove, verbose)
-    } else if (this.distro().familyId === 'fedora') {
-      packages = Fedora.packages(remove, verbose)
-    } else if (this.distro().familyId === 'archlinux') {
-      packages = Archlinux.packages(remove, verbose)
-    } else if (this.distro().familyId === 'suse') {
-      packages = Suse.packages(remove, verbose)
-    }
-    */
     return packages
   }
   
