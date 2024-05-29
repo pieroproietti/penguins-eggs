@@ -1,7 +1,7 @@
 {
   "name": "penguins-eggs",
   "description": "penguins-eggs: remaster your system and distribuite it",
-  "version": "9.8.1",
+  "version": "9.8.2",
   "author": "Piero Proietti @pieroproietti",
   "bin": {
     "eggs": "./bin/run.js"
