@@ -38,11 +38,6 @@ export default class Daddy {
       await Pacman.configurationInstall(verbose)
     }
 
-    // Controllo prerequisites
-    if (!(await Pacman.prerequisitesCheck())) {
-      console.log('- installing prerequisites...')
-      await Pacman.prerequisitesInstall(verbose)
-    }
 
     // Templates
     if (!Pacman.distroTemplateCheck()) {

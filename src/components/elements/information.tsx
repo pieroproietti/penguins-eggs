@@ -81,7 +81,7 @@ export default async function information(verbose = false): Promise<void> {
     )
     // render(<Distro />)
 
-    const dependencies = await Pacman.prerequisitesCheck()
+    const dependencies = true 
     const configurations = Pacman.configurationCheck()
     let uefi = Pacman.isUefi()
 

@@ -27,7 +27,7 @@ export default class Config extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
 
-  static description = 'Configure and install prerequisites deb packages to run it'
+  static description = 'Configure eggs to run it'
   static examples = [
     'sudo eggs config',
     'sudo eggs config --clean',
@@ -109,9 +109,7 @@ export default class Config extends Command {
       i.configurationRefresh = !Pacman.configurationMachineNew()
     }
 
-    i.prerequisites = !(await Pacman.prerequisitesCheck())
-
-    if (i.efi || i.calamares || i.prerequisites) {
+    if (i.efi || i.calamares ) {
       i.needApt = true
     }
 
@@ -129,15 +127,6 @@ export default class Config extends Command {
       if (i.efi && Pacman.distro().familyId === 'debian' && Utils.uefiArch() !== 'i386') {
         console.log('- install efi packages')
         console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.uefiArch() + '-bin\n'))
-      }
-
-      if (i.prerequisites) {
-        console.log('- install packages prerequisites')
-        const packages = Pacman.packages(verbose)
-
-        if (packages.length > 0) {
-          console.log(chalk.yellow('  will install: ' + array2spaced(packages)))
-        }
       }
 
       if (i.configurationInstall) {
@@ -221,13 +210,6 @@ export default class Config extends Command {
       }
     }
 
-    if (i.prerequisites) {
-      if (nointeractive) {
-        Utils.warning("Can't install prerequisites now...")
-      } else {
-        await Pacman.prerequisitesInstall(verbose)
-      }
-    }
 
     if (!noicons) { // se VOGLIO le icone
       if (i.calamares && Pacman.isCalamaresAvailable()) {
