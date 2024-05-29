@@ -185,29 +185,6 @@ export default class Pacman {
 
 
   /**
-   * not used more
-   */
-  static packages(remove = false, verbose = false): string[] {
-    let packages: string[] = []
-    return packages
-  }
-  
-  /**
-   * Restituisce VERO se i prerequisiti sono installati
-   */
-  static async Check(verbose = false): Promise<boolean> {
-    let installed = true
-    const packages = this.packages(false, verbose)
-
-    if (packages.length > 0) {
-      installed = false
-    }
-
-    return installed
-  }
-
-
-  /**
    * return true if calamares is installed
    */
   static calamaresExists(): boolean {

@@ -37,33 +37,7 @@ export default class Suse {
     return this.packageIsInstalled('xwayland*')
   }
 
-  /**
-   * Crea array pacchetti da installare/rimuovere
-   */
-  static packages(remove = false, verbose = false): string[] {
-    // Preso qualcosa da livecd-tools
-    const packages = ['xorriso', 'syslinux', 'squashfs']
-
-    const toInstall: string[] = []
-    const toRemove: string[] = []
-
-    for (const elem of packages) {
-      if (!this.packageIsInstalled(elem)) {
-        toInstall.push(elem)
-      } else {
-        toRemove.push(elem)
-      }
-    }
-
-    if (remove) {
-      return toRemove
-    }
-
-    return toInstall
-  }
-
-
-  /**
+   /**
    *
    */
   static async calamaresInstall(verbose = true): Promise<void> {

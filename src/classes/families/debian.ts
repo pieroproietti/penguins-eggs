@@ -36,56 +36,6 @@ export default class Debian {
     return this.packageIsInstalled('xwayland')
   }
 
-  /**
-   * Debian: packages
-   * Create array packages to install/remove
-   */
-  static packages(remove = false, verbose = false): string[] {
-    let packages: string[] = []
-
-    /*
-    const toInstall: string[] = []
-    const toRemove: string[] = []
-
-    for (const elem of depCommon) {
-      if (!this.packageIsInstalled(elem)) {
-        toInstall.push(elem)
-      } else {
-        toRemove.push(elem)
-      }
-    }
-
-    const arch = Utils.uefiArch()
-    for (const dep of depArch) {
-      if (dep.arch.includes(arch)) {
-        if (!this.packageIsInstalled(dep.package)) {
-          toInstall.push(dep.package)
-        } else {
-          toRemove.push(dep.package)
-        }
-      }
-    }
-
-    // depending on init/systemd
-    const initType: string = shx.exec('ps --no-headers -o comm 1', {silent: !verbose}).trim()
-    for (const dep of depInit) {
-      if (dep.init.includes(initType)) {
-        if (!this.packageIsInstalled(dep.package)) {
-          toInstall.push(dep.package)
-        } else {
-          toRemove.push(dep.package)
-        }
-      }
-    }
-
-    packages = toInstall
-    if (remove) {
-      packages = toRemove
-    }
-    */
-
-    return packages
-  }
 
   /**
    * Debian: calamaresInstall
