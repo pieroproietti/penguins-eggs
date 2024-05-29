@@ -42,6 +42,8 @@ export default class Debian {
    */
   static packages(remove = false, verbose = false): string[] {
     let packages: string[] = []
+
+    /*
     const toInstall: string[] = []
     const toRemove: string[] = []
 
@@ -64,9 +66,7 @@ export default class Debian {
       }
     }
 
-    /**
-     * depending on init/systemd
-     */
+    // depending on init/systemd
     const initType: string = shx.exec('ps --no-headers -o comm 1', {silent: !verbose}).trim()
     for (const dep of depInit) {
       if (dep.init.includes(initType)) {
@@ -82,6 +82,7 @@ export default class Debian {
     if (remove) {
       packages = toRemove
     }
+    */
 
     return packages
   }
