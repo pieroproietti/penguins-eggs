@@ -1,0 +1,59 @@
+# Description: This file contains the dependencies for the packages in the project.
+---
+##
+# common dependencies 
+common:
+  - coreutils 
+  - cryptsetup 
+  - curl # wardrobe
+  - dosfstools # eggs
+  - dpkg-dev  # yolk
+  - git # wardrobe
+  - isolinux # eggs
+  - jq # mom
+  - live-boot-initramfs-tools # eggs
+  - live-boot # eggs
+  - lsb-release  # eggs
+  - lvm2  # pvdisplay in krill
+  - grub2
+  - nodejs 
+  - parted 
+  - pxelinux # cuckoo
+  - rsync
+  - squashfs-tools
+  - sshfs # eggs
+  - syslinux-common
+  - xorriso
+
+##
+# dependencies arch specific
+arch:
+  amd64:
+  - grub-efi-amd64-bin
+  - syslinux
+
+  i386:
+  - syslinux
+
+  arm64:
+  - syslinux-efi
+
+##
+# dependencies version
+version:
+  jessie:
+  - live-config
+  - live-config-systemd
+  stretch:
+  - live-config
+  - live-config-systemd
+
+# dependencies for the init system
+init:
+  beowulf:
+  - live-config-sysvinit
+  bionic:
+  - open-infrastructure-system-config
+
+#init:  
+#- live-config-sysvinit
