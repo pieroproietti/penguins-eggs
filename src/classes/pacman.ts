@@ -195,7 +195,7 @@ export default class Pacman {
   /**
    * Restituisce VERO se i prerequisiti sono installati
    */
-  static async prerequisitesCheck(verbose = false): Promise<boolean> {
+  static async Check(verbose = false): Promise<boolean> {
     let installed = true
     const packages = this.packages(false, verbose)
 
@@ -206,23 +206,6 @@ export default class Pacman {
     return installed
   }
 
-  /**
-   *
-   */
-  static async prerequisitesInstall(verbose = true): Promise<boolean> {
-    let retVal = false
-
-    if (this.distro().familyId === 'debian') {
-      retVal = await Debian.prerequisitesInstall(verbose)
-    } else if (this.distro().familyId === 'fedora') {
-      retVal = await Fedora.prerequisitesInstall(verbose)
-    } else if (this.distro().familyId === 'archlinux') {
-      retVal = await Archlinux.prerequisitesInstall(verbose)
-    } else if (this.distro().familyId === 'suse') {
-      retVal = await Suse.prerequisitesInstall(verbose)
-    }
-    return retVal
-  }
 
   /**
    * return true if calamares is installed
@@ -790,22 +773,4 @@ export default class Pacman {
     return retVal
   }
 
-  /**
-   *
-   * @param packages array packages
-   *
-   * Probabilmente da rimuovere, viene usata solo da prerequisitesRemove
-   *
-   */
-  static filterInstalled(packages: string[]): string[] {
-    const installed: string[] = []
-
-    for (const i in packages) {
-      if (Pacman.packageIsInstalled(packages[i])) {
-        installed.push(packages[i])
-      }
-    }
-
-    return installed
-  }
 }

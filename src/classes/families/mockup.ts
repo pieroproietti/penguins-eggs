@@ -45,13 +45,6 @@ export default class Mockup {
     return packages
   }
 
-  /**
-   * Mockup: prerequisitesInstall
-   */
-  static async prerequisitesInstall(verbose = true): Promise<boolean> {
-    let retVal = false
-    return retVal
-  }
 
   /**
    * Mockup: calamaresInstall

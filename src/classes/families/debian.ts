@@ -88,36 +88,6 @@ export default class Debian {
   }
 
   /**
-   * Debian: prerequisitesInstall
-   * install prerequisites
-   */
-  static async prerequisitesInstall(verbose = true): Promise<boolean> {
-    const echo = Utils.setEcho(verbose)
-    const retVal = false
-
-    await exec(`apt-get install --yes ${array2spaced(this.packages(false, verbose))}`, echo)
-
-    if (!Pacman.isInstalledGui()) {
-      /**
-       * live-config-getty-generator
-       *
-       * Viene rimosso in naked, altrimenti non funziona il login
-       * generando un errore getty.
-       * Sarebbe utile individuarne le ragioni, forse rompe anche sul desktop
-       * non permettendo di cambiare terminale e loggarsi
-       *
-       * A che serve?
-       */
-      const fileToRemove = '/lib/systemd/system-generators/live-config-getty-generator'
-      if (fs.existsSync(fileToRemove)) {
-        await exec(`rm ${fileToRemove}`)
-      }
-    }
-
-    return retVal
-  }
-
-  /**
    * Debian: calamaresInstall
    */
   static async calamaresInstall(verbose = true): Promise<void> {
