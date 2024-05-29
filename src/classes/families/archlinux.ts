@@ -37,32 +37,7 @@ export default class Archlinux {
     return this.packageIsInstalled('xwayland')
   }
 
-  /**
-   * Archlinux: packages
-   * Create array packages to install/remove
-   */
-  static packages(remove = false, verbose = false): string[] {
-    const packages = [''] // 'arch-install-scripts',  'e2fsprogs', 'erofs-utils', 'findutils', 'gzip', 'libarchive', 'libisoburn', 'mtools', 'openssl', 'rsync', 'sed', 'syslinux', 'squashfs-tools']
-
-    const toInstall: string[] = []
-    const toRemove: string[] = []
-
-    for (const elem of packages) {
-      if (!this.packageIsInstalled(elem)) {
-        toInstall.push(elem)
-      } else {
-        toRemove.push(elem)
-      }
-    }
-
-    if (remove) {
-      return toRemove
-    }
-
-    return toInstall
-  }
-
-
+  
   /**
    * Archlinux: calamaresInstall
    */

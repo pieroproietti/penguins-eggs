@@ -37,16 +37,6 @@ export default class Mockup {
   }
 
   /**
-   * Mockup: packages
-   * Create array packages to install/remove
-   */
-  static packages(remove = false, verbose = false): string[] {
-    let packages =['']
-    return packages
-  }
-
-
-  /**
    * Mockup: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
