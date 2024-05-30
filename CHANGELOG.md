@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-9.8.3
+I consider the cleanup and adjustments resulting from the switch to oclif4 and Debian package name change to be over. I put the new version in the PPA and you can install it with the command: `sudo apt install penguins-eggs`.
+
 # penguins-eggs-9.8.2
 Removed a lot of unusefull code, when eggs started I thought to use npm packages to distribuite it, so inside there was the code to install necessary packages. From long time now, we produce deb packages and arch packages so there was no need ot that code. I tested it working on i386 Debian Bookworm, amd64 Debian Bookworm, Arch.
 
