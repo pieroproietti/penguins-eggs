@@ -15,7 +15,7 @@ common:
   - live-boot # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
-  - grub2
+  #- grub2
   - nodejs 
   - parted 
   - pxelinux # cuckoo
