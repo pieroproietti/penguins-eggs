@@ -183,9 +183,9 @@ The penguins-eggs-ppa repository provides a convenient and reliable way to acces
 
  To install Eggs, the simplest method is to download the package from the project's SourceForge page  [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it on your system. You can find the Eggs package on the SourceForge page here.
 After downloading the appropriate package based on your system's architecture, you can proceed with the installation. If you are using an amd64 system, run the following command in the terminal:
-```sudo dpkg -i eggs_9.6.24_amd64.deb```
+```sudo dpkg -i penguins_eggs_9.8.3_amd64.deb```
 For i386 systems, the command would be:
-```sudo dpkg -i eggs_9.6.24_i386.deb```
+```sudo dpkg -i penguins_eggs_9.8.3_i386.deb```
 Executing these commands will initiate the installation process and install Eggs on your system.
 Once Eggs is successfully installed, you have the option to enhance its functionality by adding the penguins-eggs-ppa repository. This repository provides additional tools and features for Eggs. To add the penguins-eggs-ppa repository, run the following command in the terminal:
 ```sudo eggs tools ppa --install```
@@ -221,7 +221,7 @@ echo "deb [arch=$(dpkg --print-architecture)] https://pieroproietti.github.io/pe
 After adding the repository, update your package repositories and install Eggs by running the following command:
 
 ```
-sudo apt update && sudo apt install eggs
+sudo apt update && sudo apt install penguins_eggs
 ```
 
 Executing these commands will update your package sources and install Eggs on your system.
@@ -244,11 +244,11 @@ sudo apt upgrade
 
 1. Install the package using the `gdebi` command (assuming you have `gdebi` installed):
 ```
-sudo gdebi eggs_9.6.24_amd64.deb
+sudo gdebi penguins_eggs_9.8.3_amd64.deb
 ```
 or for i386 systems:
 ```
-sudo dpkg -i eggs_9.6.24_i386.deb
+sudo dpkg -i penguins_eggs_9.8.3_i386.deb
 ```
 
 2. In case of any missing dependencies, you can resolve them by running the following command:
