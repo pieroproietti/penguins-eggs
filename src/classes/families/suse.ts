@@ -10,8 +10,6 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
-import Pacman from '../pacman'
-import {array2spaced} from '../../lib/dependencies'
 import {exec} from '../../lib/utils'
 
 /**
@@ -43,9 +41,9 @@ export default class Suse {
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      await exec(`zypper install ${array2spaced(this.packs4calamares)}`, echo)
+      await exec(`zypper install ${this.packs4calamares.join(' ')}`, echo)
     } catch {
-      Utils.error(`Fedora.calamaresInstall() pacman -Sy ${array2spaced(this.packs4calamares)}`) // + e.error)
+      Utils.error(`Fedora.calamaresInstall() pacman -Sy ${this.packs4calamares.join(' ')}`) // + e.error)
     }
   }
 

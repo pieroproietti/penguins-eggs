@@ -10,8 +10,6 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 import Utils from '../utils'
-import Pacman from '../pacman'
-import { array2spaced } from '../../lib/dependencies'
 import { exec } from '../../lib/utils'
 
 /**
