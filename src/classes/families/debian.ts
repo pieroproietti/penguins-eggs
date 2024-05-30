@@ -11,7 +11,6 @@ import shx from 'shelljs'
 import Utils from '../utils'
 import Pacman from '../pacman'
 import {exec} from '../../lib/utils'
-import {array2spaced, depCommon, depArch, depVersions, depInit} from '../../lib/dependencies'
 
 /**
  * Debian
@@ -49,7 +48,8 @@ export default class Debian {
     }
 
     try {
-      await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
+      //await exec(`apt-get install --yes ${array2spaced(this.debs4calamares)}`, echo)
+      await exec(`apt-get install --yes ${this.debs4calamares.join(' ')}`, echo)
     } catch {
       Utils.error(`Debian.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
     }
@@ -151,3 +151,8 @@ export default class Debian {
     return version
   }
 }
+
+function array2spaced(oArray: string[]) {
+  return oArray.join(' ');
+}
+

@@ -11,8 +11,6 @@ import Utils from '../classes/utils'
 import Pacman from '../classes/pacman'
 import Bleach from '../classes/bleach'
 import { IInstall } from '../interfaces/index'
-import { array2spaced } from '../lib/dependencies'
-
 import { exec } from '../lib/utils'
 
 /**
@@ -147,7 +145,7 @@ export default class Config extends Command {
         console.log('- install calamares')
         if (Pacman.distro().familyId === 'debian') {
           const packages = Pacman.debs4calamares
-          console.log(chalk.yellow('  will install: ' + array2spaced(packages) + '\n'))
+          console.log(chalk.yellow('  will install: ' + packages.join(' ') + '\n'))
         }
       }
 
