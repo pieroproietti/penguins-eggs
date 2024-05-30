@@ -19,7 +19,6 @@ import Utils from './utils'
 import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'
-import { createEmitAndSemanticDiagnosticsBuilderProgram } from 'typescript'
 
 /**
 * Pxe:
