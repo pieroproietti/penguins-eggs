@@ -9,4 +9,5 @@ Description: {{{description}}}
 Depends: {{{depends}}}
 Suggest: calamares, qml-module-qtquick2, qml-module-qtquick-controls
 Conflicts: eggs, calamares-settings-debian, calamares-settings-ubuntu 
+Replaces: eggs
 
