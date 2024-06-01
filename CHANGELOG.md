@@ -59,7 +59,7 @@ I made a little update penGUI too to 0.7.9 to reflect the different package name
 This package I place in testing at the moment, it definitely needs same break-in, but it assures us to stay well anchored in the present.
 
 # changelog.d
-[Old changelogs](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
+Old changelogs are located on[changelog.d](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
 
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
