@@ -7,7 +7,7 @@
   "bin": {
     "eggs": "./bin/run.js"
   },
-  "bugs": "https://github.com/pieroproietti/krill/issues",
+  "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
   "dependencies": {
     "@oclif/core": "^3",
     "@oclif/plugin-autocomplete": "^3.1.0",
@@ -68,7 +68,7 @@
     "/mkinitcpio",
     "/scripts"
   ],
-  "homepage": "https://github.com/pieroproietti/krill",
+  "homepage": "https://penguins-eggs.net",
   "keywords": [
     "oclif"
   ],
