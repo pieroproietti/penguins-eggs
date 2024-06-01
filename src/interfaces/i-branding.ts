@@ -1,36 +1,37 @@
 /**
- * penguins-eggs
- * interface: i-branding.ts
+ * ./src/interfaces/i-branding.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IBranding {
   componentName: string
-  welcomeStyleCalamares: boolean
-  strings: {
-    productName: string
-    shortProductName: string
-    version: string
-    shortVersion: string
-    versionedName: string
-    shortVersionedName: string
-    bootloaderEntryName: string
-    productUrl: string
-    supportUrl: string
-    bugReportUrl: string
-    releaseNotesUrl: string
-  }
   images: {
-    productLogo: string
     productIcon: string
+    productLogo: string
     productWelcome: string
   }
-  slideshowAPI: number
   slideshow: string
+  slideshowAPI: number
+  strings: {
+    bootloaderEntryName: string
+    bugReportUrl: string
+    productName: string
+    productUrl: string
+    releaseNotesUrl: string
+    shortProductName: string
+    shortVersion: string
+    shortVersionedName: string
+    supportUrl: string
+    version: string
+    versionedName: string
+  }
   style: {
     sidebarBackground: string
     sidebarText: string
     sidebarTextSelect: string
   }
+  welcomeStyleCalamares: boolean
 }

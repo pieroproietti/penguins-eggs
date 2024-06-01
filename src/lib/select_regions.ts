@@ -1,26 +1,27 @@
 /**
- * penguins-eggs
- * lib: select_regiones.ts
+ * ./src/lib/
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 'use strict'
-const inquirer = require('inquirer') 
+import inquirer from 'inquirer'
 
 export default async function selectRegions(selected = ''): Promise<string> {
   const questions: Array<Record<string, any>> = [
     {
-      type: 'list',
-      name: 'region',
-      message: 'Select your region: ',
       choices: ['Atlantic', 'Africa', 'America', 'Antarctica', 'Artic', 'Australia', 'Europe', 'India', 'Europe', 'Pacific'],
       default: selected,
+      message: 'Select your region: ',
+      name: 'region',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.region)
     })
   })

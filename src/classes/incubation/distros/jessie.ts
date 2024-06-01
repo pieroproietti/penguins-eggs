@@ -1,32 +1,31 @@
 /**
- * penguins-eggs
- * class / incubation: jessie.ts
+ * ./src/classes/incubation/distros/jessie.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import {IRemix, IDistro} from '../../../interfaces/index'
-import {IInstaller} from '../../../interfaces/i-installer'
-import Fisherman from '../fisherman'
-
-import {exec} from '../../../lib/utils'
+import {IInstaller} from '../../../interfaces/i-installer.js'
+import {IDistro, IRemix} from '../../../interfaces/index.js'
+import {exec} from '../../../lib/utils.js'
+import Fisherman from '../fisherman.js'
 
 /**
  *
  */
 export class Jessie {
-  verbose = false
+  distro: IDistro
 
   installer = {} as IInstaller
 
-  remix: IRemix
-
-  distro: IDistro
-
   release = false
 
+  remix: IRemix
+
   user_opt: string
+
+  verbose = false
 
   /**
    * @param remix

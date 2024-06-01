@@ -1,27 +1,39 @@
 /**
- * penguins-eggs
- * command: install.ts
+ * ./src/commands/install.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags, flush} from '@oclif/core'
-import Utils from '../classes/utils'
-import Krill from '../krill/krill-prepare'
-import path from 'node:path'
-import yaml from 'js-yaml'
-import fs from 'fs'
 import axios, {AxiosResponse} from 'axios'
+import yaml from 'js-yaml'
+import fs from 'node:fs'
 import https from 'node:https'
+import path from 'node:path'
+
+import Utils from '../classes/utils.js'
+import Krill from '../krill/prepare.js'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })
-import {IKrillConfig} from '../interfaces/i-krill-config'
+import {IKrillConfig} from '../interfaces/i-krill-config.js'
 
 /**
  * Class Krill
  */
 export default class Install extends Command {
+  static aliases = ['krill']
+
+  static description = 'krill: the CLI system installer - the egg became a penguin!'
+
+  static examples = [
+    'sudo eggs install',
+    'sudo eggs install --unattended --halt',
+    'sudo eggs install --custom it',
+  ]
+
   static flags = {
     btrfs: Flags.boolean({char: 'b', description: 'Format btrfs'}),
     crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
@@ -40,16 +52,6 @@ export default class Install extends Command {
     verbose: Flags.boolean({char: 'v', description: 'Verbose'}),
   }
 
-  static aliases = ['krill']
-
-  static description = 'krill: the CLI system installer - the egg became a penguin!'
-
-  static examples = [
-    'sudo eggs install',
-    'sudo eggs install --unattended --halt',
-    'sudo eggs install --custom it',
-  ]
-
   /**
    * Execute
    */
@@ -60,7 +62,7 @@ export default class Install extends Command {
 
     let custom = flags.custom!
 
-    let unattended = flags.unattended
+    const {unattended} = flags
     if (unattended) {
       custom = 'us'
     }
@@ -87,14 +89,14 @@ export default class Install extends Command {
   end removed */
 
     // nointeractive
-    const nointeractive = flags.nointeractive
+    const {nointeractive} = flags
 
     // halt
-    let halt = flags.halt
+    const {halt} = flags
 
     // hostname
-    const ip = flags.ip
-    const random = flags.random
+    const {ip} = flags
+    const {random} = flags
 
     let domain = ''
     if (flags.domain) {
@@ -102,18 +104,18 @@ export default class Install extends Command {
     }
 
     // swap
-    const suspend = flags.suspend
-    const small = flags.small
-    const none = flags.none
+    const {suspend} = flags
+    const {small} = flags
+    const {none} = flags
 
-    let crypted = flags.crypted
+    let {crypted} = flags
 
-    const pve = flags.pve
+    const {pve} = flags
     if (pve) {
       crypted = false
     }
 
-    const verbose = flags.verbose
+    const {verbose} = flags
 
     if (Utils.isRoot()) {
       if (Utils.isLive()) {

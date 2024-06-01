@@ -1,81 +1,98 @@
 /**
- * penguins-eggs
- * command: config.ts
+ * ./src/commands/config.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
-import Utils from '../classes/utils'
-import Pacman from '../classes/pacman'
-import Bleach from '../classes/bleach'
-import { IInstall } from '../interfaces/index'
-import { exec } from '../lib/utils'
+
+import Bleach from '../classes/bleach.js'
+import Pacman from '../classes/pacman.js'
+import Utils from '../classes/utils.js'
+import { IInstall } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
 
 /**
  *
  */
 export default class Config extends Command {
-  static flags = {
-    clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
-    help: Flags.help({ char: 'h' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-  }
-
   static description = 'Configure eggs to run it'
+
   static examples = [
     'sudo eggs config',
     'sudo eggs config --clean',
     'sudo eggs config --clean --nointeractive',
   ]
 
-  async run(): Promise<void> {
-    const { flags } = await this.parse(Config)
-    const nointeractive = flags.nointeractive
-    const noicons = flags.noicons
-    const verbose = flags.verbose
+  static flags = {
+    clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
+    help: Flags.help({ char: 'h' }),
+    noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
+  }
 
-    if (!nointeractive) {
-      Utils.titles(this.id + ' ' + this.argv)
-      if (Utils.isDebPackage()) {
-        Utils.warning('running as package .deb')
-      } else if (Utils.isSources()) {
-        Utils.warning('running as sources')
+  /**
+   *
+   * @param i
+   * @param verbose
+   */
+  static async install(i: IInstall, nointeractive = false, noicons = false, verbose = false) {
+    const echo = Utils.setEcho(verbose)
+
+    Utils.warning('config: so, we install')
+
+    if (i.configurationInstall) {
+      Utils.warning('creating configuration...')
+      await Pacman.configurationInstall(verbose)
+    }
+
+    if (i.configurationRefresh) {
+      Utils.warning('refreshing configuration for new machine...')
+      await Pacman.configurationMachineNew(verbose)
+    }
+
+    if (i.distroTemplate) {
+      Utils.warning('copying distro templates...')
+      await Pacman.distroTemplateInstall(verbose)
+    }
+
+    if (i.needApt && !nointeractive && !nointeractive && Pacman.distro().familyId === 'debian') {
+      Utils.warning('updating system...')
+      await exec('apt-get update --yes', echo)
+    }
+
+    if (i.efi) {
+      if (nointeractive) {
+        Utils.error('config: you are on a system UEFI')
+        Utils.warning('I suggest You to install grub-efi-' + Utils.uefiArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.uefiArch())
+      } else if (Pacman.distro().familyId === 'debian') {
+        Utils.warning('Installing uefi support...')
+        await exec('apt-get install grub-efi-' + Utils.uefiArch() + '-bin --yes', echo)
       }
     }
 
-    if (Utils.isRoot(this.id)) {
-      if (flags.clean) {
-        Utils.warning('removing old configurations')
-        await exec('rm /etc/penguins-eggs.d -rf')
-      }
 
-      /**
-       * Se stiamo utilizzando eggs da sorgenti
-       * Aggiungo autocomplete e manPage
-       */
-      if (Utils.isSources()) {
-        Utils.warning('creating autocomplete...')
-        await Pacman.autocompleteInstall(verbose)
-        Utils.warning('creating eggs man page...')
-        await Pacman.manPageInstall(verbose)
-      }
-
-      // Vediamo che cosa c'è da fare...
-      Utils.warning('what we need?')
-      const i = await Config.thatWeNeed(nointeractive, noicons, verbose)
-      if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
+    if (!noicons && // se VOGLIO le icone
+      i.calamares && Pacman.isCalamaresAvailable()) {
         if (nointeractive) {
-          await Config.install(i, nointeractive, noicons, verbose)
-        } else if (await Utils.customConfirm()) {
-          await Config.install(i, nointeractive, noicons, verbose)
+          Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
+        } else {
+          Utils.warning('Installing calamares...')
+          await Pacman.calamaresInstall(verbose)
+          await Pacman.calamaresPolicies()
         }
       }
-    } else {
-      Utils.useRoot(this.id)
+
+    if (i.needApt && !nointeractive) {
+      Utils.warning('cleaning the system...')
+      if (Pacman.distro().familyId === 'debian') {
+        const bleach = new Bleach()
+        await bleach.clean(verbose)
+      }
     }
   }
 
@@ -168,65 +185,50 @@ export default class Config extends Command {
     return i
   }
 
-  /**
-   *
-   * @param i
-   * @param verbose
-   */
-  static async install(i: IInstall, nointeractive = false, noicons = false, verbose = false) {
-    const echo = Utils.setEcho(verbose)
+  async run(): Promise<void> {
+    const { flags } = await this.parse(Config)
+    const {nointeractive} = flags
+    const {noicons} = flags
+    const {verbose} = flags
 
-    Utils.warning('config: so, we install')
-
-    if (i.configurationInstall) {
-      Utils.warning('creating configuration...')
-      await Pacman.configurationInstall(verbose)
-    }
-
-    if (i.configurationRefresh) {
-      Utils.warning('refreshing configuration for new machine...')
-      await Pacman.configurationMachineNew(verbose)
-    }
-
-    if (i.distroTemplate) {
-      Utils.warning('copying distro templates...')
-      await Pacman.distroTemplateInstall(verbose)
-    }
-
-    if (i.needApt && !nointeractive && !nointeractive && Pacman.distro().familyId === 'debian') {
-      Utils.warning('updating system...')
-      await exec('apt-get update --yes', echo)
-    }
-
-    if (i.efi) {
-      if (nointeractive) {
-        Utils.error('config: you are on a system UEFI')
-        Utils.warning('I suggest You to install grub-efi-' + Utils.uefiArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.uefiArch())
-      } else if (Pacman.distro().familyId === 'debian') {
-        Utils.warning('Installing uefi support...')
-        await exec('apt-get install grub-efi-' + Utils.uefiArch() + '-bin --yes', echo)
+    if (!nointeractive) {
+      Utils.titles(this.id + ' ' + this.argv)
+      if (Utils.isDebPackage()) {
+        Utils.warning('running as package .deb')
+      } else if (Utils.isSources()) {
+        Utils.warning('running as sources')
       }
     }
 
+    if (Utils.isRoot(this.id)) {
+      if (flags.clean) {
+        Utils.warning('removing old configurations')
+        await exec('rm /etc/penguins-eggs.d -rf')
+      }
 
-    if (!noicons) { // se VOGLIO le icone
-      if (i.calamares && Pacman.isCalamaresAvailable()) {
+      /**
+       * Se stiamo utilizzando eggs da sorgenti
+       * Aggiungo autocomplete e manPage
+       */
+      if (Utils.isSources()) {
+        Utils.warning('creating autocomplete...')
+        await Pacman.autocompleteInstall(verbose)
+        Utils.warning('creating eggs man page...')
+        await Pacman.manPageInstall(verbose)
+      }
+
+      // Vediamo che cosa c'è da fare...
+      Utils.warning('what we need?')
+      const i = await Config.thatWeNeed(nointeractive, noicons, verbose)
+      if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
         if (nointeractive) {
-          Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
-        } else {
-          Utils.warning('Installing calamares...')
-          await Pacman.calamaresInstall(verbose)
-          await Pacman.calamaresPolicies()
+          await Config.install(i, nointeractive, noicons, verbose)
+        } else if (await Utils.customConfirm()) {
+          await Config.install(i, nointeractive, noicons, verbose)
         }
       }
-    }
-
-    if (i.needApt && !nointeractive) {
-      Utils.warning('cleaning the system...')
-      if (Pacman.distro().familyId === 'debian') {
-        const bleach = new Bleach()
-        await bleach.clean(verbose)
-      }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

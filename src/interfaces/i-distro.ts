@@ -1,28 +1,28 @@
 /**
- * penguins-eggs
- * interface: i-distro.ts
+ * ./src/interfaces/i-distro.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 export interface IDistro {
-  familyId: string
-  distroId: string
-  distroLike: string
+  bugReportUrl: string
   codenameId: string
   codenameLikeId: string
+  distroId: string
+  distroLike: string
+  familyId: string
+  homeUrl: string
+  isCalamaresAvailable: boolean
+  isolinuxPath: string
+  liveMediumPath: string
+  memdiskPath: string
+  pxelinuxPath: string
   releaseId: string
   releaseLike: string
-  usrLibPath: string
-  isolinuxPath: string
-  syslinuxPath: string
-  pxelinuxPath: string
-  memdiskPath: string
-  liveMediumPath: string
   squashfs: string
-  homeUrl: string
   supportUrl: string
-  bugReportUrl: string
-  isCalamaresAvailable: boolean
+  syslinuxPath: string
+  usrLibPath: string
 }

@@ -1,31 +1,33 @@
 /**
- * penguins-eggs
- * command: dad.ts
+ * ./src/commands/dad.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
-import Utils from '../classes/utils'
-import Daddy from '../classes/daddy'
 import chalk from 'chalk'
 
-import {exec} from '../lib/utils'
+import Daddy from '../classes/daddy.js'
+import Utils from '../classes/utils.js'
+import {exec} from '../lib/utils.js'
 
 export default class Dad extends Command {
+  static description = 'ask help from daddy - TUI configuration helper'
+
+  static examples = [
+    'sudo dad',
+    'sudo dad --clean',
+    'sudo dad --default',
+  ]
+
   static flags = {
     clean: Flags.boolean({char: 'c', description: 'remove old configuration before to create'}),
     default: Flags.boolean({char: 'd', description: 'remove old configuration and force default'}),
     help: Flags.help({char: 'h'}),
     verbose: Flags.boolean({char: 'v'}),
   }
-
-  static description = 'ask help from daddy - TUI configuration helper'
-  static examples = [
-    'sudo dad',
-    'sudo dad --clean',
-    'sudo dad --default',
-  ]
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)

@@ -1,16 +1,17 @@
 /**
- * penguins-eggs
- * interface: i-install.ts
+ * ./src/interfaces/i-install.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IInstall {
-  distroTemplate: boolean
-  efi: boolean
   calamares: boolean
   configurationInstall: boolean
   configurationRefresh: boolean
-  prerequisites: boolean
+  distroTemplate: boolean
+  efi: boolean
   needApt: boolean
+  prerequisites: boolean
 }

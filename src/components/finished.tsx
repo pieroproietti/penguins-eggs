@@ -1,33 +1,31 @@
 /**
- * penguins-eggs
- * components: finished.tsx
+ * ./src/components/finished.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React, { useState } from 'react'
 import { Box, Newline, Text } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './title.js'
+import Steps from './steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index'
-
-const pjson = require('../../package.json')
-
+import { ISettings, IBranding } from '../interfaces/index.js'
 
 type FinishedProps = {
   installationDevice?: string,
-  hostName: string,
+  hostName?: string,
   userName?: string,
 }
 
 
-export default function Finished({ installationDevice, hostName, userName}: FinishedProps) {
+export default function Finished({ installationDevice='', hostName='', userName=''}: FinishedProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
-  let configRoot = '/etc/penguins-eggs.d/krill/'
+  let configRoot = '/etc/penguins-eggs.d/krill/' // krill
   if (fs.existsSync('/etc/calamares/settings.conf')) {
       configRoot = '/etc/calamares/'
   }
@@ -47,7 +45,7 @@ export default function Finished({ installationDevice, hostName, userName}: Fini
   const [submission, setSubmission] = React.useState()
   return (
     <>
-      <Title title={productName} />
+      <Title />
       <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
         <Box flexDirection="column">

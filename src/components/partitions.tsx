@@ -1,18 +1,19 @@
 /**
- * penguins-eggs
- * components: partitions.tsx
+ * ./src/components/partitions.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React from 'react'
-import { render, Text, Box, Newline } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './title.js'
+import Steps from './steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding, IPartitions } from '../interfaces/index'
+import { ISettings, IBranding, IPartitions } from '../interfaces/index.js'
+import { render, Text, Box, Newline } from 'ink'
 
 type partitionsProps = {
     installationDevice?: string,
@@ -24,8 +25,8 @@ type partitionsProps = {
 
 export default function Partitions({ installationDevice, installationMode, filesystemType, userSwapChoice }: partitionsProps) {
     let installer = 'krill'
-    let productName = 'unknown'
-    let version = 'x.x.x'
+    let productName = ''
+    let version = ''
     let configRoot = '/etc/penguins-eggs.d/krill/'
     if (fs.existsSync('/etc/calamares/settings.conf')) {
         configRoot = '/etc/calamares/'
@@ -55,7 +56,7 @@ export default function Partitions({ installationDevice, installationMode, files
 
     return (
         <>
-            <Title title={productName} />
+            <Title />
             <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
                 <Box flexDirection="column">

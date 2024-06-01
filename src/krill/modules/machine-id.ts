@@ -7,9 +7,10 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import fs from 'fs'
+import fs from 'node:fs'
+
+import {exec} from '../../lib/utils.js'
+import Sequence from '../sequence.js'
 
 /**
  * On Ubuntu

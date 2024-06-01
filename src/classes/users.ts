@@ -1,32 +1,29 @@
-/**
- * penguins-eggs
- * class: users.ts
+ /**
+ * ./src/classes/users.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-//import {integer} from '@oclif/core/lib/parser/flags'
-import {flagUsage} from '@oclif/core/lib/parser/help'
-import fs from 'fs'
-import {exec} from '../lib/utils'
-import {access} from 'fs/promises'
-import {constants} from 'fs'
+import fs from 'node:fs'
+
+import {exec} from '../lib/utils.js'
 
 /**
  *
  */
 export default class Users {
+    public gecos: string
+    public gid: string
+    public hasHome: boolean
+    public home: string
     public login: string
     public password: string
-    public uid: string
-    public gid: string
-    public gecos: string
-    public home: string
+    public saveIt: boolean
     public shell: string
     public size: number
-    public hasHome: boolean
-    public saveIt: boolean
+    public uid: string
 
     constructor(login: string, password: string, uid: string, gid: string, gecos: string, home: string, shell: string) {
       this.login = login
@@ -144,7 +141,7 @@ export default class Users {
             default: {
               if (fs.existsSync(this.home)) {
                 hasHome = true
-                const sizeUser = await exec(` du --block-size=1 --summarize ${this.home} | awk '{print $1}'`, {echo: false, ignore: false, capture: true})
+                const sizeUser = await exec(` du --block-size=1 --summarize ${this.home} | awk '{print $1}'`, {capture: true, echo: false, ignore: false})
                 size = Number.parseInt(sizeUser.data)
               }
 

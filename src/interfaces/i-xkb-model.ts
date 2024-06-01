@@ -1,10 +1,11 @@
 /**
- * penguins-eggs
- * interface: i-xkd-model.ts
+ * ./src/interfaces/i-xkb-model.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IXkbModel {
     code: string,
     description: string
@@ -17,8 +18,8 @@ export interface IXkbLayout {
 
 export interface IXkbVariant {
     code: string,
-    lang: string,
     description: string
+    lang: string,
 }
 
 export interface IXkbOption {

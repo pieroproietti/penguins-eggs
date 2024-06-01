@@ -1,43 +1,23 @@
-/**
- * penguins-eggs
- * class: sources_list.ts
+ /**
+ * ./src/classes/sources_list.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
+
 import chalk from 'chalk'
-import Utils from './utils'
-import {IMateria} from '../interfaces/index'
-import {exec} from '../lib/utils'
-import Distro from './distro'
+
+import {IMateria} from '../interfaces/index.js'
+import {exec} from '../lib/utils.js'
+import Distro from './distro.js'
+import Utils from './utils.js'
 
 /**
  *
  */
 export default class SourcesList {
-  /**
-    *
-    * @param repos
-    * @returns
-    */
-  async distribution(distributions: string[]): Promise<boolean> {
-    /**
-      * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
-      */
-    let checked = true
-    checked = false
-    const distro = new Distro()
-
-    for (const distribution of distributions) {
-      if (distribution.includes(distro.codenameLikeId)) {
-        checked = true
-      }
-    }
-
-    return checked
-  }
-
   /**
     *
     * @param repos
@@ -72,6 +52,28 @@ export default class SourcesList {
 
   /**
     *
+    * @param repos
+    * @returns
+    */
+  async distribution(distributions: string[]): Promise<boolean> {
+    /**
+      * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
+      */
+    let checked = true
+    checked = false
+    const distro = new Distro()
+
+    for (const distribution of distributions) {
+      if (distribution.includes(distro.codenameLikeId)) {
+        checked = true
+      }
+    }
+
+    return checked
+  }
+
+  /**
+    *
     */
   private async get(): Promise<string[]> {
     let universalSourcesList = '/etc/apt/sources.list'
@@ -81,7 +83,7 @@ export default class SourcesList {
     }
 
     // deb uri distribution [component1] [component2] [...]
-    const checkRepos = await exec(`grep "deb http"<${universalSourcesList}`, {echo: false, capture: true})
+    const checkRepos = await exec(`grep "deb http"<${universalSourcesList}`, {capture: true, echo: false})
     let tmp: string[] = []
     if (checkRepos.code === 0) {
       tmp = checkRepos.data.split('\n')

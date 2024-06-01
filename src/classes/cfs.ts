@@ -1,14 +1,16 @@
-/**
- * penguins-eggs
- * class: cfs.ts (custom final steps)
+ /**
+ * ./src/classes/families/cfs.ts (custom final steps)
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { ISettings } from '../interfaces/i-settings'
-import fs from 'fs'
-import yaml from 'js-yaml'
-import Pacman from './pacman'
+
+ import yaml from 'js-yaml'
+import fs from 'node:fs'
+
+import { ISettings } from '../interfaces/i-settings.js'
+import Pacman from './pacman.js'
 
 /**
  * cfs
@@ -38,6 +40,7 @@ export default class CFS {
             }
          }
       }
+
       return cfs
    }
 }

@@ -1,49 +1,34 @@
 /**
- * penguins-eggs
- * command: update.ts
+ * ./src/commands/syncfrom.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
+import inquirer from 'inquirer'
 import shx from 'shelljs'
-import Utils from '../classes/utils'
-import Tools from '../classes/tools'
-import Pacman from '../classes/pacman'
-import {exec} from '../lib/utils'
-const inquirer = require('inquirer') 
+
+import Pacman from '../classes/pacman.js'
+import Tools from '../classes/tools.js'
+import Utils from '../classes/utils.js'
+import {exec} from '../lib/utils.js'
 
 
 /**
  *
  */
 export default class Update extends Command {
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
-  }
-
   static description = "update the Penguins' eggs tool"
+
   static examples = [
     'eggs update',
   ]
 
-  async run(): Promise<void> {
-    Utils.titles(this.id + ' ' + this.argv)
-    const {flags} = await this.parse(Update)
-    Utils.titles(this.id + ' ' + this.argv)
-
-    if (Utils.isRoot()) {
-      if (Utils.isSources()) {
-        Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
-      } else if (Utils.isDebPackage()) {
-        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
-      }
-
-      await this.chooseUpdate()
-    } else {
-      Utils.useRoot(this.id)
-    }
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
 
   /**
@@ -92,10 +77,10 @@ export default class Update extends Command {
 
     const questions: Array<Record<string, any>> = [
       {
-        type: 'list',
+        choices,
         message: 'select update method',
         name: 'selected',
-        choices: choices,
+        type: 'list',
       },
     ]
     const answer = await inquirer.prompt(questions)
@@ -104,6 +89,43 @@ export default class Update extends Command {
     }
 
     return answer.selected
+  }
+
+  /**
+   *
+   */
+  async getDebFromApt() {
+    if (await Pacman.packageAptAvailable('eggs')) {
+      await exec('apt reinstall eggs')
+    } else {
+      console.log('eggs is not present in your repositories')
+      console.log('but you can upgrade from internet')
+    }
+  }
+
+  /**
+   * download da LAN
+   */
+  async getDebFromLan() {
+    const Tu = new Tools()
+    await Tu.loadSettings()
+
+    Utils.warning('import from lan')
+    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.uefiArch()}.deb /tmp`
+    await exec(cmd, {capture: true, echo: true})
+
+    if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)) {
+      await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)
+    }
+  }
+
+  /**
+   *
+   */
+  async getDebFromManual() {
+    console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+    console.log('\nand install it with:')
+    console.log('\nsudo dpkg -i eggs_x.x.x-1.deb')
   }
 
   /**
@@ -124,40 +146,21 @@ export default class Update extends Command {
     console.log('npm install')
   }
 
-  /**
-   *
-   */
-  async getDebFromManual() {
-    console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
-    console.log('\nand install it with:')
-    console.log('\nsudo dpkg -i eggs_x.x.x-1.deb')
-  }
+  async run(): Promise<void> {
+    Utils.titles(this.id + ' ' + this.argv)
+    const {flags} = await this.parse(Update)
+    Utils.titles(this.id + ' ' + this.argv)
 
-  /**
-   * download da LAN
-   */
-  async getDebFromLan() {
-    const Tu = new Tools()
-    await Tu.loadSettings()
+    if (Utils.isRoot()) {
+      if (Utils.isSources()) {
+        Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
+      } else if (Utils.isDebPackage()) {
+        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
+      }
 
-    Utils.warning('import from lan')
-    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.uefiArch()}.deb /tmp`
-    await exec(cmd, {echo: true, capture: true})
-
-    if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)) {
-      await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)
-    }
-  }
-
-  /**
-   *
-   */
-  async getDebFromApt() {
-    if (await Pacman.packageAptAvailable('eggs')) {
-      await exec('apt reinstall eggs')
+      await this.chooseUpdate()
     } else {
-      console.log('eggs is not present in your repositories')
-      console.log('but you can upgrade from internet')
+      Utils.useRoot(this.id)
     }
   }
 }

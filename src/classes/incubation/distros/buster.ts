@@ -1,34 +1,34 @@
 /**
- * penguins-eggs
- * class / incubation: buster.ts
+ * ./src/classes/incubation/distros/buster.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import CFS from '../../cfs'
-import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
-import Fisherman from '../fisherman'
+import {IDistro, IInstaller, IRemix} from '../../../interfaces/index.js'
+import CFS from '../../cfs.js'
+import Fisherman from '../fisherman.js'
 
 /**
  *
  */
 export class Buster {
-  verbose = false
+  distro: IDistro
 
   installer = {} as IInstaller
 
-  remix: IRemix
-
-  distro: IDistro
+  isClone: boolean
 
   release = false
 
-  user_opt: string
+  remix: IRemix
 
-  theme: string // theme comprende il path
+  theme: string
 
-  isClone: boolean
+  user_opt: string // theme comprende il path
+
+  verbose = false
 
   /**
    * @param remix

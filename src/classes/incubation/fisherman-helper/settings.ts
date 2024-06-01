@@ -1,16 +1,26 @@
 /**
+ * ./src/classes/incubation/fisherman-helper/settings.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+
+/**
  * 
  * @param theme 
  * @param isClone 
  */
 
-import fs from 'fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
 import shx from 'shelljs'
-import { displaymanager } from './displaymanager'
-import Utils from '../../utils'
-import { ISettings } from '../../../interfaces/i-settings'
-import { installer } from '../installer'
+
+import { ISettings } from '../../../interfaces/i-settings.js'
+import Utils from '../../utils.js'
+import { installer } from '../installer.js'
+import { displaymanager } from './displaymanager.js'
 
 
 /**
@@ -22,7 +32,7 @@ import { installer } from '../installer'
  */
 export async function settings(src: string, dest: string, theme = 'eggs', isClone = false) {
     let branding = theme
-    let settingsSrc = src + 'settings.yml'
+    const settingsSrc = src + 'settings.yml'
     if (theme.includes('/')) {
         branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
     }
@@ -64,8 +74,8 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
 function cfsAppend(cfs: string) {
     const configRoot = installer().configRoot + 'settings.conf'
 
-    let soContent = fs.readFileSync(configRoot, 'utf8')
-    let so = yaml.load(soContent) as ISettings
+    const soContent = fs.readFileSync(configRoot, 'utf8')
+    const so = yaml.load(soContent) as ISettings
 
     const cfsContent: string = fs.readFileSync(cfs, 'utf8')
     const cfsSteps = yaml.load(cfsContent) as []
@@ -81,9 +91,11 @@ function cfsAppend(cfs: string) {
             for (const cfsStep of cfsSteps) {
                 so.sequence[1].exec.push(cfsStep)
             }
+
             so.sequence[1].exec.push('end-cfs') // we will replace with umount
         }
     }
+
     // ***
     fs.writeFileSync(configRoot, yaml.dump(so), 'utf-8')
     shx.sed('-i', 'end-cfs', 'umount', configRoot)

@@ -1,4 +1,13 @@
 /**
+ * ./src/classes/incubation/installer.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+
+/**
  * installer
  *
  * name  = 'calamares' oppure 'krill'
@@ -11,9 +20,9 @@
  * templateMultiarch = template + installer + '-modules/'
  *
  */
-import { IInstaller, IRemix } from '../../interfaces/index'
-import Distro from '../../classes/distro'
-import Pacman from '../../classes/pacman'
+import Distro from '../../classes/distro.js'
+import Pacman from '../../classes/pacman.js'
+import { IInstaller, IRemix } from '../../interfaces/index.js'
 
 /**
  * 

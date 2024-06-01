@@ -11,11 +11,12 @@ common:
   - git # wardrobe
   - isolinux # eggs
   - jq # mom
-  - live-boot-initramfs-tools # eggs
   - live-boot # eggs
+  - live-boot-doc # eggs
+  - live-boot-initramfs-tools # eggs
+  - live-tools # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
-  #- grub2
   - nodejs 
   - parted 
   - pxelinux # cuckoo

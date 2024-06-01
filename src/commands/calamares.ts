@@ -1,20 +1,31 @@
 /**
- * penguins-eggs
- * command: calamares.ts
+ * ./src/commands/calamares.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import { Command, Flags } from '@oclif/core'
-import path from 'path'
-import fs from 'fs'
-import Utils from '../classes/utils'
-import Settings from '../classes/settings'
-import Incubator from '../classes/incubation/incubator'
-import Pacman from '../classes/pacman'
-import { IRemix } from '../interfaces/index'
+import fs from 'node:fs'
+import path from 'node:path'
+
+import Incubator from '../classes/incubation/incubator.js'
+import Pacman from '../classes/pacman.js'
+import Settings from '../classes/settings.js'
+import Utils from '../classes/utils.js'
+import { IRemix } from '../interfaces/index.js'
 
 export default class Calamares extends Command {
+  static description = 'configure calamares or install or configure it'
+
+  static examples = [
+    'sudo eggs calamares',
+    'sudo eggs calamares --install',
+    'sudo eggs calamares --install --theme=/path/to/theme',
+    'sudo eggs calamares --remove',
+  ]
+
   static flags = {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: "install calamares and its dependencies" }),
@@ -26,17 +37,9 @@ export default class Calamares extends Command {
     verbose: Flags.boolean({ char: 'v' }),
   }
 
-  static description = 'configure calamares or install or configure it'
-  static examples = [
-    'sudo eggs calamares',
-    'sudo eggs calamares --install',
-    'sudo eggs calamares --install --theme=/path/to/theme',
-    'sudo eggs calamares --remove',
-  ]
+  incubator = {} as Incubator
 
   remix = {} as IRemix
-
-  incubator = {} as Incubator
 
   settings = {} as Settings
 
@@ -46,34 +49,36 @@ export default class Calamares extends Command {
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
-    let verbose = flags.verbose
+    const {verbose} = flags
 
-    let remove = flags.remove
+    const {remove} = flags
 
-    let install = flags.install
+    const {install} = flags
 
-    let release = flags.release
+    const {release} = flags
 
     let theme = 'eggs'
     if (flags.theme !== undefined) {
       theme = flags.theme
       if (theme.includes('/')) {
         if (theme.endsWith('/')) {
-          theme = theme.substring(0, theme.length - 1)
+          theme = theme.slice(0, Math.max(0, theme.length - 1))
         }
       } else {
         const wpath = `/home/${await Utils.getPrimaryUser()}/.wardrobe/vendors/`
         theme = wpath + flags.theme
       }
+
       theme = path.resolve(theme)
       if (!fs.existsSync(theme + '/theme')) {
         console.log('Cannot find theme: ' + theme)
         process.exit()
       }
     }
+
     console.log(`theme: ${theme}`)
-    let policies = flags.policies
-    const nointeractive = flags.nointeractive
+    let {policies} = flags
+    const {nointeractive} = flags
 
     if (Utils.isRoot(this.id)) {
       let installer = 'krill'
@@ -91,6 +96,7 @@ export default class Calamares extends Command {
                 this.settings.save(this.settings.config)
               }
             }
+
             process.exit()
           }
 

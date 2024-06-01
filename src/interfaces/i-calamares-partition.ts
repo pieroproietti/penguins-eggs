@@ -1,27 +1,27 @@
 /**
- * penguins-eggs
- * interface: i-calamares-partition.ts
+ * ./src/interfaces/i-calamares-partition.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-//import { boolean } from "@oclif/core/lib/parser"
+// import { boolean } from "@oclif/core/lib/parser"
 
 export interface ICalamaresPartition {
-    efiSystemPartition: string //    "/boot/efi"
-    // efiSystemPartitionSize:     300M
-    userSwapChoices: string[]
+    alwaysShowPartitionLabels: boolean // true    
+    availableFileSystemTypes: string [] //  ["ext4"]
     // swapPartitionName:      swap    
     // ensureSuspendToDisk:    true
+    defaultFileSystemType: string //  "ext4"
     // neverCreateSwap:        false
     drawNestedPartitions: boolean // false
-    alwaysShowPartitionLabels: boolean // true    
+    efiSystemPartition: string //    "/boot/efi"
     // allowManualPartitioning:   true
     initialPartitioningChoice: string // none
     initialSwapChoice: string // none 
-    defaultFileSystemType: string //  "ext4"
-    availableFileSystemTypes: string [] //  ["ext4"]
-    //enableLuksAutomatedPartitioning:    true
-    requiredStorage: 6.0
+    // enableLuksAutomatedPartitioning:    true
+    requiredStorage: 6
+    // efiSystemPartitionSize:     300M
+    userSwapChoices: string[]
 }

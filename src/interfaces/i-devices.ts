@@ -1,21 +1,22 @@
 /**
- * penguins-eggs
- * interface: i-devices.ts
+ * ./src/interfaces/i-devices.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IDevice {
-  name: string
+  cryptedFrom: string
   fsType: string
   mountPoint: string
-  cryptedFrom: string
+  name: string
 }
 
 export interface IDevices {
-  efi: IDevice
   boot: IDevice
-  root: IDevice
   data: IDevice
+  efi: IDevice
+  root: IDevice
   swap: IDevice
 }

@@ -1,27 +1,28 @@
-/**
- * penguins-eggs
- * class: pacman.ts
+ /**
+ * ./src/classes/pacman.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
+// _dirname
 import path from 'node:path'
 import shx from 'shelljs'
-import { IRemix, IDistro } from '../interfaces/index'
 
-import Utils from './utils'
-import Distro from './distro'
-import Settings from './settings'
-import { execSync } from 'node:child_process'
-import { IEggsConfig } from '../interfaces/index'
-import { exec } from '../lib/utils'
+import { IDistro, IEggsConfig , IRemix } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
+import Distro from './distro.js'
+import Archlinux from './families/archlinux.js'
+import Debian from './families/debian.js'
+import Fedora from './families/fedora.js'
+import Suse from './families/suse.js'
+import Settings from './settings.js'
+import Utils from './utils.js'
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-import Debian from './families/debian'
-import Fedora from './families/fedora'
-import Archlinux from './families/archlinux'
-import Suse from './families/suse'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
@@ -39,169 +40,27 @@ export default class Pacman {
 
   /**
    *
-   * @returns
+   * @param verbose
    */
-  static distro(): IDistro {
-    const remix = {} as IRemix
-    const distro = new Distro(remix)
-    return distro
-  }
-
-  /**
-   * 
-   * @returns grub
-   */
-  static whichGrubIsInstalled(): string {
-    let grubInstalled = ''
+  static async autocompleteInstall(verbose = false) {
     if (this.distro().familyId === 'debian') {
-      if (this.packageIsInstalled('grub-common')) {
-        grubInstalled = 'grub'
-      }
-    } else if (this.distro().familyId === 'fedora') {
-      if (this.packageIsInstalled('grub2-common.noarch')) {
-        grubInstalled = 'grub2'
-      }
-    } else if (this.distro().familyId === 'archlinux') {
-      if (this.packageIsInstalled('grub')) {
-        grubInstalled = 'grub'
-      }
-    } else if (this.distro().familyId === 'suse' && this.packageIsInstalled('grub2')) {
-      grubInstalled = 'grub2'
-    }
-
-    return grubInstalled
-  }
-
-  /**
-   * check if it's installed xorg
-   * @returns 
-   */
-  static isInstalledXorg(): boolean {
-    let installed = false
-    if (this.distro().familyId === 'debian') {
-      if (Debian.packageIsInstalled('xserver-xorg-core')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'fedora') {
-      if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'archlinux') {
-      if (Archlinux.packageIsInstalled('xorg-server-common')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'suse') {
-      if (Suse.packageIsInstalled('xorg-x11-server')) {
-        installed = true
-      } 
-    }
-
-    return installed
-  }
-
-  /**
-   * check if it's installed wayland
-   * @returns true if wayland
-   */
-  static isInstalledWayland(): boolean {
-    let installed = false
-    if (this.distro().familyId === 'debian') {
-      if (Debian.packageIsInstalled('xwayland')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'fedora') {
-      if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'archlinux') {
-      if (Archlinux.packageIsInstalled('xwayland')) {
-        installed = true
-      }
-    } else if (this.distro().familyId === 'suse') {
-      if (Suse.packageIsInstalled('xwayland*')) {
-        installed = true
-      }
-    }
-    return installed
-  }
-
-  /**
-   * Check se la macchina ha grub adatto ad efi
-   * Forse conviene spostarlo in pacman
-   */
-  static isUefi(): boolean {
-    let isUefi = false
-    if (this.distro().familyId === 'debian') {
-      if (Utils.uefiArch() !== 'i386') {
-        if (this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
-          isUefi = true
+      if (Pacman.packageIsInstalled('bash-completion')) {
+        if (fs.existsSync('/usr/share/bash-completion/completions/')) {
+          await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
+        } else if (fs.existsSync('/etc/bash_completion.d/')) {
+          await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
         }
       }
-    } else if (Pacman.distro().familyId === 'fedora') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'archlinux') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'suse') {
-      isUefi = true
+    } else if (this.distro().familyId === 'archlinux' && Pacman.packageIsInstalled('bash-completion')) {
+      await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
     }
-    return isUefi
   }
-
-  /**
-   *
-   * @returns true se GUI
-   */
-  static isInstalledGui(): boolean {
-    return this.isInstalledXorg() || this.isInstalledWayland()
-  }
-
-  /**
-   * controlla se è operante xserver-xorg-core
-   */
-  static isRunningXorg(): boolean {
-    return process.env.XDG_SESSION_TYPE === 'x11'
-  }
-
-  /**
-   * Constrolla se è operante wayland
-   */
-  static isRunningWayland(): boolean {
-    return process.env.XDG_SESSION_TYPE === 'wayland'
-  }
-
-  /**
-   * Check if the system is GUI able
-   */
-  static isRunningGui(): boolean {
-    return this.isRunningXorg() || this.isRunningWayland()
-  }
-
-  /**
-   * Check if the system is just CLI
-   */
-  static isRunningCli(): boolean {
-    return !this.isRunningGui()
-  }
-
 
   /**
    * return true if calamares is installed
    */
   static calamaresExists(): boolean {
     return this.commandIsInstalled('calamares')
-  }
-
-  /**
-   * Controlla se calamares è installabile
-   * @returns
-   */
-  static isCalamaresAvailable(): boolean {
-    let result = this.distro().isCalamaresAvailable
-    if (process.arch === 'arm' || process.arch === 'arm64') {
-      result = false
-    }
-
-    return result
   }
 
   /**
@@ -269,25 +128,26 @@ export default class Pacman {
   }
 
   /**
+   *
+   * @param cmd
+   */
+  static commandIsInstalled(cmd: string): boolean {
+    let installed = false
+    // if (shx.exec(`command -V ${cmd} &>/dev/null`).code == 0) {
+    // remove output
+    if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
+      installed = true
+    }
+
+    return installed
+  }
+
+  /**
    * Restituisce VERO se i file di configurazione SONO presenti
    */
   static configurationCheck(): boolean {
     const confExists = fs.existsSync(config_file)
     return confExists
-  }
-
-  /**
-   * Ritorna vero se machine-id è uguale
-   */
-  static async configurationMachineNew(verbose = false): Promise<boolean> {
-    const settings = new Settings()
-    await settings.load()
-    const result = Utils.machineId() !== settings.config.machine_id
-    if (verbose && result) {
-      console.log('configurationMachineNew: True')
-    }
-
-    return result
   }
 
   /**
@@ -312,8 +172,8 @@ export default class Pacman {
     config.compression = 'xz'
     config.ssh_pass = false
     config.timezone = 'Europe/Rome'
-    //config.locales_default = '__NOT_USED_MORE'
-    //config.locales = ['__NOT_USED_MORE']
+    // config.locales_default = '__NOT_USED_MORE'
+    // config.locales = ['__NOT_USED_MORE']
 
     // config.timezone = 'America/New_York'
     // const env = process.env
@@ -350,6 +210,7 @@ export default class Pacman {
       execSync(`mkdir ${confRoot}`)
     }
 
+    console.log('configurationInstall: ' + confRoot)
     const addons = `${confRoot}/addons`
     if (fs.existsSync(addons)) {
       execSync(`rm -rf ${addons}`)
@@ -393,6 +254,21 @@ export default class Pacman {
   }
 
   /**
+   * Ritorna vero se machine-id è uguale
+   */
+  static async configurationMachineNew(verbose = false): Promise<boolean> {
+    const settings = new Settings()
+    await settings.load()
+    const result = Utils.machineId() !== settings.config.machine_id
+    if (verbose && result) {
+      console.log('configurationMachineNew: True')
+    }
+
+    return result
+  }
+
+
+  /**
    * Rimozione dei file di configurazione
    */
   static async configurationRemove(verbose = true): Promise<void> {
@@ -409,49 +285,19 @@ export default class Pacman {
 
   /**
    *
-   * @param verbose
+   * @returns
    */
-  static async autocompleteInstall(verbose = false) {
-    if (this.distro().familyId === 'debian') {
-      if (Pacman.packageIsInstalled('bash-completion')) {
-        if (fs.existsSync('/usr/share/bash-completion/completions/')) {
-          await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-        } else if (fs.existsSync('/etc/bash_completion.d/')) {
-          await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
-        }
-      }
-    } else if (this.distro().familyId === 'archlinux' && Pacman.packageIsInstalled('bash-completion')) {
-      await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-    }
-  }
-
-  /**
-   * Installa manPage
-   */
-  static async manPageInstall(verbose = false) {
-    const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.roll.gz')
-    if (fs.existsSync(manPageSrc)) {
-      const man1Dir = '/usr/share/man/man1/'
-      if (!fs.existsSync(man1Dir)) {
-        exec(`mkdir ${man1Dir} -p`)
-      }
-
-      const manPageDest = man1Dir + 'eggs.1.gz'
-      exec(`cp ${manPageSrc} ${manPageDest}`)
-      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
-        await exec('mandb > /dev/null')
-        if (verbose) {
-          console.log('manPage eggs installed...')
-        }
-      }
-    }
+  static distro(): IDistro {
+    const remix = {} as IRemix
+    const distro = new Distro(remix)
+    return distro
   }
 
   /**
    * distroTemplateCheck
    */
   static distroTemplateCheck(): boolean {
-    const codenameLikeId = this.distro().codenameLikeId
+    const {codenameLikeId} = this.distro()
     return fs.existsSync(`/etc/penguins-eggs.d/distros/${codenameLikeId}`)
   }
 
@@ -666,22 +512,145 @@ export default class Pacman {
   }
 
   /**
-   * restuisce VERO se il pacchetto è installato
-   * @param debPackage
+   * Controlla se calamares è installabile
+   * @returns
    */
-  static packageIsInstalled(packageName: string): boolean {
-    let installed = false
-    if (this.distro().familyId === 'debian') {
-      installed = Debian.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'fedora') {
-      installed = Fedora.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'archlinux') {
-      installed = Archlinux.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'suse') {
-      installed = Suse.packageIsInstalled(packageName)
+  static isCalamaresAvailable(): boolean {
+    let result = this.distro().isCalamaresAvailable
+    if (process.arch === 'arm' || process.arch === 'arm64') {
+      result = false
     }
 
+    return result
+  }
+
+  /**
+   *
+   * @returns true se GUI
+   */
+  static isInstalledGui(): boolean {
+    return this.isInstalledXorg() || this.isInstalledWayland()
+  }
+
+  /**
+   * check if it's installed wayland
+   * @returns true if wayland
+   */
+  static isInstalledWayland(): boolean {
+    let installed = false
+    if (this.distro().familyId === 'debian') {
+      if (Debian.packageIsInstalled('xwayland')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'fedora') {
+      if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'archlinux') {
+      if (Archlinux.packageIsInstalled('xwayland')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'suse' && Suse.packageIsInstalled('xwayland*')) {
+        installed = true
+      }
+
     return installed
+  }
+
+  /**
+   * check if it's installed xorg
+   * @returns 
+   */
+  static isInstalledXorg(): boolean {
+    let installed = false
+    if (this.distro().familyId === 'debian') {
+      if (Debian.packageIsInstalled('xserver-xorg-core')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'fedora') {
+      if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'archlinux') {
+      if (Archlinux.packageIsInstalled('xorg-server-common')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'suse' && Suse.packageIsInstalled('xorg-x11-server')) {
+        installed = true
+      }
+
+    return installed
+  }
+
+  /**
+   * Check if the system is just CLI
+   */
+  static isRunningCli(): boolean {
+    return !this.isRunningGui()
+  }
+
+  /**
+   * Check if the system is GUI able
+   */
+  static isRunningGui(): boolean {
+    return this.isRunningXorg() || this.isRunningWayland()
+  }
+
+  /**
+   * Constrolla se è operante wayland
+   */
+  static isRunningWayland(): boolean {
+    return process.env.XDG_SESSION_TYPE === 'wayland'
+  }
+
+  /**
+   * controlla se è operante xserver-xorg-core
+   */
+  static isRunningXorg(): boolean {
+    return process.env.XDG_SESSION_TYPE === 'x11'
+  }
+
+  /**
+   * Check se la macchina ha grub adatto ad efi
+   * Forse conviene spostarlo in pacman
+   */
+  static isUefi(): boolean {
+    let isUefi = false
+    if (this.distro().familyId === 'debian') {
+      if (Utils.uefiArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
+          isUefi = true
+        }
+    } else if (Pacman.distro().familyId === 'fedora') {
+      isUefi = true
+    } else if (Pacman.distro().familyId === 'archlinux') {
+      isUefi = true
+    } else if (Pacman.distro().familyId === 'suse') {
+      isUefi = true
+    }
+
+    return isUefi
+  }
+
+  /**
+   * Installa manPage
+   */
+  static async manPageInstall(verbose = false) {
+    const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.roll.gz')
+    if (fs.existsSync(manPageSrc)) {
+      const man1Dir = '/usr/share/man/man1/'
+      if (!fs.existsSync(man1Dir)) {
+        exec(`mkdir ${man1Dir} -p`)
+      }
+
+      const manPageDest = man1Dir + 'eggs.1.gz'
+      exec(`cp ${manPageSrc} ${manPageDest}`)
+      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
+        await exec('mandb > /dev/null')
+        if (verbose) {
+          console.log('manPage eggs installed...')
+        }
+      }
+    }
   }
 
   /**
@@ -712,25 +681,6 @@ export default class Pacman {
     return version
   }
 
-  static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
-    return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
-  }
-
-  /**
-   *
-   * @param cmd
-   */
-  static commandIsInstalled(cmd: string): boolean {
-    let installed = false
-    // if (shx.exec(`command -V ${cmd} &>/dev/null`).code == 0) {
-    // remove output
-    if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
-      installed = true
-    }
-
-    return installed
-  }
-
   /**
    * Install the package packageName
    * @param packageName {string} Pacchetto Debian da installare
@@ -748,6 +698,54 @@ export default class Pacman {
     }
 
     return retVal
+  }
+
+  /**
+   * restuisce VERO se il pacchetto è installato
+   * @param debPackage
+   */
+  static packageIsInstalled(packageName: string): boolean {
+    let installed = false
+    if (this.distro().familyId === 'debian') {
+      installed = Debian.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'fedora') {
+      installed = Fedora.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'archlinux') {
+      installed = Archlinux.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'suse') {
+      installed = Suse.packageIsInstalled(packageName)
+    }
+
+    return installed
+  }
+
+  static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
+    return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
+  }
+
+  /**
+   * 
+   * @returns grub
+   */
+  static whichGrubIsInstalled(): string {
+    let grubInstalled = ''
+    if (this.distro().familyId === 'debian') {
+      if (this.packageIsInstalled('grub-common')) {
+        grubInstalled = 'grub'
+      }
+    } else if (this.distro().familyId === 'fedora') {
+      if (this.packageIsInstalled('grub2-common.noarch')) {
+        grubInstalled = 'grub2'
+      }
+    } else if (this.distro().familyId === 'archlinux') {
+      if (this.packageIsInstalled('grub')) {
+        grubInstalled = 'grub'
+      }
+    } else if (this.distro().familyId === 'suse' && this.packageIsInstalled('grub2')) {
+      grubInstalled = 'grub2'
+    }
+
+    return grubInstalled
   }
 
 }

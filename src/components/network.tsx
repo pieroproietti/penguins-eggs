@@ -1,21 +1,25 @@
 /**
- * penguins-eggs
- * components: network.tsx
+ * ./src/components/network.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import React, { useState } from 'react'
-import { Box, Text } from 'ink'
 
-import Title from './elements/title'
-import Steps from './elements/steps'
+import React, { useState } from 'react'
+
+import Title from './title.js'
+import Steps from './steps.js'
+import {Text, Box, Newline } from 'ink'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index'
+import { ISettings, IBranding } from '../interfaces/index.js'
 
-const pjson = require('../../package.json')
+// pjson
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pjson = require('../../package.json');
 
 type NetworkProps = {
   iface?: string,
@@ -23,14 +27,15 @@ type NetworkProps = {
   address?: string,
   netmask?: string,
   gateway?: string,
-  domain: string
+  domain?: string
   dns?: string,
 }
 
 
 export default function Network({ iface, addressType, address, netmask, gateway, domain, dns }: NetworkProps) {
-  let productName = 'unknown'
-  let version = 'x.x.x'
+
+  let productName = ''
+  let version = ''
   let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
     configRoot = '/etc/calamares/'
@@ -51,7 +56,7 @@ export default function Network({ iface, addressType, address, netmask, gateway,
   const [submission, setSubmission] = React.useState()
   return (
     <>
-      <Title title={productName} />
+      <Title />
       <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
         <Box width={74} height={8} flexDirection="column">

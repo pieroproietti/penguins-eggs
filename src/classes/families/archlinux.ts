@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
-/**
- * penguins-eggs
- * classes/families: archilinux.ts
+ /**
+ * ./src/classes/families/archlinux.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -9,8 +8,9 @@
 
 import fs from 'node:fs'
 import shx from 'shelljs'
-import Utils from '../utils'
-import { exec } from '../../lib/utils'
+
+import { exec } from '../../lib/utils.js'
+import Utils from '../utils.js'
 
 /**
  * Archlinux
@@ -20,31 +20,14 @@ export default class Archlinux {
   static packs4calamares = ['calamares-eggs']  // , 'calamares', 'calamares-git']
 
   /**
-   * Archlinux: isInstalledXorg
-   * @returns true if xorg is installed
-   */
-  static isInstalledXorg(): boolean {
-    return this.packageIsInstalled('xorg-server-common')
-  }
-
-  /**
-   * Archlinux: isInstalledWayland
-   * @returns true if wayland is installed
-   */
-  static isInstalledWayland(): boolean {
-    return this.packageIsInstalled('xwayland')
-  }
-
-  
-  /**
    * Archlinux: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
     // const cal_eggs = 'arco-calamares-3.3.2-02-x86_64.pkg.tar.zst' // 2024-02-10
-    //const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
-    //const cal_eggs = 'calamares-garuda-3.3.5.r19.g10acebff4-1-x86_64.pkg.tar.zst' // 2024-03-10
+    // const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
+    // const cal_eggs = 'calamares-garuda-3.3.5.r19.g10acebff4-1-x86_64.pkg.tar.zst' // 2024-03-10
     const cal_eggs = 'arco-calamares-3.3.6-06-x86_64.pkg.tar.zst' // 24/04/27
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
@@ -68,6 +51,7 @@ export default class Archlinux {
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }
 
+  
   /**
    * Archlinux: calamaresRemove
    */
@@ -77,7 +61,7 @@ export default class Archlinux {
     let removed = false
     const echo = Utils.setEcho(verbose)
     
-    let calPKGs = [
+    const calPKGs = [
       'arco-calamares',
       'calamares', 
       'calamares-garuda', 
@@ -89,12 +73,42 @@ export default class Archlinux {
       }
     }
 
-    if (removed) {
-      if (fs.existsSync('/etc/calamares')) {
+    if (removed && fs.existsSync('/etc/calamares')) {
         await exec('rm /etc/calamares -rf', echo)
       }
-    }
+
     return removed
+  }
+
+  /**
+   * Archlinux: isInstalledWayland
+   * @returns true if wayland is installed
+   */
+  static isInstalledWayland(): boolean {
+    return this.packageIsInstalled('xwayland')
+  }
+
+  /**
+   * Archlinux: isInstalledXorg
+   * @returns true if xorg is installed
+   */
+  static isInstalledXorg(): boolean {
+    return this.packageIsInstalled('xorg-server-common')
+  }
+
+  /**
+   * Archlinux: packageInstall
+   * Install the package packageName
+   * @param packageName {string} Pacchetto Debian da installare
+   * @returns {boolean} True if success
+   */
+  static async packageInstall(packageName: string): Promise<boolean> {
+    let retVal = false
+    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
+      retVal = true
+    }
+
+    return retVal
   }
 
   /**
@@ -114,21 +128,6 @@ export default class Archlinux {
   }
 
   /**
-   * Archlinux: packageInstall
-   * Install the package packageName
-   * @param packageName {string} Pacchetto Debian da installare
-   * @returns {boolean} True if success
-   */
-  static async packageInstall(packageName: string): Promise<boolean> {
-    let retVal = false
-    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
-      retVal = true
-    }
-
-    return retVal
-  }
-
-  /**
    * Archlinux: packagePacmanAvailable
    * restuisce VERO se il pacchetto è installato
    * @param packageName
@@ -140,6 +139,7 @@ export default class Archlinux {
     if (stdout == packageName) {
       available = true
     }
+
     return available
   }
 

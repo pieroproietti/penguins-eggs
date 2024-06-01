@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 /**
- * penguins-eggs
- * classes/families: archilinux.ts
+ * ./src/classes/families/mockup.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -9,30 +8,15 @@
 
 import fs from 'node:fs'
 import shx from 'shelljs'
-import Utils from '../utils'
-import { exec } from '../../lib/utils'
+
+import { exec } from '../../lib/utils.js'
+import Utils from '../utils.js'
 
 /**
  * Mockup
  * @remarks all the utilities
  */
 export default class Mockup {
-
-  /**
-   * Mockup: isInstalledXorg
-   * @returns true if xorg is installed
-   */
-  static isInstalledXorg(): boolean {
-    return this.packageIsInstalled('xorg-server-common')
-  }
-
-  /**
-   * Mockup: isInstalledWayland
-   * @returns true if wayland is installed
-   */
-  static isInstalledWayland(): boolean {
-    return this.packageIsInstalled('xwayland')
-  }
 
   /**
    * Mockup: calamaresInstall
@@ -50,18 +34,24 @@ export default class Mockup {
    * Mockup: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    let removed=false
+    const removed=false
     return removed
   }
 
   /**
-   * Mockup: packageIsInstalled
-   * restuisce VERO se il pacchetto è installato
-   * @param packageName
+   * Mockup: isInstalledWayland
+   * @returns true if wayland is installed
    */
-  static packageIsInstalled(packageName: string): boolean {
-    let installed = false
-    return installed
+  static isInstalledWayland(): boolean {
+    return this.packageIsInstalled('xwayland')
+  }
+
+  /**
+   * Mockup: isInstalledXorg
+   * @returns true if xorg is installed
+   */
+  static isInstalledXorg(): boolean {
+    return this.packageIsInstalled('xorg-server-common')
   }
 
   /**
@@ -71,8 +61,18 @@ export default class Mockup {
    * @returns {boolean} True if success
    */
   static async packageInstall(packageName: string): Promise<boolean> {
-    let retVal = false
+    const retVal = false
     return retVal
+  }
+
+  /**
+   * Mockup: packageIsInstalled
+   * restuisce VERO se il pacchetto è installato
+   * @param packageName
+   */
+  static packageIsInstalled(packageName: string): boolean {
+    const installed = false
+    return installed
   }
 
   /**
@@ -81,7 +81,7 @@ export default class Mockup {
    * @param packageName
    */
   static async packagePacmanAvailable(packageName: string): Promise<boolean> {
-    let available = false
+    const available = false
     return available
   }
 
@@ -91,7 +91,7 @@ export default class Mockup {
    * @returns
    */
   static async packagePacmanLast(packageName: string): Promise<string> {
-    let version = ''
+    const version = ''
     return version
   }
 }

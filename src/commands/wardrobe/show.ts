@@ -1,25 +1,38 @@
 /**
- * penguins-eggs
- * command: show.ts
+ * ./src/commands/wardrobe/show.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 // libraries
 import { Args, Command, Flags } from '@oclif/core'
-import yaml from 'js-yaml'
-import fs from 'fs'
-import path from 'path'
 import chalk from 'chalk'
-import Distro from '../../classes/distro'
+import yaml from 'js-yaml'
+import fs from 'node:fs'
+import path from 'node:path'
 
-import Utils from '../../classes/utils'
-import { IMateria } from '../../interfaces/index'
+import Distro from '../../classes/distro.js'
+import Utils from '../../classes/utils.js'
+import { IMateria } from '../../interfaces/index.js'
 
 /**
  *
  */
 export default class Show extends Command {
+  static args = {
+    repo: Args.string({description: 'costume to show', name: 'costume', required: false}),
+  }
+
+  static description = 'show costumes/accessories in wardrobe'
+  // static args = [{ name: 'costume', description: 'costume', required: false }]
+  static example = [
+    'eggs wardrobe show colibri',
+    'eggs wardrobe show accessories/firmwares',
+    'eggs wardrobe show accessories/',
+  ]
+
   static flags = {
     help: Flags.help({ char: 'h' }),
     json: Flags.boolean({ char: 'j', description: 'output JSON' }),
@@ -27,23 +40,11 @@ export default class Show extends Command {
     wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
   }
 
-  static description = 'show costumes/accessories in wardrobe'
-  static args = {
-    repo: Args.string({name: 'costume', description: 'costume to show', required: false}),
-  }
-
-  //static args = [{ name: 'costume', description: 'costume', required: false }]
-  static example = [
-    'eggs wardrobe show colibri',
-    'eggs wardrobe show accessories/firmwares',
-    'eggs wardrobe show accessories/',
-  ]
-
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Show)
 
-    const verbose = flags.verbose
-    const json = flags.json
+    const {verbose} = flags
+    const {json} = flags
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
@@ -83,14 +84,28 @@ export default class Show extends Command {
     /**
       * tailorList
       */
-    let distro = new Distro()
+    const distro = new Distro()
     let index = ''
-    if (distro.distroLike === "Arch") {
+    switch (distro.distroLike) {
+    case "Arch": {
       index = 'arch.yml'
-    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
+    
+    break;
+    }
+
+    case "Debian": 
+    case "Devuan": {
       index = 'debian.yml'
-    } else if (distro.distroLike === "Debian") {      
+    
+    break;
+    }
+
+    case "Debian": {      
       index = 'ubuntu.yml'
+    
+    break;
+    }
+    // No default
     }
 
     const tailorList = `${costume}/${index}`
@@ -99,7 +114,7 @@ export default class Show extends Command {
       process.exit()
     }
 
-    const materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
+    const materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
 
     if (json) {
       console.log(JSON.stringify(materials, null, ' '))

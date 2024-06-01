@@ -1,47 +1,53 @@
 /**
- * penguins-eggs: incubator.ts
- *
+ * ./src/classes/incubation/incubator.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-import fs from 'node:fs'
-import path from 'node:path'
-import shx from 'shelljs'
-import Utils from '../utils'
-import { IRemix, IDistro } from '../../interfaces/index'
-
-import { Jessie } from './distros/jessie'
-import { Buster } from './distros/buster'
-import { Focal } from './distros/focal'
-import { Bionic } from './distros/bionic'
-import { Rolling } from './distros/rolling'
-
-import Pacman from '../pacman'
-import { installer } from './installer'
-import { IInstaller } from '../../interfaces/i-installer'
 
 // partition
 import yaml from 'js-yaml'
-import { ICalamaresPartition } from '../../interfaces/i-calamares-partition'
+import fs from 'node:fs'
+import path from 'node:path'
+import shx from 'shelljs'
 
+import { ICalamaresPartition } from '../../interfaces/i-calamares-partition.js'
+import { IInstaller } from '../../interfaces/i-installer.js'
+import { IDistro, IRemix } from '../../interfaces/index.js'
+import Pacman from '../pacman.js'
+import Utils from '../utils.js'
+import { Bionic } from './distros/bionic.js'
+import { Buster } from './distros/buster.js'
+import { Focal } from './distros/focal.js'
+import { Jessie } from './distros/jessie.js'
+import { Rolling } from './distros/rolling.js'
+import { installer } from './installer.js'
+
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+// const branding = require('./branding.js').branding
+import { branding } from './branding.js'
 
 /**
  *
  */
 export default class Incubator {
-  verbose = false
+  distro: IDistro
 
   installer = {} as IInstaller
 
+  isClone: boolean
+
   remix: IRemix
-
-  distro: IDistro
-
-  user_opt: string
 
   theme: string
 
-  isClone: boolean
+  user_opt: string
+
+  verbose = false
 
   /**
    *
@@ -102,12 +108,14 @@ export default class Incubator {
 
         break
       }
+
       case 'bookworm': {
         const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await bookworm.create()
 
         break
       }
+
       case 'trixie': {
         const trixie = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await trixie.create()
@@ -185,6 +193,22 @@ export default class Incubator {
     if (Pacman.calamaresExists()) {
       partitionCustomize()
     }
+  }
+
+  /**
+   *
+   */
+  private createBranding() {
+    // const branding = require('./branding.js').branding
+
+    const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
+    if (!fs.existsSync(dir)) {
+      shx.exec(`mkdir ${dir} -p`)
+    }
+
+    const file = dir + 'branding.desc'
+    const content = branding(this.remix, this.distro, this.theme, this.verbose)
+    write(file, content, this.verbose)
   }
 
   /**
@@ -272,6 +296,7 @@ export default class Incubator {
           console.log('error: ' + error + ' creating ' + this.installer.configRoot + `branding/${this.remix.branding}`)
         }
       }
+
       // patch quirinux
       shx.cp('-r', calamaresBranding + '/*', this.installer.configRoot + `branding/${this.remix.branding}/`)
     } else {
@@ -311,22 +336,6 @@ export default class Incubator {
     shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
     shx.chmod('+x', '/usr/sbin/install-system.sh')
   }
-
-  /**
-   *
-   */
-  private createBranding() {
-    const branding = require('./branding').branding
-
-    const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
-    if (!fs.existsSync(dir)) {
-      shx.exec(`mkdir ${dir} -p`)
-    }
-
-    const file = dir + 'branding.desc'
-    const content = branding(this.remix, this.distro, this.verbose)
-    write(file, content, this.verbose)
-  }
 }
 
 /**
@@ -348,15 +357,17 @@ function write(file: string, content: string, verbose = false) {
  */
 function partitionCustomize() {
   const filePartition = '/etc/calamares/modules/partition.conf'
-  let partition = yaml.load(fs.readFileSync(filePartition, 'utf-8')) as ICalamaresPartition
+  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as ICalamaresPartition
   partition.defaultFileSystemType = 'ext4'
   partition.availableFileSystemTypes = ['ext4']
   if (Pacman.packageIsInstalled('btrfs-progs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
+
   if (Pacman.packageIsInstalled('xfsprogs')) {
     partition.availableFileSystemTypes.push('xfs')
   }
+
   if (Pacman.packageIsInstalled('f2fs-tools')) {
     partition.availableFileSystemTypes.push('f2fs')
   }

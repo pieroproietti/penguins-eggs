@@ -1,30 +1,30 @@
 /**
- * penguins-eggs
- * components: install.tsx
+ * ./src/components/install.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React, { useState } from 'react'
-import { Box, Newline, Text } from 'ink'
-
-import Title from './elements/title'
-import Steps from './elements/steps'
-
-
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index'
+
+import { ISettings, IBranding } from '../interfaces/index.js'
+
+import { Box, Newline, Text } from 'ink'
+import Title from './title.js'
+import Steps from './steps.js'
 
 
 type InstallProps = {
-  message: string,
-  percent: number,
+  message?: string,
+  percent?: number,
   spinner?: boolean
 }
 
 
-export default function Install({ message, percent, spinner = false }: InstallProps) {
+export default function Install({ message="Install", percent=0, spinner = false }: InstallProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -32,8 +32,9 @@ export default function Install({ message, percent, spinner = false }: InstallPr
     configRoot = '/etc/calamares/'
    }
 
-  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
+  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as ISettings
   const branding = settings.branding
+
   const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
   productName = calamares.strings.productName
   version = calamares.strings.version
@@ -52,11 +53,11 @@ export default function Install({ message, percent, spinner = false }: InstallPr
    */
   return (
     <>
-      <Title title={productName} />
+      <Title />
       <Box width={74} height={11} borderStyle="round" flexDirection="column">
         <Box flexDirection="column">
           <Box flexDirection="row">
-            <Steps step={8} />
+            <Steps step={9} />
             <Box flexDirection="column">
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />

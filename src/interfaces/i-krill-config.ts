@@ -1,34 +1,34 @@
 /**
- * penguins-eggs
- * interface: i-krill-config.ts
+ * ./src/interfaces/i-krill-config.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 export interface IKrillConfig {
-    language: string
-    region: string
-    zone: string
-    keyboardModel: string
-    keyboardLayout: string
-    keyboardVariant: string
-    keyboardOption: string
-    installationDevice: string
-    installationMode: string
-    filesystemType: string
-    userSwapChoice: string
-    name: string
-    fullname: string
-    password: string
-    rootPassword: string
+    address: string
+    addressType: string
     autologin: boolean
+    dns: string
+    domain: string
+    filesystemType: string
+    fullname: string
+    gateway: string
     hostname: string
     iface: string
-    addressType: string
-    address: string
+    installationDevice: string
+    installationMode: string
+    keyboardLayout: string
+    keyboardModel: string
+    keyboardOption: string
+    keyboardVariant: string
+    language: string
+    name: string
     netmask: string
-    gateway: string
-    domain: string
-    dns: string
+    password: string
+    region: string
+    rootPassword: string
+    userSwapChoice: string
+    zone: string
 }

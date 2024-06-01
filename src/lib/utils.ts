@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * lib: utils.ts
+ * ./src/lib/utils.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -23,8 +23,9 @@
  * https://github.com/AstarNetwork/swanky-cli/blob/master/src/commands/compile/index.ts
  */
 
-import {IExec} from '../interfaces/index'
-import {spawn} from 'child_process'
+import {spawn} from 'node:child_process'
+
+import {IExec} from '../interfaces/index.js'
 
 /**
  *
@@ -32,7 +33,7 @@ import {spawn} from 'child_process'
  * @param param1
  * @returns
  */
-export async function exec(command: string, {echo = false, ignore = false, capture = false} = {}): Promise<IExec> {
+export async function exec(command: string, {capture = false, echo = false, ignore = false} = {}): Promise<IExec> {
   /**
    * You could wrap spawn in a promise,
    * listen to exit event,
@@ -49,8 +50,6 @@ export async function exec(command: string, {echo = false, ignore = false, captu
       stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit'),
     })
 
-    // const spawn = require('child_process').spawn
-    // child.stdout.on('data', (data: string) => {
 
     let stdout = ''
     if (capture) {
@@ -60,15 +59,15 @@ export async function exec(command: string, {echo = false, ignore = false, captu
     }
 
     // 'error' event
-    child.on('error', function (error: string) {
-      reject({code: 1, error: error})
+    child.on('error', (error: string) => {
+      reject({code: 1, error})
     })
 
     // The 'exit' event is emitted after the child process ends. If the process exited, code is the final exit code of the process,
     // otherwise null. If the process terminated due to receipt of a signal, signal is the string name of the signal, otherwise null.
     // One of the two will always be non-null.
     child.on('exit', (code: number) => {
-      resolve({code: code, data: stdout})
+      resolve({code, data: stdout})
     })
 
     // end promise

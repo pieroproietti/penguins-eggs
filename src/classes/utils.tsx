@@ -1,7 +1,6 @@
-/* eslint-disable valid-jsdoc */
-/**
- * penguins-eggs
- * class: utils.tsx
+ /**
+ * ./src/classes/utils.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -12,21 +11,23 @@ import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
-import yaml from 'js-yaml'
-const inquirer = require('inquirer')
+import inquirer from 'inquirer'
 import chalk from 'chalk'
-import Pacman from './pacman'
+import Pacman from './pacman.js'
 import { ChildProcess, spawnSync } from 'child_process'
 import { Netmask } from 'netmask'
 
 // libraries
-import { exec } from '../lib/utils'
-import Distro from './distro'
-import Settings from './settings'
-import { settings } from '@oclif/core'
+import { exec } from '../lib/utils.js'
+import Distro from './distro.js'
 
+// pjson
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pjson = require('../../package.json');
 
-const pjson = require('../../package.json')
+// __dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 /**
  * Utils: general porpourse utils

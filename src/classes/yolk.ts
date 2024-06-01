@@ -1,27 +1,28 @@
-/**
- * penguins-eggs
- * class: yolk.ts
+ /**
+ * ./src/classes/yolk.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import fs from 'fs'
-import Utils from './utils'
-import Pacman from './pacman'
-import Bleach from './bleach'
-import { exec } from '../lib/utils'
+import fs from 'node:fs'
 import shx from 'shelljs'
+
+import { exec } from '../lib/utils.js'
+import Bleach from './bleach.js'
+import Pacman from './pacman.js'
+import Utils from './utils.js'
 
 /**
  *
  */
 export default class Yolk {
-  yolkDir = '/var/local/yolk'
+  echo = {}
 
   verbose = false
 
-  echo = {}
+  yolkDir = '/var/local/yolk'
 
   /**
    *
@@ -53,11 +54,11 @@ export default class Yolk {
       process.exit(0)
     }
 
-    if (!this.exists()) {
+    if (this.exists()) {
+      await this.erase()
+    } else {
       await exec(`mkdir ${this.yolkDir} -p`, this.echo)
       await exec(`chown _apt:root ${this.yolkDir} -R`, this.echo)
-    } else {
-      await this.erase()
     }
 
     // packages we need
@@ -76,14 +77,14 @@ export default class Yolk {
       Utils.warning(`- ${pkg}`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${pkg} | grep "^\\w" | sort -u`
       let depends = pkg + '\n'
-      depends += (await exec(cmd, { echo: false, capture: true })).data
+      depends += (await exec(cmd, { capture: true, echo: false })).data
       await this.installDeps(depends.split('\n'))
     }
 
     // create Package.gz
     cmd = 'dpkg-scanpackages -h  md5,sha1,sha256 . | gzip -c > Packages.gz'
     Utils.warning(cmd)
-    await exec(cmd, { echo: false, capture: true })
+    await exec(cmd, { capture: true, echo: false })
 
     // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
     const now = shx.exec('date -R -u').stdout.trim()
@@ -95,6 +96,21 @@ export default class Yolk {
     Utils.warning('Cleaning apt cache')
     const bleach = new Bleach()
     await bleach.clean(verbose)
+  }
+
+  /**
+   * Svuota la repo yolk
+   */
+  async erase() {
+    await exec(`rm ${this.yolkDir}/*`, this.echo)
+  }
+
+  /**
+  * Check if yoil exists and it's a repo
+  */
+  exists(): boolean {
+    const check = `${this.yolkDir}/Packages.gz`
+    return fs.existsSync(check)
   }
 
   /**
@@ -118,20 +134,5 @@ export default class Yolk {
       // Utils.warning(`- ${cmd}`)
       await exec(cmd, this.echo)
     }
-  }
-
-  /**
-  * Check if yoil exists and it's a repo
-  */
-  exists(): boolean {
-    const check = `${this.yolkDir}/Packages.gz`
-    return fs.existsSync(check)
-  }
-
-  /**
-   * Svuota la repo yolk
-   */
-  async erase() {
-    await exec(`rm ${this.yolkDir}/*`, this.echo)
   }
 }

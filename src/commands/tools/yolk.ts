@@ -1,31 +1,33 @@
 /**
- * penguins-eggs
- * command: yolk.ts
+ * ./src/commands/tools/yolk.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
-import shx from 'shelljs'
 import fs from 'node:fs'
-import Utils from '../../classes/utils'
-import Yolk from '../../classes/yolk'
+import shx from 'shelljs'
+
+import Utils from '../../classes/utils.js'
+import Yolk from '../../classes/yolk.js'
 
 /**
  *
  */
 export default class ToolsYolk extends Command {
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v'}),
-  }
-
   static description = 'configure eggs to install without internet'
+
+  static dir = '/var/local/yolk'
   static examples = [
     'sudo eggs tools yolk',
   ]
 
-  static dir = '/var/local/yolk'
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    verbose: Flags.boolean({char: 'v'}),
+  }
 
   /**
    *

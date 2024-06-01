@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * interface: i-drive-list.ts
+ * ./src/interfaces/i-drive-list.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -11,24 +11,24 @@ interface IMountPoint {
 }
 
 export interface IDriveList {
-  enumerator: string
+  blockSize: number
   busType: string
   busVersion: string
+  description: string
   device: string
   devicePath: string
-  raw: string
-  description: string
+  enumerator: string
   error: boolean
-  size: number
-  blockSize: number
+  isCard: boolean
+  isReadOnly: boolean
+  isRemovable: boolean
+  isSCSI: boolean
+  isSystem: boolean
+  isUAS: boolean
+  isUSB: boolean
+  isVirtual: boolean
   logicalBlockSize: number
   mountpoints: IMountPoint[]
-  isReadOnly: boolean
-  isSystem: boolean
-  isVirtual: boolean
-  isRemovable: boolean
-  isCard: boolean
-  isSCSI: boolean
-  isUSB: boolean
-  isUAS: boolean
+  raw: string
+  size: number
 }

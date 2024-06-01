@@ -1,20 +1,21 @@
 /**
- * penguins-eggs
- * krill modules: hostname.ts
+ * ./src/krill/modules/hostnames.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import fs from 'fs'
+import fs from 'node:fs'
+
+import Sequence from '../sequence.js'
 
 /**
  * hostname
  */
 export default async function hostname(this: Sequence, domain = ''): Promise<void> {
-  const hostname = this.users.hostname
+  const {hostname} = this.users
 
   /**
      * hostname
@@ -38,14 +39,11 @@ export default async function hostname(this: Sequence, domain = ''): Promise<voi
     let text = '127.0.0.1 localhost localhost.localdomain\n'
     if (this.network.addressType === 'static') {
       text += `${this.network.address} ${hostname} ${hostname}${domain} pvelocalhost pvelocalhost.pvelocaldomain\n`
-    } else {
-      
-      if (domain !== '') {
-        text += `127.0.1.1 ${hostname} ${hostname}${domain}\n`
-      } else {
+    } else if (domain === '') {
         text += `127.0.1.1 ${hostname}\n`        
+      } else {
+        text += `127.0.1.1 ${hostname} ${hostname}${domain}\n`
       }
-    }
 
     text += '# The following lines are desirable for IPv6 capable hosts\n'
     text += ':: 1     ip6 - localhost ip6 - loopback\n'

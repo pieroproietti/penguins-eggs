@@ -1,33 +1,33 @@
 /**
- * penguins-eggs
- * interface: index.ts
+ * ./src/interfaces/index.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-export {IAddons} from './i-addons'
-export {IExcludes} from './i-excludes'
-
-export {IDevice, IDevices} from './i-devices'
-export {IRemix} from './i-remix'
-export {IUser} from './i-user'
-export {IApp} from './i-app'
-
-// export { IDriveList } from './i-drive-list'
-export {IDistro} from './i-distro'
-export {INet} from './i-net'
-export {IInitrd} from './i-initrd'
-export {IWorkDir} from './i-workdir'
-export {IInstall} from './i-install'
-export {IExec} from './i-exec'
-export {IInstaller} from './i-installer'
-export {IEggsConfig} from './i-eggs-config'
+export {IAddons} from './i-addons.js'
+export {IApp} from './i-app.js'
 
 // Per krill
-export {IBranding} from './i-branding'
-export {ISettings} from './i-settings'
-export {IPartitions} from './i-partitions'
+export {IBranding} from './i-branding.js'
+export {IDevice, IDevices} from './i-devices.js'
+// export { IDriveList } from './i-drive-list'
+export {IDistro} from './i-distro.js'
+export {IEggsConfig} from './i-eggs-config.js'
 
+export {IExcludes} from './i-excludes.js'
+export {IExec} from './i-exec.js'
+export {IInitrd} from './i-initrd.js'
+export {IInstall} from './i-install.js'
+export {IInstaller} from './i-installer.js'
 // Costumes and Materia
-export {IMateria, IRepos} from './i-materia'
+export {IMateria, IRepos} from './i-materia.js'
+export {INet} from './i-net.js'
+export {IPartitions} from './i-partitions.js'
+
+export {IRemix} from './i-remix.js'
+export {ISettings} from './i-settings.js'
+export {IUser} from './i-user.js'
+
+export {IWorkDir} from './i-workdir.js'

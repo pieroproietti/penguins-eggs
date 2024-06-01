@@ -1,27 +1,36 @@
 /**
- * penguins-eggs
- * components: users.tsx
+ * ./src/components/users.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React, {useState, useEffect} from 'react'
 import { render, Text, Box } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './title.js'
+import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 
-import { ISettings, IBranding, IUser } from '../interfaces/index'
+
+// pjson
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pjson = require('../../package.json');
+
+
+
+import { ISettings, IBranding, IUser } from '../interfaces/index.js'
 
 type UsersProps = {
-    name: string,
-    fullname: string,
-    password: string,
-    rootPassword: string,
-    hostname: string,
-    autologin: boolean,
-    sameUserPassword: boolean
+    username?: string,
+    fullname?: string,
+    password?: string,
+    rootPassword?: string,
+    hostname?: string,
+    autologin?: boolean,
+    sameUserPassword?: boolean
 }
 
 
@@ -36,7 +45,7 @@ function useForceUpdate(){
  * @param param0 
  * @returns 
  */
-export default function Users({ name, fullname, password, rootPassword, hostname, autologin, sameUserPassword }: UsersProps) {
+export default function Users({ username, fullname, password, rootPassword, hostname, autologin, sameUserPassword }: UsersProps) {
     let productName = 'unknown'
     let version = 'x.x.x'
     let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -70,14 +79,14 @@ export default function Users({ name, fullname, password, rootPassword, hostname
 
     return (
         <>
-            <Title title={productName} />
+            <Title />
             <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
                 <Box flexDirection="column">
                     <Box flexDirection="row">
                         <Steps step={5} />
                         <Box flexDirection="column">
-                            <Box><Text>username     : </Text><Text color="cyan">{name}</Text></Box>
+                            <Box><Text>username     : </Text><Text color="cyan">{username}</Text></Box>
                             <Box><Text>full username: </Text><Text color="cyan">{fullname}</Text></Box>
                             <Box><Text>user password: </Text><Text color="cyan">{password}</Text></Box>
                             <Box></Box>

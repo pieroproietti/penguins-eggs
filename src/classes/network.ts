@@ -1,13 +1,13 @@
-/**
- * penguins-eggs
- * class: network.ts
+ /**
+ * ./src/classes/network.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 import {Netmask} from 'netmask'
-import os from 'os'
+import os from 'node:os'
 
 /**
  *
@@ -73,12 +73,12 @@ export default class Network {
       return this.o.base
     }
 
-    broadcast() {
-      return this.o.broadcast
-    }
-
     bitmask() {
       this.o.bitmask
+    }
+
+    broadcast() {
+      return this.o.broadcast
     }
 
     contains() {

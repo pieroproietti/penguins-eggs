@@ -1,25 +1,26 @@
 /**
- * penguins-eggs
- * lib: get_dns.ts
+ * ./src/lib/get_dns.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 'use strict'
-const inquirer = require('inquirer') 
+import inquirer from 'inquirer'
 
 export default async function getDns(initial: string): Promise<string> {
-  return new Promise(function (resolve) {
+  return new Promise((resolve) => {
     const questions: Array<Record<string, any>> = [
       {
-        type: 'input',
-        name: 'dns',
-        message: 'use ; to separe: ',
         default: initial,
+        message: 'use ; to separe: ',
+        name: 'dns',
+        type: 'input',
       },
     ]
 
-    inquirer.prompt(questions).then(function (options: any) {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.dns)
     })
   })

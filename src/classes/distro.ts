@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 /**
  * penguins-eggs
  * class: distro.ts
@@ -7,35 +7,39 @@
  * license: MIT
  */
 'use strict'
+import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import shell from 'shelljs'
-import yaml from 'js-yaml'
-import { IRemix, IDistro } from '../interfaces/index'
-import Utils from './utils'
+
+import { IDistro, IRemix } from '../interfaces/index.js'
+import Utils from './utils.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 /**
  * Classe
  */
 class Distro implements IDistro {
-  familyId: string
-  distroId: string
-  distroLike: string
+  bugReportUrl: string
   codenameId: string
   codenameLikeId: string
+  distroId: string
+  distroLike: string
+  familyId: string
+  homeUrl: string
+  isCalamaresAvailable: boolean
+  isolinuxPath: string
+  liveMediumPath: string
+  memdiskPath: string
+  pxelinuxPath: string
   releaseId: string
   releaseLike: string
-  usrLibPath: string
-  isolinuxPath: string
-  syslinuxPath: string
-  pxelinuxPath: string
-  memdiskPath: string
-  liveMediumPath: string
   squashfs: string
-  homeUrl: string
   supportUrl: string
-  bugReportUrl: string
-  isCalamaresAvailable: boolean
+  syslinuxPath: string
+  usrLibPath: string
 
   constructor(remix = {} as IRemix) {
     this.familyId = 'debian'
@@ -76,15 +80,15 @@ class Distro implements IDistro {
     os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
     for (const temp in data) {
       if (!data[temp].search(os[info.HOME_URL])) {
-        this.homeUrl = data[temp].slice(os[info.HOME_URL].length).replace(/"/g, '')
+        this.homeUrl = data[temp].slice(os[info.HOME_URL].length).replaceAll('"', '')
       }
 
       if (!data[temp].search(os[info.SUPPORT_URL])) {
-        this.supportUrl = data[temp].slice(os[info.SUPPORT_URL].length).replace(/"/g, '')
+        this.supportUrl = data[temp].slice(os[info.SUPPORT_URL].length).replaceAll('"', '')
       }
 
       if (!data[temp].search(os[info.BUG_REPORT_URL])) {
-        this.bugReportUrl = data[temp].slice(os[info.BUG_REPORT_URL].length).replace(/"/g, '')
+        this.bugReportUrl = data[temp].slice(os[info.BUG_REPORT_URL].length).replaceAll('"', '')
       }
     }
 
@@ -254,9 +258,9 @@ class Distro implements IDistro {
          * find in ./conf/derivaties
          */
         interface IDistros {
-          id: string, // codenameId
           distroLike: string,
           family: string,
+          id: string, // codenameId
           ids: string[]
         }
 

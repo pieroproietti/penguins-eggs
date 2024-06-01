@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * lib: selsect_zones.ts
+ * ./src/lib/select_zones.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -8,7 +8,8 @@
 
 'use strict'
 'use strict'
-const inquirer = require('inquirer') // inquirer from 
+import inquirer from 'inquirer'
+
 
 export default async function selectRegions(region = ''): Promise<string> {
   const africa = [
@@ -539,15 +540,15 @@ export default async function selectRegions(region = ''): Promise<string> {
 
   const questions: Array<Record<string, any>> = [
     {
-      type: 'list',
-      name: 'zone',
-      message: 'Please select the city or region corresponding to your time zone: ',
       choices: zone,
+      message: 'Please select the city or region corresponding to your time zone: ',
+      name: 'zone',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.zone)
     })
   })

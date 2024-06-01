@@ -1,14 +1,15 @@
 /**
- * penguins-eggs
- * interface: i-user.ts
+ * ./src/interfaces/i-user.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IUser {
-  name: string
   fullname: string
+  hostname: string
+  name: string
   password: string
   rootpassword: string
-  hostname: string
 }

@@ -1,14 +1,16 @@
 /**
- * penguins-eggs
- * krill modules: remove-installer.ts
+ * ./src/krill/modules/remove-installer-link.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import fs from 'fs'
+
+import fs from 'node:fs'
+
+import Sequence from '../sequence.js'
 
 /**
    * removeInstallerLink

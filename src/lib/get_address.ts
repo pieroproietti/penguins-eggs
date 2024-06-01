@@ -1,25 +1,26 @@
 /**
- * penguins-eggs
- * lib: get_address.ts
+ * ./src/lib/get_address.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 'use strict'
-const inquirer = require('inquirer') 
+import inquirer from 'inquirer'
 
 export default async function getAddress(initial: string): Promise<string> {
-  return new Promise(function (resolve) {
+  return new Promise((resolve) => {
     const questions: Array<Record<string, any>> = [
       {
-        type: 'input',
-        name: 'address',
-        message: 'What is ip address of this computer? ',
         default: initial,
+        message: 'What is ip address of this computer? ',
+        name: 'address',
+        type: 'input',
       },
     ]
 
-    inquirer.prompt(questions).then(function (options: any) {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.address)
     })
   })

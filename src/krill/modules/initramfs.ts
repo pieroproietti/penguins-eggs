@@ -1,16 +1,19 @@
 /**
- * penguins-eggs
- * krill modules: initramfs.ts
+ * ./src/krill/modules/initramfs.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import Utils from '../../classes/utils'
-import path from 'path'
+import path from 'node:path'
+
+import Utils from '../../classes/utils.js'
+import {exec} from '../../lib/utils.js'
+import Sequence from '../sequence.js'
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 /**
    * initramfs()
@@ -37,6 +40,7 @@ export default async function initramfs(this: Sequence) {
     if (this.distro.distroId === 'Manjaro' ) {
       cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
     }
+
     try {
       await exec(cmd, Utils.setEcho(true))
     } catch {
