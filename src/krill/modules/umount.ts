@@ -1,15 +1,15 @@
 /**
- * penguins-eggs
- * krill modules: umount.ts
+ * ./src/krill/modules/umount.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import Utils from '../../classes/utils'
-import { exec } from '../../lib/utils'
+import Sequence from '../sequence.js'
+import Utils from '../../classes/utils.js'
+import { exec } from '../../lib/utils.js'
  
   /**
  * 

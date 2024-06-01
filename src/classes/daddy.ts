@@ -1,35 +1,100 @@
-/**
- * penguins-eggs
- * class: daddy.ts
+ /**
+ * ./src/classes/daddy.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import Utils from '../classes/utils'
-import Pacman from '../classes/pacman'
-import Settings from '../classes/settings'
-import Compressors from '../classes/compressors'
-const inquirer = require('inquirer') 
 
-import {IEggsConfig} from '../interfaces/i-eggs-config'
 import chalk from 'chalk'
+import inquirer from 'inquirer'
+// _dirname
+import path from 'node:path'
 
-// libraries
-import { exec } from '../lib/utils'
+import Pacman from '../classes/pacman.js'
+import Settings from '../classes/settings.js'
+import Utils from '../classes/utils.js'
+import {IEggsConfig} from '../interfaces/i-eggs-config.js'
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 
 interface editConf {
+  compression: string
+  root_passwd: string
   snapshot_basename: string
   snapshot_prefix: string
+  theme: string
   user_opt: string
   user_opt_passwd: string
-  root_passwd: string
-  theme: string
-  compression: string
 }
 
 export default class Daddy {
   settings = {} as Settings
+
+  /**
+   *
+   * @param c
+   */
+  editConfig(c: IEggsConfig): Promise<string> {
+    // Utils.titles('dad')
+    console.log(chalk.cyan('Edit and save Live system parameters'))
+    console.log()
+    let compressionOpt = 0
+    if (c.compression === 'xz') {
+      compressionOpt = 1
+    } else if (c.compression === 'xz -Xbcj x86') {
+      compressionOpt = 2
+    }
+
+    if (c.snapshot_prefix === '') {
+      c.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
+    }
+
+    return new Promise((resolve) => {
+      const questions: Array<Record<string, any>> = [
+        {
+          default: c.snapshot_prefix,
+          message: 'LiveCD iso prefix: ',
+          name: 'snapshot_prefix',
+          type: 'input',
+        },
+        {
+          default: c.snapshot_basename,
+          message: 'LiveCD iso basename: ',
+          name: 'snapshot_basename',
+          type: 'input',
+        },
+        {
+          default: c.user_opt,
+          message: 'LiveCD user:',
+          name: 'user_opt',
+          type: 'input',
+        },
+        {
+          default: c.user_opt_passwd,
+          message: 'LiveCD user password: ',
+          name: 'user_opt_passwd',
+          type: 'input',
+        },
+        {
+          default: c.root_passwd,
+          message: 'LiveCD root password: ',
+          name: 'root_passwd',
+          type: 'input',
+        },
+        {
+          choices: ['fast', 'max'],
+          default: compressionOpt,
+          message: 'LiveCD compression: ',
+          name: 'compression',
+          type: 'list',
+        },
+      ]
+      inquirer.prompt(questions).then((options: any) => {
+        resolve(JSON.stringify(options))
+      })
+    })
+  }
 
   async helpMe(loadDefault = false, verbose = false) {
     // Controllo configurazione
@@ -51,15 +116,17 @@ export default class Daddy {
     if (await this.settings.load()) {
       config = this.settings.config
       let jsonConf: string
-      if (!loadDefault) {
-        jsonConf = await this.editConfig(config)
-      } else {
+      if (loadDefault) {
         if (config.snapshot_prefix === '') {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
           config.compression = 'fast'
         }
+
         jsonConf = JSON.stringify(config)
+      } else {
+        jsonConf = await this.editConfig(config)
       }
+
       const newConf = JSON.parse(jsonConf)
       // salvo le modifiche
       config.snapshot_basename = newConf.snapshot_basename
@@ -88,70 +155,5 @@ export default class Daddy {
       console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
       // await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
     }
-  }
-
-  /**
-   *
-   * @param c
-   */
-  editConfig(c: IEggsConfig): Promise<string> {
-    // Utils.titles('dad')
-    console.log(chalk.cyan('Edit and save Live system parameters'))
-    console.log()
-    let compressionOpt = 0
-    if (c.compression === 'xz') {
-      compressionOpt = 1
-    } else if (c.compression === 'xz -Xbcj x86') {
-      compressionOpt = 2
-    }
-
-    if (c.snapshot_prefix === '') {
-      c.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
-    }
-
-    return new Promise(function (resolve) {
-      const questions: Array<Record<string, any>> = [
-        {
-          type: 'input',
-          name: 'snapshot_prefix',
-          message: 'LiveCD iso prefix: ',
-          default: c.snapshot_prefix,
-        },
-        {
-          type: 'input',
-          name: 'snapshot_basename',
-          message: 'LiveCD iso basename: ',
-          default: c.snapshot_basename,
-        },
-        {
-          type: 'input',
-          name: 'user_opt',
-          message: 'LiveCD user:',
-          default: c.user_opt,
-        },
-        {
-          type: 'input',
-          name: 'user_opt_passwd',
-          message: 'LiveCD user password: ',
-          default: c.user_opt_passwd,
-        },
-        {
-          type: 'input',
-          name: 'root_passwd',
-          message: 'LiveCD root password: ',
-          default: c.root_passwd,
-        },
-        {
-          type: 'list',
-          name: 'compression',
-          message: 'LiveCD compression: ',
-          choices: ['fast', 'max'],
-          default: compressionOpt,
-        },
-      ]
-      inquirer.prompt(questions).then(function (options: any) {
-        resolve(JSON.stringify(options))
-      })
-    })
   }
 }

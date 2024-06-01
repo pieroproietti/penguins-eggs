@@ -1,16 +1,18 @@
 /**
- * penguins-eggs
- * classes/families: fedora.ts
+ * ./src/classes/families/fedora.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 
+
 import fs from 'node:fs'
 import shx from 'shelljs'
-import Utils from '../utils'
-import {exec} from '../../lib/utils'
+
+import {exec} from '../../lib/utils.js'
+import Utils from '../utils.js'
 
 /**
  * Utils: general porpourse utils
@@ -18,22 +20,6 @@ import {exec} from '../../lib/utils'
  */
 export default class Fedora {
   static packs4calamares = ['calamares']
-
-  /**
-   * check if it's installed xorg
-   * @returns true if xorg is installed
-   */
-  static isInstalledXorg(): boolean {
-    return this.packageIsInstalled('xorg-x11-server-Xorg.x86_64')
-  }
-
-  /**
-   * check if it's installed wayland
-   * @returns true if wayland
-   */
-  static isInstalledWayland(): boolean {
-    return this.packageIsInstalled('xorg-x11-server-Xwayland*')
-  }
 
   /**
    *
@@ -72,19 +58,34 @@ export default class Fedora {
   }
 
   /**
+   * check if it's installed wayland
+   * @returns true if wayland
+   */
+  static isInstalledWayland(): boolean {
+    return this.packageIsInstalled('xorg-x11-server-Xwayland*')
+  }
+
+  /**
+   * check if it's installed xorg
+   * @returns true if xorg is installed
+   */
+  static isInstalledXorg(): boolean {
+    return this.packageIsInstalled('xorg-x11-server-Xorg.x86_64')
+  }
+
+  /**
    * restuisce VERO se il pacchetto è installato
    * @param packageName
    */
-  static packageIsInstalled(packageName: string): boolean {
-    let installed = false
-    // rpm -qa | grep -i nano
-    const cmd = `/usr/bin/dnf list --installed ${packageName}`
+  static async packageAvailable(packageName: string): Promise<boolean> {
+    let available = false
+    const cmd = `/usr/bin/dnf list --available ${packageName} | grep Package:`
     const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
-      installed = true
+      available = true
     }
 
-    return installed
+    return available
   }
 
   /**
@@ -105,14 +106,15 @@ export default class Fedora {
    * restuisce VERO se il pacchetto è installato
    * @param packageName
    */
-  static async packageAvailable(packageName: string): Promise<boolean> {
-    let available = false
-    const cmd = `/usr/bin/dnf list --available ${packageName} | grep Package:`
+  static packageIsInstalled(packageName: string): boolean {
+    let installed = false
+    // rpm -qa | grep -i nano
+    const cmd = `/usr/bin/dnf list --installed ${packageName}`
     const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
     if (stdout.includes(packageName)) {
-      available = true
+      installed = true
     }
 
-    return available
+    return installed
   }
 }

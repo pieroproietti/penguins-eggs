@@ -1,15 +1,17 @@
 /**
- * penguins-eggs
- * command: ppa.ts
+ * ./src/commands/tools/ppa.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import { Command, Flags } from '@oclif/core'
-import Distro from '../../classes/distro'
-import Utils from '../../classes/utils'
-import { exec } from '../../lib/utils'
-import fs from 'fs'
+import fs from 'node:fs'
+
+import Distro from '../../classes/distro.js'
+import Utils from '../../classes/utils.js'
+import { exec } from '../../lib/utils.js'
 
 const fkey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
 const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
@@ -19,6 +21,13 @@ const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
  */
 export default class Ppa extends Command {
 
+  static description = 'add/remove repo'
+
+  static examples = [
+    'sudo eggs tools ppa --add',
+    'sudo eggs tools ppa --remove',
+  ]
+
   static flags = {
     add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
     help: Flags.help({ char: 'h' }),
@@ -26,12 +35,6 @@ export default class Ppa extends Command {
     remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
   }
-
-  static description = 'add/remove repo'
-  static examples = [
-    'sudo eggs tools ppa --add',
-    'sudo eggs tools ppa --remove',
-  ]
 
   /**
    * 
@@ -45,7 +48,7 @@ export default class Ppa extends Command {
       verbose = true
     }
 
-    const nointeractive = flags.nointeractive
+    const {nointeractive} = flags
 
     if (Utils.isRoot()) {
       const distro = new Distro()
@@ -70,7 +73,9 @@ export default class Ppa extends Command {
         /** 
          * archlinux
          */
-      } if (distro.familyId === 'archlinux') {
+      }
+
+ if (distro.familyId === 'archlinux') {
 
         if (flags.add) {
           if (distro.distroId !== 'ManjaroLinux') {
@@ -107,6 +112,7 @@ async function archAdd() {
     await archRemove()
     process.exit()
   }
+
   await exec('pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com', echo)
   await exec('pacman-key --lsign-key FBA220DFC880C036', echo)
   await exec("pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'", echo)

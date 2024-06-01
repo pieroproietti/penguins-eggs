@@ -1,9 +1,12 @@
-/**
- * penguins-eggs
- * class: initrd.ts
+ /**
+ * ./src/classes/initrd.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
+ */
+
+/**
  * Schema from "refractasnapshot-10.2.10 (20191218)"
  * Copyright: fsmithred@gmail.com 2011-2019
  */
@@ -11,7 +14,8 @@
 // packages
 import fs from 'node:fs'
 import shx from 'shelljs'
-import {IInitrd} from '../interfaces/index'
+
+import {IInitrd} from '../interfaces/index.js'
 
 /**
  * initrd
@@ -19,11 +23,11 @@ import {IInitrd} from '../interfaces/index'
  * cryptsetup
  */
 export default class Initrd {
-  workDir = '/tmp/initrd-extracted'
   compression = 'gzip'
-  initrdSrc = '/initrd.img'
-  initrdDest = '/home/eggs/ovarium/iso/live'
   fsLive = '/home/eggs/ovarium/filesystem'
+  initrdDest = '/home/eggs/ovarium/iso/live'
+  initrdSrc = '/initrd.img'
+  workDir = '/tmp/initrd-extracted'
 
   constructor(initrdSrc = '/initrd.img', initrdDest = '/home/eggs/mnt/ovarium/iso/live/initrd.img', fsLive = '/home/eggs/ovarium/filesystem') {
     this.initrdSrc = initrdSrc
@@ -32,15 +36,6 @@ export default class Initrd {
     console.log('sorgente: ' + this.initrdSrc)
     console.log('destinazione: ' + this.initrdDest)
     console.log('fsLive: ' + this.fsLive)
-  }
-
-  /**
-   * clean
-   */
-  clean() {
-    this.extract()
-    this.edit()
-    this.rebuild()
   }
 
   /**
@@ -69,6 +64,15 @@ export default class Initrd {
     }
 
     return initrd
+  }
+
+  /**
+   * clean
+   */
+  clean() {
+    this.extract()
+    this.edit()
+    this.rebuild()
   }
 
   /**

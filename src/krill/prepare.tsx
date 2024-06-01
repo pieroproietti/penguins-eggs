@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * krill modules: krill-prepare.ts
+ * ./src/krill/prepare.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -56,62 +56,63 @@
  * relevant /etc/calamares/ files.
  */
 import os from 'os'
-import { IKrillConfig } from '../interfaces/i-krill-config'
+import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
 import React from 'react';
 import { Box, Text } from 'ink'
 import { render, RenderOptions } from 'ink'
-import Utils from '../classes/utils'
+import Utils from '../classes/utils.js'
 import axios from 'axios'
 import shx from 'shelljs'
 import fs from 'fs'
-import Systemctl from '../classes/systemctl'
-import Locales from '../classes/locales'
-import Keyboards from '../classes/keyboards'
-import Pacman from '../classes/pacman'
+import Systemctl from '../classes/systemctl.js'
+import Locales from '../classes/locales.js'
+import Keyboards from '../classes/keyboards.js'
+import Pacman from '../classes/pacman.js'
 
 // libraries
-const exec = require('../lib/utils').exec
+import { exec } from '../lib/utils.js'
 
-import Welcome from '../components/welcome'
-import Location from '../components/location'
-import Partitions from '../components/partitions'
-import Keyboard from '../components/keyboard'
-import Users from '../components/users'
-import Network from '../components/network'
-import Summary from '../components/summary'
 
-import selectLanguages from '../lib/select_languages'
-import selectRegions from '../lib/select_regions'
-import selectZones from '../lib/select_zones'
+import Welcome from '../components/welcome.js'
+import Location from '../components/location.js'
+import Partitions from '../components/partitions.js'
+import Keyboard from '../components/keyboard.js'
+import Users from '../components/users.js'
+import Network from '../components/network.js'
+import Summary from '../components/summary.js'
 
-import selectInstallationDevice from '../lib/select_installation_device'
-import selectInstallationMode from '../lib/select_installation_mode'
-import selectUserSwapChoice from '../lib/select_user_swap_choice'
-import selectFileSystemType from '../lib/select_filesystem_type'
+import selectLanguages from '../lib/select_languages.js'
+import selectRegions from '../lib/select_regions.js'
+import selectZones from '../lib/select_zones.js'
 
-import getUsername from '../lib/get_username'
-import getUserfullname from '../lib/get_userfullname'
-import getHostname from '../lib/get_hostname'
-import getPassword from '../lib/get_password'
+import selectInstallationDevice from '../lib/select_installation_device.js'
+import selectInstallationMode from '../lib/select_installation_mode.js'
+import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
+import selectFileSystemType from '../lib/select_filesystem_type.js'
 
-import selectKeyboardModel from '../lib/select_keyboard_model'
-import selectKeyboardLayout from '../lib/select_keyboard_layout'
-import selectKeyboardVariant from '../lib/select_keyboard_variant'
-import selectKeyboardOption from '../lib/select_keyboard_option'
+import getUsername from '../lib/get_username.js'
+import getUserfullname from '../lib/get_userfullname.js'
+import getHostname from '../lib/get_hostname.js'
+import getPassword from '../lib/get_password.js'
 
-import selectInterface from '../lib/select_interface'
-import selectAddressType from '../lib/select_address_type'
-import getAddress from '../lib/get_address'
-import getNetmask from '../lib/get_netmask'
-import getGateway from '../lib/get_gateway'
-import getDomain from '../lib/get_domain'
-import getDns from '../lib/get_dns'
+import selectKeyboardModel from '../lib/select_keyboard_model.js'
+import selectKeyboardLayout from '../lib/select_keyboard_layout.js'
+import selectKeyboardVariant from '../lib/select_keyboard_variant.js'
+import selectKeyboardOption from '../lib/select_keyboard_option.js'
 
-import Sequence from './krill-sequence'
+import selectInterface from '../lib/select_interface.js'
+import selectAddressType from '../lib/select_address_type.js'
+import getAddress from '../lib/get_address.js'
+import getNetmask from '../lib/get_netmask.js'
+import getGateway from '../lib/get_gateway.js'
+import getDomain from '../lib/get_domain.js'
+import getDns from '../lib/get_dns.js'
 
-import { INet } from '../interfaces/index'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
+import Sequence from './sequence.js'
+
+import { INet } from '../interfaces/index.js'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -272,7 +273,7 @@ export default class Krill {
     }
 
     oUsers = {
-      name: this.krillConfig.name,
+      username: this.krillConfig.name,
       fullname: this.krillConfig.fullname,
       password: this.krillConfig.password,
       rootPassword: this.krillConfig.rootPassword,
@@ -500,14 +501,14 @@ export default class Krill {
    */
   async users(): Promise<IUsers> {
 
-    let name = this.krillConfig.name
-    if (name === '' || name === undefined) {
-      name = 'artisan'
+    let username = this.krillConfig.name
+    if (username === '' || username === undefined) {
+      username = 'artisan'
     }
 
     let fullname = this.krillConfig.fullname
     if (fullname === '' || fullname === undefined) {
-      fullname = name
+      fullname = username
     }
 
     let password = this.krillConfig.password
@@ -531,19 +532,19 @@ export default class Krill {
 
     let usersElem: JSX.Element
     while (true) {
-      usersElem = <Users name={name} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
+      usersElem = <Users username={username} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
       if (await confirm(usersElem, "Confirm Users datas?")) {
         break
       }
-      name = await getUsername(name)
+      username = await getUsername(username)
       fullname = await getUserfullname(fullname)
-      password = await getPassword(name, password)
+      password = await getPassword(username, password)
       rootPassword = await getPassword('root', password)
       hostname = await getHostname(hostname)
     }
 
     return {
-      name: name,
+      username: username,
       fullname: fullname,
       password: password,
       rootPassword: rootPassword,
@@ -617,7 +618,7 @@ export default class Krill {
 
 
     while (true) {
-      summaryElem = <Summary name={users.name} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} />
+      summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} />
       if (this.unattended && this.nointeractive) {
         redraw(summaryElem)
         await sleep(5000)

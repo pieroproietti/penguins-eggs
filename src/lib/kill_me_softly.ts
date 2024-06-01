@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * lib: kill_me_softly.ts
+ * ./src/lib/kill_me_softly.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -8,9 +8,10 @@
 
 'use strict'
 
-import Utils from "../classes/utils"
-import fs from 'fs'
-import { exec } from "./utils"
+import fs from 'node:fs'
+
+import Utils from "../classes/utils.js"
+import { exec } from "./utils.js"
 
 /**
  *  
@@ -46,8 +47,10 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
     if (!haveBindedDirs(liveFs)) {
       await exec(`rm -rf ${liveFs}`)
     }
+
     process.exit(0)
   }
+
   await exec(`rm ${eggsRoot} -rf`, echo)
 }
 
@@ -56,7 +59,7 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
  * @param path 
  * @returns 
  */
-function haveBindedDirs(path: string): Boolean {
+function haveBindedDirs(path: string): boolean {
   let retVal = false
   const dirs = [
     'bin',
@@ -76,12 +79,11 @@ function haveBindedDirs(path: string): Boolean {
 
   for (const dir of dirs) {
     const dirToCheck = `${path}/${dir}`
-    if (fs.existsSync(dirToCheck)) {
-      if (Utils.isMountpoint(dirToCheck)) {
+    if (fs.existsSync(dirToCheck) && Utils.isMountpoint(dirToCheck)) {
         console.log(`Warning: ${dirToCheck}, is a mountpoint!`)
         retVal = true
       }
-    }
   }
+
   return retVal
 }

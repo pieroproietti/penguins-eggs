@@ -1,44 +1,29 @@
 /**
- * penguins-eggs
- * command: produce.ts
+ * ./src/commands/produce.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import { Command, Flags } from '@oclif/core'
-import Utils from '../classes/utils'
-import Ovary from '../classes/ovary'
-import Compressors from '../classes/compressors'
-import Config from './config'
 import chalk from 'chalk'
-import { IExcludes, IAddons } from '../interfaces/index'
 import fs, { link } from 'node:fs'
 import path from 'node:path'
-import { create } from 'axios'
+
+import Compressors from '../classes/compressors.js'
+import Ovary from '../classes/ovary.js'
+import Utils from '../classes/utils.js'
+import { IAddons, IExcludes } from '../interfaces/index.js'
+import Config from './config.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 
 export default class Produce extends Command {
-  static flags = {
-    addons: Flags.string({ multiple: true, description: 'addons to be used: adapt, ichoice, pve, rsupport' }),
-    basename: Flags.string({ description: 'basename' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    excludes: Flags.string({ multiple: true, description: 'use: custom, home, mine, usr, var' }),
-    help: Flags.help({ char: 'h' }),
-    links:  Flags.string({ multiple: true, description: 'desktop links' }),
-    max: Flags.boolean({ char: 'm', description: 'max compression' }),
-    noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    prefix: Flags.string({ char: 'p', description: 'prefix' }),
-    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
-    script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
-    theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
-  }
-
   static description = 'produce a live image from your system whithout your data'
+
   static examples = [
     'sudo eggs produce',
     'sudo eggs produce --standard',
@@ -52,6 +37,27 @@ export default class Produce extends Command {
     'sudo eggs produce --excludes=static'
   ]
 
+  static flags = {
+    addons: Flags.string({ description: 'addons to be used: adapt, ichoice, pve, rsupport', multiple: true }),
+    basename: Flags.string({ description: 'basename' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone' }),
+    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
+    excludes: Flags.string({ description: 'use: custom, home, mine, usr, var', multiple: true }),
+    help: Flags.help({ char: 'h' }),
+    links:  Flags.string({ description: 'desktop links', multiple: true }),
+    max: Flags.boolean({ char: 'm', description: 'max compression' }),
+    noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    prefix: Flags.string({ char: 'p', description: 'prefix' }),
+    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
+    script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
+    standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
+    theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
+    unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
+    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
+  }
+
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
@@ -63,7 +69,7 @@ export default class Produce extends Command {
        */
       const addons = []
       if (flags.addons) {
-        const addons = flags.addons // array
+        const {addons} = flags // array
         for (let addon of addons) {
           // se non viene specificato il vendor il default è eggs
           if (!addon.includes('//')) {
@@ -86,14 +92,14 @@ export default class Produce extends Command {
       }
 
       // links check
-      let myLinks: string[]=[]
+      const myLinks: string[]=[]
       if (flags.links) {
-        const links = flags.links
-        for (let i=0; i<links.length; i++) {
-          if (fs.existsSync(`/usr/share/applications/${links[i]}.desktop`)) {
-            myLinks.push(links[i])
+        const {links} = flags
+        for (const link_ of links) {
+          if (fs.existsSync(`/usr/share/applications/${link_}.desktop`)) {
+            myLinks.push(link_)
           } else {
-            Utils.warning('desktop link: ' + chalk.white('/usr/share/applications/'+links[i] + '.desktop') + ' not found!')
+            Utils.warning('desktop link: ' + chalk.white('/usr/share/applications/'+link_ + '.desktop') + ' not found!')
           }
         }
       }
@@ -114,15 +120,19 @@ export default class Produce extends Command {
         if (flags.excludes.includes('static')) {
           excludes.static = true
         }
+
         if (flags.excludes.includes('home')) {
           excludes.home = true
         }
+
         if (flags.excludes.includes('mine')) {
           excludes.mine = true
         }
+
         if (flags.excludes.includes('usr')) {
           excludes.usr = true
         }
+
         if (flags.excludes.includes('var')) {
           excludes.var = true
         }
@@ -148,21 +158,21 @@ export default class Produce extends Command {
         compression = compressors.standard()
       }
 
-      const release = flags.release
+      const {release} = flags
 
-      let cryptedclone = flags.cryptedclone
+      const {cryptedclone} = flags
 
-      const clone = flags.clone
+      const {clone} = flags
 
-      const verbose = flags.verbose
+      const {verbose} = flags
 
       const scriptOnly = flags.script
 
       const yolkRenew = flags.yolk
 
-      const nointeractive = flags.nointeractive
+      const {nointeractive} = flags
 
-      const noicons = flags.noicons
+      const {noicons} = flags
 
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
@@ -175,7 +185,7 @@ export default class Produce extends Command {
         theme = flags.theme
         if (theme.includes('/')) {
           if (theme.endsWith('/')) {
-            theme = theme.substring(0, theme.length - 1)
+            theme = theme.slice(0, Math.max(0, theme.length - 1))
           }
         } else {
           const wpath = `/home/${await Utils.getPrimaryUser()}/.wardrobe/vendors/`
@@ -226,7 +236,7 @@ export default class Produce extends Command {
   }
 }
 
-const validSizePattern = /^(\d+)([MG]?)$/;
+const validSizePattern = /^(\d+)([GM]?)$/;
 
 function isValidSize(input: string): boolean {
   return validSizePattern.test(input);

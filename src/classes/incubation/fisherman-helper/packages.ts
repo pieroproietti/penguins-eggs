@@ -1,8 +1,13 @@
 /**
- * packages.ts
+ * ./src/classes/incubation/fisherman-helper/packages.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
-import {IDistro} from '../../../interfaces/index'
-import Pacman from '../../pacman'
+
+import {IDistro} from '../../../interfaces/index.js'
+import Pacman from '../../pacman.js'
 
 /**
  *
@@ -12,8 +17,8 @@ import Pacman from '../../pacman'
 export function remove(distro: IDistro): string {
   const packages = [
     'calamares-eggs', 
-    'calamares', 
     'calamares-garuda', 
+    'calamares', 
   ]
   
   if (distro.familyId === 'archlinux') {
@@ -21,11 +26,7 @@ export function remove(distro: IDistro): string {
   }
 
   if (distro.familyId === 'debian') {
-    packages.push('eggs')
-    packages.push('live-boot')
-    packages.push('live-boot-doc')
-    packages.push('live-boot-initramfs-tools')
-    packages.push('live-tools')
+    packages.push('penguins-eggs', 'live-boot', 'live-boot-doc', 'live-boot-initramfs-tools', 'live-tools')
   }
 
   let yaml = ''

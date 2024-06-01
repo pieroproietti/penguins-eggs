@@ -1,12 +1,14 @@
 /**
- * penguins-eggs
- * lib: select_keyboard_layout.ts
+ * ./src/lib/select_keyboard_layout.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-const inquirer = require('inquirer') 
-import Keyboards from '../classes/keyboards'
+
+import inquirer from 'inquirer'
+
+import Keyboards from '../classes/keyboards.js'
 
 /**
   *
@@ -19,21 +21,22 @@ export default async function selectKeyboardLayout(selected = ''): Promise<strin
   for (const l of layouts) {
     supported.push(l.code)
   }
+
   // sord keyboard layouts
   supported.sort()
 
   const questions: Array<Record<string, any>> = [
     {
-      type: 'list',
-      name: 'layout',
-      message: 'Select layout: ',
       choices: supported,
       default: selected,
+      message: 'Select layout: ',
+      name: 'layout',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.layout)
     })
   })

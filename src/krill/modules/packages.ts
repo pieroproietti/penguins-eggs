@@ -1,19 +1,20 @@
 /**
- * penguins-eggs
- * krill modules: packages.ts
+ * ./src/krill/modules/packages.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import Utils from '../../classes/utils'
-import Pacman from '../../classes/pacman'
-import fs from 'fs'
 import yaml from 'js-yaml'
-import {IPackages} from '../../interfaces/i-packages'
+import fs from 'node:fs'
+
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
+import {IPackages} from '../../interfaces/i-packages.js'
+import {exec} from '../../lib/utils.js'
+import Sequence from '../sequence.js'
 
 /**
  *
@@ -32,7 +33,7 @@ export default async function packages(this: Sequence): Promise<void> {
   let install: string[] = []
 
   if (fs.existsSync(config_file)) {
-    const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
+    const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
     const operations = JSON.parse(JSON.stringify(packages.operations))
 
     remove = operations[0].remove

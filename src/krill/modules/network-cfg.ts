@@ -1,17 +1,17 @@
 /**
- * penguins-eggs
- * krill modules: network.ts
+ * ./src/krill/modules/network-cfg.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import Utils from '../../classes/utils'
-import Pacman from '../../classes/pacman'
-import Systemctl from '../../classes/systemctl'
-import { exec } from '../../lib/utils'
+import Pacman from '../../classes/pacman.js'
+import Systemctl from '../../classes/systemctl.js'
+import Utils from '../../classes/utils.js'
+import { exec } from '../../lib/utils.js'
+import Sequence from '../sequence.js'
 
 /**
  * networkcfg
@@ -40,12 +40,13 @@ export default async function networkCfg(this: Sequence) {
       content += '    netmask ' + this.network.netmask + '\n'
       content += '    gateway ' + this.network.gateway + '\n'
     }
+
     Utils.write(file, content)
 
     // trixie
-    //if (await systemdCtl.isActive('systemd-networkd.service')) {
+    // if (await systemdCtl.isActive('systemd-networkd.service')) {
     //  await exec (`rm ${file}`)
-    //}
+    // }
 
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
@@ -67,6 +68,7 @@ export default async function networkCfg(this: Sequence) {
       for (const element of this.network.dns) {
         content += 'nameserver ' + element + '\n'
       }
+
       Utils.write(file, content)
     }
   }

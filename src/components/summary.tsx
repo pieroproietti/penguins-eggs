@@ -1,48 +1,49 @@
 /**
- * penguins-eggs
- * components: summary.tsx
+ * ./src/components/summary.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import React from 'react'
-import { Box, Text } from 'ink'
 
-import Title from './elements/title'
-import Steps from './elements/steps'
+import React from 'react'
+import Title from './title.js'
+import Steps from './steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index'
+import { ISettings, IBranding } from '../interfaces/index.js'
+import { Text, Box } from 'ink'
 
 
 type SummaryProps = {
 
-  language: string,
-  region: string,
-  zone: string,
+  language?: string,
+  region?: string,
+  zone?: string,
   // dateNumbers: string,
   // from keyboard
-  keyboardModel: string,
-  keyboardLayout: string,
+  keyboardModel?: string,
+  keyboardLayout?: string,
   //keyboardVariant: string,
   //keyboardOptions: string,
-  installationDevice: string,
-  filesystemType: string,
+  installationDevice?: string,
+  filesystemType?: string,
   // filesystemType: string,
   // userSwapChoice: string,
-  name: string,
+  username?: string,
   // fullname: string,
-  password: string,
-  rootPassword: string,
-  hostname: string,
+  password?: string,
+  rootPassword?: string,
+  hostname?: string,
   // autologin: boolean,
   // sameUserPassword: boolean,
 
-  message: string
+  message?: string
 }
 
-export default function Summary({ name, password, rootPassword, hostname, region, zone, language, keyboardModel, keyboardLayout, installationDevice, filesystemType, message }: SummaryProps) {
+export default function Summary({ username='', password='', rootPassword='', hostname='', region='', zone='', language='', keyboardModel='', keyboardLayout='', installationDevice='', filesystemType, message=''}: SummaryProps) {
+
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -63,7 +64,7 @@ export default function Summary({ name, password, rootPassword, hostname, region
   */
   return (
     <>
-      <Title title={productName} />
+      <Title />
       <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
         <Box flexDirection="column">
@@ -74,7 +75,7 @@ export default function Summary({ name, password, rootPassword, hostname, region
                 <Text>Installing </Text><Text color="green">{productName}</Text>
               </Box>
               <Box>
-                <Text></Text><Text color="green">{name}</Text><Text>/</Text><Text color="green">{password} </Text>
+                <Text></Text><Text color="green">{username}</Text><Text>/</Text><Text color="green">{password} </Text>
                 <Text>pwd root </Text><Text color="green">{rootPassword} </Text>
                 <Text>hostname </Text><Text color="green">{hostname}</Text>
               </Box>

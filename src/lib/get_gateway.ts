@@ -1,25 +1,26 @@
 /**
- * penguins-eggs
- * lib: get_gateway.ts
+ * ./src/lib/get_gateway.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 'use strict'
-const inquirer = require('inquirer') 
+import inquirer from 'inquirer'
 
 export default async function getGateway(initial: string): Promise<string> {
-  return new Promise(function (resolve) {
+  return new Promise((resolve) => {
     const questions: Array<Record<string, any>> = [
       {
-        type: 'input',
-        name: 'gateway',
-        message: 'What is gateway of this network? ',
         default: initial,
+        message: 'What is gateway of this network? ',
+        name: 'gateway',
+        type: 'input',
       },
     ]
 
-    inquirer.prompt(questions).then(function (options: any) {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.gateway)
     })
   })

@@ -1,11 +1,14 @@
 /**
- * penguins-eggs: buster/branding.ts
- *
+ * ./src/classes/incubation/branding.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
+
 import yaml from 'js-yaml'
-import { IRemix, IDistro } from '../../interfaces/index'
+
+import { IDistro, IRemix } from '../../interfaces/index.js'
 
 /**
  *
@@ -16,8 +19,8 @@ import { IRemix, IDistro } from '../../interfaces/index'
  * @returns
  */
 export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
-  const homeUrl: string = distro.homeUrl
-  const supportUrl: string = distro.supportUrl
+  const {homeUrl} = distro
+  const {supportUrl} = distro
   const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'
 
   const productName = remix.versionName // Questa va nel titolo ed in basso
@@ -61,38 +64,38 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
 
   const branding = {
     componentName: remix.branding,
-    welcomeStyleCalamares: true,
-    strings: {
-      productName: productName,
-      shortProductName: shortProductName,
-      version: version,
-      shortVersion: shortVersion,
-      versionedName: versionedName,
-      shortVersionedName: shortVersionedName,
-      bootloaderEntryName: bootloaderEntryName,
-      productUrl: productUrl,
-      supportUrl: supportUrl,
-      bugReportUrl: bugReportUrl,
-      releaseNotesUrl: releaseNotesUrl,
-    },
     images: {
-      productLogo: productLogo,
-      productIcon: productIcon,
-      productWelcome: productWelcome,
+      productIcon,
+      productLogo,
+      productWelcome,
     },
+    slideshow,
     slideshowAPI: 1,
-    slideshow: slideshow,
+    strings: {
+      bootloaderEntryName,
+      bugReportUrl,
+      productName,
+      productUrl,
+      releaseNotesUrl,
+      shortProductName,
+      shortVersion,
+      shortVersionedName,
+      supportUrl,
+      version,
+      versionedName,
+    },
     style: {
-      sidebarBackground:    "#010027",
-      sidebarText:          "#FFFFFF",
-      sidebarTextCurrent:   "#fbfbfb",
-      sidebarBackgroundCurrent: "#017877",
       // li ripeto per calamares 3.3
       SidebarBackground:    "#010027",
+      SidebarBackgroundCurrent: "#017877",
       SidebarText:          "#FFFFFF",
       SidebarTextCurrent:   "#fbfbfb",
-      SidebarBackgroundCurrent: "#017877"
+      sidebarBackground:    "#010027",
+      sidebarBackgroundCurrent: "#017877",
+      sidebarText:          "#FFFFFF",
+      sidebarTextCurrent:   "#fbfbfb"
     },
+    welcomeStyleCalamares: true,
   }
   return yaml.dump(branding)
 }

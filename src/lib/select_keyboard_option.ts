@@ -1,12 +1,14 @@
 /**
- * penguins-eggs
- * lib: select_keyboard_option.ts
+ * ./src/lib/select_keyboard_option.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-const inquirer = require('inquirer') 
-import Keyboards from '../classes/keyboards'
+
+import inquirer from 'inquirer'
+
+import Keyboards from '../classes/keyboards.js'
 
 /**
   * selectKeyboardOption
@@ -22,16 +24,16 @@ export default async function selectKeyboardOption(selected = ''): Promise<strin
 
   const questions: Array<Record<string, any>> = [
     {
-      type: 'list',
-      name: 'option',
-      message: 'Select option: ',
       choices: supported,
       default: selected,
+      message: 'Select option: ',
+      name: 'option',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.option)
     })
   })

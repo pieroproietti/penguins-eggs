@@ -1,33 +1,34 @@
 /**
- * penguins-eggs
- * interface: i-settings.ts
+ * ./src/interfaces/i-settings.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 interface Iinstance {
+  config: string  // 'before_bootloader_mkdirs_context.conf'
   id: string      // 'before_bootloader_mkdirs'
   moduce: string  // 'contextualprocess',
-  config: string  // 'before_bootloader_mkdirs_context.conf'
 }
 
 /**
  * 
  */
 export interface ISettings {
-  "modules-search": string[]
+  "branding": string,
+  "disable-cancel": boolean
+  "disable-cancel-during-exec": boolean
+  "dont-chroot": boolean
   "instances": [
     instance: Iinstance
   ]
+  "modules-search": string[]
+  "oem-setup": boolean
+  "prompt-install": boolean
   "sequence": [
       { show: string[]},
       { exec: string[]},
       { show: string[]}
     ]
-  "branding": string,
-  "prompt-install": boolean
-  "dont-chroot": boolean
-  "oem-setup": boolean
-  "disable-cancel": boolean
-  "disable-cancel-during-exec": boolean
 }

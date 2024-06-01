@@ -1,22 +1,22 @@
 /**
- * penguins-eggs
- * interface: i-remix.ts
+ * ./src/interfaces/i-remix.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 export interface IRemix {
-  name: string
-  fullname: string
   branding: string
+  fullname: string
+  kernel: string
+  lowerdir: string
+  merged: string
+  name: string
+  pathHome: string
+  pathIso: string
+  upperdir: string
   versionName: string
   versionNumber: string
-  kernel: string
-  pathHome: string
-  lowerdir: string
-  upperdir: string
   workdir: string
-  merged: string
-  pathIso: string
 }

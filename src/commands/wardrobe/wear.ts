@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * command: wear.ts
+ * ./src/commands/wardrobe/wear.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -8,15 +8,27 @@
 
 import {Args, Command, Flags} from '@oclif/core'
 import chalk from 'chalk'
-import Utils from '../../classes/utils'
-import path from 'path'
-import fs from 'fs'
-import Tailor from '../../classes/tailor'
+import fs from 'node:fs'
+import path from 'node:path'
+
+import Tailor from '../../classes/tailor.js'
+import Utils from '../../classes/utils.js'
 
 /**
  *
  */
 export default class Wear extends Command {
+  static args = {
+    repo: Args.string({description: 'costume to wear', name: 'costume', required: false}),
+  }
+
+  static description = 'wear costume/accessories from wardrobe'
+  static examples=[
+    'sudo eggs wardrobe wear duck',
+    'sudo eggs wardrobe wear accessories/firmwares',
+    'sudo eggs wardrobe wear wagtail/waydroid',
+  ]
+
   static flags = {
     help: Flags.help({char: 'h'}),
     no_accessories: Flags.boolean({char: 'a', description: 'not install accessories'}),
@@ -25,20 +37,10 @@ export default class Wear extends Command {
     wardrobe: Flags.string({char: 'w', description: 'wardrobe'}),
   }
 
-  static description = 'wear costume/accessories from wardrobe'
-  static args = {
-    repo: Args.string({name: 'costume', description: 'costume to wear', required: false}),
-  }
-  static examples=[
-    'sudo eggs wardrobe wear duck',
-    'sudo eggs wardrobe wear accessories/firmwares',
-    'sudo eggs wardrobe wear wagtail/waydroid',
-  ]
-
   async run(): Promise<void> {
     const {argv, flags} = await this.parse(Wear)
 
-    const verbose = flags.verbose
+    const {verbose} = flags
     Utils.titles(this.id + ' ' + this.argv)
 
     let no_accessories = false
@@ -75,6 +77,7 @@ export default class Wear extends Command {
         costume = `costumes/${costume}`
       }
     }
+
     costume = wardrobe + costume
     console.log(costume)
     if (!fs.existsSync(costume)) {

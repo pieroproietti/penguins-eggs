@@ -1,23 +1,31 @@
 /**
- * penguins-eggs
- * command: syncfrom.ts
+ * ./src/commands/syncfrom.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
 
-import fs from 'fs'
-import path  from 'path'
-import Utils from '../classes/utils'
-import {exec} from '../lib/utils'
-import Distro from '../classes/distro'
-import { IRemix } from '../interfaces/index'
+import {Command, Flags} from '@oclif/core'
+import fs from 'node:fs'
+import path  from 'node:path'
+
+import Distro from '../classes/distro.js'
+import Utils from '../classes/utils.js'
+import { IRemix } from '../interfaces/index.js'
+import {exec} from '../lib/utils.js'
 
 /**
  *
  */
 export default class Syncfrom extends Command {
+  static description = 'restore users and user data from a LUKS volumes'
+
+  static examples = [
+    'sudo eggs syncfrom',
+    'sudo eggs syncfrom --file /path/to/luks-volume',
+  ]
+
   static flags = {
     delete: Flags.string({description: 'rsync --delete delete extraneous files from dest dirs'}),
     file: Flags.string({char: 'f', description: 'file containing luks-volume encrypted'}),
@@ -26,27 +34,58 @@ export default class Syncfrom extends Command {
     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
 
-  static description = 'restore users and user data from a LUKS volumes'
-  static examples = [
-    'sudo eggs syncfrom',
-    'sudo eggs syncfrom --file /path/to/luks-volume',
-  ]
-
-  verbose = false
-
   echo = {}
 
-  rootDir = '/'
-
-  luksName = 'luks-volume'
-
-  luksFile = "" 
+  luksName = 'luks-volume' 
 
   luksDevice = `/dev/mapper/${this.luksName}`
+
+  luksFile = ""
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
   remix = {} as IRemix
+
+  rootDir = '/'
+
+  verbose = false
+
+  /**
+  *
+  */
+  async luksClose() {
+    if (Utils.isMountpoint(this.luksMountpoint)) {
+      await exec(`umount ${this.luksMountpoint}`, this.echo)
+    }
+
+    if (fs.existsSync(this.luksDevice)) {
+      Utils.warning(`LUKS close volume: ${this.luksName}`)
+      await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
+    }
+  }
+
+  /**
+   *
+   */
+  async luksOpen() {
+    if (fs.existsSync(this.luksDevice)) {
+      Utils.warning(`LUKS volume: ${this.luksName} already open`)
+    } else {
+      Utils.warning(`LUKS open volume: ${this.luksName}`)
+      await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+    }
+
+    if (!fs.existsSync(this.luksMountpoint)) {
+      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
+    }
+
+    if (Utils.isMountpoint(this.luksMountpoint)) {
+      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
+    } else {
+      Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
+      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, this.echo)
+    }
+  }
 
   async run(): Promise<void> {
     const {flags} = await this.parse(Syncfrom)
@@ -77,11 +116,20 @@ export default class Syncfrom extends Command {
 
     if (Utils.isRoot()) {
       if (fileVolume === '') {
-        let distro = new Distro(this.remix)
+        const distro = new Distro(this.remix)
         fileVolume=`${distro.liveMediumPath}live/${this.luksName}`
       }
 
-      if (!Utils.isLive()) {
+      if (Utils.isLive()) {
+        /**
+         * WORKING FROM LIVE
+         */
+        this.luksName = path.basename(fileVolume)
+        this.luksFile = fileVolume
+        this.luksDevice = `/dev/mapper/${this.luksName}`
+        this.luksMountpoint = `/tmp/${this.luksName}`
+        await this.restorePrivateData()
+      } else {
         /**
          * WORKING FROM INSTALLED
          */
@@ -98,15 +146,6 @@ export default class Syncfrom extends Command {
         } else {
           Utils.pressKeyToExit(`Can't find ${this.luksFile}`)
         }
-      } else {
-        /**
-         * WORKING FROM LIVE
-         */
-        this.luksName = path.basename(fileVolume)
-        this.luksFile = fileVolume
-        this.luksDevice = `/dev/mapper/${this.luksName}`
-        this.luksMountpoint = `/tmp/${this.luksName}`
-        await this.restorePrivateData()
       }
     } else {
       Utils.useRoot(this.id)
@@ -138,44 +177,8 @@ export default class Syncfrom extends Command {
       const cmd = `unsquashfs -d ${this.rootDir} -f ${this.luksMountpoint}/private.squashfs`
       await exec(cmd, Utils.setEcho(true))
     }
+
     await this.luksClose()
-  }
-
-  /**
-   *
-   */
-  async luksOpen() {
-    if (!fs.existsSync(this.luksDevice)) {
-      Utils.warning(`LUKS open volume: ${this.luksName}`)
-      await exec(`cryptsetup luksOpen --type luks2 ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
-    } else {
-      Utils.warning(`LUKS volume: ${this.luksName} already open`)
-    }
-
-    if (!fs.existsSync(this.luksMountpoint)) {
-      await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
-    }
-
-    if (!Utils.isMountpoint(this.luksMountpoint)) {
-      Utils.warning(`mount volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-      await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, this.echo)
-    } else {
-      Utils.warning(`mount volume: ${this.luksDevice} already mounted on ${this.luksMountpoint}`)
-    }
-  }
-
-  /**
-  *
-  */
-  async luksClose() {
-    if (Utils.isMountpoint(this.luksMountpoint)) {
-      await exec(`umount ${this.luksMountpoint}`, this.echo)
-    }
-
-    if (fs.existsSync(this.luksDevice)) {
-      Utils.warning(`LUKS close volume: ${this.luksName}`)
-      await exec(`cryptsetup luksClose ${this.luksName}`, this.echo)
-    }
   }
 }
 

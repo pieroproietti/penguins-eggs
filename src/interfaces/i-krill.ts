@@ -1,10 +1,11 @@
 /**
- * penguins-eggs
- * interface: i-krill.ts
+ * ./src/interfaces/i-krill.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IWelcome {
   language: string
 }
@@ -16,33 +17,33 @@ export interface ILocation {
 }
 
 export interface IKeyboard {
-  keyboardModel: string
   keyboardLayout: string
-  keyboardVariant: string
+  keyboardModel: string
   keyboardOption: string
+  keyboardVariant: string
 }
 
 export interface IPartitions {
+  filesystemType: string
   installationDevice: string
   installationMode: string
-  filesystemType: string
   userSwapChoice: string
 }
 
 export interface IUsers {
-  name: string
+  autologin: boolean
   fullname: string
+  hostname: string
   password: string
   rootPassword: string
-  autologin: boolean
-  hostname: string
+  username: string
 }
 
 // interface solo per hatching
 export interface ICalamaresModule {
-  type: string
-  name: string
-  interface: string
   command: string
+  interface: string
+  name: string
   timeout: number
+  type: string
 }

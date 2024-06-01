@@ -1,6 +1,6 @@
-/**
- * penguins-eggs
- * class: pve.ts
+ /**
+ * ./src/classes/pve-live.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -15,10 +15,14 @@
  * This will remove the symbolic link that indicated that the service should be started automatically.
  */
 
-import Systemctl from './systemctl'
-import path from 'path'
+import path from 'node:path'
 import shx from 'shelljs'
-import Utils from './utils'
+
+import Systemctl from './systemctl.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 
 export default class PveLive {
   systemctl = {} as Systemctl
@@ -41,15 +45,15 @@ export default class PveLive {
     const src = `${root}/usr/lib/systemd/system`
     const dest = `${root}/etc/systemd/system/multi-user.target.wants`
     shx.exec(`ln -s ${src}/pve-live.service ${dest}/pve-live.service`)
-    //Utils.pressKeyToExit("check it!",true)
-  }
-
-  enable() {
-    this.systemctl.enable('pve-live')
+    // Utils.pressKeyToExit("check it!",true)
   }
 
   disable() {
     this.systemctl.disable('pve-live')
+  }
+
+  enable() {
+    this.systemctl.enable('pve-live')
   }
 
   start() {

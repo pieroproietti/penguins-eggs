@@ -1,35 +1,35 @@
 /**
- * penguins-eggs
- * class / incubation: rolling.ts
+ * ./src/classes/incubation/distros/rolling.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import Pacman from '../../pacman'
-import CFS from '../../cfs'
-import { IInstaller, IRemix, IDistro } from '../../../interfaces/index'
-import Fisherman from '../fisherman'
+import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
+import CFS from '../../cfs.js'
+import Pacman from '../../pacman.js'
+import Fisherman from '../fisherman.js'
 
 /**
   *
   */
 export class Rolling {
-  installer = {} as IInstaller
-
-  remix: IRemix
-
   distro: IDistro
 
-  user_opt: string
+  installer = {} as IInstaller
+
+  isClone = false
 
   release = false
 
+  remix: IRemix
+
   theme: string // theme comprende il path
 
-  verbose = false
+  user_opt: string
 
-  isClone = false
+  verbose = false
 
   /**
    * @param remix

@@ -1,35 +1,38 @@
-/**
- * penguins-eggs
- * class: tailor.ts
+ /**
+ * ./src/classes/tailor.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
 import chalk from 'chalk'
-import Utils from './utils'
-import { IMateria, IEggsConfig } from '../interfaces/index'
-import { exec } from '../lib/utils'
-import fs from 'fs'
-import path from 'path'
 import yaml from 'js-yaml'
-import Pacman from './pacman'
-import Distro from './distro'
-import SourcesList from './sources_list'
+import fs from 'node:fs'
+// pjson
+import { createRequire } from 'node:module';
+import path from 'node:path'
 
-const pjson = require('../../package.json')
+import { IEggsConfig, IMateria } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
+import Distro from './distro.js'
+import Pacman from './pacman.js'
+import SourcesList from './sources_list.js'
+import Utils from './utils.js'
+const require = createRequire(import.meta.url);
+const pjson = require('../../package.json');
 
 /**
 *
 */
 export default class Tailor {
-  private verbose = false
-  private echo = {}
-  private costume = ''
-  private wardrobe = ''
-  private category = 'costume'
-
   materials = {} as IMateria
+  private category = 'costume'
+  private costume = ''
+  private echo = {}
+  private verbose = false
+
+  private wardrobe = ''
 
   /**
   * @param wardrobe
@@ -39,6 +42,101 @@ export default class Tailor {
     this.costume = costume
     this.wardrobe = path.dirname((path.dirname(costume)))
     this.category = category
+  }
+
+  /**
+  *
+  * @param packages
+  * @param verbose
+  * @param section
+  * @returns
+  */
+  async helperExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
+    const packages_we_want = '/tmp/packages_we_want'
+    const packages_not_exists = '/tmp/packages_not_exists'
+    const packages_exists = '/tmp/packages_exists'
+
+    await exec(`rm -f ${packages_we_want}`)
+    await exec(`rm -f ${packages_not_exists}`)
+    await exec(`rm -f ${packages_exists}`)
+
+    /**
+    * packages_we_want
+    */
+    let content = ''
+    packages.sort()
+    for (const elem of packages) {
+      if (!Pacman.packageIsInstalled(elem)) {
+        content += elem + '\n'
+      }
+    }
+
+    fs.writeFileSync(packages_we_want, content, 'utf-8')
+
+    /**
+    * packages_exists
+    */
+    const distro = new Distro()
+    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`));
+
+
+    /**
+    * packages_not_exists
+    */
+    if (verbose) {
+      await (distro.familyId === "debian" ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`));
+      const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
+      if (not_exist_packages.length > 1) { // Una riga c'è sempre
+        let content = ''
+        // for (const elem of not_exist_packages) {
+        for (let i = 0; i < not_exist_packages.length - 1; i++) {
+          content += `- ${not_exist_packages[i]}\n`
+        }
+
+        this.titles('tailor')
+        console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
+        console.log(content)
+        Utils.pressKeyToExit('Press a key to continue...')
+      }
+    }
+
+    return fs.readFileSync(packages_exists, 'utf8').split('\n')
+  }
+
+  /**
+  * - check if every package if installed
+  * - if find any packages to install, install it
+  */
+  async helperInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+    if (packages[0] !== null) {
+      const elements: string[] = []
+      let strElements = ''
+      for (const elem of packages) {
+        elements.push(elem)
+        cmd += ` ${elem}`
+        strElements += `, ${elem}`
+      }
+
+      if (elements.length > 0) {
+        let step = `installing ${comment}: `
+        // if not verbose show strElements
+        if (!this.verbose) {
+          step += strElements.slice(2)
+        }
+
+        /**
+        * prova 3 volte
+        */
+        const limit = 3
+        for (let tempts = 1; tempts < limit; tempts++) {
+          this.titles(step)
+          Utils.warning(`tempts ${tempts} of ${limit}`)
+          if (await tryCheckSuccess(cmd, this.echo)) {
+            break
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -58,9 +156,10 @@ export default class Tailor {
     }
 
     // Analyze distro
-    let distro = new Distro()
+    const distro = new Distro()
     let tailorList = ''
-    if (distro.distroLike === 'Debian') {
+    switch (distro.distroLike) {
+    case 'Debian': {
       tailorList = `${this.costume}/debian.yml`
       if (!fs.existsSync(tailorList)) {
         tailorList = `${this.costume}/devuan.yml`
@@ -73,7 +172,11 @@ export default class Tailor {
         }
       }
 
-    } else if (distro.distroLike === 'Devuan') {
+    
+    break;
+    }
+
+    case 'Devuan': {
       tailorList = `${this.costume}/devuan.yml`
       if (!fs.existsSync(tailorList)) {
         tailorList = `${this.costume}/debian.yml`
@@ -85,7 +188,11 @@ export default class Tailor {
           }
         }
       }
-    } else if (distro.distroLike === 'Ubuntu') {
+    
+    break;
+    }
+
+    case 'Ubuntu': {
       tailorList = `${this.costume}/ubuntu.yml`
       if (!fs.existsSync(tailorList)) {
         tailorList = `${this.costume}/debian.yml`
@@ -99,7 +206,11 @@ export default class Tailor {
           }
         }
       }
-    } else if (distro.distroLike === 'Arch') {
+    
+    break;
+    }
+
+    case 'Arch': {
       tailorList = `${this.costume}/arch.yml`
       if (!fs.existsSync(tailorList)) {
         tailorList = `${this.costume}/debian.yml`
@@ -108,10 +219,14 @@ export default class Tailor {
           process.exit()
         }
       }
+    
+    break;
+    }
+    // No default
     }
 
     if (fs.existsSync(tailorList)) {
-      this.materials = yaml.load(fs.readFileSync(tailorList, 'utf-8')) as IMateria
+      this.materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
     } else switch (this.category) {
       case 'costume': {
         this.titles(`${this.category}: ${this.costume}`)
@@ -234,11 +349,7 @@ export default class Tailor {
         step = 'repositories update'
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
-          if (distro.familyId === "debian") {
-            await exec('apt-get update', Utils.setEcho(false))
-          } else {
-            await exec('pacman -Sy', Utils.setEcho(false))
-          }
+          await (distro.familyId === "debian" ? exec('apt-get update', Utils.setEcho(false)) : exec('pacman -Sy', Utils.setEcho(false)));
         }
 
         /**
@@ -248,11 +359,7 @@ export default class Tailor {
           step = 'repositories upgrade'
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
-            if (distro.familyId === "debian") {
-              await exec('apt-get full-upgrade -y', Utils.setEcho(false))
-            } else {
-              await exec('pacman -Su', Utils.setEcho(false))
-            }
+            await (distro.familyId === "debian" ? exec('apt-get full-upgrade -y', Utils.setEcho(false)) : exec('pacman -Su', Utils.setEcho(false)));
           } //  upgrade true
         } // undefined upgrade
 
@@ -386,9 +493,8 @@ export default class Tailor {
           }
         }
 
-        if (distro.familyId === "debian") {
-          // try_accessories
-          if (this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
+        if (distro.familyId === "debian" && // try_accessories
+          this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
             step = 'wearing try_accessories'
             for (const elem of this.materials.sequence.try_accessories) {
               if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
@@ -404,7 +510,6 @@ export default class Tailor {
               }
             }
           }
-        }
       } // no-accessories
     } // end sequence
 
@@ -466,109 +571,6 @@ export default class Tailor {
       await exec('reboot')
     } else {
       console.log(`You look good with: ${this.materials.name}`)
-    }
-  }
-
-  /**
-  *
-  * @param packages
-  * @param verbose
-  * @param section
-  * @returns
-  */
-  async helperExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
-    const packages_we_want = '/tmp/packages_we_want'
-    const packages_not_exists = '/tmp/packages_not_exists'
-    const packages_exists = '/tmp/packages_exists'
-
-    await exec(`rm -f ${packages_we_want}`)
-    await exec(`rm -f ${packages_not_exists}`)
-    await exec(`rm -f ${packages_exists}`)
-
-    /**
-    * packages_we_want
-    */
-    let content = ''
-    packages.sort()
-    for (const elem of packages) {
-      if (!Pacman.packageIsInstalled(elem)) {
-        content += elem + '\n'
-      }
-    }
-
-    fs.writeFileSync(packages_we_want, content, 'utf-8')
-
-    /**
-    * packages_exists
-    */
-    let distro = new Distro()
-    if (distro.familyId === 'debian') {
-      await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-    } else {
-      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-    }
-
-
-    /**
-    * packages_not_exists
-    */
-    if (verbose) {
-      if (distro.familyId === "debian") {
-        await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
-      } else {
-        await exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
-      }
-      const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf-8').split('\n')
-      if (not_exist_packages.length > 1) { // Una riga c'è sempre
-        let content = ''
-        // for (const elem of not_exist_packages) {
-        for (let i = 0; i < not_exist_packages.length - 1; i++) {
-          content += `- ${not_exist_packages[i]}\n`
-        }
-
-        this.titles('tailor')
-        console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
-        console.log(content)
-        Utils.pressKeyToExit('Press a key to continue...')
-      }
-    }
-
-    return fs.readFileSync(packages_exists, 'utf-8').split('\n')
-  }
-
-  /**
-  * - check if every package if installed
-  * - if find any packages to install, install it
-  */
-  async helperInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
-    if (packages[0] !== null) {
-      const elements: string[] = []
-      let strElements = ''
-      for (const elem of packages) {
-        elements.push(elem)
-        cmd += ` ${elem}`
-        strElements += `, ${elem}`
-      }
-
-      if (elements.length > 0) {
-        let step = `installing ${comment}: `
-        // if not verbose show strElements
-        if (!this.verbose) {
-          step += strElements.slice(2)
-        }
-
-        /**
-        * prova 3 volte
-        */
-        const limit = 3
-        for (let tempts = 1; tempts < limit; tempts++) {
-          this.titles(step)
-          Utils.warning(`tempts ${tempts} of ${limit}`)
-          if (await tryCheckSuccess(cmd, this.echo)) {
-            break
-          }
-        }
-      }
     }
   }
 

@@ -1,19 +1,17 @@
 /**
- * penguins-eggs
- * krill modules: fatab.ts
+ * ./src/krill/modules/fstab.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-
-import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import Utils from '../../classes/utils'
 import shx from 'shelljs'
-import { util } from 'chai'
-import Pacman from '../../classes/pacman'
+
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
+import Sequence from '../sequence.js'
 
 /**
    * fstab()
@@ -97,18 +95,19 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
       text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
       text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
     }
+
     text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
   
   } else if (this.partitions.filesystemType === 'btrfs') {
-    let base                    = '/        btrfs  subvol=/@,defaults 0 0'
-    let snapshots               = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
-    let home                    = '/home                     btrfs  subvol=/@home,defaults 0 0'
-    let root                    = '/root                     btrfs  subvol=/@root,defaults 0 0'
-    let var_log                 = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
-    let var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
-    let var_lib_blueman         = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
-    let tmp                     = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
+    const base                    = '/        btrfs  subvol=/@,defaults 0 0'
+    const snapshots               = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
+    const home                    = '/home                     btrfs  subvol=/@home,defaults 0 0'
+    const root                    = '/root                     btrfs  subvol=/@root,defaults 0 0'
+    const var_log                 = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
+    const var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
+    const var_lib_blueman         = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
+    const tmp                     = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
 
     text += `# ${this.devices.root.name}  btrfs ${this.devices.root.mountPoint} subvol\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
@@ -121,6 +120,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
     
   }
+
   Utils.write(fstab, text)
 }
 

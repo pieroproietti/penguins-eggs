@@ -1,14 +1,16 @@
 /**
- * penguins-eggs
- * command: stat.ts
+ * ./src/commands/tools/stat.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
 import axios from 'axios'
 import https from 'node:https'
+
+import Utils from '../../classes/utils.js'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })
@@ -18,18 +20,19 @@ import yaml from 'js-yaml'
  *
  */
 export default class ToolsStat extends Command {
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    month: Flags.boolean({char: 'm', description: 'current month'}),
-    year: Flags.boolean({char: 'y', description: 'current year'}),
-  }
-
   static description = 'get statistics from sourceforge'
+
   static examples=[
     'eggs tools stat',
     'eggs tools stat --month',
     'eggs tools stat --year',
   ]
+
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    month: Flags.boolean({char: 'm', description: 'current month'}),
+    year: Flags.boolean({char: 'y', description: 'current year'}),
+  }
 
   /**
    *

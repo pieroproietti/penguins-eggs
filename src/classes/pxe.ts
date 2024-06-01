@@ -1,182 +1,44 @@
-/**
- * penguins-eggs
- * class: pxe.ts
+ /**
+ * ./src/classes/pxe.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import { exec } from '../lib/utils'
-import { ITftpOptions, IDhcpOptions } from '../interfaces/i-pxe'
-import Distro from './distro'
-import fs from 'fs'
-import http, { IncomingMessage, ServerResponse } from 'http'
-import nodeStatic from 'node-static'
-import path, { dirname } from 'node:path'
-import Settings from './settings'
-import Utils from './utils'
-// @ts-ignore
-import tftp from 'tftp'
 // @ts-ignore
 import etrick from 'etrick'
+import fs from 'node:fs'
+import http, { IncomingMessage, ServerResponse } from 'node:http'
+import path, { dirname } from 'node:path'
+import nodeStatic from 'node-static'
+// @ts-ignore
+import tftp from 'tftp'
+
+import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
+import { exec } from '../lib/utils.js'
+import Distro from './distro.js'
+import Settings from './settings.js'
+import Utils from './utils.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 /**
 * Pxe:
 */
 export default class Pxe {
-  verbose = false
+  bootLabel = ''
 
   echo = {}
-  settings = {} as Settings
-  bootLabel = ''
-  nest = '' // cuckoo's nest
-  pxeRoot = ''
   eggRoot = ''
-  vmlinuz = ''
   initrdImg = ''
-  isos: string[] = []
-
-  /**
-   * fertilization()
-   *
-   * cuckoo's nest
-   */
-  async fertilization() {
-    this.settings = new Settings()
-    await this.settings.load()
-
-    if (Utils.isLive()) {
-      this.eggRoot = this.settings.distro.liveMediumPath
-      if (
-        // ArchisoCompatibles
-        this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'ArcoLinux' ||
-        this.settings.distro.distroId === 'blendOS' ||
-        this.settings.distro.distroId === 'EndeavourOS' ||
-        this.settings.distro.distroId === 'Garuda' ||
-        this.settings.distro.distroId === 'phyOS' ||
-        this.settings.distro.distroId === 'RebornOS'
-      ) {
-        this.eggRoot = '/run/archiso/bootmnt/'
-        await exec(`mkdir ${this.eggRoot} -p`)
-        await exec(`mount /dev/sr0 ${this.eggRoot}`)
-      }
-    } else {
-      //this.eggRoot = path.dirname(this.settings.config.snapshot_mnt) + '/iso/'
-      this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
-    }
-
-    if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_mnt)) {
-      console.log('no image available, build an image with: sudo eggs produce')
-      process.exit()
-    }
-
-    this.nest = this.settings.config.snapshot_mnt
-    this.pxeRoot = this.nest + '/pxe'
-
-    /**
-    * se pxeRoot non esiste viene creato
-    */
-    if (!fs.existsSync(this.pxeRoot)) {
-      await exec(`mkdir ${this.pxeRoot} -p`)
-    }
-
-    /**
-    * Ricerca delle ISOs
-    */
-    const isos: string[] = []
-
-    /*
-    if (!Utils.isLive()) {
-      const isos = fs.readdirSync(this.nest)
-      for (const iso of isos) {
-        if (path.extname(iso) === '.iso') {
-          this.isos.push(iso)
-        }
-
-        this.isos = this.isos.sort()
-      }
-    }
-    */
-
-    /**
-    * installed: /home/eggs/mnt/iso/live
-    * live: this.iso/live
-    */
-    const pathFiles = this.eggRoot + 'live'
-    const files = fs.readdirSync(pathFiles)
-    for (const file of files) {
-      if (this.settings.distro.familyId === 'debian') {
-        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
-          this.vmlinuz = path.basename(file)
-        }
-
-        if (path.basename(file).slice(0, 6) === 'initrd') {
-          this.initrdImg = path.basename(file)
-        }
-      } else if (this.settings.distro.familyId === 'archlinux') {
-        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
-          this.vmlinuz = path.basename(file)
-        }
-
-        if (path.basename(file).slice(0, 9) === 'initramfs') {
-          this.initrdImg = path.basename(file)
-        }
-      }
-    }
-
-    /**
-    * bootLabel
-    */
-    this.bootLabel = 'not found'
-    if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
-      const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf-8')
-      const b = a.slice(Math.max(0, a.indexOf('-o ') + 3))
-      const c = b.slice(0, Math.max(0, b.indexOf(' ')))
-      this.bootLabel = c.slice(Math.max(0, c.lastIndexOf('/') + 1))
-    }
-
-    console.log(`bootLabel: ${this.bootLabel}`)
-    console.log(`vmlinuz: ${this.vmlinuz}`)
-    console.log(`initrd: ${this.initrdImg}`)
-  }
-
-  /**
-   * build
-   */
-  async build() {
-    if (fs.existsSync(this.pxeRoot)) {
-      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
-    }
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
-
-    if (this.settings.distro.distroId === 'ManjaroLinux') {
-      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
-      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
-    }
-
-    if (fs.existsSync(this.eggRoot)) {
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
-    }
-
-    // link iso images in pxe
-    for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
-    }
-
-    await this.bios()
-    await this.ipxe()
-    await this.http()
-  }
+  isos: string[] = [] // cuckoo's nest
+  nest = ''
+  pxeRoot = ''
+  settings = {} as Settings
+  verbose = false
+  vmlinuz = ''
 
   /**
    * configure PXE bios
@@ -260,6 +122,200 @@ export default class Pxe {
 
     const file = `${this.pxeRoot}/pxelinux.cfg/default`
     fs.writeFileSync(file, content)
+  }
+
+  /**
+   * build
+   */
+  async build() {
+    if (fs.existsSync(this.pxeRoot)) {
+      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
+    }
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
+    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
+
+    if (this.settings.distro.distroId === 'ManjaroLinux') {
+      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
+    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
+    }
+
+    if (fs.existsSync(this.eggRoot)) {
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
+      await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
+      await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
+    }
+
+    // link iso images in pxe
+    for (const iso of this.isos) {
+      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
+    }
+
+    await this.bios()
+    await this.ipxe()
+    await this.http()
+  }
+
+  /**
+   *
+   * @param dhcpOptions
+   */
+  dhcpStart(dhcpOptions: IDhcpOptions) {
+    new etrick(dhcpOptions)
+  }
+
+  /**
+   * fertilization()
+   *
+   * cuckoo's nest
+   */
+  async fertilization() {
+    this.settings = new Settings()
+    await this.settings.load()
+
+    if (Utils.isLive()) {
+      this.eggRoot = this.settings.distro.liveMediumPath
+      if (
+        // ArchisoCompatibles
+        this.settings.distro.distroId === 'Arch' ||
+        this.settings.distro.distroId === 'ArcoLinux' ||
+        this.settings.distro.distroId === 'blendOS' ||
+        this.settings.distro.distroId === 'EndeavourOS' ||
+        this.settings.distro.distroId === 'Garuda' ||
+        this.settings.distro.distroId === 'phyOS' ||
+        this.settings.distro.distroId === 'RebornOS'
+      ) {
+        this.eggRoot = '/run/archiso/bootmnt/'
+        await exec(`mkdir ${this.eggRoot} -p`)
+        await exec(`mount /dev/sr0 ${this.eggRoot}`)
+      }
+    } else {
+      // this.eggRoot = path.dirname(this.settings.config.snapshot_mnt) + '/iso/'
+      this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
+    }
+
+    if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_mnt)) {
+      console.log('no image available, build an image with: sudo eggs produce')
+      process.exit()
+    }
+
+    this.nest = this.settings.config.snapshot_mnt
+    this.pxeRoot = this.nest + '/pxe'
+
+    /**
+    * se pxeRoot non esiste viene creato
+    */
+    if (!fs.existsSync(this.pxeRoot)) {
+      await exec(`mkdir ${this.pxeRoot} -p`)
+    }
+
+    /**
+    * Ricerca delle ISOs
+    */
+    const isos: string[] = []
+
+    /*
+    if (!Utils.isLive()) {
+      const isos = fs.readdirSync(this.nest)
+      for (const iso of isos) {
+        if (path.extname(iso) === '.iso') {
+          this.isos.push(iso)
+        }
+
+        this.isos = this.isos.sort()
+      }
+    }
+    */
+
+    /**
+    * installed: /home/eggs/mnt/iso/live
+    * live: this.iso/live
+    */
+    const pathFiles = this.eggRoot + 'live'
+    const files = fs.readdirSync(pathFiles)
+    for (const file of files) {
+      if (this.settings.distro.familyId === 'debian') {
+        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
+          this.vmlinuz = path.basename(file)
+        }
+
+        if (path.basename(file).slice(0, 6) === 'initrd') {
+          this.initrdImg = path.basename(file)
+        }
+      } else if (this.settings.distro.familyId === 'archlinux') {
+        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
+          this.vmlinuz = path.basename(file)
+        }
+
+        if (path.basename(file).slice(0, 9) === 'initramfs') {
+          this.initrdImg = path.basename(file)
+        }
+      }
+    }
+
+    /**
+    * bootLabel
+    */
+    this.bootLabel = 'not found'
+    if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
+      const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf8')
+      const b = a.slice(Math.max(0, a.indexOf('-o ') + 3))
+      const c = b.slice(0, Math.max(0, b.indexOf(' ')))
+      this.bootLabel = c.slice(Math.max(0, c.lastIndexOf('/') + 1))
+    }
+
+    console.log(`bootLabel: ${this.bootLabel}`)
+    console.log(`vmlinuz: ${this.vmlinuz}`)
+    console.log(`initrd: ${this.initrdImg}`)
+  }
+
+  /**
+   * configure PXE http server
+   */
+  async http() {
+    console.log('creating cuckoo configuration: PXE html')
+
+    const file = `${this.pxeRoot}/index.html`
+    let content = ''
+    content += '<html><title>Penguin\'s eggs PXE server</title>'
+    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
+    content += '<h1>Cucko PXE server</h1>'
+    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
+    if (Utils.isLive()) {
+      content += 'started from live iso image<br/>'
+    } else {
+      content += 'Serving:<li>'
+      for (const iso of this.isos) {
+        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
+      }
+
+      content += '</li>'
+    }
+
+    content += 'source: <a href=\'https://github.com/pieroproietti/penguins-eggs\'>https://github.com/pieroproietti/penguins-eggs</a><br/>'
+    content += 'manual: <a href=\'https://penguins-eggs.net/book/italiano9.2.html\'>italiano</a>, <a href=\'https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en\'>translated</a><br/>'
+    content += 'discuss: <a href=\'https://t.me/penguins_eggs\'>Telegram group<br/></body</html>'
+    fs.writeFileSync(file, content)
+  }
+
+  /**
+  * start http server for images
+  *
+  */
+  async httpStart() {
+    const port = 80
+    const httpRoot = this.pxeRoot + '/'
+    console.log('http listening: 0.0.0.0:' + port)
+
+    const file = new (nodeStatic.Server)(httpRoot)
+    http.createServer((req: IncomingMessage, res: ServerResponse) => {
+      file.serve(req, res)
+    }).listen(port)
   }
 
   /**
@@ -350,71 +406,19 @@ export default class Pxe {
   }
 
   /**
-   * configure PXE http server
-   */
-  async http() {
-    console.log('creating cuckoo configuration: PXE html')
-
-    const file = `${this.pxeRoot}/index.html`
-    let content = ''
-    content += '<html><title>Penguin\'s eggs PXE server</title>'
-    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
-    content += '<h1>Cucko PXE server</h1>'
-    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
-    if (!Utils.isLive()) {
-      content += 'Serving:<li>'
-      for (const iso of this.isos) {
-        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
-      }
-
-      content += '</li>'
-    } else {
-      content += 'started from live iso image<br/>'
-    }
-
-    content += 'source: <a href=\'https://github.com/pieroproietti/penguins-eggs\'>https://github.com/pieroproietti/penguins-eggs</a><br/>'
-    content += 'manual: <a href=\'https://penguins-eggs.net/book/italiano9.2.html\'>italiano</a>, <a href=\'https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en\'>translated</a><br/>'
-    content += 'discuss: <a href=\'https://t.me/penguins_eggs\'>Telegram group<br/></body</html>'
-    fs.writeFileSync(file, content)
-  }
-
-  /**
-   *
-   * @param dhcpOptions
-   */
-  dhcpStart(dhcpOptions: IDhcpOptions) {
-    new etrick(dhcpOptions)
-  }
-
-  /**
-  * start http server for images
-  *
-  */
-  async httpStart() {
-    const port = 80
-    const httpRoot = this.pxeRoot + '/'
-    console.log('http listening: 0.0.0.0:' + port)
-
-    const file = new (nodeStatic.Server)(httpRoot)
-    http.createServer(function (req: IncomingMessage, res: ServerResponse) {
-      file.serve(req, res)
-    }).listen(port)
-  }
-
-  /**
    * start tftp
    */
   async tftpStart(tftpOptions: ITftpOptions) {
     const tftpServer = tftp.createServer(tftpOptions)
 
-    tftpServer.on('error', function (error: any) {
+    tftpServer.on('error', (error: any) => {
       // Errors from the main socket
       // The current transfers are not aborted
       console.error(error)
     })
 
-    tftpServer.on('request', function (req: any, res: any) {
-      req.on('error', function (error: any) {
+    tftpServer.on('request', (req: any, res: any) => {
+      req.on('error', (error: any) => {
         // Error from the request
         // The connection is already closed
         console.error('[' + req.stats.remoteAddress + ':' + req.stats.remotePort + '] (' + req.file + ') ' + error.message)

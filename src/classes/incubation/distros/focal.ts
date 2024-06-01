@@ -1,39 +1,40 @@
 /**
- * penguins-eggs
- * class / incubation: focal.ts
+ * ./src/classes/incubation/distros/focal.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-import {IInstaller, IRemix, IDistro} from '../../../interfaces/index'
-import Fisherman from '../fisherman'
-import CFS from '../../cfs'
+
+import {IDistro, IInstaller, IRemix} from '../../../interfaces/index.js'
+import CFS from '../../cfs.js'
+import Fisherman from '../fisherman.js'
 
 interface IReplaces {
-  search: string
   replace: string
+  search: string
 }
 
 /**
  *
  */
 export class Focal {
-  verbose = false
+  distro: IDistro
 
   installer = {} as IInstaller
 
-  remix: IRemix
-
-  distro: IDistro
+  isClone: boolean
 
   release = false
+
+  remix: IRemix
 
   theme: string // theme comprende il path  
 
   user_opt: string
 
-  isClone: boolean
+  verbose = false
 
   /**
    * @param remix

@@ -1,18 +1,24 @@
 /**
- * penguins-eggs
- * components: location.tsx
+ * ./src/components/location.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React, { useState } from 'react'
-import { render, Text, Box, Newline } from 'ink'
-import Title from './elements/title'
-import Steps from './elements/steps'
+import Title from './title.js'
+import Steps from './steps.js'
+import {Text, Box, Newline }from 'ink'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index'
+import { ISettings, IBranding } from '../interfaces/index.js'
+
+// pjson
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pjson = require('../../package.json');
 
 
 type LocationProps = {
@@ -43,7 +49,7 @@ export default function Location({ region = '', zone = '', language = '', dateNu
 
     return (
         <>
-            <Title title={productName} />
+            <Title />
             <Box width={74} height={11} borderStyle="round" flexDirection="column">
 
                 <Box flexDirection="column">

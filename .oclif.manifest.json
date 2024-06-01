@@ -30,7 +30,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -68,7 +68,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -149,7 +149,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -180,17 +180,17 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "noicons": {
           "char": "N",
           "description": "no icons",
           "name": "noicons",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
           "allowNo": false,
           "type": "boolean"
         },
@@ -210,7 +210,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -241,7 +241,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -294,7 +294,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -429,7 +429,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -451,17 +451,17 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "isos": {
           "char": "i",
           "description": "erase all ISOs on remote mount",
           "name": "isos",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
           "allowNo": false,
           "type": "boolean"
         },
@@ -481,7 +481,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -512,7 +512,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -671,7 +671,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -708,7 +708,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -770,7 +770,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -787,6 +787,13 @@
         "sudo eggs syncto --excludes"
       ],
       "flags": {
+        "excludes": {
+          "char": "e",
+          "description": "use: exclude.list.d/home.list",
+          "name": "excludes",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "file": {
           "char": "f",
           "description": "file luks-volume encrypted",
@@ -794,13 +801,6 @@
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
-        },
-        "excludes": {
-          "char": "e",
-          "description": "use: exclude.list.d/home.list",
-          "name": "excludes",
-          "allowNo": false,
-          "type": "boolean"
         },
         "help": {
           "char": "h",
@@ -825,7 +825,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -863,7 +863,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -917,7 +917,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -934,17 +934,17 @@
         "eggs export iso --clean"
       ],
       "flags": {
-        "clean": {
-          "char": "c",
-          "description": "delete old ISOs before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "checksum": {
           "char": "C",
           "description": "export checksums md5 and sha256",
           "name": "checksum",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "clean": {
+          "char": "c",
+          "description": "delete old ISOs before to copy",
+          "name": "clean",
           "allowNo": false,
           "type": "boolean"
         },
@@ -971,7 +971,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1017,7 +1017,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1078,7 +1078,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1125,7 +1125,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1173,7 +1173,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1212,7 +1212,7 @@
       "strict": true,
       "enableJsonFlag": false,
       "dir": "/var/local/yolk",
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1257,7 +1257,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1281,13 +1281,6 @@
         "eggs wardrobe list --distro arch"
       ],
       "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "distro": {
           "char": "d",
           "description": "distro",
@@ -1295,6 +1288,13 @@
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
         },
         "verbose": {
           "char": "v",
@@ -1311,7 +1311,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1377,7 +1377,7 @@
         "eggs wardrobe show accessories/firmwares",
         "eggs wardrobe show accessories/"
       ],
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1445,7 +1445,7 @@
       "pluginType": "core",
       "strict": true,
       "enableJsonFlag": false,
-      "isESM": false,
+      "isESM": true,
       "relativePath": [
         "dist",
         "commands",
@@ -1454,5 +1454,5 @@
       ]
     }
   },
-  "version": "9.8.3"
+  "version": "10.0.0"
 }

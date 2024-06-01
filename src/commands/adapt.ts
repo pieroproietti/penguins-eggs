@@ -1,25 +1,27 @@
 /**
- * penguins-eggs
- * command: adapt.ts
+ * ./src/commands/adapt.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Command, Flags} from '@oclif/core'
-import Utils from '../classes/utils'
 
-import {exec} from '../lib/utils'
+import {Command, Flags} from '@oclif/core'
+
+import Utils from '../classes/utils.js'
+import {exec} from '../lib/utils.js'
 
 export default class Adapt extends Command {
+  static description = 'adapt monitor resolution for VM only'
+
+  static examples = [
+    'eggs adapt',
+  ]
+
   static flags = {
     help: Flags.help({char: 'h'}),
     verbose: Flags.boolean({char: 'v'}),
   }
-
-  static description = 'adapt monitor resolution for VM only'
-  static examples = [
-    'eggs adapt',
-  ]
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(Adapt)

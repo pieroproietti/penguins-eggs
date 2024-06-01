@@ -1,18 +1,19 @@
 /**
- * penguins-eggs
- * krill modules: partition.ts
+ * ./src/krill/modules/partition.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import {IPartitions} from '../../interfaces/i-partitions'
-import Sequence from '../krill-sequence'
-import {exec} from '../../lib/utils'
-import Utils from '../../classes/utils'
+import os from 'node:os'
 import shx from 'shelljs'
-import os from 'os'
+
+import Utils from '../../classes/utils.js'
+import {IPartitions} from '../../interfaces/i-partitions.js'
+import {exec} from '../../lib/utils.js'
+import Sequence from '../sequence.js'
 
 /**
  *

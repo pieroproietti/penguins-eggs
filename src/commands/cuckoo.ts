@@ -1,26 +1,30 @@
 /**
- * penguins-eggs
- * command: cuckoo.ts
+ * ./src/commands/cuckoo.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
-import network from '../classes/network'
-import Utils from '../classes/utils'
-import Pxe from '../classes/pxe'
-import {ITftpOptions, IDhcpOptions} from '../interfaces/i-pxe'
-const tftp = require('tftp')
+
+import network from '../classes/network.js'
+import Pxe from '../classes/pxe.js'
+import Utils from '../classes/utils.js'
+import {IDhcpOptions, ITftpOptions} from '../interfaces/i-pxe.js'
+
+// const tftp = require('tftp')
 
 export default class Cuckoo extends Command {
-  static flags = {
-    help: Flags.help({char: 'h'}),
-  }
-
   static description = 'PXE start with proxy-dhcp'
+
   static examples = [
     'sudo eggs cuckoo',
   ]
+
+  static flags = {
+    help: Flags.help({char: 'h'}),
+  }
 
   async run(nest = '/home/eggs/mnt'): Promise<void> {
     const {args, flags} = await this.parse(Cuckoo)
@@ -38,12 +42,12 @@ export default class Cuckoo extends Command {
        * service proxy-dhcp
        */
       const dhcpOptions: IDhcpOptions = {
-        subnet: n.cidr,
-        host: n.address,
-        tftpserver: n.address,
         bios_filename: 'lpxelinux.0',
         efi32_filename: 'ipxe32.efi',
         efi64_filename: 'ipxe.efi',
+        host: n.address,
+        subnet: n.cidr,
+        tftpserver: n.address,
       }
       pxe.dhcpStart(dhcpOptions)
 
@@ -51,10 +55,10 @@ export default class Cuckoo extends Command {
        * service tftp
        */
       const tftpOptions: ITftpOptions = {
+        denyPUT: true,
         host: n.address,
         port: 69,
         root: pxeRoot,
-        denyPUT: true,
       }
       await pxe.tftpStart(tftpOptions)
 

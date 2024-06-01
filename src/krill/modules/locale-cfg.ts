@@ -1,14 +1,15 @@
 /**
- * penguins-eggs
- * krill modules: locale-cfg.ts
+ * ./src/krill/modules/locale-cfg.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../krill-sequence'
-import fs from 'fs'
+import fs from 'node:fs'
+
+import Sequence from '../sequence.js'
 
 /* localeCfg
 * Enable the configured locales (those set by the user on the
@@ -22,10 +23,10 @@ export default async function localeCfg(this: Sequence) {
   let supporteds: string[] = []
   if (this.distro.familyId === 'debian') {
     // Format: en_US.UTF-8 UTF-8
-    supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf-8').split('\n')
+    supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
   } else if (this.distro.familyId === 'archlinux') {
     // shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work!
-    const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf-8').split('\n')
+    const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf8').split('\n')
 
     // Original Format: #en_US.UTF-8 UTF-8
     for (let line of supportedsSource) {
@@ -38,7 +39,7 @@ export default async function localeCfg(this: Sequence) {
     // Format: en_US.UTF-8 UTF-8
   }
 
-  const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf-8').split('\n')
+  const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf8').split('\n')
   let localeGenDest = ''
   const krillBookmark = '#   Locales enabled by krill\n'
   for (const line of localeGenSource) {

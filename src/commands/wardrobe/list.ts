@@ -1,42 +1,45 @@
 /**
- * penguins-eggs
- * command: list.ts
+ * ./src/commands/wardrobe/list.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import { Args, Command, Flags } from '@oclif/core'
-import Utils from '../../classes/utils'
-import path from 'path'
-import yaml from 'js-yaml'
-import fs from 'fs'
-import { IMateria } from '../../interfaces/index'
-import Distro from '../../classes/distro'
 
+import { Args, Command, Flags } from '@oclif/core'
 // libraries
 import chalk from 'chalk'
-import { fork } from 'child_process'
+import yaml from 'js-yaml'
+import { fork } from 'node:child_process'
+import fs from 'node:fs'
+import path from 'node:path'
+
+import Distro from '../../classes/distro.js'
+import Utils from '../../classes/utils.js'
+import { IMateria } from '../../interfaces/index.js'
 
 /**
  *
  */
 export default class List extends Command {
-  static flags = {
-    help: Flags.help({ char: 'h' }),
-    distro: Flags.string({ char: 'd', description: 'distro' }),
-    verbose: Flags.boolean({ char: 'v' }),
-  }
   static args = {
-    repo: Args.string({name: 'wardrobe', description: 'wardrobe to get', required: false}),
+    repo: Args.string({description: 'wardrobe to get', name: 'wardrobe', required: false}),
   }
 
-  //static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
+  // static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
   static description = 'list costumes and accessoires in wardrobe'
+
   static examples = [
     'eggs wardrobe list',
     'eggs wardrobe list your-wardrobe',
     'eggs wardrobe list --distro arch',
   ]
+
+  static flags = {
+    distro: Flags.string({ char: 'd', description: 'distro' }),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' }),
+  }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(List)
@@ -54,27 +57,41 @@ export default class List extends Command {
     */
     let wardrobe = await Utils.wardrobe()
 
-    if (flags.distro === undefined) {
-      if (this.argv['0'] !== undefined) {
+    if (flags.distro === undefined && this.argv['0'] !== undefined) {
         wardrobe = this.argv['0']
       }
-    }
 
     /**
      * seleziona distro
      */
     let index = ''
-    let distro = new Distro()
-    if (distro.distroLike === "Arch") {
+    const distro = new Distro()
+    switch (distro.distroLike) {
+    case "Arch": {
       index = 'arch'
-    } else if (distro.distroLike === "Debian" || distro.distroLike === "Devuan") {
-      index = 'debian'
-    } else if (distro.distroLike === "Ubuntu") {
-      index = 'ubuntu'
+    
+    break;
     }
+
+    case "Debian": 
+    case "Devuan": {
+      index = 'debian'
+    
+    break;
+    }
+
+    case "Ubuntu": {
+      index = 'ubuntu'
+    
+    break;
+    }
+    // No default
+    }
+
     if (flags.distro !== undefined) {
       index = flags.distro
     }
+
     index+='.yml'
 
     console.log(chalk.green('wardrobe: ') + wardrobe)
@@ -94,7 +111,7 @@ export default class List extends Command {
     console.log(chalk.green('costumes: '))
     for (const costume of costumes) {
       if (fs.existsSync(`${wardrobe}costumes/${costume}/${index}`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/${index}`, 'utf-8')) as IMateria
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}costumes/${costume}/${index}`, 'utf8')) as IMateria
         console.log('- ' + chalk.cyan(costume) + ': ' + materials.description)
       }
     }
@@ -108,7 +125,7 @@ export default class List extends Command {
     console.log(chalk.green('accessories: '))
     for (const accessory of accessories) {
       if (fs.existsSync(`${wardrobe}/accessories/${accessory}/${index}`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/${index}`, 'utf-8')) as IMateria
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/accessories/${accessory}/${index}`, 'utf8')) as IMateria
         console.log('- ' + chalk.cyan(accessory) + ': ' + materials.description)
       }
     }
@@ -122,7 +139,7 @@ export default class List extends Command {
     console.log(chalk.green('servers: '))
     for (const server of servers) {
       if (fs.existsSync(`${wardrobe}/servers/${server}/${index}`)) {
-        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/${index}`, 'utf-8')) as IMateria
+        const materials = yaml.load(fs.readFileSync(`${wardrobe}/servers/${server}/${index}`, 'utf8')) as IMateria
         console.log('- ' + chalk.cyan(server) + ': ' + materials.description)
       }
     }

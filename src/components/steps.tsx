@@ -1,10 +1,11 @@
 /**
- * penguins-eggs
- * components: steps.tsx
+ * ./src/components/steps.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import React from 'react'
 import { render, Text, Box } from 'ink'
 
@@ -14,6 +15,7 @@ type stepsPros = {
 }
 
 export default function Steps({ step = 1 }: stepsPros) {
+
     let activeWelcome = false
     let activeLocation = false
     let activeKeyboard = false

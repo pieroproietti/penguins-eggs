@@ -1,33 +1,41 @@
 /**
- * penguins-eggs: fisherman.ts
- *
+ * ./src/classes/incubation/fisherman.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
- * mail: piero.proietti@gmail.com
+ * email: piero.proietti@gmail.com
+ * license: MIT
  */
 
-import fs from 'node:fs'
-import shx from 'shelljs'
-import path from 'node:path'
-import mustache from 'mustache'
-
-import { IRemix, IDistro } from '../../interfaces/index'
 import chalk from 'chalk'
-import Utils from '../utils'
-import { IInstaller } from '../../interfaces/index'
-import { displaymanager } from './fisherman-helper/displaymanager'
-import { settings} from './fisherman-helper/settings'
+import mustache from 'mustache'
+import fs from 'node:fs'
+import path from 'node:path'
+import shx from 'shelljs'
 
-import { exec } from '../../lib/utils'
+import { IDistro, IInstaller , IRemix } from '../../interfaces/index.js'
+import { exec } from '../../lib/utils.js'
+import Utils from '../utils.js'
+import { settings} from './fisherman-helper/settings.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+/**
+ * vecchi require che vanno sostituiti con import
+ */
+import {displaymanager}  from './fisherman-helper/displaymanager.js'
+import {remove as removePackages,tryInstall} from './fisherman-helper/packages.js'
+
 
 interface IReplaces {
-  search: string
   replace: string
+  search: string
 }
 
 export default class Fisherman {
-  installer = {} as IInstaller
-
   distro: IDistro
+
+  installer = {} as IInstaller
 
   verbose = false
 
@@ -35,100 +43,6 @@ export default class Fisherman {
     this.distro = distro
     this.installer = installer
     this.verbose = verbose
-  }
-
-  /**
-   * write setting
-   */
-  async createCalamaresSettings(theme = 'eggs', isClone = false) {
-    await settings(this.installer.template, this.installer.configRoot, theme, isClone)
-  }
-
-  /**
-   *
-   * @param name
-   */
-  async shellprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess_' + name + '.yml')
-    const moduleDest = this.installer.modules + 'shellprocess_' + name + '.conf'
-    if (fs.existsSync(moduleSource)) {
-      if (this.verbose) this.show(name, 'shellprocess', moduleDest)
-      shx.cp(moduleSource, moduleDest)
-    } else if (this.verbose) {
-      console.log(`calamares: ${name} shellprocess, nothing to do`)
-    }
-  }
-
-  /**
-   *
-   * @param name
-   */
-  async contextualprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yml')
-    const moduleDest = this.installer.modules + name + '_context.conf'
-    if (fs.existsSync(moduleSource)) {
-      if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
-      shx.cp(moduleSource, moduleDest)
-    } else if (this.verbose) {
-      console.log(`calamares: ${name} contextualprocess, nothing to do!`)
-    }
-  }
-
-  /**
-   *
-   * @param name
-   * @param replaces [['search','replace']]
-   */
-  async buildModule(name: string, vendor = '') {
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
-
-    /**
-     * We need vendor here to have possibility to load custom modules for calamares
-     * the custom modules live in: /addons/vendor/theme/calamares/modules
-     * and - if exist - take priority on distro modules on /conf/distros/calamares/modules
-     *
-     * example:
-     *
-     * ./addons/openos/theme/calamares/modules/partition.yml
-     * take place of:
-     * ./conf/distros/bullseye/calamares/modules/partition.yml
-     * and end in:
-     * /etc/calamares/modules/partition.conf
-     *
-     * And we solve the issue of Sebastien who need btrfs
-     *
-     */
-    if (vendor !== 'eggs') {
-      let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
-      if (vendor.includes('/')) {
-        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
-      }
-
-      if (fs.existsSync(customModuleSource)) {
-        moduleSource = customModuleSource
-      }
-    }
-    const moduleDest = this.installer.modules + name + '.conf'
-    if (fs.existsSync(moduleSource)) {
-      if (this.verbose) {
-        this.show(name, 'module', moduleDest)
-      }
-      // We need to adapt just mount.conf
-      if (name==='mount') {
-        let calamaresVersion = (await exec('calamares --version', { echo: false, ignore: false, capture: true })).data.trim().substring(10,13)
-        let options='[ bind ]'
-        if (calamaresVersion==='3.2') {
-          options='bind'
-        }
-        let view = { options: options}
-        const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
-        fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
-      } else {
-        shx.cp(moduleSource, moduleDest)
-      }
-    } else if (this.verbose) {
-      console.log('unchanged: ' + chalk.greenBright(name))
-    }
   }
 
   /**
@@ -182,6 +96,171 @@ export default class Fisherman {
 
   /**
    *
+   * @param name
+   * @param replaces [['search','replace']]
+   */
+  async buildModule(name: string, vendor = '') {
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
+
+    /**
+     * We need vendor here to have possibility to load custom modules for calamares
+     * the custom modules live in: /addons/vendor/theme/calamares/modules
+     * and - if exist - take priority on distro modules on /conf/distros/calamares/modules
+     *
+     * example:
+     *
+     * ./addons/openos/theme/calamares/modules/partition.yml
+     * take place of:
+     * ./conf/distros/bullseye/calamares/modules/partition.yml
+     * and end in:
+     * /etc/calamares/modules/partition.conf
+     *
+     * And we solve the issue of Sebastien who need btrfs
+     *
+     */
+    if (vendor !== 'eggs') {
+      let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
+      if (vendor.includes('/')) {
+        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
+      }
+
+      if (fs.existsSync(customModuleSource)) {
+        moduleSource = customModuleSource
+      }
+    }
+
+    const moduleDest = this.installer.modules + name + '.conf'
+    if (fs.existsSync(moduleSource)) {
+      if (this.verbose) {
+        this.show(name, 'module', moduleDest)
+      }
+
+      // We need to adapt just mount.conf
+      if (name==='mount') {
+        const calamaresVersion = (await exec('calamares --version', { capture: true, echo: false, ignore: false })).data.trim().slice(10,13)
+        let options='[ bind ]'
+        if (calamaresVersion==='3.2') {
+          options='bind'
+        }
+
+        const view = { options}
+        const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
+        fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
+      } else {
+        shx.cp(moduleSource, moduleDest)
+      }
+    } else if (this.verbose) {
+      console.log('unchanged: ' + chalk.greenBright(name))
+    }
+  }
+
+  /**
+   *
+   * @param name
+   */
+  async contextualprocess(name: string) {
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yml')
+    const moduleDest = this.installer.modules + name + '_context.conf'
+    if (fs.existsSync(moduleSource)) {
+      if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
+      shx.cp(moduleSource, moduleDest)
+    } else if (this.verbose) {
+      console.log(`calamares: ${name} contextualprocess, nothing to do!`)
+    }
+  }
+
+  /**
+   * write setting
+   */
+  async createCalamaresSettings(theme = 'eggs', isClone = false) {
+    await settings(this.installer.template, this.installer.configRoot, theme, isClone)
+  }
+
+  /**
+   * usa i moduli-ts
+   */
+  async moduleDisplaymanager() {
+    const name = 'displaymanager'
+    // const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
+    this.buildModule(name)
+    shx.sed('-i', '{{displaymanagers}}', displaymanager(), this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleFinished() {
+    const name = 'finished'
+    await this.buildModule(name)
+    const restartNowCommand = 'reboot'
+    shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * ====================================================================================
+   * M O D U L E S
+   * ====================================================================================
+   */
+
+  /**
+   * usa i moduli-ts
+   */
+  async modulePackages(distro: IDistro, release = false) {
+    const name = 'packages'
+    // const removePackages = require('./fisherman-helper/packages').remove
+    // const tryInstall = require('./fisherman-helper/packages').tryInstall
+    this.buildModule(name)
+
+    const yamlInstall = tryInstall(distro)
+
+    let yamlRemove = ''
+    if (release) {
+      yamlRemove = removePackages(distro)
+    }
+
+    let operations = ''
+    if (yamlRemove !== '' || yamlInstall !== '') {
+      operations = 'operations:\n' + yamlRemove + yamlInstall
+    }
+
+    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleRemoveuser(username: string) {
+    const name = 'removeuser'
+    this.buildModule(name)
+    shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleUnpackfs() {
+    const name = 'unpackfs'
+    this.buildModule(name)
+    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   *
+   * @param name
+   */
+  async shellprocess(name: string) {
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess_' + name + '.yml')
+    const moduleDest = this.installer.modules + 'shellprocess_' + name + '.conf'
+    if (fs.existsSync(moduleSource)) {
+      if (this.verbose) this.show(name, 'shellprocess', moduleDest)
+      shx.cp(moduleSource, moduleDest)
+    } else if (this.verbose) {
+      console.log(`calamares: ${name} shellprocess, nothing to do`)
+    }
+  }
+
+  /**
+   *
    * @param module
    * @param type
    * @param path
@@ -213,73 +292,5 @@ export default class Fisherman {
       }
       // No default
     }
-  }
-
-  /**
-   * ====================================================================================
-   * M O D U L E S
-   * ====================================================================================
-   */
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleFinished() {
-    const name = 'finished'
-    await this.buildModule(name)
-    const restartNowCommand = 'reboot'
-    shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleUnpackfs() {
-    const name = 'unpackfs'
-    this.buildModule(name)
-    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * usa i moduli-ts
-   */
-  async moduleDisplaymanager() {
-    const name = 'displaymanager'
-    const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
-    this.buildModule(name)
-    shx.sed('-i', '{{displaymanagers}}', displaymanager(), this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * usa i moduli-ts
-   */
-  async modulePackages(distro: IDistro, release = false) {
-    const name = 'packages'
-    const removePackages = require('./fisherman-helper/packages').remove
-    const tryInstall = require('./fisherman-helper/packages').tryInstall
-    this.buildModule(name)
-
-    const yamlInstall = tryInstall(distro)
-
-    let yamlRemove = ''
-    if (release) {
-      yamlRemove = removePackages(distro)
-    }
-
-    let operations = ''
-    if (yamlRemove !== '' || yamlInstall !== '') {
-      operations = 'operations:\n' + yamlRemove + yamlInstall
-    }
-
-    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleRemoveuser(username: string) {
-    const name = 'removeuser'
-    this.buildModule(name)
-    shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
   }
 }

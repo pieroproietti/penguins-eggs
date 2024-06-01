@@ -1,12 +1,12 @@
 /**
- * penguins-eggs
- * lib: select_installation_device.ts
+ * ./src/lib/installation_device.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-'use strict'
-const inquirer = require('inquirer') 
+
+import inquirer from 'inquirer'
 import shx from 'shelljs'
 
 export default async function selectInstallationDevice(): Promise<string> {
@@ -19,15 +19,15 @@ export default async function selectInstallationDevice(): Promise<string> {
   const questions: Array<Record<string, any>> = [
     // nvme0n1p1, nvme0n1p2, nvme0n1p3
     {
-      type: 'list',
-      name: 'installationDevice',
-      message: 'Select the installation disk: ',
       choices: driveList,
+      message: 'Select the installation disk: ',
+      name: 'installationDevice',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.installationDevice)
     })
   })

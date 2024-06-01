@@ -1,23 +1,20 @@
 /**
- * penguins-eggs
- * components: information.tsx
+ * ./src/components/information.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import shx from 'shelljs'
 import React from 'react'
+import Settings from '../classes/settings.js'
+import Pacman from '../classes/pacman.js'
+import Utils from '../classes/utils.js'
+import Title from './title.js'
 import { render, Text, Box } from 'ink'
-import Settings from '../../classes/settings'
-import Pacman from '../../classes/pacman'
-import Utils from '../../classes/utils'
-import Title from './title'
 
-/**
- * 
- */
 export default async function information(verbose = false): Promise<void> {
-
     const echo = Utils.setEcho(verbose)
     console.clear()
 
@@ -30,43 +27,26 @@ export default async function information(verbose = false): Promise<void> {
         </Box>
     )
     render (<Wait/>)
-
-    /**
-     * nest
-     */
     const Nest = () => (
         <Box borderStyle="round" marginRight={2}>
             <Box marginRight={2}><Text>nest: <Text color="cyan">{settings.config.snapshot_dir}</Text></Text></Box>
             <Box marginRight={2}><Text>name: <Text color="cyan">{settings.config.snapshot_prefix}{settings.config.snapshot_basename}</Text></Text></Box>
-            <Box marginRight={2}><Text>ovarium: <Text color="cyan">{settings.config.snapshot_dir}</Text></Text></Box>
         </Box>
     )
-    // render(<Nest />)
 
-
-    /**
-     * Boot
-     * @returns 
-     */
     const Boot = () => (
         <Box borderStyle="round" marginRight={2}>
             <Box marginRight={2}><Text>kernel: <Text color="cyan">{settings.kernel_image}</Text></Text></Box>
             <Box marginRight={2}><Text>initrd.img: <Text color="cyan">{settings.initrd_image}</Text></Text></Box>
         </Box>
     )
-    // render(<Boot />)
 
-    /**
-     * Live
-     */
     const Live = () => (
         <Box borderStyle="round" marginRight={2}>
             <Box marginRight={2}><Text>live user/passwd: <Text color="cyan">{settings.config.user_opt}/{settings.config.user_opt_passwd}</Text></Text></Box>
             <Box marginRight={2}><Text>root passwd: <Text color="cyan">{settings.config.root_passwd}</Text></Text></Box>
         </Box>
     )
-    // render(<Live />)
-
 
     const distroId = shx.exec('lsb_release -is', { silent: true }).stdout.trim()
     const releaseId = shx.exec('lsb_release -rs', { silent: true }).stdout.trim()
@@ -79,9 +59,7 @@ export default async function information(verbose = false): Promise<void> {
             </Box>
         </Box>
     )
-    // render(<Distro />)
 
-    const dependencies = true 
     const configurations = Pacman.configurationCheck()
     let uefi = Pacman.isUefi()
 
@@ -93,27 +71,18 @@ export default async function information(verbose = false): Promise<void> {
     const Ok = () => (
         <Text backgroundColor="green">OK</Text>
     )
-    // render(<Ok />)
 
     const Ko = () => (
         <Text backgroundColor="red" color="white">KO</Text>
     )
-    // render(<Ko />)
-
-    /** 
-     * CLI va verde se naked, altrimenti giallo
-     */
 
     const CLI = () => (
-        <Text backgroundColor="green">CLI</Text>
+        <Text color="cyan">krill</Text>
     )
-    // render(<CLI />)
 
     const GUI = () => (
-        <Text backgroundColor="green">GUI</Text>
+        <Text color="cyan">calamares</Text>
     )
-    // render(<GUI />)
-
 
     let initType = ''
     if (Utils.isSysvinit()) {
@@ -129,15 +98,12 @@ export default async function information(verbose = false): Promise<void> {
     const systemd = Utils.isSystemd()
     const Checks = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
-            <Box marginRight={2}><Text>dependencies: {dependencies ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
+            <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
+            <Box marginRight={2}><Text>init system: <Text color="cyan">{initType}</Text></Text></Box>
         </Box>
     )
-    // render(<Checks />)
-
 
     const Presentation = () => (
         <>
@@ -157,8 +123,6 @@ export default async function information(verbose = false): Promise<void> {
             </Box>
         </>
     )
-    // render(<Presentation />)
-
 
 
     /**

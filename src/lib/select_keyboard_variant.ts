@@ -1,14 +1,14 @@
 /**
- * penguins-eggs
- * lib: select_keyboard_variant.ts
+ * ./src/lib/select_keyboard_variant.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-const inquirer = require('inquirer') 
-import Keyboards from '../classes/keyboards'
-import Utils from '../classes/utils'
-import selectKeyboardOption from './select_keyboard_option'
+
+import inquirer from 'inquirer'
+
+import Keyboards from '../classes/keyboards.js'
 
 /**
   *
@@ -24,16 +24,16 @@ export default async function selectKeyboardVariant(keyboardLayout = ''): Promis
 
   const questions: Array<Record<string, any>> = [
     {
-      type: 'list',
-      name: 'variant',
-      message: 'Select variant: ',
       choices: supported,
       default: '',
+      message: 'Select variant: ',
+      name: 'variant',
+      type: 'list',
     },
   ]
 
-  return new Promise(function (resolve) {
-    inquirer.prompt(questions).then(function (options: any) {
+  return new Promise((resolve) => {
+    inquirer.prompt(questions).then((options: any) => {
       resolve(options.variant)
     })
   })

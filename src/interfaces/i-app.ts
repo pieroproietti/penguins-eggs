@@ -1,14 +1,15 @@
 /**
- * penguins-eggs
- * interface: i-app.ts
+ * ./src/interfaces/i-app.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 export interface IApp {
-  version: string
-  name: string
   author: string
   homepage: string
   mail: string
+  name: string
+  version: string
 }

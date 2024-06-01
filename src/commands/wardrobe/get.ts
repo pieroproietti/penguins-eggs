@@ -1,36 +1,38 @@
 /**
- * penguins-eggs
- * command: get.ts
+ * ./src/commands/wardrobe/get.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import {Args, Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
 
+import {Args, Command, Flags} from '@oclif/core'
+import { basename } from 'node:path'
+
+import Utils from '../../classes/utils.js'
 // libraries
-import {exec} from '../../lib/utils'
-import { basename } from 'path';
+import {exec} from '../../lib/utils.js'
 
 /**
  *
  */
 export default class Get extends Command {
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v'}),
-  }
-
   static args = {
-    repo: Args.string({name: 'repo', description: 'repository to get', required: false}),
+    repo: Args.string({description: 'repository to get', name: 'repo', required: false}),
   }
 
-  //static args ={name: 'repo', description: 'repository to get', required: false}
+  // static args ={name: 'repo', description: 'repository to get', required: false}
   static description = 'get warorobe'
+
   static examples=[
     'eggs wardrobe get',
     'eggs wardrobe get your-wardrobe',
   ]
+
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    verbose: Flags.boolean({char: 'v'}),
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(Get)

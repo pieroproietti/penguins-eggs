@@ -1,6 +1,6 @@
 /**
- * penguins-eggs
- * krill modules: krill-sequence.ts
+ * ./src/krill/sequence.tsx
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -47,65 +47,65 @@
  */
 
 
-import { IRemix, IDistro, INet } from '../interfaces/index'
-import Settings from '../classes/settings'
+import { IRemix, IDistro, INet } from '../interfaces/index.js'
+import Settings from '../classes/settings.js'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
-import Install from '../components/install'
-import Finished from '../components/finished'
+import Install from '../components/install.js'
+import Finished from '../components/finished.js'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
-import Utils from '../classes/utils'
-import CliAutologin from '../lib/cli-autologin'
-import Pacman from '../classes/pacman';
-import { installer } from '../classes/incubation/installer'
-import Xdg from '../classes/xdg';
-import Distro from '../classes/distro'
+import Utils from '../classes/utils.js'
+import CliAutologin from '../lib/cli-autologin.js'
+import Pacman from '../classes/pacman.js'
+import { installer } from '../classes/incubation/installer.js'
+import Xdg from '../classes/xdg.js';
+import Distro from '../classes/distro.js'
 
-import { IInstaller, IDevices, IDevice } from '../interfaces/index'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill'
-import { exec } from '../lib/utils'
+import { IInstaller, IDevices, IDevice } from '../interfaces/index.js'
+import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { exec } from '../lib/utils.js'
 
 // import krill modules
-import partition from './modules/partition'
-import { mountFs, umountFs } from './modules/mount-fs'
-import { mountVfs, umountVfs } from './modules/mount-vfs'
-import unpackfs from './modules/unpackfs'
-import machineId from './modules/machine-id'
-import fstab from './modules/fstab'
-import locale from './modules/locale'
-import mKeyboard from './modules/m-keyboard'
-import localeCfg from './modules/locale-cfg'
+import partition from './modules/partition.js'
+import { mountFs, umountFs } from './modules/mount-fs.js'
+import { mountVfs, umountVfs } from './modules/mount-vfs.js'
+import unpackfs from './modules/unpackfs.js'
+import machineId from './modules/machine-id.js'
+import fstab from './modules/fstab.js'
+import locale from './modules/locale.js'
+import mKeyboard from './modules/m-keyboard.js'
+import localeCfg from './modules/locale-cfg.js'
 // users
-import addUser from './modules/add-user'
-import changePassword from './modules/change-password'
+import addUser from './modules/add-user.js'
+import changePassword from './modules/change-password.js'
 // displaymanager: autologin
-import networkCfg from './modules/network-cfg'
+import networkCfg from './modules/network-cfg.js'
 // hwclock:
 // services-systemd:
 // bootloader-config
-import bootloaderConfig from './modules/bootloader-config'
-import bootloaderConfigArch from './modules/bootloader-config-arch'
-import bootloaderConfigDebian from './modules/bootloader-config-debian'
-import grubcfg from './modules/grubcfg'
-import bootloader from './modules/bootloader'
-import packages from './modules/packages'
-import removeInstallerLink from './modules/remove-installer-link'
-import initramfsCfg from './modules/initramfs-cfg'
-import initramfs from './modules/initramfs'
-import delLiveUser from './modules/del-live-user'
+import bootloaderConfig from './modules/bootloader-config.js'
+import bootloaderConfigArch from './modules/bootloader-config-arch.js'
+import bootloaderConfigDebian from './modules/bootloader-config-debian.js'
+import grubcfg from './modules/grubcfg.js'
+import bootloader from './modules/bootloader.js'
+import packages from './modules/packages.js'
+import removeInstallerLink from './modules/remove-installer-link.js'
+import initramfsCfg from './modules/initramfs-cfg.js'
+import initramfs from './modules/initramfs.js'
+import delLiveUser from './modules/del-live-user.js'
 // umount already imported
 
 // to order in same wat
-import mTimezone from './modules/m-timezone'
-import umount from './modules/umount'
-import mkfs from './modules/mkfs'
-import hostname from './modules/hostname'
+import mTimezone from './modules/m-timezone.js'
+import umount from './modules/umount.js'
+import mkfs from './modules/mkfs.js'
+import hostname from './modules/hostname.js'
 
-import CFS from '../classes/cfs'
+import CFS from '../classes/cfs.js'
 
 /**
  * hatching: installazione o cova!!!
@@ -512,7 +512,7 @@ export default class Sequence {
             percent = 0.76
             try {
                await redraw(<Install message={message} percent={percent} />)
-               await this.addUser(this.users.name, this.users.password, this.users.fullname, '', '', '')
+               await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
@@ -533,10 +533,10 @@ export default class Sequence {
                   message = "Autologin GUI"
                   percent = 0.78
                   if (this.users.autologin) {
-                     await Xdg.autologin(await Utils.getPrimaryUser(), this.users.name, this.installTarget)
+                     await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {
                         await exec(`chroot ${this.installTarget} groupadd autologin`)
-                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.name} autologin`)
+                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.username} autologin`)
                      }
                   }
                   await redraw(<Install message={message} percent={percent} />)
@@ -703,7 +703,7 @@ export default class Sequence {
     * only show the result
     */
    async finished() {
-      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.name} />)
+      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.username} />)
 
       let cmd = "reboot"
       if (this.halt) {

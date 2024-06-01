@@ -1,25 +1,28 @@
 /**
- * penguins-eggs
- * command: clean.ts
+ * ./src/commands/tools/clean.ts
+ * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
+
 import {Command, Flags} from '@oclif/core'
-import Utils from '../../classes/utils'
-import Bleach from '../../classes/bleach'
+
+import Bleach from '../../classes/bleach.js'
+import Utils from '../../classes/utils.js'
 
 export default class Clean extends Command {
+  static description = 'clean system log, apt, etc'
+
+  static examples=[
+    'sudo eggs tools clean',
+  ]
+
   static flags = {
     help: Flags.help({char: 'h'}),
     nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
     verbose: Flags.boolean({char: 'v', description: 'verbose'}),
   }
-
-  static description = 'clean system log, apt, etc'
-  static examples=[
-    'sudo eggs tools clean',
-  ]
 
   async run(): Promise<void> {
     const {flags} = await this.parse(Clean)
@@ -30,7 +33,7 @@ export default class Clean extends Command {
       verbose = true
     }
 
-    const nointeractive = flags.nointeractive
+    const {nointeractive} = flags
 
     if (Utils.isRoot()) {
       if (nointeractive || await Utils.customConfirm('Select yes to continue...')) {

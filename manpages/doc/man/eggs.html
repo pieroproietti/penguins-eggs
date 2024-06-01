@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v9.8.3</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.0</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i penguins-eggs_9.8.3-1_i386.deb
+    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.0-1_i386.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/9.8.3  
+penguins-eggs/10.0.0  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -54,219 +54,54 @@ sudo eggs dad -d
     <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares) or eggs CLI installer (krill).</p>
     <h1>COMMANDS</h1>
     <ul>
-      <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
-      <li><a href="#eggs-analyze"><code>eggs analyze</code></a></li>
-      <li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
-      <li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
-      <li><a href="#eggs-config"><code>eggs config</code></a></li>
-      <li><a href="#eggs-cuckoo"><code>eggs cuckoo</code></a></li>
-      <li><a href="#eggs-dad"><code>eggs dad</code></a></li>
-      <li><a href="#eggs-export-deb"><code>eggs export deb</code></a></li>
-      <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
-      <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
-      <li><a href="#eggs-install"><code>eggs install</code></a></li>
-      <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
-      <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
-      <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
-      <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
-      <li><a href="#eggs-status"><code>eggs status</code></a></li>
-      <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
-      <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
-      <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
-      <li><a href="#eggs-tools-ppa"><code>eggs tools ppa</code></a></li>
-      <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
-      <li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
-      <li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
-      <li><a href="#eggs-update"><code>eggs update</code></a></li>
-      <li><a href="#eggs-version"><code>eggs version</code></a></li>
-      <li><a href="#eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-list-repo"><code>eggs wardrobe list [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-show-repo"><code>eggs wardrobe show [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-wear-repo"><code>eggs wardrobe wear [REPO]</code></a></li>
+      <li><a href="#krill-hello-person"><code>krill hello PERSON</code></a></li>
+      <li><a href="#krill-hello-world"><code>krill hello world</code></a></li>
+      <li><a href="#krill-help-command"><code>krill help [COMMAND]</code></a></li>
+      <li><a href="#krill-plugins"><code>krill plugins</code></a></li>
+      <li><a href="#krill-plugins-add-plugin"><code>krill plugins add PLUGIN</code></a></li>
+      <li><a href="#krill-pluginsinspect-plugin"><code>krill plugins:inspect PLUGIN...</code></a></li>
+      <li><a href="#krill-plugins-install-plugin"><code>krill plugins install PLUGIN</code></a></li>
+      <li><a href="#krill-plugins-link-path"><code>krill plugins link PATH</code></a></li>
+      <li><a href="#krill-plugins-remove-plugin"><code>krill plugins remove [PLUGIN]</code></a></li>
+      <li><a href="#krill-plugins-reset"><code>krill plugins reset</code></a></li>
+      <li><a href="#krill-plugins-uninstall-plugin"><code>krill plugins uninstall [PLUGIN]</code></a></li>
+      <li><a href="#krill-plugins-unlink-plugin"><code>krill plugins unlink [PLUGIN]</code></a></li>
+      <li><a href="#krill-plugins-update"><code>krill plugins update</code></a></li>
     </ul>
-    <h2><code>eggs adapt</code></h2>
-    <p>adapt monitor resolution for VM only</p>
+    <h2><code>krill hello PERSON</code></h2>
+    <p>Say hello</p>
     <pre><code>USAGE
-  $ eggs adapt [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  adapt monitor resolution for VM only
-
-EXAMPLES
-  $ eggs adapt
-</code></pre>
-    <h2><code>eggs analyze</code></h2>
-    <p>analyze for syncto</p>
-    <pre><code>USAGE
-  $ eggs analyze [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  analyze for syncto
-
-EXAMPLES
-  sudo eggs analyze
-</code></pre>
-    <h2><code>eggs autocomplete [SHELL]</code></h2>
-    <p>Display autocomplete installation instructions.</p>
-    <pre><code>USAGE
-  $ eggs autocomplete [SHELL] [-r]
+  $ krill hello PERSON -f &#x3C;value>
 
 ARGUMENTS
-  SHELL  (zsh|bash|powershell) Shell type
+  PERSON  Person to say hello to
 
 FLAGS
-  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+  -f, --from=&#x3C;value>  (required) Who is saying hello
 
 DESCRIPTION
-  Display autocomplete installation instructions.
+  Say hello
 
 EXAMPLES
-  $ eggs autocomplete
-
-  $ eggs autocomplete bash
-
-  $ eggs autocomplete zsh
-
-  $ eggs autocomplete powershell
-
-  $ eggs autocomplete --refresh-cache
+  $ krill hello friend --from oclif
+  hello friend from oclif! (./src/commands/hello/index.ts)
 </code></pre>
-    <h2><code>eggs calamares</code></h2>
-    <p>configure calamares or install or configure it</p>
+    <h2><code>krill hello world</code></h2>
+    <p>Say hello world</p>
     <pre><code>USAGE
-  $ eggs calamares [-h] [-i] [-n] [-p] [-r] [--remove] [--theme &#x3C;value>] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -i, --install        install calamares and its dependencies
-  -n, --nointeractive  no user interaction
-  -p, --policies       configure calamares policies
-  -r, --release        release: remove calamares and all its dependencies after the installation
-  -v, --verbose
-      --remove         remove calamares and its dependencies
-      --theme=&#x3C;value>  theme/branding for eggs and calamares
+  $ krill hello world
 
 DESCRIPTION
-  configure calamares or install or configure it
+  Say hello world
 
 EXAMPLES
-  sudo eggs calamares
-
-  sudo eggs calamares --install
-
-  sudo eggs calamares --install --theme=/path/to/theme
-
-  sudo eggs calamares --remove
+  $ krill hello world
+  hello world! (./src/commands/hello/world.ts)
 </code></pre>
-    <h2><code>eggs config</code></h2>
-    <p>Configure eggs to run it</p>
+    <h2><code>krill help [COMMAND]</code></h2>
+    <p>Display help for krill.</p>
     <pre><code>USAGE
-  $ eggs config [-c] [-h] [-n] [-N] [-v]
-
-FLAGS
-  -N, --noicons        no icons
-  -c, --clean          remove old configuration before to create new one
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  Configure eggs to run it
-
-EXAMPLES
-  sudo eggs config
-
-  sudo eggs config --clean
-
-  sudo eggs config --clean --nointeractive
-</code></pre>
-    <h2><code>eggs cuckoo</code></h2>
-    <p>PXE start with proxy-dhcp</p>
-    <pre><code>USAGE
-  $ eggs cuckoo [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  PXE start with proxy-dhcp
-
-EXAMPLES
-  sudo eggs cuckoo
-</code></pre>
-    <h2><code>eggs dad</code></h2>
-    <p>ask help from daddy - TUI configuration helper</p>
-    <pre><code>USAGE
-  $ eggs dad [-c] [-d] [-h] [-v]
-
-FLAGS
-  -c, --clean    remove old configuration before to create
-  -d, --default  remove old configuration and force default
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  ask help from daddy - TUI configuration helper
-
-EXAMPLES
-  sudo dad
-
-  sudo dad --clean
-
-  sudo dad --default
-</code></pre>
-    <h2><code>eggs export deb</code></h2>
-    <p>export deb/docs/iso to the destination host</p>
-    <pre><code>USAGE
-  $ eggs export deb [-a] [-c] [-h] [-v]
-
-FLAGS
-  -a, --all      export all archs
-  -c, --clean    remove old .deb before to copy
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  export deb/docs/iso to the destination host
-
-EXAMPLES
-  $ eggs export deb
-
-  $ eggs export deb --clean
-
-  $ eggs export deb --all
-</code></pre>
-    <h2><code>eggs export iso</code></h2>
-    <p>export iso in the destination host</p>
-    <pre><code>USAGE
-  $ eggs export iso [-c] [-C] [-h] [-v]
-
-FLAGS
-  -C, --checksum  export checksums md5 and sha256
-  -c, --clean     delete old ISOs before to copy
-  -h, --help      Show CLI help.
-  -v, --verbose   verbose
-
-DESCRIPTION
-  export iso in the destination host
-
-EXAMPLES
-  $ eggs export iso
-
-  $ eggs export iso --clean
-</code></pre>
-    <h2><code>eggs help [COMMAND]</code></h2>
-    <p>Display help for eggs.</p>
-    <pre><code>USAGE
-  $ eggs help [COMMAND...] [-n]
+  $ krill help [COMMAND...] [-n]
 
 ARGUMENTS
   COMMAND...  Command to show help for.
@@ -275,425 +110,242 @@ FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for eggs.
+  Display help for krill.
 </code></pre>
-    <h2><code>eggs install</code></h2>
-    <p>krill: the CLI system installer - the egg became a penguin!</p>
+    <h2><code>krill plugins</code></h2>
+    <p>List installed plugins.</p>
     <pre><code>USAGE
-  $ eggs install [-b] [-k] [-c &#x3C;value>] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+  $ krill plugins [--json] [--core]
 
 FLAGS
-  -H, --halt            Halt the system after installation
-  -N, --none            Swap none: 256M
-  -S, --suspend         Swap suspend: RAM x 2
-  -b, --btrfs           Format btrfs
-  -c, --custom=&#x3C;value>  custom unattended configuration
-  -d, --domain=&#x3C;value>  Domain name, defult: .local
-  -h, --help            Show CLI help.
-  -i, --ip              hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted         Crypted CLI installation
-  -n, --nointeractive   no user interaction
-  -p, --pve             Proxmox VE install
-  -r, --random          Add random to hostname, eg: colibri-ay412dt
-  -s, --small           Swap small: RAM
-  -u, --unattended      Unattended installation
-  -v, --verbose         Verbose
-
-DESCRIPTION
-  krill: the CLI system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
-
-EXAMPLES
-  sudo eggs install
-
-  sudo eggs install --unattended --halt
-
-  sudo eggs install --custom it
-</code></pre>
-    <h2><code>eggs kill</code></h2>
-    <p>kill the eggs/free the nest</p>
-    <pre><code>USAGE
-  $ eggs kill [-h] [-n] [-i] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -i, --isos           erase all ISOs on remote mount
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  kill the eggs/free the nest
-
-EXAMPLES
-  sudo eggs kill
-</code></pre>
-    <h2><code>eggs krill</code></h2>
-    <p>krill: the CLI system installer - the egg became a penguin!</p>
-    <pre><code>USAGE
-  $ eggs krill [-b] [-k] [-c &#x3C;value>] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
-
-FLAGS
-  -H, --halt            Halt the system after installation
-  -N, --none            Swap none: 256M
-  -S, --suspend         Swap suspend: RAM x 2
-  -b, --btrfs           Format btrfs
-  -c, --custom=&#x3C;value>  custom unattended configuration
-  -d, --domain=&#x3C;value>  Domain name, defult: .local
-  -h, --help            Show CLI help.
-  -i, --ip              hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted         Crypted CLI installation
-  -n, --nointeractive   no user interaction
-  -p, --pve             Proxmox VE install
-  -r, --random          Add random to hostname, eg: colibri-ay412dt
-  -s, --small           Swap small: RAM
-  -u, --unattended      Unattended installation
-  -v, --verbose         Verbose
-
-DESCRIPTION
-  krill: the CLI system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
-
-EXAMPLES
-  sudo eggs install
-
-  sudo eggs install --unattended --halt
-
-  sudo eggs install --custom it
-</code></pre>
-    <h2><code>eggs mom</code></h2>
-    <p>ask help from mommy - TUI helper</p>
-    <pre><code>USAGE
-  $ eggs mom [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  ask help from mommy - TUI helper
-
-EXAMPLES
-  $ eggs mom
-</code></pre>
-    <h2><code>eggs produce</code></h2>
-    <p>produce a live image from your system whithout your data</p>
-    <pre><code>USAGE
-  $ eggs produce [--addons &#x3C;value>] [--basename &#x3C;value>] [-c] [-C] [--excludes &#x3C;value>] [-h] [--links
-    &#x3C;value>] [-m] [-N] [-n] [-p &#x3C;value>] [--release] [-s] [-f] [--theme &#x3C;value>] [-u] [-v] [-y]
-
-FLAGS
-  -C, --cryptedclone         crypted clone
-  -N, --noicons              no icons on desktop
-  -c, --clone                clone
-  -f, --standard             standard compression
-  -h, --help                 Show CLI help.
-  -m, --max                  max compression
-  -n, --nointeractive        no user interaction
-  -p, --prefix=&#x3C;value>       prefix
-  -s, --script               script mode. Generate scripts to manage iso build
-  -u, --unsecure             /root contents are included on live
-  -v, --verbose              verbose
-  -y, --yolk                 force yolk renew
-      --addons=&#x3C;value>...    addons to be used: adapt, ichoice, pve, rsupport
-      --basename=&#x3C;value>     basename
-      --excludes=&#x3C;value>...  use: custom, home, mine, usr, var
-      --links=&#x3C;value>...     desktop links
-      --release              release: max compression, remove penguins-eggs and calamares after installation
-      --theme=&#x3C;value>        theme for livecd, calamares branding and partitions
-
-DESCRIPTION
-  produce a live image from your system whithout your data
-
-EXAMPLES
-  sudo eggs produce
-
-  sudo eggs produce --standard
-
-  sudo eggs produce --max
-
-  sudo eggs produce --max --basename=colibri
-
-  sudo eggs produce --cryptedclone 4G
-
-  sudo eggs produce --clone
-
-  sudo eggs produce --basename=colibri
-
-  sudo eggs produce --basename=colibri --theme theme --addons adapt
-
-  sudo eggs produce --excludes=usr var
-
-  sudo eggs produce --excludes=static
-</code></pre>
-    <h2><code>eggs status</code></h2>
-    <p>informations about eggs status</p>
-    <pre><code>USAGE
-  $ eggs status [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  informations about eggs status
-
-EXAMPLES
-  $ eggs status
-</code></pre>
-    <h2><code>eggs syncfrom</code></h2>
-    <p>restore users and user data from a LUKS volumes</p>
-    <pre><code>USAGE
-  $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-h] [-r &#x3C;value>] [-v]
-
-FLAGS
-  -f, --file=&#x3C;value>     file containing luks-volume encrypted
-  -h, --help             Show CLI help.
-  -r, --rootdir=&#x3C;value>  rootdir of the installed system, when used from live
-  -v, --verbose          verbose
-      --delete=&#x3C;value>   rsync --delete delete extraneous files from dest dirs
-
-DESCRIPTION
-  restore users and user data from a LUKS volumes
-
-EXAMPLES
-  sudo eggs syncfrom
-
-  sudo eggs syncfrom --file /path/to/luks-volume
-</code></pre>
-    <h2><code>eggs syncto</code></h2>
-    <p>Save users and users' data ENCRYPTED</p>
-    <pre><code>USAGE
-  $ eggs syncto [-f &#x3C;value>] [-e] [-h] [-v]
-
-FLAGS
-  -e, --excludes      use: exclude.list.d/home.list
-  -f, --file=&#x3C;value>  file luks-volume encrypted
-  -h, --help          Show CLI help.
-  -v, --verbose       verbose
-
-DESCRIPTION
-  Save users and users' data ENCRYPTED
-
-EXAMPLES
-  sudo eggs syncto
-
-  sudo eggs syncto --file /path/to/luks-volume
-
-  sudo eggs syncto --excludes
-</code></pre>
-    <h2><code>eggs tools clean</code></h2>
-    <p>clean system log, apt, etc</p>
-    <pre><code>USAGE
-  $ eggs tools clean [-h] [-n] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  clean system log, apt, etc
-
-EXAMPLES
-  sudo eggs tools clean
-</code></pre>
-    <h2><code>eggs tools ppa</code></h2>
-    <p>add/remove repo</p>
-    <pre><code>USAGE
-  $ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
-
-FLAGS
-  -a, --add            add penguins-eggs PPA repository
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -r, --remove         remove penguins-eggs PPA repository
-  -v, --verbose        verbose
-
-DESCRIPTION
-  add/remove repo
-
-EXAMPLES
-  sudo eggs tools ppa --add
-
-  sudo eggs tools ppa --remove
-</code></pre>
-    <h2><code>eggs tools skel</code></h2>
-    <p>update skel from home configuration</p>
-    <pre><code>USAGE
-  $ eggs tools skel [-h] [-u &#x3C;value>] [-v]
-
-FLAGS
-  -h, --help          Show CLI help.
-  -u, --user=&#x3C;value>  user to be used
-  -v, --verbose
-
-DESCRIPTION
-  update skel from home configuration
-
-EXAMPLES
-  sudo eggs tools skel
-
-  sudo eggs tools skel --user user-to-be-copied
-</code></pre>
-    <h2><code>eggs tools stat</code></h2>
-    <p>get statistics from sourceforge</p>
-    <pre><code>USAGE
-  $ eggs tools stat [-h] [-m] [-y]
-
-FLAGS
-  -h, --help   Show CLI help.
-  -m, --month  current month
-  -y, --year   current year
-
-DESCRIPTION
-  get statistics from sourceforge
-
-EXAMPLES
-  $ eggs tools stat
-
-  $ eggs tools stat --month
-
-  $ eggs tools stat --year
-</code></pre>
-    <h2><code>eggs tools yolk</code></h2>
-    <p>configure eggs to install without internet</p>
-    <pre><code>USAGE
-  $ eggs tools yolk [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  configure eggs to install without internet
-
-EXAMPLES
-  sudo eggs tools yolk
-</code></pre>
-    <h2><code>eggs update</code></h2>
-    <p>update the Penguins' eggs tool</p>
-    <pre><code>USAGE
-  $ eggs update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  update the Penguins' eggs tool
-
-EXAMPLES
-  $ eggs update
-</code></pre>
-    <h2><code>eggs version</code></h2>
-    <pre><code>USAGE
-  $ eggs version [--json] [--verbose]
-
-FLAGS
-  --verbose  Show additional information about the CLI.
+  --core  Show core plugins.
 
 GLOBAL FLAGS
   --json  Format output as json.
 
-FLAG DESCRIPTIONS
-  --verbose  Show additional information about the CLI.
+DESCRIPTION
+  List installed plugins.
 
-    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
+EXAMPLES
+  $ krill plugins
 </code></pre>
-    <h2><code>eggs wardrobe get [REPO]</code></h2>
-    <p>get warorobe</p>
+    <h2><code>krill plugins add PLUGIN</code></h2>
+    <p>Installs a plugin into krill.</p>
     <pre><code>USAGE
-  $ eggs wardrobe get [REPO] [-h] [-v]
+  $ krill plugins add PLUGIN... [--json] [-f] [-h] [-s | -v]
 
 ARGUMENTS
-  REPO  repository to get
+  PLUGIN...  Plugin to install.
+
+FLAGS
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
+  -h, --help     Show CLI help.
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Installs a plugin into krill.
+
+  Uses bundled npm executable to install plugins into /home/artisan/.local/share/krill
+
+  Installation of a user-installed plugin will override a core plugin.
+
+  Use the KRILL_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the KRILL_NPM_REGISTRY environment variable to set the npm registry.
+
+ALIASES
+  $ krill plugins add
+
+EXAMPLES
+  Install a plugin from npm registry.
+
+    $ krill plugins add myplugin
+
+  Install a plugin from a github url.
+
+    $ krill plugins add https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ krill plugins add someuser/someplugin
+</code></pre>
+    <h2><code>krill plugins:inspect PLUGIN...</code></h2>
+    <p>Displays installation properties of a plugin.</p>
+    <pre><code>USAGE
+  $ krill plugins inspect PLUGIN...
+
+ARGUMENTS
+  PLUGIN...  [default: .] Plugin to inspect.
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Displays installation properties of a plugin.
+
+EXAMPLES
+  $ krill plugins inspect myplugin
+</code></pre>
+    <h2><code>krill plugins install PLUGIN</code></h2>
+    <p>Installs a plugin into krill.</p>
+    <pre><code>USAGE
+  $ krill plugins install PLUGIN... [--json] [-f] [-h] [-s | -v]
+
+ARGUMENTS
+  PLUGIN...  Plugin to install.
+
+FLAGS
+  -f, --force    Force npm to fetch remote resources even if a local copy exists on disk.
+  -h, --help     Show CLI help.
+  -s, --silent   Silences npm output.
+  -v, --verbose  Show verbose npm output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+DESCRIPTION
+  Installs a plugin into krill.
+
+  Uses bundled npm executable to install plugins into /home/artisan/.local/share/krill
+
+  Installation of a user-installed plugin will override a core plugin.
+
+  Use the KRILL_NPM_LOG_LEVEL environment variable to set the npm loglevel.
+  Use the KRILL_NPM_REGISTRY environment variable to set the npm registry.
+
+ALIASES
+  $ krill plugins add
+
+EXAMPLES
+  Install a plugin from npm registry.
+
+    $ krill plugins install myplugin
+
+  Install a plugin from a github url.
+
+    $ krill plugins install https://github.com/someuser/someplugin
+
+  Install a plugin from a github slug.
+
+    $ krill plugins install someuser/someplugin
+</code></pre>
+    <h2><code>krill plugins link PATH</code></h2>
+    <p>Links a plugin into the CLI for development.</p>
+    <pre><code>USAGE
+  $ krill plugins link PATH [-h] [--install] [-v]
+
+ARGUMENTS
+  PATH  [default: .] path to plugin
+
+FLAGS
+  -h, --help          Show CLI help.
+  -v, --verbose
+      --[no-]install  Install dependencies after linking the plugin.
+
+DESCRIPTION
+  Links a plugin into the CLI for development.
+  Installation of a linked plugin will override a user-installed or core plugin.
+
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
+  command will override the user-installed or core plugin implementation. This is useful for development work.
+
+
+EXAMPLES
+  $ krill plugins link myplugin
+</code></pre>
+    <h2><code>krill plugins remove [PLUGIN]</code></h2>
+    <p>Removes a plugin from the CLI.</p>
+    <pre><code>USAGE
+  $ krill plugins remove [PLUGIN...] [-h] [-v]
+
+ARGUMENTS
+  PLUGIN...  plugin to uninstall
 
 FLAGS
   -h, --help     Show CLI help.
   -v, --verbose
 
 DESCRIPTION
-  get warorobe
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ krill plugins unlink
+  $ krill plugins remove
 
 EXAMPLES
-  $ eggs wardrobe get
-
-  $ eggs wardrobe get your-wardrobe
+  $ krill plugins remove myplugin
 </code></pre>
-    <h2><code>eggs wardrobe list [REPO]</code></h2>
-    <p>list costumes and accessoires in wardrobe</p>
+    <h2><code>krill plugins reset</code></h2>
+    <p>Remove all user-installed and linked plugins.</p>
     <pre><code>USAGE
-  $ eggs wardrobe list [REPO] [-h] [-d &#x3C;value>] [-v]
-
-ARGUMENTS
-  REPO  wardrobe to get
+  $ krill plugins reset [--hard] [--reinstall]
 
 FLAGS
-  -d, --distro=&#x3C;value>  distro
-  -h, --help            Show CLI help.
+  --hard       Delete node_modules and package manager related files in addition to uninstalling plugins.
+  --reinstall  Reinstall all plugins after uninstalling.
+</code></pre>
+    <h2><code>krill plugins uninstall [PLUGIN]</code></h2>
+    <p>Removes a plugin from the CLI.</p>
+    <pre><code>USAGE
+  $ krill plugins uninstall [PLUGIN...] [-h] [-v]
+
+ARGUMENTS
+  PLUGIN...  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
   -v, --verbose
 
 DESCRIPTION
-  list costumes and accessoires in wardrobe
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ krill plugins unlink
+  $ krill plugins remove
 
 EXAMPLES
-  $ eggs wardrobe list
-
-  $ eggs wardrobe list your-wardrobe
-
-  $ eggs wardrobe list --distro arch
+  $ krill plugins uninstall myplugin
 </code></pre>
-    <h2><code>eggs wardrobe show [REPO]</code></h2>
-    <p>show costumes/accessories in wardrobe</p>
+    <h2><code>krill plugins unlink [PLUGIN]</code></h2>
+    <p>Removes a plugin from the CLI.</p>
     <pre><code>USAGE
-  $ eggs wardrobe show [REPO] [-h] [-j] [-v] [-w &#x3C;value>]
+  $ krill plugins unlink [PLUGIN...] [-h] [-v]
 
 ARGUMENTS
-  REPO  costume to show
+  PLUGIN...  plugin to uninstall
 
 FLAGS
-  -h, --help              Show CLI help.
-  -j, --json              output JSON
+  -h, --help     Show CLI help.
   -v, --verbose
-  -w, --wardrobe=&#x3C;value>  wardrobe
 
 DESCRIPTION
-  show costumes/accessories in wardrobe
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ krill plugins unlink
+  $ krill plugins remove
 
 EXAMPLES
-  $ eggs wardrobe show colibri
-
-  $ eggs wardrobe show accessories/firmwares
-
-  $ eggs wardrobe show accessories/
+  $ krill plugins unlink myplugin
 </code></pre>
-    <h2><code>eggs wardrobe wear [REPO]</code></h2>
-    <p>wear costume/accessories from wardrobe</p>
+    <h2><code>krill plugins update</code></h2>
+    <p>Update installed plugins.</p>
     <pre><code>USAGE
-  $ eggs wardrobe wear [REPO] [-h] [-a] [-f] [-v] [-w &#x3C;value>]
-
-ARGUMENTS
-  REPO  costume to wear
+  $ krill plugins update [-h] [-v]
 
 FLAGS
-  -a, --no_accessories    not install accessories
-  -f, --no_firmwares      not install firmwares
-  -h, --help              Show CLI help.
+  -h, --help     Show CLI help.
   -v, --verbose
-  -w, --wardrobe=&#x3C;value>  wardrobe
 
 DESCRIPTION
-  wear costume/accessories from wardrobe
-
-EXAMPLES
-  sudo eggs wardrobe wear duck
-
-  sudo eggs wardrobe wear accessories/firmwares
-
-  sudo eggs wardrobe wear wagtail/waydroid
+  Update installed plugins.
 </code></pre>
     <h1>FILES</h1>
     <pre><code>  /etc/penguins-eggs.d
