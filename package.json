@@ -13,7 +13,6 @@
     "@oclif/plugin-autocomplete": "^3.0.18",
     "@oclif/plugin-help": "^6.0.22",
     "@oclif/plugin-version": "^2.1.2",
-    "@oclif/plugin-warn-if-update-available": "^3.0.19",
     "@oclif/test": "^4.0.2",
     "axios": "^1.7.2",
     "chalk": "^4.1.2",
@@ -96,7 +95,6 @@
     "plugins": [
       "@oclif/plugin-autocomplete",
       "@oclif/plugin-help",
-      "@oclif/plugin-warn-if-update-available",
       "@oclif/plugin-version"
     ],
     "additionalHelpFlags": [
