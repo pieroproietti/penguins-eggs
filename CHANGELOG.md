@@ -36,8 +36,6 @@ To make your life easier, save yourself the installation of nodejs and pnpm by u
 
 In short, what I am about to tell you is that it is a good time to get on board!
 
-Insomma, quello che sto per dirvi è che è il momento buono per salire a bordo!
-
 # penguins-eggs-9.8.3
 I consider the cleanup and adjustments resulting from the switch to oclif4 and Debian package name change to be over. I put the new version in the PPA and you can install it with the command: `sudo apt install penguins-eggs`.
 
