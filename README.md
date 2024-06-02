@@ -15,7 +15,7 @@ penguins-eggs
 # Index
 <!-- toc -->
 * [Index](#index)
-* [v10.0.0](#v1000)
+* [penguins-eggs-10.0.0](#penguins-eggs-1000)
 * [Introduction](#introduction)
 * [Technology](#technology)
 * [Features](#features)
@@ -26,7 +26,7 @@ penguins-eggs
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
-# v10.0.0
+# penguins-eggs-10.0.0
 With [version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
 
 # Introduction
