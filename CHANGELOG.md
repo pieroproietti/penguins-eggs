@@ -21,13 +21,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.0
-There would be many ways to change the version number and emphasize an important fact in the code. I don't pretend to be right, but having spent a full morning reintroducing the files and, a few days switching from `commonjs` modules to a more modern `node16` that supports both CommonJS and ECMAScript modules, I decided this way. Don't hold it against me... :-)
+There would be many ways to change the version number and emphasize an important fact in the code. I don't pretend to be right, but having spent a full morning reintroducing new headers on the sources and, a few days switching from `commonjs` modules to a more modern `node16` to support both CommonJS and ECMAScript modules, I decided this way. Don't hold it against me... :-)
 
 In this version all dependencies have finally been updated. from [oclif](https://oclif.io/), [ink](https://github.com/vadimdemedes/ink), etc.
 
-Another new feature for those who want to try their hand at penguins-eggs development: you can create debian your penguins-eggs packages with these simple commands, of course after installing nodejs and pnpm.
+Another new feature, for those who want to try their hand at penguins-eggs development: you can create your penguins-eggs deb packages with these simple commands, of course after installing nodejs and pnpm.
 
-To make your life easier, save yourself the installation of nodejs and pnpm by using any recent version of my colibri ISO.
+To make your life easier and save yourself from installation of nodejs and pnpm, you can ise any recent version of my live [colibri ISO](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/amd64/).
 
 - `git clone https://github.com/pieroproietti/penguins-eggs`
 - `cd penguins-eggs`
