@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.2
+A whole series of tweaks to make the Debian package more standard, a pity not to have been able to generate a single package `-any` for all architectures. 
+
 # penguins-eggs-10.0.0
 There would be many ways to change the version number and emphasize an important fact in the code. I don't pretend to be right, but having spent a full morning reintroducing new headers on the sources and, a few days switching from `commonjs` modules to a more modern `node16` to support both CommonJS and ECMAScript modules, I decided this way. Don't hold it against me... :-)
 
