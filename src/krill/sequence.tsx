@@ -208,6 +208,8 @@ export default class Sequence {
 
    nointeractive = false
 
+   chroot = false
+
    halt = false
 
    cliAutologin = new CliAutologin()
@@ -252,7 +254,7 @@ export default class Sequence {
     * @param umount
     * @returns
     */
-   async start(domain = '', unattended = false, nointeractive = false, halt = false, verbose = false) {
+   async start(domain = '', unattended = false, nointeractive = false, chroot=false, halt = false, verbose = false) {
 
       // Imposta il domain per flag
       if (domain !== '') {
@@ -275,6 +277,7 @@ export default class Sequence {
 
       this.unattended = unattended
       this.nointeractive = nointeractive
+      this.chroot = chroot
       this.halt = halt
 
       this.verbose = verbose
@@ -648,6 +651,18 @@ export default class Sequence {
                } catch (error) {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
+            }
+         }
+
+         // chroot
+         if (chroot) {
+            message = "chroot: write exit to exit from chroot"
+            percent = 0.99
+            try{
+               await redraw(<Install message={message} percent={percent} />)
+               await exec(`chroot ${this.installTarget} /bin/bash`)
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
 

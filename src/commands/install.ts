@@ -11,7 +11,6 @@ import axios, {AxiosResponse} from 'axios'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
-import path from 'node:path'
 
 import Utils from '../classes/utils.js'
 import Krill from '../krill/prepare.js'
@@ -31,13 +30,13 @@ export default class Install extends Command {
   static examples = [
     'sudo eggs install',
     'sudo eggs install --unattended --halt',
-    'sudo eggs install --custom it',
+    'sudo eggs install --chroot',
   ]
 
   static flags = {
     btrfs: Flags.boolean({char: 'b', description: 'Format btrfs'}),
     crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
-    custom: Flags.string({char: 'c', description: 'custom unattended configuration'}),
+    chroot: Flags.boolean({char: 'c', description: 'chroot before to end'}),
     domain: Flags.string({char: 'd', description: 'Domain name, defult: .local'}),
     halt: Flags.boolean({char: 'H', description: 'Halt the system after installation'}),    
     help: Flags.help({char: 'h'}),
@@ -71,22 +70,6 @@ export default class Install extends Command {
     let krillConfig = {} as IKrillConfig
     const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
     krillConfig = yaml.load(content) as IKrillConfig
-    /* removed
-    if (custom !== undefined) {
-      const fname = path.basename(custom)
-      const url = `https://raw.githubusercontent.com/pieroproietti/penguins-wardrobe/main/config/${fname}.yaml`
-      let res: AxiosResponse
-      await axios.get(url, {httpsAgent: agent})
-      .then(function (response) {
-        krillConfig = yaml.load(response.data) as IKrillConfig
-      })
-      .catch(function (error) {
-        const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
-        krillConfig = yaml.load(content) as IKrillConfig
-      })
-    }
-  }
-  end removed */
 
     // nointeractive
     const {nointeractive} = flags
@@ -97,6 +80,9 @@ export default class Install extends Command {
     // hostname
     const {ip} = flags
     const {random} = flags
+
+    // chroot before to end
+    const {chroot} = flags
 
     let domain = ''
     if (flags.domain) {
@@ -110,7 +96,7 @@ export default class Install extends Command {
 
     let {crypted} = flags
 
-    const {pve} = flags
+    const pve = flags.pve
     if (pve) {
       crypted = false
     }
@@ -119,7 +105,7 @@ export default class Install extends Command {
 
     if (Utils.isRoot()) {
       if (Utils.isLive()) {
-        const krill = new Krill(unattended, nointeractive, halt)
+        const krill = new Krill(unattended, nointeractive, halt, chroot)
         await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, verbose)
       } else {
         Utils.warning('You are in an installed system!')
