@@ -14,6 +14,8 @@ common:
   - live-boot # eggs
   - live-boot-doc # eggs
   - live-boot-initramfs-tools # eggs
+  - live-config-systemd # metto sia per systemd che per sysvinit
+  - live-config-sysvinit
   - live-tools # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
@@ -44,17 +46,12 @@ arch:
 version:
   jessie:
   - live-config
-  - live-config-systemd
+  #- live-config-systemd
   stretch:
   - live-config
-  - live-config-systemd
-
-# dependencies for the init system
-init:
+  #- live-config-systemd
   beowulf:
-  - live-config-sysvinit
+  #daedalus:
+  #- live-config-sysvinit
   bionic:
   - open-infrastructure-system-config
-
-#init:  
-#- live-config-sysvinit
