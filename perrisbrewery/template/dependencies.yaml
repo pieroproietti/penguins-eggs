@@ -9,7 +9,6 @@ common:
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
-  - 'grub-efi-amd64-bin [amd64]'
   - isolinux # eggs
   - jq # mom
   - live-boot # eggs
@@ -25,7 +24,17 @@ common:
   - rsync
   - squashfs-tools
   - sshfs # eggs
-  - 'syslinux [i386 amd64]'
-  - 'syslinux-efi [arm64]'
   - syslinux-common
   - xorriso
+
+# dependencies arch specific
+arch:
+  amd64:
+  - grub-efi-amd64-bin
+  - syslinux
+
+  i386:
+  - syslinux
+
+  arm64:
+  - syslinux-efi

@@ -13,4 +13,5 @@ Replaces: eggs
 Description: {{{description}}}
  Penguins-eggs is a versatile remastering tool that allows users to create
  custom live ISO images. It supports multiple Linux distributions, including
- Arch, Debian, Fedora, Ubuntu, and others.
+ Arch, Debian, Devuan, Ubuntu, and others.
+ 
