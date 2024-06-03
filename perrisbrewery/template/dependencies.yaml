@@ -9,49 +9,23 @@ common:
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
+  - 'grub-efi-amd64-bin [amd64]'
   - isolinux # eggs
   - jq # mom
   - live-boot # eggs
   - live-boot-doc # eggs
   - live-boot-initramfs-tools # eggs
-  - live-config-systemd # metto sia per systemd che per sysvinit
-  - live-config-sysvinit
+  - 'live-config-systemd | live-config-sysvinit'
   - live-tools # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
-  - nodejs 
+  - nodejs (>= 18)
   - parted 
   - pxelinux # cuckoo
   - rsync
   - squashfs-tools
   - sshfs # eggs
+  - 'syslinux [i386 amd64]'
+  - 'syslinux-efi [arm64]'
   - syslinux-common
   - xorriso
-
-##
-# dependencies arch specific
-arch:
-  amd64:
-  - grub-efi-amd64-bin
-  - syslinux
-
-  i386:
-  - syslinux
-
-  arm64:
-  - syslinux-efi
-
-##
-# dependencies version
-version:
-  jessie:
-  - live-config
-  #- live-config-systemd
-  stretch:
-  - live-config
-  #- live-config-systemd
-  beowulf:
-  #daedalus:
-  #- live-config-sysvinit
-  bionic:
-  - open-infrastructure-system-config
