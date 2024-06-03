@@ -1,13 +1,16 @@
 Source: {{{name}}}
-Package: {{{name}}}
-Version: {{{version}}}
 Section: {{{section}}}
 Priority: {{{priority}}}
-Architecture: {{{arch}}}
 Maintainer: {{{mantainer}}}
-Description: {{{description}}}
+Standards-Version: 4.5.0
+Package: {{{name}}}
+Architecture: {{{arch}}}
+Version: {{{version}}}
 Depends: {{{depends}}}
-Suggest: calamares, qml-module-qtquick2, qml-module-qtquick-controls
-Conflicts: eggs, calamares-settings-debian, calamares-settings-ubuntu 
+Suggests: calamares
+Conflicts: calamares-settings-debian, calamares-settings-ubuntu, eggs
 Replaces: eggs
-
+Description: {{{description}}}
+ Penguins-eggs is a versatile remastering tool that allows users to create
+ custom live ISO images. It supports multiple Linux distributions, including
+ Arch, Debian, Fedora, Ubuntu, and others.

@@ -10,4 +10,4 @@ mv /var/local/yolk "${tmpDir}"
 apt -y purge penguins-eggs
 dpkg -i /tmp/penguins-eggs*.deb
 mv "${tmpDir}/yolk" /var/local
-#eggs dad -d
+eggs dad -d

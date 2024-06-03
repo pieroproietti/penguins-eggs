@@ -1,107 +1,107 @@
 {
-  "name": "penguins-eggs",
-  "shortName": "eggs",
-  "description": "testing eggs as ECMAScript modules",
-  "version": "10.0.2",
-  "author": "Piero Proietti",
-  "bin": {
-    "eggs": "./bin/run.js"
-  },
-  "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
-  "dependencies": {
-    "@oclif/core": "^3",
-    "@oclif/plugin-autocomplete": "^3.1.0",
-    "@oclif/plugin-help": "^6.1.0",
-    "@oclif/plugin-version": "^2.2.0",
-    "axios": "^1.7.2",
-    "chalk": "^5.3.0",
-    "etrick": "0.0.3",
-    "ink": "^5.0.0",
-    "inquirer": "^9.2.23",
-    "js-yaml": "^4.1.0",
-    "mustache": "^4.2.0",
-    "netmask": "^2.0.2",
-    "node-static": "^0.7.11",
-    "react": "^18.3.1",
-    "shelljs": "^0.8.5",
-    "systeminformation": "^5.22.10",
-    "tftp": "^0.1.2"
-  },
-  "devDependencies": {
-    "@oclif/prettier-config": "^0.2.1",
-    "@oclif/test": "^4",
-    "@types/chai": "^4",
-    "@types/inquirer": "^9.0.7",
-    "@types/js-yaml": "^4.0.9",
-    "@types/mocha": "^10",
-    "@types/mustache": "^4.2.5",
-    "@types/netmask": "^2.0.5",
-    "@types/node": "^18",
-    "@types/node-static": "^0.7.11",
-    "@types/react": "^18.3.3",
-    "@types/shelljs": "^0.8.15",
-    "chai": "^5.1.1",
-    "eslint": "^8",
-    "eslint-config-oclif": "^5",
-    "eslint-config-oclif-typescript": "^3",
-    "eslint-config-prettier": "^9",
-    "mocha": "^10",
-    "perrisbrewery": "^9.8.1",
-    "oclif": "^4.12.0",
-    "shx": "^0.3.3",
-    "ts-node": "^10",
-    "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "files": [
-    ".oclif.manifest.json",
-    "/addons",
-    "/assets",
-    "/bin",
-    "/conf",
-    "/dist",
-    "/eui",
-    "/ipxe",
-    "/manpages",
-    "/mkinitcpio",
-    "/scripts"
-  ],
-  "homepage": "https://penguins-eggs.net",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "main": "dist/index.js",
-  "type": "module",
-  "oclif": {
-    "bin": "eggs",
-    "dirname": "penguins-eggs",
-    "commands": "./dist/commands",
-    "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-autocomplete",
-      "@oclif/plugin-version"
+    "name": "penguins-eggs",
+    "shortName": "eggs",
+    "description": "A remaster system tool, compatible with Arch, Debian, Fedora, Ubuntu and others",
+    "version": "10.0.2",
+    "author": "Piero Proietti",
+    "bin": {
+      "eggs": "./bin/run.js"
+    },
+    "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
+    "dependencies": {
+      "@oclif/core": "^3",
+      "@oclif/plugin-autocomplete": "^3.1.0",
+      "@oclif/plugin-help": "^6.1.0",
+      "@oclif/plugin-version": "^2.2.0",
+      "axios": "^1.7.2",
+      "chalk": "^5.3.0",
+      "etrick": "0.0.3",
+      "ink": "^5.0.0",
+      "inquirer": "^9.2.23",
+      "js-yaml": "^4.1.0",
+      "mustache": "^4.2.0",
+      "netmask": "^2.0.2",
+      "node-static": "^0.7.11",
+      "react": "^18.3.1",
+      "shelljs": "^0.8.5",
+      "systeminformation": "^5.22.10",
+      "tftp": "^0.1.2"
+    },
+    "devDependencies": {
+      "@oclif/prettier-config": "^0.2.1",
+      "@oclif/test": "^4",
+      "@types/chai": "^4",
+      "@types/inquirer": "^9.0.7",
+      "@types/js-yaml": "^4.0.9",
+      "@types/mocha": "^10",
+      "@types/mustache": "^4.2.5",
+      "@types/netmask": "^2.0.5",
+      "@types/node": "^18",
+      "@types/node-static": "^0.7.11",
+      "@types/react": "^18.3.3",
+      "@types/shelljs": "^0.8.15",
+      "chai": "^5.1.1",
+      "eslint": "^8",
+      "eslint-config-oclif": "^5",
+      "eslint-config-oclif-typescript": "^3",
+      "eslint-config-prettier": "^9",
+      "mocha": "^10",
+      "perrisbrewery": "../perrisbrewery",
+      "oclif": "^4.12.0",
+      "shx": "^0.3.3",
+      "ts-node": "^10",
+      "typescript": "^5"
+    },
+    "engines": {
+      "node": ">=18.0.0"
+    },
+    "files": [
+      ".oclif.manifest.json",
+      "/addons",
+      "/assets",
+      "/bin",
+      "/conf",
+      "/dist",
+      "/eui",
+      "/ipxe",
+      "/manpages",
+      "/mkinitcpio",
+      "/scripts"
     ],
-    "topicSeparator": " ",
-    "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+    "homepage": "https://penguins-eggs.net",
+    "keywords": [
+      "oclif"
+    ],
+    "license": "MIT",
+    "main": "dist/index.js",
+    "type": "module",
+    "oclif": {
+      "bin": "eggs",
+      "dirname": "penguins-eggs",
+      "commands": "./dist/commands",
+      "plugins": [
+        "@oclif/plugin-help",
+        "@oclif/plugin-autocomplete",
+        "@oclif/plugin-version"
+      ],
+      "topicSeparator": " ",
+      "topics": {
+        "hello": {
+          "description": "Say hello to the world and others"
+        }
       }
-    }
-  },
-  "repository": "pieroproietti/krill",
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
-    "deb": "tsc -p . && pb deb",
-    "lint": "eslint . --ext .ts",
-    "manifest": "oclif manifest",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "pnpm run lint",
-    "prepack": "oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif readme && git add README.md"
-  },
-  "types": "dist/index.d.ts"
-}
+    },
+    "repository": "pieroproietti/krill",
+    "scripts": {
+      "build": "shx rm -rf dist && tsc -b",
+      "deb": "tsc -p . && pb deb",
+      "lint": "eslint . --ext .ts",
+      "manifest": "oclif manifest",
+      "postpack": "shx rm -f oclif.manifest.json",
+      "posttest": "pnpm run lint",
+      "prepack": "oclif manifest && oclif readme",
+      "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+      "version": "oclif readme && git add README.md"
+    },
+    "types": "dist/index.d.ts"
+  }
