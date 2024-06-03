@@ -70,7 +70,9 @@
     ],
     "homepage": "https://penguins-eggs.net",
     "keywords": [
-      "oclif"
+      "oclif",
+      "remaster",
+      "system"
     ],
     "license": "MIT",
     "main": "dist/index.js",
@@ -91,7 +93,7 @@
         }
       }
     },
-    "repository": "pieroproietti/krill",
+    "repository": "pieroproietti/penguins-eggs",
     "scripts": {
       "build": "shx rm -rf dist && tsc -b",
       "deb": "tsc -p . && pb deb",
