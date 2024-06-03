@@ -131,6 +131,8 @@ export default class Krill {
 
   nointeractive = false
 
+  chroot = false  
+
   halt = false
 
   /**
@@ -139,10 +141,12 @@ export default class Krill {
    * @param nointeractive 
    * @param halt 
    */
-  constructor(unattended = false, nointeractive = false, halt = false) {
+  constructor(unattended = false, nointeractive = false, halt = false, chroot = false) {
     this.unattended = unattended
     this.nointeractive = nointeractive
+      this.chroot = chroot
     this.halt = halt
+
   }
 
   /**
@@ -310,7 +314,7 @@ export default class Krill {
      * INSTALL
      */
     const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
-    await sequence.start(domain, this.unattended, this.nointeractive, this.halt, verbose)
+    await sequence.start(domain, this.unattended, this.nointeractive, this.chroot, this.halt, verbose)
   }
 
   /**

@@ -310,7 +310,7 @@
       "examples": [
         "sudo eggs install",
         "sudo eggs install --unattended --halt",
-        "sudo eggs install --custom it"
+        "sudo eggs install --chroot"
       ],
       "flags": {
         "btrfs": {
@@ -327,13 +327,12 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "custom": {
+        "chroot": {
           "char": "c",
-          "description": "custom unattended configuration",
-          "name": "custom",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
+          "description": "chroot before to end",
+          "name": "chroot",
+          "allowNo": false,
+          "type": "boolean"
         },
         "domain": {
           "char": "d",
