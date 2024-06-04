@@ -44,14 +44,14 @@ export default async function packages(this: Sequence): Promise<void> {
 
     console.log(packages.operations)
 
-    for (let operation in packages.operations) {
-      if (operation === 'try_remove') {
-        console.log("try_remove", packages.operations[operation]?.packages)
-        packagesToInstall = packages.operations[operation]?.packages;
+    for (let operation of packages.operations) {
+      if ('try_remove' in operation) {
+        console.log("try_remove", operation.try_remove);
+        packagesToRemove = operation.try_remove;
       }
-      if (operation === 'try_install') {
-        console.log("try_install", packages.operations[operation]?.packages)
-        packagesToInstall = packages.operations[operation]?.packages;
+      if ('try_install' in operation) {
+        console.log("try_install", operation.try_install);
+        packagesToInstall = operation.try_install;
       }
     }
     console.log(packagesToInstall)
