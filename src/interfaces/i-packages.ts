@@ -6,26 +6,43 @@
  * license: MIT
  */
 
-interface operations {
+interface try_remove {
   packages: string[]
 }
 
-export interface IPackages {
-  backend: string
-  operations: operations[]
+interface try_install {
+  packages: string[]
 }
 
-/**
+interface operations {
+  try_remove: try_remove
+  try_install: try_install
+}
+
+
+
+export interface IPackages {
+  backend: string
+  operations: operations
+}
+
+/*
 # Debian/Buster et others
 # packages
 ---
 backend: apt
 
 operations:
-- remove:
+- try_remove:
+  - calamares-eggs
+  - calamares-garuda
   - calamares
-  - eggs
+  - penguins-eggs
+  - live-boot
+  - live-boot-doc
+  - live-boot-initramfs-tools
+  - live-tools
 - try_install:
   - firefox-esr-$LOCALE
 
- */
+*/

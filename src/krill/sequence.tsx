@@ -51,7 +51,7 @@ import { IRemix, IDistro, INet } from '../interfaces/index.js'
 import Settings from '../classes/settings.js'
 
 import React from 'react';
-import { render, RenderOptions } from 'ink'
+import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../components/install.js'
 import Finished from '../components/finished.js'
 
@@ -106,6 +106,7 @@ import mkfs from './modules/mkfs.js'
 import hostname from './modules/hostname.js'
 
 import CFS from '../classes/cfs.js'
+import Title from '../components/title.js'
 
 /**
  * hatching: installazione o cova!!!
@@ -428,26 +429,6 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         // initramfsCfg
-         message = "initramfs configure"
-         percent = 0.67
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.initramfsCfg(this.partitions.installationDevice)
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
-         // initramfs
-         message = "initramfs "
-         percent = 0.70
-         try {
-            await redraw(<Install message={message} percent={percent} />)
-            await this.initramfs()
-         } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
-         }
-
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
             message = "dpkg-unsafe-io-undo"
@@ -612,6 +593,26 @@ export default class Sequence {
             console.log(JSON.stringify(error))
          }
 
+         // initramfsCfg
+         message = "initramfs configure"
+         percent = 0.67
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.initramfsCfg(this.partitions.installationDevice)
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         // initramfs
+         message = "initramfs "
+         percent = 0.70
+         try {
+            await redraw(<Install message={message} percent={percent} />)
+            await this.initramfs()
+         } catch (error) {
+            await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
          /**
           *
           * remove CLI/GUI installer link
@@ -656,10 +657,17 @@ export default class Sequence {
 
          // chroot
          if (chroot) {
-            message = "chroot: write exit to exit from chroot"
+            message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
             percent = 0.99
             try{
-               await redraw(<Install message={message} percent={percent} />)
+               await redraw(
+                  <>
+                     <Title />
+                     <Box>
+                        <Text>message</Text>
+                     </Box>
+                  </>
+               )
                await exec(`chroot ${this.installTarget} /bin/bash`)
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
@@ -744,11 +752,9 @@ export default class Sequence {
  */
 async function redraw(elem: JSX.Element) {
    let opt: RenderOptions = {}
-
    opt.patchConsole = false
    opt.debug = false
    console.clear()
-   // await exec('clear', Utils.setEcho(false))
    render(elem, opt)
 }
 

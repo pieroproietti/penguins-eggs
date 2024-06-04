@@ -34,25 +34,18 @@ export default async function packages(this: Sequence): Promise<void> {
 
   if (fs.existsSync(config_file)) {
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
-    const operations = JSON.parse(JSON.stringify(packages.operations))
+    remove=packages.operations.try_remove.packages
+    install=packages.operations.try_install.packages
 
-    remove = operations[0].remove
-    if (operations.length > 1) {
-      install = operations[1].install
-    }
-
-    if (operations !== undefined) {
+    //if (operations !== undefined) {
       if (packages.backend === 'apt') {
-        /**
-                 * apt: Debian/Devuan/Ubuntu
-                 */
         if (remove.length > 0) {
           let cmd = `chroot ${this.installTarget} apt-get purge -y `
           for (const elem of remove) {
             cmd += elem + ' '
           }
-
           await exec(`${cmd} ${this.toNull}`, this.echo)
+          await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)  
         }
 
         if (install.length > 0) {
@@ -83,6 +76,6 @@ export default async function packages(this: Sequence): Promise<void> {
           }
         }
       }
-    }
+    //}
   }
 }
