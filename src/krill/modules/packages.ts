@@ -15,7 +15,7 @@ import Utils from '../../classes/utils.js'
 import { IPackages } from '../../interfaces/i-packages.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
-import { tryInstall } from '../../classes/incubation/fisherman-helper/packages.js'
+
 
 /**
  *
@@ -60,7 +60,9 @@ export default async function packages(this: Sequence): Promise<void> {
         if (packagesToRemove.length > 0) {
           let cmd = `chroot ${this.installTarget} apt-get purge -y `
           for (const elem of packagesToRemove) {
-            cmd += elem + ' '
+            if (Pacman.packageIsInstalled(elem)) {
+              cmd += elem + ' '
+            }
           }
           console.log("cmd:", cmd)
           await exec(`${cmd} #${this.toNull}`, this.echo)
