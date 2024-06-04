@@ -31,17 +31,23 @@ export default async function packages(this: Sequence): Promise<void> {
   }
 
   const config_file = `${modulePath}modules/packages.conf`
+  console.log(config_file)
   if (!fs.existsSync(config_file)) {
-    console.log("Cannot find: " + config_file)
-    console.log(config_file)
+    console.log("il file di configurazione NON esiste")
     await Utils.pressKeyToExit()
   } else {
+    console.log("il file di configurazione esiste")
+    await Utils.pressKeyToExit()
+    
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
     console.log("packages.conf")
     console.log(packages)
+    await Utils.pressKeyToExit()
 
     console.log("packages try remove")
     console.log(packages.operations.try_remove.packages)
+    await Utils.pressKeyToExit()
+
     console.log("packages try install")
     console.log(packages.operations.try_install.packages)
     await Utils.pressKeyToExit("")
