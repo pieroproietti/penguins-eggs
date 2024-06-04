@@ -6,17 +6,13 @@
  * license: MIT
  */
 
-interface TryRemove {
-  packages: string[]
-}
-
-interface TryInstall {
+interface Try {
   packages: string[]
 }
 
 interface Operations {
-  try_remove: TryRemove
-  try_install: TryInstall
+  try_remove?: Try
+  try_install?: Try
 }
 
 export interface IPackages {
