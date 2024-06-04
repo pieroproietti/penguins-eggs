@@ -664,7 +664,7 @@ export default class Sequence {
                   <>
                      <Title />
                      <Box>
-                        <Text>message</Text>
+                        <Text>{message}</Text>
                      </Box>
                   </>
                )
