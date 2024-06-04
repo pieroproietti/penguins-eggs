@@ -29,12 +29,12 @@ export default async function packages(this: Sequence): Promise<void> {
   if (Pacman.packageIsInstalled('calamares')) {
     modulePath = '/etc/calamares/'
   }
-  console.log(modulePath)
-  await Utils.pressKeyToExit()
 
-  const config_file = `${this.installTarget}${modulePath}modules/packages.conf`
+  const config_file = `${modulePath}modules/packages.conf`
   let remove: string[] = []
   let install: string[] = []
+  console.log(config_file)
+  await Utils.pressKeyToExit()
 
   if (fs.existsSync(config_file)) {
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
