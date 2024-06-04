@@ -19,29 +19,7 @@ interface Operations {
   try_install: TryInstall
 }
 
-
 export interface IPackages {
   backend: string
   operations: Operations
 }
-
-/*
-# Debian/Buster et others
-# packages
----
-backend: apt
-
-operations:
-- try_remove:
-  - calamares-eggs
-  - calamares-garuda
-  - calamares
-  - penguins-eggs
-  - live-boot
-  - live-boot-doc
-  - live-boot-initramfs-tools
-  - live-tools
-- try_install:
-  - firefox-esr-$LOCALE
-
-*/
