@@ -51,7 +51,6 @@ export default async function packages(this: Sequence): Promise<void> {
     }
     console.log("packagesToInstall", packagesToInstall)
     console.log("packagesToRemove", packagesToRemove)        
-    await Utils.pressKeyToExit()
 
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
@@ -61,8 +60,11 @@ export default async function packages(this: Sequence): Promise<void> {
           for (const elem of packagesToRemove) {
             cmd += elem + ' '
           }
+          console.log("cmd:", cmd)
           await exec(`${cmd} ${this.toNull}`, this.echo)
-          await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
+          let autoremove =`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
+          console.log("autoremove:", autoremove)
+          await exec(autoremove, this.echo)
         }
       }
 
@@ -72,10 +74,15 @@ export default async function packages(this: Sequence): Promise<void> {
           for (const elem of packagesToInstall) {
             cmd += elem + ' '
           }
-          await exec(`chroot ${this.installTarget} apt-get update ${this.toNull}`, this.echo)
+          let update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
+          console.log("update:", update)
+          await exec(update, this.echo)
+
+          console.log("cmd:", cmd)
           await exec(`${cmd} ${this.toNull}`, this.echo)
         }
       }
+      await Utils.pressKeyToExit()
 
     } else if (packages.backend === 'pacman') {
 
