@@ -258,6 +258,12 @@ export default class Xdg {
     /**
      * special cases
      */
+
+    // Riccardo suggestion
+    await rsyncIfExist(`/home/${user}/.mozilla`, '/etc/skel', verbose)
+    await rsyncIfExist(`/home/${user}/.kodi`, '/etc/skel', verbose)
+   
+
     // waydroid
     if (fs.existsSync(`/home/${user}/waydroid-package-manager`)) {
       await rsyncIfExist(`/home/${user}/waydroid-package-manager`, '/etc/skel', verbose)
@@ -277,6 +283,7 @@ export default class Xdg {
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bashrc', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
+
 
     // quirinux
     const distro = new Distro()
