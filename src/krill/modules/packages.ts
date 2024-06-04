@@ -42,15 +42,18 @@ export default async function packages(this: Sequence): Promise<void> {
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
     console.log("packages.conf")
     console.log(packages)
-    await Utils.pressKeyToExit()
+    await Utils.pressKeyToExit("")
 
+    // sino a qua arriva
     console.log("packages try remove")
     console.log(packages.operations.try_remove.packages)
-    await Utils.pressKeyToExit()
+    await Utils.pressKeyToExit("")
 
     console.log("packages try install")
     console.log(packages.operations.try_install.packages)
     await Utils.pressKeyToExit("")
+
+    
 
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
