@@ -41,8 +41,19 @@ export default async function packages(this: Sequence): Promise<void> {
     console.log("packages")
     console.log(packages)
 
-    const tryRemovePackages = packages.operations.try_remove.packages
-    const tryInstallPackages = packages.operations.try_install.packages
+
+    let tryRemovePackages: string[] = []  
+    let tryInstallPackages: string[] = []
+
+    try {
+      tryRemovePackages = packages.operations.try_remove.packages
+      tryInstallPackages = packages.operations.try_install.packages
+    } catch (error) {
+      console.log("errore nella lettura del file di configurazione")
+      console.log(error)
+      await Utils.pressKeyToExit()
+    }
+
     if (tryRemovePackages.length === 0 && tryInstallPackages.length === 0) {
       console.log("nessun pacchetto da installare o rimuovere")
     }
