@@ -41,21 +41,16 @@ export default async function packages(this: Sequence): Promise<void> {
 
     let packagesToInstall: string[] | undefined = []
     let packagesToRemove: string[] | undefined = []
-
-    console.log(packages.operations)
-
     for (let operation of packages.operations) {
       if ('try_remove' in operation) {
-        console.log("try_remove", operation.try_remove);
         packagesToRemove = operation.try_remove;
       }
       if ('try_install' in operation) {
-        console.log("try_install", operation.try_install);
         packagesToInstall = operation.try_install;
       }
     }
-    console.log(packagesToInstall)
-    console.log(packagesToRemove)        
+    console.log("packagesToInstall", packagesToInstall)
+    console.log("packagesToRemove", packagesToRemove)        
     await Utils.pressKeyToExit()
 
     if (packages.backend === 'apt') {
