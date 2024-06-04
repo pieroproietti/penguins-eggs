@@ -38,22 +38,30 @@ export default async function packages(this: Sequence): Promise<void> {
     await Utils.pressKeyToExit()
   } else {
     let packages: IPackages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
-    console.log("packages")
-    console.log(packages)
 
-    let packagesToInstall: string[] = []
-    let packagesToRemove: string[] = []
-    if (packages.operations.try_install) {
-      packagesToInstall = packages.operations.try_install.packages
-      console.log("packagesToInstall", packagesToInstall)
-      if (packages.operations.try_remove) {
-        packagesToRemove = packages.operations.try_remove.packages
-        console.log("packagesToRemove", packagesToRemove)
+    let packagesToInstall: string[] | undefined = []
+    let packagesToRemove: string[] | undefined = []
+
+    for (let operation in packages.operations) {
+      if (operation === 'try_remove') {
+        packagesToInstall = packages.operations[operation]?.packages;
+        break;
       }
-      await Utils.pressKeyToExit()
+    }
 
-      if (packages.backend === 'apt') {
-        // Debian/Devuan/Ubuntu
+    for (let operation in packages.operations) {
+      if (operation === 'try_install') {
+        packagesToInstall = packages.operations[operation]?.packages;
+        break;
+      }
+    }
+    console.log(packagesToInstall)
+    console.log(packagesToRemove)        
+    await Utils.pressKeyToExit()
+
+    if (packages.backend === 'apt') {
+      // Debian/Devuan/Ubuntu
+      if (packagesToRemove != undefined) {
         if (packagesToRemove.length > 0) {
           let cmd = `chroot ${this.installTarget} apt-get purge -y `
           for (const elem of packagesToRemove) {
@@ -62,28 +70,33 @@ export default async function packages(this: Sequence): Promise<void> {
           await exec(`${cmd} ${this.toNull}`, this.echo)
           await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
         }
+      }
 
+      if (packagesToInstall != undefined) {
         if (packagesToInstall.length > 0) {
-          let cmd = `chroot ${this.installTarget} apt-get install -y `
+        let cmd = `chroot ${this.installTarget} apt-get install -y `
           for (const elem of packagesToInstall) {
             cmd += elem + ' '
           }
           await exec(`chroot ${this.installTarget} apt-get update ${this.toNull}`, this.echo)
           await exec(`${cmd} ${this.toNull}`, this.echo)
         }
+      }
 
-      } else if (packages.backend === 'pacman') {
+    } else if (packages.backend === 'pacman') {
 
-        // arch/manjaro
-        if (packagesToRemove.length > 0) {
+      // arch/manjaro
+      if (packagesToRemove != undefined) {
+          if (packagesToRemove.length > 0) {
           let cmd = `chroot ${this.installTarget} pacman -R\n`
           for (const elem of packagesToRemove) {
             cmd += elem + ' '
           }
-
           await exec(`${cmd} ${echoYes}`, this.echo)
         }
+      }
 
+      if (packagesToInstall != undefined) {
         if (packagesToInstall.length > 0) {
           for (const elem of packagesToInstall) {
             await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
@@ -93,3 +106,4 @@ export default async function packages(this: Sequence): Promise<void> {
     }
   }
 }
+
