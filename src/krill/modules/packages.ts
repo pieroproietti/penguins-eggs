@@ -56,7 +56,6 @@ export default async function packages(this: Sequence): Promise<void> {
       console.log("nessun pacchetto da installare o rimuovere")
     }
     await Utils.pressKeyToExit("")
-    process.exit(0)
 
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
