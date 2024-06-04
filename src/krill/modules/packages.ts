@@ -41,19 +41,23 @@ export default async function packages(this: Sequence): Promise<void> {
     await Utils.pressKeyToExit()
     
     const packages: IPackages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
-    console.log("packages.conf")
+    console.log("packages")
     console.log(packages)
     await Utils.pressKeyToExit("")
 
-    const tryRemovePackages = packages.operations.try_remove.packages;
-    console.log("tryRemovePackages")
+    const tryRemovePackages = packages.operations.try_remove.packages
+    console.log("tryRemovePackages" + tryRemovePackages.length)
     console.log(tryRemovePackages)
     await Utils.pressKeyToExit("")
 
-    const tryInstallPackages = packages.operations.try_install.packages;
-    console.log("tryInstallPackages")
+    const tryInstallPackages = packages.operations.try_install.packages
+    console.log("tryInstallPackages"  + tryInstallPackages.length)
     console.log(tryInstallPackages)
     await Utils.pressKeyToExit("")
+
+    if (tryRemovePackages.length === 0 && tryInstallPackages.length === 0) {
+      console.log("nessun pacchetto da installare o rimuovere")
+    }
     
 
     if (packages.backend === 'apt') {
