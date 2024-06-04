@@ -10,12 +10,12 @@ interface Packages {
   packages: string[]
 }
 
-interface Operations {
-  try_remove?: Packages
-  try_install?: Packages
+interface IOperation {
+  try_remove?: string[];
+  try_install?: string[];
 }
 
 export interface IPackages {
-  backend: string
-  operations: Operations
+  backend: string;
+  operations: IOperation[];
 }
