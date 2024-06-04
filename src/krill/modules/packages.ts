@@ -54,6 +54,8 @@ export default async function packages(this: Sequence): Promise<void> {
 
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
+      let saveEcho = this.echo
+      this.echo = true
       if (packagesToRemove != undefined) {
         if (packagesToRemove.length > 0) {
           let cmd = `chroot ${this.installTarget} apt-get purge -y `
@@ -61,8 +63,8 @@ export default async function packages(this: Sequence): Promise<void> {
             cmd += elem + ' '
           }
           console.log("cmd:", cmd)
-          await exec(`${cmd} ${this.toNull}`, this.echo)
-          let autoremove =`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
+          await exec(`${cmd} #${this.toNull}`, this.echo)
+          let autoremove =`chroot ${this.installTarget} apt-get autoremove -y #${this.toNull}`
           console.log("autoremove:", autoremove)
           await exec(autoremove, this.echo)
         }
@@ -74,14 +76,15 @@ export default async function packages(this: Sequence): Promise<void> {
           for (const elem of packagesToInstall) {
             cmd += elem + ' '
           }
-          let update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
+          let update = `chroot ${this.installTarget} apt-get update #${this.toNull}`
           console.log("update:", update)
           await exec(update, this.echo)
 
           console.log("cmd:", cmd)
-          await exec(`${cmd} ${this.toNull}`, this.echo)
+          await exec(`${cmd} #${this.toNull}`, this.echo)
         }
       }
+      this.echo = saveEcho
       await Utils.pressKeyToExit()
 
     } else if (packages.backend === 'pacman') {
