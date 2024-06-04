@@ -44,6 +44,8 @@ export default async function packages(this: Sequence): Promise<void> {
         packagesToInstall = operation.try_install;
       }
     }
+
+    
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
       if (packagesToRemove != undefined) {
@@ -56,8 +58,6 @@ export default async function packages(this: Sequence): Promise<void> {
           }
           await exec(`${cmd} ${this.toNull}`, this.echo)
           let autoremove =`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
-          console.log(autoremove)
-          await Utils.pressKeyToExit('autoremove')
           await exec(autoremove, this.echo)
         }
       }
