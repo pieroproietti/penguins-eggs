@@ -31,38 +31,35 @@ export default async function packages(this: Sequence): Promise<void> {
   }
 
   const config_file = `${modulePath}modules/packages.conf`
-  let remove: string[] = []
-  let install: string[] = []
-  console.log(config_file)
-  await Utils.pressKeyToExit()
-
-  if (fs.existsSync(config_file)) {
+  if (!fs.existsSync(config_file)) {
+    console.log("Cannot find: " + config_file)
+    console.log(config_file)
+    await Utils.pressKeyToExit()
+  } else {
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
     console.log("packages.conf")
     console.log(packages)
 
-    remove = packages.operations.try_remove.packages
     console.log("packages try remove")
-    console.log(remove)
-    install = packages.operations.try_install.packages
+    console.log(packages.operations.try_remove.packages)
     console.log("packages try install")
-    console.log(install)
-    await Utils.pressKeyToExit()
+    console.log(packages.operations.try_install.packages)
+    await Utils.pressKeyToExit("")
 
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
-      if (remove.length > 0) {
+      if (packages.operations.try_remove.packages.length > 0) {
         let cmd = `chroot ${this.installTarget} apt-get purge -y `
-        for (const elem of remove) {
+        for (const elem of packages.operations.try_remove.packages) {
           cmd += elem + ' '
         }
         await exec(`${cmd} ${this.toNull}`, this.echo)
         await exec(`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`, this.echo)
       }
 
-      if (install.length > 0) {
+      if (packages.operations.try_install.packages.length > 0) {
         let cmd = `chroot ${this.installTarget} apt-get install -y `
-        for (const elem of install) {
+        for (const elem of packages.operations.try_install.packages) {
           cmd += elem + ' '
         }
 
@@ -73,17 +70,17 @@ export default async function packages(this: Sequence): Promise<void> {
     } else if (packages.backend === 'pacman') {
 
       // arch/manjaro
-      if (remove.length > 0) {
+      if (packages.operations.try_remove.packages.length > 0) {
         let cmd = `chroot ${this.installTarget} pacman -R\n`
-        for (const elem of remove) {
+        for (const elem of packages.operations.try_remove.packages) {
           cmd += elem + ' '
         }
 
         await exec(`${cmd} ${echoYes}`, this.echo)
       }
 
-      if (install.length > 0) {
-        for (const elem of install) {
+      if (packages.operations.try_install.packages.length > 0) {
+        for (const elem of packages.operations.try_install.packages) {
           await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
         }
       }
