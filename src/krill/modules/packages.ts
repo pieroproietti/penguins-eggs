@@ -23,10 +23,14 @@ import Sequence from '../sequence.js'
 export default async function packages(this: Sequence): Promise<void> {
   const echoYes = Utils.setEcho(true)
 
+  console.log("siamo in packages")
+
   let modulePath = '/etc/penguins-eggs.d/krill/'
   if (Pacman.packageIsInstalled('calamares')) {
     modulePath = '/etc/calamares/'
   }
+  console.log(modulePath)
+  await Utils.pressKeyToExit()
 
   const config_file = `${this.installTarget}${modulePath}modules/packages.conf`
   let remove: string[] = []
@@ -34,8 +38,16 @@ export default async function packages(this: Sequence): Promise<void> {
 
   if (fs.existsSync(config_file)) {
     const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
+    console.log("packages.conf")
+    console.log(packages)
+
     remove=packages.operations.try_remove.packages
+    console.log("packages try remove")
+    console.log(remove)
     install=packages.operations.try_install.packages
+    console.log("packages try install")
+    console.log(install)
+    await Utils.pressKeyToExit()
 
     //if (operations !== undefined) {
       if (packages.backend === 'apt') {
