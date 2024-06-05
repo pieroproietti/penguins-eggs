@@ -30,7 +30,6 @@ export default async function packages(this: Sequence): Promise<void> {
   }
 
   const config_file = `${modulePath}modules/packages.conf`
-  console.log(config_file)
   if (fs.existsSync(config_file)) {
     let packages: IPackages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
 

@@ -108,6 +108,8 @@ import hostname from './modules/hostname.js'
 import CFS from '../classes/cfs.js'
 import Title from '../components/title.js'
 
+import cliCursor from 'cli-cursor'
+
 /**
  * hatching: installazione o cova!!!
  */
@@ -668,7 +670,9 @@ export default class Sequence {
                      </Box>
                   </>
                )
+               cliCursor.show()
                await exec(`chroot ${this.installTarget} /bin/bash`)
+               cliCursor.hide()
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
