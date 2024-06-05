@@ -9,7 +9,7 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^3",
+        "@oclif/core": "^4.0.1",
         "@oclif/plugin-autocomplete": "^3.1.2",
         "@oclif/plugin-help": "^6.1.0",
         "@oclif/plugin-version": "^2.2.2",
@@ -37,7 +37,7 @@
         "@types/mocha": "^10",
         "@types/mustache": "^4.2.5",
         "@types/netmask": "^2.0.5",
-        "@types/node": "^18",
+        "@types/node": "^20.14.2",
         "@types/node-static": "^0.7.11",
         "@types/react": "^18.3.3",
         "@types/shelljs": "^0.8.15",
