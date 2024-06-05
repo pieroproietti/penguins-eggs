@@ -36,6 +36,8 @@ export function remove(distro: IDistro): string {
     }
   }
 
+  installedPackages.sort()
+
   let yaml = ''
   for (const elem of installedPackages) {
     yaml += `  - ${elem.trim()}\n`
