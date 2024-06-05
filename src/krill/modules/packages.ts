@@ -59,6 +59,10 @@ export default async function packages(this: Sequence): Promise<void> {
           await exec(`${cmd} ${this.toNull}`, this.echo)
           let autoremove =`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
           await exec(autoremove, this.echo)
+          console.clear()
+          console.log(cmd)
+          console.log(autoremove)
+          await Utils.pressKeyToExit()
         }
       }
 
@@ -71,6 +75,10 @@ export default async function packages(this: Sequence): Promise<void> {
           let update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
           await exec(update, this.echo)
           await exec(`${cmd} ${this.toNull}`, this.echo)
+          console.clear()
+          console.log(update)
+          console.log(cmd)
+          await Utils.pressKeyToExit()
         }
       }
 
