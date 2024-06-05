@@ -496,7 +496,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.1.1/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.1.2/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -807,8 +807,8 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>] [--basename <value>] [-c] [-C] [--excludes <value>] [-h] [--links
-    <value>] [-m] [-N] [-n] [-p <value>] [--release] [-s] [-f] [--theme <value>] [-u] [-v] [-y]
+  $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-C] [--excludes <value>...] [-h] [--links
+    <value>...] [-m] [-N] [-n] [-p <value>] [--release] [-s] [-f] [--theme <value>] [-u] [-v] [-y]
 
 FLAGS
   -C, --cryptedclone         crypted clone
@@ -1089,7 +1089,7 @@ FLAG DESCRIPTIONS
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.0/src/commands/version.ts)_
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.2/src/commands/version.ts)_
 
 ## `eggs wardrobe get [REPO]`
 
