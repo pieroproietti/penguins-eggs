@@ -432,7 +432,7 @@ export default class Sequence {
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
             message = "dpkg-unsafe-io-undo"
-            percent = 0.72
+            percent = 0.65
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
@@ -454,7 +454,7 @@ export default class Sequence {
          if (!this.is_clone) {
             // locale
             message = "Locale"
-            percent = 0.74
+            percent = 0.70
             try {
                redraw(<Install message={message} percent={percent} />)
                await this.locale()
@@ -464,7 +464,7 @@ export default class Sequence {
 
             // keyboard
             message = "settings keyboard"
-            percent = 0.75
+            percent = 0.71
             try {
                await this.keyboard()
             } catch (error) {
@@ -473,7 +473,7 @@ export default class Sequence {
 
             // localeCfg
             message = "Locale Configuration"
-            percent = 0.76
+            percent = 0.72
             try {
                await this.localeCfg()
                await exec("chroot " + this.installTarget + " locale-gen")
@@ -483,7 +483,7 @@ export default class Sequence {
 
             // delLiveUser
             message = "Remove user LIVE"
-            percent = 0.75
+            percent = 0.73
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.delLiveUser()
@@ -493,7 +493,7 @@ export default class Sequence {
 
             // addUser
             message = "Add user"
-            percent = 0.76
+            percent = 0.74
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
@@ -503,7 +503,7 @@ export default class Sequence {
 
             // changePassword root
             message = "Add root password"
-            percent = 0.77
+            percent = 0.75
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
@@ -515,7 +515,7 @@ export default class Sequence {
             if (Pacman.isInstalledGui()) {
                try {
                   message = "Autologin GUI"
-                  percent = 0.78
+                  percent = 0.76
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {
@@ -543,7 +543,7 @@ export default class Sequence {
 
          // bootloader-config
          message = "bootloader-config "
-         percent = 0.82
+         percent = 0.81
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.bootloaderConfig()
@@ -553,7 +553,7 @@ export default class Sequence {
 
          // grubcfg
          message = "grubcfg "
-         percent = 0.84
+         percent = 0.82
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
@@ -563,7 +563,7 @@ export default class Sequence {
 
          // bootloader (grub-install)
          message = "bootloader "
-         percent = 0.86
+         percent = 0.83
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
@@ -574,7 +574,7 @@ export default class Sequence {
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
             message = "sources-yolk-undo"
-            percent = 0.88
+            percent = 0.84
             try {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-undo')
@@ -584,8 +584,8 @@ export default class Sequence {
          }
 
          // packages
-         message = "add/remove packages"
-         percent = 0.90
+         message = "add/remove same packages"
+         percent = 0.85
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.packages()
@@ -595,7 +595,7 @@ export default class Sequence {
 
          // initramfsCfg
          message = "initramfs configure"
-         percent = 0.67
+         percent = 0.86
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.initramfsCfg(this.partitions.installationDevice)
@@ -605,7 +605,7 @@ export default class Sequence {
 
          // initramfs
          message = "initramfs "
-         percent = 0.70
+         percent = 0.87
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
@@ -618,7 +618,7 @@ export default class Sequence {
           * remove CLI/GUI installer link
           */
          message = "remove GUI installer link"
-         percent = 0.92
+         percent = 0.88
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.removeInstallerLink()
@@ -628,7 +628,7 @@ export default class Sequence {
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
-         percent = 0.94
+         percent = 0.89
          try {
             await redraw(<Install message={message} percent={percent} />)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
@@ -645,7 +645,7 @@ export default class Sequence {
          if (steps.length > 0) {
             for (const step of steps) {
                message = `running ${step}`
-               percent = 0.97
+               percent = 0.90
                try {
                   await redraw(<Install message={message} percent={percent} />)
                   await this.execCalamaresModule(step)
@@ -658,7 +658,7 @@ export default class Sequence {
          // chroot
          if (chroot) {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
-            percent = 0.99
+            percent = 0.95
             try{
                await redraw(
                   <>
@@ -685,7 +685,7 @@ export default class Sequence {
          }
 
          message = "umount"
-         percent = 0.98
+         percent = 0.97
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.umountFs()
