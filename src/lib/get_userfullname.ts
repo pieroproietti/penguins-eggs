@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-'use strict'
+
 import inquirer from 'inquirer'
 
 export default async function getUserfullname(initial: string): Promise<string> {

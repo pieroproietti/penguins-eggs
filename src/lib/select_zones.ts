@@ -6,8 +6,7 @@
  * license: MIT
  */
 
-'use strict'
-'use strict'
+
 import inquirer from 'inquirer'
 
 export default async function selectRegions(region = ''): Promise<string> {

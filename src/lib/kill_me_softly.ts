@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-'use strict'
+
 
 import fs from 'node:fs'
 
