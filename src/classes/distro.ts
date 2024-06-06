@@ -56,7 +56,7 @@ class Distro implements IDistro {
     this.memdiskPath = ''
     this.liveMediumPath = '/run/live/medium/'
     this.squashfs = 'live/filesystem.squashfs'
-    this.homeUrl = 'https://penguins-eggs.net'
+    this.homeUrl = 'https://penguins-eggs.net' 
     this.supportUrl = 'https://penguins-eggs.net'
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.isCalamaresAvailable = true
@@ -69,7 +69,7 @@ class Distro implements IDistro {
         lines = data.split('\n')
       }
       
-      // Itera su ogni riga
+      // per ogni riga
       for (const line of lines) {
         if (line.startsWith('HOME_URL=')) {
           this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '');
