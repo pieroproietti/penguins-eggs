@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.4
+* calamares: configuration of calamares now take the vaules for homeUrl, supportUrl and bugReportUrl from /etc/os-release;
+
 # penguins-eggs-10.0.3
 * krill installaler: `sudo eggs install` now have a new option to chroot on the installed system before reboot. This let you di add/remove last time packages, before your system is rebooted;
 * again in krill: krill now respect the calamares module: `packages.conf` or it's own, packages are added/removed after it's configuration. This born becouse of Devuan daedalus amd64 version, I noted it go in kernel panic after installation, if penguins-eggs and it's dependecies are not removed. The problem arise - probably - from the package `live-config-sysvinit`. I solved using the option `--release` in command `produce`, to configurate calamares/krill to remove penguins-eggs, calamares and it's dependencies before to finish the installation process;

@@ -56,39 +56,28 @@ class Distro implements IDistro {
     this.memdiskPath = ''
     this.liveMediumPath = '/run/live/medium/'
     this.squashfs = 'live/filesystem.squashfs'
-    this.homeUrl = ''
-    this.supportUrl = ''
-    this.bugReportUrl = ''
+    this.homeUrl = 'https://penguins-eggs.net'
+    this.supportUrl = 'https://penguins-eggs.net'
+    this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.isCalamaresAvailable = true
 
-    const file = '/etc/os-release'
-    let data: any
-    if (fs.existsSync(file)) {
-      data = fs.readFileSync(file, 'utf8')
-    }
-
-    // inizio
-    enum info {
-      HOME_URL,
-      SUPPORT_URL,
-      BUG_REPORT_URL
-    }
-
-    const os: Array<string> = []
-    os[info.HOME_URL] = 'HOME_URL='
-    os[info.SUPPORT_URL] = 'SUPPORT_URL='
-    os[info.BUG_REPORT_URL] = 'BUG_REPORT_URL='
-    for (const temp in data) {
-      if (!data[temp].search(os[info.HOME_URL])) {
-        this.homeUrl = data[temp].slice(os[info.HOME_URL].length).replaceAll('"', '')
+    const os_release = '/etc/os-release'
+    if (fs.existsSync(os_release)) {
+      let lines: string[] = []
+      if (fs.existsSync(os_release)) {
+        const data = fs.readFileSync(os_release, 'utf8')
+        lines = data.split('\n')
       }
-
-      if (!data[temp].search(os[info.SUPPORT_URL])) {
-        this.supportUrl = data[temp].slice(os[info.SUPPORT_URL].length).replaceAll('"', '')
-      }
-
-      if (!data[temp].search(os[info.BUG_REPORT_URL])) {
-        this.bugReportUrl = data[temp].slice(os[info.BUG_REPORT_URL].length).replaceAll('"', '')
+      
+      // Itera su ogni riga
+      for (const line of lines) {
+        if (line.startsWith('HOME_URL=')) {
+          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '');
+        } else if (line.startsWith('SUPPORT_URL=')) {
+          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '');
+        } else if (line.startsWith('BUG_REPORT_URL=')) {
+          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '');
+        }
       }
     }
 

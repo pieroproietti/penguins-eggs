@@ -19,28 +19,33 @@ import { IDistro, IRemix } from '../../interfaces/index.js'
  * @returns
  */
 export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
-  const homeUrl = distro.homeUrl || 'https://penguins-eggs.net'
-  const supportUrl = distro.supportUrl || 'https://t.me/penguins_eggs'
-  const bugReportUrl = distro.bugReportUrl || 'https://github.com/pieroproietti/penguins-eggs/issues'
+  const {homeUrl, supportUrl, bugReportUrl} = distro
+
+  // Li ridenomino per calamares
+  const productUrl= homeUrl
+  // const supportUrl= supportUrl
+  // const knownIssuesUrl=bugReportUrl
+  const releaseNotesUrl = bugReportUrl
 
   const productName = remix.versionName // Questa va nel titolo ed in basso
   const shortProductName = remix.fullname
+
   const today = new Date()
   const day = ('0' + today.getDate()).slice(-2)
   const month = ('0' + (today.getMonth() + 1)).slice(-2)
   const year = today.getFullYear()
   const version = year + '-' + month + '-' + day
+
   const shortVersion = version
   const versionedName = remix.fullname + ' (' + version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
   const shortVersionedName = remix.versionName + ' ' + version
-
-  let bootloaderEntryName = distro.distroId
 
   /**
    * some distros: Devuan, LMDE, syslinuxos 
    * must have: bootloaderEntryName=Debian 
    * to work on EFI
    */
+  let bootloaderEntryName = ''
   switch (distro.distroId.toLowerCase()) {
     case 'devuan':
     case 'lmde':
@@ -55,8 +60,7 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     }
   }
 
-  const productUrl = homeUrl
-  const releaseNotesUrl = 'https://github.com/pieroproietti/penguins-eggs/changelog.md'
+  
   const productLogo = `${remix.branding}-logo.png`
   const productIcon = `${remix.branding}-logo.png`
   const productWelcome = 'welcome.png'
@@ -72,30 +76,31 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     slideshow,
     slideshowAPI: 1,
     strings: {
-      bootloaderEntryName,
-      bugReportUrl,
-      productName,
       productUrl,
+      supportUrl,
       releaseNotesUrl,
+      bootloaderEntryName,
+      productName,
       shortProductName,
       shortVersion,
       shortVersionedName,
-      supportUrl,
       version,
       versionedName,
     },
-    style: {
-      // li ripeto per calamares 3.3
-      SidebarBackground:    "#010027",
-      SidebarBackgroundCurrent: "#017877",
-      SidebarText:          "#FFFFFF",
-      SidebarTextCurrent:   "#fbfbfb",
-      sidebarBackground:    "#010027",
-      sidebarBackgroundCurrent: "#017877",
-      sidebarText:          "#FFFFFF",
-      sidebarTextCurrent:   "#fbfbfb"
+  style: {
+    // 3.2.x
+    sidebarBackground:        "#292F34",
+    sidebarText:              "#FFFFFF",
+    sidebarTextCurrent:       "#292F34",
+    sidebarBackgroundCurrent: "#D35400",
+    // 3.3.x
+    SidebarBackground:        "#292F34",
+    SidebarText:              "#FFFFFF",
+    SidebarTextCurrent:       "#292F34",
+    SidebarBackgroundCurrent: "#D35400",
     },
     welcomeStyleCalamares: true,
   }
   return yaml.dump(branding)
 }
+
