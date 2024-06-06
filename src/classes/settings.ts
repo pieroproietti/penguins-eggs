@@ -75,7 +75,7 @@ export default class Settings {
     this.app.version = pjson.version
     this.isLive = Utils.isLive()
     this.i686 = Utils.isi686()
-    this.distro = new Distro(this.remix)
+    this.distro = new Distro()
   }
 
   /**

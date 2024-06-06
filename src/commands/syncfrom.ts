@@ -116,7 +116,7 @@ export default class Syncfrom extends Command {
 
     if (Utils.isRoot()) {
       if (fileVolume === '') {
-        const distro = new Distro(this.remix)
+        const distro = new Distro()
         fileVolume=`${distro.liveMediumPath}live/${this.luksName}`
       }
 
