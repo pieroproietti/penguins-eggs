@@ -3,8 +3,8 @@
  * #!/usr/bin/npx ts-node
  */
 
-import Utils from '../src/classes/utils'
 import Tailor from '../src/classes/tailor'
+import Utils from '../src/classes/utils'
 
 startPoint()
 

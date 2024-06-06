@@ -1,7 +1,8 @@
 
-import fs from 'fs'
 import yaml from 'js-yaml'
-import {stringify} from 'querystring'
+import fs from 'node:fs'
+import {stringify} from 'node:querystring'
+
 import Utils from '../src/classes/utils'
 import {IPackages} from '../src/interfaces/i-packages'
 
@@ -16,7 +17,7 @@ async function start() {
 
   console.clear()
   if (fs.existsSync(config_file)) {
-    const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
+    const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
     console.log('YAML')
     console.log(yaml.dump(packages))
 

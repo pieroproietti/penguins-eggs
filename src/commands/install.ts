@@ -31,8 +31,8 @@ export default class Install extends Command {
 
   static flags = {
     btrfs: Flags.boolean({ char: 'b', description: 'Format btrfs' }),
-    crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
     chroot: Flags.boolean({ char: 'c', description: 'chroot before to end' }),
+    crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
     domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
     halt: Flags.boolean({ char: 'H', description: 'Halt the system after installation' }),
     help: Flags.help({ char: 'h' }),
@@ -92,7 +92,7 @@ export default class Install extends Command {
 
     let { crypted } = flags
 
-    const pve = flags.pve
+    const {pve} = flags
     if (pve) {
       crypted = false
     }

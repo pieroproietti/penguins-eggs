@@ -1,13 +1,13 @@
-#!/usr/bin/pnpx ts-node
 /**
  * run with: pnpx ts-node
  * #!/usr/bin/pnpx ts-node
  */
 
-import {ISettings} from '../src/interfaces/i-settings'
-import Utils from '../src/classes/utils'
-import fs from 'fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
+
+import Utils from '../src/classes/utils'
+import {ISettings} from '../src/interfaces/i-settings'
 
 Utils.titles('settings')
 

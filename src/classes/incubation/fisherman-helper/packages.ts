@@ -25,7 +25,7 @@ export function remove(distro: IDistro): string {
     packages.push('penguins-eggs', 'live-boot', 'live-boot-doc', 'live-boot-initramfs-tools', 'live-tools')
   }
 
-  let installedPackages: string[] = []
+  const installedPackages: string[] = []
   for (const elem of packages) {
     if (Pacman.packageIsInstalled(elem)) {
       installedPackages.push(elem)

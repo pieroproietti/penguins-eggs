@@ -4,11 +4,12 @@
  * #!/usr/bin/npx ts-node
  */
 
-import {exec} from '../src/lib/utils'
-import Utils from '../src/classes/utils'
-import fs from 'fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
+
+import Utils from '../src/classes/utils'
 import {ICostume} from '../src/interfaces/i-costume'
+import {exec} from '../src/lib/utils'
 
 startPoint()
 
@@ -23,7 +24,7 @@ async function startPoint() {
 }
 
 async function renum(pathOrig: string, pathSorted: string) {
-  const orig = yaml.load(fs.readFileSync(pathOrig, 'utf-8')) as ICostume
+  const orig = yaml.load(fs.readFileSync(pathOrig, 'utf8')) as ICostume
   const sorted: ICostume = orig
 
   sorted.name = orig.name

@@ -1,4 +1,3 @@
-#!/usr/bin/pnpx ts-node
 
 import Utils from '../src/classes/utils'
 import { exec } from '../src/lib/utils'
