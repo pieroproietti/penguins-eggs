@@ -19,9 +19,9 @@ import { IDistro, IRemix } from '../../interfaces/index.js'
  * @returns
  */
 export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
-  const {homeUrl} = distro
-  const {supportUrl} = distro
-  const bugReportUrl = 'https://github.com/pieroproietti/penguins-eggs/issues'
+  const homeUrl = distro.homeUrl || 'https://penguins-eggs.net'
+  const supportUrl = distro.supportUrl || 'https://t.me/penguins_eggs'
+  const bugReportUrl = distro.bugReportUrl || 'https://github.com/pieroproietti/penguins-eggs/issues'
 
   const productName = remix.versionName // Questa va nel titolo ed in basso
   const shortProductName = remix.fullname
