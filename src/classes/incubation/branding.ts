@@ -7,7 +7,6 @@
  */
 
 import yaml from 'js-yaml'
-
 import { IDistro, IRemix } from '../../interfaces/index.js'
 
 /**
@@ -24,8 +23,8 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
   // Li ridenomino per calamares
   const productUrl= homeUrl
   // const supportUrl= supportUrl
-  const knownIssuesUrl="https://github.com/pieroproietti/penguins-eggs/issues/"
   const releaseNotesUrl = bugReportUrl
+  const knownIssuesUrl="https://github.com/pieroproietti/penguins-eggs/issues/"
 
   const productName = remix.versionName // Questa va nel titolo ed in basso
   const shortProductName = remix.fullname
@@ -33,7 +32,7 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
   const today = new Date()
   const version = today.toISOString().split('T')[0]   // 2021-09-30
   const shortVersion = version.split('-').join('.')    // 2021.09.30
-  const versionedName = remix.fullname + ' (' + shortVersion + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
+  const versionedName = remix.fullname + ' (' + shortVersion + ')'
   const shortVersionedName = remix.versionName + ' ' + version
 
   /**
@@ -56,7 +55,6 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     }
   }
 
-  
   const productLogo = `${remix.branding}-logo.png`
   const productIcon = `${remix.branding}-logo.png`
   const productWelcome = 'welcome.png'
