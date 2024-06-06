@@ -320,17 +320,17 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "crypted": {
-          "char": "k",
-          "description": "Crypted CLI installation",
-          "name": "crypted",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "chroot": {
           "char": "c",
           "description": "chroot before to end",
           "name": "chroot",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "crypted": {
+          "char": "k",
+          "description": "Crypted CLI installation",
+          "name": "crypted",
           "allowNo": false,
           "type": "boolean"
         },
