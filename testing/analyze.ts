@@ -4,11 +4,12 @@
  * #!/usr/bin/npx ts-node
  */
 
-import {exec} from '../src/lib/utils'
-import Utils from '../src/classes/utils'
-import fs from 'fs'
-import yaml from 'js-yaml'
 import {string} from '@oclif/core/lib/flags'
+import yaml from 'js-yaml'
+import fs from 'node:fs'
+
+import Utils from '../src/classes/utils'
+import {exec} from '../src/lib/utils'
 
 startPoint()
 
@@ -54,14 +55,14 @@ async function makeInstalled() {
    const wifs: wif[] = []
 
    const installeds: string[] = []
-   const oInstalleds = await exec('apt list --installed', {echo: false, ignore: false, capture: true})
+   const oInstalleds = await exec('apt list --installed', {capture: true, echo: false, ignore: false})
    if (oInstalleds.code === 0) {
      const elements = oInstalleds.data.split('\n')
      for (const elem of elements) {
        if (!elem.includes('Listing...') && elem !== '') {
          const pacchetto = elem.slice(0, Math.max(0, elem.indexOf('/')))
          const section = await getSection(pacchetto)
-         const wif = {name: pacchetto, section: section}
+         const wif = {name: pacchetto, section}
          wifs.push(wif)
        }
      }
@@ -78,9 +79,9 @@ async function makeInstalled() {
 async function getSection(pacchetto: string) {
   let section = ''
   try {
-    const result = await exec(`apt-cache show ${pacchetto}|grep Section:`, {echo: false, ignore: false, capture: true})
+    const result = await exec(`apt-cache show ${pacchetto}|grep Section:`, {capture: true, echo: false, ignore: false})
     if (result.code === 0) {
-      section = result.data.slice(Math.max(0, result.data.indexOf(':') + 2)).replace(/(\r\n|\n|\r)/gm, '')
+      section = result.data.slice(Math.max(0, result.data.indexOf(':') + 2)).replaceAll(/(\r\n|\n|\r)/gm, '')
     }
   } catch (error) {
     console.log(error)

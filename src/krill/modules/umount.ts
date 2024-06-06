@@ -7,9 +7,9 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Sequence from '../sequence.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
+import Sequence from '../sequence.js'
 
 /**
  *
@@ -22,7 +22,7 @@ export default async function umount(this: Sequence, mountPoint = '') {
       await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
       await exec('sleep 1', this.echo)
     } catch (error) {
-      message += +mountPoint + JSON.stringify(error)
+      message += Number(mountPoint) + JSON.stringify(error)
       await Utils.pressKeyToExit(message)
     }
   }

@@ -1,6 +1,7 @@
 
-import fs from 'fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
+
 import Utils from '../src/classes/utils'
 import {IPackages} from '../src/interfaces/i-packages'
 
@@ -13,7 +14,7 @@ async function start() {
   const echoYes = Utils.setEcho(true)
   const config_file = '/etc/calamares/modules/packages.conf'
   if (fs.existsSync(config_file)) {
-    const packages = yaml.load(fs.readFileSync(config_file, 'utf-8')) as IPackages
+    const packages = yaml.load(fs.readFileSync(config_file, 'utf8')) as IPackages
 
     console.log(packages)
     const operations = JSON.parse(JSON.stringify(packages.operations))

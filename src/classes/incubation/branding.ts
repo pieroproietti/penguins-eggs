@@ -7,6 +7,7 @@
  */
 
 import yaml from 'js-yaml'
+
 import { IDistro, IRemix } from '../../interfaces/index.js'
 
 /**
@@ -18,7 +19,7 @@ import { IDistro, IRemix } from '../../interfaces/index.js'
  * @returns
  */
 export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = false): string {
-  const { homeUrl, supportUrl, bugReportUrl } = distro
+  const { bugReportUrl, homeUrl, supportUrl } = distro
 
   // Li ridenomino per calamares
   const productUrl = homeUrl
@@ -70,29 +71,29 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     slideshow,
     slideshowAPI: 1,
     strings: {
-      productUrl,
-      supportUrl,
-      knownIssuesUrl,
-      releaseNotesUrl,
       bootloaderEntryName,
+      knownIssuesUrl,
       productName,
+      productUrl,
+      releaseNotesUrl,
       shortProductName,
-      version,
       shortVersion,
       shortVersionedName,
+      supportUrl,
+      version,
       versionedName
     },
     style: {
-      // 3.2.x
-      sidebarBackground: '#292F34',
-      sidebarText: '#FFFFFF',
-      sidebarTextCurrent: '#292F34',
-      sidebarBackgroundCurrent: '#D35400',
       // 3.3.x
       SidebarBackground: '#292F34',
+      SidebarBackgroundCurrent: '#D35400',
       SidebarText: '#FFFFFF',
       SidebarTextCurrent: '#292F34',
-      SidebarBackgroundCurrent: '#D35400'
+      // 3.2.x
+      sidebarBackground: '#292F34',
+      sidebarBackgroundCurrent: '#D35400',
+      sidebarText: '#FFFFFF',
+      sidebarTextCurrent: '#292F34'
     },
     welcomeStyleCalamares: true
   }

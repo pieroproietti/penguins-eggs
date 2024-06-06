@@ -3,13 +3,13 @@
  * #!/usr/bin/pnpx ts-node
  */
 
-import {exec} from '../src/lib/utils'
-import Utils from '../src/classes/utils'
-import fs from 'fs'
+import axios from 'axios'
+import fs from 'node:fs'
+import https from 'node:https'
 import shx from 'shelljs'
 
-import axios from 'axios'
-import https from 'node:https'
+import Utils from '../src/classes/utils'
+import {exec} from '../src/lib/utils'
 const agent = new https.Agent({
   rejectUnauthorized: false,
 })
