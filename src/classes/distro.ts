@@ -12,7 +12,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shell from 'shelljs'
 
-import { IDistro, IRemix } from '../interfaces/index.js'
+import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
 
 // _dirname
@@ -41,25 +41,28 @@ class Distro implements IDistro {
   syslinuxPath: string
   usrLibPath: string
 
-  constructor(remix = {} as IRemix) {
-    this.familyId = 'debian'
-    this.distroId = ''
-    this.distroLike = ''
+  /**
+   * Costruttore
+   */
+  constructor() {
+    this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
     this.codenameLikeId = ''
+    this.distroId = ''
+    this.distroLike = ''
+    this.familyId = 'debian'
+    this.homeUrl = 'https://penguins-eggs.net' 
+    this.isCalamaresAvailable = true
+    this.isolinuxPath = ''
+    this.liveMediumPath = '/run/live/medium/'
+    this.memdiskPath = ''
+    this.pxelinuxPath = ''
     this.releaseId = ''
     this.releaseLike = ''
-    this.usrLibPath = '/usr/lib'
-    this.isolinuxPath = ''
-    this.syslinuxPath = ''
-    this.pxelinuxPath = ''
-    this.memdiskPath = ''
-    this.liveMediumPath = '/run/live/medium/'
     this.squashfs = 'live/filesystem.squashfs'
-    this.homeUrl = 'https://penguins-eggs.net' 
     this.supportUrl = 'https://penguins-eggs.net'
-    this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
-    this.isCalamaresAvailable = true
+    this.syslinuxPath = ''
+    this.usrLibPath = '/usr/lib'
 
     const os_release = '/etc/os-release'
     if (fs.existsSync(os_release)) {
@@ -335,7 +338,6 @@ class Distro implements IDistro {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
-
   }
 }
 

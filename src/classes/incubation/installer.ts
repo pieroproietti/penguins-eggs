@@ -51,8 +51,7 @@ export function installer(): IInstaller {
    * se distro.isCalamaresAvailable()
    * i template di calamares e krill sono gli stessi
    */
-  const remix = {} as IRemix
-  const distro = new Distro(remix)
+  const distro = new Distro()
   if (distro.isCalamaresAvailable) {
     installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares/'
     /*

@@ -22,8 +22,6 @@ import Suse from './families/suse.js'
 import Settings from './settings.js'
 import Utils from './utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
-
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
 
@@ -288,9 +286,7 @@ export default class Pacman {
    * @returns
    */
   static distro(): IDistro {
-    const remix = {} as IRemix
-    const distro = new Distro(remix)
-    return distro
+    return new Distro()
   }
 
   /**
