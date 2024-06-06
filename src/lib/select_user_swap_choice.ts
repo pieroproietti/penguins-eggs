@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-'use strict'
+
 import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'

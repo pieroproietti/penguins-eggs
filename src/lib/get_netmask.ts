@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-'use strict'
+
 import inquirer from 'inquirer'
 
 export default async function getNetmask(initial: string): Promise<string> {
