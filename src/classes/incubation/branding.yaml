@@ -1,0 +1,37 @@
+componentName:  default
+welcomeExpandingLogo:   true
+windowExpanding:    normal
+windowSize: 800px,520px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+strings:
+    productName:         "${NAME}"
+    shortProductName:    Generic
+    version:             2023.3 LTS
+    shortVersion:        2023.3
+    versionedName:       Fancy GNU/Linux 2023.3 LTS "Venomous Vole"
+    shortVersionedName:  FancyGL 2023.3
+    bootloaderEntryName: FancyGL
+    productUrl:          https://calamares.io/
+    supportUrl:          https://github.com/calamares/calamares/wiki
+    knownIssuesUrl:      https://github.com/calamares/calamares/issues
+    releaseNotesUrl:     https://calamares.io/news/
+    donateUrl:           https://kde.org/community/donations/index.php
+images:
+    # productBanner:       "banner.png"
+    productIcon:         "squid.png"
+    productLogo:         "squid.png"
+    # productWallpaper:    "wallpaper.png"
+    productWelcome:      "languages.png"
+style:
+   SidebarBackground:        "#292F34"
+   SidebarText:              "#FFFFFF"
+   SidebarTextCurrent:       "#292F34"
+   SidebarBackgroundCurrent: "#D35400"
+slideshow:               "show.qml"
+slideshowAPI: 2
+uploadServer :
+    type :    "fiche"
+    url :     "http://termbin.com:9999"
+    sizeLimit : -1

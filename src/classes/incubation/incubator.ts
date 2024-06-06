@@ -199,8 +199,6 @@ export default class Incubator {
    *
    */
   private createBranding() {
-    // const branding = require('./branding.js').branding
-
     const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
     if (!fs.existsSync(dir)) {
       shx.exec(`mkdir ${dir} -p`)
