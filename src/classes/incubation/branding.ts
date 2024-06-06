@@ -31,13 +31,9 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
   const shortProductName = remix.fullname
 
   const today = new Date()
-  const day = ('0' + today.getDate()).slice(-2)
-  const month = ('0' + (today.getMonth() + 1)).slice(-2)
-  const year = today.getFullYear()
-  const version = year + '-' + month + '-' + day
-
-  const shortVersion = version
-  const versionedName = remix.fullname + ' (' + version + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
+  const version = today.toISOString().split('T')[0]   // 2021-09-30
+  const shortVersion = version.split('-').join('.')    // 2021.09.30
+  const versionedName = remix.fullname + ' (' + shortVersion + ')' // Questa la mette nella descrizione andrebbe aggiunta la versione dal nome della iso
   const shortVersionedName = remix.versionName + ' ' + version
 
   /**
@@ -83,9 +79,9 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
       bootloaderEntryName,
       productName,
       shortProductName,
+      version,
       shortVersion,
       shortVersionedName,
-      version,
       versionedName,
     },
   style: {
