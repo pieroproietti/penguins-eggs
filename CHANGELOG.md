@@ -35,7 +35,7 @@ In this version all dependencies have finally been updated. from [oclif](https:/
 
 Another new feature, for those who want to try their hand at penguins-eggs development: you can create your penguins-eggs deb packages with these simple commands, of course after installing nodejs and pnpm.
 
-To make your life easier and save yourself from installation of nodejs and pnpm, you can ise any recent version of my live [colibri ISO](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/amd64/).
+To make your life easier and save yourself from installation of nodejs and pnpm, you can use any recent version of my live [colibri ISO](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/amd64/).
 
 - `git clone https://github.com/pieroproietti/penguins-eggs`
 - `cd penguins-eggs`
