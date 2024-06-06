@@ -37,13 +37,14 @@ export default class Syncto extends Command {
 
   excludeHome = '/etc/penguins-eggs.d/exclude.list.d/home.list'
 
+  luksName = 'luks-volume'
+
   luksDevice = `/dev/mapper/${this.luksName}`
 
   luksFile = `/tmp/${this.luksName}`
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
-  luksName = 'luks-volume'
 
   privateSquashfs = `private.squashfs`
 
