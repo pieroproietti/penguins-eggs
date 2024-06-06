@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/n8.ts (node 8)
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti

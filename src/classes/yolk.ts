@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/yolk.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -62,13 +62,7 @@ export default class Yolk {
     }
 
     // packages we need
-    const pkgs = [
-      'cryptsetup',
-      'grub-efi-amd64',
-      'grub-pc',
-      'keyutils',
-      'shim-signed',
-    ]
+    const pkgs = ['cryptsetup', 'grub-efi-amd64', 'grub-pc', 'keyutils', 'shim-signed']
 
     process.chdir(this.yolkDir)
     Utils.warning(`Downloading packages and its dependencies`)
@@ -106,8 +100,8 @@ export default class Yolk {
   }
 
   /**
-  * Check if yoil exists and it's a repo
-  */
+   * Check if yoil exists and it's a repo
+   */
   exists(): boolean {
     const check = `${this.yolkDir}/Packages.gz`
     return fs.existsSync(check)

@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/settings.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -11,12 +11,11 @@ import yaml from 'js-yaml'
 // packages
 import fs from 'node:fs'
 // pjson
-import { createRequire } from 'node:module';
+import { createRequire } from 'node:module'
 import os from 'node:os'
 import shx from 'shelljs'
-const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
-
+const require = createRequire(import.meta.url)
+const pjson = require('../../package.json')
 
 // interfaces
 import { IApp, IDistro, IRemix, IWorkDir } from '../interfaces/index.js'
@@ -102,9 +101,9 @@ export default class Settings {
     spaceAvailable = Number(
       shx
         .exec(`df "${this.config.snapshot_mnt}" | /usr/bin/awk 'NR==2 {print $4}'`, {
-          silent: true,
+          silent: true
         })
-        .stdout.trim(),
+        .stdout.trim()
     )
     console.log(`Space available: ${Math.round((spaceAvailable / gb) * 10) / 10} GB`)
     console.log(`There are ${Utils.getSnapshotCount(this.config.snapshot_mnt)} snapshots taking ${Math.round((Utils.getSnapshotSize(this.config.snapshot_mnt) / gb) * 10) / 10} GB of disk space.`)
@@ -170,12 +169,12 @@ export default class Settings {
     }
 
     if (this.config.make_efi && !Pacman.isUefi() && Utils.uefiArch() === 'amd64') {
-        Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
-        Utils.error('Please install it before to create an UEFI image:')
-        Utils.warning('sudo apt install grub-efi-amd64-bin')
-        Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
-        this.config.make_efi = false
-      }
+      Utils.error('You choose to create an UEFI image, but miss to install grub-efi-amd64-bin package.')
+      Utils.error('Please install it before to create an UEFI image:')
+      Utils.warning('sudo apt install grub-efi-amd64-bin')
+      Utils.error('or edit /etc/penguins-eggs.d/eggs.yaml and set the valuer of make_efi = false')
+      this.config.make_efi = false
+    }
 
     this.kernel_image = this.config.vmlinuz
     this.initrd_image = this.config.initrd_img
@@ -218,7 +217,7 @@ export default class Settings {
     this.remix.versionNumber = Utils.getPackageVersion()
     this.remix.kernel = Utils.kernelVersion()
 
-    this.remix.branding = theme === '' ? 'eggs' : this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
+    this.remix.branding = theme === '' ? 'eggs' : (this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1)))
 
     this.remix.name = this.config.snapshot_basename
     let name = this.config.snapshot_prefix + this.config.snapshot_basename

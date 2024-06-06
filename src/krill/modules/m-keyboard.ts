@@ -19,13 +19,13 @@ import Sequence from '../sequence.js'
  */
 export default async function mKeyboard(this: Sequence): Promise<void> {
   /**
-    * influence: - /etc/default/keyboard (x11)
-    *            - /etc/vconsole.conf (console)
-    *            - /etc/X11/xorg.conf.d/00-keyboard.conf
-    *
-    * Problem: Actually don't update /etc/default/keyboard (x11)
-    *          /etc/vconsole.conf is update in installed systems
-    */
+   * influence: - /etc/default/keyboard (x11)
+   *            - /etc/vconsole.conf (console)
+   *            - /etc/X11/xorg.conf.d/00-keyboard.conf
+   *
+   * Problem: Actually don't update /etc/default/keyboard (x11)
+   *          /etc/vconsole.conf is update in installed systems
+   */
 
   // systemd as default
   let cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
@@ -41,12 +41,12 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
   }
 
   /**
-     * this must to be not necessary but...
-     *
-    * force change /etc/default/keyboard (x11)
-    * force change /etc/vconsole.conf
-    * force change /etc/X11/xorg.conf.d/00-keyboard.conf
-    */
+   * this must to be not necessary but...
+   *
+   * force change /etc/default/keyboard (x11)
+   * force change /etc/vconsole.conf
+   * force change /etc/X11/xorg.conf.d/00-keyboard.conf
+   */
   let content = '# KEYBOARD CONFIGURATION FILE\n\n'
   content += '# Consult the keyboard(5) manual page.\n\n'
   content += '# See penguins-eggs/src/krill/modules/m-keyboard.ts\n\n'
@@ -73,7 +73,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
    * 00-keyboard.conf: dovrebbe dipendere da X
    */
   content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
-  content += '# Read and parsed by systemd-localed. It\'s probably wise not to edit this file\n'
+  content += "# Read and parsed by systemd-localed. It's probably wise not to edit this file\n"
   content += '# manually too freely.\n'
   content += 'Section "InputClass"\n'
   content += '        Identifier "system-keyboard"\n'
@@ -85,4 +85,3 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
   }
 }
-

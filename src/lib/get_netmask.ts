@@ -9,7 +9,6 @@
 'use strict'
 import inquirer from 'inquirer'
 
-
 export default async function getNetmask(initial: string): Promise<string> {
   return new Promise((resolve) => {
     const questions: Array<Record<string, any>> = [
@@ -17,8 +16,8 @@ export default async function getNetmask(initial: string): Promise<string> {
         default: initial,
         message: 'What is netmask of this computer? ',
         name: 'netmask',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

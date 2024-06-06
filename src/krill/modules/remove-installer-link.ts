@@ -7,20 +7,19 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-
 import fs from 'node:fs'
 
 import Sequence from '../sequence.js'
 
 /**
-   * removeInstallerLink
-   */
+ * removeInstallerLink
+ */
 export default async function removeInstallerLink(this: Sequence): Promise<void> {
   const file = `${this.installTarget}/usr/bin/penguins-links-add.sh`
   let lines = []
   let content = ''
   if (fs.existsSync(file)) {
-    lines = fs.readFileSync(file, {encoding: 'utf8', flag: 'r'}).split('\n')
+    lines = fs.readFileSync(file, { encoding: 'utf8', flag: 'r' }).split('\n')
     for (let i = 0; i < lines.length; i++) {
       if (lines[i]) {
         if (lines[i].search('penguins-krill.desktop') !== -1) {

@@ -6,9 +6,9 @@
  * license: MIT
  */
 
-import {IInstaller} from '../../../interfaces/i-installer.js'
-import {IDistro, IRemix} from '../../../interfaces/index.js'
-import {exec} from '../../../lib/utils.js'
+import { IInstaller } from '../../../interfaces/i-installer.js'
+import { IDistro, IRemix } from '../../../interfaces/index.js'
+import { exec } from '../../../lib/utils.js'
 import Fisherman from '../fisherman.js'
 
 /**

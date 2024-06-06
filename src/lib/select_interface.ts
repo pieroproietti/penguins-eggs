@@ -15,8 +15,8 @@ export default async function selectInterface(iface = 'eth0', ifaces: string[]):
       default: iface,
       message: 'Select interface: ',
       name: 'option',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

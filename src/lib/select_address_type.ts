@@ -15,8 +15,8 @@ export default async function selectAddressType(): Promise<string> {
       default: 'dhcp',
       message: 'Select address type: ',
       name: 'option',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

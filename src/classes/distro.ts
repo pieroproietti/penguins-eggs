@@ -1,4 +1,3 @@
- 
 /**
  * penguins-eggs
  * class: distro.ts
@@ -16,7 +15,7 @@ import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
  * Classe
@@ -51,7 +50,7 @@ class Distro implements IDistro {
     this.distroId = ''
     this.distroLike = ''
     this.familyId = 'debian'
-    this.homeUrl = 'https://penguins-eggs.net' 
+    this.homeUrl = 'https://penguins-eggs.net'
     this.isCalamaresAvailable = true
     this.isolinuxPath = ''
     this.liveMediumPath = '/run/live/medium/'
@@ -71,15 +70,15 @@ class Distro implements IDistro {
         const data = fs.readFileSync(os_release, 'utf8')
         lines = data.split('\n')
       }
-      
+
       // per ogni riga
       for (const line of lines) {
         if (line.startsWith('HOME_URL=')) {
-          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '');
+          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '')
         } else if (line.startsWith('SUPPORT_URL=')) {
-          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '');
+          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '')
         } else if (line.startsWith('BUG_REPORT_URL=')) {
-          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '');
+          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '')
         }
       }
     }
@@ -192,8 +191,8 @@ class Distro implements IDistro {
       }
 
       /**
-         * Ubuntu LTS + actual
-         */
+       * Ubuntu LTS + actual
+       */
 
       case 'bionic': {
         // Ubuntu 18.04 bionic LTS eol aprile 2023
@@ -229,8 +228,8 @@ class Distro implements IDistro {
       }
 
       /**
-         * Arch Linux/Garuda
-         */
+       * Arch Linux/Garuda
+       */
       case 'Spizaetus':
       case 'n/a':
       case 'rolling': {
@@ -250,9 +249,9 @@ class Distro implements IDistro {
          * find in ./conf/derivaties
          */
         interface IDistros {
-          distroLike: string,
-          family: string,
-          id: string, // codenameId
+          distroLike: string
+          family: string
+          id: string // codenameId
           ids: string[]
         }
 
@@ -317,10 +316,8 @@ class Distro implements IDistro {
       }
 
       // No default
-
     } // Fine analisi codenameId
 
-    
     /**
      * if lsb-release exists
      */
@@ -331,10 +328,10 @@ class Distro implements IDistro {
     }
 
     /**
-      * ManjaroLinux and BigLinux
-      */
-    
-    if (this.distroId === 'ManjaroLinux' || this.distroId.toLowerCase().includes("biglinux"))  {
+     * ManjaroLinux and BigLinux
+     */
+
+    if (this.distroId === 'ManjaroLinux' || this.distroId.toLowerCase().includes('biglinux')) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
@@ -342,4 +339,3 @@ class Distro implements IDistro {
 }
 
 export default Distro
-

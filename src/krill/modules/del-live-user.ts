@@ -8,13 +8,13 @@
  */
 
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
-   * delUser
-   * va corretto con users.conf di calamares
-*/
+ * delUser
+ * va corretto con users.conf di calamares
+ */
 export default async function delLiveUser(this: Sequence) {
   if (Utils.isLive()) {
     const user: string = this.settings.config.user_opt

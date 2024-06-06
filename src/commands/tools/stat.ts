@@ -6,13 +6,13 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import axios from 'axios'
 import https from 'node:https'
 
 import Utils from '../../classes/utils.js'
 const agent = new https.Agent({
-  rejectUnauthorized: false,
+  rejectUnauthorized: false
 })
 import yaml from 'js-yaml'
 
@@ -22,23 +22,19 @@ import yaml from 'js-yaml'
 export default class ToolsStat extends Command {
   static description = 'get statistics from sourceforge'
 
-  static examples=[
-    'eggs tools stat',
-    'eggs tools stat --month',
-    'eggs tools stat --year',
-  ]
+  static examples = ['eggs tools stat', 'eggs tools stat --month', 'eggs tools stat --year']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    month: Flags.boolean({char: 'm', description: 'current month'}),
-    year: Flags.boolean({char: 'y', description: 'current year'}),
+    help: Flags.help({ char: 'h' }),
+    month: Flags.boolean({ char: 'm', description: 'current month' }),
+    year: Flags.boolean({ char: 'y', description: 'current year' })
   }
 
   /**
    *
    */
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(ToolsStat)
+    const { args, flags } = await this.parse(ToolsStat)
     Utils.titles(this.id + ' ' + this.argv)
 
     const yesterday = new Date()
@@ -82,7 +78,7 @@ export default class ToolsStat extends Command {
     const request = '?start_date=' + start + '&end_date=' + end
     url += request
 
-    const res = await axios.get(url, {httpsAgent: agent})
+    const res = await axios.get(url, { httpsAgent: agent })
 
     console.log(type)
     for (const country of res.data.countries) {

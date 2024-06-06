@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/ovary.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -38,7 +38,7 @@ import Xdg from './xdg.js'
 import Repo from './yolk.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
  * Ovary:
@@ -78,7 +78,7 @@ export default class Ovary {
    * @param exclusion {string} path to add/remove
    */
   addRemoveExclusion(add: boolean, exclusion: string): void {
-    if(this.verbose) {
+    if (this.verbose) {
       console.log('Ovary: addRemoveExclusion')
     }
 
@@ -103,30 +103,30 @@ export default class Ovary {
    * @param verbose
    */
   async bindLiveFs() {
-  if (this.verbose) {
-    console.log('Ovary: bindLiveFs')
-  }
+    if (this.verbose) {
+      console.log('Ovary: bindLiveFs')
+    }
 
-  /**
-   * Attenzione:
-   * fs.readdirSync('/', { withFileTypes: true })
-   * viene ignorato da Node8, ma da problemi da Node10 in poi
-   */
-  const dirs = fs.readdirSync('/') // we must remove boot and 
-  const startLine = '#############################################################'
-  const titleLine = '# -----------------------------------------------------------'
-  const endLine = '# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
+    /**
+     * Attenzione:
+     * fs.readdirSync('/', { withFileTypes: true })
+     * viene ignorato da Node8, ma da problemi da Node10 in poi
+     */
+    const dirs = fs.readdirSync('/') // we must remove boot and
+    const startLine = '#############################################################'
+    const titleLine = '# -----------------------------------------------------------'
+    const endLine = '# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
 
-  let lnkDest = ''
-  let cmd = ''
-  const cmds: string[] = []
-  cmds.push('# NOTE: cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just a mkdir in ${this.settings.work_dir.merged}`)
-  cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
+    let lnkDest = ''
+    let cmd = ''
+    const cmds: string[] = []
+    cmds.push('# NOTE: cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just a mkdir in ${this.settings.work_dir.merged}`)
+    cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
 
-  for (const dir of dirs) {
-    cmds.push(startLine)
-    if (N8.isDirectory(dir)) {
-      if (dir !== 'boot' && dir !== 'lost+found') {
+    for (const dir of dirs) {
+      cmds.push(startLine)
+      if (N8.isDirectory(dir)) {
+        if (dir !== 'boot' && dir !== 'lost+found') {
           cmd = `# /${dir} is a directory`
           if (this.mergedAndOverlay(dir)) {
             /**
@@ -156,96 +156,96 @@ export default class Ovary {
             cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
           }
         }
-    } else if (N8.isFile(dir)) {
-      cmds.push(`# /${dir} is just a file`, titleLine)
-      if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
-        cmds.push('# file exist... skip')
-      } else {
-        cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, this.verbose))
-      }
-    } else if (N8.isSymbolicLink(dir)) {
-      lnkDest = fs.readlinkSync(`/${dir}`)
-      cmds.push(
-        `# /${dir} is a symbolic link to /${lnkDest} in the system`,
-        '# we need just to recreate it',
-        `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
-        "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
-        titleLine,
-      )
-      if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
-        cmds.push('# SymbolicLink exist... skip')
-      } else if (fs.existsSync(lnkDest)) {
+      } else if (N8.isFile(dir)) {
+        cmds.push(`# /${dir} is just a file`, titleLine)
+        if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
+          cmds.push('# file exist... skip')
+        } else {
+          cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, this.verbose))
+        }
+      } else if (N8.isSymbolicLink(dir)) {
+        lnkDest = fs.readlinkSync(`/${dir}`)
+        cmds.push(
+          `# /${dir} is a symbolic link to /${lnkDest} in the system`,
+          '# we need just to recreate it',
+          `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
+          "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
+          titleLine
+        )
+        if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
+          cmds.push('# SymbolicLink exist... skip')
+        } else if (fs.existsSync(lnkDest)) {
           cmds.push(`ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
         } else {
           cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
         }
+      }
+
+      cmds.push(endLine)
     }
 
-    cmds.push(endLine)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
   }
-
-  // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
-}
 
   /**
    * bind dei virtual file system
    */
   async bindVfs() {
-  if (this.verbose) {
-    console.log('Ovary: bindVfs')
-  }
+    if (this.verbose) {
+      console.log('Ovary: bindVfs')
+    }
 
-  const cmds: string[] = []
-  cmds.push(
-    `mount -o bind /dev ${this.settings.work_dir.merged}/dev`,
-    `mount -o bind /dev/pts ${this.settings.work_dir.merged}/dev/pts`,
-    `mount -o bind /proc ${this.settings.work_dir.merged}/proc`,
-    `mount -o bind /sys ${this.settings.work_dir.merged}/sys`,
-    `mount -o bind /run ${this.settings.work_dir.merged}/run`,
-  )
-  // Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}bindvfs`, cmds)
-}
+    const cmds: string[] = []
+    cmds.push(
+      `mount -o bind /dev ${this.settings.work_dir.merged}/dev`,
+      `mount -o bind /dev/pts ${this.settings.work_dir.merged}/dev/pts`,
+      `mount -o bind /proc ${this.settings.work_dir.merged}/proc`,
+      `mount -o bind /sys ${this.settings.work_dir.merged}/sys`,
+      `mount -o bind /run ${this.settings.work_dir.merged}/run`
+    )
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}bindvfs`, cmds)
+  }
 
   /**
    *
    * @param verbose
    */
   async cleanUsersAccounts() {
-  if (this.verbose) {
-    console.log('Ovary: cleanUsersAccounts')
-  }
+    if (this.verbose) {
+      console.log('Ovary: cleanUsersAccounts')
+    }
 
-  /**
-   * delete all user in chroot
-   */
-  const cmds: string[] = []
-  const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
-  const result = await exec(cmd, {
-    capture: true,
-    echo: this.verbose,
-    ignore: false,
-  })
-  const users: string[] = result.data.split('\n')
-  for (let i = 0; i < users.length - 1; i++) {
-    // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-    cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
+    /**
+     * delete all user in chroot
+     */
+    const cmds: string[] = []
+    const cmd = `chroot ${this.settings.work_dir.merged} getent passwd {1000..60000} |awk -F: '{print $1}'`
+    const result = await exec(cmd, {
+      capture: true,
+      echo: this.verbose,
+      ignore: false
+    })
+    const users: string[] = result.data.split('\n')
+    for (let i = 0; i < users.length - 1; i++) {
+      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
+    }
   }
-}
 
   /**
    * copyBoot
-   * 
+   *
    * necessario: prima era merged
    */
   async copyBoot() {
-  if (this.verbose) {
-    console.log('Ovary: copyBoot')
-  }
+    if (this.verbose) {
+      console.log('Ovary: copyBoot')
+    }
 
-  await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
-}
+    await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
+  }
 
   /**
    * list degli utenti: grep -E 1[0-9]{3}  /etc/passwd | sed s/:/\ / | awk '{print $1}'
@@ -253,221 +253,221 @@ export default class Ovary {
    * @param verbose
    */
   async createUserLive() {
-  if (this.verbose) {
-    console.log('Ovary: createUserLive')
-  }
+    if (this.verbose) {
+      console.log('Ovary: createUserLive')
+    }
 
-  const cmds: string[] = []
-  cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
-  cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
-  cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
-  cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
+    const cmds: string[] = []
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
+    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
-  // da problemi con il mount sshfs
-  cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
+    // da problemi con il mount sshfs
+    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
-  // live password
-  cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    // live password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
-  // root password
-  cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    // root password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
-  if (this.familyId === 'debian') {
-    cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-  } else if (this.familyId === 'archlinux') {
-    cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
+    if (this.familyId === 'debian') {
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
+    } else if (this.familyId === 'archlinux') {
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
 
-    // check or create group: autologin
-    cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
-    cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
-  }
+      // check or create group: autologin
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
+    }
 
-  /**
-   * educaandos and others themes
-   * users.yml
-   */
-  let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
-  if (this.theme.includes('/')) {
-    usersConf = `${this.theme}/theme/calamares/modules/users.yml`
-  }
+    /**
+     * educaandos and others themes
+     * users.yml
+     */
+    let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
+    if (this.theme.includes('/')) {
+      usersConf = `${this.theme}/theme/calamares/modules/users.yml`
+    }
 
-  if (fs.existsSync(usersConf)) {
-    interface IUserCalamares {
-      defaultGroups: string[]
-      doAutologin: boolean
-      doReusePassword: boolean
-      passwordRequirements: {
-        maxLenght: number
-        minLenght: number
+    if (fs.existsSync(usersConf)) {
+      interface IUserCalamares {
+        defaultGroups: string[]
+        doAutologin: boolean
+        doReusePassword: boolean
+        passwordRequirements: {
+          maxLenght: number
+          minLenght: number
+        }
+        setRootPassword: boolean
+        sudoersGroup: string
+        userShell: string
       }
-      setRootPassword: boolean
-      sudoersGroup: string
-      userShell: string
-    }
-    const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
-    for (const group of o.defaultGroups) {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt}`, this.verbose))
+      const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
+      for (const group of o.defaultGroups) {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt}`, this.verbose))
+      }
     }
   }
-}
 
   /**
    *
    */
   async createXdgAutostart(theme = 'eggs', myAddons: IAddons, myLinks: string[] = [], noicons = false) {
-  if (this.verbose) {
-    console.log('Ovary: createXdgAutostart')
-  }
+    if (this.verbose) {
+      console.log('Ovary: createXdgAutostart')
+    }
 
-  const pathHomeLive = `/home/${this.settings.config.user_opt}`
+    const pathHomeLive = `/home/${this.settings.config.user_opt}`
 
-  if (noicons) { // NO icons
-    shx.rm(`${this.settings.work_dir.merged}/etc/xdg/autostart/penguins-links-add.desktop`)
-  } else { // VOGLIO le icone
-    // Copia icona penguins-eggs
-    shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
-    shx.cp(path.resolve(__dirname, '../../assets/krill.svg'), '/usr/share/icons/')
-    shx.cp(path.resolve(__dirname, '../../assets/leaves.svg'), '/usr/share/icons/')
-
-    /**
-     * creazione dei link in /usr/share/applications
-     */
-    shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
-    /**
-     * Scrivania/install-system.desktop
-     */
-    let installerUrl = 'install-system.desktop'
-    let installerIcon = 'install-system.sh'
-    if (Pacman.calamaresExists()) {
-      shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
-    } else if (Pacman.packageIsInstalled('live-installer')) {
-      // carico la policy per live-installer
-      const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
-      const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-      shx.cp(policySource, policyDest)
-      await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
-
-      // carico in filesystem.live packages-remove
-      shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
-      shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
-
-      installerUrl = 'penguins-live-installer.desktop'
-      installerIcon = 'utilities-terminal'
-      shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+    if (noicons) {
+      // NO icons
+      shx.rm(`${this.settings.work_dir.merged}/etc/xdg/autostart/penguins-links-add.desktop`)
     } else {
-      installerUrl = 'penguins-krill.desktop'
-      installerIcon = 'utilities-terminal'
-      shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
-    }
-
-    /**
-     * flags
-     */
-
-    // adapt
-    if (myAddons.adapt) {
-      const dirAddon = path.resolve(__dirname, '../../addons/eggs/adapt/')
-      shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-      shx.cp(`${dirAddon}/bin/adapt`, `${this.settings.work_dir.merged}/usr/bin/`)
-      shx.chmod('+x', `${this.settings.work_dir.merged}/usr/bin/adapt`)
-    }
-
-    // ichoice
-    if (myAddons.ichoice) {
-      installerUrl = 'eggs-ichoice.desktop'
-      installerIcon = 'system-software-install'
-      const dirAddon = path.resolve(__dirname, '../../addons/eggs/ichoice/')
-      shx.cp(`${dirAddon}/applications/eggs-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-      shx.cp(`${dirAddon}/bin/eggs-ichoice.sh`, `${this.settings.work_dir.merged}/usr/bin/`)
-      shx.chmod('+x', `${this.settings.work_dir.merged}/usr/bin/eggs-ichoice.sh`)
-    }
-
-    // pve
-    if (myAddons.pve) {
-      /**
-       * create service pve-live
-       */
-      const pve = new PveLive()
-      pve.create(this.settings.work_dir.merged)
+      // VOGLIO le icone
+      // Copia icona penguins-eggs
+      shx.cp(path.resolve(__dirname, '../../assets/eggs.png'), '/usr/share/icons/')
+      shx.cp(path.resolve(__dirname, '../../assets/krill.svg'), '/usr/share/icons/')
+      shx.cp(path.resolve(__dirname, '../../assets/leaves.svg'), '/usr/share/icons/')
 
       /**
-       * adding a desktop link for pve
+       * creazione dei link in /usr/share/applications
        */
-      const dirAddon = path.resolve(__dirname, '../../addons/eggs/pve')
-      shx.cp(`${dirAddon}/artwork/eggs-pve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
-      shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-    }
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
+      /**
+       * Scrivania/install-system.desktop
+       */
+      let installerUrl = 'install-system.desktop'
+      let installerIcon = 'install-system.sh'
+      if (Pacman.calamaresExists()) {
+        shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      } else if (Pacman.packageIsInstalled('live-installer')) {
+        // carico la policy per live-installer
+        const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
+        const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+        shx.cp(policySource, policyDest)
+        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
 
-    // rsupport
-    if (myAddons.rsupport) {
-      const dirAddon = path.resolve(__dirname, '../../addons/eggs/rsupport')
-      shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-      shx.cp(`${dirAddon}/artwork/eggs-rsupport.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
-    }
+        // carico in filesystem.live packages-remove
+        shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
+        shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
 
-    /**
-     * configuro add-penguins-desktop-icons in /etc/xdg/autostart
-     */
-
-    const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
-    if (fs.existsSync(dirAutostart)) {
-
-      // Creo l'avviatore xdg: DEVE essere add-penguins-links.desktop
-      shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
-
-      // create /usr/bin/penguins-links-add.sh
-      const script = '/usr/bin/penguins-links-add.sh'
-      let text = ''
-      text += '#!/bin/sh\n'
-      text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-      text += 'test -d "$DESKTOP" && mkdir -p "$DESKTOP"\n'
-      text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
-      if (Pacman.packageIsInstalled('lxde-core')) {
-        text += this.lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
-        if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
-        if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
-        if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
+        installerUrl = 'penguins-live-installer.desktop'
+        installerIcon = 'utilities-terminal'
+        shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
       } else {
-        text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-        if (myLinks.length > 0) {
-          for (const link of myLinks) {
-            text += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
+        installerUrl = 'penguins-krill.desktop'
+        installerIcon = 'utilities-terminal'
+        shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      }
+
+      /**
+       * flags
+       */
+
+      // adapt
+      if (myAddons.adapt) {
+        const dirAddon = path.resolve(__dirname, '../../addons/eggs/adapt/')
+        shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+        shx.cp(`${dirAddon}/bin/adapt`, `${this.settings.work_dir.merged}/usr/bin/`)
+        shx.chmod('+x', `${this.settings.work_dir.merged}/usr/bin/adapt`)
+      }
+
+      // ichoice
+      if (myAddons.ichoice) {
+        installerUrl = 'eggs-ichoice.desktop'
+        installerIcon = 'system-software-install'
+        const dirAddon = path.resolve(__dirname, '../../addons/eggs/ichoice/')
+        shx.cp(`${dirAddon}/applications/eggs-ichoice.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+        shx.cp(`${dirAddon}/bin/eggs-ichoice.sh`, `${this.settings.work_dir.merged}/usr/bin/`)
+        shx.chmod('+x', `${this.settings.work_dir.merged}/usr/bin/eggs-ichoice.sh`)
+      }
+
+      // pve
+      if (myAddons.pve) {
+        /**
+         * create service pve-live
+         */
+        const pve = new PveLive()
+        pve.create(this.settings.work_dir.merged)
+
+        /**
+         * adding a desktop link for pve
+         */
+        const dirAddon = path.resolve(__dirname, '../../addons/eggs/pve')
+        shx.cp(`${dirAddon}/artwork/eggs-pve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+        shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+      }
+
+      // rsupport
+      if (myAddons.rsupport) {
+        const dirAddon = path.resolve(__dirname, '../../addons/eggs/rsupport')
+        shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
+        shx.cp(`${dirAddon}/artwork/eggs-rsupport.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+      }
+
+      /**
+       * configuro add-penguins-desktop-icons in /etc/xdg/autostart
+       */
+
+      const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
+      if (fs.existsSync(dirAutostart)) {
+        // Creo l'avviatore xdg: DEVE essere add-penguins-links.desktop
+        shx.cp(path.resolve(__dirname, '../../assets/penguins-links-add.desktop'), dirAutostart)
+
+        // create /usr/bin/penguins-links-add.sh
+        const script = '/usr/bin/penguins-links-add.sh'
+        let text = ''
+        text += '#!/bin/sh\n'
+        text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
+        text += 'test -d "$DESKTOP" && mkdir -p "$DESKTOP"\n'
+        text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
+        if (Pacman.packageIsInstalled('lxde-core')) {
+          text += this.lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
+          if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
+          if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
+          if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
+        } else {
+          text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+          if (myLinks.length > 0) {
+            for (const link of myLinks) {
+              text += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
+            }
           }
+
+          if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n'
+          if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n'
+          if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n'
         }
 
-        if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n'
-        if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n'
-        if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n'
+        /**
+         * enable desktop links
+         */
+        if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+          // GNOME
+          text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+          text += 'test -f "$DESKTOP"/op && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
+          text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
+          text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
+          text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
+          text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
+        } else if (Pacman.packageIsInstalled('xfce4-session')) {
+          // f=FILE; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"
+          text += 'chmod +x "$DESKTOP"/*.desktop'
+          // await exec(`f="$DESKTOP"/*.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"`)
+        } else {
+          // OTHERS: CINNAMON/KDE/ETC
+          text += 'chmod +x "$DESKTOP"/*.desktop'
+        }
+
+        fs.writeFileSync(script, text, 'utf8')
+        await exec(`chmod a+x ${script}`, this.echo)
       }
+    } // END se VOGLIO le icone
 
-      /**
-       * enable desktop links
-       */
-      if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-        // GNOME
-        text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-        text += 'test -f "$DESKTOP"/op && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
-        text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
-        text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
-        text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
-        text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
-      } else if (Pacman.packageIsInstalled('xfce4-session')) {
-
-        // f=FILE; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"
-        text += 'chmod +x "$DESKTOP"/*.desktop'
-        // await exec(`f="$DESKTOP"/*.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"`)
-      } else {
-        // OTHERS: CINNAMON/KDE/ETC
-        text += 'chmod +x "$DESKTOP"/*.desktop'
-      }
-
-      fs.writeFileSync(script, text, 'utf8')
-      await exec(`chmod a+x ${script}`, this.echo)
-    }
-  } // END se VOGLIO le icone
-
-  await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
-}
+    await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
+  }
 
   /**
    * editLiveFs
@@ -538,9 +538,9 @@ export default class Ovary {
       await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       if (this.settings.config.ssh_pass) {
-        /** removed on 2023-12-28 
-        * await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
-        */
+        /** removed on 2023-12-28
+         * await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+         */
         await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       } else {
         await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
@@ -549,12 +549,11 @@ export default class Ovary {
     }
 
     /**
-     * ufw --force reset 
+     * ufw --force reset
      */
     // if (Pacman.packageIsInstalled('ufw')) {
     //    await exec('ufw --force reset')
     // }
-
 
     /**
      * /etc/fstab should exist, even if it's empty,
@@ -590,8 +589,8 @@ export default class Ovary {
     shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
 
     /**
-    * cleaning /etc/resolv.conf
-    */
+     * cleaning /etc/resolv.conf
+     */
     const resolvFile = `${this.settings.work_dir.merged}/etc/resolv.conf`
     shx.rm(resolvFile)
 
@@ -739,8 +738,8 @@ export default class Ovary {
       }
 
       /**
-      * Assegno 1777 a /tmp creava problemi con MXLINUX 
-      */
+       * Assegno 1777 a /tmp creava problemi con MXLINUX
+       */
       await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, this.echo)
     }
   }
@@ -785,76 +784,76 @@ export default class Ovary {
   }
 
   /**
- * finished = show the results
- * @param scriptOnly
- */
-finished(scriptOnly = false) {
-  Utils.titles('produce')
-  if (scriptOnly) {
-    console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
-    console.log('usage')
-    console.log(chalk.cyanBright(`cd ${this.settings.config.snapshot_dir}`))
-    console.log(chalk.cyanBright('sudo ./bind'))
-    console.log('Make all yours modifications in the directories filesystem.squashfs and iso.')
-    console.log('After when you are ready:')
-    console.log(chalk.cyanBright('sudo ./mksquashfs'))
-    console.log(chalk.cyanBright('sudo ./mkisofs'))
-    console.log(chalk.cyanBright('sudo ./ubind'))
-    console.log('happy hacking!')
-  } else {
-    console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
-  }
+   * finished = show the results
+   * @param scriptOnly
+   */
+  finished(scriptOnly = false) {
+    Utils.titles('produce')
+    if (scriptOnly) {
+      console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+      console.log('usage')
+      console.log(chalk.cyanBright(`cd ${this.settings.config.snapshot_dir}`))
+      console.log(chalk.cyanBright('sudo ./bind'))
+      console.log('Make all yours modifications in the directories filesystem.squashfs and iso.')
+      console.log('After when you are ready:')
+      console.log(chalk.cyanBright('sudo ./mksquashfs'))
+      console.log(chalk.cyanBright('sudo ./mkisofs'))
+      console.log(chalk.cyanBright('sudo ./ubind'))
+      console.log('happy hacking!')
+    } else {
+      console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+    }
 
-  console.log()
-  console.log('Remember, on liveCD user = ' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
-  console.log('                    root = ' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
-}
+    console.log()
+    console.log('Remember, on liveCD user = ' + chalk.cyanBright(this.settings.config.user_opt) + '/' + chalk.cyanBright(this.settings.config.user_opt_passwd))
+    console.log('                    root = ' + chalk.cyanBright('root') + '/' + chalk.cyanBright(this.settings.config.root_passwd))
+  }
 
   /**
    * initrdArch()
    * necessita di echoYes
    */
   async initrdArch() {
-  Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
 
-  let initrdImg = Utils.initrdImg()
-  initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-  Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
-  const {distroId} = this.settings.distro
-  let fileConf = 'arch'
-  if (isMiso(distroId)) {
-    fileConf="manjarolinux"
-    if (distroId.toLowerCase().includes("biglinux"))  {
-      fileConf="biglinux"
+    let initrdImg = Utils.initrdImg()
+    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
+    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
+    const { distroId } = this.settings.distro
+    let fileConf = 'arch'
+    if (isMiso(distroId)) {
+      fileConf = 'manjarolinux'
+      if (distroId.toLowerCase().includes('biglinux')) {
+        fileConf = 'biglinux'
+      }
     }
-  }
 
-  const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-  await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-}
+    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+  }
 
   /**
    * We must upgrade to initrdCreate for Debian/Ubuntu
    * @returns
    */
   async initrdDebian(verbose = false) {
-  Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
 
-  let isCrypted = false
+    let isCrypted = false
 
-  if (fs.existsSync('/etc/crypttab')) {
-    isCrypted = true
-    await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
+    if (fs.existsSync('/etc/crypttab')) {
+      isCrypted = true
+      await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
+    }
+
+    await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+
+    if (isCrypted) {
+      await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
+    }
   }
 
-  await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
-
-  if (isCrypted) {
-    await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
-  }
-}
-
-/**
+  /**
    *  async isolinux
    */
   async isolinux(theme = 'eggs') {
@@ -906,7 +905,7 @@ finished(scriptOnly = false) {
       initrdImg: `/live${this.settings.initrdImg}`,
       kernel: Utils.kernelVersion(),
       kernel_parameters,
-      vmlinuz: `/live${this.settings.vmlinuz}`,
+      vmlinuz: `/live${this.settings.vmlinuz}`
     }
     fs.writeFileSync(isolinuxDest, mustache.render(template, view))
 
@@ -927,29 +926,29 @@ finished(scriptOnly = false) {
     fs.copyFileSync(splashSrc, splashDest)
   }
 
-/**
+  /**
    * kernelCopy
    */
   async kernelCopy() {
-  Utils.warning(`copying ${path.basename(this.settings.kernel_image)} on ISO/live`)
+    Utils.warning(`copying ${path.basename(this.settings.kernel_image)} on ISO/live`)
 
-  let lackVmlinuzImage = false
-  if (fs.existsSync(this.settings.kernel_image)) {
-    await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}live/`, this.echo)
-  } else {
-    Utils.error(`Cannot find ${this.settings.kernel_image}`)
-    lackVmlinuzImage = true
-  }
+    let lackVmlinuzImage = false
+    if (fs.existsSync(this.settings.kernel_image)) {
+      await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}live/`, this.echo)
+    } else {
+      Utils.error(`Cannot find ${this.settings.kernel_image}`)
+      lackVmlinuzImage = true
+    }
 
-  if (lackVmlinuzImage) {
-    Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
-    Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
-    process.exit(1)
+    if (lackVmlinuzImage) {
+      Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
+      Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
+      process.exit(1)
+    }
   }
-}
 
   /**
-   * 
+   *
    * @returns kernelParameters
    */
   kernelParameters(): string {
@@ -958,11 +957,11 @@ finished(scriptOnly = false) {
     }
 
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
-    const {distroId} = this.settings.distro
+    const { distroId } = this.settings.distro
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
       const volid = Utils.getVolid(this.settings.remix.name)
-      kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${volid}` : ` archisobasedir=arch archisolabel=${volid}`;
+      kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${volid}` : ` archisobasedir=arch archisolabel=${volid}`
     }
 
     kp += ` cow_spacesize=4G`
@@ -990,7 +989,7 @@ finished(scriptOnly = false) {
       this.tryCatch(cmd)
     }
 
-    // Ovarium 
+    // Ovarium
     if (!fs.existsSync(this.settings.work_dir.ovarium)) {
       cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
       this.tryCatch(cmd)
@@ -1042,490 +1041,473 @@ finished(scriptOnly = false) {
     this.tryCatch(cmd)
   }
 
-
   /**
- * makeDotDisk
- */
-makeDotDisk(info = '', mksquashfs = '', mkisofs = '') {
-  if (this.verbose) {
-    console.log('Ovary: makeDotDisk')
+   * makeDotDisk
+   */
+  makeDotDisk(info = '', mksquashfs = '', mkisofs = '') {
+    if (this.verbose) {
+      console.log('Ovary: makeDotDisk')
+    }
+
+    const dotDisk = this.settings.iso_work + '.disk'
+    if (fs.existsSync(dotDisk)) {
+      shx.rm('-rf', dotDisk)
+    }
+
+    shx.mkdir('-p', dotDisk)
+    let text = `# Created at: ${Utils.formatDate(new Date())}\n`
+    text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
+
+    // .disk/info
+    fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
+
+    // .disk/mksquashfs
+    fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
+
+    // .disk/mkisofs
+    fs.writeFileSync(dotDisk + '/mkisofs', text + mkisofs, 'utf-8')
   }
-
-  const dotDisk = this.settings.iso_work + '.disk'
-  if (fs.existsSync(dotDisk)) {
-    shx.rm('-rf', dotDisk)
-  }
-
-  shx.mkdir('-p', dotDisk)
-  let text = `# Created at: ${Utils.formatDate(new Date())}\n`
-  text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
-
-  // .disk/info
-  fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
-
-  // .disk/mksquashfs
-  fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
-
-  // .disk/mkisofs
-  fs.writeFileSync(dotDisk + '/mkisofs', text + mkisofs, 'utf-8')
-}
 
   // #######################################################################################
   async makeEfi(theme = 'eggs') {
-  if (this.verbose) {
-    console.log('Ovary: makeEfi')
-  }
+    if (this.verbose) {
+      console.log('Ovary: makeEfi')
+    }
 
-  const memdiskDir = this.settings.config.snapshot_mnt + 'memdiskDir'
-  const efiWorkDir = this.settings.efi_work
-  const isoDir = this.settings.iso_work
+    const memdiskDir = this.settings.config.snapshot_mnt + 'memdiskDir'
+    const efiWorkDir = this.settings.efi_work
+    const isoDir = this.settings.iso_work
 
-  /**
-   * il pachetto grub/grub2 DEVE essere presente
-   */
-  const grubName = Pacman.whichGrubIsInstalled()
-  if (grubName === '') {
-    Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
-    process.exit(1)
-  }
+    /**
+     * il pachetto grub/grub2 DEVE essere presente
+     */
+    const grubName = Pacman.whichGrubIsInstalled()
+    if (grubName === '') {
+      Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
+      process.exit(1)
+    }
 
-  /**
-   * Creo o cancello e creo: memdiskDir
-   */
-  if (fs.existsSync(memdiskDir)) {
-    await exec(`rm ${memdiskDir} -rf`, this.echo)
-  }
+    /**
+     * Creo o cancello e creo: memdiskDir
+     */
+    if (fs.existsSync(memdiskDir)) {
+      await exec(`rm ${memdiskDir} -rf`, this.echo)
+    }
 
-  Utils.warning('creating temporary memdiskDir on ' + memdiskDir)
-  await exec(`mkdir ${memdiskDir}`)
-  await exec(`mkdir ${memdiskDir}/boot`, this.echo)
-  await exec(`mkdir ${memdiskDir}/boot/grub`, this.echo)
+    Utils.warning('creating temporary memdiskDir on ' + memdiskDir)
+    await exec(`mkdir ${memdiskDir}`)
+    await exec(`mkdir ${memdiskDir}/boot`, this.echo)
+    await exec(`mkdir ${memdiskDir}/boot/grub`, this.echo)
 
-  /**
-   * for initial grub.cfg in memdisk
-   */
-  const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
-  let text = ''
-  text += 'search --file --set=root /.disk/info\n'
-  text += 'set prefix=($root)/boot/grub\n'
-  text += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
-  Utils.write(grubCfg, text)
+    /**
+     * for initial grub.cfg in memdisk
+     */
+    const grubCfg = `${memdiskDir}/boot/grub/grub.cfg`
+    let text = ''
+    text += 'search --file --set=root /.disk/info\n'
+    text += 'set prefix=($root)/boot/grub\n'
+    text += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
+    Utils.write(grubCfg, text)
 
-  // #################################
+    // #################################
 
-  /**
-   * start with empty efiWorkDir
-   */
-  if (fs.existsSync(efiWorkDir)) {
-    await exec(`rm ${efiWorkDir} -rf`, this.echo)
-  }
+    /**
+     * start with empty efiWorkDir
+     */
+    if (fs.existsSync(efiWorkDir)) {
+      await exec(`rm ${efiWorkDir} -rf`, this.echo)
+    }
 
-  Utils.warning('creating temporary efiWordDir on ' + efiWorkDir)
-  await exec(`mkdir ${efiWorkDir}`, this.echo)
-  await exec(`mkdir ${efiWorkDir}boot`, this.echo)
-  await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
-  await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
-  await exec(`mkdir ${efiWorkDir}efi`, this.echo)
-  await exec(`mkdir ${efiWorkDir}efi/boot`, this.echo)
+    Utils.warning('creating temporary efiWordDir on ' + efiWorkDir)
+    await exec(`mkdir ${efiWorkDir}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
+    await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}efi/boot`, this.echo)
 
-  /**
-  * copy splash to efiWorkDir
-  */
-  const splashDest = `${efiWorkDir}boot/grub/splash.png`
-  let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
-  if (this.theme.includes('/')) {
-    splashSrc = `${theme}/theme/livecd/splash.png`
-  }
+    /**
+     * copy splash to efiWorkDir
+     */
+    const splashDest = `${efiWorkDir}boot/grub/splash.png`
+    let splashSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/splash.png`)
+    if (this.theme.includes('/')) {
+      splashSrc = `${theme}/theme/livecd/splash.png`
+    }
 
-  if (!fs.existsSync(splashSrc)) {
-    Utils.warning('Cannot find: ' + splashSrc)
-    process.exit()
-  }
+    if (!fs.existsSync(splashSrc)) {
+      Utils.warning('Cannot find: ' + splashSrc)
+      process.exit()
+    }
 
-  await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
+    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
-  /**
-   * copy theme
-   */
-  const themeDest = `${efiWorkDir}boot/grub/theme.cfg`
-  let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-  if (this.theme.includes('/')) {
-    themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
-  }
+    /**
+     * copy theme
+     */
+    const themeDest = `${efiWorkDir}boot/grub/theme.cfg`
+    let themeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    if (this.theme.includes('/')) {
+      themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+    }
 
-  if (!fs.existsSync(themeSrc)) {
-    Utils.warning('Cannot find: ' + themeSrc)
-    process.exit()
-  }
+    if (!fs.existsSync(themeSrc)) {
+      Utils.warning('Cannot find: ' + themeSrc)
+      process.exit()
+    }
 
-  await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
+    await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
-  /**
-   * second grub.cfg file in efiWork
-   */
-  //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
-  let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
-  await exec(cmd, this.echo)
-  // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
-  cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
-  await exec(cmd, this.echo)
-  await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
+    /**
+     * second grub.cfg file in efiWork
+     */
+    //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
+    let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
+    await exec(cmd, this.echo)
+    // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
+    cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
+    await exec(cmd, this.echo)
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
 
-  /**
-   * andiamo in memdiskDir
-   */
+    /**
+     * andiamo in memdiskDir
+     */
 
-  /**
-   * make a tarred "memdisk" to embed in the grub image
-   *
-   * NOTE: it's CRUCIAL to chdir before tar!!!
-   */
-  const currentDir = process.cwd()
-  process.chdir(memdiskDir)
-  await exec('tar -cvf memdisk boot', this.echo)
-  process.chdir(currentDir)
+    /**
+     * make a tarred "memdisk" to embed in the grub image
+     *
+     * NOTE: it's CRUCIAL to chdir before tar!!!
+     */
+    const currentDir = process.cwd()
+    process.chdir(memdiskDir)
+    await exec('tar -cvf memdisk boot', this.echo)
+    process.chdir(currentDir)
 
-  // -O, --format=FORMAT
-  // -m --memdisk=FILE embed FILE as a memdisk image
-  // -o, --output=FILE embed FILE as a memdisk image
-  // -p, --prefix=DIR set prefix directory
-  //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
-  //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-  //                                   arm64-efi 
-  await exec(`${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
+    // -O, --format=FORMAT
+    // -m --memdisk=FILE embed FILE as a memdisk image
+    // -o, --output=FILE embed FILE as a memdisk image
+    // -p, --prefix=DIR set prefix directory
+    //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
+    //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
+    //                                   arm64-efi
+    await exec(
+      `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
                 -m "${memdiskDir}/memdisk" \
                 -o "${memdiskDir}/${Utils.uefiBN()}" \
                 -p '(memdisk)/boot/grub' \
-                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`, this.echo)
+                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`,
+      this.echo
+    )
 
-  // popd torna in efiWorkDir
+    // popd torna in efiWorkDir
 
-  // copy the grub image to efi/boot (to go later in the device's root)
-  await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}efi/boot`, this.echo)
+    // copy the grub image to efi/boot (to go later in the device's root)
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}efi/boot`, this.echo)
 
-  // #######################
+    // #######################
 
-  // Do the boot image "boot/grub/efiboot.img"
+    // Do the boot image "boot/grub/efiboot.img"
 
-  await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
-  await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
+    await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
 
-  await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
 
-  await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
+    await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
 
-  await exec(`mkdir ${efiWorkDir}img-mnt/efi`, this.echo)
-  await exec(`mkdir ${efiWorkDir}img-mnt/efi/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt/efi`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
-  // era cp -r
-  await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/efi/boot`, this.echo)
+    // era cp -r
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/efi/boot`, this.echo)
 
-  // #######################
+    // #######################
 
-  // copy modules and font
-  await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
+    // copy modules and font
+    await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
 
-  // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
-  // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-  if (fs.existsSync('/usr/share/grub/font.pf2')) {
-    await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-  } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-    await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-  } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
-    await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
+    // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
+    if (fs.existsSync('/usr/share/grub/font.pf2')) {
+      await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+      await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
+      await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    }
+
+    // doesn't need to be root-owned
+    // chown -R 1000:1000 $(pwd) 2>/dev/null
+
+    // Cleanup efi temps
+    await exec(`umount ${efiWorkDir}img-mnt`, this.echo)
+    await exec(`rmdir ${efiWorkDir}img-mnt`, this.echo)
+    await exec(`rm ${memdiskDir}/img-mnt -rf`, this.echo)
+
+    //  popd
+
+    // Copy efi files to iso
+    await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
+    await exec(`rsync -avx ${efiWorkDir}efi  ${isoDir}/`, this.echo)
+
+    // Do the main grub.cfg (which gets loaded last):
+
+    // grub.theme.cfg
+    let grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    if (this.theme.includes('/')) {
+      grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+    }
+
+    const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
+    if (!fs.existsSync(grubThemeSrc)) {
+      Utils.warning('Cannot find: ' + grubThemeSrc)
+      process.exit()
+    }
+
+    fs.copyFileSync(grubThemeSrc, grubThemeDest)
+
+    /**
+     * prepare grub.cfg from grub.main.cfg
+     */
+
+    let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
+    if (!fs.existsSync(grubTemplate)) {
+      // grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
+      grubTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/grub.main.cfg')
+    }
+
+    if (!fs.existsSync(grubTemplate)) {
+      Utils.warning('Cannot find: ' + grubTemplate)
+      process.exit()
+    }
+
+    const kernel_parameters = this.kernelParameters()
+    const grubDest = `${isoDir}/boot/grub/grub.cfg`
+    const template = fs.readFileSync(grubTemplate, 'utf8')
+
+    const view = {
+      fullname: this.settings.remix.fullname.toUpperCase(),
+      initrdImg: `/live${this.settings.initrdImg}`,
+      kernel: Utils.kernelVersion(),
+      kernel_parameters,
+      vmlinuz: `/live${this.settings.vmlinuz}`
+    }
+    fs.writeFileSync(grubDest, mustache.render(template, view))
+
+    /**
+     * loopback.cfg
+     */
+    fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
+
+    // console.log('end makeEfi')
+    // process.exit()
   }
-
-  // doesn't need to be root-owned
-  // chown -R 1000:1000 $(pwd) 2>/dev/null
-
-  // Cleanup efi temps
-  await exec(`umount ${efiWorkDir}img-mnt`, this.echo)
-  await exec(`rmdir ${efiWorkDir}img-mnt`, this.echo)
-  await exec(`rm ${memdiskDir}/img-mnt -rf`, this.echo)
-
-  //  popd
-
-  // Copy efi files to iso
-  await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
-  await exec(`rsync -avx ${efiWorkDir}efi  ${isoDir}/`, this.echo)
-
-  // Do the main grub.cfg (which gets loaded last):
-
-  // grub.theme.cfg
-  let grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-  if (this.theme.includes('/')) {
-    grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
-  }
-
-  const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
-  if (!fs.existsSync(grubThemeSrc)) {
-    Utils.warning('Cannot find: ' + grubThemeSrc)
-    process.exit()
-  }
-
-  fs.copyFileSync(grubThemeSrc, grubThemeDest)
-
-  /**
-  * prepare grub.cfg from grub.main.cfg
-  */
-
-  let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
-  if (!fs.existsSync(grubTemplate)) {
-    // grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
-    grubTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/grub.main.cfg')
-  }
-
-  if (!fs.existsSync(grubTemplate)) {
-    Utils.warning('Cannot find: ' + grubTemplate)
-    process.exit()
-  }
-
-  const kernel_parameters = this.kernelParameters()
-  const grubDest = `${isoDir}/boot/grub/grub.cfg`
-  const template = fs.readFileSync(grubTemplate, 'utf8')
-
-  const view = {
-    fullname: this.settings.remix.fullname.toUpperCase(),
-    initrdImg: `/live${this.settings.initrdImg}`,
-    kernel: Utils.kernelVersion(),
-    kernel_parameters,
-    vmlinuz: `/live${this.settings.vmlinuz}`,
-  }
-  fs.writeFileSync(grubDest, mustache.render(template, view))
-
-  /**
-  * loopback.cfg
-  */
-  fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-
-  // console.log('end makeEfi')
-  // process.exit()
-}
 
   /**
    * makeIso
    * cmd: cmd 4 xorirriso
    */
   async makeIso(cmd: string, scriptOnly = false) {
-  // echo = { echo: true, ignore: false }
-  if (this.verbose) {
-    console.log('Ovary: makeIso')
-  }
-
-  Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
-  if (!scriptOnly) {
-    const test = (await exec(cmd, Utils.setEcho(true))).code
-    if (test !== 0) {
-      process.exit()
+    // echo = { echo: true, ignore: false }
+    if (this.verbose) {
+      console.log('Ovary: makeIso')
     }
 
-    // Create link to iso
-    const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
-    const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
-    await exec(`ln -s ${src} ${dest}`)
+    Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
+    if (!scriptOnly) {
+      const test = (await exec(cmd, Utils.setEcho(true))).code
+      if (test !== 0) {
+        process.exit()
+      }
 
-    // Create md5sum, sha256sum
-    if (this.settings.config.make_md5sum) {
-      Utils.warning('creating md5, sha256')
-      await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
-      await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
+      // Create link to iso
+      const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
+      const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
+      await exec(`ln -s ${src} ${dest}`)
+
+      // Create md5sum, sha256sum
+      if (this.settings.config.make_md5sum) {
+        Utils.warning('creating md5, sha256')
+        await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
+        await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
+      }
     }
   }
-}
 
   /**
    * squashFs: crea in live filesystem.squashfs
    */
-  async makeSquashfs(scriptOnly = false, unsecure = false): Promise < string > {
-  if(this.verbose) {
-  console.log('Ovary: makeSquashfs')
-}
+  async makeSquashfs(scriptOnly = false, unsecure = false): Promise<string> {
+    if (this.verbose) {
+      console.log('Ovary: makeSquashfs')
+    }
 
-/**
- * exclude all the accurence of cryptdisks in rc0.d, etc
- */
-const fexcludes = [
-  '/boot/efi/EFI',
-  '/etc/fstab',
-  '/etc/mtab',
-  '/etc/udev/rules.d/70-persistent-cd.rules',
-  '/etc/udev/rules.d/70-persistent-net.rules',
-]
+    /**
+     * exclude all the accurence of cryptdisks in rc0.d, etc
+     */
+    const fexcludes = ['/boot/efi/EFI', '/etc/fstab', '/etc/mtab', '/etc/udev/rules.d/70-persistent-cd.rules', '/etc/udev/rules.d/70-persistent-net.rules']
 
-for (const i in fexcludes) {
-  this.addRemoveExclusion(true, fexcludes[i])
-}
+    for (const i in fexcludes) {
+      this.addRemoveExclusion(true, fexcludes[i])
+    }
 
-/**
- * Non sò che fa, ma sicuro non serve per archlinux
- */
-if (this.familyId === 'debian') {
-  const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
-  let files: string[]
-  for (const i in rcd) {
-    files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
-    for (const n in files) {
-      if (files[n].includes('cryptdisks')) {
-        this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+    /**
+     * Non sò che fa, ma sicuro non serve per archlinux
+     */
+    if (this.familyId === 'debian') {
+      const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
+      let files: string[]
+      for (const i in rcd) {
+        files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
+        for (const n in files) {
+          if (files[n].includes('cryptdisks')) {
+            this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+          }
+        }
       }
     }
-  }
-}
 
-/**
- * secure
- */
-if (!unsecure) {
-  this.addRemoveExclusion(true, `root/*`)
-  this.addRemoveExclusion(true, `root/.*`)
-}
+    /**
+     * secure
+     */
+    if (!unsecure) {
+      this.addRemoveExclusion(true, `root/*`)
+      this.addRemoveExclusion(true, `root/.*`)
+    }
 
-if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
-  // this.addRemoveExclusion(true, '/etc/localtime')
-}
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
+      // this.addRemoveExclusion(true, '/etc/localtime')
+    }
 
-this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
+    this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
 
-if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
-  fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
-}
+    if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
+      fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
+    }
 
-const compression = `-comp ${this.settings.config.compression}`
+    const compression = `-comp ${this.settings.config.compression}`
 
-/**
-* limit: patch per Raspberry
-*/
-const limit = ''
-if (Utils.uefiArch() === 'arm64') {
-  // limit = ' -processors 2 -mem 1024M'
-}
+    /**
+     * limit: patch per Raspberry
+     */
+    const limit = ''
+    if (Utils.uefiArch() === 'arm64') {
+      // limit = ' -processors 2 -mem 1024M'
+    }
 
-/**
- * mksquashfs
- * 
- * SYNTAX: mksquashfs source1 source2 ...  
- * FILESYSTEM [OPTIONS] 
- * [-ef exclude.list]
- * [-e list of exclude dirs/files]
- */
-let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+    /**
+     * mksquashfs
+     *
+     * SYNTAX: mksquashfs source1 source2 ...
+     * FILESYSTEM [OPTIONS]
+     * [-ef exclude.list]
+     * [-e list of exclude dirs/files]
+     */
+    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
-cmd = cmd.replaceAll(/\s\s+/g, ' ')
-Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
-if (!scriptOnly) {
-  Utils.warning('creating filesystem.squashfs on ISO/live')
-  // Utils.warning(`compression: ` + compression)
-  const test = (await exec(cmd, Utils.setEcho(true))).code
-  if (test !== 0) {
-    process.exit()
-  }
-}
+    cmd = cmd.replaceAll(/\s\s+/g, ' ')
+    Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
+    if (!scriptOnly) {
+      Utils.warning('creating filesystem.squashfs on ISO/live')
+      // Utils.warning(`compression: ` + compression)
+      const test = (await exec(cmd, Utils.setEcho(true))).code
+      if (test !== 0) {
+        process.exit()
+      }
+    }
 
-return cmd
+    return cmd
   }
 
   /**
- * Ritorna true se c'è bisogno del mount --bind
- *
- * Ci sono tre tipologie:
- *
- * - normal solo la creazione della directory, nessun mount
- * - merged creazione della directory e mount ro
- * - mergedAndOverlay creazione directory, overlay e mount rw
- * - copied: creazione directory e copia
- */
-merged(dir: string): boolean {
-  if (this.verbose) {
-    console.log('Ovary: merged')
-  }
+   * Ritorna true se c'è bisogno del mount --bind
+   *
+   * Ci sono tre tipologie:
+   *
+   * - normal solo la creazione della directory, nessun mount
+   * - merged creazione della directory e mount ro
+   * - mergedAndOverlay creazione directory, overlay e mount rw
+   * - copied: creazione directory e copia
+   */
+  merged(dir: string): boolean {
+    if (this.verbose) {
+      console.log('Ovary: merged')
+    }
 
-  let merged = true
+    let merged = true
 
-  if (dir === 'home') {
-    merged = this.clone
-  } else {
-    const noMergeDirs = [
-      'boot', // will be copied now
-      'cdrom',
-      'dev',
-      'media',
-      'mnt',
-      'proc',
-      'run',
-      'swapfile',
-      'sys',
-      'tmp',
-    ]
+    if (dir === 'home') {
+      merged = this.clone
+    } else {
+      const noMergeDirs = [
+        'boot', // will be copied now
+        'cdrom',
+        'dev',
+        'media',
+        'mnt',
+        'proc',
+        'run',
+        'swapfile',
+        'sys',
+        'tmp'
+      ]
 
-    // deepin
-    noMergeDirs.push('data', 'recovery')
+      // deepin
+      noMergeDirs.push('data', 'recovery')
 
-    for (const noMergeDir of noMergeDirs) {
-      if (dir === noMergeDir) {
-        merged = false
+      for (const noMergeDir of noMergeDirs) {
+        if (dir === noMergeDir) {
+          merged = false
+        }
       }
     }
-  }
 
-  return merged
-}
+    return merged
+  }
 
   /**
- * Restituisce true per le direcory da montare con overlay
- *
- * Ci sono tre tipologie:
- *
- * - normal solo la creazione della directory, nessun mount
- * - merged creazione della directory e mount ro
- * - mergedAndOverlay creazione directory, overlay e mount rw
- *
- * @param dir
- */
-mergedAndOverlay(dir: string): boolean {
-  if (this.verbose) {
-    console.log('Ovary: mergedAndOverlay')
-  }
-
-  // boot viene copiato... non ricordo perchè
-  const mountDirs = ['etc', 'usr', 'var']
-  let mountDir = ''
-  let overlay = false
-  for (mountDir of mountDirs) {
-    if (mountDir === dir) {
-      overlay = true
+   * Restituisce true per le direcory da montare con overlay
+   *
+   * Ci sono tre tipologie:
+   *
+   * - normal solo la creazione della directory, nessun mount
+   * - merged creazione della directory e mount ro
+   * - mergedAndOverlay creazione directory, overlay e mount rw
+   *
+   * @param dir
+   */
+  mergedAndOverlay(dir: string): boolean {
+    if (this.verbose) {
+      console.log('Ovary: mergedAndOverlay')
     }
-  }
 
-  return overlay
-}
+    // boot viene copiato... non ricordo perchè
+    const mountDirs = ['etc', 'usr', 'var']
+    let mountDir = ''
+    let overlay = false
+    for (mountDir of mountDirs) {
+      if (mountDir === dir) {
+        overlay = true
+      }
+    }
+
+    return overlay
+  }
 
   /**
    * produce
-   * @param clone 
-   * @param cryptedclone 
-   * @param scriptOnly 
-   * @param yolkRenew 
-   * @param release 
-   * @param myAddons 
-   * @param nointeractive 
-   * @param noicons 
-   * @param unsecure 
-   * @param verbose 
+   * @param clone
+   * @param cryptedclone
+   * @param scriptOnly
+   * @param yolkRenew
+   * @param release
+   * @param myAddons
+   * @param nointeractive
+   * @param noicons
+   * @param unsecure
+   * @param verbose
    */
-  async produce(
-    clone = false,
-    cryptedclone = false,
-    scriptOnly = false,
-    yolkRenew = false,
-    release = false,
-    myAddons: IAddons,
-    myLinks: string[],
-    excludes: IExcludes,
-    nointeractive = false, 
-    noicons = false,
-    unsecure = false,
-    verbose = false) {
-
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -1566,20 +1548,25 @@ mergedAndOverlay(dir: string): boolean {
       await this.liveCreateStructure()
 
       // Carica calamares sono se le icone sono accettate
-      if (!noicons && // se VOGLIO le icone
-        !nointeractive && this.settings.distro.isCalamaresAvailable && (Pacman.isInstalledGui()) &&
-          this.settings.config.force_installer && !(Pacman.calamaresExists())) {
-          console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
-          await Pacman.calamaresInstall(verbose)
-          const bleach = new Bleach()
-          await bleach.clean(verbose)
-        }
+      if (
+        !noicons && // se VOGLIO le icone
+        !nointeractive &&
+        this.settings.distro.isCalamaresAvailable &&
+        Pacman.isInstalledGui() &&
+        this.settings.config.force_installer &&
+        !Pacman.calamaresExists()
+      ) {
+        console.log('Installing ' + chalk.bgGray('calamares') + ' due force_installer=yes.')
+        await Pacman.calamaresInstall(verbose)
+        const bleach = new Bleach()
+        await bleach.clean(verbose)
+      }
 
       if (cryptedclone) {
-      /**
-       * cryptedclone
-       */
-      console.log('eggs will SAVE users and users\' data ENCRYPTED')
+        /**
+         * cryptedclone
+         */
+        console.log("eggs will SAVE users and users' data ENCRYPTED")
         /*
         const users = await this.usersFill()
         for (const user of users) {
@@ -1595,31 +1582,29 @@ mergedAndOverlay(dir: string): boolean {
           }
         }
         */
-
       } else if (this.clone) {
         /**
          * clone
-         * 
-         * users tend to set user_opt as 
+         *
+         * users tend to set user_opt as
          * real user when create a clone,
-         * this is WRONG here we correct 
+         * this is WRONG here we correct
          */
-        this.settings.config.user_opt = 'live' // patch for humans 
+        this.settings.config.user_opt = 'live' // patch for humans
         this.settings.config.user_opt_passwd = 'evolution'
         this.settings.config.root_passwd = 'evolution'
-        Utils.warning('eggs will SAVE users and users\' data UNCRYPTED on the live')
-
+        Utils.warning("eggs will SAVE users and users' data UNCRYPTED on the live")
       } else {
         /**
          * normal
          */
-        Utils.warning('eggs will REMOVE users and users\' data from live')
+        Utils.warning("eggs will REMOVE users and users' data from live")
       }
 
       /**
        * create exclude.list in not exists or static
        */
-      if (!fs.existsSync("/etc/penguins-eggs/exclude.list") || excludes.static) {
+      if (!fs.existsSync('/etc/penguins-eggs/exclude.list') || excludes.static) {
         const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
         const excludeListTemplate = excludeListTemplateDir + 'master.list'
         if (!fs.existsSync(excludeListTemplate)) {
@@ -1665,7 +1650,8 @@ mergedAndOverlay(dir: string): boolean {
        */
       const reCreate = true
       let mksquashfsCmd = ''
-      if (reCreate) { // start pre-clone
+      if (reCreate) {
+        // start pre-clone
         /**
          * installer
          */
@@ -1724,7 +1710,7 @@ mergedAndOverlay(dir: string): boolean {
       if (cryptedclone) {
         let synctoCmd = `eggs syncto  -f ${luksFile}`
         if (excludes.home) {
-         synctoCmd += ' --excludes' // from Marco, usa home.list 
+          synctoCmd += ' --excludes' // from Marco, usa home.list
         }
 
         await exec(synctoCmd, Utils.setEcho(true))
@@ -1812,7 +1798,7 @@ mergedAndOverlay(dir: string): boolean {
   // #######################################################################################
   /**
    * makeEfi
-  */
+   */
   /**
    *
    * @param cmd
@@ -1830,168 +1816,168 @@ mergedAndOverlay(dir: string): boolean {
     }
   }
 
-// #######################################################################################
+  // #######################################################################################
 
-/**
+  /**
    * ubind del fs live
    * @param verbose
    */
   async uBindLiveFs() {
-  if (this.verbose) {
-    console.log('Ovary: uBindLiveFs')
-  }
+    if (this.verbose) {
+      console.log('Ovary: uBindLiveFs')
+    }
 
-  const cmds: string[] = []
-  cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
-  cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
-  if (fs.existsSync(this.settings.work_dir.merged)) {
-    const bindDirs = fs.readdirSync(this.settings.work_dir.merged, {
-      withFileTypes: true,
-    })
+    const cmds: string[] = []
+    cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
+    cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
+    if (fs.existsSync(this.settings.work_dir.merged)) {
+      const bindDirs = fs.readdirSync(this.settings.work_dir.merged, {
+        withFileTypes: true
+      })
 
-    for (const dir of bindDirs) {
-      const dirname = N8.dirent2string(dir)
+      for (const dir of bindDirs) {
+        const dirname = N8.dirent2string(dir)
 
-      cmds.push('#############################################################')
-      if (N8.isDirectory(dirname)) {
-        cmds.push(`\n# directory: ${dirname}`)
-        if (this.mergedAndOverlay(dirname)) {
-          cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
-          cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
-          cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
-        } else if (this.merged(dirname)) {
-          cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+        cmds.push('#############################################################')
+        if (N8.isDirectory(dirname)) {
+          cmds.push(`\n# directory: ${dirname}`)
+          if (this.mergedAndOverlay(dirname)) {
+            cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
+            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
+            cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
+          } else if (this.merged(dirname)) {
+            cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+          }
+
+          cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
+
+          /**
+           * We can't remove the nest!!!
+           */
+          const nest = this.settings.config.snapshot_dir.split('/')
+          if (dirname !== nest[1]) {
+            // We can't remove first level nest
+            cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
+          }
+        } else if (N8.isFile(dirname)) {
+          cmds.push(`\n# ${dirname} = file`)
+          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+        } else if (N8.isSymbolicLink(dirname)) {
+          cmds.push(`\n# ${dirname} = symbolicLink`)
+          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }
-
-        cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
-
-        /**
-         * We can't remove the nest!!!
-         */
-        const nest = this.settings.config.snapshot_dir.split('/')
-        if (dirname !== nest[1]) { // We can't remove first level nest
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
-        }
-      } else if (N8.isFile(dirname)) {
-        cmds.push(`\n# ${dirname} = file`)
-        cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
-      } else if (N8.isSymbolicLink(dirname)) {
-        cmds.push(`\n# ${dirname} = symbolicLink`)
-        cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
       }
     }
+
+    if (this.clone) {
+      cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
+    }
+
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}ubind`, cmds)
   }
 
-  if (this.clone) {
-    cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
-  }
-
-  // Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}ubind`, cmds)
-
-}
-
-/**
+  /**
    *
    * @param verbose
    */
   async ubindVfs() {
-  if (this.verbose) {
-    console.log('Ovary: ubindVfs')
-  }
+    if (this.verbose) {
+      console.log('Ovary: ubindVfs')
+    }
 
-  const cmds: string[] = []
-  cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
-  // Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}ubindvfs`, cmds)
-}
+    const cmds: string[] = []
+    cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
+    // Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
+    Utils.writeXs(`${this.settings.work_dir.ovarium}ubindvfs`, cmds)
+  }
 
   /**
-  * fill
-  */
-  async usersFill(): Promise < Users[] > {
-  if(this.verbose) {
-  console.log('Ovary: usersFill')
-}
-
-const usersArray = []
-await access('/etc/passwd', constants.R_OK | constants.W_OK)
-const passwd = fs.readFileSync('/etc/passwd', 'utf8').split('\n')
-for (const element of passwd) {
-  const line = element.split(':')
-  const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
-  await users.getValues()
-  if (users.password !== undefined) {
-    usersArray.push(users)
-  }
-}
-
-return usersArray
-  }
-
-/**
- *
- * @param cryptedclone
- * @returns cmd 4 mkiso
- */
-xorrisoCommand(clone = false, cryptedclone = false): string {
-  if (this.verbose) {
-    console.log('Ovary: xorrisoCommand')
-  }
-
-  const volid = Utils.getVolid(this.settings.remix.name)
-
-  const prefix = this.settings.config.snapshot_prefix
-
-  let typology = ''
-  // typology is applied only with standard egg-of
-  if (prefix.slice(0, 7) === 'egg-of_') {
-    if (clone) {
-      typology = '_clone'
-    } else if (cryptedclone) {
-      typology = '_crypted'
+   * fill
+   */
+  async usersFill(): Promise<Users[]> {
+    if (this.verbose) {
+      console.log('Ovary: usersFill')
     }
 
-    if (fs.existsSync('/usr/bin/eui-start.sh')) {
-      typology += "_EUI"
+    const usersArray = []
+    await access('/etc/passwd', constants.R_OK | constants.W_OK)
+    const passwd = fs.readFileSync('/etc/passwd', 'utf8').split('\n')
+    for (const element of passwd) {
+      const line = element.split(':')
+      const users = new Users(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+      await users.getValues()
+      if (users.password !== undefined) {
+        usersArray.push(users)
+      }
     }
+
+    return usersArray
   }
 
-  const postfix = Utils.getPostfix()
-  this.settings.isoFilename = prefix + volid + '_' + Utils.uefiArch() + typology + postfix
-  // 
-  const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
-
-  let command = ''
-  // const appid = `-appid "${this.settings.distro.distroId}" `
-  // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
-  // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
-
-  let isoHybridMbr = ''
-  if (this.settings.config.make_isohybrid) {
-    const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
-    if (fs.existsSync(isolinuxFile)) {
-      isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
-    } else {
-      Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+  /**
+   *
+   * @param cryptedclone
+   * @returns cmd 4 mkiso
+   */
+  xorrisoCommand(clone = false, cryptedclone = false): string {
+    if (this.verbose) {
+      console.log('Ovary: xorrisoCommand')
     }
-  }
 
-  // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
-  let uefi_elToritoAltBoot = ''
-  let uefi_e = ''
-  let uefi_isohybridGptBasdat = ''
-  let uefi_noEmulBoot = ''
-  if (this.settings.config.make_efi) {
-    uefi_elToritoAltBoot = '-eltorito-alt-boot'
-    uefi_e = '-e boot/grub/efiboot.img'
-    uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
-    uefi_noEmulBoot = '-no-emul-boot'
-  }
+    const volid = Utils.getVolid(this.settings.remix.name)
 
-  // geniisoimage from Hosein
-  if (Pacman.packageIsInstalled('genisoimage')) {
-    command = `genisoimage \
+    const prefix = this.settings.config.snapshot_prefix
+
+    let typology = ''
+    // typology is applied only with standard egg-of
+    if (prefix.slice(0, 7) === 'egg-of_') {
+      if (clone) {
+        typology = '_clone'
+      } else if (cryptedclone) {
+        typology = '_crypted'
+      }
+
+      if (fs.existsSync('/usr/bin/eui-start.sh')) {
+        typology += '_EUI'
+      }
+    }
+
+    const postfix = Utils.getPostfix()
+    this.settings.isoFilename = prefix + volid + '_' + Utils.uefiArch() + typology + postfix
+    //
+    const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
+
+    let command = ''
+    // const appid = `-appid "${this.settings.distro.distroId}" `
+    // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
+    // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
+
+    let isoHybridMbr = ''
+    if (this.settings.config.make_isohybrid) {
+      const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
+      if (fs.existsSync(isolinuxFile)) {
+        isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
+      } else {
+        Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+      }
+    }
+
+    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    let uefi_elToritoAltBoot = ''
+    let uefi_e = ''
+    let uefi_isohybridGptBasdat = ''
+    let uefi_noEmulBoot = ''
+    if (this.settings.config.make_efi) {
+      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      uefi_e = '-e boot/grub/efiboot.img'
+      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
+      uefi_noEmulBoot = '-no-emul-boot'
+    }
+
+    // geniisoimage from Hosein
+    if (Pacman.packageIsInstalled('genisoimage')) {
+      command = `genisoimage \
     -iso-level 3 \
     -allow-limited-size \
     -joliet-long \
@@ -2008,12 +1994,12 @@ xorrisoCommand(clone = false, cryptedclone = false): string {
     -eltorito-alt-boot \
     -e boot/grub/efiboot.img \
     -o ${output} ${this.settings.iso_work}`
-   
-    return command
-  }
- 
-  // xorriso from Piero
-  command = `xorriso -as mkisofs \
+
+      return command
+    }
+
+    // xorriso from Piero
+    command = `xorriso -as mkisofs \
      -J \
      -joliet-long \
      -l \
@@ -2032,8 +2018,8 @@ xorrisoCommand(clone = false, cryptedclone = false): string {
      ${uefi_noEmulBoot} \
      -o ${output} ${this.settings.iso_work}`
 
-  return command
-}
+    return command
+  }
 
   /**
    * Creazione link desktop per lxde
@@ -2098,21 +2084,22 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   const echo = Utils.setEcho(verbose)
 
   const check = await exec(cmd, echo)
-  if (!cmd.startsWith('umount') && // skip umount errors
-    check.code !== 0) {
-      console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
-    }
+  if (
+    !cmd.startsWith('umount') && // skip umount errors
+    check.code !== 0
+  ) {
+    console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
+  }
 
   return cmd
 }
 
 /**
- * isMiso 
+ * isMiso
  */
 function isMiso(distro: string): boolean {
   let found = false
-  if ( (distro.includes('ManjaroLinux')) || 
-        distro.toLowerCase().includes("biglinux") ) {
+  if (distro.includes('ManjaroLinux') || distro.toLowerCase().includes('biglinux')) {
     found = true
   }
 
@@ -2121,9 +2108,9 @@ function isMiso(distro: string): boolean {
 
 /**
  * se non zuppa, pan bagnato
- * @param distro 
- * @returns 
+ * @param distro
+ * @returns
  */
 function isArchiso(distro: string): boolean {
-  return ! isMiso(distro) 
+  return !isMiso(distro)
 }

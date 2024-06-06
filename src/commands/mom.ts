@@ -6,24 +6,21 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import path from 'node:path'
 
 import Utils from '../classes/utils.js'
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Mom extends Command {
   static description = 'ask help from mommy - TUI helper'
 
-  static examples = [
-    'eggs mom',
-  ]
+  static examples = ['eggs mom']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
+    help: Flags.help({ char: 'h' })
   }
 
   async run(): Promise<void> {

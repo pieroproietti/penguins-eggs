@@ -8,7 +8,7 @@
  */
 
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
@@ -20,7 +20,7 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     // userSwapChoices = ['none', 'small', 'suspend', 'file']
     const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
     let text = ''
-    text += this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file' ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name);
+    text += this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file' ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
 
     Utils.write(file, text)
   } else if (this.distro.familyId === 'archlinux') {

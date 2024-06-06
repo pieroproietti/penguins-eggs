@@ -6,8 +6,7 @@
  * license: MIT
  */
 
-
-import {IDistro, IInstaller, IRemix} from '../../../interfaces/index.js'
+import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../cfs.js'
 import Fisherman from '../fisherman.js'
 
@@ -30,7 +29,7 @@ export class Focal {
 
   remix: IRemix
 
-  theme: string // theme comprende il path  
+  theme: string // theme comprende il path
 
   user_opt: string
 
@@ -91,7 +90,7 @@ export class Focal {
     await fisherman.buildCalamaresModule('cleanup', true)
 
     /**
-     * cfs: custom final steps   
+     * cfs: custom final steps
      */
     const cfs = new CFS()
     const steps = await cfs.steps()

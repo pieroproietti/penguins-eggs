@@ -11,8 +11,8 @@ import os from 'node:os'
 import shx from 'shelljs'
 
 import Utils from '../../classes/utils.js'
-import {IPartitions} from '../../interfaces/i-partitions.js'
-import {exec} from '../../lib/utils.js'
+import { IPartitions } from '../../interfaces/i-partitions.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
@@ -27,10 +27,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
   const installDevice = this.partitions.installationDevice
 
   /**
-     * Support for NVMe
-     *
-     * /dev/sda1 = /dev/nvme0n1p1
-     */
+   * Support for NVMe
+   *
+   * /dev/sda1 = /dev/nvme0n1p1
+   */
   let p = ''
   if (installDevice.includes('nvme')) {
     p = 'p'
@@ -40,36 +40,36 @@ export default async function partition(this: Sequence): Promise<boolean> {
   let swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
 
   switch (this.partitions.userSwapChoice) {
-  case 'none': {
-    swapSize = 256
+    case 'none': {
+      swapSize = 256
 
-    break
-  }
+      break
+    }
 
-  case 'small': {
-    break
-  }
+    case 'small': {
+      break
+    }
 
-  case 'suspend': {
-    swapSize *= 2
+    case 'suspend': {
+      swapSize *= 2
 
-    break
-  }
+      break
+    }
 
-  case 'file': {
-    swapSize = 0
+    case 'file': {
+      swapSize = 0
 
-    break
-  }
-  // No default
+      break
+    }
+    // No default
   }
 
   if (installMode === 'standard' && !this.efi) {
     /**
-         * ===========================================================================================
-         * BIOS: working
-         * ===========================================================================================
-         */
+     * ===========================================================================================
+     * BIOS: working
+     * ===========================================================================================
+     */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${swapSize + 1}MiB`, this.echo) // dev/sda1 swap
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
@@ -94,10 +94,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
     retVal = true
   } else if (installMode === 'full-encrypted' && !this.efi) {
     /**
-         * ===========================================================================================
-         * BIOS: full-encrypt:
-         * ===========================================================================================
-         */
+     * ===========================================================================================
+     * BIOS: full-encrypt:
+     * ===========================================================================================
+     */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         1MiB        512MiB`, this.echo) // sda1
     await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${swapSize + 512}MiB`, this.echo) // sda2
@@ -157,10 +157,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
     retVal = true
   } else if (installMode === 'standard' && this.efi) {
     /**
-         * ===========================================================================================
-         * UEFI: working
-         * ===========================================================================================
-         */
+     * ===========================================================================================
+     * UEFI: working
+     * ===========================================================================================
+     */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32      34s                256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${swapSize + 256}Mib`, this.echo) // sda2 swap
@@ -188,10 +188,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
     retVal = true
   } else if (installMode === 'full-encrypted' && this.efi) {
     /**
-         * ===========================================================================================
-         * UEFI, full-encrypt
-         * ===========================================================================================
-         */
+     * ===========================================================================================
+     * UEFI, full-encrypt
+     * ===========================================================================================
+     */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi fat32               34s               256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext4             256MiB              768MiB`, this.echo) // sda2 boot
@@ -211,16 +211,16 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.mountPoint = '/boot'
 
     /**
-         *  cryptsetup return codes are:
-         *
-         * 1 wrong parameters,
-         * 2 no permission (bad passphrase),
-         * 3 out of memory,
-         * 4 wrong device specified,
-         * 5 device already exists or device is busy.
-         *
-         * sometime due scarce memory 2GB, we can have the process killed
-         */
+     *  cryptsetup return codes are:
+     *
+     * 1 wrong parameters,
+     * 2 no permission (bad passphrase),
+     * 3 out of memory,
+     * 4 wrong device specified,
+     * 5 device already exists or device is busy.
+     *
+     * sometime due scarce memory 2GB, we can have the process killed
+     */
 
     // SWAP 8G
     // redraw(<Install message={`Formatting LUKS ${installDevice}${p}3`} percent={0} />)
@@ -270,10 +270,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
     retVal = true
   } else if (installMode === 'lvm2' && !this.efi) {
     /**
-        * ===========================================================================================
-        * PROXMOX VE: BIOS and lvm2
-        * ===========================================================================================
-        */
+     * ===========================================================================================
+     * PROXMOX VE: BIOS and lvm2
+     * ===========================================================================================
+     */
     // Creo partizioni
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
@@ -313,16 +313,16 @@ export default async function partition(this: Sequence): Promise<boolean> {
     retVal = true
   } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
     /**
-        * ===========================================================================================
-        * PROXMOX VE: lvm2 and UEFI
-        * ===========================================================================================
-        */
+     * ===========================================================================================
+     * PROXMOX VE: lvm2 and UEFI
+     * ===========================================================================================
+     */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
     await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-    await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)  // sda1
+    await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
     const partInfo = await lvmPartInfo(installDevice)

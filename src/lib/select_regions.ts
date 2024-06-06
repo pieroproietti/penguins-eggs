@@ -16,8 +16,8 @@ export default async function selectRegions(selected = ''): Promise<string> {
       default: selected,
       message: 'Select your region: ',
       name: 'region',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

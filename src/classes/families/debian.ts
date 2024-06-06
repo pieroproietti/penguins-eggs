@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/families/debian.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -9,7 +9,7 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -45,7 +45,6 @@ export default class Debian {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }
-
 
   /**
    * Debian: calamaresRemove
@@ -97,7 +96,7 @@ export default class Debian {
     let available = false
     const cmd = `apt-cache show ${packageName} | grep Package:`
     const test = `Package: ${packageName}`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout === test) {
       available = true
     }
@@ -107,13 +106,13 @@ export default class Debian {
 
   /**
    * Debian: packageAptLast
-   * @param debPackage 
+   * @param debPackage
    * @returns version
    */
   static async packageAptLast(debPackage: string): Promise<string> {
     let version = ''
     const cmd = `apt-cache show ${debPackage} | grep Version:`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     version = stdout.slice(9)
     // console.log('===================================')
     // console.log('[' + version + ']')
@@ -128,7 +127,7 @@ export default class Debian {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, {silent: true}) === '0') {
+    if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
       retVal = true
     }
 
@@ -143,7 +142,7 @@ export default class Debian {
   static packageIsInstalled(debPackage: string): boolean {
     let installed = false
     const cmd = `/usr/bin/dpkg -s ${debPackage} | grep Status:`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout === 'Status: install ok installed') {
       installed = true
     }
@@ -153,6 +152,5 @@ export default class Debian {
 }
 
 function array2spaced(oArray: string[]) {
-  return oArray.join(' ');
+  return oArray.join(' ')
 }
-

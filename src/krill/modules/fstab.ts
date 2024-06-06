@@ -14,15 +14,15 @@ import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
 
 /**
-   * fstab()
-   * @param devices
-   */
+ * fstab()
+ * @param devices
+ */
 export default async function fstab(this: Sequence, installDevice: string, crypted = false) {
   let text = ''
 
   /**
-  * crypttab
-  */
+   * crypttab
+   */
   if (this.partitions.installationMode === 'full-encrypted') {
     const crypttab = this.installTarget + '/etc/crypttab'
     text += '# /etc/crypttab: mappings for encrypted partitions.\n'
@@ -46,7 +46,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     Utils.write(crypttab, text)
   }
 
-
   /**
    * fstab
    */
@@ -60,7 +59,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   let mountOptsData = ''
   let mountOptsEfi = ''
   let mountOptsSwap = ''
-
 
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
@@ -98,16 +96,15 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
 
     text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-  
   } else if (this.partitions.filesystemType === 'btrfs') {
-    const base                    = '/        btrfs  subvol=/@,defaults 0 0'
-    const snapshots               = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
-    const home                    = '/home                     btrfs  subvol=/@home,defaults 0 0'
-    const root                    = '/root                     btrfs  subvol=/@root,defaults 0 0'
-    const var_log                 = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
+    const base = '/        btrfs  subvol=/@,defaults 0 0'
+    const snapshots = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
+    const home = '/home                     btrfs  subvol=/@home,defaults 0 0'
+    const root = '/root                     btrfs  subvol=/@root,defaults 0 0'
+    const var_log = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
     const var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
-    const var_lib_blueman         = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
-    const tmp                     = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
+    const var_lib_blueman = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
+    const tmp = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
 
     text += `# ${this.devices.root.name}  btrfs ${this.devices.root.mountPoint} subvol\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
@@ -118,7 +115,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
-    
   }
 
   Utils.write(fstab, text)
@@ -133,11 +129,10 @@ async function isRotational(device: string): Promise<boolean> {
   let response: any
   let retVal = false
 
-  response = shx.exec(`cat /sys/block/${device}/queue/rotational`, {silent: true}).stdout.trim()
+  response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: true }).stdout.trim()
   if (response === '1') {
     retVal = true
   }
 
   return retVal
 }
-

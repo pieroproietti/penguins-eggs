@@ -11,13 +11,13 @@ import inquirer from 'inquirer'
 import Keyboards from '../classes/keyboards.js'
 
 /**
-  * selectKeyboardOption
-  */
+ * selectKeyboardOption
+ */
 export default async function selectKeyboardOption(selected = ''): Promise<string> {
   const keyboards = new Keyboards()
   const options = keyboards.getOptions()
 
-  const supported : string [] = []
+  const supported: string[] = []
   for (const o of options) {
     supported.push(o.code)
   }
@@ -28,8 +28,8 @@ export default async function selectKeyboardOption(selected = ''): Promise<strin
       default: selected,
       message: 'Select option: ',
       name: 'option',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {
@@ -38,4 +38,3 @@ export default async function selectKeyboardOption(selected = ''): Promise<strin
     })
   })
 }
-

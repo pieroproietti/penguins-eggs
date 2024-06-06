@@ -18,8 +18,7 @@ import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Produce extends Command {
   static description = 'produce a live image from your system whithout your data'
@@ -44,7 +43,7 @@ export default class Produce extends Command {
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     excludes: Flags.string({ description: 'use: custom, home, mine, usr, var', multiple: true }),
     help: Flags.help({ char: 'h' }),
-    links:  Flags.string({ description: 'desktop links', multiple: true }),
+    links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
@@ -55,7 +54,7 @@ export default class Produce extends Command {
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
+    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }
 
   async run(): Promise<void> {
@@ -69,7 +68,7 @@ export default class Produce extends Command {
        */
       const addons = []
       if (flags.addons) {
-        const {addons} = flags // array
+        const { addons } = flags // array
         for (let addon of addons) {
           // se non viene specificato il vendor il default è eggs
           if (!addon.includes('//')) {
@@ -92,14 +91,14 @@ export default class Produce extends Command {
       }
 
       // links check
-      const myLinks: string[]=[]
+      const myLinks: string[] = []
       if (flags.links) {
-        const {links} = flags
+        const { links } = flags
         for (const link_ of links) {
           if (fs.existsSync(`/usr/share/applications/${link_}.desktop`)) {
             myLinks.push(link_)
           } else {
-            Utils.warning('desktop link: ' + chalk.white('/usr/share/applications/'+link_ + '.desktop') + ' not found!')
+            Utils.warning('desktop link: ' + chalk.white('/usr/share/applications/' + link_ + '.desktop') + ' not found!')
           }
         }
       }
@@ -158,21 +157,21 @@ export default class Produce extends Command {
         compression = compressors.standard()
       }
 
-      const {release} = flags
+      const { release } = flags
 
-      const {cryptedclone} = flags
+      const { cryptedclone } = flags
 
-      const {clone} = flags
+      const { clone } = flags
 
-      const {verbose} = flags
+      const { verbose } = flags
 
       const scriptOnly = flags.script
 
       const yolkRenew = flags.yolk
 
-      const {nointeractive} = flags
+      const { nointeractive } = flags
 
-      const {noicons} = flags
+      const { noicons } = flags
 
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
@@ -236,8 +235,8 @@ export default class Produce extends Command {
   }
 }
 
-const validSizePattern = /^(\d+)([GM]?)$/;
+const validSizePattern = /^(\d+)([GM]?)$/
 
 function isValidSize(input: string): boolean {
-  return validSizePattern.test(input);
+  return validSizePattern.test(input)
 }

@@ -6,15 +6,14 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import shx from 'shelljs'
 
 import Pacman from '../classes/pacman.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
-import {exec} from '../lib/utils.js'
-
+import { exec } from '../lib/utils.js'
 
 /**
  *
@@ -22,13 +21,11 @@ import {exec} from '../lib/utils.js'
 export default class Update extends Command {
   static description = "update the Penguins' eggs tool"
 
-  static examples = [
-    'eggs update',
-  ]
+  static examples = ['eggs update']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   /**
@@ -41,29 +38,29 @@ export default class Update extends Command {
     const choose = await this.chosenDeb()
     Utils.titles(`updating via ${choose}`)
     switch (choose) {
-    case 'apt': {
-      await this.getDebFromApt()
+      case 'apt': {
+        await this.getDebFromApt()
 
-      break
-    }
+        break
+      }
 
-    case 'lan': {
-      await this.getDebFromLan()
+      case 'lan': {
+        await this.getDebFromLan()
 
-      break
-    }
+        break
+      }
 
-    case 'manual': {
-      this.getDebFromManual()
+      case 'manual': {
+        this.getDebFromManual()
 
-      break
-    }
+        break
+      }
 
-    case 'sources': {
-      this.getFromSources()
+      case 'sources': {
+        this.getFromSources()
 
-      break
-    }
+        break
+      }
       // No default
     }
   }
@@ -80,8 +77,8 @@ export default class Update extends Command {
         choices,
         message: 'select update method',
         name: 'selected',
-        type: 'list',
-      },
+        type: 'list'
+      }
     ]
     const answer = await inquirer.prompt(questions)
     if (answer.selected === 'abort') {
@@ -112,7 +109,7 @@ export default class Update extends Command {
 
     Utils.warning('import from lan')
     const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}${Tu.config.filterDeb}${Utils.uefiArch()}.deb /tmp`
-    await exec(cmd, {capture: true, echo: true})
+    await exec(cmd, { capture: true, echo: true })
 
     if (await Utils.customConfirm(`Want to install ${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)) {
       await exec(`dpkg -i /tmp/${Tu.config.filterDeb}${Utils.uefiArch()}.deb`)
@@ -148,7 +145,7 @@ export default class Update extends Command {
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
-    const {flags} = await this.parse(Update)
+    const { flags } = await this.parse(Update)
     Utils.titles(this.id + ' ' + this.argv)
 
     if (Utils.isRoot()) {

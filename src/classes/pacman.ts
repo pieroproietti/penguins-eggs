@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/pacman.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -12,7 +12,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 
-import { IDistro, IEggsConfig , IRemix } from '../interfaces/index.js'
+import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Archlinux from './families/archlinux.js'
@@ -21,7 +21,7 @@ import Fedora from './families/fedora.js'
 import Suse from './families/suse.js'
 import Settings from './settings.js'
 import Utils from './utils.js'
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
 
@@ -184,7 +184,7 @@ export default class Pacman {
       console.log('Due the lacks of calamares package set force_installer = false')
     }
 
-    if (!Pacman.isUefi() && Utils.uefiArch() !=="i386") {
+    if (!Pacman.isUefi() && Utils.uefiArch() !== 'i386') {
       config.make_efi = false
       console.log('Due the lacks of grub-efi-' + Utils.uefiArch() + '-bin package set make_efi = false')
     }
@@ -237,7 +237,7 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
-    
+
     // init
     shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')
     shx.chmod('+x', '/etc/penguins-eggs.d/init/unattended.sh')
@@ -264,7 +264,6 @@ export default class Pacman {
 
     return result
   }
-
 
   /**
    * Rimozione dei file di configurazione
@@ -293,7 +292,7 @@ export default class Pacman {
    * distroTemplateCheck
    */
   static distroTemplateCheck(): boolean {
-    const {codenameLikeId} = this.distro()
+    const { codenameLikeId } = this.distro()
     return fs.existsSync(`/etc/penguins-eggs.d/distros/${codenameLikeId}`)
   }
 
@@ -454,7 +453,7 @@ export default class Pacman {
 
       /**
        * Ubuntu lunar/rhino: eredita da devel e buster
-       *  
+       *
        */
     } else if (this.distro().codenameLikeId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
@@ -547,15 +546,15 @@ export default class Pacman {
         installed = true
       }
     } else if (this.distro().familyId === 'suse' && Suse.packageIsInstalled('xwayland*')) {
-        installed = true
-      }
+      installed = true
+    }
 
     return installed
   }
 
   /**
    * check if it's installed xorg
-   * @returns 
+   * @returns
    */
   static isInstalledXorg(): boolean {
     let installed = false
@@ -572,8 +571,8 @@ export default class Pacman {
         installed = true
       }
     } else if (this.distro().familyId === 'suse' && Suse.packageIsInstalled('xorg-x11-server')) {
-        installed = true
-      }
+      installed = true
+    }
 
     return installed
   }
@@ -614,8 +613,8 @@ export default class Pacman {
     let isUefi = false
     if (this.distro().familyId === 'debian') {
       if (Utils.uefiArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
-          isUefi = true
-        }
+        isUefi = true
+      }
     } else if (Pacman.distro().familyId === 'fedora') {
       isUefi = true
     } else if (Pacman.distro().familyId === 'archlinux') {
@@ -720,7 +719,7 @@ export default class Pacman {
   }
 
   /**
-   * 
+   *
    * @returns grub
    */
   static whichGrubIsInstalled(): string {
@@ -743,5 +742,4 @@ export default class Pacman {
 
     return grubInstalled
   }
-
 }

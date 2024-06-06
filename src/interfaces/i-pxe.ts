@@ -7,10 +7,10 @@
  */
 
 export interface ITftpOptions {
-  denyPUT : boolean
-  host : string
-  port : number
-  root : string
+  denyPUT: boolean
+  host: string
+  port: number
+  root: string
 }
 
 export interface IDhcpOptions {
@@ -21,4 +21,3 @@ export interface IDhcpOptions {
   subnet: string
   tftpserver: string
 }
-

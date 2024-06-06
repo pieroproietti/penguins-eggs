@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/xdg.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -6,12 +6,12 @@
  * license: MIT
  */
 
-import fs, {utimesSync} from 'node:fs'
+import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 
 // libraries
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import N8 from './n8.js'
 import Pacman from './pacman.js'
@@ -32,7 +32,6 @@ export default class Xdg {
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
     if (Pacman.isInstalledGui()) {
-
       /**
        * SLIM & SLIMSKI
        */
@@ -50,22 +49,21 @@ export default class Xdg {
           slimConf = 'slimski.local.conf'
         }
       }
-     
+
       if (slimConf !== '') {
         let content = fs.readFileSync(`${chroot}/etc/${slimConf}`, 'utf8')
 
         const regexAutoLogin = new RegExp(`auto_login\\s*no`, 'g')
         content = content.replaceAll(regexAutoLogin, 'auto_login yes')
-        
+
         const regexDefaultUser = new RegExp(`default_user\\s*${olduser}`, 'g')
         content = content.replace(regexDefaultUser, `default_user ${newuser}`)
-        
+
         fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
 
         // shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/${slimConf}`)
         // shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/${slimConf}`)
       }
-
 
       /**
        * LIGHTDM
@@ -175,7 +173,7 @@ export default class Xdg {
      * Creo solo la cartella DESKTOP perchè serve per i link, eventualmente posso creare le altre
      * ma c'è il problema di traduce/non traduce
      */
-    xdg_dirs.forEach(async dir => {
+    xdg_dirs.forEach(async (dir) => {
       if (dir === 'DESKTOP') {
         await Xdg.mk(chroot, `/home/${user}/` + this.traduce(dir, traduce), verbose)
       }
@@ -220,39 +218,32 @@ export default class Xdg {
       // we need a more clean solution
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
-
     } else if (Pacman.packageIsInstalled('cinnamon-common')) {
       // before the check was against cinnamon-core
       // use .cinnamon NOT cinnamon/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
-
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
       // use .kde NOT .kde/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
-
     } else if (Pacman.packageIsInstalled('lxde-core')) {
       // we need a more clean solution
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
-
     } else if (Pacman.packageIsInstalled('lxqt-session')) {
       // we need a more clean solution
       await rsyncIfExist(`/home/${user}/.config/lxqt`, '/etc/skel/.config', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
-
     } else if (Pacman.packageIsInstalled('mate-session-manager')) {
       // we need a more clean solution
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
-      
     } else if (Pacman.packageIsInstalled('xfce4-session')) {
       // use .config/xfce4 NOT .config/xfce4/
       await rsyncIfExist(`/home/${user}/.config/xfce4`, '/etc/skel/.config', verbose)
       await exec('mkdir /etc/skel/.local/share -p', echo)
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
-
     }
 
     /**
@@ -262,7 +253,6 @@ export default class Xdg {
     // Riccardo suggestion
     await rsyncIfExist(`/home/${user}/.mozilla`, '/etc/skel', verbose)
     await rsyncIfExist(`/home/${user}/.kodi`, '/etc/skel', verbose)
-   
 
     // waydroid
     if (fs.existsSync(`/home/${user}/waydroid-package-manager`)) {
@@ -284,13 +274,12 @@ export default class Xdg {
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
 
-
     // quirinux
     const distro = new Distro()
     if (distro.distroId === 'Quirinux') {
-      await exec('chmod -R 777 /etc/skel/.config') 
+      await exec('chmod -R 777 /etc/skel/.config')
       await exec('chmod -R 777 /etc/xdg/autostart') // here we must change ***
-      await exec('chmod -R 777 /home/*/.config') 
+      await exec('chmod -R 777 /home/*/.config')
       await exec('chmod -R 777 /opt/estilos-general/.config')
       await exec('chmod -R 777 /opt/estilos/.config')
       await exec('chmod -R 777 /usr/bin/iniciar-asistente')
@@ -306,9 +295,9 @@ export default class Xdg {
     // Emer Chen suggestion
     await rmIfExist('/etc/skel/.config/user-dirs.dirs')
     await rmIfExist('/etc/skel/.config/user-dirs.locale')
-    await rmIfExist('/etc/skel/.config/gtk-3.0/bookmarks/','r')
+    await rmIfExist('/etc/skel/.config/gtk-3.0/bookmarks/', 'r')
 
-    // Manuel Senpai suggestion     
+    // Manuel Senpai suggestion
     // await exec(`grep -IE -r /etc/skel -e ${user}`)
     await rmIfExist('/etc/skel/.local/share/recently-used.xbel')
     await rmIfExist('/etc/skel/.config/xfce4/desktop/', 'r')
@@ -325,9 +314,9 @@ export default class Xdg {
       retval = xdg_dir.charAt(0).toUpperCase() + xdg_dir.slice(1).toLowerCase()
       console.log(retval)
     } else {
-      xdg_dirs.forEach(async dir => {
+      xdg_dirs.forEach(async (dir) => {
         if (dir === xdg_dir) {
-          retval = path.basename(shx.exec(`sudo -u ${await Utils.getPrimaryUser()} xdg-user-dir ${dir}`, {silent: true}).stdout.trim())
+          retval = path.basename(shx.exec(`sudo -u ${await Utils.getPrimaryUser()} xdg-user-dir ${dir}`, { silent: true }).stdout.trim())
         }
       })
     }
@@ -361,9 +350,9 @@ async function rsyncIfExist(source: string, dest = '/etc/skel/', verbose = false
 }
 
 /**
- * 
- * @param file2Remove 
- * @param recursive 
+ *
+ * @param file2Remove
+ * @param recursive
  */
 async function rmIfExist(file2Remove: string, recursive = '') {
   if (fs.existsSync(file2Remove)) {

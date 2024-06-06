@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/compressors.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -18,14 +18,14 @@ export default class Compressors {
     lzma: false,
     lzo: false,
     xz: false,
-    zstd: false,
+    zstd: false
   }
 
   source = '/tmp/eggs-mksquash-test'
 
   /**
    * fast
-   * @returns 
+   * @returns
    */
   fast(): string {
     let comp = 'gzip'
@@ -39,7 +39,7 @@ export default class Compressors {
   }
 
   /**
-   * max 
+   * max
    * @returns
    */
   max(): string {
@@ -73,7 +73,7 @@ export default class Compressors {
 
   /**
    * standard
-   * @returns 
+   * @returns
    */
   standard(): string {
     const comp = 'xz -b 1M'
@@ -82,13 +82,13 @@ export default class Compressors {
 
   /**
    * check mksquashfs exists
-   * @param compressor 
-   * @returns 
+   * @param compressor
+   * @returns
    */
   private async check(compressor: string): Promise<boolean> {
     let result = false
 
-    const {stderr} = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, {silent: true})
+    const { stderr } = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, { silent: true })
     if (stderr === '') {
       result = true
     }
@@ -100,15 +100,15 @@ export default class Compressors {
    * prepareCheck
    */
   private async prepareCheck() {
-    shx.exec('rm -rf ' + this.source, {silent: true})
-    shx.exec('mkdir ' + this.source, {silent: true})
+    shx.exec('rm -rf ' + this.source, { silent: true })
+    shx.exec('mkdir ' + this.source, { silent: true })
   }
 
   /**
    * removeCheck
    */
   private async removeCheck() {
-    shx.exec('rm -rf ' + this.source, {silent: true})
-    shx.exec('rm -f  ' + this.dest, {silent: true})
+    shx.exec('rm -rf ' + this.source, { silent: true })
+    shx.exec('rm -f  ' + this.dest, { silent: true })
   }
 }

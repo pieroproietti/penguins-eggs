@@ -18,8 +18,8 @@ import Sequence from '../sequence.js'
  *
  * - debian: /etc/network/interface
  * - ubuntu: netplan
- * - arch: 
- * 
+ * - arch:
+ *
  * - all: /etc/resolv.conf
  */
 export default async function networkCfg(this: Sequence) {
@@ -47,7 +47,6 @@ export default async function networkCfg(this: Sequence) {
     // if (await systemdCtl.isActive('systemd-networkd.service')) {
     //  await exec (`rm ${file}`)
     // }
-
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
   } else if (this.distro.familyId === 'arch') {

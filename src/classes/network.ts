@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/network.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -6,118 +6,114 @@
  * license: MIT
  */
 
-import {Netmask} from 'netmask'
+import { Netmask } from 'netmask'
 import os from 'node:os'
 
 /**
  *
  */
 export default class Network {
-    address = ''
-    cidr = ''
-    family = ''
-    internal = false
-    mac = ''
-    netmask = ''
-    o = {} as Netmask
+  address = ''
+  cidr = ''
+  family = ''
+  internal = false
+  mac = ''
+  netmask = ''
+  o = {} as Netmask
 
-    /**
-     *
-     */
-    constructor() {
-      const interfaces = os.networkInterfaces()
-      const address = ''
-      if (interfaces !== undefined) {
-        for (const devName in interfaces) {
-          const iface = interfaces[devName]
-          if (iface !== undefined) {
-            for (const alias of iface) {
-              if (
-                alias.family === 'IPv4' &&
-                            alias.address !== '127.0.0.1' &&
-                            !alias.internal
-              ) {
-                // take just the first!
-                if (this.address === '') {
-                  this.address = alias.address
-                }
+  /**
+   *
+   */
+  constructor() {
+    const interfaces = os.networkInterfaces()
+    const address = ''
+    if (interfaces !== undefined) {
+      for (const devName in interfaces) {
+        const iface = interfaces[devName]
+        if (iface !== undefined) {
+          for (const alias of iface) {
+            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+              // take just the first!
+              if (this.address === '') {
+                this.address = alias.address
+              }
 
-                if (this.cidr === '' && alias.cidr !== null) {
-                  this.cidr = alias.cidr
-                }
+              if (this.cidr === '' && alias.cidr !== null) {
+                this.cidr = alias.cidr
+              }
 
-                if (this.family === '') {
-                  this.family = alias.family
-                }
+              if (this.family === '') {
+                this.family = alias.family
+              }
 
-                if (this.mac === '') {
-                  this.mac = alias.mac
-                }
+              if (this.mac === '') {
+                this.mac = alias.mac
+              }
 
-                if (this.netmask === '') {
-                  this.netmask = alias.netmask
-                }
+              if (this.netmask === '') {
+                this.netmask = alias.netmask
               }
             }
           }
         }
-
-        /**
-             * valori da netmask
-             */
-        this.o = new Netmask(this.cidr)
       }
-    }
 
-    base() {
-      return this.o.base
+      /**
+       * valori da netmask
+       */
+      this.o = new Netmask(this.cidr)
     }
+  }
 
-    bitmask() {
-      this.o.bitmask
-    }
+  base() {
+    return this.o.base
+  }
 
-    broadcast() {
-      return this.o.broadcast
-    }
+  bitmask() {
+    this.o.bitmask
+  }
 
-    contains() {
-      return this.o.contains
-    }
+  broadcast() {
+    return this.o.broadcast
+  }
 
-    first() {
-      return this.o.first
-    }
+  contains() {
+    return this.o.contains
+  }
 
-    forEach() {
-      return this.o.forEach
-    }
+  first() {
+    return this.o.first
+  }
 
-    hostmask() {
-      return this.o.hostmask
-    }
+  forEach() {
+    return this.o.forEach
+  }
 
-    last() {
-      return this.o.last
-    }
+  hostmask() {
+    return this.o.hostmask
+  }
 
-    maskLong() {
-      return this.o.maskLong
-    }
+  last() {
+    return this.o.last
+  }
 
-    netLong() {
-      return this.o.netLong
-    }
+  maskLong() {
+    return this.o.maskLong
+  }
 
-    next() {
-      return this.o.next
-    }
+  netLong() {
+    return this.o.netLong
+  }
 
-    size() {
-      return this.o.size
-    }
+  next() {
+    return this.o.next
+  }
 
-    toString() {
-      return this.o.toString
-    }
+  size() {
+    return this.o.size
+  }
+
+  toString() {
+    return this.o.toString
+  }
 }

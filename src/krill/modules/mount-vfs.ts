@@ -7,11 +7,11 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 /**
-* mountvfs()
-*/
+ * mountvfs()
+ */
 export async function mountVfs(this: Sequence) {
   await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, this.echo)
   await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
@@ -31,8 +31,8 @@ export async function mountVfs(this: Sequence) {
 }
 
 /**
-*
-*/
+ *
+ */
 export async function umountVfs(this: Sequence) {
   await this.umount(`${this.installTarget}/dev/pts`)
   await this.umount(`${this.installTarget}/dev`)

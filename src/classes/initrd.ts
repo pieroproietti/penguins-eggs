@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/initrd.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -15,7 +15,7 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 
-import {IInitrd} from '../interfaces/index.js'
+import { IInitrd } from '../interfaces/index.js'
 
 /**
  * initrd
@@ -45,7 +45,7 @@ export default class Initrd {
     const initrd = {} as IInitrd
 
     const cmdCheck = `lsinitramfs ${this.initrdSrc} | egrep 'conf/conf.d/cryptroot|cryptroot/crypttab|conf/conf.d/resume|conf/conf.d/zz-resume-auto'`
-    const check = shx.exec(cmdCheck, {silent: true})
+    const check = shx.exec(cmdCheck, { silent: true })
 
     if (check.includes('conf/conf.d/cryptroot')) {
       initrd.cryptoroot = true
@@ -79,9 +79,9 @@ export default class Initrd {
    * extract
    */
   async extract(initrd = '/initrd.img', verbose = false) {
-    let echo = {echo: false, ignore: false}
+    let echo = { echo: false, ignore: false }
     if (verbose) {
-      echo = {echo: true, ignore: false}
+      echo = { echo: true, ignore: false }
     }
 
     const savedState = process.cwd()
@@ -98,21 +98,21 @@ export default class Initrd {
     const cmd = `file -L ${this.initrdSrc} | egrep -o 'gzip compressed|XZ compressed|cpio archive'`
     const compressionShell = shx.exec(cmd).trimStart().trimEnd()
     switch (compressionShell) {
-    case 'gzip compressed': {
-      break
-    }
+      case 'gzip compressed': {
+        break
+      }
 
-    case 'xz compressed': {
-      this.compression = 'xz'
+      case 'xz compressed': {
+        this.compression = 'xz'
 
-      break
-    }
+        break
+      }
 
-    case 'cpio compressed': {
-      this.compression = 'cpio'
+      case 'cpio compressed': {
+        this.compression = 'cpio'
 
-      break
-    }
+        break
+      }
       // No default
     }
 
@@ -157,9 +157,9 @@ export default class Initrd {
    * rebuild
    */
   private rebuild(initrd = '/initrd.img', verbose = true) {
-    let echo = {echo: false, ignore: false}
+    let echo = { echo: false, ignore: false }
     if (verbose) {
-      echo = {echo: true, ignore: false}
+      echo = { echo: true, ignore: false }
     }
 
     const savedState = process.cwd()

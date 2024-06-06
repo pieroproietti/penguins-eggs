@@ -6,8 +6,8 @@
  * license: MIT
  */
 
-import {Command, Flags, flush} from '@oclif/core'
-import axios, {AxiosResponse} from 'axios'
+import { Command, Flags, flush } from '@oclif/core'
+import axios, { AxiosResponse } from 'axios'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
@@ -15,9 +15,9 @@ import https from 'node:https'
 import Utils from '../classes/utils.js'
 import Krill from '../krill/prepare.js'
 const agent = new https.Agent({
-  rejectUnauthorized: false,
+  rejectUnauthorized: false
 })
-import {IKrillConfig} from '../interfaces/i-krill-config.js'
+import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
 /**
  * Class Krill
@@ -27,28 +27,24 @@ export default class Install extends Command {
 
   static description = 'krill: the CLI system installer - the egg became a penguin!'
 
-  static examples = [
-    'sudo eggs install',
-    'sudo eggs install --unattended --halt',
-    'sudo eggs install --chroot',
-  ]
+  static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
 
   static flags = {
-    btrfs: Flags.boolean({char: 'b', description: 'Format btrfs'}),
-    crypted: Flags.boolean({char: 'k', description: 'Crypted CLI installation'}),
-    chroot: Flags.boolean({char: 'c', description: 'chroot before to end'}),
-    domain: Flags.string({char: 'd', description: 'Domain name, defult: .local'}),
-    halt: Flags.boolean({char: 'H', description: 'Halt the system after installation'}),    
-    help: Flags.help({char: 'h'}),
-    ip: Flags.boolean({char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33'}),
-    nointeractive: Flags.boolean({char: 'n', description: 'no user interaction'}),
-    none: Flags.boolean({char: 'N', description: 'Swap none: 256M'}),
-    pve: Flags.boolean({char: 'p', description: 'Proxmox VE install'}),
-    random: Flags.boolean({char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt'}),
-    small: Flags.boolean({char: 's', description: 'Swap small: RAM'}),
-    suspend: Flags.boolean({char: 'S', description: 'Swap suspend: RAM x 2'}),
-    unattended: Flags.boolean({char: 'u', description: 'Unattended installation'}),
-    verbose: Flags.boolean({char: 'v', description: 'Verbose'}),
+    btrfs: Flags.boolean({ char: 'b', description: 'Format btrfs' }),
+    crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
+    chroot: Flags.boolean({ char: 'c', description: 'chroot before to end' }),
+    domain: Flags.string({ char: 'd', description: 'Domain name, defult: .local' }),
+    halt: Flags.boolean({ char: 'H', description: 'Halt the system after installation' }),
+    help: Flags.help({ char: 'h' }),
+    ip: Flags.boolean({ char: 'i', description: 'hostname as ip, eg: ip-192-168-1-33' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
+    pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
+    random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
+    small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
+    suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
+    unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
+    verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
 
   /**
@@ -57,11 +53,11 @@ export default class Install extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const {flags} = await this.parse(Install)
+    const { flags } = await this.parse(Install)
 
     let custom = flags.custom!
 
-    const {unattended} = flags
+    const { unattended } = flags
     if (unattended) {
       custom = 'us'
     }
@@ -72,17 +68,17 @@ export default class Install extends Command {
     krillConfig = yaml.load(content) as IKrillConfig
 
     // nointeractive
-    const {nointeractive} = flags
+    const { nointeractive } = flags
 
     // halt
-    const {halt} = flags
+    const { halt } = flags
 
     // hostname
-    const {ip} = flags
-    const {random} = flags
+    const { ip } = flags
+    const { random } = flags
 
     // chroot before to end
-    const {chroot} = flags
+    const { chroot } = flags
 
     let domain = ''
     if (flags.domain) {
@@ -90,18 +86,18 @@ export default class Install extends Command {
     }
 
     // swap
-    const {suspend} = flags
-    const {small} = flags
-    const {none} = flags
+    const { suspend } = flags
+    const { small } = flags
+    const { none } = flags
 
-    let {crypted} = flags
+    let { crypted } = flags
 
     const pve = flags.pve
     if (pve) {
       crypted = false
     }
 
-    const {verbose} = flags
+    const { verbose } = flags
 
     if (Utils.isRoot()) {
       if (Utils.isLive()) {

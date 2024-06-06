@@ -24,9 +24,8 @@ import { Jessie } from './distros/jessie.js'
 import { Rolling } from './distros/rolling.js'
 import { installer } from './installer.js'
 
-
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 // const branding = require('./branding.js').branding
 import { branding } from './branding.js'
@@ -125,8 +124,8 @@ export default class Incubator {
       }
 
       /**
-         * DEVUAN
-         */
+       * DEVUAN
+       */
       case 'beowulf': {
         const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await beowulf.create()
@@ -149,8 +148,8 @@ export default class Incubator {
       }
 
       /**
-         * UBUNTU
-         */
+       * UBUNTU
+       */
       case 'bionic': {
         const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await bionic.create()
@@ -180,8 +179,8 @@ export default class Incubator {
       }
 
       /**
-         * Arch
-         */
+       * Arch
+       */
       case 'rolling': {
         const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await rolling.create()
@@ -317,7 +316,7 @@ export default class Incubator {
         process.exit()
       }
     }
-    
+
     let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
     if (this.theme.includes('/')) {
       calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
@@ -351,7 +350,7 @@ function write(file: string, content: string, verbose = false) {
 }
 
 /**
- * 
+ *
  */
 function partitionCustomize() {
   const filePartition = '/etc/calamares/modules/partition.conf'
@@ -371,5 +370,4 @@ function partitionCustomize() {
   }
 
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
-
 }

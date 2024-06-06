@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/sources_list.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -6,11 +6,10 @@
  * license: MIT
  */
 
-
 import chalk from 'chalk'
 
-import {IMateria} from '../interfaces/index.js'
-import {exec} from '../lib/utils.js'
+import { IMateria } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Utils from './utils.js'
 
@@ -19,14 +18,14 @@ import Utils from './utils.js'
  */
 export default class SourcesList {
   /**
-    *
-    * @param repos
-    * @returns
-    */
+   *
+   * @param repos
+   * @returns
+   */
   async components(components: string[]): Promise<boolean> {
     /**
-      * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
-      */
+     * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
+     */
     let checked = true
     const repos = await this.get()
     if (repos.length > 0) {
@@ -51,14 +50,14 @@ export default class SourcesList {
   }
 
   /**
-    *
-    * @param repos
-    * @returns
-    */
+   *
+   * @param repos
+   * @returns
+   */
   async distribution(distributions: string[]): Promise<boolean> {
     /**
-      * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
-      */
+     * Linuxmint non ha nessuna configurazione in /etc/apt/sources.list
+     */
     let checked = true
     checked = false
     const distro = new Distro()
@@ -73,8 +72,8 @@ export default class SourcesList {
   }
 
   /**
-    *
-    */
+   *
+   */
   private async get(): Promise<string[]> {
     let universalSourcesList = '/etc/apt/sources.list'
     const distro = new Distro()
@@ -83,7 +82,7 @@ export default class SourcesList {
     }
 
     // deb uri distribution [component1] [component2] [...]
-    const checkRepos = await exec(`grep "deb http"<${universalSourcesList}`, {capture: true, echo: false})
+    const checkRepos = await exec(`grep "deb http"<${universalSourcesList}`, { capture: true, echo: false })
     let tmp: string[] = []
     if (checkRepos.code === 0) {
       tmp = checkRepos.data.split('\n')

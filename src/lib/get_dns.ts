@@ -16,8 +16,8 @@ export default async function getDns(initial: string): Promise<string> {
         default: initial,
         message: 'use ; to separe: ',
         name: 'dns',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

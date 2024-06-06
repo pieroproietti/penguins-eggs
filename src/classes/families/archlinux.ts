@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/families/archlinux.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -17,7 +17,7 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares-eggs']  // , 'calamares', 'calamares-git']
+  static packs4calamares = ['calamares-eggs'] // , 'calamares', 'calamares-git']
 
   /**
    * Archlinux: calamaresInstall
@@ -51,7 +51,6 @@ export default class Archlinux {
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }
 
-  
   /**
    * Archlinux: calamaresRemove
    */
@@ -60,13 +59,9 @@ export default class Archlinux {
 
     let removed = false
     const echo = Utils.setEcho(verbose)
-    
-    const calPKGs = [
-      'arco-calamares',
-      'calamares', 
-      'calamares-garuda', 
-    ]
-    for(const calPKG of calPKGs){
+
+    const calPKGs = ['arco-calamares', 'calamares', 'calamares-garuda']
+    for (const calPKG of calPKGs) {
       if (await this.packagePacmanAvailable(calPKG)) {
         await exec(`pacman -R ${calPKG}`, echo)
         removed = true
@@ -74,8 +69,8 @@ export default class Archlinux {
     }
 
     if (removed && fs.existsSync('/etc/calamares')) {
-        await exec('rm /etc/calamares -rf', echo)
-      }
+      await exec('rm /etc/calamares -rf', echo)
+    }
 
     return removed
   }

@@ -12,20 +12,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 
-import { IDistro, IInstaller , IRemix } from '../../interfaces/index.js'
+import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'
 import { exec } from '../../lib/utils.js'
 import Utils from '../utils.js'
-import { settings} from './fisherman-helper/settings.js'
+import { settings } from './fisherman-helper/settings.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
  * vecchi require che vanno sostituiti con import
  */
-import {displaymanager}  from './fisherman-helper/displaymanager.js'
-import {remove as removePackages,tryInstall} from './fisherman-helper/packages.js'
-
+import { displaymanager } from './fisherman-helper/displaymanager.js'
+import { remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
 interface IReplaces {
   replace: string
@@ -51,9 +50,8 @@ export default class Fisherman {
    * @param isScript
    */
   async buildCalamaresModule(name: string, isScript = true, theme = 'eggs'): Promise<string> {
-
     let moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch + name)
-    if (theme !== 'eggs')  {
+    if (theme !== 'eggs') {
       moduleTemplate = theme + '/theme/calamares/calamares-modules/' + name
     }
 
@@ -136,14 +134,14 @@ export default class Fisherman {
       }
 
       // We need to adapt just mount.conf
-      if (name==='mount') {
-        const calamaresVersion = (await exec('calamares --version', { capture: true, echo: false, ignore: false })).data.trim().slice(10,13)
-        let options='[ bind ]'
-        if (calamaresVersion==='3.2') {
-          options='bind'
+      if (name === 'mount') {
+        const calamaresVersion = (await exec('calamares --version', { capture: true, echo: false, ignore: false })).data.trim().slice(10, 13)
+        let options = '[ bind ]'
+        if (calamaresVersion === '3.2') {
+          options = 'bind'
         }
 
-        const view = { options}
+        const view = { options }
         const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
         fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
       } else {
