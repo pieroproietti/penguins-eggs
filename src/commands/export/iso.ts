@@ -6,29 +6,26 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 
 export default class ExportIso extends Command {
   static description = 'export iso in the destination host'
 
-  static examples = [
-    'eggs export iso',
-    'eggs export iso --clean',
-  ]
+  static examples = ['eggs export iso', 'eggs export iso --clean']
 
   static flags = {
-    checksum: Flags.boolean({char: 'C', description: 'export checksums md5 and sha256'}),
-    clean: Flags.boolean({char: 'c', description: 'delete old ISOs before to copy'}),
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    checksum: Flags.boolean({ char: 'C', description: 'export checksums md5 and sha256' }),
+    clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(ExportIso)
+    const { flags } = await this.parse(ExportIso)
     Utils.titles(this.id + ' ' + this.argv)
     Utils.warning(ExportIso.description)
 
@@ -39,7 +36,7 @@ export default class ExportIso extends Command {
 
     const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `rm -f ${rmount}\n`
-    const filters=['*.iso', '*.md5', '*.sha256']
+    const filters = ['*.iso', '*.md5', '*.sha256']
     cmd += `mkdir ${rmount}\n`
     cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso} ${rmount}\n`
     if (flags.clean) {

@@ -19,15 +19,14 @@ const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
 /*
-* Comando per avviare ubiquity: 
-* sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
-*/
+ * Comando per avviare ubiquity:
+ * sudo --preserve-env DBUS_SESSION_BUS_ADDRESS, XDG_RUNTIME sh -c 'calamares'
+ */
 
 /**
  * CliAutologin
  */
 export default class CliAutologin {
-  
   async addAutologin(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
       /**
@@ -73,13 +72,13 @@ export default class CliAutologin {
   }
 
   /**
-   * 
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   *
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
   async addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileIssue = `${chroot}/etc/issue`
@@ -94,19 +93,19 @@ export default class CliAutologin {
   }
 
   /**
-   * 
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   *
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
   async addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
     let installer = 'sudo eggs install'
-    if (Pacman.calamaresExists()){
+    if (Pacman.calamaresExists()) {
       if (Pacman.packageIsInstalled('plasma-desktop')) {
         installer = 'startplasma-wayland to run GUI and launch calamares'
       } else if (Pacman.packageIsInstalled('xfce4')) {
@@ -135,8 +134,8 @@ export default class CliAutologin {
   }
 
   /**
-   * 
-   * @param path 
+   *
+   * @param path
    */
   async msgRemove(path: string) {
     if (fs.existsSync(path)) {
@@ -163,8 +162,8 @@ export default class CliAutologin {
   }
 
   /**
-   * 
-   * @param chroot 
+   *
+   * @param chroot
    */
   async remove(chroot = '/') {
     if (Utils.isSystemd()) {

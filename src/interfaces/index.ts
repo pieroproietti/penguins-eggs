@@ -6,28 +6,28 @@
  * license: MIT
  */
 
-export {IAddons} from './i-addons.js'
-export {IApp} from './i-app.js'
+export { IAddons } from './i-addons.js'
+export { IApp } from './i-app.js'
 
 // Per krill
-export {IBranding} from './i-branding.js'
-export {IDevice, IDevices} from './i-devices.js'
+export { IBranding } from './i-branding.js'
+export { IDevice, IDevices } from './i-devices.js'
 // export { IDriveList } from './i-drive-list'
-export {IDistro} from './i-distro.js'
-export {IEggsConfig} from './i-eggs-config.js'
+export { IDistro } from './i-distro.js'
+export { IEggsConfig } from './i-eggs-config.js'
 
-export {IExcludes} from './i-excludes.js'
-export {IExec} from './i-exec.js'
-export {IInitrd} from './i-initrd.js'
-export {IInstall} from './i-install.js'
-export {IInstaller} from './i-installer.js'
+export { IExcludes } from './i-excludes.js'
+export { IExec } from './i-exec.js'
+export { IInitrd } from './i-initrd.js'
+export { IInstall } from './i-install.js'
+export { IInstaller } from './i-installer.js'
 // Costumes and Materia
-export {IMateria, IRepos} from './i-materia.js'
-export {INet} from './i-net.js'
-export {IPartitions} from './i-partitions.js'
+export { IMateria, IRepos } from './i-materia.js'
+export { INet } from './i-net.js'
+export { IPartitions } from './i-partitions.js'
 
-export {IRemix} from './i-remix.js'
-export {ISettings} from './i-settings.js'
-export {IUser} from './i-user.js'
+export { IRemix } from './i-remix.js'
+export { ISettings } from './i-settings.js'
+export { IUser } from './i-user.js'
 
-export {IWorkDir} from './i-workdir.js'
+export { IWorkDir } from './i-workdir.js'

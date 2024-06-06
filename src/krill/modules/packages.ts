@@ -16,7 +16,6 @@ import { IPackages } from '../../interfaces/i-packages.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
-
 /**
  *
  * @param this
@@ -37,14 +36,13 @@ export default async function packages(this: Sequence): Promise<void> {
     let packagesToRemove: string[] | undefined = []
     for (let operation of packages.operations) {
       if ('try_remove' in operation) {
-        packagesToRemove = operation.try_remove;
+        packagesToRemove = operation.try_remove
       }
       if ('try_install' in operation) {
-        packagesToInstall = operation.try_install;
+        packagesToInstall = operation.try_install
       }
     }
 
-    
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
       if (packagesToRemove != undefined) {
@@ -56,14 +54,14 @@ export default async function packages(this: Sequence): Promise<void> {
             }
           }
           await exec(`${cmd} ${this.toNull}`, this.echo)
-          let autoremove =`chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
+          let autoremove = `chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
           await exec(autoremove, this.echo)
         }
       }
 
       if (packagesToInstall != undefined) {
         if (packagesToInstall.length > 0) {
-        let cmd = `chroot ${this.installTarget} apt-get install -y `
+          let cmd = `chroot ${this.installTarget} apt-get install -y `
           for (const elem of packagesToInstall) {
             cmd += elem + ' '
           }
@@ -72,12 +70,10 @@ export default async function packages(this: Sequence): Promise<void> {
           await exec(`${cmd} ${this.toNull}`, this.echo)
         }
       }
-
     } else if (packages.backend === 'pacman') {
-
       // arch/manjaro
       if (packagesToRemove != undefined) {
-          if (packagesToRemove.length > 0) {
+        if (packagesToRemove.length > 0) {
           let cmd = `chroot ${this.installTarget} pacman -R\n`
           for (const elem of packagesToRemove) {
             cmd += elem + ' '
@@ -96,4 +92,3 @@ export default async function packages(this: Sequence): Promise<void> {
     }
   }
 }
-

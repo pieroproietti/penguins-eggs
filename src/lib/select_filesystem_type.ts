@@ -12,7 +12,7 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 
 import Pacman from '../classes/pacman.js'
-import {IPartitions} from '../interfaces/index.js'
+import { IPartitions } from '../interfaces/index.js'
 
 export default async function selectFileSystemType(): Promise<string> {
   let partitions = {} as IPartitions
@@ -33,8 +33,8 @@ export default async function selectFileSystemType(): Promise<string> {
       default: partitions.defaultFileSystemType,
       message: 'Select file system tyèe',
       name: 'fileSystemChoices',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

@@ -11,7 +11,7 @@ import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
-import {IPartitions} from '../interfaces/index.js'
+import { IPartitions } from '../interfaces/index.js'
 
 export default async function selectUserSwapChoice(): Promise<string> {
   let partitions = {} as IPartitions
@@ -28,8 +28,8 @@ export default async function selectUserSwapChoice(): Promise<string> {
       default: partitions.initialSwapChoice,
       message: 'Select the swap choice',
       name: 'userSwapChoices',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

@@ -16,8 +16,8 @@ export default async function getDomain(initial = ''): Promise<string> {
         default: initial,
         message: 'What is domain of this network? ',
         name: 'domain',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

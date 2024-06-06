@@ -19,22 +19,17 @@ import { IRemix } from '../interfaces/index.js'
 export default class Calamares extends Command {
   static description = 'configure calamares or install or configure it'
 
-  static examples = [
-    'sudo eggs calamares',
-    'sudo eggs calamares --install',
-    'sudo eggs calamares --install --theme=/path/to/theme',
-    'sudo eggs calamares --remove',
-  ]
+  static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    install: Flags.boolean({ char: 'i', description: "install calamares and its dependencies" }),
+    install: Flags.boolean({ char: 'i', description: 'install calamares and its dependencies' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     policies: Flags.boolean({ char: 'p', description: 'configure calamares policies' }),
-    release: Flags.boolean({ char: 'r', description: "release: remove calamares and all its dependencies after the installation" }),
-    remove: Flags.boolean({ description: "remove calamares and its dependencies" }),
+    release: Flags.boolean({ char: 'r', description: 'release: remove calamares and all its dependencies after the installation' }),
+    remove: Flags.boolean({ description: 'remove calamares and its dependencies' }),
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
-    verbose: Flags.boolean({ char: 'v' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   incubator = {} as Incubator
@@ -49,13 +44,13 @@ export default class Calamares extends Command {
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
-    const {verbose} = flags
+    const { verbose } = flags
 
-    const {remove} = flags
+    const { remove } = flags
 
-    const {install} = flags
+    const { install } = flags
 
-    const {release} = flags
+    const { release } = flags
 
     let theme = 'eggs'
     if (flags.theme !== undefined) {
@@ -77,8 +72,8 @@ export default class Calamares extends Command {
     }
 
     console.log(`theme: ${theme}`)
-    let {policies} = flags
-    const {nointeractive} = flags
+    let { policies } = flags
+    const { nointeractive } = flags
 
     if (Utils.isRoot(this.id)) {
       let installer = 'krill'
@@ -87,7 +82,7 @@ export default class Calamares extends Command {
       }
 
       if (installer === 'calamares') {
-        if (!nointeractive || await Utils.customConfirm('Select yes to continue...')) {
+        if (!nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
           if (remove) {
             if (Pacman.calamaresExists()) {
               await Pacman.calamaresRemove()
@@ -115,8 +110,8 @@ export default class Calamares extends Command {
         }
 
         /**
-        * Configure
-        */
+         * Configure
+         */
         if (await this.settings.load()) {
           Utils.warning(`Configuring ${installer}`)
           await this.settings.loadRemix(this.settings.config.snapshot_basename, theme)
@@ -136,4 +131,3 @@ export default class Calamares extends Command {
     }
   }
 }
-

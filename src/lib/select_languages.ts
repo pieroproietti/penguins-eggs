@@ -21,8 +21,8 @@ export default async function selectLanguages(selectedLanguage = ''): Promise<st
       default: selected,
       message: 'Select language: ',
       name: 'language',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {

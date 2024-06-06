@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/tools.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -69,7 +69,6 @@ export default class Tools {
 
       const prefix = settings.config.snapshot_prefix
       this.snapshot_name = prefix + settings.config.snapshot_basename + '_' + Utils.uefiArch()
-      
     } else {
       console.log(`Can't find: ${this.tools_yaml}`)
       process.exit(1)

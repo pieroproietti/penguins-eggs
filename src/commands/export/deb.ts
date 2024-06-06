@@ -6,30 +6,26 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 
 export default class ExportDeb extends Command {
   static description = 'export deb/docs/iso to the destination host'
 
-  static examples=[
-    'eggs export deb',
-    'eggs export deb --clean',
-    'eggs export deb --all',
-  ]
+  static examples = ['eggs export deb', 'eggs export deb --clean', 'eggs export deb --all']
 
   static flags = {
-    all: Flags.boolean({char: 'a', description: 'export all archs'}),
-    clean: Flags.boolean({char: 'c', description: 'remove old .deb before to copy'}),
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    all: Flags.boolean({ char: 'a', description: 'export all archs' }),
+    clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(ExportDeb)
+    const { args, flags } = await this.parse(ExportDeb)
     Utils.titles(this.id + ' ' + this.argv)
 
     const Tu = new Tools()

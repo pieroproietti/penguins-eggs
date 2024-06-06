@@ -12,14 +12,14 @@ import fs from 'node:fs'
 import Sequence from '../sequence.js'
 
 /* localeCfg
-* Enable the configured locales (those set by the user on the
-* user page) in /etc/locale.gen, if they are available in the
-* target system.
-*/
+ * Enable the configured locales (those set by the user on the
+ * user page) in /etc/locale.gen, if they are available in the
+ * target system.
+ */
 export default async function localeCfg(this: Sequence) {
   /**
-    * influence: - locale-gen
-    */
+   * influence: - locale-gen
+   */
   let supporteds: string[] = []
   if (this.distro.familyId === 'debian') {
     // Format: en_US.UTF-8 UTF-8
@@ -30,7 +30,8 @@ export default async function localeCfg(this: Sequence) {
 
     // Original Format: #en_US.UTF-8 UTF-8
     for (let line of supportedsSource) {
-      if (line.slice(0, 2) !== '# ') { // se non è un commento
+      if (line.slice(0, 2) !== '# ') {
+        // se non è un commento
         line = line.slice(1) // Rimuove #
       }
 
@@ -53,7 +54,7 @@ export default async function localeCfg(this: Sequence) {
   localeGenDest += '\n'
   localeGenDest += krillBookmark
 
-  const locales: string []  = []
+  const locales: string[] = []
   if (this.language !== 'en_US.UTF-8') {
     locales.push('en_US.UTF-8')
   }
@@ -69,4 +70,3 @@ export default async function localeCfg(this: Sequence) {
 
   fs.writeFileSync(`${this.installTarget}/etc/locale.gen`, localeGenDest)
 }
-

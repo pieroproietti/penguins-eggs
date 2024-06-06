@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
 
 import Utils from '../../classes/utils.js'
@@ -15,21 +15,18 @@ import Xdg from '../../classes/xdg.js'
 export default class Skel extends Command {
   static description = 'update skel from home configuration'
 
-  static examples = [
-    'sudo eggs tools skel',
-    'sudo eggs tools skel --user user-to-be-copied',
-  ]
+  static examples = ['sudo eggs tools skel', 'sudo eggs tools skel --user user-to-be-copied']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    user: Flags.string({char: 'u', description: 'user to be used'}),
-    verbose: Flags.boolean({char: 'v'}),
+    help: Flags.help({ char: 'h' }),
+    user: Flags.string({ char: 'u', description: 'user to be used' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const {flags} = await this.parse(Skel)
+    const { flags } = await this.parse(Skel)
 
     let verbose = false
     if (flags.verbose) {

@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/pxe.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -22,11 +22,11 @@ import Settings from './settings.js'
 import Utils from './utils.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-* Pxe:
-*/
+ * Pxe:
+ */
 export default class Pxe {
   bootLabel = ''
 
@@ -50,8 +50,8 @@ export default class Pxe {
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
 
     /**
-         * ipxe.efi
-         */
+     * ipxe.efi
+     */
     await this.tryCatch(`ln -s ${__dirname}/../../ipxe/ipxe.efi ${this.pxeRoot}/ipxe.efi`)
 
     // pxe
@@ -83,8 +83,8 @@ export default class Pxe {
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     if (this.settings.distro.familyId === 'debian') {
       /**
-      * DEBIAN
-      */
+       * DEBIAN
+       */
       const clid = this.settings.distro.codenameLikeId
       if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
         content += 'kernel vmlinuz\n'
@@ -95,8 +95,8 @@ export default class Pxe {
       }
     } else if (distro.familyId === 'archlinux') {
       /**
-      * ARCH LINUX
-      */
+       * ARCH LINUX
+       */
       let tool = 'archiso'
       if (distro.distroId === 'ManjaroLinux') {
         tool = 'miso'
@@ -208,15 +208,15 @@ export default class Pxe {
     this.pxeRoot = this.nest + '/pxe'
 
     /**
-    * se pxeRoot non esiste viene creato
-    */
+     * se pxeRoot non esiste viene creato
+     */
     if (!fs.existsSync(this.pxeRoot)) {
       await exec(`mkdir ${this.pxeRoot} -p`)
     }
 
     /**
-    * Ricerca delle ISOs
-    */
+     * Ricerca delle ISOs
+     */
     const isos: string[] = []
 
     /*
@@ -233,9 +233,9 @@ export default class Pxe {
     */
 
     /**
-    * installed: /home/eggs/mnt/iso/live
-    * live: this.iso/live
-    */
+     * installed: /home/eggs/mnt/iso/live
+     * live: this.iso/live
+     */
     const pathFiles = this.eggRoot + 'live'
     const files = fs.readdirSync(pathFiles)
     for (const file of files) {
@@ -259,8 +259,8 @@ export default class Pxe {
     }
 
     /**
-    * bootLabel
-    */
+     * bootLabel
+     */
     this.bootLabel = 'not found'
     if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
       const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf8')
@@ -282,7 +282,7 @@ export default class Pxe {
 
     const file = `${this.pxeRoot}/index.html`
     let content = ''
-    content += '<html><title>Penguin\'s eggs PXE server</title>'
+    content += "<html><title>Penguin's eggs PXE server</title>"
     content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
     content += '<h1>Cucko PXE server</h1>'
     content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
@@ -297,30 +297,32 @@ export default class Pxe {
       content += '</li>'
     }
 
-    content += 'source: <a href=\'https://github.com/pieroproietti/penguins-eggs\'>https://github.com/pieroproietti/penguins-eggs</a><br/>'
-    content += 'manual: <a href=\'https://penguins-eggs.net/book/italiano9.2.html\'>italiano</a>, <a href=\'https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en\'>translated</a><br/>'
-    content += 'discuss: <a href=\'https://t.me/penguins_eggs\'>Telegram group<br/></body</html>'
+    content += "source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>"
+    content += "manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>"
+    content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
     fs.writeFileSync(file, content)
   }
 
   /**
-  * start http server for images
-  *
-  */
+   * start http server for images
+   *
+   */
   async httpStart() {
     const port = 80
     const httpRoot = this.pxeRoot + '/'
     console.log('http listening: 0.0.0.0:' + port)
 
-    const file = new (nodeStatic.Server)(httpRoot)
-    http.createServer((req: IncomingMessage, res: ServerResponse) => {
-      file.serve(req, res)
-    }).listen(port)
+    const file = new nodeStatic.Server(httpRoot)
+    http
+      .createServer((req: IncomingMessage, res: ServerResponse) => {
+        file.serve(req, res)
+      })
+      .listen(port)
   }
 
   /**
-  *
-  */
+   *
+   */
   async ipxe() {
     console.log('creating cuckoo configuration pxe: UEFI')
 
@@ -357,18 +359,18 @@ export default class Pxe {
     content += `kernel http://${Utils.address()}/vmlinuz\n`
     content += `initrd http://${Utils.address()}/initrd\n`
     /**
-         * CORRECT:
-         * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
-         */
+     * CORRECT:
+     * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
+     */
     if (this.settings.distro.familyId === 'debian') {
       /**
-      * DEBIAN
-      */
+       * DEBIAN
+       */
       content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
     } else if (this.settings.distro.familyId === 'archlinux') {
       /**
-               * ARCH LINUX
-               */
+       * ARCH LINUX
+       */
       let tool = 'archiso'
       if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris' || this.settings.distro.codenameId === 'UltimaThule') {
         tool = 'miso'
@@ -391,8 +393,8 @@ export default class Pxe {
     }
 
     /**
-         * netboot.xyz
-         */
+     * netboot.xyz
+     */
     content += ':netboot\n'
     content += 'ifopen net0\n'
     content += 'set conn_type https\n'

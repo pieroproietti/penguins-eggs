@@ -16,24 +16,19 @@ import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 
-
 /**
  *
  */
 export default class Syncto extends Command {
-  static description = 'Save users and users\' data ENCRYPTED'
+  static description = "Save users and users' data ENCRYPTED"
 
-  static examples = [
-    'sudo eggs syncto',
-    'sudo eggs syncto --file /path/to/luks-volume',
-    'sudo eggs syncto --excludes'
-  ]
+  static examples = ['sudo eggs syncto', 'sudo eggs syncto --file /path/to/luks-volume', 'sudo eggs syncto --excludes']
 
   static flags = {
     excludes: Flags.boolean({ char: 'e', description: 'use: exclude.list.d/home.list' }),
     file: Flags.string({ char: 'f', description: 'file luks-volume encrypted' }),
     help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   echo = {}
@@ -55,7 +50,6 @@ export default class Syncto extends Command {
   settings = {} as Settings
 
   verbose = false
-
 
   /**
    *
@@ -100,8 +94,8 @@ export default class Syncto extends Command {
     await exec(`cp -a /etc/passwd /tmp/dummyfs/etc`, this.echo)
     await exec(`cp -a /etc/group /tmp/dummyfs/etc`, this.echo)
     await exec(`cp -a /etc/shadow /tmp/dummyfs/etc`, this.echo)
-    await exec(`mkdir -p /tmp/dummyfs/etc/lightdm`, this.echo)                          // lightdm
-    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/dummyfs/etc/lightdm/`, this.echo)  // lightdm  
+    await exec(`mkdir -p /tmp/dummyfs/etc/lightdm`, this.echo) // lightdm
+    await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/dummyfs/etc/lightdm/`, this.echo) // lightdm
 
     let mkPrivateSquashfs = `mksquashfs \
                               /tmp/dummyfs/etc \
@@ -117,29 +111,29 @@ export default class Syncto extends Command {
     await exec(mkPrivateSquashfs, Utils.setEcho(true))
 
     // remove dummyfs
-    await exec (`rm /tmp/dummyfs/ -rf`, this.echo)
+    await exec(`rm /tmp/dummyfs/ -rf`, this.echo)
 
     // ==========================================================================
     // Create LUKS volume
     // ==========================================================================
-    Utils.titles("Creating LUKS Volume")
+    Utils.titles('Creating LUKS Volume')
 
     // calcolo size
-    const sizeString=(await exec(`unsquashfs -s /tmp/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data
+    const sizeString = (await exec(`unsquashfs -s /tmp/${this.privateSquashfs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data
     let size = Number.parseInt(sizeString) + 2048
-    console.log("size private.squashfs:", bytesToGB(size), size)
+    console.log('size private.squashfs:', bytesToGB(size), size)
 
     const luksBlockSize = 512
     const luksBlocks = Math.ceil(size / luksBlockSize)
-    size=luksBlockSize*luksBlocks
+    size = luksBlockSize * luksBlocks
 
     // Aggiungo un 20% in più per ottenere luksSize
-    const luksSize = Math.ceil((size)*1.2)
-    console.log("luksSize:", bytesToGB(luksSize), luksSize)
+    const luksSize = Math.ceil(size * 1.2)
+    console.log('luksSize:', bytesToGB(luksSize), luksSize)
 
     // truncate * 2048 è cruciale
-    const truncateAt=luksSize*2048
-    
+    const truncateAt = luksSize * 2048
+
     Utils.warning(`Preparing file ${this.luksFile} for ${this.luksDevice}, size ${truncateAt}`)
     await exec(`truncate --size ${luksSize} ${this.luksFile}`, this.echo)
 
@@ -149,7 +143,7 @@ export default class Syncto extends Command {
 
     // open LUKS volume temp
     Utils.warning(`Opening LUKS Volume on ${this.luksFile}`)
-    const {code} = await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
+    const { code } = await exec(`cryptsetup luksOpen ${this.luksFile} ${this.luksName}`, Utils.setEcho(true))
     if (code != 0) {
       Utils.error(`cryptsetup luksOpen ${this.luksFile} ${this.luksName} failed`)
       process.exit(code)
@@ -169,7 +163,7 @@ export default class Syncto extends Command {
 
     if (!Utils.isMountpoint(`${this.luksMountpoint}`)) {
       Utils.warning(`mounting volume: ${this.luksDevice} on ${this.luksMountpoint}`)
-      const {code} = await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))
+      const { code } = await exec(`mount ${this.luksDevice} ${this.luksMountpoint}`, Utils.setEcho(true))
       if (code != 0) {
         Utils.error(`mount ${this.luksDevice} ${this.luksMountpoint} failed`)
         process.exit(code)
@@ -221,6 +215,6 @@ export default class Syncto extends Command {
  * Convert bytes to gigabytes
  */
 function bytesToGB(bytes: number): string {
-  const gigabytes = bytes / 1_073_741_824;
-  return gigabytes.toFixed(2) + ' GB';
+  const gigabytes = bytes / 1_073_741_824
+  return gigabytes.toFixed(2) + ' GB'
 }

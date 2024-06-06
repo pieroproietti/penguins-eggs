@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 /**
  * installer
  *
@@ -25,8 +24,8 @@ import Pacman from '../../classes/pacman.js'
 import { IInstaller, IRemix } from '../../interfaces/index.js'
 
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
 export function installer(): IInstaller {
   const installer = {} as IInstaller
@@ -41,7 +40,7 @@ export function installer(): IInstaller {
   } else {
     installer.name = 'krill'
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
-    installer.multiarch = Pacman.distro().usrLibPath + '/krill/' 
+    installer.multiarch = Pacman.distro().usrLibPath + '/krill/'
   }
 
   installer.modules = installer.configRoot + 'modules/'

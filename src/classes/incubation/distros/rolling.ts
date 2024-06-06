@@ -12,8 +12,8 @@ import Pacman from '../../pacman.js'
 import Fisherman from '../fisherman.js'
 
 /**
-  *
-  */
+ *
+ */
 export class Rolling {
   distro: IDistro
 
@@ -50,8 +50,8 @@ export class Rolling {
   }
 
   /**
-  * locale, partitions, users can come from themes
-  */
+   * locale, partitions, users can come from themes
+   */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
@@ -84,7 +84,7 @@ export class Rolling {
     await fisherman.shellprocess('removelink')
 
     /**
-     * cfs: custom final steps   
+     * cfs: custom final steps
      */
     const cfs = new CFS()
     const steps = await cfs.steps()

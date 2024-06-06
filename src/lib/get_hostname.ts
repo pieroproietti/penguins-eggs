@@ -9,7 +9,6 @@
 'use strict'
 import inquirer from 'inquirer'
 
-
 export default async function getHostname(initial: string): Promise<string> {
   return new Promise((resolve) => {
     const questions: Array<Record<string, any>> = [
@@ -17,8 +16,8 @@ export default async function getHostname(initial: string): Promise<string> {
         default: initial,
         message: 'Choose a name for this computer? ',
         name: 'hostname',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

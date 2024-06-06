@@ -7,22 +7,22 @@
  */
 
 export interface IXkbModel {
-    code: string,
-    description: string
+  code: string
+  description: string
 }
 
 export interface IXkbLayout {
-    code: string,
-    description: string
+  code: string
+  description: string
 }
 
 export interface IXkbVariant {
-    code: string,
-    description: string
-    lang: string,
+  code: string
+  description: string
+  lang: string
 }
 
 export interface IXkbOption {
-    code: string
-    description: string
+  code: string
+  description: string
 }

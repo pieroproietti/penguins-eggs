@@ -9,12 +9,12 @@
 
 import fs from 'node:fs'
 
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
-   * mountFs
-   */
+ * mountFs
+ */
 export async function mountFs(this: Sequence): Promise<boolean> {
   if (!fs.existsSync(this.installTarget)) {
     await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
@@ -72,4 +72,3 @@ export async function umountFs(this: Sequence): Promise<boolean> {
 
   return true
 }
-

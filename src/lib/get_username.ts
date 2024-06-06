@@ -15,8 +15,8 @@ export default async function getUsername(initial: string): Promise<string> {
         default: initial,
         message: 'What is your name? ',
         name: 'name',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

@@ -8,12 +8,12 @@
  */
 
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
-* mkfs
-*/
+ * mkfs
+ */
 export default async function mkfs(this: Sequence): Promise<boolean> {
   const result = true
 
@@ -52,7 +52,6 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     // await exec(`btrfs subvolume create /var/lib/AccountsService ${this.toNull}`, this.echo)
     // await exec(`btrfs subvolume create /var/lib/blueman ${this.toNull}`, this.echo)
     // await exec(`btrfs subvolume create /tmp ${this.toNull}`, this.echo)
-
   }
 
   return result

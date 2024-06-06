@@ -6,14 +6,14 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
-import path  from 'node:path'
+import path from 'node:path'
 
 import Distro from '../classes/distro.js'
 import Utils from '../classes/utils.js'
 import { IRemix } from '../interfaces/index.js'
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 
 /**
  *
@@ -21,26 +21,23 @@ import {exec} from '../lib/utils.js'
 export default class Syncfrom extends Command {
   static description = 'restore users and user data from a LUKS volumes'
 
-  static examples = [
-    'sudo eggs syncfrom',
-    'sudo eggs syncfrom --file /path/to/luks-volume',
-  ]
+  static examples = ['sudo eggs syncfrom', 'sudo eggs syncfrom --file /path/to/luks-volume']
 
   static flags = {
-    delete: Flags.string({description: 'rsync --delete delete extraneous files from dest dirs'}),
-    file: Flags.string({char: 'f', description: 'file containing luks-volume encrypted'}),
-    help: Flags.help({char: 'h'}),
-    rootdir: Flags.string({char: 'r', description: 'rootdir of the installed system, when used from live'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    delete: Flags.string({ description: 'rsync --delete delete extraneous files from dest dirs' }),
+    file: Flags.string({ char: 'f', description: 'file containing luks-volume encrypted' }),
+    help: Flags.help({ char: 'h' }),
+    rootdir: Flags.string({ char: 'r', description: 'rootdir of the installed system, when used from live' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   echo = {}
 
-  luksName = 'luks-volume' 
+  luksName = 'luks-volume'
 
   luksDevice = `/dev/mapper/${this.luksName}`
 
-  luksFile = ""
+  luksFile = ''
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
@@ -51,8 +48,8 @@ export default class Syncfrom extends Command {
   verbose = false
 
   /**
-  *
-  */
+   *
+   */
   async luksClose() {
     if (Utils.isMountpoint(this.luksMountpoint)) {
       await exec(`umount ${this.luksMountpoint}`, this.echo)
@@ -88,7 +85,7 @@ export default class Syncfrom extends Command {
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(Syncfrom)
+    const { flags } = await this.parse(Syncfrom)
 
     if (flags.verbose) {
       this.verbose = true
@@ -117,7 +114,7 @@ export default class Syncfrom extends Command {
     if (Utils.isRoot()) {
       if (fileVolume === '') {
         const distro = new Distro()
-        fileVolume=`${distro.liveMediumPath}live/${this.luksName}`
+        fileVolume = `${distro.liveMediumPath}live/${this.luksName}`
       }
 
       if (Utils.isLive()) {
@@ -167,7 +164,7 @@ export default class Syncfrom extends Command {
       Utils.warning('Restoring crypted data')
 
       // Rimozione dei file esistenti
-      await exec(`rm -rf ${this.rootDir}/etc/lightdm/lightdm.conf`, this.echo)      
+      await exec(`rm -rf ${this.rootDir}/etc/lightdm/lightdm.conf`, this.echo)
       await exec(`rm -rf ${this.rootDir}/etc/passwd`, this.echo)
       await exec(`rm -rf ${this.rootDir}/etc/group`, this.echo)
       await exec(`rm -rf ${this.rootDir}/etc/shadow`, this.echo)
@@ -181,4 +178,3 @@ export default class Syncfrom extends Command {
     await this.luksClose()
   }
 }
-

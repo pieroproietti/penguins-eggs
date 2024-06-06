@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 
 import Information from '../components/information.js'
 
@@ -16,20 +16,18 @@ import Information from '../components/information.js'
 export default class Status extends Command {
   static description = 'informations about eggs status'
 
-  static examples = [
-    'eggs status',
-  ]
+  static examples = ['eggs status']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v'}),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   /**
    *
    */
   async run(): Promise<void> {
-    const {flags} = await this.parse(Status)
+    const { flags } = await this.parse(Status)
 
     let verbose = false
     if (flags.verbose) {

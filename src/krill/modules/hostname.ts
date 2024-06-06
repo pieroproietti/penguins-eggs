@@ -15,11 +15,11 @@ import Sequence from '../sequence.js'
  * hostname
  */
 export default async function hostname(this: Sequence, domain = ''): Promise<void> {
-  const {hostname} = this.users
+  const { hostname } = this.users
 
   /**
-     * hostname
-     */
+   * hostname
+   */
   {
     const file = this.installTarget + '/etc/hostname'
     const text = hostname
@@ -27,8 +27,8 @@ export default async function hostname(this: Sequence, domain = ''): Promise<voi
   }
 
   /**
-     * hosts
-     */
+   * hosts
+   */
   {
     const file = this.installTarget + '/etc/hosts'
 
@@ -40,10 +40,10 @@ export default async function hostname(this: Sequence, domain = ''): Promise<voi
     if (this.network.addressType === 'static') {
       text += `${this.network.address} ${hostname} ${hostname}${domain} pvelocalhost pvelocalhost.pvelocaldomain\n`
     } else if (domain === '') {
-        text += `127.0.1.1 ${hostname}\n`        
-      } else {
-        text += `127.0.1.1 ${hostname} ${hostname}${domain}\n`
-      }
+      text += `127.0.1.1 ${hostname}\n`
+    } else {
+      text += `127.0.1.1 ${hostname} ${hostname}${domain}\n`
+    }
 
     text += '# The following lines are desirable for IPv6 capable hosts\n'
     text += ':: 1     ip6 - localhost ip6 - loopback\n'
@@ -55,4 +55,3 @@ export default async function hostname(this: Sequence, domain = ''): Promise<voi
     fs.writeFileSync(file, text)
   }
 }
-

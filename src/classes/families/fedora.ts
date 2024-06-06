@@ -6,12 +6,10 @@
  * license: MIT
  */
 
-
-
 import fs from 'node:fs'
 import shx from 'shelljs'
 
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -38,7 +36,6 @@ export default class Fedora {
    */
   static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    
   }
 
   /**
@@ -51,7 +48,7 @@ export default class Fedora {
     if (fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
-    
+
     // yay???
     await exec('yay -Rns calamares', echo)
     return retVal
@@ -80,7 +77,7 @@ export default class Fedora {
   static async packageAvailable(packageName: string): Promise<boolean> {
     let available = false
     const cmd = `/usr/bin/dnf list --available ${packageName} | grep Package:`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       available = true
     }
@@ -95,7 +92,7 @@ export default class Fedora {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/dnf install ${packageName}`, {silent: true}) === '0') {
+    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: true }) === '0') {
       retVal = true
     }
 
@@ -110,7 +107,7 @@ export default class Fedora {
     let installed = false
     // rpm -qa | grep -i nano
     const cmd = `/usr/bin/dnf list --installed ${packageName}`
-    const stdout = shx.exec(cmd, {silent: true}).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }

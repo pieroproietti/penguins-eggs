@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/daddy.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -14,9 +14,8 @@ import path from 'node:path'
 import Pacman from '../classes/pacman.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import {IEggsConfig} from '../interfaces/i-eggs-config.js'
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
+import { IEggsConfig } from '../interfaces/i-eggs-config.js'
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 interface editConf {
   compression: string
@@ -56,39 +55,39 @@ export default class Daddy {
           default: c.snapshot_prefix,
           message: 'LiveCD iso prefix: ',
           name: 'snapshot_prefix',
-          type: 'input',
+          type: 'input'
         },
         {
           default: c.snapshot_basename,
           message: 'LiveCD iso basename: ',
           name: 'snapshot_basename',
-          type: 'input',
+          type: 'input'
         },
         {
           default: c.user_opt,
           message: 'LiveCD user:',
           name: 'user_opt',
-          type: 'input',
+          type: 'input'
         },
         {
           default: c.user_opt_passwd,
           message: 'LiveCD user password: ',
           name: 'user_opt_passwd',
-          type: 'input',
+          type: 'input'
         },
         {
           default: c.root_passwd,
           message: 'LiveCD root password: ',
           name: 'root_passwd',
-          type: 'input',
+          type: 'input'
         },
         {
           choices: ['fast', 'max'],
           default: compressionOpt,
           message: 'LiveCD compression: ',
           name: 'compression',
-          type: 'list',
-        },
+          type: 'list'
+        }
       ]
       inquirer.prompt(questions).then((options: any) => {
         resolve(JSON.stringify(options))
@@ -102,7 +101,6 @@ export default class Daddy {
       console.log('- creating configuration dir...')
       await Pacman.configurationInstall(verbose)
     }
-
 
     // Templates
     if (!Pacman.distroTemplateCheck()) {

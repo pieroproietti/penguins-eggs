@@ -8,7 +8,7 @@
  * license: MIT
  */
 
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 import Utils from './utils.js'
 
 export default class SistemdCtl {
@@ -43,12 +43,12 @@ export default class SistemdCtl {
   async isActive(service: string) {
     return new Promise((resolve, reject) => {
       exec(`systemctl is-active ${service}`, this.echo)
-      .then(result => {
-        resolve(!result.data.includes('inactive'))
-      })
-      .catch((error) => {
-        resolve(false)
-      })
+        .then((result) => {
+          resolve(!result.data.includes('inactive'))
+        })
+        .catch((error) => {
+          resolve(false)
+        })
     })
   }
 
@@ -58,12 +58,12 @@ export default class SistemdCtl {
   async isEnabled(service: string) {
     return new Promise((resolve, reject) => {
       exec(`systemctl is-enabled ${service}`, this.echo)
-      .then(result => {
-        resolve(result.data.includes('enabled'))
-      })
-      .catch((error) => {
-        resolve(false)
-      })
+        .then((result) => {
+          resolve(result.data.includes('enabled'))
+        })
+        .catch((error) => {
+          resolve(false)
+        })
     })
   }
 

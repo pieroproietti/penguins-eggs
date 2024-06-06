@@ -23,22 +23,18 @@ import { IMateria } from '../../interfaces/index.js'
  */
 export default class List extends Command {
   static args = {
-    repo: Args.string({description: 'wardrobe to get', name: 'wardrobe', required: false}),
+    repo: Args.string({ description: 'wardrobe to get', name: 'wardrobe', required: false })
   }
 
   // static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
   static description = 'list costumes and accessoires in wardrobe'
 
-  static examples = [
-    'eggs wardrobe list',
-    'eggs wardrobe list your-wardrobe',
-    'eggs wardrobe list --distro arch',
-  ]
+  static examples = ['eggs wardrobe list', 'eggs wardrobe list your-wardrobe', 'eggs wardrobe list --distro arch']
 
   static flags = {
     distro: Flags.string({ char: 'd', description: 'distro' }),
     help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {
@@ -53,13 +49,13 @@ export default class List extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     /**
-    * wardobe
-    */
+     * wardobe
+     */
     let wardrobe = await Utils.wardrobe()
 
     if (flags.distro === undefined && this.argv['0'] !== undefined) {
-        wardrobe = this.argv['0']
-      }
+      wardrobe = this.argv['0']
+    }
 
     /**
      * seleziona distro
@@ -67,32 +63,32 @@ export default class List extends Command {
     let index = ''
     const distro = new Distro()
     switch (distro.distroLike) {
-    case "Arch": {
-      index = 'arch'
-    
-    break;
-    }
+      case 'Arch': {
+        index = 'arch'
 
-    case "Debian": 
-    case "Devuan": {
-      index = 'debian'
-    
-    break;
-    }
+        break
+      }
 
-    case "Ubuntu": {
-      index = 'ubuntu'
-    
-    break;
-    }
-    // No default
+      case 'Debian':
+      case 'Devuan': {
+        index = 'debian'
+
+        break
+      }
+
+      case 'Ubuntu': {
+        index = 'ubuntu'
+
+        break
+      }
+      // No default
     }
 
     if (flags.distro !== undefined) {
       index = flags.distro
     }
 
-    index+='.yml'
+    index += '.yml'
 
     console.log(chalk.green('wardrobe: ') + wardrobe)
     console.log()
@@ -105,8 +101,8 @@ export default class List extends Command {
     }
 
     /**
-    * costumes
-    */
+     * costumes
+     */
     const costumes = fs.readdirSync(`${wardrobe}costumes/`)
     console.log(chalk.green('costumes: '))
     for (const costume of costumes) {
@@ -153,7 +149,7 @@ export default class List extends Command {
     console.log(chalk.green('vendors/themes: '))
     for (const vendor of vendors) {
       if (fs.existsSync(`${wardrobe}/vendors/${vendor}/theme`)) {
-        console.log('- ' + chalk.cyan(vendor)) 
+        console.log('- ' + chalk.cyan(vendor))
       }
     }
   }

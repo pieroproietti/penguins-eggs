@@ -10,23 +10,20 @@
 import Sequence from '../sequence.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
- 
-  /**
- * 
- * @param mountpoint 
+
+/**
+ *
+ * @param mountpoint
  */
- export default async function umount(this: Sequence, mountPoint = '') {
-    let message = 'umount: ' + mountPoint
-    if (Utils.isMountpoint(mountPoint)) {
-        try {
-            await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
-            await exec('sleep 1', this.echo)
-        } catch (error) {
-            message += + mountPoint + JSON.stringify(error)
-            await Utils.pressKeyToExit(message)
-        }
+export default async function umount(this: Sequence, mountPoint = '') {
+  let message = 'umount: ' + mountPoint
+  if (Utils.isMountpoint(mountPoint)) {
+    try {
+      await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
+      await exec('sleep 1', this.echo)
+    } catch (error) {
+      message += +mountPoint + JSON.stringify(error)
+      await Utils.pressKeyToExit(message)
     }
+  }
 }
-
-
-

@@ -10,7 +10,7 @@ export default class IAnalyze {
   gecos = ''
   gid = ''
   home = ''
-  login =''
+  login = ''
   password = ''
   shell = ''
   size = 0

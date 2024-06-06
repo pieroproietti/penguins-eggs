@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/pve-live.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -21,8 +21,7 @@ import shx from 'shelljs'
 import Systemctl from './systemctl.js'
 
 // _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class PveLive {
   systemctl = {} as Systemctl

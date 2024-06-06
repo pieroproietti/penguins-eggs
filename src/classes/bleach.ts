@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/bleach.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -9,7 +9,7 @@
 import fs from 'node:fs'
 
 // libraries
-import {exec} from '../lib/utils.js'
+import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Utils from './utils.js'
 
@@ -43,9 +43,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanApt(verbose = false) {
-    let echo = {capture: false, echo: false, ignore: true}
+    let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
-      echo = {capture: false, echo: true, ignore: true}
+      echo = { capture: false, echo: true, ignore: true }
     }
 
     await exec('apt-get clean', echo)
@@ -74,9 +74,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanJournal(verbose = false) {
-    let echo = {capture: false, echo: false, ignore: true}
+    let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
-      echo = {capture: false, echo: true, ignore: true}
+      echo = { capture: false, echo: true, ignore: true }
       Utils.warning('cleaning journald')
     }
 
@@ -99,9 +99,9 @@ export default class Bleach {
    * @param verbose
    */
   private async cleanSystemCache(verbose = false) {
-    let echo = {capture: false, echo: false, ignore: true}
+    let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
-      echo = {capture: false, echo: true, ignore: true}
+      echo = { capture: false, echo: true, ignore: true }
       Utils.warning('cleaning system cache')
     }
 
@@ -121,9 +121,9 @@ export default class Bleach {
  * @param dest
  */
 async function rm(dest = '', verbose = false) {
-  let echo = {capture: false, echo: false, ignore: true}
+  let echo = { capture: false, echo: false, ignore: true }
   if (verbose) {
-    echo = {capture: false, echo: true, ignore: true}
+    echo = { capture: false, echo: true, ignore: true }
   }
 
   if (fs.existsSync(dest)) {
@@ -134,9 +134,9 @@ async function rm(dest = '', verbose = false) {
 }
 
 async function rmdir(dest = '', verbose = false) {
-  let echo = {capture: false, echo: false, ignore: true}
+  let echo = { capture: false, echo: false, ignore: true }
   if (verbose) {
-    echo = {capture: false, echo: true, ignore: true}
+    echo = { capture: false, echo: true, ignore: true }
   }
 
   const result: string[] = fs.readdirSync(dest)
@@ -144,4 +144,3 @@ async function rmdir(dest = '', verbose = false) {
     await exec(`rm ${dest} -rf`, echo)
   }
 }
-

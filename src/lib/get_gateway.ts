@@ -16,8 +16,8 @@ export default async function getGateway(initial: string): Promise<string> {
         default: initial,
         message: 'What is gateway of this network? ',
         name: 'gateway',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

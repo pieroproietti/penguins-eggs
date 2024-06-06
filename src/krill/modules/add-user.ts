@@ -50,4 +50,3 @@ export default async function addUser(this: Sequence, name = 'live', password = 
     await Utils.pressKeyToExit(cmd)
   }
 }
-

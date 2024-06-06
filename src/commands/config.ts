@@ -21,18 +21,14 @@ import { exec } from '../lib/utils.js'
 export default class Config extends Command {
   static description = 'Configure eggs to run it'
 
-  static examples = [
-    'sudo eggs config',
-    'sudo eggs config --clean',
-    'sudo eggs config --clean --nointeractive',
-  ]
+  static examples = ['sudo eggs config', 'sudo eggs config --clean', 'sudo eggs config --clean --nointeractive']
 
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   /**
@@ -75,17 +71,19 @@ export default class Config extends Command {
       }
     }
 
-
-    if (!noicons && // se VOGLIO le icone
-      i.calamares && Pacman.isCalamaresAvailable()) {
-        if (nointeractive) {
-          Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
-        } else {
-          Utils.warning('Installing calamares...')
-          await Pacman.calamaresInstall(verbose)
-          await Pacman.calamaresPolicies()
-        }
+    if (
+      !noicons && // se VOGLIO le icone
+      i.calamares &&
+      Pacman.isCalamaresAvailable()
+    ) {
+      if (nointeractive) {
+        Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
+      } else {
+        Utils.warning('Installing calamares...')
+        await Pacman.calamaresInstall(verbose)
+        await Pacman.calamaresPolicies()
       }
+    }
 
     if (i.needApt && !nointeractive) {
       Utils.warning('cleaning the system...')
@@ -110,9 +108,9 @@ export default class Config extends Command {
       i.efi = !Pacman.isUefi()
     }
 
-    if (!cryptedclone && !(Pacman.calamaresExists()) && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
+    if (!cryptedclone && !Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
       if (noicons) {
-        i.calamares = false 
+        i.calamares = false
       } else {
         Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
         i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
@@ -124,7 +122,7 @@ export default class Config extends Command {
       i.configurationRefresh = !Pacman.configurationMachineNew()
     }
 
-    if (i.efi || i.calamares ) {
+    if (i.efi || i.calamares) {
       i.needApt = true
     }
 
@@ -187,9 +185,9 @@ export default class Config extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(Config)
-    const {nointeractive} = flags
-    const {noicons} = flags
-    const {verbose} = flags
+    const { nointeractive } = flags
+    const { noicons } = flags
+    const { verbose } = flags
 
     if (!nointeractive) {
       Utils.titles(this.id + ' ' + this.argv)

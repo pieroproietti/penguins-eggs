@@ -8,18 +8,18 @@
  */
 
 import Utils from '../../classes/utils.js'
-import {exec} from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /**
-    * locale
-   */
+ * locale
+ */
 export default async function locale(this: Sequence) {
   /**
-     * influcence: - /etc/default/locale
-     *             - /etc/locale.conf
-     *             - /etc/timezone
-     */
+   * influcence: - /etc/default/locale
+   *             - /etc/locale.conf
+   *             - /etc/timezone
+   */
   const defaultLocale = this.language
 
   // /etc/default/locale

@@ -17,24 +17,21 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Mockup {
-
   /**
    * Mockup: calamaresInstall
    */
-  static async calamaresInstall(verbose = false): Promise<void> {
-  }
+  static async calamaresInstall(verbose = false): Promise<void> {}
 
   /**
    * Mockup: calamaresPolicies
    */
-  static async calamaresPolicies() {
-  }
+  static async calamaresPolicies() {}
 
   /**
    * Mockup: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    const removed=false
+    const removed = false
     return removed
   }
 

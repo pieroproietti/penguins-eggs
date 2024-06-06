@@ -6,12 +6,12 @@
  * license: MIT
  */
 
-import {stringify} from 'node:querystring'
+import { stringify } from 'node:querystring'
 
 export interface IRepos {
-    key: string
-    lines: string[]
-    name: string
+  key: string
+  lines: string[]
+  name: string
 }
 
 export interface IMateria {
@@ -36,10 +36,10 @@ export interface IMateria {
     preinst: string[]
     repositories: {
       sources_list: string[]
-      sources_list_d: string []
+      sources_list_d: string[]
       update: boolean
       upgrade: boolean
-    },
+    }
     try_accessories: string[]
     try_packages: string[]
     try_packages_no_install_recommends: string[]

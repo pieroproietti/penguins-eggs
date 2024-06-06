@@ -1,4 +1,4 @@
- /**
+/**
  * ./src/classes/tailor.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
@@ -10,7 +10,7 @@ import chalk from 'chalk'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 // pjson
-import { createRequire } from 'node:module';
+import { createRequire } from 'node:module'
 import path from 'node:path'
 
 import { IEggsConfig, IMateria } from '../interfaces/index.js'
@@ -19,12 +19,12 @@ import Distro from './distro.js'
 import Pacman from './pacman.js'
 import SourcesList from './sources_list.js'
 import Utils from './utils.js'
-const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
+const require = createRequire(import.meta.url)
+const pjson = require('../../package.json')
 
 /**
-*
-*/
+ *
+ */
 export default class Tailor {
   materials = {} as IMateria
   private category = 'costume'
@@ -35,22 +35,22 @@ export default class Tailor {
   private wardrobe = ''
 
   /**
-  * @param wardrobe
-  * @param costume
-  */
+   * @param wardrobe
+   * @param costume
+   */
   constructor(costume: string, category = 'costume') {
     this.costume = costume
-    this.wardrobe = path.dirname((path.dirname(costume)))
+    this.wardrobe = path.dirname(path.dirname(costume))
     this.category = category
   }
 
   /**
-  *
-  * @param packages
-  * @param verbose
-  * @param section
-  * @returns
-  */
+   *
+   * @param packages
+   * @param verbose
+   * @param section
+   * @returns
+   */
   async helperExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
     const packages_we_want = '/tmp/packages_we_want'
     const packages_not_exists = '/tmp/packages_not_exists'
@@ -61,8 +61,8 @@ export default class Tailor {
     await exec(`rm -f ${packages_exists}`)
 
     /**
-    * packages_we_want
-    */
+     * packages_we_want
+     */
     let content = ''
     packages.sort()
     for (const elem of packages) {
@@ -74,19 +74,19 @@ export default class Tailor {
     fs.writeFileSync(packages_we_want, content, 'utf-8')
 
     /**
-    * packages_exists
-    */
+     * packages_exists
+     */
     const distro = new Distro()
-    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`));
-
+    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`))
 
     /**
-    * packages_not_exists
-    */
+     * packages_not_exists
+     */
     if (verbose) {
-      await (distro.familyId === "debian" ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`));
+      await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`))
       const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
-      if (not_exist_packages.length > 1) { // Una riga c'è sempre
+      if (not_exist_packages.length > 1) {
+        // Una riga c'è sempre
         let content = ''
         // for (const elem of not_exist_packages) {
         for (let i = 0; i < not_exist_packages.length - 1; i++) {
@@ -104,9 +104,9 @@ export default class Tailor {
   }
 
   /**
-  * - check if every package if installed
-  * - if find any packages to install, install it
-  */
+   * - check if every package if installed
+   * - if find any packages to install, install it
+   */
   async helperInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
     if (packages[0] !== null) {
       const elements: string[] = []
@@ -125,8 +125,8 @@ export default class Tailor {
         }
 
         /**
-        * prova 3 volte
-        */
+         * prova 3 volte
+         */
         const limit = 3
         for (let tempts = 1; tempts < limit; tempts++) {
           this.titles(step)
@@ -140,16 +140,16 @@ export default class Tailor {
   }
 
   /**
-  *
-  */
+   *
+   */
   async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
 
     /**
-    * check curl presence
-    */
+     * check curl presence
+     */
     if (!Pacman.packageIsInstalled('curl')) {
       Utils.pressKeyToExit('In this tailoring shop we use curl. sudo apt update | apt install curl')
       process.exit()
@@ -159,103 +159,103 @@ export default class Tailor {
     const distro = new Distro()
     let tailorList = ''
     switch (distro.distroLike) {
-    case 'Debian': {
-      tailorList = `${this.costume}/debian.yml`
-      if (!fs.existsSync(tailorList)) {
-        tailorList = `${this.costume}/devuan.yml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/ubuntu.yml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Debian`)
-            process.exit()
-          }
-        }
-      }
-
-    
-    break;
-    }
-
-    case 'Devuan': {
-      tailorList = `${this.costume}/devuan.yml`
-      if (!fs.existsSync(tailorList)) {
+      case 'Debian': {
         tailorList = `${this.costume}/debian.yml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/ubuntu.yml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Devuan`)
-            process.exit()
-          }
-        }
-      }
-    
-    break;
-    }
-
-    case 'Ubuntu': {
-      tailorList = `${this.costume}/ubuntu.yml`
-      if (!fs.existsSync(tailorList)) {
-        tailorList = `${this.costume}/debian.yml`
-        console.log(`trying ` + tailorList)
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/devuan.yml`
-          console.log(`trying ` + tailorList)
           if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Ubuntu`)
-            process.exit()
+            tailorList = `${this.costume}/ubuntu.yml`
+            if (!fs.existsSync(tailorList)) {
+              console.log(`no costume definition found compatible Debian`)
+              process.exit()
+            }
           }
         }
-      }
-    
-    break;
-    }
-
-    case 'Arch': {
-      tailorList = `${this.costume}/arch.yml`
-      if (!fs.existsSync(tailorList)) {
-        tailorList = `${this.costume}/debian.yml`
-        if (!fs.existsSync(tailorList)) {
-          console.log(`no costume definition found compatible Arch`)
-          process.exit()
-        }
-      }
-    
-    break;
-    }
-    // No default
-    }
-
-    if (fs.existsSync(tailorList)) {
-      this.materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
-    } else switch (this.category) {
-      case 'costume': {
-        this.titles(`${this.category}: ${this.costume}`)
-        console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
-        console.log('Costume will not be installed, operations will abort.\n')
-        Utils.pressKeyToExit()
-        process.exit()
 
         break
       }
 
-      case 'accessory': {
-        this.titles(`${this.category}: ${this.costume}`)
-        console.log('Tailor\'s list ' + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
-        console.log('Accessory will not be installed, operations will continue.\n')
-        Utils.pressKeyToExit()
-        return
+      case 'Devuan': {
+        tailorList = `${this.costume}/devuan.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            tailorList = `${this.costume}/ubuntu.yml`
+            if (!fs.existsSync(tailorList)) {
+              console.log(`no costume definition found compatible Devuan`)
+              process.exit()
+            }
+          }
+        }
+
+        break
       }
 
-      case 'try_accessory': {
-        return
+      case 'Ubuntu': {
+        tailorList = `${this.costume}/ubuntu.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          console.log(`trying ` + tailorList)
+          if (!fs.existsSync(tailorList)) {
+            tailorList = `${this.costume}/devuan.yml`
+            console.log(`trying ` + tailorList)
+            if (!fs.existsSync(tailorList)) {
+              console.log(`no costume definition found compatible Ubuntu`)
+              process.exit()
+            }
+          }
+        }
+
+        break
+      }
+
+      case 'Arch': {
+        tailorList = `${this.costume}/arch.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Arch`)
+            process.exit()
+          }
+        }
+
+        break
       }
       // No default
     }
 
+    if (fs.existsSync(tailorList)) {
+      this.materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
+    } else
+      switch (this.category) {
+        case 'costume': {
+          this.titles(`${this.category}: ${this.costume}`)
+          console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
+          console.log('Costume will not be installed, operations will abort.\n')
+          Utils.pressKeyToExit()
+          process.exit()
+
+          break
+        }
+
+        case 'accessory': {
+          this.titles(`${this.category}: ${this.costume}`)
+          console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
+          console.log('Accessory will not be installed, operations will continue.\n')
+          Utils.pressKeyToExit()
+          return
+        }
+
+        case 'try_accessory': {
+          return
+        }
+        // No default
+      }
+
     /**
-    * distro e sources_list
-    * vengono definite qua perchè servono a tutti
-    */
+     * distro e sources_list
+     * vengono definite qua perchè servono a tutti
+     */
     const sources_list = new SourcesList()
     let step = ''
 
@@ -263,7 +263,7 @@ export default class Tailor {
       step = 'analyzing distribution'
       Utils.warning(step)
 
-      if (!await sources_list.distribution(this.materials.distributions)) {
+      if (!(await sources_list.distribution(this.materials.distributions))) {
         switch (this.category) {
           case 'costume': {
             this.titles('step')
@@ -292,20 +292,20 @@ export default class Tailor {
     }
 
     /**
-    * sequence
-    */
+     * sequence
+     */
     if (this.materials.sequence !== undefined) {
       step = 'analyzing sequence'
       Utils.warning(step)
 
       /**
-      * sequence/repositories
-      */
+       * sequence/repositories
+       */
       if (this.materials.sequence.repositories !== undefined) {
-        if (distro.familyId === "debian") {
+        if (distro.familyId === 'debian') {
           /**
-          * sequence/repositories/sources_list
-          */
+           * sequence/repositories/sources_list
+           */
           // evito di fallire se sources_list non è presente
           if (this.materials.sequence.repositories.sources_list !== undefined) {
             step = 'analyzing repositories'
@@ -316,8 +316,8 @@ export default class Tailor {
           }
 
           /**
-          * sequence/repositories/sources_list_d
-          */
+           * sequence/repositories/sources_list_d
+           */
           if (this.materials.sequence.repositories.sources_list_d !== undefined && this.materials.sequence.repositories.sources_list_d[0] !== null) {
             step = 'adding repositories to /etc/apt/sources_list_d'
             Utils.warning(step)
@@ -339,8 +339,8 @@ export default class Tailor {
         }
 
         /**
-        * sequence/repositories/update
-        */
+         * sequence/repositories/update
+         */
         if (this.materials.sequence.repositories.update === undefined) {
           console.log('repositiories, and repositories.update MUST be defined on sequence')
           process.exit()
@@ -349,25 +349,24 @@ export default class Tailor {
         step = 'repositories update'
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
-          await (distro.familyId === "debian" ? exec('apt-get update', Utils.setEcho(false)) : exec('pacman -Sy', Utils.setEcho(false)));
+          await (distro.familyId === 'debian' ? exec('apt-get update', Utils.setEcho(false)) : exec('pacman -Sy', Utils.setEcho(false)))
         }
 
         /**
-        * sequence/repositories/upgrade
-        */
+         * sequence/repositories/upgrade
+         */
         if (this.materials.sequence.repositories.upgrade !== undefined) {
           step = 'repositories upgrade'
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
-            await (distro.familyId === "debian" ? exec('apt-get full-upgrade -y', Utils.setEcho(false)) : exec('pacman -Su', Utils.setEcho(false)));
+            await (distro.familyId === 'debian' ? exec('apt-get full-upgrade -y', Utils.setEcho(false)) : exec('pacman -Su', Utils.setEcho(false)))
           } //  upgrade true
         } // undefined upgrade
-
       } // end sequence/repositories
 
       /**
-      * sequence/preinst
-      */
+       * sequence/preinst
+       */
       if (this.materials.sequence.preinst !== undefined && Array.isArray(this.materials.sequence.preinst)) {
         step = 'preinst scripts'
         Utils.warning(step)
@@ -382,8 +381,8 @@ export default class Tailor {
       }
 
       /**
-      * install packages
-      */
+       * install packages
+       */
       if (this.materials.sequence.packages !== undefined) {
         if (distro.familyId === 'debian') {
           const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
@@ -391,30 +390,24 @@ export default class Tailor {
             await this.helperInstall(packages)
           }
         } else {
-          await this.helperInstall(this.materials.sequence.packages,
-            'packages',
-            `pacman -Sy --noconfirm`)
+          await this.helperInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
         }
       }
 
-      if (distro.familyId === "debian") {
+      if (distro.familyId === 'debian') {
         /**
-        * sequence/packages_no_install_recommends
-        */
+         * sequence/packages_no_install_recommends
+         */
         if (this.materials.sequence.packages_no_install_recommends !== undefined) {
           const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
           if (packages_no_install_recommends.length > 1) {
-            await this.helperInstall(
-              packages_no_install_recommends,
-              'packages without recommends and suggests',
-              'apt-get install --no-install-recommends --no-install-suggests -yq ',
-            )
+            await this.helperInstall(packages_no_install_recommends, 'packages without recommends and suggests', 'apt-get install --no-install-recommends --no-install-suggests -yq ')
           }
         }
 
         /**
-        * sequence/try_packages
-        */
+         * sequence/try_packages
+         */
         if (this.materials.sequence.try_packages !== undefined) {
           const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
           if (try_packages.length > 1) {
@@ -423,22 +416,18 @@ export default class Tailor {
         }
 
         /**
-        * sequence/try_packages_no_install_recommends
-        */
+         * sequence/try_packages_no_install_recommends
+         */
         if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
           const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
           if (try_packages_no_install_recommends.length > 1) {
-            await this.helperInstall(
-              try_packages_no_install_recommends,
-              'try packages without recommends and suggests',
-              'apt-get install --no-install-recommends --no-install-suggests -yq ',
-            )
+            await this.helperInstall(try_packages_no_install_recommends, 'try packages without recommends and suggests', 'apt-get install --no-install-recommends --no-install-suggests -yq ')
           }
         }
 
         /**
-        * sequence/debs
-        */
+         * sequence/debs
+         */
         if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
           step = 'installing local packages'
           Utils.warning(step)
@@ -454,10 +443,9 @@ export default class Tailor {
         }
       }
 
-
       /**
-      * sequence/packages_python
-      */
+       * sequence/packages_python
+       */
       if (this.materials.sequence.packages_python !== undefined && Array.isArray(this.materials.sequence.packages_python)) {
         let cmd = 'pip install '
         let pip = ''
@@ -472,8 +460,8 @@ export default class Tailor {
       }
 
       /**
-      * sequence/accessories
-      */
+       * sequence/accessories
+       */
       if (!no_accessories) {
         // accessories
         if (this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
@@ -493,33 +481,36 @@ export default class Tailor {
           }
         }
 
-        if (distro.familyId === "debian" && // try_accessories
-          this.materials.sequence.try_accessories !== undefined && Array.isArray(this.materials.sequence.try_accessories)) {
-            step = 'wearing try_accessories'
-            for (const elem of this.materials.sequence.try_accessories) {
-              if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-                continue
-              }
+        if (
+          distro.familyId === 'debian' && // try_accessories
+          this.materials.sequence.try_accessories !== undefined &&
+          Array.isArray(this.materials.sequence.try_accessories)
+        ) {
+          step = 'wearing try_accessories'
+          for (const elem of this.materials.sequence.try_accessories) {
+            if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+              continue
+            }
 
-              if (elem.slice(0, 2) === './') {
-                const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
-                await tailor.prepare(verbose)
-              } else {
-                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
-                await tailor.prepare(verbose)
-              }
+            if (elem.slice(0, 2) === './') {
+              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
+              await tailor.prepare(verbose)
+            } else {
+              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
+              await tailor.prepare(verbose)
             }
           }
+        }
       } // no-accessories
     } // end sequence
 
     /**
-       * customize
-       */
+     * customize
+     */
     if (this.materials.customize !== undefined) {
       /**
-      * customize/dirs
-      */
+       * customize/dirs
+       */
       if (this.materials.customize.dirs && fs.existsSync(`/${this.costume}/dirs`)) {
         step = 'copying dirs'
         Utils.warning(step)
@@ -531,8 +522,8 @@ export default class Tailor {
         await exec(cmd, this.echo)
 
         /**
-        * Copyng skel in /home/user
-        */
+         * Copyng skel in /home/user
+         */
         if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
           const user = await Utils.getPrimaryUser()
           step = `copying skel in /home/${user}/`
@@ -544,8 +535,8 @@ export default class Tailor {
       }
 
       /**
-      * customize/scripts
-      */
+       * customize/scripts
+       */
       if (this.materials.customize.scripts !== undefined && Array.isArray(this.materials.customize.scripts)) {
         step = 'customize script'
         Utils.warning(step)
@@ -563,8 +554,8 @@ export default class Tailor {
     }
 
     /**
-    * reboot
-    */
+     * reboot
+     */
     if (this.materials.reboot) {
       Utils.warning('Reboot')
       await Utils.pressKeyToExit('system need to reboot', true)
@@ -583,9 +574,7 @@ export default class Tailor {
     console.log('')
     console.log(' E G G S: the reproductive system of penguins')
     console.log('')
-    console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
-      chalk.bgWhite.blue(" Perri's Brewery edition ") +
-      chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
+    console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') + chalk.bgWhite.blue(" Perri's Brewery edition ") + chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
     console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + ' ' + chalk.bgBlack.white(command) + '\n')
   }
 }

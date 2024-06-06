@@ -22,29 +22,25 @@ import { IMateria } from '../../interfaces/index.js'
  */
 export default class Show extends Command {
   static args = {
-    repo: Args.string({description: 'costume to show', name: 'costume', required: false}),
+    repo: Args.string({ description: 'costume to show', name: 'costume', required: false })
   }
 
   static description = 'show costumes/accessories in wardrobe'
   // static args = [{ name: 'costume', description: 'costume', required: false }]
-  static example = [
-    'eggs wardrobe show colibri',
-    'eggs wardrobe show accessories/firmwares',
-    'eggs wardrobe show accessories/',
-  ]
+  static example = ['eggs wardrobe show colibri', 'eggs wardrobe show accessories/firmwares', 'eggs wardrobe show accessories/']
 
   static flags = {
     help: Flags.help({ char: 'h' }),
     json: Flags.boolean({ char: 'j', description: 'output JSON' }),
     verbose: Flags.boolean({ char: 'v' }),
-    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' }),
+    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' })
   }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Show)
 
-    const {verbose} = flags
-    const {json} = flags
+    const { verbose } = flags
+    const { json } = flags
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
@@ -64,8 +60,8 @@ export default class Show extends Command {
     console.log(chalk.green('wardrobe: ') + wardrobe)
 
     /**
-       * costume
-       */
+     * costume
+     */
     let costume = 'costumes/colibri'
     if (this.argv['0'] !== undefined) {
       costume = this.argv['0']
@@ -82,30 +78,30 @@ export default class Show extends Command {
     }
 
     /**
-      * tailorList
-      */
+     * tailorList
+     */
     const distro = new Distro()
     let index = ''
     switch (distro.distroLike) {
-    case "Arch": {
-      index = 'arch.yml'
-    
-    break;
-    }
+      case 'Arch': {
+        index = 'arch.yml'
 
-    case "Debian": 
-    case "Devuan": {
-      index = 'debian.yml'
-    
-    break;
-    }
+        break
+      }
 
-    case "Debian": {      
-      index = 'ubuntu.yml'
-    
-    break;
-    }
-    // No default
+      case 'Debian':
+      case 'Devuan': {
+        index = 'debian.yml'
+
+        break
+      }
+
+      case 'Debian': {
+        index = 'ubuntu.yml'
+
+        break
+      }
+      // No default
     }
 
     const tailorList = `${costume}/${index}`
@@ -123,4 +119,3 @@ export default class Show extends Command {
     }
   }
 }
-

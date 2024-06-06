@@ -11,11 +11,11 @@ interface Packages {
 }
 
 interface IOperation {
-  try_remove?: string[];
-  try_install?: string[];
+  try_remove?: string[]
+  try_install?: string[]
 }
 
 export interface IPackages {
-  backend: string;
-  operations: IOperation[];
+  backend: string
+  operations: IOperation[]
 }

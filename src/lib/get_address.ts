@@ -16,8 +16,8 @@ export default async function getAddress(initial: string): Promise<string> {
         default: initial,
         message: 'What is ip address of this computer? ',
         name: 'address',
-        type: 'input',
-      },
+        type: 'input'
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

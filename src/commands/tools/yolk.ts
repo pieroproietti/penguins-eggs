@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
 import shx from 'shelljs'
 
@@ -20,13 +20,11 @@ export default class ToolsYolk extends Command {
   static description = 'configure eggs to install without internet'
 
   static dir = '/var/local/yolk'
-  static examples = [
-    'sudo eggs tools yolk',
-  ]
+  static examples = ['sudo eggs tools yolk']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v'}),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   /**
@@ -35,7 +33,7 @@ export default class ToolsYolk extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const {flags} = await this.parse(ToolsYolk)
+    const { flags } = await this.parse(ToolsYolk)
 
     let verbose = false
     if (flags.verbose) {

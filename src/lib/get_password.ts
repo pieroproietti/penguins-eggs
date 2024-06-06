@@ -9,7 +9,6 @@
 'use strict'
 import inquirer from 'inquirer'
 
-
 export default async function getPassword(user = 'root', initial: string): Promise<string> {
   const requireLetterAndNumber = (value: string) => {
     if (/\w/.test(value) && /\d/.test(value)) {
@@ -23,16 +22,16 @@ export default async function getPassword(user = 'root', initial: string): Promi
         default: initial,
         message: `Choose a password for ${user}: `,
         name: 'password',
-        type: 'password',
+        type: 'password'
         // validate: requireLetterAndNumber,
       },
       {
         default: initial,
         message: `Confirm your ${user} password: `,
         name: 'confirmPassword',
-        type: 'password',
+        type: 'password'
         // validate: requireLetterAndNumber,
-      },
+      }
     ]
 
     inquirer.prompt(questions).then((options: any) => {

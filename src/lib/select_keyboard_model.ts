@@ -9,16 +9,16 @@
 import inquirer from 'inquirer'
 
 import Keyboards from '../classes/keyboards.js'
-import {IXkbLayout, IXkbModel, IXkbOption, IXkbVariant} from '../interfaces/i-xkb-model.js'
+import { IXkbLayout, IXkbModel, IXkbOption, IXkbVariant } from '../interfaces/i-xkb-model.js'
 
 /**
-  *
-  */
+ *
+ */
 export default async function selectKeyboardModel(selected = ''): Promise<string> {
   const keyboards = new Keyboards()
-  const models = keyboards.getModels() as IXkbModel []
+  const models = keyboards.getModels() as IXkbModel[]
 
-  const supported : string [] = []
+  const supported: string[] = []
   for (const m of models) {
     supported.push(m.code)
   }
@@ -29,8 +29,8 @@ export default async function selectKeyboardModel(selected = ''): Promise<string
       default: selected,
       message: 'Select model: ',
       name: 'model',
-      type: 'list',
-    },
+      type: 'list'
+    }
   ]
 
   return new Promise((resolve) => {
@@ -39,4 +39,3 @@ export default async function selectKeyboardModel(selected = ''): Promise<string
     })
   })
 }
-

@@ -13,6 +13,6 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   if (this.distro.familyId === 'debian') {
     this.bootloaderConfigDebian()
   } else if (this.distro.familyId === 'archlinux') {
-    this.bootloaderConfigArch() 
+    this.bootloaderConfigArch()
   }
 }

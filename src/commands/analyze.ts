@@ -6,22 +6,22 @@
  * license: MIT
  */
 
-import {Command, Flags} from '@oclif/core'
-import fs, {constants} from 'node:fs'
-import {access} from 'node:fs/promises'
+import { Command, Flags } from '@oclif/core'
+import fs, { constants } from 'node:fs'
+import { access } from 'node:fs/promises'
 import si from 'systeminformation'
 
 import Users from '../classes/users.js'
 import Utils from '../classes/utils.js'
-import {IWorkDir} from '../interfaces/i-workdir.js'
+import { IWorkDir } from '../interfaces/i-workdir.js'
 
 export default class Analyze extends Command {
   static description = 'analyze for syncto'
 
   static examples = ['sudo eggs analyze']
   static flags = {
-    help: Flags.help({char: 'h'}),
-    verbose: Flags.boolean({char: 'v', description: 'verbose'}),
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
@@ -55,7 +55,7 @@ export default class Analyze extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const {flags} = await this.parse(Analyze)
+    const { flags } = await this.parse(Analyze)
     let verbose = false
     if (flags.verbose) {
       verbose = true
@@ -110,4 +110,3 @@ export default class Analyze extends Command {
     }
   }
 }
-

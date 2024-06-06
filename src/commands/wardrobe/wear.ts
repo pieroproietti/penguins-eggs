@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import {Args, Command, Flags} from '@oclif/core'
+import { Args, Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -19,28 +19,24 @@ import Utils from '../../classes/utils.js'
  */
 export default class Wear extends Command {
   static args = {
-    repo: Args.string({description: 'costume to wear', name: 'costume', required: false}),
+    repo: Args.string({ description: 'costume to wear', name: 'costume', required: false })
   }
 
   static description = 'wear costume/accessories from wardrobe'
-  static examples=[
-    'sudo eggs wardrobe wear duck',
-    'sudo eggs wardrobe wear accessories/firmwares',
-    'sudo eggs wardrobe wear wagtail/waydroid',
-  ]
+  static examples = ['sudo eggs wardrobe wear duck', 'sudo eggs wardrobe wear accessories/firmwares', 'sudo eggs wardrobe wear wagtail/waydroid']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    no_accessories: Flags.boolean({char: 'a', description: 'not install accessories'}),
-    no_firmwares: Flags.boolean({char: 'f', description: 'not install firmwares'}),
-    verbose: Flags.boolean({char: 'v'}),
-    wardrobe: Flags.string({char: 'w', description: 'wardrobe'}),
+    help: Flags.help({ char: 'h' }),
+    no_accessories: Flags.boolean({ char: 'a', description: 'not install accessories' }),
+    no_firmwares: Flags.boolean({ char: 'f', description: 'not install firmwares' }),
+    verbose: Flags.boolean({ char: 'v' }),
+    wardrobe: Flags.string({ char: 'w', description: 'wardrobe' })
   }
 
   async run(): Promise<void> {
-    const {argv, flags} = await this.parse(Wear)
+    const { argv, flags } = await this.parse(Wear)
 
-    const {verbose} = flags
+    const { verbose } = flags
     Utils.titles(this.id + ' ' + this.argv)
 
     let no_accessories = false
@@ -72,7 +68,7 @@ export default class Wear extends Command {
      */
     let costume = 'costumes/colibri'
     if (this.argv['0'] !== undefined) {
-      costume = this.argv['0']  // 12345678                               12345678901                              1234567
+      costume = this.argv['0'] // 12345678                               12345678901                              1234567
       if (costume.slice(0, 8) !== 'costumes' && costume.slice(0, 11) !== 'accessories' && costume.slice(0, 7) !== 'servers') {
         costume = `costumes/${costume}`
       }
@@ -97,4 +93,3 @@ export default class Wear extends Command {
     }
   }
 }
-
