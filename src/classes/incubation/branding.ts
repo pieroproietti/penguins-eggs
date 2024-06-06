@@ -24,7 +24,7 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
   // Li ridenomino per calamares
   const productUrl= homeUrl
   // const supportUrl= supportUrl
-  // const knownIssuesUrl=bugReportUrl
+  const knownIssuesUrl="https://github.com/pieroproietti/penguins-eggs/issues/"
   const releaseNotesUrl = bugReportUrl
 
   const productName = remix.versionName // Questa va nel titolo ed in basso
@@ -78,6 +78,7 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     strings: {
       productUrl,
       supportUrl,
+      knownIssuesUrl,
       releaseNotesUrl,
       bootloaderEntryName,
       productName,
