@@ -6,14 +6,15 @@
  * license: MIT
  */
 
+import dhcpd from 'node-proxy-dhcpd'
+
 // @ts-ignore
-import etrick from 'etrick'
+import tftp from 'tftp'
+
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
 import nodeStatic from 'node-static'
-// @ts-ignore
-import tftp from 'tftp'
 
 import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 import { exec } from '../lib/utils.js'
@@ -46,6 +47,7 @@ export default class Pxe {
   async bios() {
     console.log('creating cuckoo configuration pxe: BIOS')
 
+    
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
 
@@ -166,7 +168,8 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    new etrick(dhcpOptions)
+    const instance = new dhcpd();
+    //new dhcpd(dhcpOptions)
   }
 
   /**
