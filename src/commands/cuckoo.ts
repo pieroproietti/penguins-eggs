@@ -13,8 +13,6 @@ import Pxe from '../classes/pxe.js'
 import Utils from '../classes/utils.js'
 import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 
-// const tftp = require('tftp')
-
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
 
@@ -28,6 +26,8 @@ export default class Cuckoo extends Command {
     const { args, flags } = await this.parse(Cuckoo)
 
     Utils.titles(this.id + ' ' + this.argv)
+
+
     if (Utils.isRoot()) {
       const pxeRoot = nest + '/pxe'
       const pxe = new Pxe()
