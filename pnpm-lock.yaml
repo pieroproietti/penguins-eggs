@@ -45,8 +45,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       node-proxy-dhcpd:
-        specifier: ../node-proxy-dhcpd
-        version: link:../node-proxy-dhcpd
+        specifier: ^0.0.5
+        version: 0.0.5
       node-static:
         specifier: ^0.7.11
         version: 0.7.11
@@ -2277,6 +2277,9 @@ packages:
 
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
+
+  node-proxy-dhcpd@0.0.5:
+    resolution: {integrity: sha512-nZ9zrlqSND5FQZIoC8esSzLZjZPse7YZuJ+CeomdjnREXGL/3fJbtDzslhsYqECKxBzm2jsmWhh+Ni1wlALyFA==}
 
   node-static@0.7.11:
     resolution: {integrity: sha512-zfWC/gICcqb74D9ndyvxZWaI1jzcoHmf4UTHWQchBNuNMxdBLJMDiUgZ1tjGLEIe/BMhj2DxKD8HOuc2062pDQ==}
@@ -6033,6 +6036,11 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
+      tslib: 2.6.3
+
+  node-proxy-dhcpd@0.0.5:
+    dependencies:
+      netmask: 2.0.2
       tslib: 2.6.3
 
   node-static@0.7.11:
