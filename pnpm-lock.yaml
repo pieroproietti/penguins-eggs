@@ -45,8 +45,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       node-proxy-dhcpd:
-        specifier: ^0.0.5
-        version: 0.0.5
+        specifier: ../node-proxy-dhcpd
+        version: link:../node-proxy-dhcpd
       node-static:
         specifier: ^0.7.11
         version: 0.7.11
@@ -119,7 +119,7 @@ importers:
         version: 10.4.0
       oclif:
         specifier: ^4.13.0
-        version: 4.13.0(typescript@5.4.5)
+        version: 4.13.1(typescript@5.4.5)
       perrisbrewery:
         specifier: ^9.8.3
         version: 9.8.3
@@ -2278,9 +2278,6 @@ packages:
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
-  node-proxy-dhcpd@0.0.5:
-    resolution: {integrity: sha512-nZ9zrlqSND5FQZIoC8esSzLZjZPse7YZuJ+CeomdjnREXGL/3fJbtDzslhsYqECKxBzm2jsmWhh+Ni1wlALyFA==}
-
   node-static@0.7.11:
     resolution: {integrity: sha512-zfWC/gICcqb74D9ndyvxZWaI1jzcoHmf4UTHWQchBNuNMxdBLJMDiUgZ1tjGLEIe/BMhj2DxKD8HOuc2062pDQ==}
     engines: {node: '>= 0.4.1'}
@@ -2328,8 +2325,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.13.0:
-    resolution: {integrity: sha512-wStOS+OWPCxRPKK8h6A3ZIAJru2UA3e29WjXka0gheD9ZKYDdUldjjtt8tKTDfrDrGQAnRfwbeMvS66ihiBybQ==}
+  oclif@4.13.1:
+    resolution: {integrity: sha512-R/tkEB7k0unsDDaNHyZc+7NHcKwNPUMG21oCOf+Vy5qfEWD7504l55m5tGLpYpJSKwvU6c7WhMpRpPLaZhxZkA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6038,11 +6035,6 @@ snapshots:
       lower-case: 2.0.2
       tslib: 2.6.3
 
-  node-proxy-dhcpd@0.0.5:
-    dependencies:
-      netmask: 2.0.2
-      tslib: 2.6.3
-
   node-static@0.7.11:
     dependencies:
       colors: 1.4.0
@@ -6099,7 +6091,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oclif@4.13.0(typescript@5.4.5):
+  oclif@4.13.1(typescript@5.4.5):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.592.0
       '@aws-sdk/client-s3': 3.592.0
