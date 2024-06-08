@@ -8,7 +8,9 @@
 
 
 // @ts-ignore
-import {dhcpd} from 'node-proxy-dhcpd'
+// import {dhcpd} from 'node-proxy-dhcpd'
+import pkgNodeProxyDhcpd from 'node-proxy-dhcpd';
+const { dhcpd } = pkgNodeProxyDhcpd;
 
 // @ts-ignore
 import tftp from 'tftp'
