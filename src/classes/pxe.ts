@@ -210,8 +210,8 @@ export default class Pxe {
     const httpRoot = this.pxeRoot + '/'
     console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
-
-    const file = new nodeStatic.Server(httpRoot)
+    //const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
+    const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
     http
       .createServer((req: IncomingMessage, res: ServerResponse) => {
         file.serve(req, res)
@@ -349,7 +349,7 @@ export default class Pxe {
     let content = ''
     content += "<html><title>Penguin's eggs PXE server</title>"
     content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
-    content += '<h1>Cuckpo PXE server</h1>'
+    content += '<h1>Cuckoo PXE server</h1>'
     content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
     if (Utils.isLive()) {
       content += 'started from live iso image<br/>'
