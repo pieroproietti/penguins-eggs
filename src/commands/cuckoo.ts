@@ -11,6 +11,7 @@ import { Command, Flags } from '@oclif/core'
 import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
 import Utils from '../classes/utils.js'
+import Settings from '../classes/settings.js'
 import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {
@@ -22,15 +23,20 @@ export default class Cuckoo extends Command {
     help: Flags.help({ char: 'h' })
   }
 
-  async run(nest = '/home/eggs/mnt'): Promise<void> {
+  async run(): Promise<void> {
     const { args, flags } = await this.parse(Cuckoo)
 
     Utils.titles(this.id + ' ' + this.argv)
 
 
     if (Utils.isRoot()) {
-      const pxeRoot = nest + '/pxe'
-      const pxe = new Pxe()
+      const settings = new Settings()
+      settings.load()
+      
+      const nest = settings.config.snapshot_mnt
+      const pxeRoot = nest + 'pxe'
+      
+      const pxe = new Pxe(nest, pxeRoot)
       await pxe.fertilization()
       await pxe.build()
 
