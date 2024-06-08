@@ -6,7 +6,9 @@
  * license: MIT
  */
 
-import dhcpd from 'node-proxy-dhcpd'
+
+// @ts-ignore
+import {dhcpd} from 'node-proxy-dhcpd'
 
 // @ts-ignore
 import tftp from 'tftp'
@@ -168,8 +170,7 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    const instance = new dhcpd();
-    //new dhcpd(dhcpOptions)
+    const instance = new dhcpd(dhcpOptions);
   }
 
   /**
