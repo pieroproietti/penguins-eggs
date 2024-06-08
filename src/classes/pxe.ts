@@ -6,11 +6,7 @@
  * license: MIT
  */
 
-
-// @ts-ignore
-// import {dhcpd} from 'node-proxy-dhcpd'
-import pkgNodeProxyDhcpd from 'node-proxy-dhcpd';
-const { dhcpd } = pkgNodeProxyDhcpd;
+import { dhcpd } from 'node-proxy-dhcpd';
 
 // @ts-ignore
 import tftp from 'tftp'
@@ -38,13 +34,22 @@ export default class Pxe {
   echo = {}
   eggRoot = ''
   initrdImg = ''
-  isos: string[] = [] // cuckoo's nest
+  isos: string[] = [] // cuckoo's eggs
   nest = ''
   pxeRoot = ''
   settings = {} as Settings
   verbose = false
   vmlinuz = ''
 
+  /**
+   * constructor
+   * @param nest
+   * @param pxeRoot
+   */
+  constructor(nest="", pxeRoot="") {
+    this.nest = nest
+    this.pxeRoot = pxeRoot
+  }
   /**
    * configure PXE bios
    */
@@ -172,7 +177,7 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    const instance = new dhcpd(dhcpOptions);
+      new dhcpd(dhcpOptions);
   }
 
   /**
@@ -201,7 +206,6 @@ export default class Pxe {
         await exec(`mount /dev/sr0 ${this.eggRoot}`)
       }
     } else {
-      // this.eggRoot = path.dirname(this.settings.config.snapshot_mnt) + '/iso/'
       this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
     }
 
@@ -210,8 +214,8 @@ export default class Pxe {
       process.exit()
     }
 
-    this.nest = this.settings.config.snapshot_mnt
-    this.pxeRoot = this.nest + '/pxe'
+    const settings = new Settings()
+    settings.load()
 
     /**
      * se pxeRoot non esiste viene creato
@@ -239,7 +243,7 @@ export default class Pxe {
     */
 
     /**
-     * installed: /home/eggs/mnt/iso/live
+     * installed: /home/eggs/.mnt/iso/live
      * live: this.iso/live
      */
     const pathFiles = this.eggRoot + 'live'
@@ -284,13 +288,13 @@ export default class Pxe {
    * configure PXE http server
    */
   async http() {
-    console.log('creating cuckoo configuration: PXE html')
+    console.log('creating cuckoo configuration: html')
 
     const file = `${this.pxeRoot}/index.html`
     let content = ''
     content += "<html><title>Penguin's eggs PXE server</title>"
     content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
-    content += '<h1>Cucko PXE server</h1>'
+    content += '<h1>Cuckpo PXE server</h1>'
     content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
     if (Utils.isLive()) {
       content += 'started from live iso image<br/>'
@@ -316,6 +320,7 @@ export default class Pxe {
   async httpStart() {
     const port = 80
     const httpRoot = this.pxeRoot + '/'
+    console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
 
     const file = new nodeStatic.Server(httpRoot)
@@ -330,7 +335,7 @@ export default class Pxe {
    *
    */
   async ipxe() {
-    console.log('creating cuckoo configuration pxe: UEFI')
+    console.log('creating cuckoo configuration: UEFI')
 
     let content = '#!ipxe\n'
     content += 'dhcp\n'
@@ -418,6 +423,7 @@ export default class Pxe {
    */
   async tftpStart(tftpOptions: ITftpOptions) {
     const tftpServer = tftp.createServer(tftpOptions)
+    console.log('tftp listening: ' + tftpOptions.host + ':' + tftpOptions.port)
 
     tftpServer.on('error', (error: any) => {
       // Errors from the main socket
