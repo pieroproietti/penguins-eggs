@@ -21,7 +21,8 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.4
-* calamares: configuration of calamares now take the vaules for homeUrl, supportUrl and bugReportUrl from /etc/os-release;
+* calamares: calamares now receive branding's configuration parameters homeUrl, supportUrl and bugReportUrl from /etc/os-release;
+* node-proxy-dhcpd: I am trying to restore the operation of `eggs cuckoo`. I have not succeeded yet, you can refer to the related [issue](/issues/367).
 
 # penguins-eggs-10.0.3
 * krill installaler: `sudo eggs install` now have a new option to chroot on the installed system before reboot. This let you di add/remove last time packages, before your system is rebooted;
