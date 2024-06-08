@@ -70,6 +70,7 @@ export default class Cuckoo extends Command {
        * service http
        */
       await pxe.httpStart()
+      
     } else {
       Utils.useRoot(this.id)
     }
