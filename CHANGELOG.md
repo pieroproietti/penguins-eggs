@@ -20,6 +20,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.5
+* produce: added flag --pendrive, using `zstd 1M Xcompression-level 5` optimized to use with pendrives.
+
 # penguins-eggs-10.0.4
 * calamares: calamares now receive branding's configuration parameters homeUrl, supportUrl and bugReportUrl from /etc/os-release;
 * node-proxy-dhcpd: I am trying to restore the operation of `eggs cuckoo`. I have not succeeded yet, you can refer to the related [issue](https://github.com/pieroproietti/penguins-eggs/issues/367).

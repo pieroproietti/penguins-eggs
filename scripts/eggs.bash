@@ -14,19 +14,19 @@ _eggs_autocomplete()
 adapt --help --verbose
 analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
-config --clean --help --nointeractive --noicons --verbose
+config --clean --help --noicons --nointeractive --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
-export:iso --clean --checksum --help --verbose
-install --btrfs --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
-krill --btrfs --crypted --custom --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
-kill --help --nointeractive --isos --verbose
+export:iso --checksum --clean --help --verbose
+install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+kill --help --isos --nointeractive --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicons --nointeractive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicons --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
-syncto --file --exclusion --help --verbose
+syncto --excludes --file --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:ppa --add --help --nointeractive --remove --verbose
 tools:skel --help --user --verbose
@@ -34,11 +34,11 @@ tools:stat --help --month --year
 tools:yolk --help --verbose
 update --help --verbose
 wardrobe:get --help --verbose
-wardrobe:list --help --distro --verbose
+wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
