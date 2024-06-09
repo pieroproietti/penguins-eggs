@@ -605,8 +605,15 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "prefix": {
+        "pendrive": {
           "char": "p",
+          "description": "pendrive",
+          "name": "pendrive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "prefix": {
+          "char": "P",
           "description": "prefix",
           "name": "prefix",
           "hasDynamicHelp": false,

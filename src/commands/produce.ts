@@ -25,15 +25,12 @@ export default class Produce extends Command {
 
   static examples = [
     'sudo eggs produce',
-    'sudo eggs produce --standard',
     'sudo eggs produce --max',
-    'sudo eggs produce --max --basename=colibri',
-    'sudo eggs produce --cryptedclone 4G',
+    'sudo eggs produce --pendrive',
     'sudo eggs produce --clone',
+    'sudo eggs produce --cryptedclone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
-    'sudo eggs produce --excludes=usr var',
-    'sudo eggs produce --excludes=static'
   ]
 
   static flags = {
@@ -47,7 +44,8 @@ export default class Produce extends Command {
     max: Flags.boolean({ char: 'm', description: 'max compression' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    prefix: Flags.string({ char: 'p', description: 'prefix' }),
+    pendrive: Flags.boolean({ char: 'p', description: 'pendrive' }),
+    prefix: Flags.string({ char: 'P', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
@@ -153,6 +151,8 @@ export default class Produce extends Command {
       let compression = compressors.fast()
       if (flags.max) {
         compression = compressors.max()
+      } else if (flags.pendrive) {
+        compression = compressors.pendrive()
       } else if (flags.standard) {
         compression = compressors.standard()
       }
