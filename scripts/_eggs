@@ -1,339 +1,380 @@
 #compdef eggs
 
-_eggs () {
-  local _command_id=${words[2]}
-  local _cur=${words[CURRENT]}
-  local -a _command_flags=()
 
-  ## public cli commands & flags
-  local -a _all_commands=(
-"adapt:adapt monitor resolution for VM only"
-"analyze:analyze for syncto"
-"calamares:configure calamares or install or configure it"
-"config:Configure and install prerequisites deb packages to run it"
-"cuckoo:PXE start with proxy-dhcp"
-"dad:ask help from daddy - TUI configuration helper"
-"export\:deb:export deb/docs/iso to the destination host"
-"export\:iso:export iso in the destination host"
-"install:krill: the CLI system installer - the egg became a penguin!"
-"krill:krill: the CLI system installer - the egg became a penguin!"
-"kill:kill the eggs/free the nest"
-"mom:ask help from mommy - TUI helper"
-"produce:produce a live image from your system whithout your data"
-"status:informations about eggs status"
-"syncfrom:restore users and user data from a LUKS volumes"
-"syncto:Save users and users' data ENCRYPTED"
-"tools\:clean:clean system log, apt, etc"
-"tools\:ppa:add/remove repo"
-"tools\:skel:update skel from home configuration"
-"tools\:stat:get statistics from sourceforge"
-"tools\:yolk:configure eggs to install without internet"
-"update:update the Penguins' eggs tool"
-"wardrobe\:get:get warorobe"
-"wardrobe\:list:list costumes and accessoires in wardrobe"
-"wardrobe\:show:show costumes/accessories in wardrobe"
-"wardrobe\:wear:wear costume/accessories from wardrobe"
-"autocomplete:display autocomplete installation instructions"
-"help:Display help for <%= config.bin %>."
-"version:"
-  )
+_eggs_export() {
+  local context state state_descr line
+  typeset -A opt_args
 
-  _set_flags () {
-    case $_command_id in
+  _arguments -C "1: :->cmds" "*::arg:->args"
+
+  case "$state" in
+    cmds)
+_values "completions" \
+"deb[export deb/docs/iso to the destination host]" \
+"iso[export iso in the destination host]" \
+
+      ;;
+    args)
+      case $line[1] in
+        "deb")
+          _arguments -S \
+"(-a --all)"{-a,--all}"[export all archs]" \
+"(-c --clean)"{-c,--clean}"[remove old .deb before to copy]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "iso")
+          _arguments -S \
+"(-C --checksum)"{-C,--checksum}"[export checksums md5 and sha256]" \
+"(-c --clean)"{-c,--clean}"[delete old ISOs before to copy]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+
+      esac
+      ;;
+  esac
+}
+
+_eggs_tools() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C "1: :->cmds" "*::arg:->args"
+
+  case "$state" in
+    cmds)
+_values "completions" \
+"clean[clean system log, apt, etc]" \
+"ppa[add/remove repo]" \
+"skel[update skel from home configuration]" \
+"stat[get statistics from sourceforge]" \
+"yolk[configure eggs to install without internet]" \
+
+      ;;
+    args)
+      case $line[1] in
+        "clean")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "ppa")
+          _arguments -S \
+"(-a --add)"{-a,--add}"[add penguins-eggs PPA repository]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-r --remove)"{-r,--remove}"[remove penguins-eggs PPA repository]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "skel")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-u --user)"{-u,--user}"[user to be used]:file:_files" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "stat")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-m --month)"{-m,--month}"[current month]" \
+"(-y --year)"{-y,--year}"[current year]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "yolk")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+
+      esac
+      ;;
+  esac
+}
+
+_eggs_wardrobe() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C "1: :->cmds" "*::arg:->args"
+
+  case "$state" in
+    cmds)
+_values "completions" \
+"get[get warorobe]" \
+"list[list costumes and accessoires in wardrobe]" \
+"show[show costumes/accessories in wardrobe]" \
+"wear[wear costume/accessories from wardrobe]" \
+
+      ;;
+    args)
+      case $line[1] in
+        "get")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "list")
+          _arguments -S \
+"(-d --distro)"{-d,--distro}"[distro]:file:_files" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "show")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-j --json)"{-j,--json}"[output JSON]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+"(-w --wardrobe)"{-w,--wardrobe}"[wardrobe]:file:_files" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "wear")
+          _arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-a --no_accessories)"{-a,--no_accessories}"[not install accessories]" \
+"(-f --no_firmwares)"{-f,--no_firmwares}"[not install firmwares]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+"(-w --wardrobe)"{-w,--wardrobe}"[wardrobe]:file:_files" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+
+      esac
+      ;;
+  esac
+}
+
+
+_eggs() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C "1: :->cmds" "*::arg:->args"
+
+  case "$state" in
+    cmds)
+      _values "completions" \
+"export[export deb/docs/iso to the destination host]" \
+"tools[clean system log, apt, etc]" \
+"wardrobe[get warorobe]" \
+"adapt[adapt monitor resolution for VM only]" \
+"analyze[analyze for syncto]" \
+"calamares[configure calamares or install or configure it]" \
+"config[Configure eggs to run it]" \
+"cuckoo[PXE start with proxy-dhcp]" \
+"dad[ask help from daddy - TUI configuration helper]" \
+"install[krill: the CLI system installer - the egg became a penguin!]" \
+"krill[krill: the CLI system installer - the egg became a penguin!]" \
+"kill[kill the eggs/free the nest]" \
+"mom[ask help from mommy - TUI helper]" \
+"produce[produce a live image from your system whithout your data]" \
+"status[informations about eggs status]" \
+"syncfrom[restore users and user data from a LUKS volumes]" \
+"syncto[Save users and users' data ENCRYPTED]" \
+"update[update the Penguins' eggs tool]" \
+"help[Display help for eggs.]" \
+"autocomplete[Display autocomplete installation instructions.]" \
+"version[]" \
+
+    ;;
+    args)
+      case $line[1] in
+export)
+  _eggs_export
+  ;;
+tools)
+  _eggs_tools
+  ;;
+wardrobe)
+  _eggs_wardrobe
+  ;;
 adapt)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 analyze)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 calamares)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--install[install calamares and its dependencies]"
-"--nointeractive[no user interaction]"
-"--policies[configure calamares policies]"
-"--release[release: remove calamares and all its dependencies after the installation]"
-"--remove[remove calamares and its dependencies]"
-"--theme=-[theme/branding for eggs and calamares]:"
-"--verbose[]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-i --install)"{-i,--install}"[install calamares and its dependencies]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-p --policies)"{-p,--policies}"[configure calamares policies]" \
+"(-r --release)"{-r,--release}"[release: remove calamares and all its dependencies after the installation]" \
+--remove"[remove calamares and its dependencies]" \
+--theme"[theme/branding for eggs and calamares]:file:_files" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 config)
-  _command_flags=(
-    "--clean[remove old configuration before to create new one]"
-"--help[Show CLI help.]"
-"--nointeractive[no user interaction]"
-"--noicons[no icons]"
-"--verbose[verbose]"
-  )
-;;
-
+_arguments -S \
+"(-c --clean)"{-c,--clean}"[remove old configuration before to create new one]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-N --noicons)"{-N,--noicons}"[no icons]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 cuckoo)
-  _command_flags=(
-    "--help[Show CLI help.]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 dad)
-  _command_flags=(
-    "--clean[remove old configuration before to create]"
-"--default[remove old configuration and force default]"
-"--help[Show CLI help.]"
-"--verbose[]"
-  )
-;;
-
-export:deb)
-  _command_flags=(
-    "--all[export all archs]"
-"--clean[remove old .deb before to copy]"
-"--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
-export:iso)
-  _command_flags=(
-    "--clean[delete old ISOs before to copy]"
-"--checksum[export checksums md5 and sha256]"
-"--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
+_arguments -S \
+"(-c --clean)"{-c,--clean}"[remove old configuration before to create]" \
+"(-d --default)"{-d,--default}"[remove old configuration and force default]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 install)
-  _command_flags=(
-    "--btrfs[Format btrfs]"
-"--crypted[Crypted CLI installation]"
-"--custom=-[custom unattended configuration]:"
-"--domain=-[Domain name, defult: .local]:"
-"--halt[Halt the system after installation]"
-"--help[Show CLI help.]"
-"--ip[hostname as ip, eg: ip-192-168-1-33]"
-"--nointeractive[no user interaction]"
-"--none[Swap none: 256M]"
-"--pve[Proxmox VE install]"
-"--random[Add random to hostname, eg: colibri-ay412dt]"
-"--small[Swap small: RAM]"
-"--suspend[Swap suspend: RAM x 2]"
-"--unattended[Unattended installation]"
-"--verbose[Verbose]"
-  )
-;;
-
+_arguments -S \
+"(-b --btrfs)"{-b,--btrfs}"[Format btrfs]" \
+"(-c --chroot)"{-c,--chroot}"[chroot before to end]" \
+"(-k --crypted)"{-k,--crypted}"[Crypted CLI installation]" \
+"(-d --domain)"{-d,--domain}"[Domain name, defult: .local]:file:_files" \
+"(-H --halt)"{-H,--halt}"[Halt the system after installation]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-i --ip)"{-i,--ip}"[hostname as ip, eg: ip-192-168-1-33]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-N --none)"{-N,--none}"[Swap none: 256M]" \
+"(-p --pve)"{-p,--pve}"[Proxmox VE install]" \
+"(-r --random)"{-r,--random}"[Add random to hostname, eg: colibri-ay412dt]" \
+"(-s --small)"{-s,--small}"[Swap small: RAM]" \
+"(-S --suspend)"{-S,--suspend}"[Swap suspend: RAM x 2]" \
+"(-u --unattended)"{-u,--unattended}"[Unattended installation]" \
+"(-v --verbose)"{-v,--verbose}"[Verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 krill)
-  _command_flags=(
-    "--btrfs[Format btrfs]"
-"--crypted[Crypted CLI installation]"
-"--custom=-[custom unattended configuration]:"
-"--domain=-[Domain name, defult: .local]:"
-"--halt[Halt the system after installation]"
-"--help[Show CLI help.]"
-"--ip[hostname as ip, eg: ip-192-168-1-33]"
-"--nointeractive[no user interaction]"
-"--none[Swap none: 256M]"
-"--pve[Proxmox VE install]"
-"--random[Add random to hostname, eg: colibri-ay412dt]"
-"--small[Swap small: RAM]"
-"--suspend[Swap suspend: RAM x 2]"
-"--unattended[Unattended installation]"
-"--verbose[Verbose]"
-  )
-;;
-
+_arguments -S \
+"(-b --btrfs)"{-b,--btrfs}"[Format btrfs]" \
+"(-c --chroot)"{-c,--chroot}"[chroot before to end]" \
+"(-k --crypted)"{-k,--crypted}"[Crypted CLI installation]" \
+"(-d --domain)"{-d,--domain}"[Domain name, defult: .local]:file:_files" \
+"(-H --halt)"{-H,--halt}"[Halt the system after installation]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-i --ip)"{-i,--ip}"[hostname as ip, eg: ip-192-168-1-33]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-N --none)"{-N,--none}"[Swap none: 256M]" \
+"(-p --pve)"{-p,--pve}"[Proxmox VE install]" \
+"(-r --random)"{-r,--random}"[Add random to hostname, eg: colibri-ay412dt]" \
+"(-s --small)"{-s,--small}"[Swap small: RAM]" \
+"(-S --suspend)"{-S,--suspend}"[Swap suspend: RAM x 2]" \
+"(-u --unattended)"{-u,--unattended}"[Unattended installation]" \
+"(-v --verbose)"{-v,--verbose}"[Verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 kill)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--nointeractive[no user interaction]"
-"--isos[erase all ISOs on remote mount]"
-"--verbose[verbose]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-i --isos)"{-i,--isos}"[erase all ISOs on remote mount]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 mom)
-  _command_flags=(
-    "--help[Show CLI help.]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 produce)
-  _command_flags=(
-    "--addons=-[addons to be used: adapt, ichoice, pve, rsupport]:"
-"--basename=-[basename]:"
-"--clone[clone]"
-"--cryptedclone[crypted clone]"
-"--excludes=-[use: custom, home, mine, usr, var]:"
-"--help[Show CLI help.]"
-"--links=-[desktop links]:"
-"--max[max compression]"
-"--noicons[no icons on desktop]"
-"--nointeractive[no user interaction]"
-"--prefix=-[prefix]:"
-"--release[release: max compression, remove penguins-eggs and calamares after installation]"
-"--script[script mode. Generate scripts to manage iso build]"
-"--standard[standard compression]"
-"--theme=-[theme for livecd, calamares branding and partitions]:"
-"--unsecure[/root contents are included on live]"
-"--verbose[verbose]"
-"--yolk[force yolk renew]"
-  )
-;;
-
+_arguments -S \
+"*"--addons"[addons to be used: adapt, ichoice, pve, rsupport]:file:_files" \
+--basename"[basename]:file:_files" \
+"(-c --clone)"{-c,--clone}"[clone]" \
+"(-C --cryptedclone)"{-C,--cryptedclone}"[crypted clone]" \
+"*"--excludes"[use: custom, home, mine, usr, var]:file:_files" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"*"--links"[desktop links]:file:_files" \
+"(-m --max)"{-m,--max}"[max compression]" \
+"(-N --noicons)"{-N,--noicons}"[no icons on desktop]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-p --pendrive)"{-p,--pendrive}"[pendrive]" \
+"(-P --prefix)"{-P,--prefix}"[prefix]:file:_files" \
+--release"[release: max compression, remove penguins-eggs and calamares after installation]" \
+"(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
+"(-f --standard)"{-f,--standard}"[standard compression]" \
+--theme"[theme for livecd, calamares branding and partitions]:file:_files" \
+"(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+"(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 status)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 syncfrom)
-  _command_flags=(
-    "--delete=-[rsync --delete delete extraneous files from dest dirs]:"
-"--file=-[file containing luks-volume encrypted]:"
-"--help[Show CLI help.]"
-"--rootdir=-[rootdir of the installed system, when used from live]:"
-"--verbose[verbose]"
-  )
-;;
-
+_arguments -S \
+--delete"[rsync --delete delete extraneous files from dest dirs]:file:_files" \
+"(-f --file)"{-f,--file}"[file containing luks-volume encrypted]:file:_files" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-r --rootdir)"{-r,--rootdir}"[rootdir of the installed system, when used from live]:file:_files" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 syncto)
-  _command_flags=(
-    "--file=-[file luks-volume encrypted]:"
-"--exclusion[use: exclude.list.d/clone.list]"
-"--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
-tools:clean)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--nointeractive[no user interaction]"
-"--verbose[verbose]"
-  )
-;;
-
-tools:ppa)
-  _command_flags=(
-    "--add[add penguins-eggs PPA repository]"
-"--help[Show CLI help.]"
-"--nointeractive[no user interaction]"
-"--remove[remove penguins-eggs PPA repository]"
-"--verbose[verbose]"
-  )
-;;
-
-tools:skel)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--user=-[user to be used]:"
-"--verbose[]"
-  )
-;;
-
-tools:stat)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--month[current month]"
-"--year[current year]"
-  )
-;;
-
-tools:yolk)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[]"
-  )
-;;
-
+_arguments -S \
+"(-e --excludes)"{-e,--excludes}"[use: exclude.list.d/home.list]" \
+"(-f --file)"{-f,--file}"[file luks-volume encrypted]:file:_files" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 update)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[verbose]"
-  )
-;;
-
-wardrobe:get)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--verbose[]"
-  )
-;;
-
-wardrobe:list)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--distro=-[distro]:"
-"--verbose[]"
-  )
-;;
-
-wardrobe:show)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--json[output JSON]"
-"--verbose[]"
-"--wardrobe=-[wardrobe]:"
-  )
-;;
-
-wardrobe:wear)
-  _command_flags=(
-    "--help[Show CLI help.]"
-"--no_accessories[not install accessories]"
-"--no_firmwares[not install firmwares]"
-"--verbose[]"
-"--wardrobe=-[wardrobe]:"
-  )
-;;
-
-autocomplete)
-  _command_flags=(
-    "--refresh-cache[Refresh cache (ignores displaying instructions)]"
-  )
-;;
-
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 help)
-  _command_flags=(
-    "--nested-commands[Include all nested commands in the output.]"
-  )
-;;
-
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+autocomplete)
+_arguments -S \
+"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 version)
-  _command_flags=(
-    "--json[Format output as json.]"
-"--verbose[Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.]"
-  )
-;;
+_arguments -S \
+--json"[Format output as json.]" \
+--verbose"[Show additional information about the CLI.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+esac
 
-    esac
-  }
-  ## end public cli commands & flags
-
-  _complete_commands () {
-    _describe -t all-commands "all commands" _all_commands
-  }
-
-  if [ $CURRENT -gt 2 ]; then
-    if [[ "$_cur" == -* ]]; then
-      _set_flags
-    else
-      _path_files
-    fi
-  fi
-
-
-  _arguments -S '1: :_complete_commands' \
-                $_command_flags
+    ;;
+  esac
 }
 
 _eggs

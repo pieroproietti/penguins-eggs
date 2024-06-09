@@ -524,15 +524,12 @@
       "description": "produce a live image from your system whithout your data",
       "examples": [
         "sudo eggs produce",
-        "sudo eggs produce --standard",
         "sudo eggs produce --max",
-        "sudo eggs produce --max --basename=colibri",
-        "sudo eggs produce --cryptedclone 4G",
+        "sudo eggs produce --pendrive",
         "sudo eggs produce --clone",
+        "sudo eggs produce --cryptedclone",
         "sudo eggs produce --basename=colibri",
-        "sudo eggs produce --basename=colibri --theme theme --addons adapt",
-        "sudo eggs produce --excludes=usr var",
-        "sudo eggs produce --excludes=static"
+        "sudo eggs produce --basename=colibri --theme theme --addons adapt"
       ],
       "flags": {
         "addons": {
@@ -1460,5 +1457,5 @@
       ]
     }
   },
-  "version": "10.0.4"
+  "version": "10.0.5"
 }
