@@ -29,12 +29,13 @@
     - faye    # LMDE 6
     - Sparky  # SparkyLinux 7
     - ara     # Parrot ara
-    - lory    # Parrot lory
 
 # trixie
 - id: trixie
   distroLike: Debian
   family: debian
+  ids:
+    - lory    # Parrot lory
 
 #
 # DEVUAN
