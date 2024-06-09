@@ -38,6 +38,17 @@ export default class Compressors {
     return comp
   }
 
+  pendrive(): string {
+    let comp = 'gzip'
+    if (this.isEnabled.zstd) {
+      comp = 'zstd -b 1M -Xcompression-level 5'
+    } else if (this.isEnabled.lz4) {
+      comp = 'lz4'
+    }
+
+    return comp
+  }
+
   /**
    * max
    * @returns
