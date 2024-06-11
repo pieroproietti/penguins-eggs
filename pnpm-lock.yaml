@@ -15,11 +15,11 @@ importers:
         specifier: ^3.1.2
         version: 3.1.2(typescript@5.4.5)
       '@oclif/plugin-help':
-        specifier: ^6.1.0
-        version: 6.2.0(typescript@5.4.5)
+        specifier: ^6.2.1
+        version: 6.2.1(typescript@5.4.5)
       '@oclif/plugin-version':
-        specifier: ^2.2.2
-        version: 2.2.2(typescript@5.4.5)
+        specifier: ^2.2.3
+        version: 2.2.3(typescript@5.4.5)
       axios:
         specifier: ^1.7.2
         version: 1.7.2
@@ -57,8 +57,8 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       systeminformation:
-        specifier: ^5.22.10
-        version: 5.22.10
+        specifier: ^5.22.11
+        version: 5.22.11
       tftp:
         specifier: ^0.1.2
         version: 0.1.2
@@ -118,8 +118,8 @@ importers:
         specifier: ^10
         version: 10.4.0
       oclif:
-        specifier: ^4.13.0
-        version: 4.13.1(typescript@5.4.5)
+        specifier: ^4.13.5
+        version: 4.13.5(typescript@5.4.5)
       perrisbrewery:
         specifier: ^9.8.3
         version: 9.8.3
@@ -422,20 +422,20 @@ packages:
     resolution: {integrity: sha512-QcTi3TYwRVCBWPFa5AVwzsQQPjHceMXyekCcIcoZ7X6gZhRKyZy6+n0WR7GSj1HfENh65fL9JHveN0VJbfbR2w==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.0':
-    resolution: {integrity: sha512-LNTrAE3ZwTXJVAFuwx+jSMGJCYHHa7jjSZ+9PgJlHIIA9qC7XcTcORoBByw9otB9q3JcbWmbS0GNCGTvciRdaw==}
+  '@oclif/plugin-help@6.2.1':
+    resolution: {integrity: sha512-ipWBN2eYr3jnac5ruRjsVfcoXyuzpjNKc/9qnL8a366vZ9b+Kdb0Z+6nFkfL7hiPI9Yo0DD+OqEjBKhETGHjRA==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-not-found@3.2.2':
-    resolution: {integrity: sha512-FyQiC0jQZsrvtoVyEkNy8gypdibCLw+AR3uP08NyO95UoJeEHpxHjJUK+E10wNsTCFLFuaBW7hAjvtGm+Ze0RQ==}
+  '@oclif/plugin-not-found@3.2.3':
+    resolution: {integrity: sha512-hDHuvMFl7CfJ+GdtDVkLDAMc9J+9Tk1ZRSuFQT7vw4eBtv0EmiXtlTafQqCW9kXypQHgw6UigC3Dz1HXkPpwNQ==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-version@2.2.2':
-    resolution: {integrity: sha512-4fi3QrsVVn6kLAsBzTZ5llsYyBb1hxfwtYyXYxfMrFAZ8+uYFktOETYh5tH0+9ECSMOvMKZtl5YlwLH3u0dnog==}
+  '@oclif/plugin-version@2.2.3':
+    resolution: {integrity: sha512-TOtOwVHDpgJsFeA13T3rtjVPK6votYsiAWvialO7K666wPHf2IrRcraFgfHJo7xcxgtfRvjB+PJDBcxT8O4f7g==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-warn-if-update-available@3.1.4':
-    resolution: {integrity: sha512-xj6zgwvuEFmUrHYFXHoqmTpvOUsEgqXiyof9OqjglV3XeBPNsQnbuW/085HFSWBvKIVQCt22uVRVaJCz3o7ODw==}
+  '@oclif/plugin-warn-if-update-available@3.1.5':
+    resolution: {integrity: sha512-WNWq1co1McIqxE/kovrslZfdIMNvaruaDgxflvN3JganabfBLMDfdsH9TalApkmtT8X9UBEZH/j9YUDNNMqLnw==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/prettier-config@0.2.1':
@@ -2328,8 +2328,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.13.1:
-    resolution: {integrity: sha512-R/tkEB7k0unsDDaNHyZc+7NHcKwNPUMG21oCOf+Vy5qfEWD7504l55m5tGLpYpJSKwvU6c7WhMpRpPLaZhxZkA==}
+  oclif@4.13.5:
+    resolution: {integrity: sha512-7HIXQC0ID+N2mrzVILe4ou1IMwq+i8eg6IeGI8HjcE7Csqt7hYMgfXC9R8+Yezn12zqtzyaZzReV07C3t4cqFA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2820,8 +2820,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  systeminformation@5.22.10:
-    resolution: {integrity: sha512-RJ3oed80NkqgHtpB0TLkxEKEpQ3pUm2lgVolkHeoaExPidkWsj2D/hO6Rwwi9i+Odl1vm8TMiRNIKK7hBaqDsw==}
+  systeminformation@5.22.11:
+    resolution: {integrity: sha512-aLws5yi4KCHTb0BVvbodQY5bY8eW4asMRDTxTW46hqw9lGjACX6TlLdJrkdoHYRB0qs+MekqEq1zG7WDnWE8Ug==}
     engines: {node: '>=8.0.0'}
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
@@ -3845,13 +3845,13 @@ snapshots:
       - supports-color
       - typescript
 
-  '@oclif/plugin-help@6.2.0(typescript@5.4.5)':
+  '@oclif/plugin-help@6.2.1(typescript@5.4.5)':
     dependencies:
       '@oclif/core': 4.0.3(typescript@5.4.5)
     transitivePeerDependencies:
       - typescript
 
-  '@oclif/plugin-not-found@3.2.2(typescript@5.4.5)':
+  '@oclif/plugin-not-found@3.2.3(typescript@5.4.5)':
     dependencies:
       '@inquirer/confirm': 3.1.9
       '@oclif/core': 4.0.3(typescript@5.4.5)
@@ -3860,14 +3860,14 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@oclif/plugin-version@2.2.2(typescript@5.4.5)':
+  '@oclif/plugin-version@2.2.3(typescript@5.4.5)':
     dependencies:
       '@oclif/core': 4.0.3(typescript@5.4.5)
       ansis: 3.2.0
     transitivePeerDependencies:
       - typescript
 
-  '@oclif/plugin-warn-if-update-available@3.1.4(typescript@5.4.5)':
+  '@oclif/plugin-warn-if-update-available@3.1.5(typescript@5.4.5)':
     dependencies:
       '@oclif/core': 4.0.3(typescript@5.4.5)
       ansis: 3.2.0
@@ -6099,7 +6099,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oclif@4.13.1(typescript@5.4.5):
+  oclif@4.13.5(typescript@5.4.5):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.592.0
       '@aws-sdk/client-s3': 3.592.0
@@ -6107,9 +6107,9 @@ snapshots:
       '@inquirer/input': 2.1.9
       '@inquirer/select': 2.3.5
       '@oclif/core': 4.0.3(typescript@5.4.5)
-      '@oclif/plugin-help': 6.2.0(typescript@5.4.5)
-      '@oclif/plugin-not-found': 3.2.2(typescript@5.4.5)
-      '@oclif/plugin-warn-if-update-available': 3.1.4(typescript@5.4.5)
+      '@oclif/plugin-help': 6.2.1(typescript@5.4.5)
+      '@oclif/plugin-not-found': 3.2.3(typescript@5.4.5)
+      '@oclif/plugin-warn-if-update-available': 3.1.5(typescript@5.4.5)
       async-retry: 1.3.3
       chalk: 4.1.2
       change-case: 4.1.2
@@ -6249,8 +6249,8 @@ snapshots:
     dependencies:
       '@oclif/core': 3.27.0
       '@oclif/plugin-autocomplete': 3.1.2(typescript@5.4.5)
-      '@oclif/plugin-help': 6.2.0(typescript@5.4.5)
-      '@oclif/plugin-version': 2.2.2(typescript@5.4.5)
+      '@oclif/plugin-help': 6.2.1(typescript@5.4.5)
+      '@oclif/plugin-version': 2.2.3(typescript@5.4.5)
       '@oclif/test': 4.0.3(@oclif/core@3.27.0)
       chalk: 4.1.2
       fs-extra: 8.1.0
@@ -6686,7 +6686,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  systeminformation@5.22.10: {}
+  systeminformation@5.22.11: {}
 
   tapable@2.2.1: {}
 

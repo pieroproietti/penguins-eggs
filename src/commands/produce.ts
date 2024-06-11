@@ -41,24 +41,26 @@ export default class Produce extends Command {
     excludes: Flags.string({ description: 'use: custom, home, mine, usr, var', multiple: true }),
     help: Flags.help({ char: 'h' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
-    max: Flags.boolean({ char: 'm', description: 'max compression' }),
+    max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    pendrive: Flags.boolean({ char: 'p', description: 'pendrive' }),
+    pendrive: Flags.boolean({ char: 'p', description: 'compression optimized for pendrive: zstd -b 1M -Xcompression-level 3', required: false}),
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
-    release: Flags.boolean({ description: 'release: max compression, remove penguins-eggs and calamares after installation' }),
+    release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    standard: Flags.boolean({ char: 'f', description: 'standard compression' }),
+    standard: Flags.boolean({ char: 'f', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
+    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
   }
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Produce)
+    let pendrive = flags.pendrive !== undefined ? Number(flags.pendrive) : null;
+
     if (Utils.isRoot()) {
       /**
        * ADDONS dei vendors
@@ -151,8 +153,8 @@ export default class Produce extends Command {
       let compression = compressors.fast()
       if (flags.max) {
         compression = compressors.max()
-      } else if (flags.pendrive) {
-        compression = compressors.pendrive()
+      } else if (flags.pendrive){
+        compression = compressors.pendrive('15')
       } else if (flags.standard) {
         compression = compressors.standard()
       }
@@ -235,8 +237,3 @@ export default class Produce extends Command {
   }
 }
 
-const validSizePattern = /^(\d+)([GM]?)$/
-
-function isValidSize(input: string): boolean {
-  return validSizePattern.test(input)
-}
