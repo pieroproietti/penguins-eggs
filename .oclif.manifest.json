@@ -604,7 +604,7 @@
         },
         "pendrive": {
           "char": "p",
-          "description": "compression optimized pendrive: zstd -b 1M -Xcompression-level 15",
+          "description": "optimized pendrive: zstd -b 1M -Xcompression-level 15",
           "name": "pendrive",
           "required": false,
           "allowNo": false,

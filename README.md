@@ -819,7 +819,7 @@ FLAGS
   -h, --help                 Show CLI help.
   -m, --max                  max compression: xz -Xbcj ...
   -n, --nointeractive        no user interaction
-  -p, --pendrive             compression optimized for pendrive: zstd -b 1M -Xcompression-level 3
+  -p, --pendrive             optimized pendrive: zstd -b 1M -Xcompression-level 15
   -s, --script               script mode. Generate scripts to manage iso build
   -u, --unsecure             /root contents are included on live
   -v, --verbose              verbose
