@@ -44,7 +44,7 @@ export default class Produce extends Command {
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
     noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    pendrive: Flags.boolean({ char: 'p', description: 'compression optimized for pendrive: zstd -b 1M -Xcompression-level 3', required: false}),
+    pendrive: Flags.boolean({ char: 'p', description: 'compression optimized pendrive: zstd -b 1M -Xcompression-level 15', required: false}),
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
