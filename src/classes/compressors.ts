@@ -24,13 +24,13 @@ export default class Compressors {
   source = '/tmp/eggs-mksquash-test'
 
   /**
-   * fast
+   * fast compression
    * @returns
    */
   fast(): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
-      comp = 'zstd -b 1M -Xcompression-level 1'
+      comp = 'zstd -b 1M -Xcompression-level 3'
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }
@@ -38,10 +38,10 @@ export default class Compressors {
     return comp
   }
 
-  pendrive(): string {
+  pendrive(level='15'): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
-      comp = 'zstd -b 1M -Xcompression-level 5'
+      comp = `zstd -b 1M -Xcompression-level ${level}`
     } else if (this.isEnabled.lz4) {
       comp = 'lz4'
     }

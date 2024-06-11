@@ -11,8 +11,8 @@
     "dependencies": {
         "@oclif/core": "^4.0.1",
         "@oclif/plugin-autocomplete": "^3.1.2",
-        "@oclif/plugin-help": "^6.1.0",
-        "@oclif/plugin-version": "^2.2.2",
+        "@oclif/plugin-help": "^6.2.1",
+        "@oclif/plugin-version": "^2.2.3",
         "axios": "^1.7.2",
         "chalk": "^5.3.0",
         "cli-cursor": "^4.0.0",
@@ -25,7 +25,7 @@
         "node-static": "^0.7.11",
         "react": "^18.3.1",
         "shelljs": "^0.8.5",
-        "systeminformation": "^5.22.10",
+        "systeminformation": "^5.22.11",
         "tftp": "^0.1.2"
     },
     "devDependencies": {
@@ -47,7 +47,7 @@
         "eslint-config-oclif-typescript": "^3",
         "eslint-config-prettier": "^9",
         "mocha": "^10",
-        "oclif": "^4.13.0",
+        "oclif": "^4.13.5",
         "perrisbrewery": "^9.8.3",
         "prettier": "^3.3.1",
         "shx": "^0.3.3",

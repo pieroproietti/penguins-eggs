@@ -676,7 +676,7 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.1/src/commands/help.ts)_
 
 ## `eggs install`
 
@@ -815,11 +815,11 @@ FLAGS
   -N, --noicons              no icons on desktop
   -P, --prefix=<value>       prefix
   -c, --clone                clone
-  -f, --standard             standard compression
+  -f, --standard             standard compression: xz -b 1M
   -h, --help                 Show CLI help.
-  -m, --max                  max compression
+  -m, --max                  max compression: xz -Xbcj ...
   -n, --nointeractive        no user interaction
-  -p, --pendrive             pendrive
+  -p, --pendrive             compression optimized for pendrive: zstd -b 1M -Xcompression-level 3
   -s, --script               script mode. Generate scripts to manage iso build
   -u, --unsecure             /root contents are included on live
   -v, --verbose              verbose
@@ -828,7 +828,7 @@ FLAGS
       --basename=<value>     basename
       --excludes=<value>...  use: custom, home, mine, usr, var
       --links=<value>...     desktop links
-      --release              release: max compression, remove penguins-eggs and calamares after installation
+      --release              release: remove penguins-eggs, calamares and dependencies after installation
       --theme=<value>        theme for livecd, calamares branding and partitions
 
 DESCRIPTION
@@ -837,23 +837,17 @@ DESCRIPTION
 EXAMPLES
   sudo eggs produce
 
-  sudo eggs produce --standard
-
   sudo eggs produce --max
 
-  sudo eggs produce --max --basename=colibri
-
-  sudo eggs produce --cryptedclone 4G
+  sudo eggs produce --pendrive
 
   sudo eggs produce --clone
+
+  sudo eggs produce --cryptedclone
 
   sudo eggs produce --basename=colibri
 
   sudo eggs produce --basename=colibri --theme theme --addons adapt
-
-  sudo eggs produce --excludes=usr var
-
-  sudo eggs produce --excludes=static
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.5/src/commands/produce.ts)_
@@ -1090,7 +1084,7 @@ FLAG DESCRIPTIONS
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.2/src/commands/version.ts)_
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.3/src/commands/version.ts)_
 
 ## `eggs wardrobe get [REPO]`
 

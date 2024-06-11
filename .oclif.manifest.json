@@ -583,7 +583,7 @@
         },
         "max": {
           "char": "m",
-          "description": "max compression",
+          "description": "max compression: xz -Xbcj ...",
           "name": "max",
           "allowNo": false,
           "type": "boolean"
@@ -604,8 +604,9 @@
         },
         "pendrive": {
           "char": "p",
-          "description": "pendrive",
+          "description": "compression optimized for pendrive: zstd -b 1M -Xcompression-level 3",
           "name": "pendrive",
+          "required": false,
           "allowNo": false,
           "type": "boolean"
         },
@@ -618,7 +619,7 @@
           "type": "option"
         },
         "release": {
-          "description": "release: max compression, remove penguins-eggs and calamares after installation",
+          "description": "release: remove penguins-eggs, calamares and dependencies after installation",
           "name": "release",
           "allowNo": false,
           "type": "boolean"
@@ -632,7 +633,7 @@
         },
         "standard": {
           "char": "f",
-          "description": "standard compression",
+          "description": "standard compression: xz -b 1M",
           "name": "standard",
           "allowNo": false,
           "type": "boolean"
