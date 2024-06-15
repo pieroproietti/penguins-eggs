@@ -21,10 +21,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.6-1
-I reseived from Glenn Chugg same information about same fixes on README and on eggs skel command. 
+I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
 
-* README: added link to the important issue regarding nodejs 18, fixes on the text;
-* skel: not more copy in skel `./conf/cinnamon`.
+* README: added link to the important issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) regarding nodejs 18, fixes on the text;
+* skel: cinnamon desktop. not more copy`./conf/cinnamon` in `/etc/skel`.
 
 # penguins-eggs-10.0.5-2
 * produce: default compression is now `zstd 1M Xcompression-level 3`, fast the same and better in decompression;

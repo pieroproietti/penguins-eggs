@@ -29,8 +29,8 @@ penguins-eggs
 
 # penguins-eggs-10.0.0
 With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
-
-> Using Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this [issue](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
+> [!NOTE]
+> Using Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
 
 # Introduction
 penguins-eggs is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE. The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident. The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. Initially built with node.js and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as “produce” for creating the eggs, “hatch” for installation, and other commands like “kill” for removing produced ISOs, “update” for software updates, and “install” for configuring the graphical installer. It also has prerequisites to install the .deb packages necessary for the process, namely, calamares.
