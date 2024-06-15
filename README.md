@@ -22,10 +22,13 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [Penguins' eggs official guide](#penguins-eggs-official-guide)
 * [Star History](#star-history)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
+* Links
+  * [penguins' eggs user guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
+  * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
+  * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
 
 # penguins-eggs-10.0.0
 With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
@@ -2286,16 +2289,6 @@ sudo eggs wardrobe wear wagtail/waydroid
 This example wears the "waydroid" costume from the "wagtail" category.
 > [!TIP]
 > **To gain a deeper understanding of the implementation and view the source code related to the `eggs wardrobe wear [COSTUME]` command, you can refer to the following link:** [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/commands/wardrobe/wear.ts)
-
-
-# Penguins' eggs official guide 
-**Penguins' Eggs Official Guide and Resources**
- 
-Welcome to the Penguins' Eggs Official Guide! This comprehensive manual provides detailed instructions on using Penguins' Eggs, a software tool designed to facilitate various tasks. Initially released in Italian, the guide can be translated into other languages using machine translation for wider accessibility.
-
-To access the guide, click [here](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). It offers valuable information and step-by-step tutorials to help users navigate through the software's features. However, please note that some of the terminal samples in the guide may need updating.
-
-For a visual demonstration of Penguins' Eggs in action, check out these helpful [terminal samples](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/terminal-lessons/eggs_help.gif?raw=true). They provide a practical overview of how to use the tool effectively.
 
 
 ## That's all, Folks!
