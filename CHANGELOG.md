@@ -22,6 +22,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 # penguins-eggs-10.0.6-1
 I reseived from Glenn Chugg same information about same fixes on README and on eggs skel command. 
+
 * README: added link to the important issue regarding nodejs 18, fixes on the text;
 * skel: not more copy in skel `./conf/cinnamon`.
 
