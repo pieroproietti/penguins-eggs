@@ -23,8 +23,8 @@ penguins-eggs
 * [Usage](#usage)
 * [Commands](#commands)
 * [Penguins' eggs official guide](#penguins-eggs-official-guide)
-* [Copyright and licenses](#copyright-and-licenses)
 * [Star History](#star-history)
+* [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
 # penguins-eggs-10.0.0
