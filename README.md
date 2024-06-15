@@ -2313,9 +2313,10 @@ Some noteworthy documents include:
 If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my blog [here](https://penguins-eggs.net) or connecting with me on [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61), [Telegram](https://t.me/penguins_eggs), or [Twitter](https://twitter.com/pieroproietti).
 
 
-# Copyright and licenses
-Copyright (c) 2017, 2023 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
-
 # Star History
+This project collects stars, look to the sky... contribute! 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
+
+# Copyright and licenses
+Copyright (c) 2017, 2024 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
