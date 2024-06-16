@@ -15,13 +15,14 @@ penguins-eggs
 # Index
 <!-- toc -->
 * [Index](#index)
-* [penguins-eggs-10.0.0](#penguins-eggs-1000)
+* [penguins-eggs-10.0.x](#penguins-eggs-100x)
 * [Introduction](#introduction)
 * [Technology](#technology)
 * [Features](#features)
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
+* [penGUI: penGUI take cure of eggs!](#pengui-pengui-take-cure-of-eggs)
 * [Star History](#star-history)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
@@ -32,7 +33,7 @@ penguins-eggs
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md)
 
-# penguins-eggs-10.0.0
+# penguins-eggs-10.0.x
 With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
 > [!NOTE]
 > Using Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
@@ -66,12 +67,6 @@ Currently, "eggs" supports several Linux distributions, including [Debian](https
 Starting from version 9.6.x, "Penguins' eggs" is released as a Debian package, available for amd64, i386, and arm64 architectures. This allows it to support a wide range of PCs, including older machines, as well as single-board ARM systems like the Raspberry Pi. You can learn more about this release in the article titled Triple Somersault! [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 For more information on the supported distributions and architectures, you can visit the blog [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs). Additionally, you can find examples of remastered ISO images created with "eggs" on the project's SourceForge page [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
-
-**penGUI take cure of eggs!**
-
-![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
-
- The development of a GUI for "penguins-eggs" with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to "penguins-eggs". If you have any specific questions or need further information about the penGUI project, feel free to ask!
 
 # Features
  Penguins-eggs is a versatile tool that offers an array of features and benefits for Linux users. Whether you want to create an installable ISO from your current Linux system or explore various customization options, Penguins-eggs has got you covered. To get started with Penguins-eggs, you'll need to install it on your Linux distribution. The tool supports a wide range of Linux distributions and their major derivatives, including Arch, Debian, Devuan, Manjaro, Ubuntu, and more. Additionally, you can easily add support for additional derivatives, expanding the tool's capabilities even further.
@@ -1211,6 +1206,13 @@ EXAMPLES
 
 _See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.6/src/commands/wardrobe/wear.ts)_
 <!-- commandsstop -->
+
+# penGUI: penGUI take cure of eggs!
+
+![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
+
+ The development of a GUI for "penguins-eggs" with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to "penguins-eggs". If you have any specific questions or need further information about the penGUI project, feel free to ask!
+
 
 ## That's all, Folks!
 
