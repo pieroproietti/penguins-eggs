@@ -58,6 +58,10 @@ To make your life easier and save yourself from installation of nodejs and pnpm,
 
 In short, what I am about to tell you is that it is a good time to get on board!
 
+> [!NOTE]
+> Using Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
+
+
 # penguins-eggs-9.8.3
 I consider the cleanup and adjustments resulting from the switch to oclif4 and Debian package name change to be over. I put the new version in the PPA and you can install it with the command: `sudo apt install penguins-eggs`.
 
