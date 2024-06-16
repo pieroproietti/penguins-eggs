@@ -36,7 +36,7 @@ With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eg
 > Using Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
 
 # Introduction
-penguins-eggs is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE. The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident. The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. Initially built with node.js and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as “produce” for creating the eggs, “hatch” for installation, and other commands like “kill” for removing produced ISOs, “update” for software updates, and “install” for configuring the graphical installer. It also has prerequisites to install the .deb packages necessary for the process, namely, calamares.
+penguins-eggs is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE. The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident. The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. Initially built with node.js and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as “produce” for creating the eggs, “hatch” for installation, and other commands like “kill” for removing produced ISOs, “update” for software updates, and “install” for configuring the graphical installer.
 
 > Considered a work-in-progress, the ultimate goal for Penguins’ Eggs is to implement a PXE server for local network distribution, drawing inspiration from the behavior of the cuckoo bird, which relies on others to hatch its eggs. Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible with various Linux distributions, despite differences in package managers, file paths, and more. The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. With the release of version 9.6.x, Penguins’ Eggs is now available as a Debian package, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. For more information and updates, visit the Penguins’ Eggs official website.
 
@@ -392,8 +392,12 @@ sudo eggs produce --cryptedclone
 ```
 This command will generate a live system with encrypted user data.
 
-By default, penguins-eggs uses fast compression for efficiency during the creation process. However, if you want a more compressed ISO file, you can use the `--max` flag during the final compression step. For example:
+By default, penguins-eggs uses fasted compression `zstd level 3` for efficiency during the creation process. However, if you want a more compressed ISO file, you can chooce `--pendrive` flag `zstd level 15` optimized for pendrives, `--standard` flag, use  `xz`, or `--max` flag using `xz -Xbcj` to get the maximun level of compression. For example:
+
 ```
+sudo eggs produce 
+sudo eggs produce --pendrive
+sudo eggs produce --standard
 sudo eggs produce --max
 ```
 > [!TIP]
