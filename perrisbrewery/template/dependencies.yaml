@@ -18,7 +18,7 @@ common:
   - live-tools # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
-  - nodejs (>= 16)
+  - nodejs (>= 18)
   - parted 
   - pxelinux # cuckoo
   - rsync
