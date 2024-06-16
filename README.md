@@ -27,10 +27,12 @@ penguins-eggs
 <!-- tocstop -->
 
 ## Links
+  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md)
   * [penguins' eggs user guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
-  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md)
+  * [Blog](https://penguins-eggs.net/blog)
+
 
 # Introduction
 
@@ -70,7 +72,9 @@ It also caters to different architectures, namely `amd64`, `i386`, and `arm64`.
 
 Starting from version 9.6.x, "Penguins' eggs" is released as a Debian package, available for amd64, i386, and arm64 architectures. This allows it to support a wide range of PCs, including older machines, as well as single-board ARM systems like the Raspberry Pi. You can learn more about this release in the article titled Triple Somersault! [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
-For more information on the supported distributions and architectures, you can visit the blog [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs). Additionally, you can find examples of remastered ISO images created with "eggs" on the project's SourceForge page [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
+For more information on the supported distributions and architectures, you can visit the blog [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs). 
+
+Additionally, you can find examples of remastered ISO images created with "eggs" on the project's SourceForge page [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
 
 # Features
@@ -1233,7 +1237,10 @@ Some noteworthy documents include:
 - [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master/documents/hens-different-species.md): A brief guide on using Penguins' Eggs in Debian, Arch, and Manjaro.
 - [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html): A blog post detailing how to create an Arch naked live, install it, and customize the resulting system into a graphics development station.
  
-If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my blog [here](https://penguins-eggs.net) or connecting with me on [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61), [Telegram](https://t.me/penguins_eggs), or [Twitter](https://twitter.com/pieroproietti).
+If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my [blog](https://penguins-eggs.net) or connecting with me on , [Telegram](https://t.me/penguins_eggs), [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61) or [Twitter](https://twitter.com/pieroproietti).
+
+## A word of thanks
+This README would not be so well cared for if not for the work of [Hosein Seilain](https://github.com/hosseinseilani) who spent his time revising and supplementing the text.
 
 
 # Star History
