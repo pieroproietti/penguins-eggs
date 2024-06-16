@@ -1240,8 +1240,11 @@ Some noteworthy documents include:
 If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my [blog](https://penguins-eggs.net) or connecting with me on , [Telegram](https://t.me/penguins_eggs), [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61) or [Twitter](https://twitter.com/pieroproietti).
 
 ## A word of thanks
-This README would not be so well cared for if not for the work of [Hosein Seilain](https://github.com/hosseinseilani) who spent his time revising and supplementing the text.
+* This README would not be so well cared for if not for the work of [Hosein Seilain](https://github.com/hosseinseilani) who spent his time revising and supplementing the text;
+* The eggs icon was designed by [Charlie Martinez](https://github.com/quirinux-so);
+* and a word of thanks to all of you who are using it and providing feedback and motivation to continue it. 
 
+Thank you!
 
 # Star History
 This project collects stars, look to the sky... contribute! 
