@@ -22,7 +22,7 @@ penguins-eggs
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [penGUI: penGUI take cure of eggs!](#pengui-pengui-take-cure-of-eggs)
+* [penGUI](#pengui)
 * [Star History](#star-history)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
@@ -1207,9 +1207,9 @@ EXAMPLES
 _See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.6/src/commands/wardrobe/wear.ts)_
 <!-- commandsstop -->
 
-# penGUI: penGUI take cure of eggs!
-
+# penGUI
 ![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
+## penGUI take cure of eggs!
 
  The development of a GUI for "penguins-eggs" with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to "penguins-eggs". If you have any specific questions or need further information about the penGUI project, feel free to ask!
 
