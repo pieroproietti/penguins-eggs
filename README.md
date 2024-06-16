@@ -25,10 +25,12 @@ penguins-eggs
 * [Star History](#star-history)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
-* Links
+
+## Links
   * [penguins' eggs user guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md)
 
 # penguins-eggs-10.0.0
 With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
@@ -107,9 +109,6 @@ Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to si
 
 11. Supports privacy and security 
  Safe: only use the original distro's packages, without any modification in your repository lists. Penguins Eggs Linux embarks on a steadfast commitment to user security and system integrity through its default practice of exclusively utilizing original distributions’ packages without any modifications in the repository lists. This resolute dedication to maintaining the pristine authenticity of packages reinforces Penguins Eggs’ fundamental ethos of safety and reliability, fostering an environment characterized by unwavering trust in the integrity of the software ecosystem.
-
-## more features 
-[More feautures](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
 
 
 ## Wardrobe, Themes, and Addons
