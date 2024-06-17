@@ -15,7 +15,7 @@ penguins-eggs
 `penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
 
 ## Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
-just install penguins-eggs-10.0.x.
+Just install penguins-eggs-10.0.x.
 
 ## Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
 Before to install `penguins-eggs-10.x` add the repoos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
