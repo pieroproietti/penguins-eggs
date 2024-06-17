@@ -12,10 +12,16 @@ penguins-eggs
 
 
 ## penguins-eggs-10.0.x
-With [penguins-eggs version 10.0.0](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#penguins-eggs-1000) we celebrate more than 8 years of penguins-eggs development! Come with us, the time is right.
-> [!NOTE]
-> Ubuntu 20.04, Ubuntu 22.04, Debian buster, Debian bullseye follow the indication in this issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368) before to install penguins-eggs-10.0.x.
-* Ubuntu 18.04 bionic follow the indication [here](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955).
+penguins-eggs-10.0.x depend on nodejs >18, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
+
+### , Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
+just install penguins-eggs-10.0.x, as is.
+
+### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
+Before to install penguins-eggs-10.x add the repoos from nodesource, following the indication on the issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368)
+
+### Debian 9 stretch, Ubuntu 18.04 bionic
+On Ubuntu 18.04 use the package `penguins-eggs-10.x.x-bionic-x` compilated against node16 and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955).
 
 # Penguins' eggs releases
 
