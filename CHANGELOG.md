@@ -11,17 +11,18 @@ penguins-eggs
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 
-## penguins-eggs-10.0.x
-penguins-eggs-10.0.x depend on nodejs >18, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
+# penguins-eggs-10.0.x versions installation
+`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
 
-### , Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
-just install penguins-eggs-10.0.x, as is.
+## Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
+just install penguins-eggs-10.0.x.
 
-### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
-Before to install penguins-eggs-10.x add the repoos from nodesource, following the indication on the issue [#368](https://github.com/pieroproietti/penguins-eggs/issues/368)
+## Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
+Before to install `penguins-eggs-10.x` add the repoos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
 
-### Debian 9 stretch, Ubuntu 18.04 bionic
-On Ubuntu 18.04 use the package `penguins-eggs-10.x.x-bionic-x` compilated against node16 and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955).
+## Debian 9 stretch, Ubuntu 18.04 bionic
+Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
+
 
 # Penguins' eggs releases
 
