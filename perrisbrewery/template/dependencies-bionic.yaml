@@ -14,7 +14,6 @@ common:
   - live-boot # eggs
   - live-boot-doc # eggs
   - live-boot-initramfs-tools # eggs
-  # live-config-systemd | live-config-sysvinit | open-infrastructure-system-config
   - live-tools # eggs
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
