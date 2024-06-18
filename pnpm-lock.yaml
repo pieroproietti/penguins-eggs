@@ -12,11 +12,11 @@ importers:
         specifier: ^4.0.6
         version: 4.0.6
       '@oclif/plugin-autocomplete':
-        specifier: ^3.1.3
-        version: 3.1.3
+        specifier: ^3.1.4
+        version: 3.1.4
       '@oclif/plugin-help':
-        specifier: ^6.2.2
-        version: 6.2.2
+        specifier: ^6.2.3
+        version: 6.2.3
       '@oclif/plugin-version':
         specifier: ^2.2.4
         version: 2.2.4
@@ -109,8 +109,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0(eslint@8.57.0)
       eslint-config-oclif-typescript:
-        specifier: ^3.1.7
-        version: 3.1.7(eslint@8.57.0)(typescript@5.4.5)
+        specifier: ^3.1.8
+        version: 3.1.8(eslint@8.57.0)(typescript@5.4.5)
       eslint-config-prettier:
         specifier: ^9.1.0
         version: 9.1.0(eslint@8.57.0)
@@ -118,8 +118,8 @@ importers:
         specifier: ^10.4.0
         version: 10.4.0
       oclif:
-        specifier: ^4.13.6
-        version: 4.13.6
+        specifier: ^4.13.8
+        version: 4.13.8
       perrisbrewery:
         specifier: ^9.8.3
         version: 9.8.3
@@ -416,24 +416,24 @@ packages:
     resolution: {integrity: sha512-z/4YUVQsf2pHsXRze5etbmvAYDhoUhIzpM6oJGEdsdWfvQJ6YQBogH7TdX/ItuGda6+vpfXg/4U1CtPexSF+bA==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-autocomplete@3.1.3':
-    resolution: {integrity: sha512-waCo5AUGl3j8C+rNdkKD5L3Tiy5gszeec3/u+BERVJd6mfc/qqxhBffyrTT7iogXVpz3KUyrHwhTQDL/L/jxBA==}
+  '@oclif/plugin-autocomplete@3.1.4':
+    resolution: {integrity: sha512-JhLK2Cndbl5QLdgAiNCCb8fpqRfB7xpcvsemhrQTxBd3LnB8bSsDIOlm2fhVucYpup5M2r9K7K791BjV90//9Q==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.2':
-    resolution: {integrity: sha512-2n3QCeq0eaWR/RfwGaJ8LMbparsGktc63WNQfjBFLfGm7VLv3tR5JNYaUrMmL3zUd3emw1SObVXmH6oY0NPEnA==}
+  '@oclif/plugin-help@6.2.3':
+    resolution: {integrity: sha512-ogaCD2i6dmEgrrIKG8iV42o/s45EG53Q+dW/zeEhL8It9UdVDooXjXkZLPSyRS+CyrbK3it8Mwh08DrJxjZiqQ==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-not-found@3.2.4':
-    resolution: {integrity: sha512-dTOqfFJZCVVmDQXgJJqbTEgmc1Dguz6tWi2R3V0XlQoRljdEKq0ixk9D6g3Ty5cRr/C3NYlJozAErbCsxZnPcg==}
+  '@oclif/plugin-not-found@3.2.5':
+    resolution: {integrity: sha512-C3YgT46dQpVs0DkXECTVrlg8KeOzLAOXFpmCYMPQQU3siptliep2eESjXrFm9VL+jZijGJjyckwQgn/X5zq1LQ==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-version@2.2.4':
     resolution: {integrity: sha512-zOog2VyWyMJkldmtlwDw8pl/aK9Z4UrmLxGf9Erjo+71hRXv0ovMvikycE3+HMwrnbIibOBs8//8CGEtSz5bBw==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-warn-if-update-available@3.1.5':
-    resolution: {integrity: sha512-WNWq1co1McIqxE/kovrslZfdIMNvaruaDgxflvN3JganabfBLMDfdsH9TalApkmtT8X9UBEZH/j9YUDNNMqLnw==}
+  '@oclif/plugin-warn-if-update-available@3.1.6':
+    resolution: {integrity: sha512-K/hKDUD1HOXJa89arqpzB5bqLO1+abiOgvQ3nIGnbO3yyVPsieBRD3yuv+ti7r/nUIroZnPYBlyNESL6W0/NaA==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/prettier-config@0.2.1':
@@ -1364,8 +1364,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-oclif-typescript@3.1.7:
-    resolution: {integrity: sha512-5q6Q1NjQt6WrAANGO9Go3uuxZTzf7ywmecRNW7e+bTnlkTk0/ClPd6SogH+qkwOkFJaMHmBp45ZmzvwGzy/Txg==}
+  eslint-config-oclif-typescript@3.1.8:
+    resolution: {integrity: sha512-nxEKt95XesuRA+5R1L4weQvmr1U0io+qzRJ8xoRb9C9OXrQTVNgcLJMDxt8XsPsr6z6ZcB3cY8kR8BuF7nBbHQ==}
     engines: {node: '>=18.0.0'}
 
   eslint-config-oclif@5.2.0:
@@ -2329,8 +2329,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.13.6:
-    resolution: {integrity: sha512-PnBwhHp+9DiMsUbED0nv13mBGy4PDeDF0blcWfAkS8Uy9+SYgjA3rWxOk5edSdVSv2k2VdSCwitqmGWmOrfBNw==}
+  oclif@4.13.8:
+    resolution: {integrity: sha512-A/e31wMSXgerxwqwb7MvPusPLGap9Hrgbmq6bBlVS+PnBvH/gxzDAMaUNI2Abcpi5KOVB/YyAaODtFHiIf3Szw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2911,8 +2911,8 @@ packages:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
 
-  type-fest@4.20.0:
-    resolution: {integrity: sha512-MBh+PHUHHisjXf4tlx0CFWoMdjx8zCMLJHOjnV1prABYZFHqtFOyauCIK2/7w4oIfwkF8iNhLtnJEfVY2vn3iw==}
+  type-fest@4.20.1:
+    resolution: {integrity: sha512-R6wDsVsoS9xYOpy8vgeBlqpdOyzJ12HNfQhC/aAKWM3YoCV9TtunJzh/QpkMgeDhkoynDcw5f1y+qF9yc/HHyg==}
     engines: {node: '>=16'}
 
   typed-array-buffer@1.0.2:
@@ -3054,8 +3054,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.17.0:
-    resolution: {integrity: sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==}
+  ws@8.17.1:
+    resolution: {integrity: sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -3821,7 +3821,7 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/plugin-autocomplete@3.1.3':
+  '@oclif/plugin-autocomplete@3.1.4':
     dependencies:
       '@oclif/core': 4.0.6
       ansis: 3.2.0
@@ -3830,11 +3830,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/plugin-help@6.2.2':
+  '@oclif/plugin-help@6.2.3':
     dependencies:
       '@oclif/core': 4.0.6
 
-  '@oclif/plugin-not-found@3.2.4':
+  '@oclif/plugin-not-found@3.2.5':
     dependencies:
       '@inquirer/confirm': 3.1.9
       '@oclif/core': 4.0.6
@@ -3846,7 +3846,7 @@ snapshots:
       '@oclif/core': 4.0.6
       ansis: 3.2.0
 
-  '@oclif/plugin-warn-if-update-available@3.1.5':
+  '@oclif/plugin-warn-if-update-available@3.1.6':
     dependencies:
       '@oclif/core': 4.0.6
       ansis: 3.2.0
@@ -4995,7 +4995,7 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-oclif-typescript@3.1.7(eslint@8.57.0)(typescript@5.4.5):
+  eslint-config-oclif-typescript@3.1.8(eslint@8.57.0)(typescript@5.4.5):
     dependencies:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.0)(typescript@5.4.5))(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.4.5)
@@ -5613,10 +5613,10 @@ snapshots:
       slice-ansi: 7.1.0
       stack-utils: 2.0.6
       string-width: 7.1.0
-      type-fest: 4.20.0
+      type-fest: 4.20.1
       widest-line: 5.0.0
       wrap-ansi: 9.0.0
-      ws: 8.17.0
+      ws: 8.17.1
       yoga-wasm-web: 0.3.3
     optionalDependencies:
       '@types/react': 18.3.3
@@ -6084,7 +6084,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oclif@4.13.6:
+  oclif@4.13.8:
     dependencies:
       '@aws-sdk/client-cloudfront': 3.598.0
       '@aws-sdk/client-s3': 3.598.0
@@ -6092,9 +6092,9 @@ snapshots:
       '@inquirer/input': 2.1.9
       '@inquirer/select': 2.3.5
       '@oclif/core': 4.0.6
-      '@oclif/plugin-help': 6.2.2
-      '@oclif/plugin-not-found': 3.2.4
-      '@oclif/plugin-warn-if-update-available': 3.1.5
+      '@oclif/plugin-help': 6.2.3
+      '@oclif/plugin-not-found': 3.2.5
+      '@oclif/plugin-warn-if-update-available': 3.1.6
       async-retry: 1.3.3
       chalk: 4.1.2
       change-case: 4.1.2
@@ -6232,8 +6232,8 @@ snapshots:
   perrisbrewery@9.8.3:
     dependencies:
       '@oclif/core': 3.27.0
-      '@oclif/plugin-autocomplete': 3.1.3
-      '@oclif/plugin-help': 6.2.2
+      '@oclif/plugin-autocomplete': 3.1.4
+      '@oclif/plugin-help': 6.2.3
       '@oclif/plugin-version': 2.2.4
       '@oclif/test': 4.0.4(@oclif/core@3.27.0)
       chalk: 4.1.2
@@ -6749,7 +6749,7 @@ snapshots:
 
   type-fest@0.8.1: {}
 
-  type-fest@4.20.0: {}
+  type-fest@4.20.1: {}
 
   typed-array-buffer@1.0.2:
     dependencies:
@@ -6926,7 +6926,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.17.0: {}
+  ws@8.17.1: {}
 
   x-is-array@0.1.0: {}
 

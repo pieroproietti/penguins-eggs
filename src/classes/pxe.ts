@@ -211,7 +211,7 @@ export default class Pxe {
     console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
     //const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
-    const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
+    const file = new nodeStatic.Server(httpRoot) 
     http
       .createServer((req: IncomingMessage, res: ServerResponse) => {
         file.serve(req, res)
