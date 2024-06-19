@@ -18,6 +18,7 @@ common:
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
   - nodejs (>= 16)
+  #- open-infrastructure-system-config  # bionic only
   - parted 
   - pxelinux # cuckoo
   - rsync
