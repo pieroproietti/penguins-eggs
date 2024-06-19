@@ -35,6 +35,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.7-1
+For the joy of all respin producer who don't like to have my eggs on the desktop, I changed a new flag in `sudo eggs produce`.
+
+I already add a flag `--noticons` equivalent to not create icons at all on the desktop, not eggs, not calamares, and so on, I think too much. So I update it to: `sudo eggs produce --noicon` in singular form, and remove just my eggs symbol and my blog link. For someone this can be important.
+
+For others, don't take cure, always is better to have eggs on the fridge!
+
 # penguins-eggs-10.0.6-3
 Generate debian packages for all Debian/Devuan/Ubuntu distros plus a specific for Ubuntu bionic, from the same codebase. Thanks to mods in [perrisbrewery](https://github.com/pieroproietti/perrisbrewery). 
 
