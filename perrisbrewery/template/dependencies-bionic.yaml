@@ -18,7 +18,7 @@ common:
   - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
   - nodejs (>= 16)
-  #- open-infrastructure-system-config  # bionic only
+  - live-boot # questo va reinstallato
   - parted 
   - pxelinux # cuckoo
   - rsync
