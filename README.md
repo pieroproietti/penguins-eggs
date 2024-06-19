@@ -518,7 +518,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.1.3/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.1.4/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -698,7 +698,7 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.2/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.3/src/commands/help.ts)_
 
 ## `eggs install`
 

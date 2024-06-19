@@ -42,7 +42,7 @@ export default class Produce extends Command {
     help: Flags.help({ char: 'h' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
-    noicons: Flags.boolean({ char: 'N', description: 'no icons on desktop' }),
+    noicon: Flags.boolean({ char: 'N', description: 'no icon eggs on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     pendrive: Flags.boolean({ char: 'p', description: 'optimized for pendrive: zstd -b 1M -Xcompression-level 15'}),
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
@@ -173,7 +173,7 @@ export default class Produce extends Command {
 
       const { nointeractive } = flags
 
-      const { noicons } = flags
+      const { noicon } = flags
 
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
@@ -200,9 +200,9 @@ export default class Produce extends Command {
         }
       }
 
-      const i = await Config.thatWeNeed(nointeractive, noicons, verbose, cryptedclone)
+      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
       if ((i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
-        await Config.install(i, nointeractive, noicons, verbose)
+        await Config.install(i, nointeractive, verbose)
       }
 
       const myAddons = {} as IAddons
@@ -228,7 +228,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicons, unsecure, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

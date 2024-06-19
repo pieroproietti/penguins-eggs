@@ -26,7 +26,6 @@ export default class Config extends Command {
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
-    noicons: Flags.boolean({ char: 'N', description: 'no icons' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -36,7 +35,7 @@ export default class Config extends Command {
    * @param i
    * @param verbose
    */
-  static async install(i: IInstall, nointeractive = false, noicons = false, verbose = false) {
+  static async install(i: IInstall, nointeractive = false, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
     Utils.warning('config: so, we install')
@@ -71,11 +70,7 @@ export default class Config extends Command {
       }
     }
 
-    if (
-      !noicons && // se VOGLIO le icone
-      i.calamares &&
-      Pacman.isCalamaresAvailable()
-    ) {
+    if (i.calamares && Pacman.isCalamaresAvailable()) {
       if (nointeractive) {
         Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
       } else {
@@ -99,7 +94,7 @@ export default class Config extends Command {
    *
    * @param verbose
    */
-  static async thatWeNeed(nointeractive = false, noicons = false, verbose = false, cryptedclone = false): Promise<IInstall> {
+  static async thatWeNeed(nointeractive = false, verbose = false, cryptedclone = false): Promise<IInstall> {
     const i = {} as IInstall
 
     i.distroTemplate = !Pacman.distroTemplateCheck()
@@ -109,12 +104,8 @@ export default class Config extends Command {
     }
 
     if (!cryptedclone && !Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
-      if (noicons) {
-        i.calamares = false
-      } else {
-        Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
-        i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
-      }
+      Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
+      i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
     }
 
     i.configurationInstall = !Pacman.configurationCheck()
@@ -186,7 +177,6 @@ export default class Config extends Command {
   async run(): Promise<void> {
     const { flags } = await this.parse(Config)
     const { nointeractive } = flags
-    const { noicons } = flags
     const { verbose } = flags
 
     if (!nointeractive) {
@@ -217,12 +207,12 @@ export default class Config extends Command {
 
       // Vediamo che cosa c'è da fare...
       Utils.warning('what we need?')
-      const i = await Config.thatWeNeed(nointeractive, noicons, verbose)
+      const i = await Config.thatWeNeed(nointeractive, verbose)
       if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
         if (nointeractive) {
-          await Config.install(i, nointeractive, noicons, verbose)
+          await Config.install(i, nointeractive, verbose)
         } else if (await Utils.customConfirm()) {
-          await Config.install(i, nointeractive, noicons, verbose)
+          await Config.install(i, nointeractive, verbose)
         }
       }
     } else {
