@@ -180,13 +180,6 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "noicons": {
-          "char": "N",
-          "description": "no icons",
-          "name": "noicons",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "nointeractive": {
           "char": "n",
           "description": "no user interaction",
@@ -588,10 +581,10 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "noicons": {
+        "noicon": {
           "char": "N",
-          "description": "no icons on desktop",
-          "name": "noicons",
+          "description": "no icon eggs on desktop",
+          "name": "noicon",
           "allowNo": false,
           "type": "boolean"
         },
@@ -1457,5 +1450,5 @@
       ]
     }
   },
-  "version": "10.0.6"
+  "version": "10.0.7"
 }
