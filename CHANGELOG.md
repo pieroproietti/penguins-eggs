@@ -36,7 +36,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.6-3
-Actually generate for all distros plus bionic from the same code, thanks mods on perrisbrewery.
+Generate debian packages for all Debian/Devuan/Ubuntu distros plus a specific for Ubuntu bionic, from the same codebase. Thanks to mods in [perrisbrewery](https://github.com/pieroproietti/perrisbrewery). 
+
+Of course Arch and Manjaro are generated aside, thanks his [PKGBUILD](https://github.com/pieroproietti/eggs-pkgbuilds).
 
 ## Note about bionic version
 To have bionic, and armonize with all the others version, I did:
