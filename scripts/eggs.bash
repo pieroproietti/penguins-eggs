@@ -14,7 +14,7 @@ _eggs_autocomplete()
 adapt --help --verbose
 analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
-config --clean --help --noicons --nointeractive --verbose
+config --clean --help --nointeractive --verbose
 cuckoo --help
 dad --clean --default --help --verbose
 export:deb --all --clean --help --verbose
@@ -23,7 +23,7 @@ install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive -
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --isos --nointeractive --verbose
 mom --help
-produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicons --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --excludes --file --help --verbose

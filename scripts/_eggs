@@ -234,7 +234,6 @@ config)
 _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old configuration before to create new one]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-N --noicons)"{-N,--noicons}"[no icons]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
@@ -313,9 +312,9 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
-"(-N --noicons)"{-N,--noicons}"[no icons on desktop]" \
+"(-N --noicon)"{-N,--noicon}"[no icon eggs on desktop]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-p --pendrive)"{-p,--pendrive}"[compression optimized for pendrive: zstd -b 1M -Xcompression-level 3]" \
+"(-p --pendrive)"{-p,--pendrive}"[optimized for pendrive: zstd -b 1M -Xcompression-level 15]" \
 "(-P --prefix)"{-P,--prefix}"[prefix]:file:_files" \
 --release"[release: remove penguins-eggs, calamares and dependencies after installation]" \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
