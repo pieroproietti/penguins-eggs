@@ -47,8 +47,7 @@ Now we have two template for control file:
 
 * perrisbrewery/template/dependencies.yaml;
 * perrisbrewery/template/dependencies-bionic.yaml I removed line: ```live-config-systemd | live-config-sysinitv```, added live `-- live-boot`, and put `nodejs (>= 16);
-
-live-boot: On bionic, for same reason, when the system is installed directory `/lib/live/boot` is erased. The sustem work, eggs work and can produce but the resilting ISO will not boot! To solve this problem, before generate the ISO give: `sudo apt install live-boot --reinstall`. This will restore `/lib/live/boot` and it's contents.
+* live-boot package: on bionic - for same reason - when the system is installed, directory `/lib/live/boot` is erased. The system work, eggs work and can produce, but the resulting ISO will not boot! To solve this problem, before generate the ISO, give: `sudo apt install live-boot --reinstall`. This will restore `/lib/live/boot` and it's full contents.
 
 # penguins-eggs-10.0.6-1
 I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
