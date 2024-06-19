@@ -40,9 +40,11 @@ Actually generate for all distros plus bionic from the same code, thanks mods on
 
 ## Note about bionic version
 To have bionic, and armonize with all the others version, I did:
+
 * package.json: ```"engines": { "node": ">=16.0.0" }, ```
 
 Now we have two template for control file:
+
 * perrisbrewery/template/dependencies.yaml;
 * perrisbrewery/template/dependencies-bionic.yaml I removed line: ```live-config-systemd | live-config-sysinitv```, added live `-- live-boot`, and put `nodejs (>= 16);
 
