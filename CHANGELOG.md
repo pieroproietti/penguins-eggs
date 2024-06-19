@@ -36,7 +36,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.6-2
-Actually generate for all or for bionic from the same come, thanks mod on perrisbrewery.
+Actually generate for all distros plus bionic from the same come, thanks mods on perrisbrewery.
 
 # penguins-eggs-10.0.6-1
 I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
