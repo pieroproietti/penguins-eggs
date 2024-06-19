@@ -35,13 +35,18 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-# penguins-eggs-10.0.6-2
+# penguins-eggs-10.0.6-3
 Actually generate for all distros plus bionic from the same code, thanks mods on perrisbrewery.
 
-## Note about bionic
+## Note about bionic version
+To have bionic, and armonize with all the others version, I did:
 * package.json: ```"engines": { "node": ">=16.0.0" }, ```
-* perrisbrewery/template/dependencies.yaml removed line: ```live-config-systemd | live-config-sysinitv```
-* remastering bionic requires the presence of the `/lib/live/boot` directory, I created it and just added a little `README.md` file inside to prevent it from being deleted;
+
+Now we have two template for control file:
+* perrisbrewery/template/dependencies.yaml;
+* perrisbrewery/template/dependencies-bionic.yaml I removed line: ```live-config-systemd | live-config-sysinitv```, added live `-- live-boot`, and put `nodejs (>= 16);
+
+live-boot: On bionic, for same reason, when the system is installed directory `/lib/live/boot` is erased. The sustem work, eggs work and can produce but the resilting ISO will not boot! To solve this problem, before generate the ISO give: `sudo apt install live-boot --reinstall`. This will restore `/lib/live/boot` and it's contents.
 
 # penguins-eggs-10.0.6-1
 I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
