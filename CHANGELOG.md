@@ -36,7 +36,12 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 # penguins-eggs-10.0.6-2
-Actually generate for all distros plus bionic from the same come, thanks mods on perrisbrewery.
+Actually generate for all distros plus bionic from the same code, thanks mods on perrisbrewery.
+
+## Note about bionic
+* package.json: ```"engines": { "node": ">=16.0.0" }, ```
+* perrisbrewery/template/dependencies.yaml removed line: ```live-config-systemd | live-config-sysinitv```
+* remastering bionic requires the presence of the `/lib/live/boot` directory, I created it and just added a little `README.md` file inside to prevent it from being deleted;
 
 # penguins-eggs-10.0.6-1
 I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
