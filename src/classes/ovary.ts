@@ -1973,28 +1973,29 @@ export default class Ovary {
       uefi_noEmulBoot = '-no-emul-boot'
     }
 
-    // geniisoimage from Hosein
-    if (Pacman.packageIsInstalled('genisoimage')) {
-      command = `genisoimage \
-    -iso-level 3 \
-    -allow-limited-size \
-    -joliet-long \
-    -r \
-    -V "-V3.0" \
-    -cache-inodes \
-    -J \
-    -l \
-    -b isolinux/isolinux.bin \
-    -c isolinux/boot.cat \
-    -no-emul-boot \
-    -boot-load-size 4 \
-    -boot-info-table \
-    -eltorito-alt-boot \
-    -e boot/grub/efiboot.img \
-    -o ${output} ${this.settings.iso_work}`
+    /* geniisoimage from Hosein
+      if (Pacman.packageIsInstalled('genisoimage')) {
+        command = `genisoimage \
+      -iso-level 3 \
+      -allow-limited-size \
+      -joliet-long \
+      -r \
+      -V "-V3.0" \
+      -cache-inodes \
+      -J \
+      -l \
+      -b isolinux/isolinux.bin \
+      -c isolinux/boot.cat \
+      -no-emul-boot \
+      -boot-load-size 4 \
+      -boot-info-table \
+      -eltorito-alt-boot \
+      -e boot/grub/efiboot.img \
+      -o ${output} ${this.settings.iso_work}`
 
-      return command
-    }
+        return command
+      }
+    */
 
     // xorriso from Piero
     command = `xorriso -as mkisofs \
