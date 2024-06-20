@@ -68,6 +68,8 @@ export default class Ovary {
 
   theme = ''
 
+  volid = ''
+
   toNull = ''
 
   verbose = false
@@ -751,6 +753,7 @@ export default class Ovary {
 
     if (await this.settings.load()) {
       await this.settings.loadRemix(this.theme)
+      this.volid = Utils.getVolid(this.settings.remix.name)
 
       this.familyId = this.settings.distro.familyId
       this.nest = this.settings.config.snapshot_mnt
@@ -961,8 +964,7 @@ export default class Ovary {
     const { distroId } = this.settings.distro
     let kp = `boot=live components locales=${process.env.LANG}`
     if (this.familyId === 'archlinux') {
-      const volid = Utils.getVolid(this.settings.remix.name)
-      kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${volid}` : ` archisobasedir=arch archisolabel=${volid}`
+      kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
     }
 
     kp += ` cow_spacesize=4G`
@@ -1718,8 +1720,7 @@ export default class Ovary {
       }
 
       const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replaceAll(/\s\s+/g, ' ')
-      const info = Utils.getVolid(this.settings.remix.name)
-      this.makeDotDisk(info, mksquashfsCmd, mkIsofsCmd)
+      this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
       /**
        * AntiX/MX LINUX
@@ -1924,8 +1925,6 @@ export default class Ovary {
       console.log('Ovary: xorrisoCommand')
     }
 
-    const volid = Utils.getVolid(this.settings.remix.name)
-
     const prefix = this.settings.config.snapshot_prefix
 
     let typology = ''
@@ -1943,7 +1942,7 @@ export default class Ovary {
     }
 
     const postfix = Utils.getPostfix()
-    this.settings.isoFilename = prefix + volid + '_' + Utils.uefiArch() + typology + postfix
+    this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
     //
     const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
 
@@ -2005,7 +2004,7 @@ export default class Ovary {
      -iso-level 3 \
      ${isoHybridMbr} \
      -partition_offset 16 \
-     -V ${volid} \
+     -V ${this.volid} \
      -b isolinux/isolinux.bin \
      -c isolinux/boot.cat \
      -no-emul-boot \
