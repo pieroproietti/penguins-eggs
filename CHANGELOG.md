@@ -35,6 +35,15 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.8-1
+* removed the code that allowed `genisoimage` to be used instead of `xorriso` to generate the ISO;
+* restored the operation of `eggs produce --script` for both: Debian and Ubuntu derivatives (for the moment it has been tested only on Debian bookworm and Linuxmint 21.3 Virginia;
+* using `eggs produces --script` actually generated a link in `/home/eggs` to the ISO in `.mnt`;
+I did my best, I hope you find errors but not too many, that's enough for today!
+
+
+Translated with DeepL.com (free version)
+
 # penguins-eggs-10.0.7-1
 For the joy of all respin producer who don't like to have my eggs on the desktop, I changed a flag in `sudo eggs produce`.
 
