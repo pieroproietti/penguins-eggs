@@ -213,12 +213,11 @@ export default class Settings {
    * @param basename
    * @param theme
    */
-  async loadRemix(basename = '', theme = '') {
+  async loadRemix(theme = '') {
     this.remix.versionNumber = Utils.getPackageVersion()
     this.remix.kernel = Utils.kernelVersion()
 
     this.remix.branding = theme === '' ? 'eggs' : (this.remix.branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1)))
-
     this.remix.name = this.config.snapshot_basename
     let name = this.config.snapshot_prefix + this.config.snapshot_basename
     name = name.replaceAll('-', ' ').replaceAll('_', ' ').replace('egg of ', '')
