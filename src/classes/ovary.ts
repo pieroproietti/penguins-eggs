@@ -10,7 +10,7 @@ import chalk from 'chalk'
 import yaml from 'js-yaml'
 import mustache from 'mustache'
 // packages
-import fs from 'node:fs'
+import fs, { Dirent } from 'node:fs'
 import { constants } from 'node:fs'
 // backup
 import { access } from 'node:fs/promises'
@@ -114,7 +114,7 @@ export default class Ovary {
      * fs.readdirSync('/', { withFileTypes: true })
      * viene ignorato da Node8, ma da problemi da Node10 in poi
      */
-    const dirs = fs.readdirSync('/') // we must remove boot and
+    const dirs = fs.readdirSync('/')
     const startLine = '#############################################################'
     const titleLine = '# -----------------------------------------------------------'
     const endLine = '# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
@@ -128,6 +128,10 @@ export default class Ovary {
     for (const dir of dirs) {
       cmds.push(startLine)
       if (N8.isDirectory(dir)) {
+        if (dir === 'boot') {
+          cmds.push(`# /boot is copied actually`)
+          cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+        }
         if (dir !== 'boot' && dir !== 'lost+found') {
           cmd = `# /${dir} is a directory`
           if (this.mergedAndOverlay(dir)) {
@@ -234,19 +238,6 @@ export default class Ovary {
       // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
     }
-  }
-
-  /**
-   * copyBoot
-   *
-   * necessario: prima era merged
-   */
-  async copyBoot() {
-    if (this.verbose) {
-      console.log('Ovary: copyBoot')
-    }
-
-    await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose)
   }
 
   /**
@@ -1317,6 +1308,12 @@ export default class Ovary {
     }
 
     Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
+    
+    // Create link to iso ALLWAYES
+    const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
+    const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
+    await exec(`ln -s ${src} ${dest}`)
+    
     if (!scriptOnly) {
       const test = (await exec(cmd, Utils.setEcho(true))).code
       if (test !== 0) {
@@ -1677,7 +1674,6 @@ export default class Ovary {
         }
 
         await this.bindLiveFs()
-        await this.copyBoot()
 
         if (!this.clone) {
           /**
