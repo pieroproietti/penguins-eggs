@@ -38,8 +38,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 # penguins-eggs-10.0.8-1
 * removed the code that allowed `genisoimage` to be used instead of `xorriso` to generate the ISO;
 * restored the operation of `eggs produce --script` for both: Debian and Ubuntu derivatives (for the moment it has been tested only on Debian bookworm and Linuxmint 21.3 Virginia;
-* using `eggs produces --script` actually generated a link in `/home/eggs` to the ISO in `.mnt`;
-* warning: I checked `eggs produce --script` on Arch too, but actually don't work.
+* using `eggs produce --script` actually generated a link in `/home/eggs` to the ISO in `.mnt`;
+* warning: I checked `eggs produce --script` on ArchLinux too, but actually don't work.
 
 I did my best, I hope you find errors but not too many, that's enough for today!
 
