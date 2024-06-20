@@ -1973,7 +1973,11 @@ export default class Ovary {
       uefi_noEmulBoot = '-no-emul-boot'
     }
 
-    /* geniisoimage from Hosein
+    /**
+     * geniisoimage from Hosein
+     * 
+     * REMOVED TOO MUCH TROUBLES
+     * 
       if (Pacman.packageIsInstalled('genisoimage')) {
         command = `genisoimage \
       -iso-level 3 \
