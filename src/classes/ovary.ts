@@ -750,6 +750,8 @@ export default class Ovary {
     this.settings = new Settings()
 
     if (await this.settings.load()) {
+      await this.settings.loadRemix(this.theme)
+
       this.familyId = this.settings.distro.familyId
       this.nest = this.settings.config.snapshot_mnt
 
@@ -1538,8 +1540,6 @@ export default class Ovary {
     if (!fs.existsSync(this.settings.config.snapshot_dir)) {
       shx.mkdir('-p', this.settings.config.snapshot_dir)
     }
-
-    await this.settings.loadRemix(this.snapshot_basename, this.theme)
 
     if (Utils.isLive()) {
       console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
