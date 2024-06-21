@@ -7,6 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import fs from 'fs'
 import Pacman from '../../classes/pacman.js'
 import Systemctl from '../../classes/systemctl.js'
 import Utils from '../../classes/utils.js'
@@ -43,10 +44,6 @@ export default async function networkCfg(this: Sequence) {
 
     Utils.write(file, content)
 
-    // trixie
-    // if (await systemdCtl.isActive('systemd-networkd.service')) {
-    //  await exec (`rm ${file}`)
-    // }
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
   } else if (this.distro.familyId === 'arch') {
@@ -56,24 +53,21 @@ export default async function networkCfg(this: Sequence) {
   /**
    * resolv.conf
    */
-  if (this.network.addressType === 'dhcp') {
-    const isResolveCtl =(await exec(`which resolvectl`)).data === `/usr/bin/resolvectl`
-    if (isResolveCtl) {
-      // resolvctl
-      await exec(`ln -s /run/systemd/resolve/resolv.conf ${this.installTarget}/etc/resolv.conf`)
-    } if (await systemdCtl.isActive('resolvconf.service')) {
-      // resolvconf.service
-      await exec(`rm ${this.installTarget}/etc/resolv.conf`)
-      await exec(`ln -s usr/lib/systemd/resolv.conf /etc/resolv.conf`)
-    } else {
-      // nature
-      const file = this.installTarget + '/etc/resolv.conf'
-      let content = '# created by eggs\n\n'
-      content += 'domain ' + this.network.domain + '\n'
-      for (const element of this.network.dns) {
-        content += 'nameserver ' + element + '\n'
-      }
-      Utils.write(file, content)
+  const resolvFile = this.installTarget + '/etc/resolv.conf'
+  await exec(`rm -f ${resolvFile}`)
+  if (await systemdCtl.isActive('resolvconf.service')) {
+    // resolvconf.service
+    await exec(`ln -s ${this.installTarget}/usr/lib/systemd/resolv.conf ${resolvFile}`)
+  } else if (await exec(`which resolvectl`)) {
+    // resolvectl
+    await exec(`ln -s ${this.installTarget}/run/systemd/resolve/resolv.conf ${resolvFile}`)
+  } else {
+    // static 
+    let content = '# created by eggs\n\n'
+    content += 'domain ' + this.network.domain + '\n'
+    for (const element of this.network.dns) {
+      content += 'nameserver ' + element + '\n'
     }
+    Utils.write(resolvFile, content)
   }
 }
