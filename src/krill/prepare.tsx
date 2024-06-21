@@ -81,6 +81,7 @@ import Keyboard from '../components/keyboard.js'
 import Users from '../components/users.js'
 import Network from '../components/network.js'
 import Summary from '../components/summary.js'
+//import Install from '../components/install.js'
 
 import selectLanguages from '../lib/select_languages.js'
 import selectRegions from '../lib/select_regions.js'
@@ -144,7 +145,7 @@ export default class Krill {
   constructor(unattended = false, nointeractive = false, halt = false, chroot = false) {
     this.unattended = unattended
     this.nointeractive = nointeractive
-      this.chroot = chroot
+    this.chroot = chroot
     this.halt = halt
 
   }
@@ -309,6 +310,8 @@ export default class Krill {
       oNetwork = await this.network()
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
+
+
 
     /**
      * INSTALL

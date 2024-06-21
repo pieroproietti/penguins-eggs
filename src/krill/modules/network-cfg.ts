@@ -56,13 +56,8 @@ export default async function networkCfg(this: Sequence) {
   const resolvFile = this.installTarget + '/etc/resolv.conf'
   await exec(`rm -f ${resolvFile}`)
   if (await systemdCtl.isActive('resolvconf.service')) {
-    // resolvconf.service
-    await exec(`ln -s ${this.installTarget}/usr/lib/systemd/resolv.conf ${resolvFile}`)
-  } else if (await exec(`which resolvectl`)) {
-    // resolvectl
-    await exec(`ln -s ${this.installTarget}/run/systemd/resolve/resolv.conf ${resolvFile}`)
+    await exec(`ln -s /run/systemd/resolve/resolv.conf ${resolvFile}`)
   } else {
-    // static 
     let content = '# created by eggs\n\n'
     content += 'domain ' + this.network.domain + '\n'
     for (const element of this.network.dns) {
