@@ -10,8 +10,6 @@ penguins-eggs
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-
-
 # Penguins' eggs releases
 
 ## penguins-eggs-10.0.x versions installation
@@ -35,13 +33,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.9-1
+krill: fixed a noising problem, when use resolvectl krill was not able to create to link `/etc/resolv.conf` to `/run/systemd/resolve/resolv.conf`, now I fixed this. I'm using krill `sudo eggs install` more than calamares due it's much fast and can be used with flags like `--unattended`, `--nointeractive`, etc.
+
 # penguins-eggs-10.0.8-2
 * just a new pratical way to add/remove local repository yolk, during installation.
 
 Yolk was created mostly to let installation without internet connection during the system installation. Before, I decided to remove all repos during installation with calamares/krill and use just `/etc/apt/sources.list.d/yolk.list`, now I changed this strategy: I just add `/etc/apt/sources.list.d/yolk.list` during installation process without remove the others repos. The result is a light slow initializations - when we are not on the net - but the possibility to add every packages during installation when we are connected.
-
-# penguins-eggs-10.0.9-1
-krill: fixed a noising problem, when use resolvectl krill was not able to create to link `/etc/resolv.conf` to `/run/systemd/resolve/resolv.conf`, now I fixed this. I'm using krill `sudo eggs install` more than calamares due it's much fast and can be used with flags like `--unattended`, `--nointeractive`, etc.
 
 # penguins-eggs-10.0.8-1
 * removed the code that allowed `genisoimage` to be used instead of `xorriso` to generate the ISO;
