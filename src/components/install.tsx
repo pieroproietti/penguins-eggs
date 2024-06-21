@@ -57,7 +57,7 @@ export default function Install({ message="Install", percent=0, spinner = false 
       <Box width={74} height={11} borderStyle="round" flexDirection="column">
         <Box flexDirection="column">
           <Box flexDirection="row">
-            <Steps step={9} />
+            <Steps step={8} />
             <Box flexDirection="column">
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />
