@@ -27,10 +27,9 @@ main() {
 #
 #
 remove() {
-    if [ -f "YOLK_LIST" ]; then
-        rm -f "YOLK_LIST"
+    if [ -f "$YOLK_LIST" ]; then
+        rm -f "$YOLK_LIST"
     fi
-
 }
 
 #
