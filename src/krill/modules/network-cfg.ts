@@ -55,7 +55,7 @@ export default async function networkCfg(this: Sequence) {
    */
   const resolvFile = this.installTarget + '/etc/resolv.conf'
   await exec(`rm -f ${resolvFile}`)
-  if (await systemdCtl.isActive('resolvconf.service')) {
+  if (fs.existsSync('/run/systemd/resolve/resolv.conf')) {
     await exec(`ln -s /run/systemd/resolve/resolv.conf ${resolvFile}`)
   } else {
     let content = '# created by eggs\n\n'
