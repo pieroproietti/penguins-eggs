@@ -57,17 +57,22 @@ export default async function networkCfg(this: Sequence) {
    * resolv.conf
    */
   if (this.network.addressType === 'dhcp') {
-    if (await systemdCtl.isActive('resolvconf.service')) {
+    const isResolveCtl =(await exec(`which resolvectl`)).data === `/usr/bin/resolvectl`
+    if (isResolveCtl) {
+      // resolvctl
+      await exec(`ln -s /run/systemd/resolve/resolv.conf ${this.installTarget}/etc/resolv.conf`)
+    } if (await systemdCtl.isActive('resolvconf.service')) {
+      // resolvconf.service
       await exec(`rm ${this.installTarget}/etc/resolv.conf`)
       await exec(`ln -s usr/lib/systemd/resolv.conf /etc/resolv.conf`)
     } else {
+      // nature
       const file = this.installTarget + '/etc/resolv.conf'
       let content = '# created by eggs\n\n'
       content += 'domain ' + this.network.domain + '\n'
       for (const element of this.network.dns) {
         content += 'nameserver ' + element + '\n'
       }
-
       Utils.write(file, content)
     }
   }
