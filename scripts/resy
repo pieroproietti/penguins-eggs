@@ -7,7 +7,7 @@ clear
 echo ">>> Re-install penguis-Eggs Saving Yolk"
 tmpDir=$(mktemp -d)
 mv /var/local/yolk "${tmpDir}"
-apt -y purge penguins-eggs
+apt-get -y purge penguins-eggs
 dpkg -i /tmp/penguins-eggs*.deb
 mv "${tmpDir}/yolk" /var/local
 eggs dad -d
