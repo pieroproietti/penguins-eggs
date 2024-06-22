@@ -36,7 +36,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 # penguins-eggs-10.0.10-1
 * dad: added a new flag `--file` to have own configuration defaults.
 
-Configuration defaults are passed with own cd custom.yaml script, eg:
+Configuration defaults are passed with own YAML file, eg: `custom.yaml`
 
 ```
 # custom.yaml
