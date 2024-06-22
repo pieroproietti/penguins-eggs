@@ -190,8 +190,8 @@ _eggs() {
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
-"autocomplete[Display autocomplete installation instructions.]" \
 "help[Display help for eggs.]" \
+"autocomplete[Display autocomplete installation instructions.]" \
 "version[]" \
 
     ;;
@@ -246,8 +246,9 @@ _arguments -S \
 dad)
 _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old configuration before to create]" \
-"(-d --default)"{-d,--default}"[remove old configuration and force default]" \
+"(-d --default)"{-d,--default}"[reset to default values]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-f --custom)"{-f,--custom}"[use a file configuration custom]:file:_files" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
@@ -354,14 +355,14 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-autocomplete)
-_arguments -S \
-"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 help)
 _arguments -S \
 "(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+autocomplete)
+_arguments -S \
+"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 version)

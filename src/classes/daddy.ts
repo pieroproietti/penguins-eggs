@@ -10,6 +10,8 @@ import chalk from 'chalk'
 import inquirer from 'inquirer'
 // _dirname
 import path from 'node:path'
+import fs from 'fs'
+import yaml from 'js-yaml'
 
 import Pacman from '../classes/pacman.js'
 import Settings from '../classes/settings.js'
@@ -31,10 +33,101 @@ export default class Daddy {
   settings = {} as Settings
 
   /**
-   *
-   * @param c
+   * 
+   * @param reset 
+   * @param isCustom 
+   * @param fileCustom 
+   * @param verbose 
    */
-  editConfig(c: IEggsConfig): Promise<string> {
+  async helpMe(reset = false, isCustom = false, fileCustom = '', verbose = false) {
+    console.log("reset: ", reset)
+    console.log("isCustom: ", isCustom)
+    if (isCustom) {
+      console.log("fileCustom: ", fileCustom)
+    }
+
+    // Controllo configurazione
+    if (!Pacman.configurationCheck()) {
+      console.log('- creating configuration dir...')
+      await Pacman.configurationInstall(verbose)
+    }
+
+    // Templates
+    if (!Pacman.distroTemplateCheck()) {
+      console.log('- distro template install...')
+      await Pacman.distroTemplateInstall(verbose)
+    }
+
+    // show and edit configuration
+    this.settings = new Settings()
+    let config = {} as IEggsConfig
+    let jsonConf = ''
+    if (await this.settings.load()) {
+      config = this.settings.config
+      config.compression = 'fast'
+
+      if (reset) {
+        // Reset configuration
+        if (config.snapshot_prefix === '') {
+          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
+        }
+        jsonConf = JSON.stringify(config)
+        console.log("reset")
+
+      } else if (isCustom) {
+
+        // Custom configuration
+        const conf = fs.readFileSync(fileCustom, 'utf8')
+        const confCustom = yaml.load(conf) as editConf
+        config.snapshot_basename = confCustom.snapshot_basename
+        config.snapshot_prefix = confCustom.snapshot_prefix
+        config.user_opt = confCustom.user_opt
+        config.user_opt_passwd = confCustom.user_opt_passwd
+        config.root_passwd = confCustom.root_passwd
+        config.theme = confCustom.theme
+        jsonConf = JSON.stringify(config)
+
+      } else {
+        // default configuration
+        jsonConf = await this.editConfig(config)
+        console.log("edit")
+      }
+
+
+      // Save new configuration
+      const confNew = JSON.parse(jsonConf)
+      config.snapshot_basename = confNew.snapshot_basename
+      config.snapshot_prefix = confNew.snapshot_prefix
+      config.user_opt = confNew.user_opt
+      config.user_opt_passwd = confNew.user_opt_passwd
+      config.root_passwd = confNew.root_passwd
+      config.theme = confNew.theme
+      await this.settings.save(config)
+    }
+    console.log()
+    console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'))
+    console.log()
+    console.log(chalk.cyan(`You can create a clean ISO with: `) + chalk.white(`sudo eggs produce`))
+    console.log(chalk.cyan(`or a full personal clone: `) + chalk.white(`sudo eggs produce --clone`))
+    console.log()
+    console.log(chalk.cyan(`If you don't have enough space to remaster, you can mount`))
+    console.log(chalk.cyan(`some remote or local space. Follow the samples:`))
+    console.log(chalk.cyan(`- first, create an hidden mountpoint under the nest:`))
+    console.log(chalk.white(`sudo mkdir /home/eggs/.mnt -p`))
+    console.log(chalk.cyan(`- then, mount remote space:`))
+    console.log(chalk.white(`sudo sshfs -o allow_other root@192.168.1.2:/zfs/iso /home/eggs/.mnt`))
+    console.log(chalk.cyan('- or, mount a local partition:'))
+    console.log(chalk.white(`sudo mount /dev/sdx1 /home/eggs/.mnt`))
+    console.log()
+    console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
+  }
+
+  /**
+   * editConfif
+   * @param c 
+   * @returns 
+   */
+  async editConfig(c: IEggsConfig): Promise<string> {
     // Utils.titles('dad')
     console.log(chalk.cyan('Edit and save Live system parameters'))
     console.log()
@@ -95,63 +188,5 @@ export default class Daddy {
     })
   }
 
-  async helpMe(loadDefault = false, verbose = false) {
-    // Controllo configurazione
-    if (!Pacman.configurationCheck()) {
-      console.log('- creating configuration dir...')
-      await Pacman.configurationInstall(verbose)
-    }
-
-    // Templates
-    if (!Pacman.distroTemplateCheck()) {
-      console.log('- distro template install...')
-      await Pacman.distroTemplateInstall(verbose)
-    }
-
-    // show and edit configuration
-    this.settings = new Settings()
-    let config = {} as IEggsConfig
-    if (await this.settings.load()) {
-      config = this.settings.config
-      let jsonConf: string
-      if (loadDefault) {
-        if (config.snapshot_prefix === '') {
-          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
-          config.compression = 'fast'
-        }
-
-        jsonConf = JSON.stringify(config)
-      } else {
-        jsonConf = await this.editConfig(config)
-      }
-
-      const newConf = JSON.parse(jsonConf)
-      // salvo le modifiche
-      config.snapshot_basename = newConf.snapshot_basename
-      config.snapshot_prefix = newConf.snapshot_prefix
-      config.user_opt = newConf.user_opt
-      config.user_opt_passwd = newConf.user_opt_passwd
-      config.root_passwd = newConf.root_passwd
-      config.theme = newConf.theme
-
-      await this.settings.save(config)
-      console.log()
-      console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'))
-      console.log()
-      console.log(chalk.cyan(`You can create a clean ISO with: `) + chalk.white(`sudo eggs produce`))
-      console.log(chalk.cyan(`or a full personal clone: `) + chalk.white(`sudo eggs produce --clone`))
-      console.log()
-      console.log(chalk.cyan(`If you don't have enough space to remaster, you can mount`))
-      console.log(chalk.cyan(`some remote or local space. Follow the samples:`))
-      console.log(chalk.cyan(`- first, create an hidden mountpoint under the nest:`))
-      console.log(chalk.white(`sudo mkdir /home/eggs/.mnt -p`))
-      console.log(chalk.cyan(`- then, mount remote space:`))
-      console.log(chalk.white(`sudo sshfs -o allow_other root@192.168.1.2:/zfs/iso /home/eggs/.mnt`))
-      console.log(chalk.cyan('- or, mount a local partition:'))
-      console.log(chalk.white(`sudo mount /dev/sdx1 /home/eggs/.mnt`))
-      console.log()
-      console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
-      // await exec(`cat /etc/penguins-eggs.d/eggs.yaml`)
-    }
-  }
 }
+
