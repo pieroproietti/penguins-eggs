@@ -106,7 +106,7 @@ I received from Glenn Chugg same informations about fixes on README and on `eggs
 * again in krill: krill now respect the calamares module: `packages.conf` or it's own, packages are added/removed after it's configuration. This born becouse of Devuan daedalus amd64 version, I noted it go in kernel panic after installation, if penguins-eggs and it's dependecies are not removed. The problem arise - probably - from the package `live-config-sysvinit`. I solved using the option `--release` in command `produce`, to configurate calamares/krill to remove penguins-eggs, calamares and it's dependencies before to finish the installation process;
 * Other little fixes on wardrobe.
 
-# penguins-eggs-10.0.2
+## penguins-eggs-10.0.2
 A whole series of tweaks to make the Debian package more standard, a pity not to have been able to generate a single package `-any` for all architectures. 
 
 ## penguins-eggs-10.0.0
