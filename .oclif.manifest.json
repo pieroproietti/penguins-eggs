@@ -260,7 +260,7 @@
         },
         "default": {
           "char": "d",
-          "description": "remove old configuration and force default",
+          "description": "reset to default values",
           "name": "default",
           "allowNo": false,
           "type": "boolean"
@@ -271,6 +271,14 @@
           "name": "help",
           "allowNo": false,
           "type": "boolean"
+        },
+        "custom": {
+          "char": "f",
+          "description": "use a file configuration custom",
+          "name": "custom",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
         },
         "verbose": {
           "char": "v",

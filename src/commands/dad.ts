@@ -8,6 +8,7 @@
 
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
+import fs from 'fs'
 
 import Daddy from '../classes/daddy.js'
 import Utils from '../classes/utils.js'
@@ -20,8 +21,10 @@ export default class Dad extends Command {
 
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
-    default: Flags.boolean({ char: 'd', description: 'remove old configuration and force default' }),
+    default: Flags.boolean({ char: 'd', description: 'reset to default values' }),
     help: Flags.help({ char: 'h' }),
+    custom: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
+
     verbose: Flags.boolean({ char: 'v' })
   }
 
@@ -29,13 +32,25 @@ export default class Dad extends Command {
     Utils.titles(this.id + ' ' + this.argv)
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))
     const { flags } = await this.parse(Dad)
+
+    const fileCustom = flags.custom
+    const isCustom = fileCustom !== undefined && fileCustom !== ''
+    const reset = flags.default
+
     if (Utils.isRoot(this.id)) {
-      if (flags.clean || flags.default) {
+      if (flags.clean || flags.default || flags.mine) {
         await exec('rm /etc/penguins-eggs.d -rf')
       }
 
+      if (isCustom) {
+        if (!fs.existsSync(fileCustom)) {
+          console.log(chalk.red(`Custom configuration file: ${flags.custom} not found!`))
+          process.exit(1)
+        }
+      }
+
       const daddy = new Daddy()
-      daddy.helpMe(flags.default, flags.verbose)
+      daddy.helpMe(reset, isCustom, fileCustom, flags.verbose)
     } else {
       Utils.useRoot(this.id)
     }
