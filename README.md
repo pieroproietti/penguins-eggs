@@ -609,10 +609,10 @@ USAGE
   $ eggs dad [-c] [-d] [-h] [-f <value>] [-v]
 
 FLAGS
-  -c, --clean           remove old configuration before to create
-  -d, --default         reset to default values
-  -f, --custom=<value>  use a file configuration custom
-  -h, --help            Show CLI help.
+  -c, --clean         remove old configuration before to create
+  -d, --default       reset to default values
+  -f, --file=<value>  use a file configuration custom
+  -h, --help          Show CLI help.
   -v, --verbose
 
 DESCRIPTION

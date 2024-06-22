@@ -1,7 +1,7 @@
 # custom.yaml
 ---
-root_passwd: 1234
-snapshot_basename: bird
+root_passwd: secret
+snapshot_basename: columbus
 snapshot_prefix: '' # none
-user_opt_passwd: 1234
+user_opt_passwd: secret
 user_opt: user 
