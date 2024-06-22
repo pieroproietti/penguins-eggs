@@ -23,7 +23,7 @@ export default class Dad extends Command {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'reset to default values' }),
     help: Flags.help({ char: 'h' }),
-    custom: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
+    file: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
 
     verbose: Flags.boolean({ char: 'v' })
   }
@@ -33,7 +33,7 @@ export default class Dad extends Command {
     console.log(chalk.cyan('Daddy, what else did you leave for me?'))
     const { flags } = await this.parse(Dad)
 
-    const fileCustom = flags.custom
+    const fileCustom = flags.file
     const isCustom = fileCustom !== undefined && fileCustom !== ''
     const reset = flags.default
 

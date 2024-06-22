@@ -33,6 +33,22 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 ## Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+# penguins-eggs-10.0.10-1
+* dad: added a new flag `--file` to have own configuration defaults.
+
+Configuration defaults are passed with own cd custom.yaml script, eg:
+
+```
+# custom.yaml
+---
+root_passwd: secret
+snapshot_basename: columbus
+snapshot_prefix: '' # none
+user_opt_passwd: secret
+user_opt: user 
+```
+Usage: `sudo eggs dad --file ./custom.yaml`
+
 # penguins-eggs-10.0.9-1
 krill: fixed a noising problem, when use resolvectl krill was not able to create to link `/etc/resolv.conf` to `/run/systemd/resolve/resolv.conf`, now I fixed this. I'm using krill `sudo eggs install` more than calamares due it's much fast and can be used with flags like `--unattended`, `--nointeractive`, etc.
 

@@ -16,7 +16,7 @@ analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help
-dad --clean --default --help --custom --verbose
+dad --clean --default --help --file --verbose
 export:deb --all --clean --help --verbose
 export:iso --checksum --clean --help --verbose
 install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
@@ -37,8 +37,8 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version --json --verbose
 "
 

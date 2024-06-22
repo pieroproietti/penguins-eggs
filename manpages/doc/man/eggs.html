@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.9</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.10</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.9-1_i386.deb
+    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.10-bionic-1_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/10.0.9  
+penguins-eggs/10.0.10  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -204,12 +204,13 @@ EXAMPLES
     <h2><code>eggs dad</code></h2>
     <p>ask help from daddy - TUI configuration helper</p>
     <pre><code>USAGE
-  $ eggs dad [-c] [-d] [-h] [-v]
+  $ eggs dad [-c] [-d] [-h] [-f &#x3C;value>] [-v]
 
 FLAGS
-  -c, --clean    remove old configuration before to create
-  -d, --default  remove old configuration and force default
-  -h, --help     Show CLI help.
+  -c, --clean         remove old configuration before to create
+  -d, --default       reset to default values
+  -f, --file=&#x3C;value>  use a file configuration custom
+  -h, --help          Show CLI help.
   -v, --verbose
 
 DESCRIPTION
