@@ -121,8 +121,8 @@ importers:
         specifier: ^4.13.8
         version: 4.13.8
       perrisbrewery:
-        specifier: ^9.8.6
-        version: 9.8.6
+        specifier: ^10
+        version: 10.0.0
       prettier:
         specifier: ^3.3.2
         version: 3.3.2
@@ -2434,8 +2434,8 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  perrisbrewery@9.8.6:
-    resolution: {integrity: sha512-S8aLAyUOh67HMLwxKsgx6/URVaC8cUn3RiRsGvZUqLJReX+HJ4jDX0riLgokqwqwAfHsXlzbLFZqANoQKy5NnQ==}
+  perrisbrewery@10.0.0:
+    resolution: {integrity: sha512-lUBEdAmCwive8qBIFePpKXSM1Gx+xfiv3PdQ9eHkEBGn/hWjNPCWl0s7RUWjfedntkag6Lv+I/ero9T83cNkXg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6229,7 +6229,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  perrisbrewery@9.8.6:
+  perrisbrewery@10.0.0:
     dependencies:
       '@oclif/core': 3.27.0
       '@oclif/plugin-autocomplete': 3.1.4
