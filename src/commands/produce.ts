@@ -16,6 +16,7 @@ import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
+import { Static } from 'ink'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -24,16 +25,16 @@ export default class Produce extends Command {
   static description = 'produce a live image from your system whithout your data'
 
   static examples = [
-    'sudo eggs produce',
-    'sudo eggs produce --max',
-    'sudo eggs produce --pendrive',
-    'sudo eggs produce --clone',
-    'sudo eggs produce --cryptedclone',
+    'sudo eggs produce                    # fast compression',    
+    'sudo eggs produce --max              # max compression', 
+    'sudo eggs produce --pendrive         # compression optomized pendrive',
+    'sudo eggs produce --clone            # clone', 
+    'sudo eggs produce --cryptedclone     # crypted clone',
     'sudo eggs produce --basename=colibri',
-    'sudo eggs produce --basename=colibri --theme theme --addons adapt',
-    'sudo eggs produce --excludes static',
-    'sudo eggs produce --excludes homes',
-    'sudo eggs produce --excludes home',
+    'sudo eggs produce --theme lastos',
+    'sudo eggs produce --excludes static  # you can customize it',
+    'sudo eggs produce --excludes homes   # exclude /home/*',
+    'sudo eggs produce --excludes home    # exclude ~/*',
   ]
 
   static flags = {
