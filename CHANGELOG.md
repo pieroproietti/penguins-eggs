@@ -32,6 +32,15 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.11-1
+* `produce --excludes`, now accept `static`, `homes` and `home`,
+
+Use:
+* `sudo eggs --excludes static` if can edit a static exclude.list;
+* `sudo eggs --excludes homes` if you want clean alls users homes;
+* `sudo eggs --excludes home` to not include your home dir.
+
+
 ## penguins-eggs-10.0.10-1
 * dad: added a new flag `--file` to have own configuration defaults.
 

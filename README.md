@@ -857,25 +857,25 @@ DESCRIPTION
   produce a live image from your system whithout your data
 
 EXAMPLES
-  sudo eggs produce
+  sudo eggs produce                    # fast compression
 
-  sudo eggs produce --max
+  sudo eggs produce --max              # max compression
 
-  sudo eggs produce --pendrive
+  sudo eggs produce --pendrive         # compression optomized pendrive
 
-  sudo eggs produce --clone
+  sudo eggs produce --clone            # clone
 
-  sudo eggs produce --cryptedclone
+  sudo eggs produce --cryptedclone     # crypted clone
 
   sudo eggs produce --basename=colibri
 
-  sudo eggs produce --basename=colibri --theme theme --addons adapt
+  sudo eggs produce --theme lastos
 
-  sudo eggs produce --excludes static
+  sudo eggs produce --excludes static  # you can customize it
 
-  sudo eggs produce --excludes homes
+  sudo eggs produce --excludes homes   # exclude /home/*
 
-  sudo eggs produce --excludes home
+  sudo eggs produce --excludes home    # exclude ~/*
 ```
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v1.0.11/src/commands/produce.ts)_

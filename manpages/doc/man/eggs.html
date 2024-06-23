@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.10</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v1.0.11</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.10-1_i386.deb
+    <pre><code>$ sudo dpkg -i penguins-eggs_1.0.11-1_i386.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -30,7 +30,7 @@ $ makepkg -si
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/10.0.10  
+penguins-eggs/1.0.11  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -400,7 +400,7 @@ FLAGS
   -y, --yolk                 force yolk renew
       --addons=&#x3C;value>...    addons to be used: adapt, ichoice, pve, rsupport
       --basename=&#x3C;value>     basename
-      --excludes=&#x3C;value>...  use: custom, home, mine, usr, var
+      --excludes=&#x3C;value>...  use: static, homes, home
       --links=&#x3C;value>...     desktop links
       --release              release: remove penguins-eggs, calamares and dependencies after installation
       --theme=&#x3C;value>        theme for livecd, calamares branding and partitions
@@ -409,19 +409,25 @@ DESCRIPTION
   produce a live image from your system whithout your data
 
 EXAMPLES
-  sudo eggs produce
+  sudo eggs produce                    # fast compression
 
-  sudo eggs produce --max
+  sudo eggs produce --max              # max compression
 
-  sudo eggs produce --pendrive
+  sudo eggs produce --pendrive         # compression optomized pendrive
 
-  sudo eggs produce --clone
+  sudo eggs produce --clone            # clone
 
-  sudo eggs produce --cryptedclone
+  sudo eggs produce --cryptedclone     # crypted clone
 
   sudo eggs produce --basename=colibri
 
-  sudo eggs produce --basename=colibri --theme theme --addons adapt
+  sudo eggs produce --theme lastos
+
+  sudo eggs produce --excludes static  # you can customize it
+
+  sudo eggs produce --excludes homes   # exclude /home/*
+
+  sudo eggs produce --excludes home    # exclude ~/*
 </code></pre>
     <h2><code>eggs status</code></h2>
     <p>informations about eggs status</p>
