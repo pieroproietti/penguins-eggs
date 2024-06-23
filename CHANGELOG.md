@@ -36,6 +36,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * `produce --excludes`, now accept `static`, `homes` and `home`,
 
 Use:
+
 * `sudo eggs --excludes static` if can edit a static exclude.list;
 * `sudo eggs --excludes homes` if you want clean alls users homes;
 * `sudo eggs --excludes home` to not include your home dir.
