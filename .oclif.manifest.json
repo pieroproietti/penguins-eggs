@@ -530,7 +530,10 @@
         "sudo eggs produce --clone",
         "sudo eggs produce --cryptedclone",
         "sudo eggs produce --basename=colibri",
-        "sudo eggs produce --basename=colibri --theme theme --addons adapt"
+        "sudo eggs produce --basename=colibri --theme theme --addons adapt",
+        "sudo eggs produce --excludes static",
+        "sudo eggs produce --excludes homes",
+        "sudo eggs produce --excludes home"
       ],
       "flags": {
         "addons": {
@@ -562,7 +565,7 @@
           "type": "boolean"
         },
         "excludes": {
-          "description": "use: custom, home, mine, usr, var",
+          "description": "use: static, homes, home",
           "name": "excludes",
           "hasDynamicHelp": false,
           "multiple": true,
