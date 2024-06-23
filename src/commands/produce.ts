@@ -31,6 +31,9 @@ export default class Produce extends Command {
     'sudo eggs produce --cryptedclone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --basename=colibri --theme theme --addons adapt',
+    'sudo eggs produce --excludes static',
+    'sudo eggs produce --excludes homes',
+    'sudo eggs produce --excludes home',
   ]
 
   static flags = {
@@ -38,7 +41,7 @@ export default class Produce extends Command {
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
-    excludes: Flags.string({ description: 'use: custom, home, mine, usr, var', multiple: true }),
+    excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
@@ -109,31 +112,23 @@ export default class Produce extends Command {
 
       // excludes
       const excludes = {} as IExcludes
+      excludes.usr = true
+      excludes.var = true
       excludes.static = false
+      excludes.homes = false
       excludes.home = false
-      excludes.mine = false
-      excludes.usr = false
-      excludes.var = false
 
       if (flags.excludes) {
         if (flags.excludes.includes('static')) {
           excludes.static = true
         }
 
+        if (flags.excludes.includes('homes')) {
+          excludes.homes = true
+        }
+
         if (flags.excludes.includes('home')) {
           excludes.home = true
-        }
-
-        if (flags.excludes.includes('mine')) {
-          excludes.mine = true
-        }
-
-        if (flags.excludes.includes('usr')) {
-          excludes.usr = true
-        }
-
-        if (flags.excludes.includes('var')) {
-          excludes.var = true
         }
       }
 
