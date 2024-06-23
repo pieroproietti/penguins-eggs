@@ -1,5 +1,5 @@
 ######################################################################################################
-# home: will be used just on:
+# homes: will be used just on:
 # * --clone included in exclude.list
 # * --cryptedclone used by syncto --excludes (automatically passed from ovary)
 # 

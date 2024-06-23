@@ -7,9 +7,9 @@
  */
 
 export interface IExcludes {
-  home: boolean
-  mine: boolean
   static: boolean
+  homes: boolean
+  home: boolean
   usr: boolean
   var: boolean
 }

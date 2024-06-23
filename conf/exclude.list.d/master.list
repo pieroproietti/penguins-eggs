@@ -78,12 +78,11 @@ lost+found
 swap/*
 swapfile
 
-{{{custom_list}}}
-
-{{{home_list}}}
-
-{{{mine_list}}}
-
 {{{usr_list}}}
 
 {{{var_list}}}
+
+{{{homes_list}}}
+
+{{{home_list}}}
+
