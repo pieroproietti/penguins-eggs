@@ -37,9 +37,9 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 Use:
 
-* `sudo eggs --excludes static` if can edit a static exclude.list;
-* `sudo eggs --excludes homes` if you want clean alls users homes;
-* `sudo eggs --excludes home` to not include your home dir.
+* `sudo eggs --excludes static` you can use a static exclude.list;
+* `sudo eggs --excludes homes` you want to clean all users' homes;
+* `sudo eggs --excludes home` don't save my home dir.
 
 
 ## penguins-eggs-10.0.10-1
