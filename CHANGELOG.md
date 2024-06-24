@@ -32,6 +32,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.12
+`produce`: added the `--sidecar` flag, allows the inclusion of an arbitrary directory within the generated ISO. Uses can be disparate, I leave it to you.
+
 ## penguins-eggs-10.0.11-2
 The `/usr/bin/penguins-links-add.sh` script called by `/etc/xdg/autostart/penguins-links-add.desktop` now waits for the Desktop folder to be present before copying the links to the desktop, with the result that all links are shown correctly.
 
