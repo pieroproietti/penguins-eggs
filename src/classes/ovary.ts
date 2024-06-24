@@ -411,7 +411,10 @@ export default class Ovary {
       let text = ''
       text += '#!/bin/sh\n'
       text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-      text += 'test -d "$DESKTOP" && mkdir -p "$DESKTOP"\n'
+      text += 'while [ ! -d "$DESKTOP" ]; do\n'
+      text += '  DESKTOP=$(xdg-user-dir DESKTOP)\n'
+      text += '  sleep 1\n'
+      text += 'done\n'
       text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
       if (Pacman.packageIsInstalled('lxde-core')) {
         if (!noicons) {
