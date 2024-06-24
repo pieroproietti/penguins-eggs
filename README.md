@@ -830,7 +830,8 @@ produce a live image from your system whithout your data
 ```
 USAGE
   $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-C] [--excludes <value>...] [-h] [--links
-    <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-f] [--theme <value>] [-u] [-v] [-y]
+    <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [--sidecar <value>] [-f] [--theme <value>] [-u] [-v]
+    [-y]
 
 FLAGS
   -C, --cryptedclone         crypted clone
@@ -851,6 +852,7 @@ FLAGS
       --excludes=<value>...  use: static, homes, home
       --links=<value>...     desktop links
       --release              release: remove penguins-eggs, calamares and dependencies after installation
+      --sidecar=<value>      add a sidecar folder on your ISO with arbitrary contents
       --theme=<value>        theme for livecd, calamares branding and partitions
 
 DESCRIPTION

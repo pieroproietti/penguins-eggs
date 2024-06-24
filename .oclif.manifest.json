@@ -634,6 +634,13 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "sidecar": {
+          "description": "add a sidecar folder on your ISO with arbitrary contents",
+          "name": "sidecar",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "standard": {
           "char": "f",
           "description": "standard compression: xz -b 1M",

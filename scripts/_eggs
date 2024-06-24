@@ -309,7 +309,7 @@ _arguments -S \
 --basename"[basename]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone]" \
 "(-C --cryptedclone)"{-C,--cryptedclone}"[crypted clone]" \
-"*"--excludes"[use: custom, home, mine, usr, var]:file:_files" \
+"*"--excludes"[use: static, homes, home]:file:_files" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
@@ -319,6 +319,7 @@ _arguments -S \
 "(-P --prefix)"{-P,--prefix}"[prefix]:file:_files" \
 --release"[release: remove penguins-eggs, calamares and dependencies after installation]" \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
+--sidecar"[add a sidecar folder on your ISO with arbitrary contents]:file:_files" \
 "(-f --standard)"{-f,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
 "(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \

@@ -72,6 +72,8 @@ export default class Ovary {
 
   toNull = ''
 
+  sidecar = ''
+
   verbose = false
 
   /**
@@ -986,6 +988,15 @@ export default class Ovary {
       this.tryCatch(cmd)
     }
 
+    // sidecar
+    if (this.sidecar !== '') {
+      this.sidecar = path.resolve(this.sidecar)
+      cmd = `mkdir -p ${this.settings.iso_work}sidecar`
+      this.tryCatch(cmd)
+      cmd = `cp ${this.sidecar}/* ${this.settings.iso_work}sidecar -R`
+      this.tryCatch(cmd)
+    }
+
     // Ovarium
     if (!fs.existsSync(this.settings.work_dir.ovarium)) {
       cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
@@ -1510,7 +1521,8 @@ export default class Ovary {
    * @param unsecure
    * @param verbose
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, sidecar='', verbose = false) {
+    this.sidecar = sidecar
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -1724,7 +1736,7 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }
 
-      const mkIsofsCmd = this.xorrisoCommand(clone, cryptedclone).replaceAll(/\s\s+/g, ' ')
+      const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')
       this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
       /**
@@ -1925,7 +1937,7 @@ export default class Ovary {
    * @param cryptedclone
    * @returns cmd 4 mkiso
    */
-  xorrisoCommand(clone = false, cryptedclone = false): string {
+  async xorrisoCommand(clone = false, cryptedclone = false): Promise<string> {
     if (this.verbose) {
       console.log('Ovary: xorrisoCommand')
     }
@@ -1977,6 +1989,7 @@ export default class Ovary {
       uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
       uefi_noEmulBoot = '-no-emul-boot'
     }
+
 
     // xorriso
     command = `xorriso -as mkisofs \
