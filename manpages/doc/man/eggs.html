@@ -9,7 +9,7 @@
     <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.11</h1>
     <h1>SYNOPSIS</h1>
     <p>Install Debian families (debian/devuan/ubuntu)</p>
-    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.11-bionic-2_amd64.deb
+    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.11-1_amd64.deb
 </code></pre>
     <p>Install Arch families (Arch, manjaro Linux)</p>
     <p>Arch from AUR</p>
@@ -382,7 +382,8 @@ EXAMPLES
     <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
   $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-C] [--excludes &#x3C;value>...] [-h] [--links
-    &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-f] [--theme &#x3C;value>] [-u] [-v] [-y]
+    &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [--sidecar &#x3C;value>] [-f] [--theme &#x3C;value>] [-u] [-v]
+    [-y]
 
 FLAGS
   -C, --cryptedclone         crypted clone
@@ -403,6 +404,7 @@ FLAGS
       --excludes=&#x3C;value>...  use: static, homes, home
       --links=&#x3C;value>...     desktop links
       --release              release: remove penguins-eggs, calamares and dependencies after installation
+      --sidecar=&#x3C;value>      add a sidecar folder on your ISO with arbitrary contents
       --theme=&#x3C;value>        theme for livecd, calamares branding and partitions
 
 DESCRIPTION
