@@ -40,4 +40,5 @@ usr/share/gtk-doc/html/*
 usr/share/krita/*
 usr/share/texmf/*
 usr/share/xemacs21/*
-usr/x86_64-w64-mingw32/*
+# Don't exclude this line with wine
+#usr/x86_64-w64-mingw32/*
