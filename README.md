@@ -31,6 +31,7 @@ penguins-eggs
   * [penguins' eggs user guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+  * [Download](https://penguins-eggs.net/download)
   * [Blog](https://penguins-eggs.net/blog)
 
 # Introduction
