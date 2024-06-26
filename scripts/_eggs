@@ -190,9 +190,9 @@ _eggs() {
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
-"autocomplete[Display autocomplete installation instructions.]" \
-"help[Display help for eggs.]" \
 "version[]" \
+"help[Display help for eggs.]" \
+"autocomplete[Display autocomplete installation instructions.]" \
 
     ;;
     args)
@@ -319,7 +319,6 @@ _arguments -S \
 "(-P --prefix)"{-P,--prefix}"[prefix]:file:_files" \
 --release"[release: remove penguins-eggs, calamares and dependencies after installation]" \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
---sidecar"[add a sidecar folder on your ISO with arbitrary contents]:file:_files" \
 "(-f --standard)"{-f,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
 "(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
@@ -356,9 +355,10 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-autocomplete)
+version)
 _arguments -S \
-"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--json"[Format output as json.]" \
+--verbose"[Show additional information about the CLI.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 help)
@@ -366,10 +366,9 @@ _arguments -S \
 "(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-version)
+autocomplete)
 _arguments -S \
---json"[Format output as json.]" \
---verbose"[Show additional information about the CLI.]" \
+"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac
