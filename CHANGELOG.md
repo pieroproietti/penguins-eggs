@@ -32,6 +32,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.13
+* `dad`: bugfix on flag --file;
+* `exclude.list.d`: usr.list is now completely - intentionally - empty;
+* `produce`: removed flag --sidecar, not necessary.
+
 ## penguins-eggs-10.0.12
 `produce`: added the `--sidecar` flag, allows the inclusion of an arbitrary directory within the generated ISO. Uses can be disparate, I leave it to you.
 

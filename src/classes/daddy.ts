@@ -64,7 +64,7 @@ export default class Daddy {
       config = this.settings.config
       config.compression = 'fast'
 
-      if (reset) {
+      if (reset || isCustom) {
         if (config.snapshot_prefix === '') {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
         }
