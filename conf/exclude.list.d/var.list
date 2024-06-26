@@ -3,9 +3,8 @@
 var/backups/*
 var/cache/* 
 var/lib/aide/*
-
-# look here for apt problem!
 var/lib/apt/*~
+var/lib/apt/cache/*
 var/lib/apt/cdroms.list
 var/lib/apt/daily_lock
 var/lib/apt/extended_states  
@@ -13,8 +12,6 @@ var/lib/apt/listchanges.db
 var/lib/apt/lists/
 var/lib/apt/mirrors/
 var/lib/apt/periodic/
-var/lib/apt/cache/*
-##
 var/lib/aptitude/*.old
 var/lib/cache/*
 var/lib/dbus/machine-id
@@ -22,9 +19,11 @@ var/lib/dhcp/*
 var/lib/dkms/wireguard/*
 var/lib/dpkg/*~old
 var/lib/gems/2.7.0/cache/*
-#var/lib/snapd/*
 var/log/*.log
 var/log/*.log.?
 var/log/*/*
 var/spool/*
 var/tmp/*
+
+
+#var/lib/snapd/*
