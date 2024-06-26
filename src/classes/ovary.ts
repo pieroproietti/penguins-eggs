@@ -72,8 +72,6 @@ export default class Ovary {
 
   toNull = ''
 
-  sidecar = ''
-
   verbose = false
 
   /**
@@ -988,15 +986,6 @@ export default class Ovary {
       this.tryCatch(cmd)
     }
 
-    // sidecar
-    if (this.sidecar !== '') {
-      this.sidecar = path.resolve(this.sidecar)
-      cmd = `mkdir -p ${this.settings.iso_work}sidecar`
-      this.tryCatch(cmd)
-      cmd = `cp ${this.sidecar}/* ${this.settings.iso_work}sidecar -R`
-      this.tryCatch(cmd)
-    }
-
     // Ovarium
     if (!fs.existsSync(this.settings.work_dir.ovarium)) {
       cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
@@ -1521,8 +1510,7 @@ export default class Ovary {
    * @param unsecure
    * @param verbose
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, sidecar='', verbose = false) {
-    this.sidecar = sidecar
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {

@@ -52,7 +52,6 @@ export default class Produce extends Command {
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    sidecar: Flags.string({ description: 'add a sidecar folder on your ISO with arbitrary contents' }),
     standard: Flags.boolean({ char: 'f', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
@@ -172,14 +171,6 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      const { sidecar } = flags
-      if (sidecar !== undefined) {
-        if (!fs.existsSync(sidecar)) {
-          Utils.warning('sidecar: ' + chalk.white(sidecar) + ' not found!')
-          process.exit()
-        }
-      }
-
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
 
@@ -234,7 +225,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, sidecar, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure,  verbose)
         ovary.finished(scriptOnly)
       }
     } else {
