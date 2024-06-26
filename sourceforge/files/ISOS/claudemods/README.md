@@ -15,7 +15,7 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# Made on [Archlinux](https://archlinux.org/) using archinstall and [KDE6.1](https://kde.org/).
+# Made on [Archlinux](https://archlinux.org/) and [KDE6.1](https://kde.org/).
 
 All information provided from website links above.
 
@@ -24,13 +24,12 @@ All information provided from website links above.
 
 # Arch-Kde-Plasma-6.1-v1.01
 
-Ww now have an option for a full arch kde plasma 6.1 iso 
-built from archinstall lots of extras that should of been installed with archinstall script
+Now have an option for a full arch kde plasma 6.1 ISO, built from archinstall, a lots of extras that should of been installed with archinstall script
 comes with albatros calamares.
 
 Simply install and get customizing please note you will need to rename account
 and change home directories files to new name their is steps online with below link i have done this many times
-https://stackoverflow.com/questions/20797819/command-to-change-the-default-home-directory-of-a-user
+[look here](https://stackoverflow.com/questions/20797819/command-to-change-the-default-home-directory-of-a-user).
 
 # claudemodssystemtool Arch-Kde-Plasma-6.1-v2.05.3
 Built to provide an ISO to showcase what can be done using skills and time you can simply gather some ideas or use this iso to build off of comes with albatros calamares.
