@@ -12,15 +12,15 @@ penguins-eggs
 # Penguins' eggs remastered ISOs
 
 # user/password
-* ```live/evolution```
-* ```root/evolution```
+* ```live/2024```
+* ```root/2024```
 
-# Made on [Archlinux](https://archlinux.org/) and [KDE6.1](https://kde.org/).
+# Made with [Archlinux](https://archlinux.org/), [KDE6.1](https://kde.org/) and Love!
 
 All information provided from website links above.
 
-**Arch** A simple, lightweight distribution
-**Kde** Plasma: The next generation desktop for Linux KDE Applications. Powerful, multi-platform, and for everyone
+* **Arch** A simple, lightweight distribution
+* **Kde** Plasma: The next generation desktop for Linux KDE Applications. Powerful, multi-platform, and for everyone
 
 # Arch-Kde-Plasma-6.1-v1.01
 
@@ -31,6 +31,7 @@ Simply install and get customizing please note you will need to rename account
 and change home directories files to new name their is steps online with below link i have done this many times
 [look here](https://stackoverflow.com/questions/20797819/command-to-change-the-default-home-directory-of-a-user).
 
+ 
 # claudemodssystemtool Arch-Kde-Plasma-6.1-v2.05.3
 Built to provide an ISO to showcase what can be done using skills and time you can simply gather some ideas or use this iso to build off of comes with albatros calamares.
 
@@ -38,7 +39,7 @@ Simply install and get customizing please note you will need to rename account a
 
 I have done this many times, get it [here](https://stackoverflow.com/questions/20797819/command-to-change-the-default-home-directory-of-a-user).
 
-
+    
 
 
 
