@@ -40,10 +40,8 @@ export default class Daddy {
    * @param verbose 
    */
   async helpMe(reset = false, isCustom = false, fileCustom = '', verbose = false) {
-    console.log("reset: ", reset)
-    console.log("isCustom: ", isCustom)
     if (isCustom) {
-      console.log("fileCustom: ", fileCustom)
+      console.log("using custom file: ", fileCustom)
     }
 
     // Controllo configurazione
@@ -67,16 +65,16 @@ export default class Daddy {
       config.compression = 'fast'
 
       if (reset) {
-        // Reset configuration
         if (config.snapshot_prefix === '') {
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
         }
         jsonConf = JSON.stringify(config)
-        console.log("reset")
+      } else {
+        jsonConf = await this.editConfig(config)
+      }
 
-      } else if (isCustom) {
-
-        // Custom configuration
+      // Custom configuration
+      if (isCustom) {
         const conf = fs.readFileSync(fileCustom, 'utf8')
         const confCustom = yaml.load(conf) as editConf
         config.snapshot_basename = confCustom.snapshot_basename
@@ -86,11 +84,6 @@ export default class Daddy {
         config.root_passwd = confCustom.root_passwd
         config.theme = confCustom.theme
         jsonConf = JSON.stringify(config)
-
-      } else {
-        // default configuration
-        jsonConf = await this.editConfig(config)
-        console.log("edit")
       }
 
 
