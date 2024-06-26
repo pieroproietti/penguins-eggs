@@ -15,7 +15,6 @@ usr/i686-w64-mingw32/*
 usr/include/gtkmm-3.0/*
 usr/lib/gcc/i686-w64-mingw32/*
 usr/lib/gcc/x86_64-w64-mingw32/*
-usr/lib/i386-linux-gnu/*
 usr/lib/i386-linux-gnu/libLLVM-12.so
 usr/lib/i386-linux-gnu/libLLVM-12.so.1
 usr/lib/llvm-11/*
@@ -33,7 +32,6 @@ usr/lib/x86_64-linux-gnu/libLLVM-9.so
 usr/lib/x86_64-linux-gnu/libLLVM-9.so.1
 usr/lib/x86_64-linux-gnu/openblas-pthread/*
 usr/share/dict/*
-usr/share/doc/*
 usr/share/eclipse/*
 usr/share/gimp/2.0/help/en/images/*
 usr/share/gtk-doc/html/*
@@ -41,4 +39,6 @@ usr/share/krita/*
 usr/share/texmf/*
 usr/share/xemacs21/*
 # Don't exclude this line with wine
+#usr/lib/i386-linux-gnu/*
+#usr/share/doc/*
 #usr/x86_64-w64-mingw32/*
