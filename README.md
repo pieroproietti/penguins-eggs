@@ -27,12 +27,12 @@ penguins-eggs
 <!-- tocstop -->
 
 ## Links
-  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
   * [Blog](https://penguins-eggs.net/blog)
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
-  * [FAQ](https://penguins-eggs.net/docs/Tutorial/faq)
+  * [FAQ](https://penguins-eggs.net/docs/faq)
+  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
 # Introduction
 
