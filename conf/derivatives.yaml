@@ -100,15 +100,18 @@
     - victoria # Linux Mint
     - virginia # LinuxMint
 
+- id: noble
+  distroLike: Ubuntu
+  family: debian
+  ids:
+    - wilma # Linux Mint 22
+
 - id: devel
   distroLike: Ubuntu
   family: debian
   ids:
     - devel # Rhino
     - lunar # Ubuntu lunar 23.04
-    - mantic # Ubuntu lunar 23.10
-    - noble # Ubuntu noble
-    - wilma # Linux Mint 22
 
 #
 # ARCH
