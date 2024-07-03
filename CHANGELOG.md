@@ -33,8 +33,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.14
-* added support to linuxmint wilma, revised support ubuntu noble
-* until now I have problems with calamares, ok with krill
+* eggs: support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
+
+There is again same problems using with calamares on this distros.
 
 ## penguins-eggs-10.0.13
 * `dad`: bugfix on flag --file;
