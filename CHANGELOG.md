@@ -35,7 +35,10 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ## penguins-eggs-10.0.14
 * eggs: support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
 
-There is again same problems using with calamares on this distros.
+> [!NOTE]
+> There still remains some problem with calamares, neither on Ubuntu noble nor on Linuxmint wilma does the installation disk formatting seem to activate. Probably a bug, since, selecting encrypt the installation works.
+
+> Installation with krill, see `eggs install --help` is also working.
 
 ## penguins-eggs-10.0.13
 * `dad`: bugfix on flag --file;
