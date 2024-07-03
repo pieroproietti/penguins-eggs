@@ -219,6 +219,14 @@ class Distro implements IDistro {
         break
       }
 
+      case 'noble': {
+        // Ubuntu 24.04 noble LTS
+        this.distroLike = 'Ubuntu'
+        this.codenameLikeId = 'noble'
+
+        break
+      }
+
       case 'devel': {
         // Ubuntu rhino
         this.distroLike = 'Ubuntu'
