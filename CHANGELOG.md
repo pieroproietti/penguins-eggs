@@ -33,12 +33,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.14
-* eggs: support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
+* eggs: added/revised support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
+* Installing with TUI installer krill works: `sudo eggs install`
+* Installing with GUI installer calamares, there is still same problem, neither Ubuntu noble nor Linuxmint wilma seems to enable the formatting of the installation disk, this result in a failure. Selecting manual installation or crypted installations seem to work regular, but the installed system don't boot.
 
-> [!NOTE]
-> There is still a problem with Calamares, neither Ubuntu noble nor Linuxmint wilma seems to enable the formatting of the installation disk. 
-
-* Installing with krill also works.
 
 ## penguins-eggs-10.0.13
 * `dad`: bugfix on flag --file;
