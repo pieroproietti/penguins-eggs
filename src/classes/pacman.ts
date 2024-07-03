@@ -436,7 +436,7 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu noble: eredita da focal e buster
+       * Ubuntu noble: eredita da devel e buster
        *
        */
     } else if (this.distro().codenameLikeId === 'noble') {
@@ -452,15 +452,14 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
-
       /**
-       * Ubuntu lunar/rhino: eredita da devel e buster
+       * Ubuntu rhino: eredita da devel e buster
        *
        */
     } else if (this.distro().codenameLikeId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
-      const focal = `${rootPen}/conf/distros/devel/*`
-      await exec(`cp -r ${focal} ${dest}`, echo)
+      const devel = `${rootPen}/conf/distros/devel/*`
+      await exec(`cp -r ${devel} ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
