@@ -36,7 +36,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 * eggs: support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
 
 > [!NOTE]
-> There is still a problem with Calamares, neither Ubuntu noble nor Linuxmint wilma seems to enable the formatting of the installation disk. Probably a bug, because selecting manual partition creation makes the installation work. Same with choosing encrypted installation on LUKS device.
+> There is still a problem with Calamares, neither Ubuntu noble nor Linuxmint wilma seems to enable the formatting of the installation disk. 
 
 * Installing with krill also works.
 
