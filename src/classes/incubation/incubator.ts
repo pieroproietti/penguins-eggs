@@ -171,9 +171,9 @@ export default class Incubator {
         break
       }
 
-      case 'devel': {
-        const devel = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await devel.create()
+      case 'noble': {
+        const noble = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await noble.create()
 
         break
       }

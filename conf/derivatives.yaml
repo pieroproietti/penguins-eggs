@@ -105,13 +105,7 @@
   family: debian
   ids:
     - wilma # Linux Mint 22
-
-- id: devel
-  distroLike: Ubuntu
-  family: debian
-  ids:
     - devel # Rhino
-    - lunar # Ubuntu lunar 23.04
 
 #
 # ARCH
