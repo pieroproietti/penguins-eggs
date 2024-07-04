@@ -12,19 +12,28 @@ penguins-eggs
 
 # Penguins' eggs releases
 
-## penguins-eggs-10.0.x series installation
-`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
+Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
-### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
-Just install penguins-eggs-10.0.x.
+## penguins-eggs-10.0.x installation
+`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
-### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
+### using get-eggs
+It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need. Copy and paste:
+```
+git clone https://github.com/piero-proietti/get-eggs
+cd get-eggs
+sudo ./get-eggs.sh
+```
+### manual installation
+
+#### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
+Just download and install penguins-eggs-10.0.x.
+
+#### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
 Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
 
-### Debian 9 stretch, Ubuntu 18.04 bionic
+#### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
-
-Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
 
 # Architectures
 Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board systems like Raspberry Pi. Read more on the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
