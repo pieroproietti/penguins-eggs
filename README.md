@@ -34,20 +34,30 @@ penguins-eggs
   * [FAQ](https://penguins-eggs.net/docs/faq)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
-# Introduction
+# Installation
 
-## penguins-eggs-10.0.x versions installation
-`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) just adding them.
+## penguins-eggs-10.0.x installation
+`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
-### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
-Just install penguins-eggs-10.0.x.
+### using get-eggs
+It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need. Copy and paste:
+```
+git clone https://github.com/piero-proietti/get-eggs
+cd get-eggs
+sudo ./get-eggs.sh
+```
+### manual installation
 
-### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
+#### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
+Just download and install penguins-eggs-10.0.x.
+
+#### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
 Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
 
-### Debian 9 stretch, Ubuntu 18.04 bionic
+#### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
+# Introduction
 
 penguins-eggs is a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE. The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident. The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. Initially built with node.js and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as “produce” for creating the eggs, “hatch” for installation, and other commands like “kill” for removing produced ISOs, “update” for software updates, and “install” for configuring the graphical installer.
 
