@@ -20,7 +20,7 @@ Detailed instructions for usage are published on the [Penguins' eggs guide](http
 ### using get-eggs
 It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need. Copy and paste:
 ```
-git clone https://github.com/piero-proietti/get-eggs
+git clone https://github.com/piero.proietti/get-eggs
 cd get-eggs
 sudo ./get-eggs.sh
 ```
