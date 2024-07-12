@@ -89,7 +89,7 @@ For more information and updates, visit the [Penguins’ Eggs official website](
 >  By default, `eggs` completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the `--clone` flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the `--cryptedclone` flag.
 
 > [!TIP]
->  The resulting live system can be easily installed using either the calamares installer or the internal TUI krill installer. Furthermore, using `krill`, you can easily get an unattended installation, utilizing `--unattended` and the varius [krill](#eggs-krill) flags.
+>  The resulting live system can be easily installed using either the calamares installer or the internal TUI krill installer. Furthermore, using `krill`, you can easily get an unattended installation, utilizing `--unattended` and various [krill](#eggs-krill) flags.
 
 > [!TIP]
 >  One interesting feature of `eggs` is its integration with the `penguins-wardrobe` This allows you to create or utilize scripts to switch between different configurations. For example, you can start with a bare version of the system, featuring only a command-line interface (CLI), and then easily transition to a full graphical user interface (GUI) or server configurations.
