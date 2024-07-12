@@ -75,7 +75,7 @@ Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible w
 
 The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. 
 
-From the release of version 9.6.x, Penguins’ Eggs is available as a Debian package, then was extened to Arch systems creating a [PKGGUILD](https://aur.archlinux.org/packages/penguins-eggs).-
+From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package](https://sourceforge.net/projects/penguins-eggs/files/DEBS/), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs).
 
 So, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
 
@@ -89,7 +89,7 @@ For more information and updates, visit the [Penguins’ Eggs official website](
 >  By default, `eggs` completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the `--clone` flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the `--cryptedclone` flag.
 
 > [!TIP]
->  The resulting live system can be easily installed using either the Calamares installer or the internal TUI Krill installer. Furthermore, if you prefer an unattended installation, you can utilize the "--unattended" flag.
+>  The resulting live system can be easily installed using either the calamares installer or the internal TUI krill installer. Furthermore, using `krill`, you can easily get an unattended installation, utilizing `--unattended` and the varius `krill` flags.
 
 > [!TIP]
 >  One interesting feature of `eggs` is its integration with the `penguins-wardrobe` This allows you to create or utilize scripts to switch between different configurations. For example, you can start with a bare version of the system, featuring only a command-line interface (CLI), and then easily transition to a full graphical user interface (GUI) or server configurations.
