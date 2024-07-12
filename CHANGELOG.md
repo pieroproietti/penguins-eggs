@@ -42,7 +42,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.15
+produce: added new flag --udf to produce ISO in Universal Disk Format with `genisoimage` command. Note: genisoimage must to be installed before.
 
+This is necessary because programs like rufus in Windows, do not correctly read ISO files generated with xorriso, when they are greater than 4.7 G.
 
 ## penguins-eggs-10.0.14
 * eggs: added/revised support to `linuxmint wilma`, `ubuntu noble`, `ubuntu devel` (rhino).
