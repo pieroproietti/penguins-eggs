@@ -414,8 +414,7 @@ sudo eggs produce --standard
 sudo eggs produce --max
 ```
 > [!TIP]
->  This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed informations. The official guide offers comprehensive documentation to help you make the most out of this tool.
-
+>  This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed informations.
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
