@@ -662,6 +662,13 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "udf": {
+          "char": "U",
+          "description": "udf, create iso UDF format using genisoimage",
+          "name": "udf",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "yolk": {
           "char": "y",
           "description": "force yolk renew",
