@@ -855,7 +855,7 @@ FLAGS
   -C, --cryptedclone         crypted clone
   -N, --noicon               no icon eggs on desktop
   -P, --prefix=<value>       prefix
-  -U, --udf                  udf, create iso UDF format using genisoimage
+  -U, --udf                  use UDF format on ISO with genisoimage breacking 4.7 G limit
   -c, --clone                clone
   -f, --standard             standard compression: xz -b 1M
   -h, --help                 Show CLI help.
