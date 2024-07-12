@@ -65,34 +65,34 @@ penguins-eggs is a console tool, under continuous development, that allows you t
 
 
  > [!TIP]
->   "Penguins-eggs" is an actively developed console tool designed to help you customize and distribute your system as live images on USB sticks or through PXE. By using this tool, you can remaster your system according to your preferences.
+>   `eggs` is an actively developed console tool designed to help you customize and distribute your system as live images on USB sticks or through PXE. By using this tool, you can remaster your system according to your preferences.
 
 > [!TIP]
->  By default, "penguins-eggs" completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the "--clone" flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the "--cryptedclone" flag.
+>  By default, `eggs` completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the `--clone` flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the `--cryptedclone` flag.
 
 > [!TIP]
 >  The resulting live system can be easily installed using either the Calamares installer or the internal TUI Krill installer. Furthermore, if you prefer an unattended installation, you can utilize the "--unattended" flag.
 
 > [!TIP]
->  One interesting feature of "penguins-eggs" is its integration with the "penguins-wardrobe." This allows you to create or utilize scripts to switch between different configurations. For example, you can start with a bare version of the system, featuring only a command-line interface (CLI), and then easily transition to a full graphical user interface (GUI) or server configurations.
+>  One interesting feature of `eggs` is its integration with the `penguins-wardrobe` This allows you to create or utilize scripts to switch between different configurations. For example, you can start with a bare version of the system, featuring only a command-line interface (CLI), and then easily transition to a full graphical user interface (GUI) or server configurations.
 
 > [!NOTE]
-> For more information and customization options, you can explore "penguins-wardrobe," a related project. You can fork it and adapt it to meet your specific needs.
+> For more information and customization options, you can explore `penguins-wardrobe`. a related project. You can fork it and adapt it to meet your specific needs.
 
 See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), fork it, and adapt it to your needs.
 
 # Technology
- "eggs" is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.
+ `eggs` is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.
 
-Currently, "eggs" supports several Linux distributions, including [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml).
+Currently, `eggs` supports several Linux distributions, including [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml).
 
 It also caters to different architectures, namely `amd64`, `i386`, and `arm64`.
 
-Starting from version 9.6.x, "Penguins' eggs" is released as a Debian package, available for amd64, i386, and arm64 architectures. This allows it to support a wide range of PCs, including older machines, as well as single-board ARM systems like the Raspberry Pi. You can learn more about this release in the article titled Triple Somersault! [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
+Starting from version 9.6.x, `penguins-eggs` is released as a Debian package, available for amd64, i386, and arm64 architectures. This allows it to support a wide range of PCs, including older machines, as well as single-board ARM systems like the Raspberry Pi. You can learn more about this release in the article titled Triple Somersault! [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
 
 For more information on the supported distributions and architectures, you can visit the blog [blog](https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs). 
 
-Additionally, you can find examples of remastered ISO images created with "eggs" on the project's SourceForge page [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
+Additionally, you can find examples of remastered ISO images created with `eggs` on the project's SourceForge page [sourceforge page of the project](https://sourceforge.net/projects/penguins-eggs/files/ISOS/).
 
 
 # Features
@@ -136,9 +136,9 @@ Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to si
 
 
 ## Wardrobe, Themes, and Addons
- In April 2022, the "wardrobe" feature was introduced to "eggs." This addition serves as a comprehensive tool to assist and streamline the process of creating a customized version of Linux, starting from a command-line interface (CLI) system. I have embraced wardrobe for all my editions to enhance convenience, enabling me to better organize, consolidate, and manage my work effectively.
+ In April 2022, the `wardrobe` command was introduced to `eggs`. This addition serves as a comprehensive tool to assist and streamline the process of creating a customized version of Linux, starting from a command-line interface (CLI) system. I have embraced wardrobe for all my editions to enhance convenience, enabling me to better organize, consolidate, and manage my work effectively.
 To add a unique touch to my customizations, I have assigned bird names to each edition. Except for the "naked" edition, there are various options available, including "Colibri," "eagle," "duck," "owl," and "chicks" under the bookworm and plastilinux distributions. [bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/)  and [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/),.Furthermore, under Waydroid on the eggs' SourceForge page, you can find "wagtail" and "warbier."
-I have high hopes that people will take an interest in wardrobe and consider forking the main repository to incorporate their own customizations. By collaborating, we can achieve significant progress that would be challenging for a single developer to accomplish. If you would like to delve deeper into the wardrobe, I recommend reading the Penguins' eggs blog [Penguins' eggs blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/). post titled Wardrobe: Colibri, Duck, Eagle, and Owl, which provides further insights into its features and benefits.
+I have high hopes that people will take an interest in wardrobe and consider forking the main repository to incorporate their own customizations. By collaborating, we can achieve significant progress that would be challenging for a single developer to accomplish. If you would like to delve deeper into the wardrobe, I recommend reading the [Penguins' eggs blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/). post titled Wardrobe: Colibri, Duck, Eagle, and Owl, which provides further insights into its features and benefits.
 Furthermore, addons, predominantly themes, have been organized under the vendor's folder in the penguin's wardrobe. I encourage utilizing your wardrobe for all your customization needs to maintain consistency and organization throughout your work.
 
 > [!NOTE]
@@ -147,20 +147,20 @@ Furthermore, addons, predominantly themes, have been organized under the vendor'
 
 ## Clone/Cryptedclone
 When creating a live distribution of your system, you have different options to consider: the default mode, clone, and cryptedclone.
-•	The default mode, achieved by using the command "eggs produce," completely removes user data from the live distribution. This ensures that no private data remains in the live system.
+•	The default mode, achieved by using the command `eggs produce`, completely removes user data from the live distribution. This ensures that no private data remains in the live system.
  
-•	The "eggs produce --clone" command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the 
+•	The `eggs produce --clone` command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the 
 user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable for sensitive information.
  
-•	On the other hand, the "eggs produce --cryptedclone" command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
+•	On the other hand, the ìeggs produce --cryptedclone` command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
 
 To summarize the available options:
 
-•	"eggs produce" (default): All private data is removed from the live system.
+•	`eggs produce` (default): All private data is removed from the live system.
 
-•	"eggs produce --clone": All user data is included unencrypted directly in the live system.
+•	'eggs produce --clone`: All user data is included unencrypted directly in the live system.
 
-•	"eggs produce --cryptedclone": All user data is included encrypted within a LUKS volume inside the ISO.
+•	`eggs produce --cryptedclone`: All user data is included encrypted within a LUKS volume inside the ISO.
 > [!TIP]
 >    During the installation process, you can use the "krill" installer to restore your crypted data automatically. By running the command "sudo eggs install" with the "krill" installer, your encrypted data will be securely transferred and made available in the installed system.
 
@@ -168,14 +168,14 @@ To summarize the available options:
 ## calamares and krill
  Calamares and Krill are powerful tools in the Eggs project [calamares](https://calamares.io), offering versatile installation options for Linux systems. The Eggs project was specifically designed to utilize Calamares as the default system installer, providing users with the flexibility to customize their installations using themes. However, Eggs goes beyond Calamares by introducing its own installer called Krill, which focuses on command-line interface (CLI) installations, particularly for server environments.
 
- Krill, like Calamares, adopts a CLI interface that closely resembles Calamares, ensuring a consistent user experience. Leveraging the same configuration files created by Eggs for Calamares, Krill maintains compatibility and allows for seamless transitions between desktop and server installations. By simply adding the flag during installation, Krill enables unattended installations, streamlining the process for system administrators. Fine-tuning installation parameters becomes effortless as the configuration values can be modified in the ```/etc/penguins-eggs.d/krill.yaml``` file, facilitating automated deployments.
+ Krill adopts a CLI/TUI interface that closely resembles Calamares, ensuring a consistent user experience. Leveraging the same configuration files created by Eggs for Calamares, Krill maintains compatibility and allows for seamless transitions between desktop and server installations. By simply adding the flag during installation, Krill enables unattended installations, streamlining the process for system administrators. Fine-tuning installation parameters becomes effortless as the configuration values can be modified in the ```/etc/penguins-eggs.d/krill.yaml``` file, facilitating automated deployments.
 
 > [!TIP]
 > Thanks to the Eggs project's integration of Calamares and the introduction of Krill, users can enjoy a comprehensive installation toolkit. Whether one prefers the graphical interface of Calamares or the command-line efficiency of Krill, Eggs caters to diverse installation needs, making Linux setup a breeze.
 
 ## cuckoo 
  Just like the cuckoo bird lays its eggs in the nests of other birds, the Eggs project introduces a similar concept in the form of a self-configuring PXE service. This service allows you to boot and install your ISO on networked computers that are not originally configured for your specific ISO.
-With the command "cuckoo," you can deploy a newly created ISO on an already installed system, or you can live to boot the ISO itself. This means that you can either install your ISO on existing systems or directly run the ISO without the need for a permanent installation.
+With the command `cuckoo` you can deploy a newly created ISO on an already installed system, or you can live to boot the ISO itself. This means that you can either install your ISO on existing systems or directly run the ISO without the need for a permanent installation.
 
 > [!TIP]
 >  By leveraging the cuckoo command, the Eggs project provides a convenient method for deploying and testing your ISO on a variety of networked computers, expanding the possibilities for system installations and evaluations.
@@ -1246,7 +1246,7 @@ _See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/peng
 ![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
 ## penGUI take cure of eggs!
 
- The development of a GUI for "penguins-eggs" with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to "penguins-eggs". If you have any specific questions or need further information about the penGUI project, feel free to ask!
+ The development of a GUI for `eggs` with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to `penguins-eggs`. If you have any specific questions or need further information about the penGUI project, feel free to ask!
 
 
 ## That's all, Folks!
