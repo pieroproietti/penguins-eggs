@@ -386,6 +386,7 @@ sudo eggs produce --cryptedclone
 ```
 This command will generate a live system with encrypted user data.
 
+## Compression
 By default, penguins-eggs uses fasted compression `zstd level 3` for efficiency during the creation process. However, if you want a more compressed ISO file, you can chooce `--pendrive` flag `zstd level 15` optimized for pendrives, `--standard` flag, use  `xz`, or `--max` flag using `xz -Xbcj` to get the maximun level of compression. For example:
 
 ```
@@ -395,7 +396,7 @@ sudo eggs produce --standard
 sudo eggs produce --max
 ```
 > [!TIP]
->  This command will apply maximum compression to the ISO file, resulting in a smaller file size. In addition to the command descriptions provided in this README, you can refer to the [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed information on how to use penguins-eggs and its various features. The official guide offers comprehensive documentation to help you make the most out of this tool.
+>  This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed informations. The official guide offers comprehensive documentation to help you make the most out of this tool.
 
 # Commands
 <!-- commands -->
