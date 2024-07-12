@@ -207,20 +207,19 @@ Overall, Eggs' packages offer a comprehensive and user-friendly experience, with
 
 
 ### Install eggs
- There are multiple methods available, lately I prefer `get-eggs` way, valid for Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:
+ There are multiple methods available, lately I prefer `get-eggs` way, working for all the supported distros: Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:
+
  ```
  git clone https://github.com/pieroproietti/get-eggs
  cd get-eggs
  sudo ./get-eggs.sh
  ```
 
-`get-eggs` on Debian families add automatically the `penguins-eggs-ppa` repository and, when need, add `nodesource` repository. On Arch, get-eggs add `chaotic-aur`.
+`get-eggs` on Debian families add automatically the `penguins-eggs-ppa` repository and, when need, add `nodesource` repository. On Arch, `chaotic-aur` repo will be added.
 
-This let to install, update `penguins-eggs` like a native package.
+This let to install, update, remove `penguins-eggs` like a native package.
 
-But if you don't want to add repos to your system, it's also possible to manually install penguins-eggs without touch repos.
-
-#### Download the package and install it with dpkg
+#### Debian families: download the package and install it with dpkg
 
  To install Eggs, the simplest method is to download the package from the project's SourceForge page  [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it on your system. You can find the Eggs package on the SourceForge page here.
 After downloading the appropriate package based on your system's architecture, you can proceed with the installation. If you are using an amd64 system, run the following command in the terminal:
@@ -233,26 +232,8 @@ Once Eggs is successfully installed, you have the option to enhance its function
 This command will add the penguins-eggs-ppa repository to your system, allowing you to access updated versions of Eggs and additional tools provided by the repository.
 By following these steps, you can easily install Eggs, add the penguins-eggs-ppa repository, [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa), and unlock further capabilities and enhancements for your Eggs installation.
 
-#### Using penguins-eggs-ppa (stable version)
-To simplify the process of using the penguins-eggs-ppa repository and installing Eggs, you can utilize a utility called `get-eggs`. Follow these steps to use `get-eggs`:
-1. Clone the `get-eggs` repository by running the following command:
-```
-git clone https://github.com/pieroproietti/get-eggs
-```
-
-2. Navigate into the `get-eggs` directory:
-```
-cd get-eggs
-```
-
-3. Execute the utility with root privileges:
-```
-sudo ./get-eggs
-```
-
-On Debian, Devuan, and Ubuntu, running `get-eggs` will add the penguins-eggs-ppa repository and install Eggs seamlessly.
-> [!TIP]
-> For derivatives of Debian, Devuan, and Ubuntu, such as Linuxmint, LMDE, etc., `get-eggs` will typically work as well. However, if needed, you can manually add the penguins-eggs-ppa repository by copying and pasting the following two lines into a terminal:
+##### Using penguins-eggs-ppa
+For derivatives of Debian, Devuan, and Ubuntu, such as Linuxmint, LMDE, etc., `get-eggs` will typically work as well. However, if needed, you can manually add the penguins-eggs-ppa repository by copying and pasting the following two lines into a terminal:
 
 ```
 curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
@@ -267,11 +248,8 @@ sudo apt update && sudo apt install penguins_eggs
 
 Executing these commands will update your package sources and install Eggs on your system.
 
-> [!TIP]
-> By using the `get-eggs` utility or manually adding the penguins-eggs-ppa repository, you can easily install Eggs on various Debian, Devuan, and Ubuntu-based distributions, including their derivatives, ensuring a smooth and hassle-free installation process.
 
-
-### Upgrade eggs
+#### Upgrade eggs
 To upgrade Eggs, the process will vary depending on whether you are using the penguins-eggs-ppa repository or not. Here's how you can upgrade Eggs with both approaches:
 If you have already added the penguins-eggs-ppa repository, you can upgrade Eggs alongside other packages on your system by running the following command:
 ```
@@ -281,15 +259,15 @@ sudo apt upgrade
 > This command will check for updates for all installed packages, including Eggs, and upgrade them to their latest versions if available.
 
 > [!NOTE]
-> On the other hand, if you have not added the penguins-eggs-ppa repository, you can manually upgrade Eggs by downloading the new version from the SourceForge page [here](https://sourceforge.net/projects/penguins-eggs/files/DEBS/). Once you have downloaded the appropriate package for your system architecture, follow these steps:
+> On the other hand, if you have not added the `penguins-eggs-ppa` repository, you can manually upgrade Eggs by downloading the new version from the SourceForge page [here](https://sourceforge.net/projects/penguins-eggs/files/DEBS/). Once you have downloaded the appropriate package for your system architecture, follow these steps:
 
 1. Install the package using the `gdebi` command (assuming you have `gdebi` installed):
 ```
-sudo gdebi penguins_eggs_10.0.0-1_amd64.deb
+sudo gdebi penguins_eggs_10.0.x-1_amd64.deb
 ```
 or for i386 systems:
 ```
-sudo dpkg -i penguins_eggs_10.0.0-1_i386.deb
+sudo dpkg -i penguins_eggs_10.0.x-1_i386.deb
 ```
 
 2. In case of any missing dependencies, you can resolve them by running the following command:
@@ -313,7 +291,7 @@ This will automatically install any required dependencies for Eggs.
 
 
 ### Arch
- To install penguins-eggs on Arch Linux, there are multiple methods available. One option is to install it directly from the Arch User Repository (AUR) by adding the Chaotic-AUR repository. Here's how you can do it:
+ To install penguins-eggs on Arch Linux, there are multiple methods available. One option is to install it directly from the Arch User Repository (AUR) by adding the `chaotic-AUR` repository. Here's how you can do it:
 
 1. Add the Chaotic-AUR repository to your system. You can find the repository at [https://aur.chaotic.cx/](https://aur.chaotic.cx/).
 
@@ -323,25 +301,9 @@ sudo pacman -Sy penguins-eggs
 ```
 This command will synchronize the package databases and install penguins-eggs on your system.
 
-Alternatively, you can use a utility called `get-eggs` that I have written. Here's how to use it:
+Alternatively, you can use a utility called `get-eggs`. This script will add the AUR repository and install penguins-eggs on your system.
 
-1. Clone the `get-eggs` repository by running the following command:
-```
-git clone https://github.com/pieroproietti/get-eggs
-```
-
-2. Change to the `get-eggs` directory:
-```
-cd get-eggs
-```
-
-3. Run the `get-eggs` script with sudo privileges:
-```
-sudo ./get-eggs
-```
-This script will add the AUR repository and install penguins-eggs on your system.
-
-Additionally, you have the option to use the popular AUR helper tool called `yay`. Simply run the following command:
+It's possible too to use the popular AUR helper tool called `yay`. Simply run the following command:
 ```
 yay penguins-eggs
 ```
