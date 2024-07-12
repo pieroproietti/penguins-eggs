@@ -664,7 +664,7 @@
         },
         "udf": {
           "char": "U",
-          "description": "udf, create iso UDF format using genisoimage",
+          "description": "use UDF format on ISO with genisoimage breacking 4.7 G limit",
           "name": "udf",
           "allowNo": false,
           "type": "boolean"
