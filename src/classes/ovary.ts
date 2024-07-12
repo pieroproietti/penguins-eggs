@@ -1510,7 +1510,7 @@ export default class Ovary {
    * @param unsecure
    * @param verbose
    */
-  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+  async produce(clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, udf = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -1724,7 +1724,7 @@ export default class Ovary {
         await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
       }
 
-      const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')
+      const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone, udf)).replaceAll(/\s\s+/g, ' ')
       this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
       /**
@@ -1925,7 +1925,7 @@ export default class Ovary {
    * @param cryptedclone
    * @returns cmd 4 mkiso
    */
-  async xorrisoCommand(clone = false, cryptedclone = false): Promise<string> {
+  async xorrisoCommand(clone = false, cryptedclone = false, udf = false): Promise<string> {
     if (this.verbose) {
       console.log('Ovary: xorrisoCommand')
     }
@@ -1978,6 +1978,31 @@ export default class Ovary {
       uefi_noEmulBoot = '-no-emul-boot'
     }
 
+    if (udf) {
+      if (Pacman.packageIsInstalled('genisoimage')) {
+        command = `genisoimage \
+          -iso-level 3 \
+          -allow-limited-size \
+          -joliet-long \
+          -r \
+          -V "V3.0" \
+          -cache-inodes \
+          -J \
+          -l \
+          -b isolinux/isolinux.bin \
+          -c isolinux/boot.cat \
+          -no-emul-boot \
+          -boot-load-size 4 \
+          -boot-info-table \
+          -eltorito-alt-boot \
+          -e boot/grub/efiboot.img \
+          -o ${output} ${this.settings.iso_work}`
+
+        return command
+      } else {
+        console.log('genisoimage is not installed')
+      }
+    }
 
     // xorriso
     command = `xorriso -as mkisofs \
