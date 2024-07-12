@@ -65,7 +65,7 @@ The concept behind Penguins’ Eggs stems from the idea of “reproduction” an
 
 The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. 
 
-Initially built with javascript and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as `produce` for creating the eggs, and `hatch` for installation (later, I changed a bit, from `hatch` to `install`, then i named it `krill` as calamares omage).
+Initially built with javascript and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as `produce` for creating the eggs, and `hatch` for installation (I changed a bit later: from `hatch` to `install`, then to `krill` as omage to calamares tribes).
 
 Other commands follow later, like `kill` for removing produced ISOs, `calamares` for configuring the graphical installer,`dad` to configure eggs, `status`, `tools`, etc.
 
