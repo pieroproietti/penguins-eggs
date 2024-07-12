@@ -65,11 +65,11 @@ The concept behind Penguins’ Eggs stems from the idea of “reproduction” an
 
 The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system. 
 
-Initially built with javascript and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as `produce` for creating the eggs, and `hatch` for installation (later, I changed a bit, from `hatch` to `install` or `krill`).
+Initially built with javascript and later transitioning to Typescript as the primary development language, the tool’s design resembles an egg production process, consisting of operations such as `produce` for creating the eggs, and `hatch` for installation (later, I changed a bit, from `hatch` to `install`, then i named it `krill` as calamares omage).
 
 Other commands follow later, like `kill` for removing produced ISOs, `calamares` for configuring the graphical installer,`dad` to configure eggs, `status`, `tools`, etc.
 
-Considered a work-in-progress, the ultimate goal for Penguins’ Eggs is to implement a PXE server for local network distribution, drawing inspiration from the behavior of the cuckoo bird, which relies on others to hatch its eggs.
+Considered a work-in-progress, the ultimate goal of Penguins' Eggs is to allow the creation of live ISOs from an installed system and their use for system installations.  It can be used both to create images on USB devices - even [Ventoy](https://www.ventoy.net/en/index.html) - and as a PXE server to distribute the image itself over a local network. Inspired by the behavior of the cuckoo bird, which depends on others to hatch its eggs.
 
 Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible with various Linux distributions, despite differences in package managers, file paths, and more. 
 
