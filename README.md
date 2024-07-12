@@ -201,15 +201,24 @@ By adapting to the packaging systems used by different distributions, Eggs ensur
 By providing deb packages for various architectures, Eggs promotes accessibility and inclusivity, allowing users on different hardware platforms to benefit from its functionality. Whether you're using a traditional desktop computer or an ARM-based device, Eggs ensures compatibility and a consistent experience across the Debian family of distributions.
 
  The packages can be installed on Debian, Devuan, or Ubuntu-based distributions without the need to worry about the specific version. Whether you're using Buster, Bullseye, Bookworm, Trixie, Chimaera, Daedalus, Bionic, Focal, or Jammy, Eggs is reported to work across these versions. However, it's important to ensure compatibility with the respective processor architecture.
-The packages provided by Eggs include standard scripts for preinst, postinst, prerm, and postrm. These scripts play a crucial role in the installation and management of the packages. The preinst script is executed before the package is installed, allowing for any necessary preparations or configurations. The postinst script is executed after the package installation, enabling additional setup or customization. Similarly, the prerm script is executed before the package is removed, while the postrm script is executed after the package removal.
+The packages provided by Eggs include standard scripts for `preinst`, `postinst`, `prerm`, and `postrm`. These scripts play a crucial role in the installation and management of the packages. The preinst script is executed before the package is installed, allowing for any necessary preparations or configurations. The postinst script is executed after the package installation, enabling additional setup or customization. Similarly, the prerm script is executed before the package is removed, while the postrm script is executed after the package removal.
 In addition to the scripts, Eggs packages also include man pages. These man pages serve as documentation for the installed packages, providing detailed information on their usage, configuration options, and other relevant details. The inclusion of man pages ensures that users have access to comprehensive documentation, enabling them to effectively utilize and manage the Eggs packages.
 Overall, Eggs' packages offer a comprehensive and user-friendly experience, with standard scripts and detailed documentation, making installation and management hassle-free on Debian, Devuan, and Ubuntu-based distributions.
 
 
 ### Install eggs
- there are multiple methods available, but one of the most practical approaches is to utilize the penguins-eggs-ppa repository.
-The penguins-eggs-ppa repository provides a convenient and reliable way to access and install Eggs on your system. By adding this repository to your package manager's sources list, you gain access to the latest versions of Eggs and can easily install or update it with a few simple commands.Adding the penguins-eggs-ppa repository ensures that you have a trusted and official source for Eggs, which simplifies the installation process and ensures that you receive updates and security patches on time.By leveraging the penguins-eggs-ppa repository, you can enjoy the benefits of a streamlined installation process, convenient updates, and a reliable source for Eggs. It's a practical solution that allows you to effortlessly install and manage Eggs as a .deb package, enhancing your overall experience with this powerful software.
+ There are multiple methods available, lately I prefer `get-eggs` way, valid for Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:
+ ```
+ git clone https://github.com/pieroproietti/get-eggs
+ cd get-eggs
+ sudo ./get-eggs.sh
+ ```
 
+`get-eggs` on Debian families add automatically the `penguins-eggs-ppa` repository and, when need, add `nodesource` repository. On Arch, get-eggs add `chaotic-aur`.
+
+This let to install, update `penguins-eggs` like a native package.
+
+But if you don't want to add repos to your system, it's also possible to manually install penguins-eggs without touch repos.
 
 #### Download the package and install it with dpkg
 
