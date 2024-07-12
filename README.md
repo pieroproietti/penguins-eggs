@@ -197,12 +197,24 @@ By adapting to the packaging systems used by different distributions, Eggs ensur
 
 
 ## Debian families
- Eggs caters to the Debian family of distributions, offering a seamless installation experience through deb packages. These deb packages are available for multiple architectures, including amd64, i386, and arm64.The availability of Eggs as a deb package simplifies the installation process for users of Debian-based distributions. Whether you are running a 64-bit (amd64) or 32-bit (i386) architecture, or even an arm64 architecture, Eggs has you covered. This ensures that users across a wide range of Debian-based systems can easily download, install, and utilize Eggs' features.
+Eggs caters to the Debian family of distributions, offering a seamless installation experience through deb packages. 
+
+These deb packages are available for multiple architectures, including amd64, i386, and arm64. 
+
+The availability of `penguins-eggs` as a deb package simplifies the installation process for users of Debian-based distributions. Whether you are running a 64-bit (amd64) or 32-bit (i386) architecture, or even an arm64 architecture, Eggs has you covered. This ensures that users across a wide range of Debian-based systems can easily download, install, and utilize Eggs' features.
+
 By providing deb packages for various architectures, Eggs promotes accessibility and inclusivity, allowing users on different hardware platforms to benefit from its functionality. Whether you're using a traditional desktop computer or an ARM-based device, Eggs ensures compatibility and a consistent experience across the Debian family of distributions.
 
- The packages can be installed on Debian, Devuan, or Ubuntu-based distributions without the need to worry about the specific version. Whether you're using Buster, Bullseye, Bookworm, Trixie, Chimaera, Daedalus, Bionic, Focal, or Jammy, Eggs is reported to work across these versions. However, it's important to ensure compatibility with the respective processor architecture.
-The packages provided by Eggs include standard scripts for `preinst`, `postinst`, `prerm`, and `postrm`. These scripts play a crucial role in the installation and management of the packages. The preinst script is executed before the package is installed, allowing for any necessary preparations or configurations. The postinst script is executed after the package installation, enabling additional setup or customization. Similarly, the prerm script is executed before the package is removed, while the postrm script is executed after the package removal.
-In addition to the scripts, Eggs packages also include man pages. These man pages serve as documentation for the installed packages, providing detailed information on their usage, configuration options, and other relevant details. The inclusion of man pages ensures that users have access to comprehensive documentation, enabling them to effectively utilize and manage the Eggs packages.
+The packages can be installed on Debian, Devuan, or Ubuntu-based distributions without the need to worry about the specific version. Whether you're using Buster, Bullseye, Bookworm, Trixie, Chimaera, Daedalus, Focal, Jammy or Noble, `eggs` is reported to work across these versions. However, it's important to ensure compatibility with the respective processor architecture.
+
+Ubuntu bionic cannot install nodejs >16, so I packaged a specific version for bionic, still largely used.
+
+The packages `penguins-eggs` provided include standard scripts for `preinst`, `postinst`, `prerm`, and `postrm`. These scripts play a crucial role in the installation and management of the packages. The preinst script is executed before the package is installed, allowing for any necessary preparations or configurations. The postinst script is executed after the package installation, enabling additional setup or customization. Similarly, the prerm script is executed before the package is removed, while the postrm script is executed after the package removal.
+
+In addition to the scripts, `penguins-eggs` package also include man pages, bash-completion and other.
+
+ man pages serve as documentation for the installed packages, providing detailed information on their usage, configuration options, and other relevant details. The inclusion of man pages ensures that users have access to comprehensive documentation, enabling them to effectively utilize and manage the Eggs packages.
+
 Overall, Eggs' packages offer a comprehensive and user-friendly experience, with standard scripts and detailed documentation, making installation and management hassle-free on Debian, Devuan, and Ubuntu-based distributions.
 
 
