@@ -158,7 +158,7 @@ To summarize the available options:
 
 •	`eggs produce` (default): All private data is removed from the live system.
 
-•	'eggs produce --clone`: All user data is included unencrypted directly in the live system.
+•	`eggs produce --clone`: All user data is included unencrypted directly in the live system.
 
 •	`eggs produce --cryptedclone`: All user data is included encrypted within a LUKS volume inside the ISO.
 > [!TIP]
