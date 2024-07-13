@@ -32,6 +32,7 @@ penguins-eggs
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+  * [Penguins' eggs book](https://penguins-eggs.gitbook.io/book)
   * [FAQ](https://penguins-eggs.net/docs/faq)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
