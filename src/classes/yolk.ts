@@ -8,6 +8,7 @@
 
 import fs from 'node:fs'
 import shx from 'shelljs'
+import yaml from 'js-yaml'
 
 import { exec } from '../lib/utils.js'
 import Bleach from './bleach.js'
@@ -62,12 +63,19 @@ export default class Yolk {
     }
 
     // packages we need
-    const pkgs = ['cryptsetup', 'grub-efi-amd64', 'grub-pc', 'keyutils', 'shim-signed']
+    // const pkgs = ['cryptsetup', 'grub-efi-amd64', 'grub-pc', 'keyutils', 'shim-signed']
+    interface IYolk {
+      packages: string[];
+    }
+
+    const yolk_yaml = '/etc/penguins-eggs.d/yolk.yaml'
+    const yolk = yaml.load(fs.readFileSync(yolk_yaml, 'utf8')) as IYolk
+    console.log(yolk)
 
     process.chdir(this.yolkDir)
     Utils.warning(`Downloading packages and its dependencies`)
 
-    for (const pkg of pkgs) {
+    for (const pkg of yolk.packages) {
       Utils.warning(`- ${pkg}`)
       cmd = `apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${pkg} | grep "^\\w" | sort -u`
       let depends = pkg + '\n'
