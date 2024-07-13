@@ -67,10 +67,8 @@ export default class Yolk {
     interface IYolk {
       packages: string[];
     }
-
     const yolk_yaml = '/etc/penguins-eggs.d/yolk.yaml'
     const yolk = yaml.load(fs.readFileSync(yolk_yaml, 'utf8')) as IYolk
-    console.log(yolk)
 
     process.chdir(this.yolkDir)
     Utils.warning(`Downloading packages and its dependencies`)
