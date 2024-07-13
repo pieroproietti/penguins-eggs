@@ -237,7 +237,7 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
-
+    shx.cp(path.resolve(__dirname, '../../conf/yolk.yaml'), confRoot)
     // init
     shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')
     shx.chmod('+x', '/etc/penguins-eggs.d/init/unattended.sh')
