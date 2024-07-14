@@ -25,7 +25,7 @@ common:
   - squashfs-tools
   - sshfs # eggs
   - syslinux-common
-  - xorriso
+  - xorriso | genisoimage
 
 # dependencies arch specific
 arch:
