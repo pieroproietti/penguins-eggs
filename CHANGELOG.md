@@ -41,6 +41,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.16
+* `clean`: bleach now don't remove all `/var/lib/apt/list` but just `/var/lib/apt/list/lock`. This must to solve a problem on `sudo apt update`;
+* `yolk`: I added a completely new configuration file for command `yoik`. You, editing `/etc/penguins-eggs.d/yolk.yaml` can insert/delete packages to be present on the local repository `/var/local/yolk`.
+
 ## penguins-eggs-10.0.15
 produce: added new flag --udf to produce ISO in Universal Disk Format with `genisoimage` command. Note: genisoimage must to be installed before.
 
