@@ -190,9 +190,9 @@ _eggs() {
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
-"version[]" \
-"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
+"help[Display help for eggs.]" \
+"version[]" \
 
     ;;
     args)
@@ -323,7 +323,7 @@ _arguments -S \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
 "(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
-"(-U --udf)"{-U,--udf}"[udf, create iso UDF format using genisoimage]" \
+"(-U --udf)"{-U,--udf}"[use UDF format on ISO with genisoimage breacking 4.7 G limit]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
@@ -356,10 +356,9 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-version)
+autocomplete)
 _arguments -S \
---json"[Format output as json.]" \
---verbose"[Show additional information about the CLI.]" \
+"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 help)
@@ -367,9 +366,10 @@ _arguments -S \
 "(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-autocomplete)
+version)
 _arguments -S \
-"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--json"[Format output as json.]" \
+--verbose"[Show additional information about the CLI.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac
