@@ -42,7 +42,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.18
-Trying to find a compromise, I placed xorriso and genisoimage as alternative dependencies for penguins-eggs, on `/DEBIAN/control` file  of the package:
+* `produce`: removed flag `--udf`.
+
+Traditionally eggs use [xorriso](https://www.gnu.org/software/xorriso/) to create ISO images, but this can be a problem, becouse Windows don't support iso9960 larger than 4.7 G.
+
+We can create ISO images more than 4.7 G and be able to use them in windows using [genisoimage](https://linux.die.net/man/1/genisoimage).
+
+Trying to find a compromise, I placed xorriso and genisoimage as alternative dependencies to penguins-eggs. On `/DEBIAN/control` file  of the package:
 
 ```
 Depends: coreutils,
@@ -51,13 +57,11 @@ Depends: coreutils,
 Suggests: calamares
 ...
 ```
-At this point the `--udf` flag is no longer necessary and was removed. 
+Installing penguins-eggs with xorriso (default) produces images in [iso 9660](https://en.wikipedia.org/wiki/ISO_9660) format while installing penguins-eggs on a system where genisoimage is installed produces ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format).
 
-Installing penguins-eggs with genisoimage produces ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format), while installing penguins-eggs with xorriso produces images in [iso 9660](https://en.wikipedia.org/wiki/ISO_9660) format.
+In each case you can overcome the 4.7 G barrier, but if you want your users to be able to use rufus or similar on Windows to create boot devices, use the UDF format.
 
-In each case you can overcome the 4.7 G barrier, but if you want your users to be able to use rufus or similar on Windows to create boot devices, it is best to use the UDF format becouse windows dont support iso9960 larger than 4.7 G.
-
-* `produce`: removed `--udf` flag
+At this point the `--udf` flag is no longer necessary and was removed, depending just on the way you installed penguins-eggs.
 
 ## penguins-eggs-10.0.16
 * `clean`: bleach now don't remove all `/var/lib/apt/list` but just `/var/lib/apt/list/lock`. This must to solve a problem on `sudo apt update`;
