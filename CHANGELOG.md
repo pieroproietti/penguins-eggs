@@ -55,7 +55,7 @@ At this point the `--udf` flag is no longer necessary and was removed.
 
 Installing penguins-eggs with genisoimage produces ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format), while installing penguins-eggs with xorriso produces images in [iso 9660](https://en.wikipedia.org/wiki/ISO_9660) format.
 
-In each case you can overcome the 4.7 G barrier, but if you want your users to be able to use rufus or similar on Windows to create boot devices, it is best to use the UDF format becouse windows dont support iso9960 larger than 4.7G so we must change it to UDF file iso format.
+In each case you can overcome the 4.7 G barrier, but if you want your users to be able to use rufus or similar on Windows to create boot devices, it is best to use the UDF format becouse windows dont support iso9960 larger than 4.7 G.
 
 * `produce`: removed `--udf` flag
 
