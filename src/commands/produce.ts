@@ -56,7 +56,6 @@ export default class Produce extends Command {
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    udf: Flags.boolean({ char: 'U', description: 'use UDF format on ISO with genisoimage breacking 4.7 G limit' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
   }
 
@@ -172,8 +171,6 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      const { udf } = flags
-
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
 
@@ -228,7 +225,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure,  udf, verbose)
+        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
