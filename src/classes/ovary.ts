@@ -1992,7 +1992,7 @@ export default class Ovary {
         -allow-limited-size \
         -joliet-long \
         -r \
-        -V "V3.0" \
+        -V ${this.volid} \
         -cache-inodes \
         -J \
         -l \

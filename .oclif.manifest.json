@@ -662,13 +662,6 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "udf": {
-          "char": "U",
-          "description": "use UDF format on ISO with genisoimage breacking 4.7 G limit",
-          "name": "udf",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "yolk": {
           "char": "y",
           "description": "force yolk renew",
