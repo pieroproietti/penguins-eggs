@@ -41,6 +41,22 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.18
+Trying to find a compromise, I placed xorriso and genisoimage as alternative dependencies for penguins-eggs, on `/DEBIAN/control` file  of the package:
+
+```
+Depends: coreutils,
+        ...
+        xorriso | genisoimage
+Suggests: calamares
+...
+```
+At this point the `--udf` flag is no longer necessary and was removed. 
+
+Installing penguins-eggs with genisoimage result in producing ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format).
+
+`produce`: removed `--udf` flag
+
 ## penguins-eggs-10.0.16
 * `clean`: bleach now don't remove all `/var/lib/apt/list` but just `/var/lib/apt/list/lock`. This must to solve a problem on `sudo apt update`;
 * `yolk`: I added a completely new configuration file for command `yoik`. You, editing `/etc/penguins-eggs.d/yolk.yaml` can insert/delete packages to be present on the local repository `/var/local/yolk`.
