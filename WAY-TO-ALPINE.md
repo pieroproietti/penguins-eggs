@@ -1,13 +1,14 @@
 # Way to Alpine
+We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine, just follow the instructions, choose `sys` as disk.
 
-Partiamo da immagine `alpine-standard-3.20.1-x86_64.iso` solo 203 MB, ed andiamo ad installare alpine, basta seguire le indicazioni, scegliere come disco `sys`.
-
-## Installazione x11
+## Install x11
 `sudo setup-xorg-base`
 `sudo apk add nano git`
 
-## Configurazione repository
-editiamo il file `/etc/apk/repositories`
+## Configuration of the repositories
+`sudo nano /etc/apk/repositories`
+
+add:
 
 ```
 #/media/cdrom/apks
@@ -18,7 +19,7 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 ```
 
-## installazione xfce4
+## xfce4 installation
 `sudo apk add xfce4 xfce4-terminal xfce4-savescreen xfce4-whiskermenu-plugin`
 
 ## customizzazioe colibri
@@ -27,34 +28,34 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 `cd penguins-wardrobe/costumes/colibri/dirs`
 `sudo cp * / -R`
 
-Sostituiere la home del utente con il contenuto di `/etc/skel`
+At this point we replace the user's home with with the contents of `/etc/skel`
 
+## Location configuration
+I added the following lines to `home/.profile`
+
+```
+export LANG="it_IT.utf8"
+export LC_COLLATE="C"
+```
+For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
+
+## keboart configuration
+`
 sudo apk add setxkbmap
 setxkmap it
+`
 
-## varie
-`sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
-
-## per sviluppo eggs
-### Visuaò studio code
+## eggs development tools
+### Visual studio code
 `sudo apk add code-oss@testing`
 
 ### nodejs, npm e pnpm
 `sudo apk add nodejs npm`
 `sudo npm i pnpm -g`
 
-## Localizzazione
-Ho aggiunto le seguenti linee a `home/.profile`
-
-```
-export LANG="it_IT.utf8"
-export LC_COLLATE="C"
-```
-
-Per la tastiera ho cercato sulle impostazioni, keyboard ed ho eliminato la tastiera US per la Italiano
-
-## Pacchetto per live
+## Packages needed for live creation
 
 `apk add alpine-conf apk-tools mkinitfs`
 
-
+## others
+`sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
