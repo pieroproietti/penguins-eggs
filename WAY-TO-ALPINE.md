@@ -22,11 +22,16 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 ## xfce4 installation
 `sudo apk add xfce4 xfce4-terminal xfce4-savescreen xfce4-whiskermenu-plugin`
 
-## customizzazioe colibri
-`sudo apk add git`
-`git  clone https://github.com/pieroproietti/penguins-wardrobe`
-`cd penguins-wardrobe/costumes/colibri/dirs`
-`sudo cp * / -R`
+## customize colibri from wardrobe
+We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/`,
+
+```
+sudo apk add git
+git  clone https://github.com/pieroproietti/penguins-wardrobe
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs  /
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/${user}
+sudo cp * / -R
+```
 
 At this point we replace the user's home with with the contents of `/etc/skel`
 
@@ -59,3 +64,12 @@ setxkmap it
 
 ## others
 `sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
+
+# Actual state 2024-07-16
+
+I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
+
+I was able to create a filesystem.squashfs that should work, but it still dwarfs a lot though::
+- creation of an initrd that loads it
+- creation of the ISO
+- modifications, at least in krill for installation
