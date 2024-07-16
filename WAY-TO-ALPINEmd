@@ -1,4 +1,4 @@
-# WAY to alpine
+# Way to Alpine
 
 Partiamo da immagine `alpine-standard-3.20.1-x86_64.iso` solo 203 MB, ed andiamo ad installare alpine, basta seguire le indicazioni, scegliere come disco `sys`.
 
