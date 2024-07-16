@@ -44,7 +44,7 @@ export LC_COLLATE="C"
 ```
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
 
-## keboart configuration
+## keboard configuration
 `
 sudo apk add setxkbmap
 setxkmap it
