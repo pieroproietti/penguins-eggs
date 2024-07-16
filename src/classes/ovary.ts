@@ -837,6 +837,23 @@ export default class Ovary {
   }
 
   /**
+   * initrdArch()
+   * necessita di echoYes
+   */
+  async initrdAlpine() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
+
+    let initrdImg = Utils.initrdImg()
+    //initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
+    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
+    const { distroId } = this.settings.distro
+    // da cambiare ...
+    let fileConf = 'arch'
+    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+  }
+
+  /**
    * We must upgrade to initrdCreate for Debian/Ubuntu
    * @returns
    */

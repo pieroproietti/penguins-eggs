@@ -241,14 +241,23 @@ class Distro implements IDistro {
       case 'Spizaetus':
       case 'n/a':
       case 'rolling': {
-        // Arch,  ArcoLinux, BlendOS, EndeavourOS, Garuda, RebornOS
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = 'rolling'
-        this.liveMediumPath = '/run/archiso/bootmnt/'
-        this.squashfs = `arch/x86_64/airootfs.sfs`
-
+        if (this.distroId === "Alpine") {
+          // Alpine
+          this.familyId = 'alpine'
+          this.distroLike = 'Alpine'
+          this.codenameId = 'rolling' // questo viene rimosso dal nome
+          this.codenameLikeId = 'alpine-rolling'
+          this.liveMediumPath = 'to/define/'
+          this.squashfs = `to/define/filestem.squashfs`
+        } else {
+          // Arch,  ArcoLinux, BlendOS, EndeavourOS, Garuda, RebornOS
+          this.familyId = 'archlinux'
+          this.distroLike = 'Arch'
+          this.codenameId = 'rolling'
+          this.codenameLikeId = 'rolling'
+          this.liveMediumPath = '/run/archiso/bootmnt/'
+          this.squashfs = `arch/x86_64/airootfs.sfs`
+        }
         break
       }
 
@@ -315,6 +324,16 @@ class Distro implements IDistro {
 
       case 'archlinux': {
         this.syslinuxPath = '/usr/lib/syslinux/bios/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+
+        break
+      }
+
+      case 'alpine': {
+        this.syslinuxPath = '/to/define/'
         this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
         this.memdiskPath = this.syslinuxPath
