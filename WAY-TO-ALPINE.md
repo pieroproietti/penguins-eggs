@@ -65,6 +65,27 @@ setxkmap it
 ## others
 `sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
 
+## dependencies penguins-eggs on Alpine (to be completed)
+  `sudo apk add 
+        alpine-conf \
+        apk-tools mkinitfs
+        cryptsetup \
+        curl \
+        dosfstools \
+        git \
+        jq \
+        lsb-release \
+        lvm2 \
+        nodejs \
+        npm \
+        parted \
+        pxelinux \
+        rsync \
+        squashfs-tools \
+        sshfs \
+        xorriso
+
+
 # Actual state 2024-07-16
 
 I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
@@ -73,3 +94,5 @@ I was able to create a filesystem.squashfs that should work, but it still dwarfs
 - creation of an initrd that loads it
 - creation of the ISO
 - modifications, at least in krill for installation
+
+  
