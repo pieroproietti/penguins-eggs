@@ -69,7 +69,7 @@ setxkmap it
 ```
 sudo apk add 
     alpine-conf \
-    apk-tools mkinitfs
+    apk-tools \
     cryptsetup \
     curl \
     dosfstools \
@@ -77,6 +77,7 @@ sudo apk add
     jq \
     lsb-release \
     lvm2 \
+    mkinitfs
     nodejs \
     npm \
     parted \
