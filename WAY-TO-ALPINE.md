@@ -66,25 +66,26 @@ setxkmap it
 `sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
 
 ## dependencies penguins-eggs on Alpine (to be completed)
-  `sudo apk add 
-        alpine-conf \
-        apk-tools mkinitfs
-        cryptsetup \
-        curl \
-        dosfstools \
-        git \
-        jq \
-        lsb-release \
-        lvm2 \
-        nodejs \
-        npm \
-        parted \
-        pxelinux \
-        rsync \
-        squashfs-tools \
-        sshfs \
-        xorriso
-
+```
+sudo apk add 
+    alpine-conf \
+    apk-tools mkinitfs
+    cryptsetup \
+    curl \
+    dosfstools \
+    git \
+    jq \
+    lsb-release \
+    lvm2 \
+    nodejs \
+    npm \
+    parted \
+    pxelinux \
+    rsync \
+    squashfs-tools \
+    sshfs \
+    xorriso
+```
 
 # Actual state 2024-07-16
 
