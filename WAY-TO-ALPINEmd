@@ -1,0 +1,60 @@
+# Way to Alpine
+
+Partiamo da immagine `alpine-standard-3.20.1-x86_64.iso` solo 203 MB, ed andiamo ad installare alpine, basta seguire le indicazioni, scegliere come disco `sys`.
+
+## Configurazione repository
+editiamo il file `/etc/apk/repositories`
+
+```
+#/media/cdrom/apks
+http://pkg.adfinis.com/alpine/v3.20/main
+http://pkg.adfinis.com/alpine/v3.20/community
+http://alpinelinux.mirror.garr.it/v3.20/main
+http://alpinelinux.mirror.garr.it/v3.20/community
+@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
+```
+
+## Installazione x11
+`sudo setup-xorg-base`
+`sudo apk add nano git`
+
+
+## installazione xfce4
+`sudo apk add xfce4 xfce4-terminal xfce4-savescreen xfce4-whiskermenu-plugin`
+
+## customizzazioe colibri
+`sudo apk add git`
+`git  clone https://github.com/pieroproietti/penguins-wardrobe`
+`cd penguins-wardrobe/costumes/colibri/dirs`
+`sudo cp * / -R`
+
+Sostituire la home del utente con il contenuto di `/etc/skel`
+
+## Localizzazione
+Ho aggiunto le seguenti linee a `home/.profile`
+
+```
+export LANG="it_IT.utf8"
+export LC_COLLATE="C"
+```
+
+Per la tastiera ho cercato sulle impostazioni, keyboard ed ho eliminato la tastiera US per la Italiano
+
+## Tastiera italiana
+`sudo apk add setxkbmap`
+`setxkmap it`
+
+## spice-vdagent e varie
+`sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
+
+## sviluppo eggs
+### Visuaò studio code
+`sudo apk add code-oss@testing`
+
+### nodejs, npm e pnpm
+`sudo apk add nodejs npm`
+`sudo npm i pnpm -g`
+
+## Pacchetti per live
+
+`apk add alpine-conf apk-tools mkinitfs`
