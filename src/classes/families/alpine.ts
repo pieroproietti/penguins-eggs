@@ -20,7 +20,7 @@ export default class Alpine {
   static packs4calamares = ['calamares']
 
   /**
-   * Archlinux: calamaresInstall
+   * Alpine: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
@@ -68,7 +68,7 @@ export default class Alpine {
   }
 
   /**
-   * Archlinux: isInstalledXorg
+   * Alpine: isInstalledXorg
    * @returns true if xorg is installed
    */
   static isInstalledXorg(): boolean {
