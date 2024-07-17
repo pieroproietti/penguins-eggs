@@ -1,15 +1,22 @@
 # Way to Alpine
-We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine, just follow the instructions, choose `sys` as disk.
+We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine.
 
-## Install x11
-`sudo setup-xorg-base`
-`sudo apk add nano git`
+Log as root without password, then install it: `setup-alpine`.
+
+just follow the instructions, choose `sys` as disk.
+
+## reboot
+```
+su
+apk add git rsync nano
+```
 
 ## Configuration of the repositories
-`sudo nano /etc/apk/repositories`
+```
+sudo nano /etc/apk/repositories
+```
 
 add:
-
 ```
 #/media/cdrom/apks
 http://pkg.adfinis.com/alpine/v3.20/main
@@ -19,24 +26,53 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 ```
 
+# sudo
+```
+apk update
+apk add sudo
+```
+
+edit /etc/sudoers with `visudo`
+
+```
+## Same thing without a password                                                
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
+```
+
+add your user to group `wheel`
+
+```
+adduser artisan wheel
+```
+
+
+## Install x11
+```
+setup-xorg-base
+```
+
 ## xfce4 installation
-`sudo apk add xfce4 xfce4-terminal xfce4-savescreen xfce4-whiskermenu-plugin`
+```
+apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
+
+rc-update add dbus
+rc-service dbus start
+
+rc-update add lightdm
+rc-service lightdm start
+```
 
 ## customize colibri from wardrobe
-We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/`,
+We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
 ```
-sudo apk add git
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs  /
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/${user}
-sudo cp * / -R
+sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs  /
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan
 ```
-
-At this point we replace the user's home with with the contents of `/etc/skel`
 
 ## Location configuration
-I added the following lines to `home/.profile`
+I added the following lines to `home/artisan/.profile`
 
 ```
 export LANG="it_IT.utf8"
@@ -44,26 +80,38 @@ export LC_COLLATE="C"
 ```
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
 
-## keboard configuration
+## keyboard configuration
 `
 sudo apk add setxkbmap
 setxkmap it
 `
 
+## spice-vdagent
+```
+sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+```
+
+
 ## eggs development tools
 ### Visual studio code
-`sudo apk add code-oss@testing`
+```
+sudo apk add code-oss@testing
+```
+
 
 ### nodejs, npm e pnpm
-`sudo apk add nodejs npm`
-`sudo npm i pnpm -g`
+```
+sudo apk add nodejs npm
+sudo npm i pnpm -g
+```
 
 ## Packages needed for live creation
+```
+apk add alpine-conf apk-tools mkinitfs
+```
 
-`apk add alpine-conf apk-tools mkinitfs`
 
-## others
-`sudo apt add xdg-user-dirs spice-vdagent spice-vdagent-openrc`
+
 
 ## dependencies penguins-eggs on Alpine (to be completed)
 ```
