@@ -110,12 +110,9 @@ sudo npm i pnpm -g
 apk add alpine-conf apk-tools mkinitfs
 ```
 
-
-
-
 ## dependencies penguins-eggs on Alpine (to be completed)
 ```
-sudo apk add 
+sudo apk add \
     alpine-conf \
     apk-tools \
     cryptsetup \
