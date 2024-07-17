@@ -8,7 +8,7 @@ just follow the instructions, choose `sys` as disk.
 ## reboot
 ```
 su
-apk add git rsync nano
+apk add git rsync nano bash-completion
 ```
 
 ## Configuration of the repositories
@@ -68,7 +68,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/config
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/
 ```
 
 ## Location configuration
@@ -125,7 +125,7 @@ sudo apk add
     jq \
     lsb-release \
     lvm2 \
-    mkinitfs
+    mkinitfs \
     nodejs \
     npm \
     parted \
