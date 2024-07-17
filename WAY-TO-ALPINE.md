@@ -151,7 +151,9 @@ sudo ./eggs dad -d
 sudo ./eggs produce --pendrive
 ```
 
-It don't produce an `initramfs-lts` and - for same reasons - don't create user `live`, but create correctly a `filesystem.squashfs`. 
+It don't produce an `initramfs-lts` and - for same reasons (*) - don't create user `live`, but create correctly a `filesystem.squashfs`. 
+
+(*) I'm using `useradd` but Alpine use `adduser`, this is not a great problem.
 
 ```
 ls /home/eggs/.mnt/iso/live/ -hs
@@ -160,6 +162,8 @@ total 496M
 ```
 
 in my case about 500 M.
+
+I think that we lacks more, is an "Angel" able to use [mkinitramfs](https://gitlab.alpinelinux.org/alpine/mkinitfs) to build an initramfs able to mount this `filesystem.squashfs` and mount it as new_root. 
 
 
 # Giving up
