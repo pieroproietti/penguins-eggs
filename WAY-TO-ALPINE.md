@@ -97,4 +97,12 @@ I was able to create a filesystem.squashfs that should work, but it still dwarfs
 - creation of the ISO
 - modifications, at least in krill for installation
 
-  
+
+# Giving up
+I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
+
+I don't see a way to build a live image, particulary I don't see a way to load an filesystem.squashfs from initrd anche chroot on it. 
+
+Probably exists, but it's not the way the ISO is made and don't have samples.
+
+
