@@ -67,8 +67,8 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs  /
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan
+sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/config
 ```
 
 ## Location configuration
