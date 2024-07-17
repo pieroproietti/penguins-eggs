@@ -143,21 +143,31 @@ pnpm i
 pnpm build
 ```
 
-Now we builded eggs, and can use it from the source
+Now we can use eggs from the source:
 
 ```
 sudo ./eggs dad -d
-eggs status
-sudo eggs produce --pendrive
+./eggs status
+sudo ./eggs produce --pendrive
 ```
 
-It don't produce and initrd - for now - but create correctly a filesystem.squashfs. 
+It don't produce an `initramfs-lts` and - for same reasons - don't create user `live`, but create correctly a `filesystem.squashfs`. 
 
 ```
 ls /home/eggs/.mnt/iso/live/ -hs
+total 496M   
+ 483.8M filesystem.squashfs   11.8M vmlinuz-lts
 ```
 
 in my case about 500 M.
+
+
+# Giving up
+I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
+
+I don't see a way to build a live image, particulary I don't see a way to load an filesystem.squashfs from initrd anche chroot on it. 
+
+Probably exists, but it's not the way the installing ISO is made and don't have any sample.
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Alipine Linux.
@@ -173,12 +183,3 @@ I was able to create a filesystem.squashfs that should work, but it still dwarfs
 - creation of an initrd that loads it
 - creation of the ISO
 - modifications, at least in krill for installation
-
-
-# Giving up
-I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
-
-I don't see a way to build a live image, particulary I don't see a way to load an filesystem.squashfs from initrd anche chroot on it. 
-
-Probably exists, but it's not the way the installing ISO is made and don't have any sample.
-
