@@ -96,6 +96,7 @@ sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
 ### Visual studio code
 ```
 sudo apk add code-oss@testing
+sudo ln -s /usr/bin/code-oss /usr/bin/code
 ```
 
 
@@ -111,6 +112,8 @@ apk add alpine-conf apk-tools mkinitfs
 ```
 
 ## dependencies penguins-eggs on Alpine (to be completed)
+We lack `pxelinux` and others... but the real problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
+
 ```
 sudo apk add \
     alpine-conf \
@@ -132,7 +135,37 @@ sudo apk add \
     xorriso
 ```
 
-# Actual state 2024-07-16
+# Clone penguins-eggs
+```
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
+pnpm i
+pnpm build
+```
+
+Now we builded eggs, and can use it from the source
+
+```
+sudo ./eggs dad -d
+eggs status
+sudo eggs produce --pendrive
+```
+
+It don't produce and initrd - for now - but create correctly a filesystem.squashfs. 
+
+```
+ls /home/eggs/.mnt/iso/live/ -hs
+```
+
+in my case about 500 M.
+
+# Someone can follow? 
+This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Alipine Linux.
+
+I will continue it, but need help.
+
+
+# Actual state 2024-07-17
 
 I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
 
