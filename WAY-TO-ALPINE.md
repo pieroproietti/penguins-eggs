@@ -103,6 +103,5 @@ I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Al
 
 I don't see a way to build a live image, particulary I don't see a way to load an filesystem.squashfs from initrd anche chroot on it. 
 
-Probably exists, but it's not the way the ISO is made and don't have samples.
-
+Probably exists, but it's not the way the ISO is made and don't have any sample.
 
