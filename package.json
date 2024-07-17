@@ -48,7 +48,7 @@
         "eslint-config-prettier": "^9.1.0",
         "mocha": "^10.6.0",
         "oclif": "^4.14.6",
-        "perrisbrewery": "^10",
+        "perrisbrewery": "^10.0.1",
         "prettier": "^3.3.3",
         "shx": "^0.3.4",
         "ts-node": "^10.9.2",
