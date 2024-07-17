@@ -126,7 +126,6 @@ sudo apk add \
     nodejs \
     npm \
     parted \
-    pxelinux \
     rsync \
     squashfs-tools \
     sshfs \
