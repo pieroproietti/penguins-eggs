@@ -238,7 +238,11 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
     for (let i = 0; i < users.length - 1; i++) {
       // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
+      if (this.familyId === 'alpine') {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, this.verbose))
+      } else {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
+      }
     }
   }
 
