@@ -130,6 +130,7 @@ sudo apk add \
     npm \
     parted \
     rsync \
+    syslinux \
     squashfs-tools \
     sshfs \
     xorriso
