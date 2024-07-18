@@ -236,13 +236,14 @@ export default class Ovary {
       ignore: false
     })
     const users: string[] = result.data.split('\n')
+    let cmdUserDel = `userdel`
+    if (this.familyId === 'alpine') {
+      // On Alpine we have just deluser
+      cmdUserDel = "deluser"
+    }
     for (let i = 0; i < users.length - 1; i++) {
       // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-      if (this.familyId === 'alpine') {
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, this.verbose))
-      } else {
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} userdel ${users[i]}`, this.verbose))
-      }
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} ${cmdUserDel} ${users[i]}`, this.verbose))
     }
   }
 
@@ -260,20 +261,17 @@ export default class Ovary {
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
     if (this.familyId === 'alpine') {
-      // Create user with adduser
+      // Create user using adduser
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' adduser -D -h /home/' + this.settings.config.user_opt + ' -s /bin/bash ' + this.settings.config.user_opt, this.verbose))
-      // live password
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
-      // root password
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
     } else {
-      // Create user
+      // Create user using useradd
       cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
-      // live password
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
-      // root password
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + '| chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
     }
+    // live password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+
+    // root password
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
