@@ -247,7 +247,7 @@ class Distro implements IDistro {
           this.distroLike = 'Alpine'
           this.codenameId = 'rolling' // questo viene rimosso dal nome
           this.codenameLikeId = 'alpine-rolling'
-          this.liveMediumPath = 'to/define/'
+          this.liveMediumPath = '/.modloop/' // ? è il mount della root su cd di installatione
           this.squashfs = `to/define/filestem.squashfs`
         } else {
           // Arch,  ArcoLinux, BlendOS, EndeavourOS, Garuda, RebornOS
@@ -333,7 +333,7 @@ class Distro implements IDistro {
       }
 
       case 'alpine': {
-        this.syslinuxPath = '/usr/share/syslinux/'
+        this.syslinuxPath = '/usr/share/syslinux/' //correct
         this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
         this.memdiskPath = this.syslinuxPath
