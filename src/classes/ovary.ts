@@ -831,7 +831,7 @@ export default class Ovary {
    * necessita di echoYes
    */
   async initrdArch() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} ArchLinux on ISO/live`)
 
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
@@ -854,16 +854,8 @@ export default class Ovary {
    * necessita di echoYes
    */
   async initrdAlpine() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
-
-    let initrdImg = Utils.initrdImg()
-    //initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
-    const { distroId } = this.settings.distro
-    // da cambiare ...
-    let fileConf = 'arch'
-    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
+    await exec(`cp /boot/initramfs-lts ${this.settings.iso_work}/live/`, this.echo)
   }
 
   /**
@@ -871,7 +863,7 @@ export default class Ovary {
    * @returns
    */
   async initrdDebian(verbose = false) {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Debian/Devuan/Ubuntu on ISO/live`)
 
     let isCrypted = false
 
@@ -1704,15 +1696,18 @@ export default class Ovary {
         await this.syslinux()
         await this.isolinux(this.theme)
         await this.kernelCopy()
+
         /**
          * we need different behaviour on
          * initrd for different familis
          */
-        if (this.familyId === 'debian') {
-          await this.initrdDebian()
-        } else if (this.familyId === 'archlinux') {
+        if (this.familyId === 'archlinux') {
           await this.initrdArch()
-        }
+        } else if (this.familyId === 'alpine') {
+            await this.initrdAlpine()
+        } else if (this.familyId === 'debian') {
+          await this.initrdDebian()
+        } 
 
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
