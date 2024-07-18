@@ -152,9 +152,7 @@ sudo ./eggs dad -d
 sudo ./eggs produce --pendrive
 ```
 
-It don't produce an `initramfs-lts` and - for same reasons (*) - don't create user `live`, but create correctly a `filesystem.squashfs`. 
-
-(*) I'm using `useradd` but Alpine use `adduser`, this is not a great problem.
+It don't produce an `initramfs-lts` but create correctly the `filesystem.squashfs`. 
 
 ```
 ls /home/eggs/.mnt/iso/live/ -hs
@@ -163,6 +161,11 @@ total 496M
 ```
 
 in my case about 500 M.
+
+Removed the problem of users creation and introducing syslinux to get isolinux,
+I was able to create ISO too, of course not booting!
+
+Size is about 600M.
 
 
 # Giving up
