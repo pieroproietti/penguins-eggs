@@ -162,11 +162,9 @@ total 496M
 
 in my case about 500 M.
 
-Removed the problem of users creation and introducing syslinux to get isolinux.
+Removed the problem of users creation and introducing syslinux to get isolinux, I was able to create both a `filesystem.squashfs` which should work, and the ISO image which not work at all, partly because it lacks of an `initramfs-lts`.
 
-I was able to create both a `filesystem.squashfs` which should work, and the ISO image which is not working, partly because it lacks of an `initramfs-lts`.
-
-Resulting ISO file is about 600M.
+Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
 
 
 # Giving up

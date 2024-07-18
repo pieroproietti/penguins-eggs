@@ -42,8 +42,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.19
-* biglinux: now take just `biglinux` ad distroId, not `BigLinux based in Manjaro Linux`;
-* alpine: solved creation of live user on the ISO.
+* biglinux: now take just `biglinux` as DISTRO-NAME, not `BigLinux based in Manjaro Linux`;
+* alpine: solved creation of live user;
+* alpine: we get a corretct `filesystem.squashfs`, a not booting iso image, and laks again to be able to create an `initramfs` to boot from it.
 
 ## penguins-eggs-10.0.18
 * `produce`: removed flag `--udf`.
