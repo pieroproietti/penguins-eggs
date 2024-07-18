@@ -236,6 +236,7 @@ export default class Ovary {
       ignore: false
     })
     const users: string[] = result.data.split('\n')
+
     let cmdUserDel = `userdel`
     if (this.familyId === 'alpine') {
       // On Alpine we have just deluser
@@ -827,15 +828,22 @@ export default class Ovary {
   }
 
   /**
+   * initrdAlpine()
+   */
+  async initrdAlpine() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
+    await exec(`cp /boot/initramfs-lts ${this.settings.iso_work}/live/`, this.echo)
+  }
+
+  /**
    * initrdArch()
    * necessita di echoYes
    */
   async initrdArch() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} ArchLinux on ISO/live`)
-
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    Utils.warning(`Creating ${initrdImg} in ${this.settings.iso_work}live/`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} ArchLinux on ISO/live`)
+
     const { distroId } = this.settings.distro
     let fileConf = 'arch'
     if (isMiso(distroId)) {
@@ -850,17 +858,9 @@ export default class Ovary {
   }
 
   /**
-   * initrdArch()
-   * necessita di echoYes
-   */
-  async initrdAlpine() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    await exec(`cp /boot/initramfs-lts ${this.settings.iso_work}/live/`, this.echo)
-  }
-
-  /**
+   * initrdDebian()
+   * Actually based on live* packages
    * We must upgrade to initrdCreate for Debian/Ubuntu
-   * @returns
    */
   async initrdDebian(verbose = false) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Debian/Devuan/Ubuntu on ISO/live`)
@@ -871,9 +871,7 @@ export default class Ovary {
       isCrypted = true
       await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
-
     await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
-
     if (isCrypted) {
       await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
@@ -1698,8 +1696,8 @@ export default class Ovary {
         await this.kernelCopy()
 
         /**
-         * we need different behaviour on
-         * initrd for different familis
+         * we need different initfs
+         * for different families
          */
         if (this.familyId === 'archlinux') {
           await this.initrdArch()
