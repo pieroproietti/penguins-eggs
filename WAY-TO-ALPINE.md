@@ -188,18 +188,15 @@ This is my end for now... but in same way can be an usefull starting point to so
 
 I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
 
-I don't see a way to build a live image, particulary I don't see a way to load an filesystem.squashfs from initrd anche chroot on it. 
-
-Probably exists, but it's not the way the installing ISO is made and don't have any sample.
+I don't see a way to build a live image, particulary I don't kwow how to load `filesystem.squashfs` from initram and chroot on it. Of course, it's possible, but it's not the way the installing ISO work and don't have any sample to look.
 
 I think that we lacks more, is an "Angel" able to use [mkinitfs](https://gitlab.alpinelinux.org/alpine/mkinitfs) to build an initramfs able to mount this `filesystem.squashfs` and mount it as new_root. 
-
 
 # Actual state 
 
 I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
 
-I was able to create a `filesystem.squashfs` that should work and an ISO file - booting in BIOS -.
+I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems.
 We need again:
 - create an `initramfs-lts` file, to loads and mount as new_root `/live/filesystem.squashfs`;
 - fix boot on UEFI for live image, on BIOS work;
