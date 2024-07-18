@@ -62,6 +62,7 @@ rc-update add lightdm
 rc-service lightdm start
 ```
 
+
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
@@ -87,8 +88,12 @@ setxkmap it
 `
 
 ## spice-vdagent
+spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
+
+I added `xrandr` package too to resize the VM window with `eggs adapt`.
+
 ```
-sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc xrandr
 ```
 
 
