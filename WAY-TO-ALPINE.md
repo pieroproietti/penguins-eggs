@@ -162,10 +162,11 @@ total 496M
 
 in my case about 500 M.
 
-Removed the problem of users creation and introducing syslinux to get isolinux,
-I was able to create ISO too, of course not booting!
+Removed the problem of users creation and introducing syslinux to get isolinux.
 
-Size is about 600M.
+I was able to create both a `filesystem.squashfs` which should work, and the ISO image which is not working, partly because it lacks of an `initramfs-lts`.
+
+Resulting ISO file is about 600M.
 
 
 # Giving up
@@ -192,3 +193,4 @@ I was able to create a filesystem.squashfs that should work, but it still dwarfs
 - creation of an initrd that loads it
 - creation of the ISO
 - modifications, at least in krill for installation
+
