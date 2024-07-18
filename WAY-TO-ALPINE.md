@@ -138,7 +138,13 @@ sudo apk add \
 ```
 
 ```
-sudo modprobe fuse
+echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
+```
+
+or 
+
+```
+modprobe fuse
 ```
 
 # Clone penguins-eggs
