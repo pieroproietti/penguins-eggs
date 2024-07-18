@@ -112,7 +112,7 @@ apk add alpine-conf apk-tools mkinitfs
 ```
 
 ## dependencies penguins-eggs on Alpine (to be completed)
-We lack `pxelinux` and others... but the real problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
+this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
 
 ```
 sudo apk add \
@@ -167,7 +167,7 @@ total 496M
 
 in my case about 500 M.
 
-Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, and an ISO image which not work at all. Partly because it lacks of an valid `initramfs-lts`.
+Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, and an ISO image starting on BIOS, but not booting becouse the lacks of the lacks of a valid `initramfs-lts`.
 
 Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
 
