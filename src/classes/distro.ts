@@ -333,7 +333,7 @@ class Distro implements IDistro {
       }
 
       case 'alpine': {
-        this.syslinuxPath = '/to/define/'
+        this.syslinuxPath = '/usr/share/syslinux/'
         this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
         this.memdiskPath = this.syslinuxPath
