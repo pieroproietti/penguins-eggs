@@ -178,7 +178,7 @@ total 496M
 
 in my case about 500 M.
 
-Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, and an ISO image starting on BIOS, but not booting becouse the lacks of the lacks of a valid `initramfs-lts`.
+Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, an ISO image starting on BIOS - I put inside `/live` the current `initramfs-lts` without try to adapt it. The ISO boot correctly, on BIOS, but of course don't load `filesystem.squashfs` and abort.
 
 Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
 
@@ -199,7 +199,7 @@ I think that we lacks more, is an "Angel" able to use [mkinitfs](https://gitlab.
 
 I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
 
-I was able to create a `filesystem.squashfs` that should work and an ISO file probably to fix.
+I was able to create a `filesystem.squashfs` that should work and an ISO file - booting in BIOS -.
 We need again:
 - create an `initramfs-lts` file, to loads and mount as new_root `/live/filesystem.squashfs`;
 - fix boot on UEFI for live image, on BIOS work;
