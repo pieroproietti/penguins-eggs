@@ -121,6 +121,7 @@ sudo apk add \
     cryptsetup \
     curl \
     dosfstools \
+    fuse \
     git \
     jq \
     lsb-release \
@@ -134,6 +135,10 @@ sudo apk add \
     squashfs-tools \
     sshfs \
     xorriso
+```
+
+```
+sudo modprobe fuse
 ```
 
 # Clone penguins-eggs
