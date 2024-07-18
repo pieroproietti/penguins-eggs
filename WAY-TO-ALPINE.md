@@ -183,12 +183,17 @@ This is my end for now... but in same way can be an usefull starting point to so
 I will continue it, but need help.
 
 
-# Actual state 2024-07-17
+# Actual state 
 
 I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
 
-I was able to create a filesystem.squashfs that should work, but it still dwarfs a lot though::
-- creation of an initrd that loads it
-- creation of the ISO
-- modifications, at least in krill for installation
+I was able to create a `filesystem.squashfs` that should work and an ISO file probably to fix.
+We need again:
+- create an `initramfs-lts` file, to loads and mount as new_root `/live/filesystem.squashfs`;
+- fix boot problems on the ISO;
 
+At this point we can "reproduce", but we need to install and create a package:
+- adapt krill to work installing Alpine;
+- see if it's possible to use calamares with Alpine;
+- create an APKBUILD for the package;
+- tests, tests, tests.
