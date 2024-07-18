@@ -352,6 +352,10 @@ class Distro implements IDistro {
     if (fs.existsSync(lsbConfig)) {
       this.distroId = Utils.searchOnFile(lsbConfig, `DISTRIB_ID`)
       this.codenameId = Utils.searchOnFile(lsbConfig, `DISTRIB_CODENAME`)
+      // patch for BigLinux
+      if (this.distroId.toLowerCase().includes('biglinux')) {
+        this.distroId = 'biglinux'
+      }
     }
 
     /**
