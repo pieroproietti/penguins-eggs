@@ -103,6 +103,7 @@ I added the following lines to `home/artisan/.profile`
 
 ```
 # Lingua italiana
+LANG=it_IT.UTF-8
 export LANG="it_IT.utf8"
 export LC_COLLATE="C"
 
