@@ -40,9 +40,14 @@ edit /etc/sudoers with `visudo`
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
 ```
 
-add your user to group `wheel`
+add your user to groups `wheel`
 
 ```
+adduser artisan adm
+adduser artisan dialout
+adduser artisan disk
+adduser artisan sys
+adduser artisan tape
 adduser artisan wheel
 ```
 
