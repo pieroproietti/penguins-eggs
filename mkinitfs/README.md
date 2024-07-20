@@ -16,3 +16,11 @@ On AlpineLinux whe have features:
 ```
 features="ata base ide scsi usb virtio ext4"
 ```
+## List feathures
+```
+mkinitfs -L 
+```
+
+apk add fuse-overlayfs
+
+apkvol
