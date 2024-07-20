@@ -230,3 +230,7 @@ At this point we can "reproduce", but we need to install and create a package:
 - see if it's possible to use calamares with Alpine;
 - create an APKBUILD for the package;
 - tests, tests, tests.
+
+## Studyng the problem
+
+I'm trying to find a way on [mkinirfs/README.md](./mkinitfs/README.md).
