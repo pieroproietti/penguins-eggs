@@ -23,4 +23,16 @@ mkinitfs -L
 
 apk add fuse-overlayfs
 
-apkvol
+## apkvol
+
+apkvol=cdrom/live/
+
+HTTP, HTTPS or FTP URL to an apkovl.tar.gz file which will be retrieved and
+applied. Can also be a filesystem path, optionally prepended with the device
+name without the /dev/ prefix.
+
+## overlaytmpfs
+When booting from a read-only filesystem, you can specify this flag to have
+your changes written to an in-memory temporary overlayfs.  The underlying
+filesystem will always be mounted read-only, the overlay always writable.
+
