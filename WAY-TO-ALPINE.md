@@ -26,25 +26,6 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 ```
 
-# sudo
-```
-apk update
-apk add sudo
-```
-
-edit /etc/sudoers with `visudo`
-
-```
-## Same thing without a password                                                
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
-```
-
-add your user to group `wheel`
-
-```
-adduser artisan wheel
-```
-
 
 ## Install x11
 ```
@@ -54,6 +35,7 @@ setup-xorg-base
 ## xfce4 installation
 ```
 apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
+apk add setxkbmap xrandr
 
 rc-update add dbus
 rc-service dbus start
@@ -76,16 +58,37 @@ rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artis
 I added the following lines to `home/artisan/.profile`
 
 ```
+# Lingua italiana
 export LANG="it_IT.utf8"
 export LC_COLLATE="C"
 ```
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
 
 ## keyboard configuration
-`
-sudo apk add setxkbmap
+```
+apk add setxkbmap 
 setxkmap it
-`
+```
+
+# sudo
+```
+apk update
+apk add sudo
+```
+
+edit /etc/sudoers with `visudo`
+
+```
+## Same thing without a password                                                
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
+```
+
+add your user to group `wheel`
+
+```
+adduser artisan wheel
+```
+
 
 ## spice-vdagent
 spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
@@ -93,9 +96,8 @@ spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize th
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
 ```
-sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc xrandr
+sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
 ```
-
 
 ## eggs development tools
 ### Visual studio code
@@ -103,7 +105,6 @@ sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc xrandr
 sudo apk add code-oss@testing
 sudo ln -s /usr/bin/code-oss /usr/bin/code
 ```
-
 
 ### nodejs, npm e pnpm
 ```
