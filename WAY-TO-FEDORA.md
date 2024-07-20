@@ -1,99 +1,27 @@
-# Way to Alpine
-We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine.
+# Way to Fedora
+We start from the `Fedora-Server-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora server choosing minumun installation.
 
-Log as root without password, then install it: `setup-alpine`.
+We can create root password and our `artisan` user.
 
-just follow the instructions, choose `sys` as disk.
+Installation is graphical and don't need to describe.
+
 
 ## reboot
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
 ```
-su
-apk add git rsync nano bash-completion mandoc
+dnf install @xfce-desktop-environment
+
+dnf install lightdm-gtk
+systemctl enable lighdm
+
+systemctl set-default graphical.target 
+systemctl enable spice-vdagent
+
 ```
 
 ## Configuration of the repositories
-```
-sudo nano /etc/apk/repositories
 
-```
-
-add:
-```
-#/media/cdrom/apks
-http://pkg.adfinis.com/alpine/v3.20/main
-http://pkg.adfinis.com/alpine/v3.20/community
-http://alpinelinux.mirror.garr.it/v3.20/main
-http://alpinelinux.mirror.garr.it/v3.20/community
-@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-
-```
-# sudo
-```
-apk update
-apk add sudo
-
-```
-
-edit /etc/sudoers with `visudo`
-
-```
-## Same thing without a password                                                
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL
-
-```
-
-add your user to groups `wheel` and others... 
-
-```
-adduser artisan adm
-adduser artisan dialout
-adduser artisan disk
-adduser artisan sys
-adduser artisan tape
-adduser artisan wheel
-
-```
-
-
-## Install x11
-```
-setup-xorg-base
-
-```
-
-## xfce4 installation
-```
-apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
-apk add setxkbmap xrandr
-
-rc-update add dbus
-rc-service dbus start
-
-rc-update add lightdm
-rc-service lightdm start
-
-```
-
-## spice-vdagent
-spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM:
-
-I added `xrandr` package too to resize the VM window with `eggs adapt`.
-
-```
-apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
-rc-update add spice-vdagentd
-rc-service spice-vdagentd start
-
-```
-## Change default shell to bash
-Change the default shell to bash:
-
-```
-chsh -s /bin/bash
-
-```
 
 
 ## customize colibri from wardrobe
@@ -107,40 +35,24 @@ sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
 rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/
 
 ```
-
-## Location configuration
-I added the following lines to `home/artisan/.profile`
-
-```
-# Lingua italiana
-LANG=it_IT.UTF-8
-export LANG="it_IT.utf8"
-export LC_COLLATE="C"
-
-```
-For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
-
 ## eggs development tools
 
 ### Visual studio code
-```
-sudo apk add code-oss@testing
-sudo ln -s /usr/bin/code-oss /usr/bin/code
-
-```
+Download [code]() and install it, just a click.
 
 ### Firefox
 ```
-sudo apk add firefox
+sudo dnf install firefox
 
 ```
 
 ### nodejs, npm e pnpm
 ```
-sudo apk add nodejs npm
+sudo dnf install nodejs npm
 sudo npm i pnpm -g
 
 ```
+# FOLLOW MUST TO BE WRITTEN 
 
 ## dependencies penguins-eggs on Alpine (to be completed)
 this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
