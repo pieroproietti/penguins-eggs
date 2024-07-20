@@ -1,4 +1,4 @@
-# Hic sunt leones!
+# Arch families
 
 After Debian/Devuan/Ubuntu I decided to bring eggs under Arch and thanx to the collaboration of stefano@manjaro.com we was able to remaster linuxmanjaro since january 2022.
 
