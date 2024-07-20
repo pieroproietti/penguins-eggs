@@ -10,7 +10,7 @@ The best is, after reboot, to connect via ssh to can copy and past the command. 
 
 ```
 su
-apk add git rsync nano bash-completion
+apk add git rsync nano bash-completion mandoc
 ```
 
 ## Configuration of the repositories
