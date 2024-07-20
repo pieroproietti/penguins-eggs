@@ -16,6 +16,7 @@ apk add git rsync nano bash-completion
 ## Configuration of the repositories
 ```
 sudo nano /etc/apk/repositories
+
 ```
 
 add:
@@ -26,18 +27,21 @@ http://pkg.adfinis.com/alpine/v3.20/community
 http://alpinelinux.mirror.garr.it/v3.20/main
 http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
+
 ```
 # sudo
 ```
 apk update
 apk add sudo
+
 ```
 
 edit /etc/sudoers with `visudo`
 
 ```
 ## Same thing without a password                                                
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL
+
 ```
 
 add your user to groups `wheel`
@@ -49,11 +53,13 @@ adduser artisan disk
 adduser artisan sys
 adduser artisan tape
 adduser artisan wheel
+
 ```
 
 ## Install x11
 ```
 setup-xorg-base
+
 ```
 
 ## xfce4 installation
@@ -66,6 +72,7 @@ rc-service dbus start
 
 rc-update add lightdm
 rc-service lightdm start
+
 ```
 
 ## spice-vdagent
@@ -77,6 +84,7 @@ I added `xrandr` package too to resize the VM window with `eggs adapt`.
 apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
 rc-update add spice-vdagentd
 rc-service spice-vdagentd start
+
 ```
 
 
@@ -87,6 +95,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
 rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/
+
 ```
 
 ## Location configuration
@@ -96,6 +105,7 @@ I added the following lines to `home/artisan/.profile`
 # Lingua italiana
 export LANG="it_IT.utf8"
 export LC_COLLATE="C"
+
 ```
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
 
@@ -103,6 +113,7 @@ For the keyboard, I looked on the settings, keyboard and eliminated the US keybo
 ```
 apk add setxkbmap 
 setxkmap it
+
 ```
 
 ## eggs development tools
@@ -110,12 +121,14 @@ setxkmap it
 ```
 sudo apk add code-oss@testing
 sudo ln -s /usr/bin/code-oss /usr/bin/code
+
 ```
 
 ### nodejs, npm e pnpm
 ```
 sudo apk add nodejs npm
 sudo npm i pnpm -g
+
 ```
 
 ## dependencies penguins-eggs on Alpine (to be completed)
@@ -142,16 +155,12 @@ sudo apk add \
     squashfs-tools \
     sshfs \
     xorriso
+
 ```
 
 ```
 echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
-```
 
-or 
-
-```
-modprobe fuse
 ```
 
 # Clone penguins-eggs
@@ -160,6 +169,7 @@ git clone https://github.com/pieroproietti/penguins-eggs
 cd penguins-eggs
 pnpm i
 pnpm build
+
 ```
 
 Now we can use eggs from the source:
@@ -168,6 +178,7 @@ Now we can use eggs from the source:
 sudo ./eggs dad -d
 ./eggs status
 sudo ./eggs produce --pendrive
+
 ```
 
 It don't produce an `initramfs-lts` but create correctly the `filesystem.squashfs`. 
