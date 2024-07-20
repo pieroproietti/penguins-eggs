@@ -6,6 +6,8 @@ Log as root without password, then install it: `setup-alpine`.
 just follow the instructions, choose `sys` as disk.
 
 ## reboot
+The best is, after reboot, to connect via ssh to can copy and past the command. Then:
+
 ```
 su
 apk add git rsync nano bash-completion
@@ -44,8 +46,6 @@ add your user to group `wheel`
 adduser artisan wheel
 ```
 
-
-
 ## Install x11
 ```
 setup-xorg-base
@@ -61,6 +61,17 @@ rc-service dbus start
 
 rc-update add lightdm
 rc-service lightdm start
+```
+
+## spice-vdagent
+spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
+
+I added `xrandr` package too to resize the VM window with `eggs adapt`.
+
+```
+apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+rc-update add spice-vdagentd
+rc-service spice-vdagentd start
 ```
 
 
@@ -89,17 +100,6 @@ apk add setxkbmap
 setxkmap it
 ```
 
-## spice-vdagent
-spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
-
-I added `xrandr` package too to resize the VM window with `eggs adapt`.
-
-```
-apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
-rc-update add spice-vdagentd
-rc-service spice-vdagentd start
-```
-
 ## eggs development tools
 ### Visual studio code
 ```
@@ -111,11 +111,6 @@ sudo ln -s /usr/bin/code-oss /usr/bin/code
 ```
 sudo apk add nodejs npm
 sudo npm i pnpm -g
-```
-
-## Packages needed for live creation
-```
-apk add alpine-conf apk-tools mkinitfs
 ```
 
 ## dependencies penguins-eggs on Alpine (to be completed)
