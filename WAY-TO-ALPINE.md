@@ -25,6 +25,25 @@ http://alpinelinux.mirror.garr.it/v3.20/main
 http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 ```
+# sudo
+```
+apk update
+apk add sudo
+```
+
+edit /etc/sudoers with `visudo`
+
+```
+## Same thing without a password                                                
+%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
+```
+
+add your user to group `wheel`
+
+```
+adduser artisan wheel
+```
+
 
 
 ## Install x11
@@ -70,33 +89,15 @@ apk add setxkbmap
 setxkmap it
 ```
 
-# sudo
-```
-apk update
-apk add sudo
-```
-
-edit /etc/sudoers with `visudo`
-
-```
-## Same thing without a password                                                
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL                                              
-```
-
-add your user to group `wheel`
-
-```
-adduser artisan wheel
-```
-
-
 ## spice-vdagent
 spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
 
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
 ```
-sudo apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+rc-update add spice-vdagentd
+rc-service spice-vdagentd start
 ```
 
 ## eggs development tools
