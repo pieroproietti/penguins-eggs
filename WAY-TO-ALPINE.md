@@ -44,7 +44,7 @@ edit /etc/sudoers with `visudo`
 
 ```
 
-add your user to groups `wheel`
+add your user to groups `wheel` and others... 
 
 ```
 adduser artisan adm
@@ -55,6 +55,7 @@ adduser artisan tape
 adduser artisan wheel
 
 ```
+
 
 ## Install x11
 ```
@@ -76,7 +77,7 @@ rc-service lightdm start
 ```
 
 ## spice-vdagent
-spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM, actually is not working for me, I was able to put it working same day ago, but not now.
+spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM:
 
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
@@ -86,10 +87,19 @@ rc-update add spice-vdagentd
 rc-service spice-vdagentd start
 
 ```
+## Change default shell to bash
+Change the default shell to bash:
+
+```
+chsh -s /bin/bash
+
+```
 
 
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
+
+
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
@@ -109,13 +119,6 @@ export LC_COLLATE="C"
 
 ```
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
-
-## keyboard configuration
-```
-apk add setxkbmap 
-setxkmap it
-
-```
 
 ## eggs development tools
 
