@@ -118,10 +118,17 @@ setxkmap it
 ```
 
 ## eggs development tools
+
 ### Visual studio code
 ```
 sudo apk add code-oss@testing
 sudo ln -s /usr/bin/code-oss /usr/bin/code
+
+```
+
+### Firefox
+```
+sudo apk add firefox
 
 ```
 
