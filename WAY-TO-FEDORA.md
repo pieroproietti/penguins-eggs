@@ -113,9 +113,11 @@ eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo root:
 
 We get a `filesystem.squasfs` of 1.3 G and an ISO file 1.5 G.
 
-The ISO is not bootable, must to check, and there is to check dependencies too-
+The ISO is not bootable, must to check, and there is to check dependencies too.
 
-I have an annoying problem with spice-vdaget, work just the first time we install it, later get a problem.
+I have an annoying problem with `spice-vdagent`, work just the first time we install it, later not. 
+
+Of course, like in Alpine, before to produce a real ISO we must prepare an `initramfs` capable to load CDROM, load `filesystem.squashfs` and chroot on it.
 
 This is all for now 2024/07/21 
 
