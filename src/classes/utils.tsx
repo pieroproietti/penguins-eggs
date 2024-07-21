@@ -130,6 +130,10 @@ export default class Utils {
       cmdline.forEach(cmd => {
          if (cmd.includes('BOOT_IMAGE')) {
             vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
+            // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
+            if (vmlinuz.includes(")")) {
+               vmlinuz=cmd.substring(cmd.indexOf(')') + 1)
+            }
 
             if (!fs.existsSync(vmlinuz) && fs.existsSync(`/boot${vmlinuz}`)) {
                vmlinuz = `/boot${vmlinuz}`
