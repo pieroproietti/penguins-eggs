@@ -27,7 +27,7 @@ export default class Fedora {
     try {
       await exec(`dnf install ${this.packs4calamares.join(' ')}`, echo)
     } catch {
-      Utils.error(`Fedora.calamaresInstall() pacman -Sy ${this.packs4calamares.join(' ')}`) // + e.error)
+      Utils.error(`fedora.calamaresInstall()`)
     }
   }
 
@@ -48,9 +48,7 @@ export default class Fedora {
     if (fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
-
-    // yay???
-    await exec('yay -Rns calamares', echo)
+    await exec('dnf remove calamares', echo)
     return retVal
   }
 
@@ -105,7 +103,6 @@ export default class Fedora {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    // rpm -qa | grep -i nano
     const cmd = `/usr/bin/dnf list --installed ${packageName}`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
