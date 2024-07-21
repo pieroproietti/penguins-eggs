@@ -16,7 +16,7 @@ dnf install spice-vdagent
 
 systemctl set-default graphical.target 
 systemctl enable lightdm
-systemctl enable spice-vdagent
+systemctl enable spice-vdagentd
 
 ```
 
