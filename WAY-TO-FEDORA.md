@@ -92,10 +92,6 @@ sudo dnf install \
 
 ```
 
-# install unicode.pf2
-
-To do...
-
 # Clone penguins-eggs
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
