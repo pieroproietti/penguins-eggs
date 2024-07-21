@@ -145,9 +145,9 @@ Of course, before to produce a real ISO we must prepare an `initramfs` capable t
 
 # Actual state 
 
-After the experience with AlpineLinux, I realized that I must to work on the main branch and check on Debian, Arch and Alpine not became brokem.
+After the experience with AlpineLinux, I realized that I must to work on the main branch and check Debian, Arch and Alpine not became broken.
 
-I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems. We are at the same point of Alpine, we need again:
+I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems. We are about at the same point of Alpine, so we need again:
 - create an `initramfs` file, to loads and mount as new_root `/live/filesystem.squashfs`;
 - fix boot on UEFI for live image, fix something in BIOS too.
 
