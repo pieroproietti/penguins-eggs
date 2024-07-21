@@ -2,7 +2,7 @@
 
 ## AlpineLinux
 
-On Arch we have HOOKS
+On Arch we have HOOKS, eg:
 
 ```
 MODULES=()
@@ -12,7 +12,7 @@ HOOKS=(base udev modconf memdisk archiso archiso_loop_mnt archiso_pxe_common arc
 COMPRESSION="zstd"
 ```
 
-On AlpineLinux whe have features:
+on AlpineLinux whe have features:
 ```
 features="ata base ide scsi usb virtio ext4"
 ```
@@ -20,8 +20,6 @@ features="ata base ide scsi usb virtio ext4"
 ```
 mkinitfs -L 
 ```
-
-apk add fuse-overlayfs
 
 ## apkvol
 
