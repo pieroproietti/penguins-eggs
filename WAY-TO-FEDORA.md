@@ -50,7 +50,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
-cp /etc/skel/.* /home/artisan/. -R
+cp /etc/skel/.* ${HOME}/. -R
 
 ```
 ## eggs development tools
