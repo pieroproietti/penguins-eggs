@@ -43,14 +43,12 @@ sudo npm i pnpm -g
 
 
 ## customize colibri from wardrobe
-We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
-
-
+We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` on `/`, then copy `/etc/skel` on the home of current user.
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
-cp /etc/skel/.* ${HOME}/. -R
+cp /etc/skel/.* "${HOME}/." -R
 
 ```
 ## eggs development tools
@@ -58,7 +56,7 @@ cp /etc/skel/.* ${HOME}/. -R
 ### Visual studio code
 Download [code](https://code.visualstudio.com/download) rpm version, and install it:
 ```
-sudo dnf install ./code...
+sudo dnf install code-1.91.1-1720564728.el8.x86_64.rpm 
 
 ```
 
