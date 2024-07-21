@@ -23,6 +23,7 @@ systemctl enable spice-vdagent
 ## others
 ```
 dnf install \
+    bash-completion \
     firefox \
     git \
     lsb-release \
@@ -46,7 +47,9 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
+
+sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
+
 cp /etc/skel/.* "${HOME}/." -R
 
 ```
