@@ -64,7 +64,7 @@ sudo dnf install ./code...
 
 
 ## dependencies penguins-eggs on Fedora
-this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
+this are that we need, almost complete... 
 
 ```
 sudo dnf install \
@@ -88,10 +88,6 @@ sudo dnf install \
 
 ```
 
-```
-echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
-
-```
 
 # Clone penguins-eggs
 ```
@@ -111,45 +107,4 @@ sudo ./eggs produce --pendrive
 
 ```
 
-It don't produce an `initramfs-lts` but create correctly the `filesystem.squashfs`. 
 
-```
-ls /home/eggs/.mnt/iso/live/ -hs
-total 496M   
- 483.8M filesystem.squashfs   11.8M vmlinuz-lts
-```
-
-in my case about 500 M.
-
-Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, an ISO image starting on BIOS - I put inside `/live` the current `initramfs-lts` without try to adapt it. The ISO boot correctly, on BIOS, but of course don't load `filesystem.squashfs` and the system go in emergency mode.
-
-Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
-
-
-# Someone can follow? 
-This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
-
-I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
-
-I don't see a way to build a live image, particulary I don't kwow how to load `filesystem.squashfs` from initram and chroot on it. Of course it's possible, but it's not the way the installing ISO is made and I don't have any sample to look.
-
-I think that we lacks more, is an "Angel" able to use [mkinitfs](https://gitlab.alpinelinux.org/alpine/mkinitfs) to build an initramfs able to mount this `filesystem.squashfs` and mount it as new_root. 
-
-# Actual state 
-
-I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
-
-I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems.
-We need again:
-- create an `initramfs-lts` file, to loads and mount as new_root `/live/filesystem.squashfs`;
-- fix boot on UEFI for live image, on BIOS already work.
-
-At this point we can "reproduce", but we need to install and create a package:
-- adapt krill to work installing Alpine;
-- see if it's possible to use calamares with Alpine;
-- create an APKBUILD for the package;
-- tests, tests, tests.
-
-## Studyng the problem
-
-I'm trying to find a way on [mkinirfs/README.md](./mkinitfs/README.md).
