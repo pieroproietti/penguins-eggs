@@ -10,18 +10,36 @@ Installation is graphical and don't need to describe.
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
 ```
-dnf install @xfce-desktop-environment
-
+#dnf install @xfce-desktop-environment
+dnf install xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
 dnf install lightdm-gtk
-systemctl enable lighdm
+dnf install spice-vdagent
 
 systemctl set-default graphical.target 
+systemctl enable lighdm
 systemctl enable spice-vdagent
 
 ```
 
-## Configuration of the repositories
+## others
+```
+dnf install \
+    firefox \
+    git \
+    lsb-release \
+    rsync \
+    xdg-user-dirs \
+    xrandr 
 
+```
+
+
+### nodejs, npm e pnpm
+```
+sudo dnf install nodejs npm
+sudo npm i pnpm -g
+
+```
 
 
 ## customize colibri from wardrobe
@@ -32,29 +50,20 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/
+cp /etc/skel/.* /home/artisan/. -R
 
 ```
 ## eggs development tools
 
 ### Visual studio code
-Download [code]() and install it, just a click.
-
-### Firefox
+Download [code](https://code.visualstudio.com/download) rpm version, and install it:
 ```
-sudo dnf install firefox
+sudo dnf install ./code...
 
 ```
 
-### nodejs, npm e pnpm
-```
-sudo dnf install nodejs npm
-sudo npm i pnpm -g
 
-```
-# FOLLOW MUST TO BE WRITTEN 
-
-## dependencies penguins-eggs on Alpine (to be completed)
+## dependencies penguins-eggs on Fedora
 this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
 
 ```
