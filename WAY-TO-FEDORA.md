@@ -58,9 +58,7 @@ sudo npm i pnpm -g
 this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
 
 ```
-sudo apk add \
-    alpine-conf \
-    apk-tools \
+sudo dnf install \
     cryptsetup \
     curl \
     dosfstools \
@@ -69,7 +67,7 @@ sudo apk add \
     jq \
     lsb-release \
     lvm2 \
-    mkinitfs \
+    dracut \
     nodejs \
     npm \
     parted \
