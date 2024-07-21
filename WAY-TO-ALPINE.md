@@ -175,6 +175,10 @@ sudo apk add \
 echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
 
 ```
+# install unicode.pf2
+
+To do...
+
 
 # Clone penguins-eggs
 ```
