@@ -836,6 +836,14 @@ export default class Ovary {
   }
 
   /**
+   * initrdFedora()
+   */
+  async initrdFedora() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+    await exec(`cp /boot/initramfs-* ${this.settings.iso_work}/live/`, this.echo)
+  }
+
+  /**
    * initrdArch()
    * necessita di echoYes
    */
@@ -1703,6 +1711,8 @@ export default class Ovary {
           await this.initrdArch()
         } else if (this.familyId === 'alpine') {
             await this.initrdAlpine()
+          } else if (this.familyId === 'fedora') {
+            await this.initrdFedora()
         } else if (this.familyId === 'debian') {
           await this.initrdDebian()
         } 
