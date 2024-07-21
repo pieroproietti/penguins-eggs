@@ -99,12 +99,12 @@ chsh -s /bin/bash
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
-
-
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/  /
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/.config /home/artisan/
+
+sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
+rm "${HOME}/." -R
+cp /etc/skel/.* "${HOME}/." -R
 
 ```
 
