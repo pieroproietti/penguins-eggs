@@ -32,10 +32,10 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 ```
-# sudo
+# sudo, shadow for chsh
 ```
 apk update
-apk add sudo
+apk add sudo shadow
 
 ```
 
