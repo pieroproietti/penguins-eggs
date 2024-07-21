@@ -120,7 +120,7 @@ class Distro implements IDistro {
       this.codenameId = 'rolling' // questo viene rimosso dal nome
       this.codenameLikeId = 'alpine-rolling'
       this.liveMediumPath = '/.modloop/' // ? è il mount della root su cd di installatione
-      this.squashfs = `to/define/filestem.squashfs`
+      this.squashfs = `live/filesystem.squashfs`
 
       this.syslinuxPath = '/usr/share/syslinux/' //correct
       this.pxelinuxPath = this.syslinuxPath
@@ -134,8 +134,8 @@ class Distro implements IDistro {
       this.codenameId = 'rolling'
       this.codenameLikeId = '40'
       this.familyId = 'fedora'
-      this.liveMediumPath = '/to/define/' // ? è il mount della root su cd di installatione
-      this.squashfs = `to/define/filestem.squashfs`
+      this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+      this.squashfs = `live/filesystem.squashfs`
 
       this.syslinuxPath = '/usr/share/syslinux/' //correct
       this.pxelinuxPath = this.syslinuxPath
