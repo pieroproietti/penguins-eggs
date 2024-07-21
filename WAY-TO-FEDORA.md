@@ -12,11 +12,10 @@ The best is, after reboot, to connect via ssh to can copy and past the command. 
 ```
 #dnf install @xfce-desktop-environment
 dnf install xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
-dnf install lightdm-gtk
 dnf install spice-vdagent
 
 systemctl set-default graphical.target 
-systemctl enable lighdm
+systemctl enable lightdm
 systemctl enable spice-vdagent
 
 ```
@@ -105,4 +104,18 @@ sudo ./eggs produce --pendrive
 
 ```
 
+The result at the moment is a not bootable ISO. 
+During `sudo eggs produce` I get this error:
+```
+eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo live:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
+eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo root:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
+```
+
+We get a `filesystem.squasfs` of 1.3 G and an ISO file 1.5 G.
+
+The ISO is not bootable, must to check, and there is to check dependencies too-
+
+I have an annoying problem with spice-vdaget, work just the first time we install it, later get a problem.
+
+This is all for now 2024/07/21 
 
