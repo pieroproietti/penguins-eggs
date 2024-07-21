@@ -112,30 +112,41 @@ class Distro implements IDistro {
 
 
     /**
-     * patch Fedora
-     * 
-     * We must refactoring distro.ts
-     * analyzing before this.distroId
-     * then this.codename
+     * Analize distroId
      */
-    if (this.distroId === 'Fedora') {
-      this.distroLike = 'Fedora'
-      this.distroLike = 'Fedora'
-      this.codenameId = 'rolling'
-      this.codenameLikeId = '40'
-      this.familyId = 'fedora'
+    if (this.distroId === 'Alpine') {
+      this.familyId = 'alpine'
+      this.distroLike = 'Alpine'
+      this.codenameId = 'rolling' // questo viene rimosso dal nome
+      this.codenameLikeId = 'alpine-rolling'
       this.liveMediumPath = '/.modloop/' // ? è il mount della root su cd di installatione
       this.squashfs = `to/define/filestem.squashfs`
-    } else if (this.distroId === 'Alpine') {
+
       this.syslinuxPath = '/usr/share/syslinux/' //correct
       this.pxelinuxPath = this.syslinuxPath
       this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath
       this.isolinuxPath = this.syslinuxPath
+
+    } else if (this.distroId === 'Fedora') {
+      this.distroLike = 'Fedora'
+      this.distroLike = 'Fedora'
+      this.codenameId = 'rolling'
+      this.codenameLikeId = '40'
+      this.familyId = 'fedora'
+      this.liveMediumPath = '/to/define/' // ? è il mount della root su cd di installatione
+      this.squashfs = `to/define/filestem.squashfs`
+
+      this.syslinuxPath = '/usr/share/syslinux/' //correct
+      this.pxelinuxPath = this.syslinuxPath
+      this.usrLibPath = '/usr/lib/'
+      this.memdiskPath = this.syslinuxPath
+      this.isolinuxPath = this.syslinuxPath
+
     } else {
 
       /**
-       * Analisi: codenameId
+       * Arch/Debian/Devuan/Manjaro and Ubuntu
        */
       switch (this.codenameId) {
         case 'jessie': {
@@ -265,23 +276,12 @@ class Distro implements IDistro {
         case 'Spizaetus':
         case 'n/a':
         case 'rolling': {
-          if (this.distroId === "Alpine") {
-            // Alpine
-            this.familyId = 'alpine'
-            this.distroLike = 'Alpine'
-            this.codenameId = 'rolling' // questo viene rimosso dal nome
-            this.codenameLikeId = 'alpine-rolling'
-            this.liveMediumPath = '/.modloop/' // ? è il mount della root su cd di installatione
-            this.squashfs = `to/define/filestem.squashfs`
-          } else {
-            // Arch,  ArcoLinux, BlendOS, EndeavourOS, Garuda, RebornOS
-            this.familyId = 'archlinux'
-            this.distroLike = 'Arch'
-            this.codenameId = 'rolling'
-            this.codenameLikeId = 'rolling'
-            this.liveMediumPath = '/run/archiso/bootmnt/'
-            this.squashfs = `arch/x86_64/airootfs.sfs`
-          }
+          this.familyId = 'archlinux'
+          this.distroLike = 'Arch'
+          this.codenameId = 'rolling'
+          this.codenameLikeId = 'rolling'
+          this.liveMediumPath = '/run/archiso/bootmnt/'
+          this.squashfs = `arch/x86_64/airootfs.sfs`
           break
         }
 
