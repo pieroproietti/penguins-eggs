@@ -5,6 +5,8 @@ We can create root password and our `artisan` user.
 
 Installation is graphical and don't need to describe.
 
+> [!NOTE]
+> This is tested just on BIOS, under a VM on Proxmox VE.
 
 ## reboot
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
@@ -105,7 +107,7 @@ Now we can use eggs from the source:
 ## Autocomplete eggs
 Create a dummy eggs in `/usr/bin/`
 ```
-echo "just a dummy eggs" | sudo tee /usr/bin/eggs
+echo \"just a dummy eggs\" | sudo tee /usr/bin/eggs
 sudo chmod +x /usr/bin/eggs
 
 ```

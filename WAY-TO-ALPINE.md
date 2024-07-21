@@ -5,6 +5,9 @@ Log as root without password, then install it: `setup-alpine`.
 
 just follow the instructions, choose `sys` as disk.
 
+> [!NOTE]
+> This is tested just on BIOS, under a VM on Proxmox VE.
+
 ## reboot
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
@@ -94,7 +97,6 @@ Change the default shell to bash:
 chsh -s /bin/bash
 
 ```
-
 
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
@@ -188,7 +190,7 @@ Now we can use eggs from the source:
 ## Autocomplete eggs
 Create a dummy eggs in `/usr/bin/`
 ```
-echo "just a dummy eggs" | sudo tee /usr/bin/eggs
+echo \"just a dummy eggs\" | sudo tee /usr/bin/eggs
 sudo chmod +x /usr/bin/eggs
 
 ```
