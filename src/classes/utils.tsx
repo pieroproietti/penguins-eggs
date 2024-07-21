@@ -35,12 +35,11 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
  */
 export default class Utils {
 
-     /**
+   /**
    * Custom function to sort object keys
    * @param obj 
    * @returns 
    */
-  // 
   static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
    const sorted: { [key: string]: any } = {};
    Object.keys(obj)
@@ -122,21 +121,20 @@ export default class Utils {
    static vmlinuz(): string {
       let distro = new Distro()
       let vmlinuz = ''
-
-      // patch per raspberry arm64
-
       // find vmlinuz in /proc/cmdline
       const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
       cmdline.forEach(cmd => {
          if (cmd.includes('BOOT_IMAGE')) {
             vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
+
             // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
             if (vmlinuz.includes(")")) {
                vmlinuz=cmd.substring(cmd.indexOf(')') + 1)
             }
-
-            if (!fs.existsSync(vmlinuz) && fs.existsSync(`/boot${vmlinuz}`)) {
-               vmlinuz = `/boot${vmlinuz}`
+            if (!fs.existsSync(vmlinuz)) {
+               if (fs.existsSync(`/boot/${vmlinuz}`)) {
+                  vmlinuz = `/boot/${vmlinuz}`
+               }
             }
          }
       })
