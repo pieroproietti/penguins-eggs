@@ -10,9 +10,12 @@ Installation is graphical and don't need to describe.
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
 ```
-#dnf install @xfce-desktop-environment
-dnf install xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
-dnf install spice-vdagent
+dnf install \
+    lightdm-gtk-greeter \
+    spice-vdagent \
+    xfce4-screensaver \
+    xfce4-terminal \
+    xfce4-whiskermenu-plugin 
 
 systemctl set-default graphical.target 
 systemctl enable lightdm
@@ -33,11 +36,10 @@ dnf install \
 
 ```
 
-
 ### nodejs, npm e pnpm
 ```
-sudo dnf install nodejs npm
-sudo npm i pnpm -g
+dnf install nodejs npm
+npm i pnpm -g
 
 ```
 
@@ -58,13 +60,13 @@ cp /etc/skel/.* "${HOME}/." -R
 ### Visual studio code
 Download [code](https://code.visualstudio.com/download) rpm version, and install it:
 ```
-sudo dnf install code-1.91.1-1720564728.el8.x86_64.rpm 
+sudo dnf install ./code-1.91.1-1720564728.el8.x86_64.rpm 
 
 ```
 
 
 ## dependencies penguins-eggs on Fedora
-this are that we need, almost complete... 
+This are that we need, almost complete... 
 
 ```
 sudo dnf install \
@@ -102,14 +104,10 @@ Now we can use eggs from the source:
 
 ## Autocomplete eggs
 Create a dummy eggs in `/usr/bin/`
-
 ```
-echo "just a dummy eggs"
-
-```
-
-```
+echo "just a dummy eggs" | sudo tee /usr/bin/eggs
 sudo chmod +x /usr/bin/eggs
+
 ```
 
 Copy `eggs.bash` on `/etc/bash_completion.d/`
@@ -129,7 +127,7 @@ sudo ./eggs produce --pendrive
 ```
 
 The result at the moment is a not bootable ISO. 
-During `sudo eggs produce` I get this error:
+During `sudo eggs produce` I'm getting this error:
 ```
 eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo live:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
 eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo root:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
@@ -141,7 +139,15 @@ The ISO is not bootable, must to check why, and there is to check dependencies t
 
 I have an annoying problem with `spice-vdagent`, work just the first time I install it, later not. 
 
-Of course, like in Alpine, before to produce a real ISO we must prepare an `initramfs` capable to load CDROM, load `filesystem.squashfs` and chroot on it.
+Of course, before to produce a real ISO we must prepare an `initramfs` capable to load `filesystem.squashfs` and chroot on it.
 
-This is all for now 2024/07/21 
+# Actual state 
 
+After the experience with AlpineLinux, I realized that I must to work on the main branch and check on Debian, Arch and Alpine not became brokem.
+
+I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems. We are at the same point of Alpine, we need again:
+- create an `initramfs` file, to loads and mount as new_root `/live/filesystem.squashfs`;
+- fix boot on UEFI for live image, fix something in BIOS too.
+
+# Fedora peoples, someone can help? 
+This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
