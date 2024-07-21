@@ -185,6 +185,17 @@ pnpm build
 
 Now we can use eggs from the source:
 
+## Autocomplete eggs
+
+```
+sudo cp ./eggs /usr/bin/
+./eggs autocomplete
+printf "eval $(eggs autocomplete script bash) >> ~/.bash_profile; source ~/.bash_profile
+
+```
+
+## Configure eggs
+
 ```
 sudo ./eggs dad -d
 ./eggs status

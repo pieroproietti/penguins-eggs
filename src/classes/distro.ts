@@ -129,15 +129,14 @@ class Distro implements IDistro {
       this.isolinuxPath = this.syslinuxPath
 
     } else if (this.distroId === 'Fedora') {
-      this.distroLike = 'Fedora'
+      this.familyId = 'fedora'
       this.distroLike = 'Fedora'
       this.codenameId = 'rolling'
       this.codenameLikeId = '40'
-      this.familyId = 'fedora'
       this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
       this.squashfs = `live/filesystem.squashfs`
 
-      this.syslinuxPath = '/usr/share/syslinux/' //correct
+      this.syslinuxPath = '/usr/share/syslinux/' 
       this.pxelinuxPath = this.syslinuxPath
       this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath

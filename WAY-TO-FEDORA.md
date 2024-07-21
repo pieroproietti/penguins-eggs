@@ -97,6 +97,27 @@ pnpm build
 
 Now we can use eggs from the source:
 
+## Autocomplete eggs
+Create a dummy eggs in `/usr/bin/`
+
+```
+echo "just a dummy eggs"
+
+```
+
+```
+sudo chmod +x /usr/bin/eggs
+```
+
+Copy `eggs.bash` on `/etc/bash_completion.d/`
+
+```
+sudo cp scripts/eggs.bash /etc/bash_completion.d/
+
+```
+
+## Configuration eggs
+
 ```
 sudo ./eggs dad -d
 ./eggs status
