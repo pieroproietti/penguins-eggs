@@ -94,14 +94,31 @@ Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Ass
 `distro.ts` it's a bit a kaos actually, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, but it work and `Primum vivere deinde philosophari` say the old latins.
 
 
-### incubation
+### incubation/incubator.ts
 The same approach is for `/incubation/incubator.ts`, it take from /incubation/distros/` the varius differents code for every distro running.
 
-Incubation, is for calamares configuration, came from the idea of eggs and something to hatch eggs.
+Incubation, is for calamares configuration, it's funny name came from the idea of eggs and something to hatch eggs.
 
 ### ovary.ts
 This is the main eggs class, it's long, and it's the central part of eggs. When we give: `eggs produce` we are calling ovary.
 
+### xdg
+All the things more or less related to xdg, eg: autologin, skel, etc.
 
 ### others classes
-Generally are more simpler.
+Generally are simpler and understandable, of course this is my idea.
+
+# Historical perspective
+I suggest to think how this is a software grow up with time, so think the history of it to understand a reason.
+
+I started just with Debian and remastering Debian, then extend to Ubuntu and Devuan. In origin I have not `deb` package but produce `npm` packages for node, so inside eggs where was the code to install the dependencies, like `xorriso` and orhers.
+
+With time, I passed to create deb packages more pratical to use, I created them thanks to [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies and pre and post install scripts.
+
+To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside tha package. This lead me to remove same of the code I did before about dependencies installing.
+
+Removing dependencies from code, free me a bit, now I can manage them in the package not i the sources, so it was more easy to extend eggs to Arch, where the part in Debian we manage with perrisbrewery, is made under the PKGBUILD scrips.
+
+After that where was time of stability, just finished actually becouse I started to extend eggs to alpine linux and fedora.
+
+
