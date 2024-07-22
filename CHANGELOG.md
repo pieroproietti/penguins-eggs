@@ -41,6 +41,12 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.20
+I'm working mostly to bring eggs to AlpineLinux and fedora, the changes are included here, but note **eggs is not yet usable on this distros**. 
+* updated oclif;
+* insert changes for AlpineLinux and fedora, not impacting for the others distros;
+* cleaning ad revisioning documentation.
+
 ## penguins-eggs-10.0.19
 * biglinux: now take just `biglinux` as DISTRO-NAME, not `BigLinux based in Manjaro Linux`;
 * alpine: solved creation of live user;
