@@ -152,3 +152,6 @@ I was able to create a `filesystem.squashfs` that should work and an ISO file bo
 
 # Fedora peoples, someone can help? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
+
+# Links
+[dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
