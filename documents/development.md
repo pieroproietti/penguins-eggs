@@ -93,3 +93,15 @@ Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Ass
 
 `distro.ts` it's a bit a kaos actually, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, but it work and `Primum vivere deinde philosophari` say the old latins.
 
+
+### incubation
+The same approach is for `/incubation/incubator.ts`, it take from /incubation/distros/` the varius differents code for every distro running.
+
+Incubation, is for calamares configuration, came from the idea of eggs and something to hatch eggs.
+
+### ovary.ts
+This is the main eggs class, it's long, and it's the central part of eggs. When we give: `eggs produce` we are calling ovary.
+
+
+### others classes
+Generally are more simpler.
