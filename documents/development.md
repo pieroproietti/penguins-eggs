@@ -119,6 +119,7 @@ To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproiett
 
 Removing dependencies from code, free me a bit, now I can manage them in the package not i the sources, so it was more easy to extend eggs to Arch, where the part in Debian we manage with perrisbrewery, is made under the PKGBUILD scrips.
 
-After that where was time of stability, just finished actually becouse I started to extend eggs to alpine linux and fedora.
+After that where was time of stability, just finished actually becouse I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
+
 
 

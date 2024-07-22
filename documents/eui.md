@@ -1,4 +1,4 @@
-# eggs unattended installation
+# EUI: Eggs Unattended Installation
 
 It is a bit long to explain, and the function is not yet to be considered fully stable.
 

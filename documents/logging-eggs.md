@@ -1,5 +1,4 @@
-# logging eggs
-
+# Instructions to logging eggs
 Simply use:
 
 * `sudo eggs produce|tee eggs-produce.log`
