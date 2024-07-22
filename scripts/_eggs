@@ -323,7 +323,6 @@ _arguments -S \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
 "(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
-"(-U --udf)"{-U,--udf}"[use UDF format on ISO with genisoimage breacking 4.7 G limit]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
