@@ -9,8 +9,8 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^4.0.12",
-        "@oclif/plugin-autocomplete": "^3.1.7",
+        "@oclif/core": "^4.0.13",
+        "@oclif/plugin-autocomplete": "^3.1.8",
         "@oclif/plugin-help": "^6.2.6",
         "@oclif/plugin-version": "^2.2.8",
         "axios": "^1.7.2",
@@ -30,7 +30,7 @@
     },
     "devDependencies": {
         "@oclif/prettier-config": "^0.2.1",
-        "@oclif/test": "^4.0.4",
+        "@oclif/test": "^4.0.5",
         "@types/chai": "^4.3.16",
         "@types/inquirer": "^9.0.7",
         "@types/js-yaml": "^4.0.9",
@@ -47,7 +47,7 @@
         "eslint-config-oclif-typescript": "^3.1.8",
         "eslint-config-prettier": "^9.1.0",
         "mocha": "^10.6.0",
-        "oclif": "^4.14.6",
+        "oclif": "^4.14.8",
         "perrisbrewery": "^10.0.1",
         "prettier": "^3.3.3",
         "shx": "^0.3.4",
