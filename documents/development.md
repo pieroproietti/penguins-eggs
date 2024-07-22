@@ -96,7 +96,7 @@ It's also possible to create debian package, all you need is to type:
 pnpm deb
 ```
 
-package will be created under `/perribrewery/working/`, you can install it as usual Debian package, it will automatically install it's dependencies, just: `sudo apt install -f`.
+package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
 
 
 # source
