@@ -1,5 +1,6 @@
 # Distrobox
 
+
 ## Install
 
 `sudo pacman -Syu podman distrobox`
@@ -10,7 +11,7 @@
 
 `sudo apt install bzip2 git nano tar xz-utils`
 
-Scaricacare ed installere nodejs19 da sourceforge, quindi:
+Installare nodejs, quindi:
 
 `sudo npm i pnpm -g`
 
