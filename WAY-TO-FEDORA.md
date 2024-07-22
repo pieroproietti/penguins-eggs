@@ -1,5 +1,13 @@
 # Way to Fedora
-We start from the `Fedora-Server-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora server choosing minumun installation.
+We start from the `Fedora-Server-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora server choosing minumun installation, set root password and user. 
+
+I initially just chosen the disk, it was formatted as xfs, I want a simple schema with swap and / formatted ext4, there is no way seem.
+
+OK, I found the way to text installation, just edit the cmdline and put `inst.text`. 
+
+Nothing to do - and this is quite ugly: CLI installation don't give full control on partitions. Tried with `Rocky-9.4-x86_64-minimal.iso` the same... 
+
+I'm short signer, will retry in the mornig seem me to see better!
 
 We can create root password and our `artisan` user.
 
