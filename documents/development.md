@@ -91,11 +91,12 @@ code .
 ```
 And use `pnpm build` before to run. 
 
-### producing penguins-eggs package .deb
 It's also possible to create debian package, all you need is to type:
 ```
 pnpm deb
 ```
+
+package will be created under `/perribrewery/working/`, you can install it as usual Debian package, it will automatically install it's dependencies, just: `sudo apt install -f`.
 
 
 # source
