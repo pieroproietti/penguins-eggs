@@ -83,10 +83,13 @@ There are a lot of classes, we now go to see pacman.ts a crucial one.
 pacman.ts from `package manager` is not for Arch, or Debian, it's for all the distro. `pacman` import classes for all the distros from `./familes`: `alpine.ts`, `arclinux.ts`, `debian.ts`, `fedora.ts` and depending on that distro is running on, realize it's operation with the system commands: `apk, `pacman`, `apt`. `dnf`.
 
 ### distro.ts
-We call often distro during our work, becouse contai a lot of values we use, regarding the distro really runnig.
+We call often distro during our work, becouse contai a lot of values we use, regarding the currens distro.
 
-I divided distros, in four families: `debian`, `archlinux`, `alpine` and `fedora`. 
+I divided distros in four families: `debian`, `archlinux`, `alpine` and `fedora`. 
 
-Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Associated where are various values for paths etc.
+Family `debian` don't have just Debian, but Devuan, Ubuntu and all their derivatives, eg `Linuxmint`.
 
-It's a bit a kaos actully, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, for now work and can stay.
+Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Associated where are various values for paths, defaults, etc.
+
+`distro.ts` it's a bit a kaos actually, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, but it work and `Primum vivere deinde philosophari` say the old latins.
+
