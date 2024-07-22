@@ -61,7 +61,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-rm "${HOME}/." -R
+rm "${HOME}/.*" -R
 cp /etc/skel/.* "${HOME}/." -R
 
 ```
@@ -111,19 +111,9 @@ pnpm build
 
 Now we can use eggs from the source:
 
-## Autocomplete eggs
-Create a dummy eggs in `/usr/bin/`
+## Autocomplete, Desktop icons
 ```
-echo \"just a dummy eggs\" | sudo tee /usr/bin/eggs
-sudo chmod +x /usr/bin/eggs
-
-```
-
-Copy `eggs.bash` on `/etc/bash_completion.d/`
-
-```
-sudo cp scripts/eggs.bash /etc/bash_completion.d/
-
+./install-eggs-dev
 ```
 
 ## Configuration eggs
