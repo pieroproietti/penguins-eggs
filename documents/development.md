@@ -4,7 +4,8 @@ Basically you need to install:
 - code
 - git
 - nodejs
-- npm
+- pnpm
+- eggs dependencies
 
 ## Install code
 Download [code](https://code.visualstudio.com/download) and install it. 
@@ -27,11 +28,39 @@ Then we will go to the project [penguings-eggs](https://github.com/pieroproietti
 
 We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
 
+## - eggs dependencies - Debian amd64 packages
+Install this Debian packages if you don't have penguins-eggs already installed. Just copy and paste:
+
+```
+sudo apt install \
+  coreutils \
+  cryptsetup \
+  curl \
+  dosfstools \
+  dpkg-dev \
+  git \
+  isolinux \
+  jq \
+  live-boot \
+  live-boot-doc \
+  live-boot-initramfs-tools \
+  live-config-systemd \
+  live-tools \
+  lsb-release \
+  lvm2 \
+  nodejs \
+  parted \
+  rsync \
+  squashfs-tools \
+  sshfs \
+  syslinux \
+  xorriso
+```
 
 ## clone penguins-eggs
 
 ```
-git clone https://github.com/piero-proietti/penguins-eggs
+git clone https://github.com/pieroproietti/penguins-eggs
 ```
 
 Now we can install node_modules:
@@ -60,6 +89,16 @@ We can use code to edit our code,
 cd penguins-eggs
 code .
 ```
+And use `pnpm build` before to run. 
+
+### producing penguins-eggs package .deb
+It's also possible to create debian package, all you need is to type:
+```
+pnpm deb
+```
+
+
+# source
 
 All the source is under `/src`, and is divided on:
 * classes
@@ -120,6 +159,3 @@ To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproiett
 Removing dependencies from code, free me a bit, now I can manage them in the package not i the sources, so it was more easy to extend eggs to Arch, where the part in Debian we manage with perrisbrewery, is made under the PKGBUILD scrips.
 
 After that where was time of stability, just finished actually becouse I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
-
-
-
