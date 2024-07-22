@@ -1,2 +1,2 @@
 #!/bin/bash
-./bin/run.js "$@"
+./bin/dev.js "$@"
