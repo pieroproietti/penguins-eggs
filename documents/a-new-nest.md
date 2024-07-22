@@ -14,7 +14,7 @@ nest=/home/eggs
 * ${nest}/memdiskDir
 * ${nest}/ovarium
 
-After the introduction of a mountpoint to mount spaces inside eggs to can clone/remaster systems without sufficient free space on the device, I need to rethink a bit this structure, due the fact who ovelays must to be on the same filesystem for lowerdir,upperdir and workdir. 
+After the introduction of a mountpoint to mount spaces inside eggs to can clone/remaster systems without sufficient free space on the device, I need to rethink a bit this structure, due the fact who ovelays must to be on the same filesystem for lowerdir,upperdir and workdir and lowerdir is always local.
 
 I created this hidden and visible structure:
 
@@ -31,7 +31,7 @@ I created this hidden and visible structure:
 
 
 ## The visible nest
-I added two links for livefs, and iso and created a folder called ovarium, is was an error, I must rename it as `bin`, but for now it remain:
+I added two links for livefs, and iso and created a folder called ovarium, this was a mistake, I want to rename it as `bin`, becouse contains scripts, but for now it remain:
 
 * ${nest}/livefs -> /.mnt/eggs/filesystem.squashfs
 * ${nest}/iso -> /.mnt/eggs/iso
