@@ -2,26 +2,27 @@
 
 That is called here `nest` is the eggs `home`, usually `/home/eggs`.
 
-## previous structure
+# Original nest
 The original structure of the nest was all under `/home/eggs`
 
 nest=/home/eggs
 
 * ${nest}/image.iso
 * ${nest}/efi_work
-* ${nest}/filestem.live
+* ${nest}/filestem.squashfs
 * ${nest}/iso
 * ${nest}/memdiskDir
 * ${nest}/ovarium
 
+# Actual nest
 After the introduction of a mountpoint to mount spaces inside eggs to can clone/remaster systems without sufficient free space on the device, I need to rethink a bit this structure, due the fact who ovelays must to be on the same filesystem for lowerdir,upperdir and workdir and lowerdir is always local.
 
 I created this hidden and visible structure:
 
-## The hidden nest
+## The actual hidden nest
 * ${nest}/.mnt
     * ${nest}/.mnt/efi_work
-    * ${nest}/.mnt/filestem.live
+    * ${nest}/.mnt/filestem.squashfs
     * ${nest}/.mnt/iso
     * ${nest}/.mnt/memdiskDir
 * ${nest}/.overlay
@@ -30,9 +31,26 @@ I created this hidden and visible structure:
     * ${nest}/.overlay/workdir
 
 
-## The visible nest
-I added two links for livefs, and iso and created a folder called ovarium, this was a mistake, I want to rename it as `bin`, becouse contains scripts, but for now it remain:
+## The actual visible nest
+I added two links for livefs, and iso and created a folder called ovarium:
 
 * ${nest}/livefs -> /.mnt/eggs/filesystem.squashfs
 * ${nest}/iso -> /.mnt/eggs/iso
 * ${nest}/ovarium 
+
+# Future nest
+This was a mistake, I want to rename `ovarium` as `bin`, becouse contains scripts, and give the name .ovarium to the mountpoint, in this way:
+
+## The future hidden nest
+* ${nest}/.ovarium
+    * ${nest}/.ovarium/efi_work
+    * ${nest}/.ovarium/filestem.squashfs
+    * ${nest}/.ovarium/iso
+    * ${nest}/.ovarium/memdiskDir
+
+## The future visible nest
+
+* ${nest}/filesystem.squashfs -> /.ovarium/eggs/filesystem.squashfs
+* ${nest}/iso -> /.ovarium/eggs/iso
+* ${nest}/bin
+
