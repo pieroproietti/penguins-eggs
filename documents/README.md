@@ -1,4 +1,4 @@
-# Development on Debian bookworm
+# Develop eggs on Debian bookworm
 
 Basically you need to install:
 - code
