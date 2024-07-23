@@ -163,15 +163,18 @@ I started just with Debian and remastering Debian, then extend to Ubuntu and Dev
 
 With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb packages using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
 
-To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside tha package. This lead me to remove same code I did before about dependencies installing.
+To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside the package. This lead me to remove same code I had inside the sources about install dependencies.
 
 Removing dependencies from code free me a bit: in this way I can manage them in the package not in the sources.
 
-Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short the step, involved initramfs, different paths, differents packages names and so on.
+Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short step, involved initramfs, different paths, differents packages names and so on.
 
-After that where was time of relative stability, nodejs was included in the package eggs from oclif.
+After that where was a time of relative stability, nodejs was included in the package eggs from oclif.
 
 With version 10.x.x come the decision to not include more nodejs inside eggs, but to have it as dependence.
 
-Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/), see [WAY_TO_ALPINE](./WAY-TO-ALPINE.md) and [WAY_TO_FEDORA](./WAY-TO-FEDORA.md).
+Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
+
+Get a look to [WAY_TO_ALPINE](./WAY-TO-ALPINE.md) and [WAY_TO_FEDORA](./WAY-TO-FEDORA.md), are similar to this document, but not yet completely working.
+
 
