@@ -161,13 +161,15 @@ I suggest to think how this is a software grow up with time, so think the histor
 
 I started just with Debian and remastering Debian, then extend to Ubuntu and Devuan. In origin I have not `deb` package but produce `npm` packages for node, so inside eggs where was the code to install all the packages dependencies.
 
-With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb package using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
+With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb packages using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
 
-To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside tha package. This lead me to remove same of the code I did before about dependencies installing.
+To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside tha package. This lead me to remove same code I did before about dependencies installing.
 
-Removing dependencies from code, free me a bit, in this way I can manage them in the package not in the sources, so it was more easy to extend eggs to Arch, where the part in Debian we manage with perrisbrewery, was made creating a PKGBUILD scrips.
+Removing dependencies from code free me a bit: in this way I can manage them in the package not in the sources.
 
-After that where was time of stability, nodejs was included in the package eggs from oclif.
+Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short the step, involved initramfs, different paths, differents packages names and so on.
+
+After that where was time of relative stability, nodejs was included in the package eggs from oclif.
 
 With version 10.x.x come the decision to not include more nodejs inside eggs, but to have it as dependence.
 
