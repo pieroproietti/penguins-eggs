@@ -1,10 +1,10 @@
-# WAY TO ARCH
+# Way to Archlinux
 
-We start from the `archlinux-2024.07.01-x86_64.iso` image, which is only 203 MB, and go to install arch.
+We start from the `archlinux-2024.07.01-x86_64.iso` image and go to install archlinux.
 
-We are logged automatically as as root without password, then install it: `archinstall`.
+We are logged automatically as root, then run: `archinstall`.
 
-just follow the instructions, add `lsb-release` and `git` to the additional packages.
+just follow the instructions.
 
 ## openssh installation
 We can add openssh to connect to remote:
@@ -58,7 +58,7 @@ sudo pacman -S firefox
 
 ```
 
-### nodejs, npm e pnpm
+### nodejs, pnpm
 ```
 sudo pacman -S nodejs pnpm
 
@@ -121,6 +121,7 @@ Now we can use eggs from the source:
 ```
 sudo ./eggs dad -d
 ./eggs status
+
 sudo ./eggs produce --pendrive
 
 ```
