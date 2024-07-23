@@ -39,15 +39,12 @@ With version 10.x.x come the decision to not include more nodejs inside eggs, bu
 
 Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
 
-Get a look to [WAY_TO_ALPINE](./WAY-TO-ALPINE.md) and [WAY_TO_FEDORA](./WAY-TO-FEDORA.md), are similar to this document, but not yet completely working.
+# Differents ways
 
-
-
-
-# [Way to Debian](#way-to-debian)
-# [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
-# [Way to AlpineLinux](./WAY-TO-ALPINE.md)
-# [Way to Fedora](./WAY-TO-FEDORA.md)
+## [Way to Debian](#way-to-debian)
+## [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
+## [Way to AlpineLinux](./WAY-TO-ALPINE.md)
+## [Way to Fedora](./WAY-TO-FEDORA.md)
 
 
 # Way to Debian
