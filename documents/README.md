@@ -126,12 +126,16 @@ code .
 ```
 And use `pnpm build` before to run. 
 
+## build penguins-eggs packages
+
 It's also possible to create debian package, all you need is to type:
 ```
 pnpm deb
 ```
 
 The `penguins-eggs-x-x-x.deb` package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
+
+Using `pnpm build -a` will generate packages for all architectures: amd64, i386 and arm64.
 
 
 ## source
