@@ -32,14 +32,14 @@ I created this hidden and visible structure:
 
 
 ## The actual visible nest
-I added two links for livefs, and iso and created a folder called ovarium:
+I added two links for livefs, and iso and created a folder called ovarium for the scripts:
 
 * ${nest}/livefs -> /.mnt/eggs/filesystem.squashfs
 * ${nest}/iso -> /.mnt/eggs/iso
 * ${nest}/ovarium 
 
 # Future nest
-This was a mistake, I want to rename `ovarium` as `bin`, becouse contains scripts, and give the name .ovarium to the mountpoint, in this way:
+This was a mistake, I want to rename `ovarium` as `bin`, becouse contains scripts, and perhaps give the name .ovarium to the mountpoint, in this way:
 
 ## The future hidden nest
 * ${nest}/.ovarium
