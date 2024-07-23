@@ -28,7 +28,7 @@ spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize th
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
 ```
-pacman spice-vdagent xorg-xrandr xdg-user-dirs
+pacman -S spice-vdagent xorg-xrandr xdg-user-dirs rsync
 
 ```
 
@@ -100,4 +100,28 @@ pacman -S \
 
 ```
 
+# Clone penguins-eggs
+```
+git clone https://github.com/pieroproietti/penguins-eggs
+cd penguins-eggs
+pnpm i
+pnpm build
+
+```
+
+Now we can use eggs from the source:
+
+## Autocomplete, Desktop icons
+```
+./install-eggs-dev
+```
+
+## Configure eggs
+
+```
+sudo ./eggs dad -d
+./eggs status
+sudo ./eggs produce --pendrive
+
+```
 
