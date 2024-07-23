@@ -20,7 +20,7 @@ Then we will go to the project [penguings-eggs](https://github.com/pieroproietti
 
 We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
 
-# Way to Debian
+# [Way to Debian](#way-to-debian)
 # [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
 # [Way to AlpineLinux](./WAY-TO-ALPINE.md)
 # [Way to Fedora](./WAY-TO-FEDORA.md)
