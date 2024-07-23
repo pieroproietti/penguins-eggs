@@ -20,6 +20,29 @@ Then we will go to the project [penguings-eggs](https://github.com/pieroproietti
 
 We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
 
+# Historical perspective
+I suggest to think how this is a software grow up with time, so think the history of it to understand a reason.
+
+I started just with Debian and remastering Debian, then extend to Ubuntu and Devuan. In origin I have not `deb` package but produce `npm` packages for node, so inside eggs where was the code to install all the packages dependencies.
+
+With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb packages using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
+
+To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside the package. This lead me to remove same code I had inside the sources about install dependencies.
+
+Removing dependencies from code free me a bit: in this way I can manage them in the package not in the sources.
+
+Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short step, involved initramfs, different paths, differents packages names and so on.
+
+After that where was a time of relative stability, nodejs was included in the package eggs from oclif.
+
+With version 10.x.x come the decision to not include more nodejs inside eggs, but to have it as dependence.
+
+Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
+
+Get a look to [WAY_TO_ALPINE](./WAY-TO-ALPINE.md) and [WAY_TO_FEDORA](./WAY-TO-FEDORA.md), are similar to this document, but not yet completely working.
+
+
+
 
 # [Way to Debian](#way-to-debian)
 # [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
@@ -98,7 +121,7 @@ sudo ./eggs dad -d
 sudo ./eggs produce --pendrive
 ```
 
-# start to change something
+## start to change something
 We can use code to edit our code, 
 ```
 cd penguins-eggs
@@ -114,7 +137,7 @@ pnpm deb
 The `penguins-eggs-x-x-x.deb` package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
 
 
-# source
+## source
 
 All the source is under `/src`, and is divided on:
 * classes
@@ -162,26 +185,4 @@ All the things more or less related to xdg, eg: autologin, skel, etc.
 
 ### others classes
 Generally are simpler and understandable, of course this is my idea.
-
-# Historical perspective
-I suggest to think how this is a software grow up with time, so think the history of it to understand a reason.
-
-I started just with Debian and remastering Debian, then extend to Ubuntu and Devuan. In origin I have not `deb` package but produce `npm` packages for node, so inside eggs where was the code to install all the packages dependencies.
-
-With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb packages using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
-
-To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside the package. This lead me to remove same code I had inside the sources about install dependencies.
-
-Removing dependencies from code free me a bit: in this way I can manage them in the package not in the sources.
-
-Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short step, involved initramfs, different paths, differents packages names and so on.
-
-After that where was a time of relative stability, nodejs was included in the package eggs from oclif.
-
-With version 10.x.x come the decision to not include more nodejs inside eggs, but to have it as dependence.
-
-Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
-
-Get a look to [WAY_TO_ALPINE](./WAY-TO-ALPINE.md) and [WAY_TO_FEDORA](./WAY-TO-FEDORA.md), are similar to this document, but not yet completely working.
-
 
