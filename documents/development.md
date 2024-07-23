@@ -7,15 +7,7 @@ Basically you need to install:
 - pnpm
 - eggs dependencies
 
-## Install code
-Download [code](https://code.visualstudio.com/download) and install it. 
-
-## install nodejs, npm and pnpm
-```
-sudo apt update
-sudo apt install git nodejs npm
-sudo npm i pnpm -g
-```
+**Note**: While not essential, it is strongly recommended to fork penguins-eggs to have your own repository
 
 ## fork penguins-eggs
 This operation is not essential but is strongly recommended as it allows us to have our own version of penguins-eggs and save our work in our git repository.
@@ -27,6 +19,10 @@ In our example we will register with the name `jtburchett`
 Then we will go to the project [penguings-eggs](https://github.com/pieroproietti/penguins-eggs) and click on the `fork` button.
 
 We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
+
+## Install code
+Download [code](https://code.visualstudio.com/download) and install it. 
+
 
 ## - eggs dependencies - Debian amd64 packages
 Install this Debian packages if you don't have penguins-eggs already installed. Just copy and paste:
@@ -57,6 +53,13 @@ sudo apt install \
   xorriso
 ```
 
+## install nodejs, npm and pnpm
+```
+sudo apt update
+sudo apt install git nodejs npm
+sudo npm i pnpm -g
+```
+
 ## clone penguins-eggs
 
 ```
@@ -73,6 +76,11 @@ pnpm i
 Ok, then we can build:
 ```
 pnpm build
+```
+
+## Autocomplete, Desktop icons
+```
+./install-eggs-dev
 ```
 
 # We are ready to test
@@ -96,7 +104,7 @@ It's also possible to create debian package, all you need is to type:
 pnpm deb
 ```
 
-package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
+The `penguins-eggs-x-x-x.deb` package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
 
 
 # source
@@ -114,7 +122,7 @@ All the source is under `/src`, and is divided on:
 
 open `dad.ts` to get a look.
 
-single command have flags, examples and descriptions, and under `async run()` start their action. using generally one or more classes, or alone.
+Single command have flags, examples and descriptions, and under `async run()` start their action. using generally one or more classes, or alone.
 
 ## classes
 There are a lot of classes, we now go to see pacman.ts a crucial one.
