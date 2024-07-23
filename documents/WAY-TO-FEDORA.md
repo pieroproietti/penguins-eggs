@@ -61,7 +61,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-rm "${HOME}/.*" -R
+rm -rf "${HOME}/.*"
 cp /etc/skel/.* "${HOME}/." -R
 
 ```
