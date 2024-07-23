@@ -1,4 +1,4 @@
-# Develop eggs on Debian bookworm
+# Develop eggs on various distros
 
 Basically you need to install:
 - code
@@ -19,6 +19,7 @@ In our example we will register with the name `jtburchett`
 Then we will go to the project [penguings-eggs](https://github.com/pieroproietti/penguins-eggs) and click on the `fork` button.
 
 We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
+
 
 # [Way to Debian](#way-to-debian)
 # [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
