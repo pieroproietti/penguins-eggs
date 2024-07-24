@@ -1,6 +1,8 @@
 # Develop eggs on various distros
 
-Basically you need to install:
+To start hacking with penguins-eggs, you have four ways, one for every family: debian, arch, alpine and fedora. The best is starting with Debian or Arch, where eggs is complete, reproductive and is possible to create packages. Alpine and fedora are unfinished, not reproductive yet and lacks package.
+
+Basically you need to have:
 - code
 - git
 - nodejs
@@ -176,7 +178,7 @@ Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Ass
 ### incubation/incubator.ts
 The same approach is for `/incubation/incubator.ts`, it take from `/incubation/distros/` the varius differents code for every distro running.
 
-Incubation stands for eggs configuration, it's funny name came from the idea of eggs and something to hatch eggs.
+Incubation stands for eggs installation, it's funny name came from the idea of eggs and something to hatch eggs.
 
 ### ovary.ts
 This is the main eggs class, it's long, and it's the central part of eggs. When we give: `eggs produce` we are calling ovary.
