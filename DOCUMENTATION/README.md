@@ -50,11 +50,20 @@ Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) an
 
 
 # Way to Debian
+
+## Install your editor
 Download [code](https://code.visualstudio.com/download) and install it. 
 
+## install nodejs, npm and pnpm
+```
+sudo apt update
+sudo apt install git nodejs npm
+sudo npm i pnpm -g
 
-## - eggs dependencies - Debian amd64 packages
+```
+## eggs dependencies (Debian)
 Install this Debian packages if you don't have penguins-eggs already installed. Just copy and paste:
+
 
 ```
 sudo apt install \
@@ -82,12 +91,6 @@ sudo apt install \
   xorriso
 ```
 
-## install nodejs, npm and pnpm
-```
-sudo apt update
-sudo apt install git nodejs npm
-sudo npm i pnpm -g
-```
 
 ## clone penguins-eggs
 
@@ -128,64 +131,14 @@ code .
 ```
 And use `pnpm build` before to run. 
 
-## build penguins-eggs packages
+## build penguins-eggs debian packages
 
-It's also possible to create debian package, all you need is to type:
+It's also possible to create debian packages, all you need is to type:
 ```
 pnpm deb
 ```
 
 The `penguins-eggs-x-x-x.deb` package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
 
-Using `pnpm build -a` will generate packages for all architectures: amd64, i386 and arm64.
-
-
-## source
-
-All the source is under `/src`, and is divided on:
-* classes
-* commands
-* components
-* interfaces
-* krill
-* lib
-
-## commands
-`commands` contain all eggs commands we use, eg: `dad`
-
-open `dad.ts` to get a look.
-
-Single command have flags, examples and descriptions, and under `async run()` start their action. using generally one or more classes, or alone.
-
-## classes
-There are a lot of classes, we now go to see pacman.ts a crucial one.
-
-### pacman.ts
-pacman.ts from `package manager` is not for Arch, or Debian, it's for all the distro. `pacman` import classes for all the distros from `./familes`: `alpine.ts`, `arclinux.ts`, `debian.ts`, `fedora.ts` and depending on that distro is running on, realize it's operation with the system commands: `apk, `pacman`, `apt`. `dnf`.
-
-### distro.ts
-We call often distro during our work, becouse contai a lot of values we use, regarding the currens distro.
-
-I divided distros in four families: `debian`, `archlinux`, `alpine` and `fedora`. 
-
-Family `debian` don't have just Debian, but Devuan, Ubuntu and all their derivatives, eg `Linuxmint`.
-
-Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Associated where are various values for paths, defaults, etc.
-
-`distro.ts` it's a bit a kaos actually, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, but it work and `Primum vivere deinde philosophari` say the old latins.
-
-
-### incubation/incubator.ts
-The same approach is for `/incubation/incubator.ts`, it take from `/incubation/distros/` the varius differents code for every distro running.
-
-Incubation stands for eggs installation, it's funny name came from the idea of eggs and something to hatch eggs.
-
-### ovary.ts
-This is the main eggs class, it's long, and it's the central part of eggs. When we give: `eggs produce` we are calling ovary.
-
-### xdg
-All the things more or less related to xdg, eg: autologin, skel, etc.
-
-### others classes
-Generally are simpler and understandable, of course this is my idea.
+Using `pnpm deb -a` will generate packages for all architectures: amd64, i386 and arm64.
 
