@@ -1,13 +1,13 @@
 # Develop eggs on various distros
 
-To start hacking with penguins-eggs, you have four ways, one for every family: debian, arch, alpine and fedora. The best is starting with Debian or Arch, where eggs is complete, reproductive and is possible to create packages. Alpine and fedora are unfinished, not reproductive yet and lacks package.
+To start hacking with penguins-eggs, you have four ways, one for every family: debian, arch, alpine and fedora. The best is starting with Debian or Arch, where eggs is complete, reproductive and is possible to create packages. Alpine and fedora are unfinished, not reproductive yet and lacks packaging.
 
 Basically you need to have:
-- code
-- git
-- nodejs
-- pnpm
-- eggs dependencies
+- an editor, I use `code`, but it's your choice
+- `git`
+- `nodejs`
+- `pnpm`
+- install eggs dependencies
 
 **Note**: While not essential, it is strongly recommended to fork penguins-eggs to have your own repository
 
