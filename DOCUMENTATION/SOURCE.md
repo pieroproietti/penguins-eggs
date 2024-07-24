@@ -46,6 +46,11 @@ It contain general methods large used on the code.
 ### xdg
 All the things more or less related to xdg, eg: autologin, skel, etc.
 
+### yolk
+Create a local repository used during installation to install `grub-pc or `grub-efi-amd64` depending on the hardware, this make possible to install without internet connection.
+
+It's also possible to add arbitraty packages to this repository, adding them on `/etc/penguins-eggs.d/yolk.yaml`.
+
 ### others classes
 Generally are simpler and understandable, of course this is my idea.
 
