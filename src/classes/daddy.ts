@@ -13,6 +13,7 @@ import path from 'node:path'
 import fs from 'fs'
 import yaml from 'js-yaml'
 
+// We need to remove .js extension from import
 import Pacman from '../classes/pacman.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'

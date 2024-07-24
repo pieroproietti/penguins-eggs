@@ -9,10 +9,10 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^4.0.13",
-        "@oclif/plugin-autocomplete": "^3.1.8",
-        "@oclif/plugin-help": "^6.2.6",
-        "@oclif/plugin-version": "^2.2.8",
+        "@oclif/core": "^4.0.14",
+        "@oclif/plugin-autocomplete": "^3.1.9",
+        "@oclif/plugin-help": "^6.2.7",
+        "@oclif/plugin-version": "^2.2.9",
         "axios": "^1.7.2",
         "chalk": "^5.3.0",
         "cli-cursor": "^4.0.0",
@@ -30,14 +30,14 @@
     },
     "devDependencies": {
         "@oclif/prettier-config": "^0.2.1",
-        "@oclif/test": "^4.0.5",
+        "@oclif/test": "^4.0.6",
         "@types/chai": "^4.3.16",
         "@types/inquirer": "^9.0.7",
         "@types/js-yaml": "^4.0.9",
         "@types/mocha": "^10.0.6",
         "@types/mustache": "^4.2.5",
         "@types/netmask": "^2.0.5",
-        "@types/node": "^20.14.11",
+        "@types/node": "^20.14.12",
         "@types/node-static": "^0.7.11",
         "@types/react": "^18.3.3",
         "@types/shelljs": "^0.8.15",
@@ -47,12 +47,12 @@
         "eslint-config-oclif-typescript": "^3.1.8",
         "eslint-config-prettier": "^9.1.0",
         "mocha": "^10.6.0",
-        "oclif": "^4.14.8",
+        "oclif": "^4.14.9",
         "perrisbrewery": "^10.0.1",
         "prettier": "^3.3.3",
         "shx": "^0.3.4",
         "ts-node": "^10.9.2",
-        "typescript": "^5.5.3"
+        "typescript": "^5.5.4"
     },
     "engines": {
         "node": ">=16.0.0"
