@@ -45,13 +45,14 @@ Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) an
 eggs is written using typescript, bash, and yaml files.
 
 ## Typescript
-All the typescript sources is under [src](../src/) here there is a mockop of [Documentation](./SOURCE.md).
+All the typescript sources are under [src](../src/) here there is a mockup of [Documentation](./SOURCE.md).
 
 ## Bash
- Bash is largely used inside Typescript and alone.
+ Bash is largely used inside Typescript and alone: [scripts](../scripts/), 
  
 ## YAML
-All the configurations are in YAML.
+All the configurations are in YAML, inside [conf](../conf/) for eggs, krill and calamares.
+
 
 # Differents ways
 
