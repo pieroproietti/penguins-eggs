@@ -41,6 +41,18 @@ With version 10.x.x come the decision to not include more nodejs inside eggs, bu
 
 Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
 
+# SOURCES
+eggs is written using typescript, bash, and yaml files.
+
+## Typescript
+All the typescript sources is under [src](../src/) here there is a mockop of [Documentation](./SOURCE.md).
+
+## Bash
+ Bash is largely used inside Typescript and alone.
+ 
+## YAML
+All the configurations are in YAML.
+
 # Differents ways
 
 ## [Way to Debian](#way-to-debian)
