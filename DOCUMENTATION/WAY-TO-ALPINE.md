@@ -200,6 +200,7 @@ doas apk add \
     fuse \
     git \
     jq \
+    lsblk \
     lsb-release \
     lvm2 \
     mkinitfs \
