@@ -42,8 +42,8 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 
 ``` 
 apk update
-
-apk add sudo
+apk add doas
+ln -s /usr/bin/doas /usr/bin/doas
 
 ```
 
@@ -51,6 +51,7 @@ Copy and past:
 ```
 apk add \
     bash-completion \
+
     git \
     mandoc \
     nano \
@@ -59,13 +60,6 @@ apk add \
 
 ```
 
-use `visudo` to edit `/etc/sudoers`:
-
-```
-## Same thing without a password                                                
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL
-
-```
 
 add your user to groups `wheel` and others... 
 
@@ -147,7 +141,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
-sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
+doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
@@ -170,23 +164,23 @@ For the keyboard, I looked on the settings, keyboard and eliminated the US keybo
 
 ### Visual studio code
 ```
-sudo apk add code-oss@testing
+doas apk add code-oss@testing
 
-sudo ln -s /usr/bin/code-oss /usr/bin/code
+doas ln -s /usr/bin/code-oss /usr/bin/code
 
 ```
 
 ### Firefox
 ```
-sudo apk add firefox
+doas apk add firefox
 
 ```
 
 ### nodejs, npm e pnpm
 ```
-sudo apk add nodejs npm
+doas apk add nodejs npm
 
-sudo npm i pnpm -g
+doas npm i pnpm -g
 
 ```
 
@@ -194,7 +188,7 @@ sudo npm i pnpm -g
 this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
 
 ```
-sudo apk add \
+doas apk add \
     alpine-conf \
     apk-tools \
     cryptsetup \
@@ -218,7 +212,7 @@ sudo apk add \
 ```
 
 ```
-echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
+echo "fuse" | doas tee /etc/modules-load.d/fuse.conf
 
 ```
 
@@ -243,9 +237,9 @@ Now we can use eggs from the source:
 ## Configure eggs
 
 ```
-sudo ./eggs dad -d
+doas ./eggs dad -d
 ./eggs status
-sudo ./eggs produce --pendrive
+doas ./eggs produce --pendrive
 
 ```
 
@@ -292,4 +286,4 @@ At this point we can "reproduce", but we need to install and create a package:
 
 I'm trying to find a way on [mkinirfs/README.md](./mkinitfs/README.md).
 
-[mkimage](https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage)
+There is a tool to create ISO images: [mkimage](https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage)
