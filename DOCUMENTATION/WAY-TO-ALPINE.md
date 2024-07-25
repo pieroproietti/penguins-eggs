@@ -68,8 +68,8 @@ setup-xorg-base
 
 ## xfce4 installation
 ```
-apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter
-apk add setxkbmap xrandr
+apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter 
+apk add setxkbmap xdg-user-dirs xrandr 
 
 rc-update add dbus
 rc-service dbus start
@@ -85,7 +85,7 @@ spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize th
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
 ```
-apk add xdg-user-dirs spice-vdagent spice-vdagent-openrc
+apk add spice-vdagent spice-vdagent-openrc
 rc-update add spice-vdagentd
 rc-service spice-vdagentd start
 
