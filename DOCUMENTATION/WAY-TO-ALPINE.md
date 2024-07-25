@@ -56,6 +56,10 @@ adduser artisan disk
 adduser artisan sys
 adduser artisan tape
 adduser artisan wheel
+adduser artisan bin
+adduser artisan daemon
+adduser artisan floppy
+adduser artisan video
 
 ```
 
