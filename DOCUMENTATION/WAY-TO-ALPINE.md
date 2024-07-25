@@ -16,15 +16,10 @@ su
 ```
 
 Now, from root we give the following commands:
+
+We add nano 
 ```
-apk add \
-    bash-completion \
-    git \
-    mandoc \
-    nano \
-    rsync \
-    shadow \ 
-    sudo
+apk add nano
 ```
 
 ## Configuration of the repositories
@@ -43,6 +38,23 @@ http://alpinelinux.mirror.garr.it/v3.20/main
 http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
+```
+
+``` 
+apk update
+
+```
+
+Copy and past:
+```
+apk add \
+    bash-completion \
+    git \
+    mandoc \
+    nano \
+    rsync \
+    shadow \ 
+    sudo
 ```
 
 use `visudo` to edit `/etc/sudoers`:
