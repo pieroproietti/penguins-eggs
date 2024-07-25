@@ -291,3 +291,5 @@ At this point we can "reproduce", but we need to install and create a package:
 ## Studyng the problem
 
 I'm trying to find a way on [mkinirfs/README.md](./mkinitfs/README.md).
+
+[mkimage](https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage)
