@@ -40,7 +40,7 @@ git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 rm -rf "${HOME}/.*"
-cp /etc/skel/.* "${HOME}/." -R
+rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
 ```
 
