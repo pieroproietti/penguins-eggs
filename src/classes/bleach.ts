@@ -22,36 +22,29 @@ export default class Bleach {
    * @param verbose
    */
   async clean(verbose = false) {
+    let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
+      echo = { capture: false, echo: true, ignore: true }      
       Utils.warning('cleaning the system')
     }
 
+
     const distro = new Distro()
     if (distro.familyId === 'debian') {
-      await this.cleanApt(verbose)
+      await exec('apt-get clean', echo)
+      await exec('apt-get autoclean', echo)
+      const lockFile = '/var/lib/apt/lists/lock'
+      await exec(`rm ${lockFile} -rf`, echo)
     } else if (distro.familyId === 'archlinux') {
       await exec('pacman -Scc', Utils.setEcho(true))
+    } else if (distro.familyId === 'alpine') {
+      await exec('apk cache clean', echo)
+      await exec('apk cache purge', echo)
     }
 
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
-  }
-
-  /**
-   * cleanApt
-   * @param verbose
-   */
-  private async cleanApt(verbose = false) {
-    let echo = { capture: false, echo: false, ignore: true }
-    if (verbose) {
-      echo = { capture: false, echo: true, ignore: true }
-    }
-
-    await exec('apt-get clean', echo)
-    await exec('apt-get autoclean', echo)
-    const lockFile = '/var/lib/apt/lists/lock'
-    await exec(`rm ${lockFile} -rf`, echo)
   }
 
   /**
