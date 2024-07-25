@@ -13,16 +13,24 @@ The best is, after reboot, to connect via ssh to can copy and past the command. 
 
 ```
 su
-apk add git rsync nano bash-completion mandoc
+apk add \
+    bash-completion \
+    git \
+    mandoc \
+    nano \
+    rsync \
+    shadow \ 
+    sudo
 ```
 
 ## Configuration of the repositories
 ```
-sudo nano /etc/apk/repositories
+rm /etc/apk/repositories
+nano /etc/apk/repositories
 
 ```
 
-add:
+copy and past:
 ```
 #/media/cdrom/apks
 http://pkg.adfinis.com/alpine/v3.20/main
@@ -32,14 +40,8 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 ```
-# sudo, shadow for chsh
-```
-apk update
-apk add sudo shadow
 
-```
-
-edit /etc/sudoers with `visudo`
+use `visudo` to edit `/etc/sudoers`:
 
 ```
 ## Same thing without a password                                                
@@ -109,7 +111,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-rm -rf "${HOME}/.*"
+rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
 ```
