@@ -142,6 +142,10 @@ git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
+```
+
+Then copy `/etc/skel/` in ${HOME}:
+```
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
