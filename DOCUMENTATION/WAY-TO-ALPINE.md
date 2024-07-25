@@ -43,7 +43,7 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 ``` 
 apk update
 apk add doas
-ln -s /usr/bin/doas /usr/bin/doas
+ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
@@ -51,7 +51,6 @@ Copy and past:
 ```
 apk add \
     bash-completion \
-
     git \
     mandoc \
     nano \
