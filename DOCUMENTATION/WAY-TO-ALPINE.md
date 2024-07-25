@@ -43,6 +43,8 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 ``` 
 apk update
 
+apk add sudo
+
 ```
 
 Copy and past:
@@ -53,8 +55,8 @@ apk add \
     mandoc \
     nano \
     rsync \
-    shadow \ 
-    sudo
+    shadow  
+
 ```
 
 use `visudo` to edit `/etc/sudoers`:
@@ -125,6 +127,13 @@ rc-service spice-vdagentd start
 
 ```
 ## Change default shell to bash
+We come back as user:
+
+```
+exit
+
+```
+
 Change the default shell to bash:
 
 ```
@@ -139,6 +148,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
+
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
@@ -161,6 +171,7 @@ For the keyboard, I looked on the settings, keyboard and eliminated the US keybo
 ### Visual studio code
 ```
 sudo apk add code-oss@testing
+
 sudo ln -s /usr/bin/code-oss /usr/bin/code
 
 ```
@@ -174,6 +185,7 @@ sudo apk add firefox
 ### nodejs, npm e pnpm
 ```
 sudo apk add nodejs npm
+
 sudo npm i pnpm -g
 
 ```
@@ -209,12 +221,10 @@ sudo apk add \
 echo "fuse" | sudo tee /etc/modules-load.d/fuse.conf
 
 ```
-# install unicode.pf2
 
-To do...
+## reboot
 
-
-# Clone penguins-eggs
+## Clone penguins-eggs
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
 cd penguins-eggs
