@@ -13,6 +13,10 @@ The best is, after reboot, to connect via ssh to can copy and past the command. 
 
 ```
 su
+```
+
+Now, from root we give the following commands:
+```
 apk add \
     bash-completion \
     git \
@@ -53,15 +57,15 @@ add your user to groups `wheel` and others...
 
 ```
 adduser artisan adm
-adduser artisan dialout
-adduser artisan disk
-adduser artisan sys
-adduser artisan tape
-adduser artisan wheel
 adduser artisan bin
 adduser artisan daemon
+adduser artisan dialout
+adduser artisan disk
 adduser artisan floppy
+adduser artisan sys
+adduser artisan tape
 adduser artisan video
+adduser artisan wheel
 
 ```
 
@@ -74,8 +78,17 @@ setup-xorg-base
 
 ## xfce4 installation
 ```
-apk add xfce4 xfce4-terminal xfce4-screensaver xfce4-whiskermenu-plugin lightdm-gtk-greeter 
-apk add setxkbmap xdg-user-dirs xrandr 
+apk add \
+    xfce4 \
+    xfce4-terminal \
+    xfce4-screensaver \
+    xfce4-whiskermenu-plugin \
+    lightdm-gtk-greeter 
+
+apk add \
+    setxkbmap \
+    xdg-user-dirs \
+    xrandr 
 
 rc-update add dbus
 rc-service dbus start
@@ -91,7 +104,10 @@ spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize th
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
 
 ```
-apk add spice-vdagent spice-vdagent-openrc
+apk add \
+    spice-vdagent \
+    spice-vdagent-openrc
+    
 rc-update add spice-vdagentd
 rc-service spice-vdagentd start
 
