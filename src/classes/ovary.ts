@@ -834,7 +834,9 @@ export default class Ovary {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     let initrdImg='initramfs-lts'
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
+    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))    
+    await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
   }
 
   /**
