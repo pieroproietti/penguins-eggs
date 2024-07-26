@@ -291,3 +291,23 @@ At this point we can "reproduce", but we need to install and create a package:
 I'm trying to find a way on [mkinirfs/README.md](./mkinitfs/README.md).
 
 There is a tool to create ISO images: [mkimage](https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage)
+
+
+```
+#!/bin/sh
+
+# Trova il dispositivo con la label desiderata (sostituisci "mylabel" con la tua label)
+DEVICE=$(blkid -o value -s LABEL -e parted -L mylabel)
+
+# Monta il filesystem in rw con overlay
+mkdir -p /mnt/overlay/{work,upper}
+mount -o remount,rw,overlay $DEVICE /mnt
+mount -t overlay overlay -o upperdir=/mnt/overlay/upper,workdir=/mnt/overlay/work /mnt
+
+# Esegui newroot
+pivot_root /mnt/overlay /mnt/overlay/root
+chroot /
+
+# Avvia il sistema
+exec /sbin/init
+```
