@@ -1,36 +1,40 @@
-# Hic sunt leones! 
+# AlpineLinux
 
-## AlpineLinux
+Sto cercando una soluzione per montare il mio `filesystem.squasfs` attraverso un apposito `initramfs-lts` custom che viene inserito nella ISO.
 
-On Arch we have HOOKS, eg:
+Dato che  dobbiamo avere a disposizione squashfs ed overlay per montare il `filesystem.squash`, li ho aggiunti alle features del file utilizzato per la configurazione: `live.conf`
 
 ```
-MODULES=()
-BINARIES=()
-FILES=()
-HOOKS=(base udev modconf memdisk archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs kms block filesystems keyboard)
-COMPRESSION="zstd"
+# live conf
+features="ata base ide scsi usb cdrom virtio blkid squashfs overlay ext4"
 ```
 
-on AlpineLinux whe have features:
+La creazione di `initramfs-lts` avviene all'interno di `ovary.ts` chiamando il metodo `initrdAlpine()`:
+
 ```
-features="ata base ide scsi usb virtio ext4"
-```
-## List feathures
-```
-mkinitfs -L 
+  /**
+   * initrdAlpine()
+   */
+  async initrdAlpine() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
+    let initrdImg='initramfs-lts'
+    const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
+    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
+    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))    
+    await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
+  }
 ```
 
-## apkvol
+Nella stessa funzione, lo script `sidecar.sh` che viene inserito all'interno della carlella `live` della ISO.
 
-apkvol=cdrom/live/
 
-HTTP, HTTPS or FTP URL to an apkovl.tar.gz file which will be retrieved and
-applied. Can also be a filesystem path, optionally prepended with the device
-name without the /dev/ prefix.
+L'avvio del live è possibile solo da sistemi BIOS, il sistema viene avviato ma `initramfs-lts` va in emergency mode.
 
-## overlaytmpfs
-When booting from a read-only filesystem, you can specify this flag to have
-your changes written to an in-memory temporary overlayfs.  The underlying
-filesystem will always be mounted read-only, the overlay always writable.
+A questo punto:
+
+```
+mkdir /mnt/
+mount /dev/sro /mnt
+/mnt/live/sidecar.sh
+```
 
