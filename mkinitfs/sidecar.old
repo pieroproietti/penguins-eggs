@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# Montare i filesystem necessari
+#mount -t proc proc /proc
+#mount -t sysfs sysfs /sys
+
+# Attendere che i dispositivi siano pronti
+sleep 3
+
+# Rilevare il CD con la label 'livecd'
+#CDROM=$(blkid -l -o device -t LABEL=colibri)
+#if [ -z "$CDROM" ]; then
+#    echo "CD con label 'colibri' non trovato!"
+#    exec sh
+#fi
+
+# Montare il CD
+#mount -r $CDROM /media
+# il cdrom è già montato in /media
+
+# Montare il filesystem squashfs
+mkdir -p /mnt/live
+mount -t squashfs /media/live/filesystem.squashfs /mnt/live
+
+# Configurare overlayfs
+mkdir -p /overlay/upper
+mkdir -p /overlay/work
+mount -t overlay overlay -o lowerdir=/mnt/live,upperdir=/overlay/upper,workdir=/overlay/work /newroot
+
+# Eseguire chroot e continuare il boot
+exec switch_root /newroot /sbin/init
+
+mkdir -p /media/root-ro /media/root-rw $sysroot/media/root-ro $sysroot/media/root-rw
+
+# Mount read-only underlying rootfs
+rootflags="${KOPT_rootflags:+$KOPT_rootflags,}ro"
+$MOCK mount ${KOPT_rootfstype:+-t $KOPT_rootfstype} -o $rootflags $KOPT_root /media/root-ro
+
+# Mount writable overlay tmpfs
+overlaytmpfsflags="mode=0755,${KOPT_overlaytmpfsflags:+$KOPT_overlaytmpfsflags,}rw"
+$MOCK mount -t tmpfs -o $overlaytmpfsflags root-tmpfs /media/root-rw
+
+# Create additional mountpoints and do the overlay mount
+mkdir -p /media/root-rw/work /media/root-rw/root
+$MOCK mount -t overlay -o owerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work overlayfs $sysroot
+	
