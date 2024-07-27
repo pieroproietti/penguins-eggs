@@ -38,6 +38,6 @@ mount /dev/sro /mnt
 /mnt/live/sidecar.sh
 ```
 
-Purtoppo mentre viene correttamente montato in `/newroot` il `filestem.squashfs`, purtroppo non viene effettuato lo `switch_root /newroot /sbin/init`.
+Purtroppo mentre `filestem.squashfs` viene correttamente montato RW in `/newroot`, non viene effettuato lo `switch_root /newroot /sbin/init`.
 
 
