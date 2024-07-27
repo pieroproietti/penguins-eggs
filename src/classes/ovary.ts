@@ -832,10 +832,10 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    let initrdImg='initramfs-lts'
+    let initrdImg = 'initramfs-lts'
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
-    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))    
+    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
   }
 
@@ -845,6 +845,15 @@ export default class Ovary {
   async initrdFedora() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
     await exec(`cp /boot/initramfs-* ${this.settings.iso_work}/live/`, this.echo)
+  }
+
+
+  /**
+   * initrdSuse()
+   */
+  async initrdSuse() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+    await exec(`cp /boot/initrd-* ${this.settings.iso_work}/live/`, this.echo)
   }
 
   /**
@@ -1714,12 +1723,14 @@ export default class Ovary {
         if (this.familyId === 'archlinux') {
           await this.initrdArch()
         } else if (this.familyId === 'alpine') {
-            await this.initrdAlpine()
-          } else if (this.familyId === 'fedora') {
-            await this.initrdFedora()
+          await this.initrdAlpine()
+        } else if (this.familyId === 'fedora') {
+          await this.initrdFedora()
+        } else if (this.familyId === 'suse') {
+          await this.initrdSuse()
         } else if (this.familyId === 'debian') {
           await this.initrdDebian()
-        } 
+        }
 
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)

@@ -127,6 +127,8 @@ class Distro implements IDistro {
       this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath
       this.isolinuxPath = this.syslinuxPath
+      // At the moment
+      this.isCalamaresAvailable = false
 
     } else if (this.distroId === 'Fedora') {
       this.familyId = 'fedora'
@@ -141,6 +143,24 @@ class Distro implements IDistro {
       this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath
       this.isolinuxPath = this.syslinuxPath
+      // At the moment
+      this.isCalamaresAvailable = false
+
+    } else if (this.distroId === 'openSUSE') {
+      this.familyId = 'suse'
+      this.distroLike = 'openSUSE'
+      this.codenameId = 'rolling'
+      this.codenameLikeId = 'Tumbleweed'
+      this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+      this.squashfs = `live/filesystem.squashfs`
+
+      this.syslinuxPath = '/usr/share/syslinux/' 
+      this.pxelinuxPath = this.syslinuxPath
+      this.usrLibPath = '/usr/lib/'
+      this.memdiskPath = this.syslinuxPath
+      this.isolinuxPath = this.syslinuxPath
+      // At the moment
+      this.isCalamaresAvailable = false
 
     } else {
 
