@@ -10,7 +10,23 @@ We start from the `openSUSE-Tumbleweed-NET-x86_64-Snapshot20240725-Media.iso` im
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
 ```
-sudo zypper in -t pattern xfce
+ip a
+```
+To get the ip of our VM, then:
+
+```
+ssh -Y artisan@192.168.1.23
+```
+
+Became root:
+```
+su
+```
+
+# install xfce
+
+```
+zypper in -t pattern xfce
 
 ```
 
