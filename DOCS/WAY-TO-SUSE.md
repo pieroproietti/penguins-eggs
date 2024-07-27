@@ -35,20 +35,23 @@ zypper install nodejs pnpm
 
 
 ## customize colibri from wardrobe
-
-```
-exit
-```
-We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` on `/`, then copy `/etc/skel` on the home of current user.
+We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
-sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-rm -rf "${HOME}/.*"
-rsync -avx /etc/skel/ "${HOME}/"
+doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 ```
+
+Then copy `/etc/skel/` in ${HOME}:
+```
+rm -rf ${HOME}/.[^.]* ${HOME}/.??*
+rm -r ${HOME}/.[^.]* ${HOME}/.??*
+rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
+
+```
+
 ## eggs development tools
 
 ### Visual studio code
