@@ -40,6 +40,8 @@ export default class Bleach {
     } else if (distro.familyId === 'alpine') {
       await exec('apk cache clean', echo)
       await exec('apk cache purge', echo)
+    } else if (distro.familyId === 'suse') {
+      await exec (`zypper clean`, echo)
     }
 
     await this.cleanHistory(verbose)

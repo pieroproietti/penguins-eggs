@@ -16,7 +16,7 @@ import Utils from '../utils.js'
  * Utils: general porpourse utils
  * @remarks all the utilities
  */
-export default class Suse {
+export default class Opensuse {
   static packs4calamares = ['calamares']
 
   /**
@@ -27,7 +27,7 @@ export default class Suse {
     try {
       await exec(`zypper install ${this.packs4calamares.join(' ')}`, echo)
     } catch {
-      Utils.error(`Fedora.calamaresInstall() pacman -Sy ${this.packs4calamares.join(' ')}`) // + e.error)
+      Utils.error(`Opensuse.calamaresInstall()`)
     }
   }
 
@@ -37,9 +37,8 @@ export default class Suse {
   static async calamaresPolicies() {
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
     /**
-     * Su fedora occorre vedere come fare!
+     * Su openSuse occorre vedere come fare!
      */
-    // await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
   }
 
   /**
