@@ -32,8 +32,9 @@ mount -t sysfs sysfs /newroot/sys
 mount -t tmpfs tmpfs /newroot/run
 cp -r /run/* /newroot/run
 
-# Go back to old init
-echo "type exit to continue... "
+echo "sidecar: /newroot was mounted correctly"
+echo "         Type 'exit' to continue boot"
+
 
 
 
