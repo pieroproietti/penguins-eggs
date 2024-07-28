@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@oclif/core':
-        specifier: ^4.0.16
-        version: 4.0.16
+        specifier: ^4.0.17
+        version: 4.0.17
       '@oclif/plugin-autocomplete':
-        specifier: ^3.1.9
-        version: 3.1.9
+        specifier: ^3.1.11
+        version: 3.1.11
       '@oclif/plugin-help':
         specifier: ^6.2.7
         version: 6.2.7
@@ -68,7 +68,7 @@ importers:
         version: 0.2.1
       '@oclif/test':
         specifier: ^4.0.6
-        version: 4.0.6(@oclif/core@4.0.16)
+        version: 4.0.6(@oclif/core@4.0.17)
       '@types/chai':
         specifier: ^4.3.16
         version: 4.3.16
@@ -89,7 +89,7 @@ importers:
         version: 2.0.5
       '@types/node':
         specifier: ^20.14.12
-        version: 20.14.12
+        version: 20.14.13
       '@types/node-static':
         specifier: ^0.7.11
         version: 0.7.11
@@ -118,8 +118,8 @@ importers:
         specifier: ^10.6.0
         version: 10.7.0
       oclif:
-        specifier: ^4.14.9
-        version: 4.14.9
+        specifier: ^4.14.11
+        version: 4.14.11
       perrisbrewery:
         specifier: ^10.0.1
         version: 10.0.1
@@ -131,7 +131,7 @@ importers:
         version: 0.3.4
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.14.12)(typescript@5.5.4)
+        version: 10.9.2(@types/node@20.14.13)(typescript@5.5.4)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -406,12 +406,12 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@oclif/core@4.0.16':
-    resolution: {integrity: sha512-J3l9Jk2+pAClpyf/dSroZNIf74PWHYRwzHJkcIe9CKq8SxGR8h+fs2GO2nKJmUSzsvnA0sF5RhWJ4mRBvWFhVA==}
+  '@oclif/core@4.0.17':
+    resolution: {integrity: sha512-zfdSRip9DVMOklMojWCLZEB4iOzy7LDTABCDzCXqmpZGS+o1e1xts4jGhnte3mi0WV0YthNfYqF16tqk6CWITA==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-autocomplete@3.1.9':
-    resolution: {integrity: sha512-eCoKeLLuZB5jVlEotk43PsFVQ1BaIm0ccpXNgF9FS71OCufzuJbqMsC5jfs76XM902lIEljVc+zMXvVVg+4Q8w==}
+  '@oclif/plugin-autocomplete@3.1.11':
+    resolution: {integrity: sha512-SDyVH/WTK0nsqWyhQik3nH+PYOgCOvxrPBd3laZvKiRODx/2QFr71SVH4CuMK4Wr2Pkax+jOlej7ECK1E3n6+Q==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-help@6.2.7':
@@ -426,8 +426,8 @@ packages:
     resolution: {integrity: sha512-iQXONngNCTW1OWZS8GS8Bd5xwEvrg5MSmfE8CBS7PqyeR/J+nVUn61TH5/kTX7wk+uXOF6XY7op28Ou5alxoBg==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-warn-if-update-available@3.1.10':
-    resolution: {integrity: sha512-4qQr4Yo9xMfYhCEU5Hz4pRyJz1EPIUVHJ1c+FNTBfiTQc1SzAmqr934uN8luTld5nmaX/MCCRVZb7Pyxsd03qA==}
+  '@oclif/plugin-warn-if-update-available@3.1.11':
+    resolution: {integrity: sha512-Pv4EFxhpzspq0n2v0cdfqRwIMwYyd3YOIKny/1Ao71D0pKlpxJ63c9OFDNJAJcUjFOUHzODTtXXNwimOpzfbYg==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/prettier-config@0.2.1':
@@ -710,8 +710,8 @@ packages:
   '@types/node-static@0.7.11':
     resolution: {integrity: sha512-1LrpKh6oftSpO2T7gUtUjT/flRdJt9Dp7IZVuNiTOXtgYVQgb/UJBLMNRUQb/Z+WCRP5OotmrUT3S3PfQn0igQ==}
 
-  '@types/node@20.14.12':
-    resolution: {integrity: sha512-r7wNXakLeSsGT0H1AU863vS2wa5wBOK4bWMjZz2wj+8nBx+m5PeIn0k8AloSLpRuiwdRQZwarZqHE4FNArPuJQ==}
+  '@types/node@20.14.13':
+    resolution: {integrity: sha512-+bHoGiZb8UiQ0+WEtmph2IWQCjIqg8MDZMAV+ppRRhUZnquF5mQkP/9vpSwJClEiSM/C7fZZExPzfU0vJTyp8w==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -2260,8 +2260,8 @@ packages:
     resolution: {integrity: sha512-yBYjY9QX2hnRmZHAjG/f13MzmBzxzYgQhFrke06TTyKY5zSTEqkOeukBzIdVA3j3ulu8Qa3MbVFShV7T2RmGtQ==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.14.9:
-    resolution: {integrity: sha512-W2RqjzcJWudQp/qUngbj/7f6oPoRrNTjAMZUn7hLO86nUgEkIF7JsgmQ5+TSC2nt35htti/ARfyM2mzQyPUNUA==}
+  oclif@4.14.11:
+    resolution: {integrity: sha512-JXamkm9DoynXo0wEjQs8zc9fW6HUl7GuChRA76oYiChvFwx83sWnmzQTD57JbcDh2Pl7JZ7o1kZwQDUnScPQtw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -3630,7 +3630,7 @@ snapshots:
       '@inquirer/figures': 1.0.5
       '@inquirer/type': 1.5.1
       '@types/mute-stream': 0.0.4
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
       '@types/wrap-ansi': 3.0.0
       ansi-escapes: 4.3.2
       cli-spinners: 2.9.2
@@ -3681,7 +3681,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@oclif/core@4.0.16':
+  '@oclif/core@4.0.17':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.3.2
@@ -3701,9 +3701,9 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/plugin-autocomplete@3.1.9':
+  '@oclif/plugin-autocomplete@3.1.11':
     dependencies:
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       ansis: 3.3.2
       debug: 4.3.6(supports-color@8.1.1)
       ejs: 3.1.10
@@ -3712,23 +3712,23 @@ snapshots:
 
   '@oclif/plugin-help@6.2.7':
     dependencies:
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
 
   '@oclif/plugin-not-found@3.2.14':
     dependencies:
       '@inquirer/confirm': 3.1.17
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       ansis: 3.3.2
       fast-levenshtein: 3.0.0
 
   '@oclif/plugin-version@2.2.9':
     dependencies:
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       ansis: 3.3.2
 
-  '@oclif/plugin-warn-if-update-available@3.1.10':
+  '@oclif/plugin-warn-if-update-available@3.1.11':
     dependencies:
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       ansis: 3.3.2
       debug: 4.3.6(supports-color@8.1.1)
       http-call: 5.3.0
@@ -3738,9 +3738,9 @@ snapshots:
 
   '@oclif/prettier-config@0.2.1': {}
 
-  '@oclif/test@4.0.6(@oclif/core@4.0.16)':
+  '@oclif/test@4.0.6(@oclif/core@4.0.17)':
     dependencies:
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       ansis: 3.3.2
       debug: 4.3.6(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -4094,7 +4094,7 @@ snapshots:
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
 
   '@types/hast@2.3.10':
     dependencies:
@@ -4127,16 +4127,16 @@ snapshots:
 
   '@types/mute-stream@0.0.4':
     dependencies:
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
 
   '@types/netmask@2.0.5': {}
 
   '@types/node-static@0.7.11':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
 
-  '@types/node@20.14.12':
+  '@types/node@20.14.13':
     dependencies:
       undici-types: 5.26.5
 
@@ -4154,11 +4154,11 @@ snapshots:
   '@types/shelljs@0.8.15':
     dependencies:
       '@types/glob': 7.2.0
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
 
   '@types/unist@2.0.10': {}
 
@@ -5897,17 +5897,17 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.0.0
 
-  oclif@4.14.9:
+  oclif@4.14.11:
     dependencies:
       '@aws-sdk/client-cloudfront': 3.620.0
       '@aws-sdk/client-s3': 3.620.0
       '@inquirer/confirm': 3.1.17
       '@inquirer/input': 2.2.4
       '@inquirer/select': 2.4.2
-      '@oclif/core': 4.0.16
+      '@oclif/core': 4.0.17
       '@oclif/plugin-help': 6.2.7
       '@oclif/plugin-not-found': 3.2.14
-      '@oclif/plugin-warn-if-update-available': 3.1.10
+      '@oclif/plugin-warn-if-update-available': 3.1.11
       async-retry: 1.3.3
       chalk: 4.1.2
       change-case: 4.1.2
@@ -6039,11 +6039,11 @@ snapshots:
 
   perrisbrewery@10.0.1:
     dependencies:
-      '@oclif/core': 4.0.16
-      '@oclif/plugin-autocomplete': 3.1.9
+      '@oclif/core': 4.0.17
+      '@oclif/plugin-autocomplete': 3.1.11
       '@oclif/plugin-help': 6.2.7
       '@oclif/plugin-version': 2.2.9
-      '@oclif/test': 4.0.6(@oclif/core@4.0.16)
+      '@oclif/test': 4.0.6(@oclif/core@4.0.17)
       chalk: 4.1.2
       fs-extra: 8.1.0
       inquirer: 8.2.4
@@ -6491,14 +6491,14 @@ snapshots:
     dependencies:
       typescript: 5.5.4
 
-  ts-node@10.9.2(@types/node@20.14.12)(typescript@5.5.4):
+  ts-node@10.9.2(@types/node@20.14.13)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.14.12
+      '@types/node': 20.14.13
       acorn: 8.12.1
       acorn-walk: 8.3.3
       arg: 4.1.3
