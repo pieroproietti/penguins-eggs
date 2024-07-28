@@ -19,11 +19,11 @@ penguins-eggs
 
 [AlpineLinux](https://alpinelinux.org/), Alpine Linux is a security-oriented, lightweight Linux distribution based on musl libc and busybox..
 
-* **egg-of-alpine-coliri** A experimental version from Alpine standard.
+* **egg-of-alpine-coliri** A experimental version from Alpine standard. Look on discussion[Way to Apline](https://github.com/pieroproietti/penguins-eggs/discussions/377).
 
 ![](https://alpinelinux.org/alpinelinux-logo.svg)
 
-* You can find more informations on this Linux distro at: [Body Linux](https://www.bodhilinux.com/).
+* You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
 ## More informations:
 
