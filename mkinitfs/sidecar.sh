@@ -33,13 +33,13 @@ mkdir -p /newroot/dev /newroot/proc /newroot/sys /newroot/run
 # newroot and makes newroot the new root filesystem and starts init
 # process.
 
-#mount -t devtmpfs devtmpfs /newroot/dev
-#mount -t proc proc /newroot/proc
-#mount -t sysfs sysfs /newroot/sys
-#mount -t tmpfs tmpfs /newroot/run
+mount -t devtmpfs devtmpfs /newroot/dev
+mount -t proc proc /newroot/proc
+mount -t sysfs sysfs /newroot/sys
+mount -t tmpfs tmpfs /newroot/run
 #// run viene copiato
-#cp -r /run/* /newroot/run
+cp -r /run/* /newroot/run
 
 # Eseguire switch_root e continuare il boot
-exec switch_root /newroot /sbin/init
+#exec switch_root /newroot /sbin/init
 
