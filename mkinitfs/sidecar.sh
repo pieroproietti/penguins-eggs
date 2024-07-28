@@ -4,7 +4,7 @@
 # we give the following commands:
 # mkdir /mnt
 # mount /dev/sr0 /mnt
-# Then /mnt/live/sidecar.sh is launched.
+# /mnt/live/sidecar
 #  
 
 # Creating mountpoints
