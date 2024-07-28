@@ -234,9 +234,14 @@ pnpm build
 Now we can use eggs from the source:
 
 ## Autocomplete, Desktop icons
+We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
 ```
 ./install-eggs-dev
 ```
+
+## Create a link to /home/artisan/penguins-eggs/eggs
+It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
+`sudo ln -s /home/artisan/penguins-eggs/eggs /usr/bin/eggs`
 
 ## Configure eggs
 
