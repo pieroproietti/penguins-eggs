@@ -40,4 +40,12 @@ mount /dev/sro /mnt
 
 Purtroppo mentre `filestem.squashfs` viene correttamente montato RW in `/newroot`, non viene effettuato lo `switch_root /newroot /sbin/init`.
 
+La causa è il PID, deve essere uguale ad 1.
 
+A questo punto, riflettendo sul funzionamento dell'emergency mode, ho realizzato che la soluzione non era quella di eseguire lo switch_root da sidecar.sh, ma semplicemente quella di digitare `exit` per tornare alla init chiamante.
+
+A questo punto, però è sorto un altro problema: mi segnala che non riesce a trovare /sbin/init nella nuova root.
+
+/sbin/init, in effetti esiste ed è un semplice link a /bin/busybox. 
+
+Ho provato anche a copiare busybox ridenominandolo `/sbin/init` ma, purtroppo, per qualche oscura ragione non lo trova lo stesso.
