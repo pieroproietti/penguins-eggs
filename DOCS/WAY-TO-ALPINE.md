@@ -239,9 +239,11 @@ We want to work with all the conveniences of eggs installed, especially completi
 ./install-eggs-dev
 ```
 
-## Create a link to /home/artisan/penguins-eggs/eggs
+## Create a link to ${HOME}/penguins-eggs/eggs
 It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-`sudo ln -s /home/artisan/penguins-eggs/eggs /usr/bin/eggs`
+```
+sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
+```
 
 ## Configure eggs
 
