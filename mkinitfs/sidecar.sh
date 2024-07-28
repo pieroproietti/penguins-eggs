@@ -25,24 +25,15 @@ mkdir -p /media/root-rw/root
 # Montare overlayfs
 mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /newroot
 
-# Creare i punti di montaggio per i filesystem virtuali nel nuovo root
-mkdir -p /newroot/dev /newroot/proc /newroot/sys /newroot/run
-
-
-# switch_root moves already mounted /proc, /dev, /sys and /run to
-# newroot and makes newroot the new root filesystem and starts init
-# process.
-
+# mount virtual filesystems
 mount -t devtmpfs devtmpfs /newroot/dev
 mount -t proc proc /newroot/proc
 mount -t sysfs sysfs /newroot/sys
 mount -t tmpfs tmpfs /newroot/run
-#// run viene copiato
 cp -r /run/* /newroot/run
 
-# Eseguire switch_root
-chroot /newroot
-echo "type exit to continue boot"
+# Go back to old init
+echo "type exit to continue... "
 
 
 
