@@ -29,7 +29,7 @@ mount -t devtmpfs devtmpfs /newroot/dev
 mount -t proc proc /newroot/proc
 mount -t sysfs sysfs /newroot/sys
 mount -t tmpfs tmpfs /newroot/run
-cp -r /run/* /newroot/run
+#cp -r /run/* /newroot/run
 
 echo "sidecar: /newroot was mounted!"
 echo "         check it then type 'exit' to continue boot"
