@@ -126,3 +126,11 @@ sudo ./eggs dad -d
 sudo ./eggs produce --pendrive
 
 ```
+
+The result at the moment is a **NOT bootable ISO**.
+
+# openSUSE peoples, someone can help? 
+This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
+
+# Links
+[dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
