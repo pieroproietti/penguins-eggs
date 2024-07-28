@@ -15,13 +15,13 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
+![](https://alpinelinux.org/alpinelinux-logo.svg)
+
 # AlpineLinux Small. Simple. Secure.
 
-[AlpineLinux](https://alpinelinux.org/), Alpine Linux is a security-oriented, lightweight Linux distribution based on musl libc and busybox..
+[AlpineLinux](https://alpinelinux.org/), is a security-oriented, lightweight Linux distribution based on musl libc and busybox.
 
-* **egg-of-alpine-coliri** A experimental version from Alpine standard. Look on discussion[Way to Apline](https://github.com/pieroproietti/penguins-eggs/discussions/377).
-
-![](https://alpinelinux.org/alpinelinux-logo.svg)
+* **egg-of-alpine-coliri** An experimental version from Alpine standard. Look on discussion[Way to Apline](https://github.com/pieroproietti/penguins-eggs/discussions/377).
 
 * You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
