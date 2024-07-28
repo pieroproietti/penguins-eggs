@@ -1,5 +1,5 @@
-#!/bin/sh
-#
+#!/bin/sh -e
+
 # At the end of the boot, initram goes into emergency,
 # we give the following commands:
 # mkdir /mnt
@@ -33,8 +33,3 @@ mount -t tmpfs tmpfs /newroot/run
 
 echo "sidecar: /newroot was mounted!"
 echo "         check it then type 'exit' to continue boot"
-
-
-
-
-
