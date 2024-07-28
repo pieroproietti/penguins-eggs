@@ -40,6 +40,10 @@ mount -t tmpfs tmpfs /newroot/run
 #// run viene copiato
 cp -r /run/* /newroot/run
 
-# Eseguire switch_root e continuare il boot
-#exec switch_root /newroot /sbin/init
+# Eseguire switch_root
+chroot /newroot
+echo "type exit to continue boot"
+
+
+
 
