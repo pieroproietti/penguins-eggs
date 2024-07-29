@@ -846,9 +846,7 @@ export default class Ovary {
    */
   async initrdFedora() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
-    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
-    await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
-    await exec(`cp /boot/initramfs-custom.img ${this.settings.iso_work}/live/`, this.echo)
+    await exec(`cp /boot/initramfs-*.img ${this.settings.iso_work}/live/`, this.echo)
   }
 
 
