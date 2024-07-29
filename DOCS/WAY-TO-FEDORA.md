@@ -48,8 +48,7 @@ dnf install \
 
 ### nodejs, npm e pnpm
 ```
-dnf install nodejs npm
-npm i pnpm -g
+dnf install nodejs pnpm
 
 ```
 
@@ -61,7 +60,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-rm -rf "${HOME}/.*"
+rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 cp /etc/skel/.* "${HOME}/." -R
 
 ```
@@ -115,6 +114,12 @@ Now we can use eggs from the source:
 We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
 ```
 ./install-eggs-dev
+```
+
+## Create a link to ${HOME}/penguins-eggs/eggs
+It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
+```
+sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
 ```
 
 ## Create a link to ${HOME}/penguins-eggs/eggs
