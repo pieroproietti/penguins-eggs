@@ -832,13 +832,14 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
+    //let initrdImg = '/home/artisan/initramfs/live/initramfs-live.gz'
+    //await exec(`cp ${initrdImg} ${this.settings.iso_work}live/initramfs-lts`)
+
     let initrdImg = 'initramfs-lts'
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
-    // const startChroot = path.resolve(__dirname, `../../mkinitfs/start-chroot.sh`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
-    // await exec(`cp ${startChroot} ${this.settings.iso_work}live/`)
   }
 
   /**
