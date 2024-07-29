@@ -832,8 +832,8 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    //let initrdImg = '/home/artisan/initramfs/live/initramfs-live.gz'
-    //await exec(`cp ${initrdImg} ${this.settings.iso_work}live/initramfs-lts`)
+    // let initrdImg = '/home/artisan/initramfs/live/initramfs-live.gz'
+    // await exec(`cp ${initrdImg} ${this.settings.iso_work}live/initramfs-lts`)
 
     let initrdImg = 'initramfs-lts'
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
