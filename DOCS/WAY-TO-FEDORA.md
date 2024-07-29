@@ -89,8 +89,9 @@ sudo dnf install \
     lvm2 \
     dracut \
     nodejs \
-    npm \
+    overlayfs-tools \
     parted \
+    pnpm \
     rsync \
     syslinux \
     squashfs-tools \
