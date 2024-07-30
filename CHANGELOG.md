@@ -41,6 +41,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.21
+After a lot of changement to include [Alpine](./DOCS/WAY-TO-ALPINE.md), [Fedora](./DOCS/WAY-TO-FEDORA.md) and [SuSE](./DOCS/WAY-TO-SUSE.md) on penguins-eggs, I need to release and have a stable start point to continue.
+
 ## penguins-eggs-10.0.20
 I'm working mostly to bring eggs to AlpineLinux and fedora, the changes are included here, but note **eggs is not yet usable on this distros**. 
 
