@@ -521,8 +521,8 @@ export default class Ovary {
     if (this.familyId === 'debian') {
       // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
       const text = 'UMASK=0077\n'
-      const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
-      Utils.write(file, text)
+      const file = '/etc/initramfs-tools/conf.d/'
+      //Utils.write(file, text)
     }
 
     // Truncate logs, remove archived logs.
