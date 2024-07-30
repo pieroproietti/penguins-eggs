@@ -7,6 +7,7 @@
 # /mnt/live/sidecar
 #  
 
+
 # Creating mountpoints
 mkdir -p /media/root-ro 
 mkdir -p /media/root-rw 
@@ -21,15 +22,15 @@ mount -t tmpfs root-tmpfs /media/root-rw
 mkdir -p /media/root-rw/work 
 mkdir -p /media/root-rw/root
 
-# mount  overlayfs on /newroot
-mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /newroot
+# mount  overlayfs on /sysroot
+mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
 
-# mount virtual filesystems on /newroot
-mount -t devtmpfs devtmpfs /newroot/dev
-mount -t proc proc /newroot/proc
-mount -t sysfs sysfs /newroot/sys
-mount -t tmpfs tmpfs /newroot/run
-#cp -r /run/* /newroot/run
+# mount virtual filesystems on /sysroot
+#mount -t devtmpfs devtmpfs /sysroot/dev
+#mount -t proc proc /sysroot/proc
+#mount -t sysfs sysfs /sysroot/sys
+#mount -t tmpfs tmpfs /sysroot/run
+#cp -r /run/* /sysroot/run
 
-echo "sidecar: /newroot was mounted!"
+echo "sidecar: /sysroot was mounted!"
 echo "         check it then type 'exit' to continue boot"
