@@ -521,7 +521,7 @@ export default class Ovary {
     if (this.familyId === 'debian') {
       // Aggiungo UMASK=0077 in /etc/initramfs-tools/conf.d/calamares-safe-initramfs.conf
       const text = 'UMASK=0077\n'
-      const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
+      const file = '/etc/initramfs-tools/conf.d/'
       Utils.write(file, text)
     }
 
@@ -833,12 +833,14 @@ export default class Ovary {
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     let initrdImg = 'initramfs-lts'
+    // dracut
+    // const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    // await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    // mkinitfs
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
-    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
-    // const startChroot = path.resolve(__dirname, `../../mkinitfs/start-chroot.sh`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
     await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
-    // await exec(`cp ${startChroot} ${this.settings.iso_work}live/`)
   }
 
   /**
