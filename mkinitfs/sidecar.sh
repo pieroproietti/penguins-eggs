@@ -4,9 +4,8 @@
 # we give the following commands:
 # mkdir /mnt
 # mount /dev/sr0 /mnt
-# /mnt/live/sidecar
+# /mnt/live/sidecar.sh
 #  
-
 
 # Creating mountpoints
 mkdir -p /media/root-ro 
