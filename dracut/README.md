@@ -72,7 +72,13 @@ echo "Inizializzazioni aggiuntive possono essere aggiunte qui"
 
 # Comando in ovary
 ```
-    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf`)
-    await exec(`dracut --add 99custom -c ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    // dracut --add 99custom /boot/initramfs-$(uname -r).img $(uname -r)
+    let initrdImg = 'initramfs-lts'
+    // dracut
+    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
 ```
+
+# TESTING
+sudo ./install-dracut-99-custom
+sudo dracut --confdir dracut/dracut.conf.d initramfs-dummy
+
