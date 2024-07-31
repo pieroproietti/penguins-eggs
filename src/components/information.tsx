@@ -87,15 +87,20 @@ export default async function information(verbose = false): Promise<void> {
     let initType = ''
     if (Utils.isSysvinit()) {
         initType = 'sysvinit'
-    }
+    } 
     if (Utils.isSystemd()) {
         if (initType === 'sysvinit') {
             initType += '/'
         }
         initType = 'systemd'
     }
-    const sysvinit = Utils.isSysvinit()
-    const systemd = Utils.isSystemd()
+    if (initType === 'sysvinit') {
+        if (Utils.isOpenRc()) {
+            initType = 'open_rc'
+        }
+    }
+    // const sysvinit = Utils.isSysvinit()
+    // const systemd = Utils.isSystemd()
     const Checks = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>

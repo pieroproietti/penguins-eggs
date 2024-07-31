@@ -23,6 +23,7 @@ import Distro from './distro.js'
 
 // pjson
 import { createRequire } from 'module';
+import bottomBar from 'inquirer/lib/ui/bottom-bar.js'
 const require = createRequire(import.meta.url);
 const pjson = require('../../package.json');
 
@@ -109,6 +110,15 @@ export default class Utils {
       const isSysvinit = fs.readFileSync(checkFile).includes('init')
       shx.exec(`rm ${checkFile}`)
       return isSysvinit
+   }
+
+   static isOpenRc():boolean {
+      let isOpenRc= false
+      let distro = new Distro()
+      if (distro.familyId === "alpine") {
+         isOpenRc= true         
+      }
+      return isOpenRc
    }
 
    /**
