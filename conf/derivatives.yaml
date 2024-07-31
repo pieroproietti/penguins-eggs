@@ -36,6 +36,7 @@
   family: debian
   ids:
     - lory    # Parrot lory
+    - orchid  # VanillaOS
 
 #
 # DEVUAN
