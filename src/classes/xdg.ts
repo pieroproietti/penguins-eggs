@@ -58,11 +58,7 @@ export default class Xdg {
 
         const regexDefaultUser = new RegExp(`default_user\\s*${olduser}`, 'g')
         content = content.replace(regexDefaultUser, `default_user ${newuser}`)
-
         fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
-
-        // shx.sed('-i', 'auto_login no', 'auto_login yes', `${chroot}/etc/${slimConf}`)
-        // shx.sed('-i', `default_user ${olduser}`, `default_user ${newuser}`, `${chroot}/etc/${slimConf}`)
       }
 
       /**
@@ -80,7 +76,6 @@ export default class Xdg {
               const regex = new RegExp(`autologin-user\\s*=\\s*${olduser}`, 'g') // remove spaces
               content = content.replace(regex, `autologin-user=${newuser}`)
               fs.writeFileSync(curFile, content, 'utf8')
-              // shx.sed('-i', `autologin-user=${olduser}`, `autologin-user=${newuser}`, curFile)
             }
           }
         }

@@ -1,10 +1,10 @@
- /**
- * ./src/classes/utils.tsx
- * penguins-eggs v.10.0.0 / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
+/**
+* ./src/classes/utils.tsx
+* penguins-eggs v.10.0.0 / ecmascript 2020
+* author: Piero Proietti
+* email: piero.proietti@gmail.com
+* license: MIT
+*/
 
 import shx from 'shelljs'
 import fs from 'fs'
@@ -41,15 +41,15 @@ export default class Utils {
    * @param obj 
    * @returns 
    */
-  static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
-   const sorted: { [key: string]: any } = {};
-   Object.keys(obj)
-     .sort()
-     .forEach(key => {
-       sorted[key] = obj[key];
-     });
-   return sorted;
- }
+   static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
+      const sorted: { [key: string]: any } = {};
+      Object.keys(obj)
+         .sort()
+         .forEach(key => {
+            sorted[key] = obj[key];
+         });
+      return sorted;
+   }
 
 
    /**
@@ -79,7 +79,7 @@ export default class Utils {
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = ''
       if (codenameId === 'rolling' || codenameId === '') {
-         result = 'egg-of_' + distroId.toLowerCase()+ '-'
+         result = 'egg-of_' + distroId.toLowerCase() + '-'
       } else {
          result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
       }
@@ -112,11 +112,11 @@ export default class Utils {
       return isSysvinit
    }
 
-   static isOpenRc():boolean {
-      let isOpenRc= false
+   static isOpenRc(): boolean {
+      let isOpenRc = false
       let distro = new Distro()
       if (distro.familyId === "alpine") {
-         isOpenRc= true         
+         isOpenRc = true
       }
       return isOpenRc
    }
@@ -139,7 +139,7 @@ export default class Utils {
 
             // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
             if (vmlinuz.includes(")")) {
-               vmlinuz=cmd.substring(cmd.indexOf(')') + 1)
+               vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
             }
             if (!fs.existsSync(vmlinuz)) {
                if (fs.existsSync(`/boot/${vmlinuz}`)) {
@@ -205,7 +205,7 @@ export default class Utils {
     * ricava path per initrdImg
     */
    static initrdImg(): string {
-      let separator="-"
+      let separator = "-"
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
       let initrd = 'initrd.img'
@@ -220,7 +220,7 @@ export default class Utils {
          suffix = '.img'
       } else if (distro.familyId === 'alpine') {
          initrd = 'initramfs'
-         separator='-'
+         separator = '-'
          version = 'lts'
          suffix = ''
       }
@@ -262,16 +262,38 @@ export default class Utils {
     * Return the primary user's name
     */
    static async getPrimaryUser(): Promise<string> {
-      let primaryUser = (await exec('/usr/bin/logname 2>/dev/null || echo ${SUDO_USER:-${USER}}', { echo: false, ignore: false, capture: true })).data.trim()
-      // if logname don't work seem we get '' so:
-      if (primaryUser === '') {
-         primaryUser = shx.exec('echo $SUDO_USER', { silent: true }).stdout.trim()
+      const { execSync } = require('child_process');
+
+      try {
+         // Attempt to get the username using the logname command
+         let primaryUser = execSync('/usr/bin/logname 2>/dev/null || echo ${SUDO_USER:-${USER}}', { encoding: 'utf-8' }).trim();
+
+         console.log("primary user", primaryUser)
+
+         // If logname returns an empty string, use environment variables as fallback
+         if (!primaryUser || primaryUser==='root' ) {
+            try {
+               // Check if doas is installed and try to use $DOAS_USER
+               execSync('command -v doas', { stdio: 'ignore' });
+               primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
+            } catch (error) {
+               // doas is not installed or $DOAS_USER is empty, try $SUDO_USER
+               primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
+            }
+         }
+
+         // If still empty, output an error and exit
+         if (!primaryUser) {
+            console.error('Cannot find your user name...');
+            process.exit(1);
+         }
+         console.log("primary user", primaryUser)
+         process.exit()
+         return primaryUser;
+      } catch (error) {
+         console.error('Error determining the primary user!');
+         process.exit(1);
       }
-      if (primaryUser === '') {
-         console.log(`Cannot find your user name...`)
-         process.exit(1)
-      }
-      return primaryUser
    }
 
    /**
@@ -660,7 +682,7 @@ export default class Utils {
       const result: number = shx.exec(cmd, { silent: true }).code
       return result === 0
    }
-      
+
 
 
    /**
