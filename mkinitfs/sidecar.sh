@@ -9,7 +9,7 @@
 
 DIRECTORY="/sysroot"
 if [ -z "$(find "$DIRECTORY" -mindepth 1)" ]; then
-    echo "sidecar: /sysroot is emply!"
+    echo "sidecar: /sysroot is again emply!"
     echo "         type 'exit' to return init, then run sidecar.sh again"
     exit 0
 fi
@@ -31,12 +31,8 @@ mkdir -p /media/root-rw/root
 # mount  overlayfs on //sysroot
 mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
 
-# mount virtual filesystems on //sysroot
-#mount -t devtmpfs devtmpfs /sysroot/dev
-#mount -t proc proc /sysroot/proc
-#mount -t sysfs sysfs /sysroot/sys
-#mount -t tmpfs tmpfs /sysroot/run
-#cp -r /run/* /sysroot/run
+# create a dummy /etc/machine-id
+echo "9350a55456f5bb96ef2fda0166a86d91" | tee /sysroot/etc/machine-id
 
 echo "sidecar: /sysroot was mounted!"
 echo "         check it then type 'exit' to continue boot"
