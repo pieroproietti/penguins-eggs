@@ -51,7 +51,7 @@ A questo punto però è sorto un altro problema: `init` mi segnala che non riesc
 Type exit to continue boot.
 ```
 
-Questo succede perchè ad un certo punto init tenta di montare in `/sysroot` il dispositivo sul quale è registrato e non è pensata per overlayfs. Tuttavia, eseguendo un `exit` prima di avviare `mnt/live/sidecar.sh` ci troveremo nella parte finale dell'init - dopo che questo tentativo è stato già effettuato.
+Questo succede perchè ad un certo punto init tenta di montare su `/sysroot` il block device o il tmpfs sul quale è registrato e non è pensata per overlayfs. Tuttavia, eseguendo un `exit` prima di avviare `mnt/live/sidecar.sh` ci troveremo nella parte finale dell'init - dopo che questo tentativo è stato già effettuato.
 
-A questo punto le istruzioni di `sidecar.sh` utilizzeranno `/sysroot` come mountpoint per il mount RW del filesystem live, e digitanto ancora `exit` verrà corrrettmanete eseguito lo `switch_root` ed il sistema verrà finalmente caricato.
+Le istruzioni di `sidecar.sh` utilizzeranno quindi `/sysroot` come mountpoint per il mount RW del filesystem live e, digitanto ancora `exit` per tornare all'init, verrà correttamente eseguito lo `switch_root` ed il sistema verrà avviato.
 
