@@ -7,6 +7,13 @@
 # /mnt/live/sidecar.sh
 #  
 
+DIRECTORY="/sysroot"
+if [ -z "$(find "$DIRECTORY" -mindepth 1)" ]; then
+    echo "sidecar: /sysroot is emply!"
+    echo "         type 'exit' to return init, then run sidecar.sh again"
+    exit 0
+fi
+
 # Creating mountpoints
 mkdir -p /media/root-ro 
 mkdir -p /media/root-rw 
@@ -21,10 +28,10 @@ mount -t tmpfs root-tmpfs /media/root-rw
 mkdir -p /media/root-rw/work 
 mkdir -p /media/root-rw/root
 
-# mount  overlayfs on /sysroot
+# mount  overlayfs on //sysroot
 mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
 
-# mount virtual filesystems on /sysroot
+# mount virtual filesystems on //sysroot
 #mount -t devtmpfs devtmpfs /sysroot/dev
 #mount -t proc proc /sysroot/proc
 #mount -t sysfs sysfs /sysroot/sys
