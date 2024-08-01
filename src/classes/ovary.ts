@@ -261,13 +261,8 @@ export default class Ovary {
     const cmds: string[] = []
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
-    if (this.familyId === 'alpine') {
-      // Create user using adduser
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' adduser -D -h /home/' + this.settings.config.user_opt + ' -s /bin/bash ' + this.settings.config.user_opt, this.verbose))
-    } else {
-      // Create user using useradd
-      cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
-    }
+    // Create user using useradd
+    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
     // live password
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
@@ -283,6 +278,8 @@ export default class Ovary {
 
     if (this.familyId === 'debian') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
+    } else if (this.familyId === 'alpine') {
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'archlinux') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
 
