@@ -237,14 +237,8 @@ export default class Ovary {
     })
     const users: string[] = result.data.split('\n')
 
-    let cmdUserDel = `userdel`
-    if (this.familyId === 'alpine') {
-      // On Alpine we have just deluser
-      cmdUserDel = "deluser"
-    }
     for (let i = 0; i < users.length - 1; i++) {
-      // cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} ${cmdUserDel} ${users[i]}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, this.verbose))
     }
   }
 
@@ -280,6 +274,10 @@ export default class Ovary {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'alpine') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG adm ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG audio ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG video ${this.settings.config.user_opt}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG netdev ${this.settings.config.user_opt}`, this.verbose))
     } else if (this.familyId === 'archlinux') {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
 
