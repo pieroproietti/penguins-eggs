@@ -34,18 +34,24 @@ A questo punto:
 
 ```
 mkdir /mnt/
-mount /dev/sro /mnt
+mount /dev/sr0 /mnt
 /mnt/live/sidecar.sh
 ```
 
-Purtroppo mentre `filestem.squashfs` viene correttamente montato RW in `/newroot`, non viene effettuato lo `switch_root /newroot /sbin/init`.
+Purtroppo mentre `filestem.squashfs` viene correttamente montato RW in `/sysroot`, non viene effettuato lo `switch_root /newroot /sbin/init`.
 
 La causa è il PID, deve essere uguale ad 1.
 
-A questo punto, riflettendo sul funzionamento dell'emergency mode, ho realizzato che la soluzione non era quella di eseguire lo switch_root da sidecar.sh, ma semplicemente quella di digitare `exit` per tornare alla init chiamante.
+A questo punto, riflettendo sul funzionamento dell'emergency mode, ho realizzato che la soluzione non è quella di eseguire lo switch_root con `sidecar.sh`, ma digitare `exit` per tornare al processo init chiamante.
 
-A questo punto, però è sorto un altro problema: mi segnala che non riesce a trovare /sbin/init nella nuova root.
+A questo punto però è sorto un altro problema: `init` mi segnala che non riesce a trovare `/sbin/init` nella nuova root.
 
-/sbin/init, in effetti esiste ed è un semplice link a /bin/busybox. 
+```
+/sbin/init not found in new root. Launching emergency recovery shell
+Type exit to continue boot.
+```
 
-Ho provato anche a copiare busybox ridenominandolo `/sbin/init` ma, purtroppo, per qualche oscura ragione non lo trova lo stesso.
+Questo succede perchè ad un certo punto init tenta di montare in `/sysroot` il dispositivo sul quale è registrato e non è pensata per overlayfs. Tuttavia, eseguendo un `exit` prima di avviare `mnt/live/sidecar.sh` ci troveremo nella parte finale dell'init - dopo che questo tentativo è stato già effettuato.
+
+A questo punto le istruzioni di `sidecar.sh` utilizzeranno `/sysroot` come mountpoint per il mount RW del filesystem live, e digitanto ancora `exit` verrà corrrettmanete eseguito lo `switch_root` ed il sistema verrà finalmente caricato.
+

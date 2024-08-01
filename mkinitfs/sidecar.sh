@@ -31,7 +31,7 @@ mkdir -p /media/root-rw/root
 # mount  overlayfs on //sysroot
 mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
 
-# create a dummy /etc/machine-id
+# insert a dummy value for /etc/machine-id
 echo "9350a55456f5bb96ef2fda0166a86d91" | tee /sysroot/etc/machine-id
 
 echo "sidecar: /sysroot was mounted!"
