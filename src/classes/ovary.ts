@@ -839,8 +839,8 @@ export default class Ovary {
     // mkinitfs
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
-    await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
+    const sidecars = path.resolve(__dirname, `../../mkinitfs/*.sh`)
+    await exec(`cp ${sidecars} ${this.settings.iso_work}live/`)
   }
 
   /**
