@@ -849,7 +849,8 @@ export default class Ovary {
   async initrdFedora() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
     // dracut
-    let initrdImg = Utils.initrdImg() 
+    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
+    const initrdImg = `initramfs-${kernelVersion}`
     const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     //await exec(`cp /boot/initramfs-*.img ${this.settings.iso_work}/live/`, this.echo)
