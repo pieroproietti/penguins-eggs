@@ -35,4 +35,6 @@ mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root
 echo "9350a55456f5bb96ef2fda0166a86d91" | tee /sysroot/etc/machine-id
 
 echo "sidecar: /sysroot was mounted!"
-echo "         check it then type 'exit' to continue boot"
+echo "         ================================"
+echo "         YOU CAN TYPE 'exit' TO BOOT LIVE"
+echo "         ================================"
