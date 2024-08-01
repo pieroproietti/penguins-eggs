@@ -567,10 +567,11 @@ export default class Pacman {
       if (Archlinux.packageIsInstalled('xorg-server-common')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'alpine' && Alpine.packageIsInstalled('xorg-x11-server')) {
-      installed = true
+    } else if (this.distro().familyId === 'alpine') {
+      if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
     }
-
     return installed
   }
 
@@ -735,7 +736,7 @@ export default class Pacman {
       if (this.packageIsInstalled('grub')) {
         grubInstalled = 'grub'
       }
-    } else if (this.distro().familyId === 'alpine' ) {
+    } else if (this.distro().familyId === 'alpine') {
       grubInstalled = 'grub2'
     }
 
