@@ -264,36 +264,43 @@ export default class Utils {
    static async getPrimaryUser(): Promise<string> {
       const { execSync } = require('child_process');
 
+      let primaryUser = '';
       try {
-         // Attempt to get the username using the logname command
-         let primaryUser = execSync('/usr/bin/logname 2>/dev/null || echo ${SUDO_USER:-${USER}}', { encoding: 'utf-8' }).trim();
-
-         console.log("primary user", primaryUser)
-
-         // If logname returns an empty string, use environment variables as fallback
-         if (!primaryUser || primaryUser==='root' ) {
-            try {
-               // Check if doas is installed and try to use $DOAS_USER
-               execSync('command -v doas', { stdio: 'ignore' });
-               primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
-            } catch (error) {
-               // doas is not installed or $DOAS_USER is empty, try $SUDO_USER
-               primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
-            }
-         }
-
-         // If still empty, output an error and exit
-         if (!primaryUser) {
-            console.error('Cannot find your user name...');
-            process.exit(1);
-         }
-         console.log("primary user", primaryUser)
-         process.exit()
-         return primaryUser;
+         // Attempt to get the user from logname
+         primaryUser = execSync('/usr/bin/logname 2>/dev/null', { encoding: 'utf-8' }).trim();
       } catch (error) {
-         console.error('Error determining the primary user!');
+         // logname failed, so we continue with other methods
+      }
+
+      if (!primaryUser) {
+         try {
+            // Check if doas is installed and get the DOAS_USER
+            execSync('command -v doas', { stdio: 'ignore' });
+            primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
+         } catch (error) {
+            // doas is not installed or DOAS_USER is not set, continue with the next method
+         }
+      }
+
+      if (!primaryUser) {
+         try {
+            // Check for the SUDO_USER
+            primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
+         } catch (error) {
+            // SUDO_USER is not set, continue with the next method
+         }
+      }
+
+      if (!primaryUser) {
+         // Fallback to the USER environment variable
+         primaryUser = process.env.USER || '';
+      }
+
+      if (!primaryUser) {
+         console.error('Cannot determine the primary user.');
          process.exit(1);
       }
+      return primaryUser;
    }
 
    /**
