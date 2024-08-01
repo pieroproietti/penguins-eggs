@@ -834,11 +834,11 @@ export default class Ovary {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     let initrdImg = 'initramfs-lts'
     // dracut
-    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    // const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    // await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     // mkinitfs
-    //const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
-    //await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
+    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     const sidecar = path.resolve(__dirname, `../../mkinitfs/sidecar.sh`)
     await exec(`cp ${sidecar} ${this.settings.iso_work}live/`)
   }
