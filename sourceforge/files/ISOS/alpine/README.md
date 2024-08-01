@@ -25,6 +25,19 @@ penguins-eggs
 
 * You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
+## Important notes
+* this image will boot only on BIOS systems;
+* this image will boot and go in emergency shell. Type `exit`, then:
+  * `mkdir /mnt`
+  * `mount /dev/sr0 /mnt`
+  * `/mnt/live/sidecar.sh`
+  * `exit`
+
+The system will boot live from the ISO. Remember, user: `artisan` password: `evolution`.
+
+Extend penguins-eggs to Alpine Linux is a work in progress, please help!
+
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
