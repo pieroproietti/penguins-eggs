@@ -64,14 +64,10 @@ apk add \
 add your user to groups `wheel` and others... 
 
 ```
-adduser artisan adm
-adduser artisan bin
-adduser artisan daemon
-adduser artisan dialout
-adduser artisan disk
-adduser artisan floppy
-adduser artisan sys
-adduser artisan tape
+adduser artisan cdrom
+adduser artisan games
+adduser artisan input
+adduser artisan users
 adduser artisan video
 adduser artisan wheel
 
