@@ -657,6 +657,7 @@ export default class Utils {
          '/live/aufs',  // mx-linux
          '/run/miso/sfs/livefs', // ManjaroLinux
          '/run/archiso/airootfs' // Arch
+         '/media/root-rw' // AlpineLinux
       ]
 
       for (let i = 0; i < paths.length; i++) {
