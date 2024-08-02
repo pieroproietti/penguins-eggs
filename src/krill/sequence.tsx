@@ -277,7 +277,10 @@ export default class Sequence {
          } else {
             await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
          }
+      } else if (this.distro.distroId === 'alpine') {
+         await exec(`doas ln -s /mnt/live/ /live`)
       }
+
 
       this.unattended = unattended
       this.nointeractive = nointeractive
