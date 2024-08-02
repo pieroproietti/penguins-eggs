@@ -46,6 +46,14 @@ apk add doas
 
 ```
 
+# sudo as link to doas
+To not get crazy, almost me:
+```
+ln -s /usr/bin/doas /usr/bin/sudo
+```
+
+# autocompletion, git, mandoc, etc
+
 Copy and past:
 ```
 apk add \
