@@ -3,6 +3,7 @@ sudo cp scripts/eggs.bash /etc/bash_completion.d/eggs
 sudo cp addons/eggs/adapt/bin/adapt /usr/local/bin/adapt
 sudo cp g4/* /usr/local/bin
 sudo cp assets/eggs.png /usr/share/icons/
+sudo cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
 cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
