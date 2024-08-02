@@ -496,10 +496,10 @@ export default class Pacman {
       /***********************************************************************************
        * Alpine
        **********************************************************************************/
-    } else if (this.distro().codenameLikeId === 'alpine-rolling') {
-      const dest = '/etc/penguins-eggs.d/distros/alpine-rolling/'
-      const alpine = `${rootPen}/conf/distros/alpine-rolling/*`
-      await exec(`cp -r ${alpine} ${dest}`, echo)
+    } else if (this.distro().codenameLikeId === 'alpine') {
+      // Prende tutto da buster
+      const dest = '/etc/penguins-eggs.d/distros/alpine/'
+      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
     }
   }
 
@@ -737,7 +737,7 @@ export default class Pacman {
         grubInstalled = 'grub'
       }
     } else if (this.distro().familyId === 'alpine') {
-      grubInstalled = 'grub2'
+      grubInstalled = 'grub'
     }
 
     return grubInstalled
