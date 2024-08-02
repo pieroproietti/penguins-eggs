@@ -270,6 +270,17 @@ Removed the problem of users creation and introducing `syslinux` package to get 
 Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
 
 
+# Installing grub (BIOS)
+To install GRUB in BIOS mode, remove the Syslinux package and install the required GRUB packages:
+
+```
+apk del syslinux
+apk add grub grub-bios
+grub-install /dev/sda
+grub-install /dev/vda
+```
+
+
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
 
