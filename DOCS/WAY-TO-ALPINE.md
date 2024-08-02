@@ -43,7 +43,6 @@ http://alpinelinux.mirror.garr.it/v3.20/community
 ``` 
 apk update
 apk add doas
-ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
@@ -244,7 +243,7 @@ We want to work with all the conveniences of eggs installed, especially completi
 ## Create a link to ${HOME}/penguins-eggs/eggs
 It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
 ```
-sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
+doas ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 ```
 
 ## Configure eggs
