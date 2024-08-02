@@ -12,7 +12,7 @@ $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
-$SUDO ln -s /home/${SUSER}/penguins-eggs/eggs /usr/bin/eggs
+$SUDO ln -s /home/$${SUSER}/penguins-eggs/eggs /usr/bin/eggs
 
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
