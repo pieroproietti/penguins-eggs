@@ -1,8 +1,10 @@
 #!/bin/bash
 if command -v sudo >/dev/null 2>&1; then
     SUDO='sudo'
+    SUSER="SUDO_USER"
 else
     SUDO='doas'
+    SUSER="DOAS_USER"    
 fi
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
 $SUDO cp addons/eggs/adapt/bin/adapt /usr/local/bin/adapt
@@ -10,7 +12,7 @@ $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
-$SUDO ln -s /home/${SUDO^^}_USER   /penguins-eggs/eggs /usr/bin/eggs
+$SUDO ln -s /home/${SUSER}/penguins-eggs/eggs /usr/bin/eggs
 
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
