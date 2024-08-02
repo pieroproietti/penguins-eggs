@@ -166,6 +166,7 @@ export LANG="it_IT.utf8"
 export LC_COLLATE="C"
 
 ```
+
 For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
 
 ## eggs development tools

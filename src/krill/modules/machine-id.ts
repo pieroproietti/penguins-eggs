@@ -11,6 +11,7 @@ import fs from 'node:fs'
 
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
+import Distro from '../../classes/distro.js'
 
 /**
  * On Ubuntu
@@ -23,5 +24,13 @@ export default async function machineId(this: Sequence): Promise<void> {
     await exec(`rm ${file}`, this.echo)
   }
 
-  await exec(`touch ${file}`)
+  const distro = new Distro()
+  if (distro.familyId === "alpine") {
+    await exec(`dbus-uuidgen | doas tee ${this.installTarget}/var/lib/dbus/machine-id`)
+    await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
+  } else {
+    await exec(`touch ${file}`)
+  }
+
+
 }
