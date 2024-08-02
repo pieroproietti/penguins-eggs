@@ -194,6 +194,17 @@ export default class Incubator {
 
         break
       }
+
+      /**
+       * Alpine
+       */
+      case 'alpine-rolling': {
+        // actually take configuration from Arch
+        const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await rolling.create()
+
+        break
+      }
     }
 
     if (Pacman.calamaresExists()) {
