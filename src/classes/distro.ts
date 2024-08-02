@@ -119,7 +119,7 @@ class Distro implements IDistro {
       this.distroLike = 'Alpine'
       this.codenameId = 'rolling' // questo viene rimosso dal nome
       this.codenameLikeId = 'alpine' // prende alpine come codebaneLikeId
-      this.liveMediumPath = '/mnt/live/' // ? è il mount della root su cd di installatione
+      this.liveMediumPath = '/mnt/' // Qua è deciso da noi
       //this.liveMediumPath = '/run/live/medium/'
       this.squashfs = `live/filesystem.squashfs`
 
