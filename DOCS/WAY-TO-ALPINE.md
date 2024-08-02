@@ -46,10 +46,11 @@ apk add doas
 
 ```
 
-# sudo as link to doas
+# sudo as link to doas, shutdown as link to poweroff
 To not get crazy, almost me:
 ```
 ln -s /usr/bin/doas /usr/bin/sudo
+ln -s /sbin/poweroff /sbin/shutdown
 ```
 
 # autocompletion, git, mandoc, etc
