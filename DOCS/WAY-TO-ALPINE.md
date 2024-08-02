@@ -276,6 +276,7 @@ Resulting ISO file size is under 600M, with xfce, code-oss, and all the material
 
 
 # Installing grub (BIOS)
+penguins-eggs support mainly grub for installing, so mu must to install it.
 To install GRUB in BIOS mode, remove the Syslinux package and install the required GRUB packages:
 
 ```
@@ -285,36 +286,18 @@ grub-install /dev/sda
 grub-install /dev/vda
 ```
 
-
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
 
 I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
 
-I don't see a way to build a live image, particulary I don't kwow how to load `filesystem.squashfs` from initram and chroot on it. Of course it's possible, but it's not the way the installing ISO is made and I don't have any sample to look.
-
-I think that we lacks more, is an "Angel" able to use [mkinitfs](https://gitlab.alpinelinux.org/alpine/mkinitfs) to build an initramfs able to mount this `filesystem.squashfs` and mount it as new_root. 
-
 # Actual state 
+Today, after 3 weeks from start this project, I was able to remaster and reinstall a customized Alpine Linux (my classical colibri) acting as the various versions.
 
-I first created a new branch to experiment with Alpine, then, given the fact that modifying the penguins-eggs code to incorporate AlpineLinux involves changes that may impact Debian and Arch as well, I tested them and immediately brought them back to the master branch.
+Probably tomorrow I will add a video about that... I need again to build an APKBUILD for penguins-eggs and look if I can use calamare with the last Alpine Linux.
 
-I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems.
-We need again:
-- create an `initramfs-lts` file, to loads and mount as new_root `/live/filesystem.squashfs`;
-- fix boot on UEFI for live image, on BIOS already work.
+Stay tuned!
 
-At this point we can "reproduce", but we need to install and create a package:
-- adapt krill to work installing Alpine;
-- see if it's possible to use calamares with Alpine;
-- create an APKBUILD for the package;
-- tests, tests, tests.
-
-## Studyng the problem
-
-I'm trying to find a way on [README](../mkinitfs/README.md). 
-
-There is a tool to create ISO images: [mkimage](https://wiki.alpinelinux.org/wiki/How_to_make_a_custom_ISO_image_with_mkimage)
 
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)

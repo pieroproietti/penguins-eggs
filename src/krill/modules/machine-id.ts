@@ -31,6 +31,5 @@ export default async function machineId(this: Sequence): Promise<void> {
   } else {
     await exec(`touch ${file}`)
   }
-
-
 }
+
