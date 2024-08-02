@@ -656,7 +656,7 @@ export default class Utils {
          '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
          '/live/aufs',  // mx-linux
          '/run/miso/sfs/livefs', // ManjaroLinux
-         '/run/archiso/airootfs' // Arch
+         '/run/archiso/airootfs', // Arch
          '/media/root-rw' // AlpineLinux
       ]
 
