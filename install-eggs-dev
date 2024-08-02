@@ -12,6 +12,8 @@ $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
+# rm /usr/bin/eggs and link it to sources
+$SUDO rm -f /usr/bin/eggs
 $SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
