@@ -118,7 +118,7 @@ class Distro implements IDistro {
       this.familyId = 'alpine'
       this.distroLike = 'Alpine'
       this.codenameId = 'rolling' // questo viene rimosso dal nome
-      this.codenameLikeId = 'alpine-rolling'
+      this.codenameLikeId = 'rolling' // prende arch poi vediamo
       this.liveMediumPath = '/.modloop/' // ? è il mount della root su cd di installatione
       this.squashfs = `live/filesystem.squashfs`
 
