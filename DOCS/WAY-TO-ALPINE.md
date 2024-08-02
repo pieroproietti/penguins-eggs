@@ -54,6 +54,8 @@ apk add \
     git \
     mandoc \
     nano \
+    mandoc \
+    mandoc-apropos \
     rsync \
     shadow  
 
