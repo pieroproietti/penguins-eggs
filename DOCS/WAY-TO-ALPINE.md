@@ -50,7 +50,7 @@ apk add doas
 To not get crazy, almost me:
 ```
 ln -s /usr/bin/doas /usr/bin/sudo
-ln -s /sbin/poweroff /sbin/shutdown
+
 ```
 
 # autocompletion, git, mandoc, etc
@@ -141,19 +141,12 @@ chsh -s /bin/bash
 ```
 
 ## customize colibri from wardrobe
-We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
+We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `dirs/etc/skel` on my user `/home/artisan`.
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel "${HOME}/"
 doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-
-```
-
-Then copy `/etc/skel/` in ${HOME}:
-```
-rm -rf ${HOME}/.[^.]* ${HOME}/.??*
-rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
 ```
 
