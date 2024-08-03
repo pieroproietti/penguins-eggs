@@ -59,11 +59,14 @@ Copy and past:
 ```
 apk add \
     bash-completion \
+    docs \
     git \
     mandoc \
     nano \
     mandoc \
     mandoc-apropos \
+    musl-locales \
+    musl-utils \
     rsync \
     shadow  
 
