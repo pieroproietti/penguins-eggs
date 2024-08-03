@@ -166,7 +166,7 @@ We just copy customization from penguins-wardrobe, on the folder `dirs` under `p
 
 ```
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel "${HOME}/"
+rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/ "${HOME}/"
 doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 ```
