@@ -271,8 +271,11 @@ export default class Utils {
       } catch (error) {
          // logname failed, so we continue with other methods
       }
+      if (primaryUser==='root'){
+         primaryUser=''
+      }
 
-      if (!primaryUser) {
+      if (primaryUser==='') {
          try {
             // Check if doas is installed and get the DOAS_USER
             execSync('command -v doas', { stdio: 'ignore' });
@@ -282,7 +285,7 @@ export default class Utils {
          }
       }
 
-      if (!primaryUser) {
+      if (primaryUser==='') {
          try {
             // Check for the SUDO_USER
             primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
@@ -291,12 +294,12 @@ export default class Utils {
          }
       }
 
-      if (!primaryUser) {
+      if (primaryUser==='') {
          // Fallback to the USER environment variable
          primaryUser = process.env.USER || '';
       }
 
-      if (!primaryUser) {
+      if (primaryUser==='') {
          console.error('Cannot determine the primary user.');
          process.exit(1);
       }
