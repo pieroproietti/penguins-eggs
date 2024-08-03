@@ -61,12 +61,12 @@ apk add \
     bash-completion \
     docs \
     git \
-    nano \
+    man-pages \
     mandoc \
     mandoc-apropos \
-    man-pages  \
     musl-locales \
     musl-utils \
+    nano \
     rsync \
     shadow  
 
