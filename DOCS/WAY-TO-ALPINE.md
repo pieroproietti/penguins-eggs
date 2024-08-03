@@ -95,11 +95,13 @@ setup-xorg-base
 ## xfce4 installation
 ```
 apk add \
+    elogind \
+    lightdm-gtk-greeter \
+    polkit-elogind \
     xfce4 \
-    xfce4-terminal \
     xfce4-screensaver \
-    xfce4-whiskermenu-plugin \
-    lightdm-gtk-greeter 
+    xfce4-terminal \
+    xfce4-whiskermenu-plugin
 
 apk add \
     setxkbmap \
