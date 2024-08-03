@@ -456,14 +456,16 @@ export default class Sequence {
           * - autologin 
           */
          if (!this.is_clone) {
+            if (this.distro.familyId !=='alpine') {
             // locale
-            message = "Locale"
-            percent = 0.70
-            try {
-               redraw(<Install message={message} percent={percent} />)
-               await this.locale()
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               message = "Locale"
+               percent = 0.70
+               try {
+                  redraw(<Install message={message} percent={percent} />)
+                  await this.locale()
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
+               }
             }
 
             // keyboard
@@ -476,13 +478,15 @@ export default class Sequence {
             }
 
             // localeCfg
-            message = "Locale Configuration"
-            percent = 0.72
-            try {
-               await this.localeCfg()
-               await exec("chroot " + this.installTarget + " locale-gen")
-            } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+            if (this.distro.familyId !=='alpine') {
+               message = "Locale Configuration"
+               percent = 0.72
+               try {
+                  await this.localeCfg()
+                  await exec("chroot " + this.installTarget + " locale-gen")
+               } catch (error) {
+                  await Utils.pressKeyToExit(JSON.stringify(error))
+               }
             }
 
             // delLiveUser
