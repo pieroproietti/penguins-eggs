@@ -72,6 +72,22 @@ apk add \
 
 ```
 
+# replace the symlinks to busybox, install
+Is necessary? Don't seem...
+```
+apk add \
+    util-linux \
+    pciutils \
+    hwdata-pci \
+    usbutils \
+    hwdata-usb \
+    coreutils \
+    binutils \
+    findutils \
+    grep \
+    iproute2
+```
+
 
 add your user to groups `wheel` and others... 
 
