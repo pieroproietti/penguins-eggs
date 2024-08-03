@@ -37,6 +37,7 @@ The system will boot live from the ISO. Remember, user: `artisan` password: `evo
 
 Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
+[remaster and reinstall Alpine Linux](https://www.youtube.com/watch?v=zjev4Zg9sHM)
 
 ## More informations:
 
