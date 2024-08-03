@@ -72,23 +72,7 @@ apk add \
 
 ```
 
-# replace the symlinks to busybox, install
-Is necessary? Don't seem...
-```
-apk add \
-    util-linux \
-    pciutils \
-    hwdata-pci \
-    usbutils \
-    hwdata-usb \
-    coreutils \
-    binutils \
-    findutils \
-    grep \
-    iproute2
-```
-
-
+# add user to wheel
 add your user to groups `wheel` and others... 
 
 ```
@@ -100,8 +84,6 @@ adduser artisan video
 adduser artisan wheel
 
 ```
-
-
 ## Install x11
 ```
 setup-xorg-base
@@ -132,7 +114,7 @@ rc-service lightdm start
 
 ```
 
-## spice-vdagent
+## install spice-vdagent
 spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM:
 
 I added `xrandr` package too to resize the VM window with `eggs adapt`.
@@ -171,22 +153,18 @@ doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 ```
 
-## Location configuration
-I added the following lines to `home/artisan/.profile`
+## Development tools
+
+### nodejs, npm e pnpm
+```
+doas apk add nodejs npm
+
+doas npm i pnpm -g
 
 ```
-# Lingua italiana
-LANG=it_IT.UTF-8
-export LANG="it_IT.utf8"
-export LC_COLLATE="C"
 
-```
 
-For the keyboard, I looked on the settings, keyboard and eliminated the US keyboard for the Italian
-
-## eggs development tools
-
-### Visual studio code
+### Visual studio code or others
 ```
 doas apk add code-oss@testing
 
@@ -200,16 +178,9 @@ doas apk add firefox
 
 ```
 
-### nodejs, npm e pnpm
-```
-doas apk add nodejs npm
 
-doas npm i pnpm -g
-
-```
-
-## dependencies penguins-eggs on Alpine (to be completed)
-this are that we need, almost complete... The problem is understand `mkinifs` and in that way can digest `filesystem.squashfs` and chroot on it.
+## Install dependencies for penguins-eggs on Alpine
+This packages will finish in a APKBUILD for penguins-eggs on Alpine.
 
 ```
 doas apk add \
@@ -236,12 +207,25 @@ doas apk add \
 
 ```
 
+# Enable fuse
 ```
 echo "fuse" | doas tee /etc/modules-load.d/fuse.conf
 
 ```
 
+# Installing grub (BIOS)
+penguins-eggs support mainly grub for installing, so we must to install use it. 
+Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
+
+To install GRUB in BIOS mode, type:
+
+```
+apk add grub grub-bios
+grub-install /dev/sda
+```
+
 ## reboot
+To check grub reboot.
 
 ## Clone penguins-eggs
 ```
@@ -255,15 +239,10 @@ pnpm build
 Now we can use eggs from the source:
 
 ## Autocomplete, Desktop icons
-We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
+It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle. 
+We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
 ```
 ./install-eggs-dev
-```
-
-## Create a link to ${HOME}/penguins-eggs/eggs
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-```
-doas ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 ```
 
 ## Configure eggs
@@ -271,35 +250,14 @@ doas ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 ```
 doas ./eggs dad -d
 ./eggs status
+
+```
+## Produce
+```
 doas ./eggs produce --pendrive
 
 ```
 
-It don't produce an `initramfs-lts` but create correctly the `filesystem.squashfs`. 
-
-```
-ls /home/eggs/.mnt/iso/live/ -hs
-total 496M   
- 483.8M filesystem.squashfs   11.8M vmlinuz-lts
-```
-
-in my case about 500 M.
-
-Removed the problem of users creation and introducing `syslinux` package to get `isolinux.bin` for the ISO, I was able to create both a `filesystem.squashfs` which should work, an ISO image starting on BIOS - I put inside `/live` the current `initramfs-lts` without try to adapt it. The ISO boot correctly, on BIOS, but of course don't load `filesystem.squashfs` and the system go in emergency mode.
-
-Resulting ISO file size is under 600M, with xfce, code-oss, and all the materials for eggs.
-
-
-# Installing grub (BIOS)
-penguins-eggs support mainly grub for installing, so mu must to install it.
-To install GRUB in BIOS mode, remove the Syslinux package and install the required GRUB packages:
-
-```
-apk del syslinux
-apk add grub grub-bios
-grub-install /dev/sda
-grub-install /dev/vda
-```
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
@@ -317,3 +275,4 @@ Stay tuned!
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
+* [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
