@@ -42,7 +42,7 @@ penguins-eggs
 `penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
 ### using get-eggs
-It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need. Copy and paste:
+It's the most pratical way and is valid for Arch, Debian, Devuan, Ubuntu and Alpine Linux. get-eggs configure automatically `nodesource` when need. Copy and paste:
 ```
 git clone https://github.com/pieroproietti/get-eggs
 cd get-eggs
@@ -107,7 +107,8 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 # Technology
  `eggs` is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.
 
-Currently, `eggs` supports several Linux distributions, including [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Ubuntu](https://ubuntu.com/), [Arch](https://archlinux.org/), [Manjaro](https://manjaro.org/) and [derivatives](./conf/derivatives.yaml).
+Currently, `eggs` supports several Linux distributions, including [Arch](https://archlinux.org/), [Debian](https://www.
+debian.org/), [Devuan](https://www.devuan.org/), [Manjaro](https://manjaro.org/), [Ubuntu](https://ubuntu.com/) and [derivatives](./conf/derivatives.yaml).
 
 It also caters to different architectures, namely `amd64`, `i386`, and `arm64`.
 
