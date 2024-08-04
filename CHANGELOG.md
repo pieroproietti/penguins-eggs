@@ -42,9 +42,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.22
-Some other steps on the way of [Alpine Linux](https://alpinelinux.org/). Again don't change so much for Arch, Debian, Devuan, Manjaro and Ubuntu users, if not the changes are actually included on the sources and I need to release.
+* Ubuntu noble: thanks to collaboration with Glenn Chugg from Tasmania - the most distant user/collaborator I have - we have Ubuntu noble and Linuxmint 22 working happily with calamares;
+* Alpine: Some other steps on the way of [Alpine Linux](https://alpinelinux.org/). Again don't change so much for Arch, Debian, Devuan, Manjaro users, if not the changes are actually included on the sources and need to be released.
 
-You can check the status of Alpine Linux remaster on [On the way of Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377) discussion, the experimental ISO can be download from [our sourceforge page](https://github.com/pieroproietti/penguins-eggs/discussions/377). Test it, is very light, under 700 MB, about half of the Arch version.
+You can check the status of Alpine Linux remaster on [On the way of Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377) discussion, the experimental ISO can be download from [our sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/ISOS/alpine/). Test it, is very light, under 700 MB, about half of the Arch version, and see how to use penguins-eggs from source, there are [video](https://youtu.be/VC4ihHRb1R0).
 
 ## penguins-eggs-10.0.21
 After a lot of changement to include [Alpine](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-ALPINE.md), [Fedora](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-FEDORA.md) and [SuSE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-SUSE.md) on penguins-eggs, I need to release and have a stable start point to continue.
