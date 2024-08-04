@@ -38,7 +38,8 @@ The system will boot live from the ISO. Remember, user: `artisan` password: `evo
 Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
 ## Video
-* [remaster and reinstall Alpine Linux](https://www.youtube.com/watch?v=zjev4Zg9sHM)
+I did a video: produce an ISO from Alpine Linux, boot another system with the live and install it using krill a CLI system installer.
+* [A new penguin](https://youtu.be/VC4ihHRb1R0)
 
 ## More informations:
 
