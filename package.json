@@ -17,7 +17,7 @@
         "chalk": "^5.3.0",
         "cli-cursor": "^4.0.0",
         "ink": "^5.0.1",
-        "inquirer": "^10.1.6",
+        "inquirer": "^9.2.23",
         "js-yaml": "^4.1.0",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
