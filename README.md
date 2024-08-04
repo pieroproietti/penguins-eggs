@@ -59,6 +59,9 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 #### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
+### Alpine Linux
+Only source installation actully, consult [WAY-TO-ALPINE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-ALPINE.md).
+
 # Introduction
 
 `penguins-eggs` is the package name of `eggs` a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE. 
