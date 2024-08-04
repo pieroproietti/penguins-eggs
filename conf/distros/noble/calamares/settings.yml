@@ -18,12 +18,12 @@ instances:
 - id: add386arch
   module: shellprocess
   config: shellprocess_add386arch.conf
-- id: pkgselect_action
-  module: contextualprocess
-  config: pkgselect_context.conf
-- id: pkgselect_snap_action
-  module: contextualprocess
-  config: pkgselect_snap_context.conf
+#- id: pkgselect_action
+#  module: contextualprocess
+#  config: pkgselect_context.conf
+#- id: pkgselect_snap_action
+#  module: contextualprocess
+#  config: pkgselect_snap_context.conf
 - id: oemprep
   module: shellprocess
   config: shellprocess_oemprep.conf
@@ -70,9 +70,9 @@ sequence:
   - shellprocess@fixconkeys_part2
   - packages
   - removeuser  
-  - contextualprocess@pkgselect_action
-  - contextualprocess@pkgselect_snap_action
-  - shellprocess@logs
+  # contextualprocess@pkgselect_action
+  # contextualprocess@pkgselect_snap_action
+  # shellprocess@logs
   - cleanup
   - sources-yolk-undo
   - umount
