@@ -9,9 +9,9 @@ instances:
 - id: before_bootloader
   module: contextualprocess
   config: before_bootloader_context.conf
-- id: logs
-  module: shellprocess
-  config: shellprocess_logs.conf
+#- id: logs
+#  module: shellprocess
+#  config: shellprocess_logs.conf
 - id: bug-LP#1829805
   module: shellprocess
   config: shellprocess_bug-LP#1829805.conf
@@ -39,7 +39,7 @@ sequence:
   - welcome
   - locale
   - keyboard
-  - pkgselect
+  # pkgselect
   - partition
   {{createUsers}}users
   - summary
@@ -64,7 +64,7 @@ sequence:
   - grubcfg
   - contextualprocess@before_bootloader
   - bootloader
-  - automirror
+  # automirror
   - shellprocess@add386arch
   - shellprocess@fixconkeys_part1
   - shellprocess@fixconkeys_part2
