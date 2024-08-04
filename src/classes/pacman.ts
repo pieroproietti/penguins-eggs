@@ -441,8 +441,16 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'noble') {
       const dest = '/etc/penguins-eggs.d/distros/noble'
-      const focal = `${rootPen}/conf/distros/focal/*`
-      await exec(`cp -r ${focal} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble/*`
+      await exec(`cp -r ${noble} ${dest}`, echo)
+
+      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)

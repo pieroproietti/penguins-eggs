@@ -1,0 +1,17 @@
+update_db: true
+backend: apt
+operations:
+  - remove:
+      - "^live-*"
+      - calamares-settings-lubuntu
+      - calamares
+      - zram-config
+      - cifs-utils
+      - lubuntu-installer-prompt
+  - try_install:
+      - language-pack-$LOCALE
+      - language-pack-gnome-$LOCALE
+      - language-pack-kde-$LOCALE
+      - hunspell-$LOCALE
+      - libreoffice-help-$LOCALE
+      - libreoffice-l10n-$LOCALE
