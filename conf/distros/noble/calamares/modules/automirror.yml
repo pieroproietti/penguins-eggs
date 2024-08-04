@@ -1,0 +1,6 @@
+---
+baseUrl: archive.ubuntu.com
+distribution: Lubuntu
+geoip:
+    style: "xml"
+    url:   "https://geoip.ubuntu.com/lookup"
