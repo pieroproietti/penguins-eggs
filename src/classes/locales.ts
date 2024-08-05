@@ -33,9 +33,13 @@ export default class Locales {
    *
    */
   async getEnabled(): Promise<string[]> {
+    const distro = new Distro()
+    let cmd = 'localectl list-locales'
+    if (distro.familyId === 'alpine') {
+      cmd = 'locale -a'
+    } 
     // Restituisce i locales abilitati in Debian, per manjaro quelli presenti
     // in /etc/locale.gen anche se #disabilitati
-    const cmd = 'localectl list-locales'
     const enabledLocales: string[] = []
     const result = await exec(cmd, { capture: true, echo: false, ignore: false })
     if (result.code === 0) {
