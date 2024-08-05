@@ -128,6 +128,14 @@ rc-update add spice-vdagentd
 rc-service spice-vdagentd start
 
 ```
+
+## Italian locale or other
+```
+echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
+
+```
+
+
 ## Change default shell to bash
 We come back as user:
 
@@ -212,6 +220,7 @@ doas apk add \
 echo "fuse" | doas tee /etc/modules-load.d/fuse.conf
 
 ```
+
 
 # Installing grub (BIOS)
 penguins-eggs support mainly grub for installing, so we must to install use it. 
