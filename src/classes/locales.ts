@@ -58,12 +58,13 @@ export default class Locales {
   async getSupported(): Promise<string[]> {
     const distro = new Distro()
     let supporteds: string[] = []
-    if (distro.familyId === 'debian') {
-      supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
+    if (distro.familyId === 'alpine') {
+      supporteds = await this.getEnabled()
+    } else if (distro.familyId === 'debian') {
+        supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
     } else if (distro.familyId === 'archlinux') {
       supporteds = (await exec('localectl list-locales', { capture: true, echo: false, ignore: false })).data.split('\n')
     }
-
     const elements: string[] = []
     for (const elem of supporteds) {
       elements.push(elem.replace(' UTF-8', ''))
