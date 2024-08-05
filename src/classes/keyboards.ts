@@ -94,7 +94,7 @@ export default class Keyboard {
   }
 
   /**
-   * XKBLAYOUT='us'
+   * XKBLAYOUT='us' OK Alpine
    */
   async getLayout(): Promise<string> {
     const file = '/etc/default/keyboard'
