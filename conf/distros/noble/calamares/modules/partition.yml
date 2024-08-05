@@ -9,13 +9,13 @@ drawNestedPartitions: true
 defaultFileSystemType: "ext4"
 availableFileSystemTypes: ["ext4","btrfs","xfs"]
 partitionLayout:
-    - name: "lubuntu_boot"
+    - name: "ubuntu_boot"
       filesystem: ext4
       noEncrypt: true
       onlyPresentWithEncryption: true
       mountPoint: "/boot"
       size: 4G
-    - name: "lubuntu_2404"
+    - name: "ubuntu_2404"
       filesystem: unknown
       mountPoint: "/"
       size: 100%
