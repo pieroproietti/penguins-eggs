@@ -122,24 +122,22 @@ Ok, then we can build:
 ```
 pnpm build
 ```
+
+Now we can use eggs from the source:
+
 ## Autocomplete, Desktop icons
-We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
+It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle. 
+We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
 ```
 ./install-eggs-dev
-```
-
-## Create a link to ${HOME}/penguins-eggs/eggs
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-```
-sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
 ```
 
 # We are ready to test
 From `penguins-eggs` now we can test it, simply using `./eggs` to start. eg:
 
 ```
-sudo ./eggs dad -d
-sudo ./eggs produce --pendrive
+sudo eggs dad -d
+sudo eggs produce --pendrive
 ```
 
 ## start to change something
@@ -160,4 +158,3 @@ pnpm deb
 The `penguins-eggs-x-x-x.deb` package will be created under `/perribrewery/workdir/`, you can install it as usual Debian package `sudo dpkg -i penguins-eggs_10.0.19-1_amd64.deb` it will automatically install it's dependencies, just: `sudo apt install -f`.
 
 Using `pnpm deb -a` will generate packages for all architectures: amd64, i386 and arm64.
-
