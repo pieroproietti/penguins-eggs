@@ -12,9 +12,21 @@ $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
+
 # rm /usr/bin/eggs and link it to sources
 $SUDO rm -f /usr/bin/eggs
 $SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
+
+# if don't exists shutdown create it
+if [ ! -e /usr/sbin/shutdown ]; then
+# create a shutdown command
+cat << 'EOF' > /tmp/shutdown
+#!/usr/bin/env bash
+/sbin/poweroff
+EOF
+$SUDO chmod +x /tmp/shutdown
+$SUDO mv /tmp/shutdown /usr/sbin
+fi
 
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
