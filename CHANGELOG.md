@@ -41,6 +41,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.23
+bugfix: removed fwsetup and memtests from grub menu ISO, fixed boot from local hard disk on isolinux menu for live;
+* Ubuntu noble: tested calamares installation without internet successfull on BIOS and UEFI.
+
 ## penguins-eggs-10.0.22
 * Ubuntu noble: thanks to collaboration with Glenn Chugg from Tasmania - the most distant user/collaborator I have - we have Ubuntu noble and Linuxmint 22 working happily with calamares;
 * Alpine: Some other steps on the way of [Alpine Linux](https://alpinelinux.org/). Again don't change so much for Arch, Debian, Devuan, Manjaro users, if not the changes are actually included on the sources and need to be released.
@@ -137,7 +141,7 @@ user_opt: user
 Usage: `sudo eggs dad --file ./custom.yaml`
 
 ## penguins-eggs-10.0.9-1
-krill: fixed a noising problem, when use resolvectl krill was not able to create to link `/etc/resolv.conf` to `/run/systemd/resolve/resolv.conf`, now I fixed this. I'm using krill `sudo eggs install` more than calamares due it's much fast and can be used with flags like `--unattended`, `--nointeractive`, etc.
+krill: fixed a annoyng problem, when use resolvectl krill was not able to create to link `/etc/resolv.conf` to `/run/systemd/resolve/resolv.conf`, now I fixed this. I'm using krill `sudo eggs install` more than calamares due it's much fast and can be used with flags like `--unattended`, `--nointeractive`, etc.
 
 ## penguins-eggs-10.0.8-2
 * just a new pratical way to add/remove local repository yolk, during installation.
