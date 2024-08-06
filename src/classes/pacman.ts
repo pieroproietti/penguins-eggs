@@ -391,8 +391,8 @@ export default class Pacman {
     } else if (this.distro().codenameLikeId === 'bionic') {
       const dest = '/etc/penguins-eggs.d/distros/bionic'
 
-      const bionic = `${rootPen}/conf/distros/bionic/*`
-      await exec(`cp -r ${bionic} ${dest}`, echo)
+      const bionic = `${rootPen}/conf/distros/bionic`
+      await exec(`cp -r ${bionic}/* ${dest}`, echo)
 
       // Poi da buster
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
@@ -408,8 +408,11 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
-      const noble = `${rootPen}/conf/distros/noble/*`
-      await exec(`cp -r ${noble} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble`
+      await exec(`cp -r ${noble}/* ${dest}`, echo)
+
+      //  backport per focal e jammy: fstab, mount, users
+      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -424,8 +427,11 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const noble = `${rootPen}/conf/distros/noble/*`
-      await exec(`cp -r ${noble} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble`
+      await exec(`cp -r ${noble}/* ${dest}`, echo)
+
+      //  backport per focal e jammy: fstab, mount, users
+      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -441,8 +447,8 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'noble') {
       const dest = '/etc/penguins-eggs.d/distros/noble'
-      const noble = `${rootPen}/conf/distros/noble/*`
-      await exec(`cp -r ${noble} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble`
+      await exec(`cp -r ${noble}/* ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -458,8 +464,8 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
-      const noble = `${rootPen}/conf/distros/devel/*`
-      await exec(`cp -r ${noble} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/devel`
+      await exec(`cp -r ${noble}/* ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
