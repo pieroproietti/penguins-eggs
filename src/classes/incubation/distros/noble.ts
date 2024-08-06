@@ -18,7 +18,7 @@ interface IReplaces {
 /**
  *
  */
-export class Focal {
+export class Noble {
   distro: IDistro
 
   installer = {} as IInstaller

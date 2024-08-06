@@ -404,12 +404,12 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu focal: eredita da focal e buster
+       * Ubuntu focal: eredita da noble e buster
        */
     } else if (this.distro().codenameLikeId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
-      const focal = `${rootPen}/conf/distros/focal/*`
-      await exec(`cp -r ${focal} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble/*`
+      await exec(`cp -r ${noble} ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -420,12 +420,12 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu 22.04 jammy: eredita da focal e buster
+       * Ubuntu 22.04 jammy: eredita da noble e buster
        */
     } else if (this.distro().codenameLikeId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const focal = `${rootPen}/conf/distros/focal/*`
-      await exec(`cp -r ${focal} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/noble/*`
+      await exec(`cp -r ${noble} ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
@@ -436,7 +436,7 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu noble: eredita da devel e buster
+       * Ubuntu noble: e la nuova baseline per ubuntu
        *
        */
     } else if (this.distro().codenameLikeId === 'noble') {
@@ -453,13 +453,13 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
 
       /**
-       * Ubuntu rhino: eredita da devel e buster
+       * Ubuntu rhino: eredita da noble e buster
        *
        */
     } else if (this.distro().codenameLikeId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
-      const devel = `${rootPen}/conf/distros/devel/*`
-      await exec(`cp -r ${devel} ${dest}`, echo)
+      const noble = `${rootPen}/conf/distros/devel/*`
+      await exec(`cp -r ${noble} ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
       await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)

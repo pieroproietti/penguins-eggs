@@ -19,7 +19,7 @@ import Pacman from '../pacman.js'
 import Utils from '../utils.js'
 import { Bionic } from './distros/bionic.js'
 import { Buster } from './distros/buster.js'
-import { Focal } from './distros/focal.js'
+import { Noble } from './distros/noble.js'
 import { Jessie } from './distros/jessie.js'
 import { Rolling } from './distros/rolling.js'
 import { installer } from './installer.js'
@@ -158,28 +158,28 @@ export default class Incubator {
       }
 
       case 'focal': {
-        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await focal.create()
 
         break
       }
 
       case 'jammy': {
-        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await jammy.create()
 
         break
       }
 
       case 'noble': {
-        const noble = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await noble.create()
 
         break
       }
 
       case 'devel': {
-        const devel = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const devel = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await devel.create()
 
         break

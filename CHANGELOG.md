@@ -42,7 +42,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.23
-bugfix: removed fwsetup and memtests from grub menu ISO, fixed boot from local hard disk on isolinux menu for live;
+* bugfix: removed fwsetup and memtests from grub menu of ISO, fixed boot from local hard disk on isolinux menu for live;
 * Ubuntu noble: tested calamares installation without internet successfull on BIOS and UEFI.
 
 ## penguins-eggs-10.0.22

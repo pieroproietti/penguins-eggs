@@ -1,2 +1,0 @@
-crypttabOptions: luks,keyscript=/bin/cat
-efiMountOptions: umask=0077
