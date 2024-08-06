@@ -464,7 +464,7 @@ export default class Pacman {
        */
     } else if (this.distro().codenameLikeId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
-      const noble = `${rootPen}/conf/distros/devel`
+      const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
 
       await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
