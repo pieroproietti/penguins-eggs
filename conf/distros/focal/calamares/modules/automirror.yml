@@ -1,6 +1,0 @@
----
-baseUrl: archive.ubuntu.com
-distribution: Lubuntu
-geoip:
-    style: "json"
-    url:   "https://ipapi.co/json"

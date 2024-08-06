@@ -15,7 +15,7 @@ partitionLayout:
       onlyPresentWithEncryption: true
       mountPoint: "/boot"
       size: 4G
-    - name: "ubuntu_2404"
+    - name: "ubuntu_root"
       filesystem: unknown
       mountPoint: "/"
       size: 100%

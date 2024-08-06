@@ -1,9 +1,0 @@
-displaymanagers:
-  - sddm
-
-defaultDesktopEnvironment:
-    executable: "lxqt"
-    desktopFile: "Lubuntu"
-
-basicSetup: false
-sysconfigSetup: false

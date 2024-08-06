@@ -1,5 +1,0 @@
----
-dontChroot: true
-timeout: 30
-script:
-    - calamares-logs-helper ${ROOT}
