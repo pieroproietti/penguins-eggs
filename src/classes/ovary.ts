@@ -236,9 +236,13 @@ export default class Ovary {
       ignore: false
     })
     const users: string[] = result.data.split('\n')
-
+    
+    let deluser = 'deluser'
+    if (this.familyId === 'arch') {
+      deluser = 'userdel'
+    }
     for (let i = 0; i < users.length - 1; i++) {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} deluser ${users[i]}`, this.verbose))
+      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} ${deluser} ${users[i]}`, this.verbose))
     }
   }
 
