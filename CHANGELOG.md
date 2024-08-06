@@ -42,7 +42,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.24
-Ubuntu: calamares configuration it's now the same for: noble, jammy and focal. I get npble configuration working in jammy and focal replacing fstab, mount and users with the old version.
+Calamares modules configuration it's now the same for: noble, jammy and focal. I get noble configuration working in jammy and focal replacing modules: fstab, mount and users with the previous version.
 
 ## penguins-eggs-10.0.23
 * bugfix: removed fwsetup and memtests from grub menu of ISO, fixed boot from local hard disk on isolinux menu for live;
