@@ -1,3 +1,4 @@
+# Ubuntu noble 24.04
 extraMounts:
     - device: proc
       fs: proc
