@@ -6,6 +6,8 @@ else
     SUDO='doas'
     SUSER="DOAS_USER"    
 fi
+
+# COMMON
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
 $SUDO cp addons/eggs/adapt/bin/adapt /usr/local/bin/adapt
 $SUDO cp g4/* /usr/local/bin
@@ -13,9 +15,6 @@ $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
 
-# rm /usr/bin/eggs and link it to sources
-$SUDO rm -f /usr/bin/eggs
-$SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 
 # if don't exists shutdown create it
 if [ ! -e /usr/sbin/shutdown ]; then
@@ -32,24 +31,30 @@ DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
 cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
 
-$SUDO mkdir /usr/lib/penguins-eggs/ -p
-
-          
-    
-$SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
-$SUDO cp node_modules /usr/lib/penguins-eggs/ -R
-$SUDO cp package.json /usr/lib/penguins-eggs/
-$SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
-$SUDO cp addons /usr/lib/penguins-eggs/ -R
-$SUDO cp assets /usr/lib/penguins-eggs/ -R
-$SUDO cp bin /usr/lib/penguins-eggs/ -R
-$SUDO cp conf /usr/lib/penguins-eggs/ -R
-$SUDO cp dist /usr/lib/penguins-eggs/ -R
-$SUDO cp  eui /usr/lib/penguins-eggs/ -R
-$SUDO cp ipxe /usr/lib/penguins-eggs/ -R
-$SUDO cp manpages  /usr/lib/penguins-eggs/ -R
-$SUDO cp mkinitcpio /usr/lib/penguins-eggs/ -R
-$SUDO cp scripts  /usr/lib/penguins-eggs/ -R
+if [ -z "$1" ]; then
+  # rm /usr/bin/eggs and link it to sources
+  $SUDO rm -f /usr/bin/eggs
+  $SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
+else 
+  # Install usr
+  $SUDO rm -rf /usr/lib/penguins-eggs/
+  $SUDO mkdir /usr/lib/penguins-eggs/ -p
+  $SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
+  $SUDO cp node_modules /usr/lib/penguins-eggs/ -R
+  $SUDO cp package.json /usr/lib/penguins-eggs/
+  $SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
+  $SUDO cp addons /usr/lib/penguins-eggs/ -R
+  $SUDO cp assets /usr/lib/penguins-eggs/ -R
+  $SUDO cp bin /usr/lib/penguins-eggs/ -R
+  $SUDO cp conf /usr/lib/penguins-eggs/ -R
+  $SUDO cp dist /usr/lib/penguins-eggs/ -R
+  $SUDO cp  eui /usr/lib/penguins-eggs/ -R
+  $SUDO cp ipxe /usr/lib/penguins-eggs/ -R
+  $SUDO cp manpages  /usr/lib/penguins-eggs/ -R
+  $SUDO cp mkinitcpio /usr/lib/penguins-eggs/ -R
+  $SUDO cp mkinitfs /usr/lib/penguins-eggs/ -R
+  $SUDO cp scripts  /usr/lib/penguins-eggs/ -R
+  $SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
 cat << 'EOF' > /tmp/eggs
 #!/usr/bin/env bash
 set -e
@@ -70,9 +75,8 @@ DIR=$(get_script_dir)
 export PB_UPDATE_INSTRUCTIONS="update with \"sudo apt update && sudo apt install pb\""
 $DIR/node $DIR/run "$@"
 EOF
-$SUDO chmod +x /tmp/eggs
-$SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
-$SUDO rm -f /usr/bin/eggs
-$SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
-$SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
-
+  $SUDO chmod +x /tmp/eggs
+  $SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
+  $SUDO rm /usr/bin/eggs
+  $SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
+fi
