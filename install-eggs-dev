@@ -18,32 +18,34 @@ DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
 cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
 
+echo "installing penguins-eggs on /usr/lib/penguins-eggs/"
+$SUDO rm -rf /usr/lib/penguins-eggs/
+$SUDO mkdir -p /usr/lib/penguins-eggs/ 
+$SUDO cp -r addons /usr/lib/penguins-eggs/
+$SUDO cp -r assets /usr/lib/penguins-eggs/
+$SUDO cp -r bin /usr/lib/penguins-eggs/ 
+$SUDO cp -r conf /usr/lib/penguins-eggs/ 
+$SUDO cp -r dist /usr/lib/penguins-eggs/ 
+$SUDO cp -r eui /usr/lib/penguins-eggs/
+$SUDO cp -r ipxe /usr/lib/penguins-eggs/ 
+$SUDO cp -r manpages  /usr/lib/penguins-eggs/
+$SUDO cp -r mkinitcpio /usr/lib/penguins-eggs/
+$SUDO cp -r mkinitfs /usr/lib/penguins-eggs/
+$SUDO cp -r node_modules /usr/lib/penguins-eggs/ 
+$SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
+$SUDO cp package.json /usr/lib/penguins-eggs/
+$SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
+$SUDO cp scripts  /usr/lib/penguins-eggs/ -R
+$SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
+create_eggs_exec
+$SUDO rm /usr/bin/eggs
+$SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
 
-if [ -z "$1" ]; then
-  echo "linking penguins-eggs at home: ${HOME}/penguins-eggs/"
-  # rm /usr/bin/eggs and link it to sources
-  $SUDO rm -f /usr/bin/eggs
-  $SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
-else 
-  echo "installing penguins-eggs on /usr/lib/penguins-eggs/"
-  $SUDO rm -rf /usr/lib/penguins-eggs/
-  $SUDO mkdir -p /usr/lib/penguins-eggs/ 
-  $SUDO cp -r addons /usr/lib/penguins-eggs/
-  $SUDO cp -r assets /usr/lib/penguins-eggs/
-  $SUDO cp -r bin /usr/lib/penguins-eggs/ 
-  $SUDO cp -r conf /usr/lib/penguins-eggs/ 
-  $SUDO cp -r dist /usr/lib/penguins-eggs/ 
-  $SUDO cp -r eui /usr/lib/penguins-eggs/
-  $SUDO cp -r ipxe /usr/lib/penguins-eggs/ 
-  $SUDO cp -r manpages  /usr/lib/penguins-eggs/
-  $SUDO cp -r mkinitcpio /usr/lib/penguins-eggs/
-  $SUDO cp -r mkinitfs /usr/lib/penguins-eggs/
-  $SUDO cp -r node_modules /usr/lib/penguins-eggs/ 
-  $SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
-  $SUDO cp package.json /usr/lib/penguins-eggs/
-  $SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
-  $SUDO cp scripts  /usr/lib/penguins-eggs/ -R
-  $SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
+  create_shutdown
+fi
+
+###
+# create /usr/lib/penguins-eggs/bin/eggs
 cat << 'EOF' > /tmp/eggs
 #!/usr/bin/env bash
 set -e
@@ -64,19 +66,17 @@ DIR=$(get_script_dir)
 export PB_UPDATE_INSTRUCTIONS="update with \"sudo apt update && sudo apt install pb\""
 $DIR/node $DIR/run "$@"
 EOF
-  $SUDO chmod +x /tmp/eggs
-  $SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
-  $SUDO rm /usr/bin/eggs
-  $SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
-fi
 
+$SUDO chmod +x /tmp/eggs
+$SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
+
+
+###
 # if don't exists shutdown create it
 if [ ! -e /usr/sbin/shutdown ]; then
-# create a shutdown command
 cat << 'EOF' > /tmp/shutdown
 #!/usr/bin/env bash
 /sbin/poweroff
 EOF
 $SUDO chmod +x /tmp/shutdown
 $SUDO mv /tmp/shutdown /usr/sbin
-fi
