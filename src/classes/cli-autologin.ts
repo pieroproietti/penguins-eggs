@@ -90,12 +90,7 @@ export default class CliAutologin {
       /**
        * Systemd
        */
-      const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
-      const dirOverride = path.dirname(fileOverride)
-      if (fs.existsSync(dirOverride)) {
-        shx.exec(`rm ${dirOverride} -rf`)
-      }
-
+      shx.exec(`systemctl revert getty@.service`)
       this.msgRemove(`${chroot}/etc/motd`)
       this.msgRemove(`${chroot}/etc/issue`)
     } else if (Utils.isSysvinit()) {
