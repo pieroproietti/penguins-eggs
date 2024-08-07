@@ -32,3 +32,47 @@ DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
 cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
 
+$SUDO mkdir /usr/lib/penguins-eggs/ -p
+
+          
+    
+$SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
+$SUDO cp node_modules /usr/lib/penguins-eggs/ -R
+$SUDO cp package.json /usr/lib/penguins-eggs/
+$SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
+$SUDO cp addons /usr/lib/penguins-eggs/ -R
+$SUDO cp assets /usr/lib/penguins-eggs/ -R
+$SUDO cp bin /usr/lib/penguins-eggs/ -R
+$SUDO cp conf /usr/lib/penguins-eggs/ -R
+$SUDO cp dist /usr/lib/penguins-eggs/ -R
+$SUDO cp  eui /usr/lib/penguins-eggs/ -R
+$SUDO cp ipxe /usr/lib/penguins-eggs/ -R
+$SUDO cp manpages  /usr/lib/penguins-eggs/ -R
+$SUDO cp mkinitcpio /usr/lib/penguins-eggs/ -R
+$SUDO cp scripts  /usr/lib/penguins-eggs/ -R
+cat << 'EOF' > /tmp/eggs
+#!/usr/bin/env bash
+set -e
+echoerr() { echo "$@" 1>&2; }
+get_script_dir () {
+  SOURCE="${BASH_SOURCE[0]}"
+  # While $SOURCE is a symlink, resolve it
+  while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$( readlink "$SOURCE" )"
+    # If $SOURCE was a relative symlink (so no "/" as prefix, need to resolve it relative to the symlink base directory
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  done
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  echo "$DIR"
+}
+DIR=$(get_script_dir)
+export PB_UPDATE_INSTRUCTIONS="update with \"sudo apt update && sudo apt install pb\""
+$DIR/node $DIR/run "$@"
+EOF
+$SUDO chmod +x /tmp/eggs
+$SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
+$SUDO rm -f /usr/bin/eggs
+$SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
+$SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
+
