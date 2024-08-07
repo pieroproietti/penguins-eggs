@@ -32,7 +32,7 @@
 #
 # The three combinations of legacy values are still supported.
 restartNowMode: user-unchecked
-
+restartNowChecked: true
 # If the checkbox is shown, and the checkbox is checked, then when
 # Calamares exits from the finished-page it will run this command.
 # If not set, falls back to "shutdown -r now".
