@@ -68,6 +68,7 @@
         "/ipxe",
         "/manpages",
         "/mkinitcpio",
+        "/mkinitfs",
         "/scripts"
     ],
     "homepage": "https://penguins-eggs.net",

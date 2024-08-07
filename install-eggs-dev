@@ -14,45 +14,34 @@ $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
-
-
-# if don't exists shutdown create it
-if [ ! -e /usr/sbin/shutdown ]; then
-# create a shutdown command
-cat << 'EOF' > /tmp/shutdown
-#!/usr/bin/env bash
-/sbin/poweroff
-EOF
-$SUDO chmod +x /tmp/shutdown
-$SUDO mv /tmp/shutdown /usr/sbin
-fi
-
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
 cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
 
+
 if [ -z "$1" ]; then
+  echo "linking penguins-eggs at home: ${HOME}/penguins-eggs/"
   # rm /usr/bin/eggs and link it to sources
   $SUDO rm -f /usr/bin/eggs
   $SUDO ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs
 else 
-  # Install usr
+  echo "installing penguins-eggs on /usr/lib/penguins-eggs/"
   $SUDO rm -rf /usr/lib/penguins-eggs/
-  $SUDO mkdir /usr/lib/penguins-eggs/ -p
-  $SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
-  $SUDO cp node_modules /usr/lib/penguins-eggs/ -R
-  $SUDO cp package.json /usr/lib/penguins-eggs/
+  $SUDO mkdir -p /usr/lib/penguins-eggs/ 
+  $SUDO cp -r addons /usr/lib/penguins-eggs/
+  $SUDO cp -r assets /usr/lib/penguins-eggs/
+  $SUDO cp -r bin /usr/lib/penguins-eggs/ 
+  $SUDO cp -r conf /usr/lib/penguins-eggs/ 
+  $SUDO cp -r dist /usr/lib/penguins-eggs/ 
+  $SUDO cp -r eui /usr/lib/penguins-eggs/
+  $SUDO cp -r ipxe /usr/lib/penguins-eggs/ 
+  $SUDO cp -r manpages  /usr/lib/penguins-eggs/
+  $SUDO cp -r mkinitcpio /usr/lib/penguins-eggs/
+  $SUDO cp -r mkinitfs /usr/lib/penguins-eggs/
+  $SUDO cp -r node_modules /usr/lib/penguins-eggs/ 
   $SUDO cp .oclif.manifest.json /usr/lib/penguins-eggs/
-  $SUDO cp addons /usr/lib/penguins-eggs/ -R
-  $SUDO cp assets /usr/lib/penguins-eggs/ -R
-  $SUDO cp bin /usr/lib/penguins-eggs/ -R
-  $SUDO cp conf /usr/lib/penguins-eggs/ -R
-  $SUDO cp dist /usr/lib/penguins-eggs/ -R
-  $SUDO cp  eui /usr/lib/penguins-eggs/ -R
-  $SUDO cp ipxe /usr/lib/penguins-eggs/ -R
-  $SUDO cp manpages  /usr/lib/penguins-eggs/ -R
-  $SUDO cp mkinitcpio /usr/lib/penguins-eggs/ -R
-  $SUDO cp mkinitfs /usr/lib/penguins-eggs/ -R
+  $SUDO cp package.json /usr/lib/penguins-eggs/
+  $SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
   $SUDO cp scripts  /usr/lib/penguins-eggs/ -R
   $SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
 cat << 'EOF' > /tmp/eggs
@@ -79,4 +68,15 @@ EOF
   $SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
   $SUDO rm /usr/bin/eggs
   $SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
+fi
+
+# if don't exists shutdown create it
+if [ ! -e /usr/sbin/shutdown ]; then
+# create a shutdown command
+cat << 'EOF' > /tmp/shutdown
+#!/usr/bin/env bash
+/sbin/poweroff
+EOF
+$SUDO chmod +x /tmp/shutdown
+$SUDO mv /tmp/shutdown /usr/sbin
 fi
