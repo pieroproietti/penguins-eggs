@@ -1,13 +1,28 @@
 #!/bin/bash
+
+# This script installs penguins-eggs on your system
+# at /usr/lib/penguins-eggs/ and creates a symlink to /usr/bin/eggs
+# it is intended for development purposes only
+
 if command -v sudo >/dev/null 2>&1; then
     SUDO='sudo'
-    SUSER="SUDO_USER"
 else
     SUDO='doas'
-    SUSER="DOAS_USER"    
 fi
 
-# COMMON
+clear
+echo "installing penguins-eggs on /usr/lib/penguins-eggs/"
+
+if [ ! -e /usr/bin/node ]; then
+    echo "node is not installed, please install nodejs"
+    exit 1
+fi
+
+if [ ! -e dist ]; then
+    echo "dist directory not found, please run 'pnpm build' first"
+    exit 1
+fi
+
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
 $SUDO cp addons/eggs/adapt/bin/adapt /usr/local/bin/adapt
 $SUDO cp g4/* /usr/local/bin
@@ -15,10 +30,8 @@ $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
 $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
-cp addons/eggs/adapt/applications/eggs-adapt.desktop ${DESKTOP_DIR}
-cp assets/penguins-eggs.desktop ${DESKTOP_DIR}
-
-echo "installing penguins-eggs on /usr/lib/penguins-eggs/"
+cp addons/eggs/adapt/applications/eggs-adapt.desktop "${DESKTOP_DIR}"
+cp assets/penguins-eggs.desktop "${DESKTOP_DIR}"
 $SUDO rm -rf /usr/lib/penguins-eggs/
 $SUDO mkdir -p /usr/lib/penguins-eggs/ 
 $SUDO cp -r addons /usr/lib/penguins-eggs/
@@ -37,14 +50,7 @@ $SUDO cp package.json /usr/lib/penguins-eggs/
 $SUDO cp pnpm-lock.yaml /usr/lib/penguins-eggs/
 $SUDO cp scripts  /usr/lib/penguins-eggs/ -R
 $SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
-create_eggs_exec
-$SUDO rm /usr/bin/eggs
-$SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
 
-  create_shutdown
-fi
-
-###
 # create /usr/lib/penguins-eggs/bin/eggs
 cat << 'EOF' > /tmp/eggs
 #!/usr/bin/env bash
@@ -70,13 +76,15 @@ EOF
 $SUDO chmod +x /tmp/eggs
 $SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
 
+$SUDO rm /usr/bin/eggs
+$SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
 
-###
-# if don't exists shutdown create it
 if [ ! -e /usr/sbin/shutdown ]; then
+echo "creating /usr/sbin/shutdown"
 cat << 'EOF' > /tmp/shutdown
 #!/usr/bin/env bash
 /sbin/poweroff
 EOF
 $SUDO chmod +x /tmp/shutdown
 $SUDO mv /tmp/shutdown /usr/sbin
+fi
