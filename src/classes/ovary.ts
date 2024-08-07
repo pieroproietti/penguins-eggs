@@ -20,7 +20,7 @@ import shx from 'shelljs'
 
 // interfaces
 import { IAddons, IExcludes } from '../interfaces/index.js'
-import CliAutologin from '../lib/cli-autologin.js'
+import CliAutologin from './cli-autologin.js'
 // libraries
 import { exec } from '../lib/utils.js'
 import Bleach from './bleach.js'
@@ -1764,13 +1764,11 @@ export default class Ovary {
               this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }
           } else {
-            this.cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+            this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
-
           // Here we are forcing alwats cliAutologin
-          this.cliAutologin.addAutologin(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+          // this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
-
         await this.editLiveFs(clone, cryptedclone)
         mksquashfsCmd = await this.makeSquashfs(scriptOnly, unsecure)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup

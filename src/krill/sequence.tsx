@@ -59,7 +59,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
 import Utils from '../classes/utils.js'
-import CliAutologin from '../lib/cli-autologin.js'
+import CliAutologin from '../classes/cli-autologin.js'
 import Pacman from '../classes/pacman.js'
 import { installer } from '../classes/incubation/installer.js'
 import Xdg from '../classes/xdg.js';
