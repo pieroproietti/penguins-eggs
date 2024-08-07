@@ -2,6 +2,7 @@
 doAutologin: false
 setRootPassword: false
 sudoersGroup: sudo
+userGroup: users # glenn
 defaultGroups:
     - adm
     - cdrom
