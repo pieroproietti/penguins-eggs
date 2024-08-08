@@ -285,22 +285,3 @@ Stay tuned!
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
-
-
-# On real hardware
-Acer Aspire One ZG8 (Aspire One Serie)
-Processore: Intel Atom N270 1 x 1.6 GHz, DiamondVille
-Scheda grafica: Intel Graphics Media Accelerator (GMA) 950
-Monitor 10 pollici 10:6, 1024 x 600 pixel
-Bluetoth
-
-https://wiki.alpinelinux.org/wiki/Intel_Video
-
-```
-
-sudo apk add libva-intel-driver
-
-```
-libreoffice
-evince
-vlc-qt
