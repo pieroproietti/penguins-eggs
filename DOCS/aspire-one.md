@@ -1,3 +1,4 @@
+git```
 pepos-live
     description: Computer
     product: AO531h (Napa_Fab5)
@@ -562,3 +563,4 @@ pepos-live
        logical name: input9
        logical name: /dev/input/event5
        capabilities: platform
+```
