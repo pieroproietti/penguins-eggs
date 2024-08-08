@@ -299,4 +299,8 @@ https://wiki.alpinelinux.org/wiki/Intel_Video
 ```
 
 sudo apk add libva-intel-driver
+
 ```
+libreoffice
+evince
+vlc-qt
