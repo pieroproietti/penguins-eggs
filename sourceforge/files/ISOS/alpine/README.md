@@ -23,6 +23,8 @@ penguins-eggs
 
 * **egg-of-alpine-colibri** An experimental version from Alpine standard. Look on discussion [Way to Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377).
 
+NOTE: I added now `linux-firmwaer` to use on real hardware.
+
 * You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
 ## Important notes
