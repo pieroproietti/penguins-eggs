@@ -1,20 +1,24 @@
 # Way to Debian
 
-We start from the `debian-12.6.0-amd64-netinst.iso` image, which is only 203 MB, and go to install Debian bookworm.
+We start from the `debian-12.6.0-amd64-netinst.iso` image, which is only 621 MB, and go to install Debian bookworm.
 
-When we reache the end of installation, we deselect all except common system utilities, then reboot.
+When we reache the end of installation, we deselect all except `system standard utilities`, finish the installation, then reboot.
 
 ## Install sudo and git
-Log in as root and: `apt install sudo` then `adduser artisan sudo` to have sudo and grant to user artisan the rights to use it.
+Log in as root and: `apt install sudo git` then `/sbin/adduser artisan sudo` to have sudo and grant to user artisan the rights to use it.
 
 ## Installing penguins-eggs
-* `sudo apt install git`
 * `git clone https://github.com/get-eggs`
 * `cd get-eggs`
 * `sudo ./get-eggs`
 
+
+# Dressing the system
+We can "dressing" our penguin manually or with eggs wardrobe,
+
 ## dressing our penguins from wardrobe
-We can "dressing" our penguin manually or with eggs wardrobe, costume colibri have all we need to develop penguins-eggs and more. Here is the wardrobe method:
+We are using here eggs wardrobe, costume colibri. 
+Colibri have all we need to develop penguins-eggs and more. Here is the wardrobe method:
 * `eggs wardrobe get`
 * `sudo eggs wardrobe wear colibri`
 
@@ -106,7 +110,7 @@ code .
 ```
 And use `pnpm build` before to run. 
 
-## build penguins-eggs debian packages
+# build penguins-eggs debian packages
 
 It's also possible to create debian packages, all you need is to type:
 ```
