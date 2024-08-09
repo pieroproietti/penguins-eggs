@@ -32,8 +32,8 @@ nano /etc/apk/repositories
 copy and past:
 ```
 #/media/cdrom/apks
-http://alpinelinux.mirror.garr.it/v3.20/main
-http://alpinelinux.mirror.garr.it/v3.20/community
+http://dl-cdn.alpinelinux.org/alpine/v3.20/main
+http://dl-cdn.alpinelinux.org/alpine/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 ```
@@ -128,11 +128,6 @@ rc-service spice-vdagentd start
 
 ```
 
-## Italian locale or other
-```
-echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
-
-```
 
 ## Installing grub (BIOS)
 penguins-eggs support mainly grub for installing, so we must to install use it. 
@@ -141,8 +136,13 @@ Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for lat
 To install GRUB in BIOS mode, type:
 
 ```
-apk add grub grub-bios grub-efi
+apk add grub grub-bios grub-efi efibootmgr
 grub-install /dev/sda
+```
+## Installing firmware-linux
+```
+apt add firmware-linux
+
 ```
 
 # reboot
@@ -154,6 +154,16 @@ chsh -s /bin/bash
 
 ```
 
+## Italian locale or other
+```
+echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
+
+```
+## Italian locale or other X
+```
+setxkeyboard it
+
+```
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `dirs/etc/skel` on my user `/home/artisan`.
 
