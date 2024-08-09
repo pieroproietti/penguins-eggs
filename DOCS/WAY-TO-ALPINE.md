@@ -141,7 +141,7 @@ grub-install /dev/sda
 ```
 ## Installing firmware-linux
 ```
-apt add firmware-linux
+apk add linux-firmware
 
 ```
 
