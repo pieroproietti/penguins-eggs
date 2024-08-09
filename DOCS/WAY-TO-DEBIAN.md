@@ -25,7 +25,36 @@ Colibri have all we need to develop penguins-eggs and more. Here is the wardrobe
 If you choose this method you are finished.
 
 ## dressing our penguins manually
-We can choose our desktop, desktop manager and so on, install and configure them continue installing the following tools, we need to develop.
+We can choose our desktop, desktop manager and so on, install and configure them continue installing 
+the following tools, we need to develop.
+
+Here we are installing plasma,
+
+```
+sudo apt install \
+    alsa-utils \
+    ark \
+    audacious \
+    bluez \
+    cups \
+    discover \
+    dolphin \
+    firefox-esr \
+    git \
+    kcalc \
+    konsole \ 
+    kwrite \
+    neofetch \
+    partitionmanager \
+    kde-plasma-desktop \
+    qbittorrent \
+    screen \ 
+    sddm \
+    spice-vdagent \
+    wget \
+    zenity
+```
+
 
 ## Install your editor
 Download [code](https://code.visualstudio.com/download) and install it. 
