@@ -264,17 +264,19 @@ doas ./eggs produce --pendrive
 
 ```
 
+# Actual state 
+After 4 weeks from start this project, I was able to remaster and reinstall a customized Alpine Linux (my classical colibri) acting as the various versions on others distros.
+
+You can remaster and reinstall it, we lacks an APKBUILD to create a real package, but I installed it by a script.
+
+I added now firmwares and grub, but until now never tested it on real hardware.
+
+Stay tuned!
+
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
 
 I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
-
-# Actual state 
-Today, after 3 weeks from start this project, I was able to remaster and reinstall a customized Alpine Linux (my classical colibri) acting as the various versions.
-
-Probably tomorrow I will add a video about that... I need again to build an APKBUILD for penguins-eggs and look if I can use calamare with the last Alpine Linux.
-
-Stay tuned!
 
 
 # Video
