@@ -32,8 +32,6 @@ nano /etc/apk/repositories
 copy and past:
 ```
 #/media/cdrom/apks
-http://pkg.adfinis.com/alpine/v3.20/main
-http://pkg.adfinis.com/alpine/v3.20/community
 http://alpinelinux.mirror.garr.it/v3.20/main
 http://alpinelinux.mirror.garr.it/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
@@ -229,7 +227,7 @@ Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for lat
 To install GRUB in BIOS mode, type:
 
 ```
-apk add grub grub-bios
+apk add grub grub-bios grub-efi
 grub-install /dev/sda
 ```
 
@@ -285,3 +283,4 @@ Stay tuned!
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
+
