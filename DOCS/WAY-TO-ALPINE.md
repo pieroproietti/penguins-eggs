@@ -44,14 +44,14 @@ apk add doas
 
 ```
 
-# sudo as link to doas, shutdown as link to poweroff
+ ## sudo as link to doas, shutdown as link to poweroff
 To not get crazy, almost me:
 ```
 ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
-# autocompletion, git, mandoc, etc
+## autocompletion, git, mandoc, etc
 
 Copy and past:
 ```
@@ -70,10 +70,11 @@ apk add \
 
 ```
 
-# add user to wheel
+## add user to wheel
 add your user to groups `wheel` and others... 
 
 ```
+adduser artisan audio
 adduser artisan cdrom
 adduser artisan games
 adduser artisan input
@@ -133,17 +134,21 @@ echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
 
 ```
 
+## Installing grub (BIOS)
+penguins-eggs support mainly grub for installing, so we must to install use it. 
+Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
+
+To install GRUB in BIOS mode, type:
+
+```
+apk add grub grub-bios grub-efi
+grub-install /dev/sda
+```
+
+# reboot
+Reboot, then login as user artisan.
 
 ## Change default shell to bash
-We come back as user:
-
-```
-exit
-
-```
-
-Change the default shell to bash:
-
 ```
 chsh -s /bin/bash
 
@@ -168,7 +173,6 @@ doas apk add nodejs npm
 doas npm i pnpm -g
 
 ```
-
 
 ### Visual studio code or others
 ```
@@ -219,21 +223,6 @@ echo "fuse" | doas tee /etc/modules-load.d/fuse.conf
 
 ```
 
-
-# Installing grub (BIOS)
-penguins-eggs support mainly grub for installing, so we must to install use it. 
-Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
-
-To install GRUB in BIOS mode, type:
-
-```
-apk add grub grub-bios grub-efi
-grub-install /dev/sda
-```
-
-## reboot
-To check grub reboot.
-
 ## Clone penguins-eggs
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
@@ -264,7 +253,6 @@ doas ./eggs dad -d
 doas ./eggs produce --pendrive
 
 ```
-
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
