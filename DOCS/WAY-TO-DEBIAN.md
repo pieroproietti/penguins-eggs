@@ -121,7 +121,7 @@ Using `pnpm deb -a` will generate packages for all architectures: amd64, i386 an
 # On real hardware
 Acer Aspire One ZG8 (Aspire One Serie), Intel Atom N270 1 x 1.6 GHz, DiamondVille, card: Intel Graphics Media Accelerator (GMA) 950
 
-Just installing `sudo apt install linux-firmware`, I get wi-fi and audio working.
+Just installing `sudo apt install firmware-linux`, I get wi-fi, audio and graphics working.
 
 ``` 
 apt install \
