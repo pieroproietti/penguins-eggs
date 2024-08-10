@@ -41,7 +41,7 @@ You can safety install it using krill, and once installed, it's possible to upda
 
 The main limits, are: my Alpine remaster is not yet able to boot from ISO on UEFI, I must to write an APKBUILD to install eggs, actually we rely on a script.
 
-So, extend penguins-eggs to Alpine Linux is a work in progress, please help!
+Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
 ## Video
 I did a video: produce an ISO from Alpine Linux, boot another system with the live and install it using krill a CLI system installer.
