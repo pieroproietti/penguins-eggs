@@ -46,7 +46,7 @@ export default class Locales {
       const lines = result.data.split('\n')
       for (const line of lines) {
         if (distro.familyId === 'alpine') {
-          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim()+ '.utf-8')
+          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim()+ '.UTF-8')
         } else {
           enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim())
         }
