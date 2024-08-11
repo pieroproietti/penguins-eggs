@@ -64,11 +64,12 @@
         "/bin",
         "/conf",
         "/dist",
+        "/dracut",
         "/eui",
         "/ipxe",
         "/manpages",
-        "/mkinitfs",
         "/mkinitcpio",
+        "/mkinitfs",
         "/scripts"
     ],
     "homepage": "https://penguins-eggs.net",
