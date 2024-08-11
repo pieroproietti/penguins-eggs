@@ -41,6 +41,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.26
+From now we have penguins-eggs on: alpine, arch, debian, devuan, manjaro, ubuntu. Isn't that great?
+
 ## penguins-eggs-10.0.24
 * Calamares modules configuration it's now the same for: noble, jammy and focal. I get noble configuration working in jammy and focal replacing modules: fstab, mount and users with the previous version.
 
