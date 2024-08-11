@@ -35,6 +35,7 @@ copy and past:
 http://dl-cdn.alpinelinux.org/alpine/v3.20/main
 http://dl-cdn.alpinelinux.org/alpine/v3.20/community
 @testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
+@edge https://dl-cdn.alpinelinux.org/alpine/edge/community
 
 ```
 
