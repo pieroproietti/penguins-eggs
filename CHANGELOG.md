@@ -41,7 +41,7 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
-## penguins-eggs-10.0.26
+## penguins-eggs-10.0.25
 From now we have penguins-eggs on: alpine, arch, debian, devuan, manjaro, ubuntu. Isn't that great?
 
 ## penguins-eggs-10.0.24
