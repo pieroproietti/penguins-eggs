@@ -72,8 +72,8 @@ export default class CliAutologin {
       fs.writeFileSync(inittab, content, 'utf-8')
       // create /bin/autologin
       const autologin=chroot + '/bin/autologin'
-      content='#!/bin/sh'
-      content+=`/bin/login -f ${user}`
+      content='#!/bin/sh' + '\n'
+      content+=`/bin/login -f ${user}` + '\n'
       fs.writeFileSync(autologin, content, 'utf-8')
       execSync(`chmod +x ${autologin}`)
 

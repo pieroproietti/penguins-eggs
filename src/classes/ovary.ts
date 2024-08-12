@@ -1540,8 +1540,8 @@ export default class Ovary {
       console.log('Ovary: mergedAndOverlay')
     }
 
-    // boot viene copiato... non ricordo perchè
-    const mountDirs = ['etc', 'usr', 'var']
+    // agginto bin per autologin su Alpine
+    const mountDirs = ['bin', 'etc', 'usr', 'var']
     let mountDir = ''
     let overlay = false
     for (mountDir of mountDirs) {
