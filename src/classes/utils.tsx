@@ -101,6 +101,18 @@ export default class Utils {
    }
 
    /**
+    * 
+    * @returns 
+    */
+   static isOpenRc(): boolean {
+      const checkFile = '/tmp/checkinit'
+      shx.exec(`command -v openrc >${checkFile} 2>&1`) 
+      const isOpenrc = fs.readFileSync(checkFile).includes('openrc')
+      shx.exec(`rm ${checkFile}`)
+      return isOpenrc
+   }
+
+   /**
     *
     * @returns
     */
@@ -110,15 +122,6 @@ export default class Utils {
       const isSysvinit = fs.readFileSync(checkFile).includes('init')
       shx.exec(`rm ${checkFile}`)
       return isSysvinit
-   }
-
-   static isOpenRc(): boolean {
-      let isOpenRc = false
-      let distro = new Distro()
-      if (distro.familyId === "alpine") {
-         isOpenRc = true
-      }
-      return isOpenRc
    }
 
    /**

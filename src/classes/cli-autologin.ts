@@ -39,9 +39,6 @@ export default class CliAutologin {
    */
   async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
-      /**
-       * Systemd
-       */
       const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
       if (fs.existsSync(dirOverride)) {
@@ -57,13 +54,25 @@ export default class CliAutologin {
       shx.exec(`chmod +x ${fileOverride}`)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
+
+    } else if (Utils.isOpenRc()) {
+      const inittab = chroot + '/etc/inittab'
+      const search=`tty1::respawn:/sbin/getty 38400 tty1`
+      let content = ''
+      const replace=`tty1::respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1`
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) {
+          lines[i] = replace
+        }
+        content += lines[i] + '\n'
+      }
+      fs.writeFileSync(inittab, content, 'utf-8')
+      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
-      /**
-       * sysvinit
-       */
       const inittab = chroot + '/etc/inittab'
       const search = '1:2345:respawn:/sbin/getty'
-      // const replace = `1:2345:respawn:/sbin/getty --noclear --autologin ${user} 38400 tty1`
       const replace = `1:2345:respawn:/sbin/getty --autologin ${user} 38400 tty1`
       let content = ''
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
@@ -71,7 +80,6 @@ export default class CliAutologin {
         if (lines[i].includes(search)) {
           lines[i] = replace
         }
-
         content += lines[i] + '\n'
       }
 
@@ -98,13 +106,33 @@ export default class CliAutologin {
       // shx.exec(`systemctl revert getty@.service`)
       this.msgRemove(`${chroot}/etc/motd`)
       this.msgRemove(`${chroot}/etc/issue`)
+
+    } else if (Utils.isOpenRc()) {
+      /**
+       * openrc
+       */
+      const inittab = chroot + '/etc/inittab'
+      const search = '--autologin'
+      const replace = `tty1::respawn:/sbin/getty 38400 tty1`
+      let content = ''
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) {
+          lines[i] = replace
+        }
+
+        content += lines[i] + '\n'
+      }
+      fs.writeFileSync(inittab, content, 'utf-8')
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+
     } else if (Utils.isSysvinit()) {
       /**
        * sysvinit
        */
       const inittab = chroot + '/etc/inittab'
-      const search = '1:2345:respawn:/sbin/getty'
-      // const replace = `1:2345:respawn:/sbin/getty --noclear 38400 tty1         `
+      const search = '--autologin'
       const replace = '1:2345:respawn:/sbin/getty 38400 tty1         '
       let content = ''
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
