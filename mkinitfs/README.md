@@ -25,33 +25,22 @@ La creazione di `initramfs-lts` avviene all'interno di `ovary.ts` chiamando il m
   }
 ```
 
-Nella stessa funzione, lo script `sidecar.sh` che viene inserito all'interno della carlella `live` della ISO.
+Nella stessa funzione, lo script `sidecar.sh` viene creato e viene inserito all'interno della carlella `live` della ISO.
 
 
-L'avvio del live è possibile solo da sistemi BIOS, il sistema viene avviato ma `initramfs-lts` va in emergency mode.
+L'avvio del live è possibile solo da sistemi BIOS, il sistema viene avviato ma `initramfs-lts` va in emergency mode, non è previsto il mount con overlayfs. 
 
-A questo punto:
+A questo punto, basta montare la ISO, digitare exit per trovarisi in emergency shell e lanciare sidecar.sh:
 
 ```
 mkdir /mnt/
 mount /dev/sr0 /mnt
+exit
 /mnt/live/sidecar.sh
 ```
 
-Purtroppo mentre `filestem.squashfs` viene correttamente montato RW in `/sysroot`, non viene effettuato lo `switch_root /newroot /sbin/init`.
+Le istruzioni di `sidecar.sh` utilizzano `/sysroot` come mountpoint per il mount RW del filesystem live e, digitanto ancora `exit` per tornare all'init, verrà correttamente eseguito lo `switch_root` ed il sistema verrà avviato.
 
-La causa è il PID, deve essere uguale ad 1.
+Resta da vedere se è possibile includere questo in un vero init.
 
-A questo punto, riflettendo sul funzionamento dell'emergency mode, ho realizzato che la soluzione non è quella di eseguire lo switch_root con `sidecar.sh`, ma digitare `exit` per tornare al processo init chiamante.
-
-A questo punto però è sorto un altro problema: `init` mi segnala che non riesce a trovare `/sbin/init` nella nuova root.
-
-```
-/sbin/init not found in new root. Launching emergency recovery shell
-Type exit to continue boot.
-```
-
-Questo succede perchè ad un certo punto init tenta di montare su `/sysroot` il block device o il tmpfs sul quale è registrato e non è pensata per overlayfs. Tuttavia, eseguendo un `exit` prima di avviare `mnt/live/sidecar.sh` ci troveremo nella parte finale dell'init - dopo che questo tentativo è stato già effettuato.
-
-Le istruzioni di `sidecar.sh` utilizzeranno quindi `/sysroot` come mountpoint per il mount RW del filesystem live e, digitanto ancora `exit` per tornare all'init, verrà correttamente eseguito lo `switch_root` ed il sistema verrà avviato.
 
