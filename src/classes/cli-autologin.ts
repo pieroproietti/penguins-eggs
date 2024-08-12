@@ -15,6 +15,7 @@ import Pacman from './pacman.js'
 import Utils from './utils.js'
 // libraries
 import { exec } from '../lib/utils.js'
+import { execSync } from 'node:child_process'
 const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
@@ -55,11 +56,12 @@ export default class CliAutologin {
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
 
+
     } else if (Utils.isOpenRc()) {
       const inittab = chroot + '/etc/inittab'
-      const search=`tty1::respawn:/sbin/getty 38400 tty1`
       let content = ''
-      const replace=`tty1::respawn:/sbin/getty --autologin ${user} --noclear 38400 tty1`
+      const search=`tty1::respawn:/sbin/getty 38400 tty1`
+      const replace=`tty1::respawn:/sbin/getty -L 38400 tty1 -n -l /bin/autologin`
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].includes(search)) {
@@ -68,6 +70,13 @@ export default class CliAutologin {
         content += lines[i] + '\n'
       }
       fs.writeFileSync(inittab, content, 'utf-8')
+      // create /bin/autologin
+      const autologin=chroot + '/bin/autologin'
+      content='#!/bin/sh'
+      content+=`/bin/login -f ${user}`
+      fs.writeFileSync(autologin, content, 'utf-8')
+      execSync(`chmod +x ${autologin}`)
+
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
@@ -112,7 +121,7 @@ export default class CliAutologin {
        * openrc
        */
       const inittab = chroot + '/etc/inittab'
-      const search = '--autologin'
+      const search = 'autologin'
       const replace = `tty1::respawn:/sbin/getty 38400 tty1`
       let content = ''
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
