@@ -12,6 +12,7 @@ import dns from 'dns'
 import path from 'path'
 import os from 'os'
 import inquirer from 'inquirer'
+import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
 import { Netmask } from 'netmask'
 
@@ -21,7 +22,6 @@ import Distro from './distro.js'
 
 // pjson
 import { createRequire } from 'module';
-import bottomBar from 'inquirer/lib/ui/bottom-bar.js'
 const require = createRequire(import.meta.url);
 const pjson = require('../../package.json');
 
@@ -92,9 +92,9 @@ export default class Utils {
    */
    static isSystemd(): boolean {
       const checkFile = '/tmp/checksystemd'
-      shx.exec(`cat /proc/1/comm >${checkFile}`)
+      execSync(`cat /proc/1/comm >${checkFile}`)
       const isSystemd = fs.readFileSync(checkFile).includes('systemd')
-      shx.exec(`rm ${checkFile}`)
+      execSync(`rm ${checkFile}`)
       return isSystemd
    }
 
@@ -104,9 +104,9 @@ export default class Utils {
     */
    static isOpenRc(): boolean {
       const checkFile = '/tmp/checkinit'
-      shx.exec(`command -v openrc >${checkFile} 2>&1`) 
+      execSync(`command -v openrc >${checkFile} 2>&1`) 
       const isOpenrc = fs.readFileSync(checkFile).includes('openrc')
-      shx.exec(`rm ${checkFile}`)
+      execSync(`rm ${checkFile}`)
       return isOpenrc
    }
 
@@ -116,9 +116,9 @@ export default class Utils {
     */
    static isSysvinit(): boolean {
       const checkFile = '/tmp/checkinit'
-      shx.exec(`cat /proc/1/comm >${checkFile}`)
+      execSync(`cat /proc/1/comm >${checkFile}`)
       const isSysvinit = fs.readFileSync(checkFile).includes('init')
-      shx.exec(`rm ${checkFile}`)
+      execSync(`rm ${checkFile}`)
       return isSysvinit
    }
 
@@ -166,7 +166,7 @@ export default class Utils {
       }
 
       if (process.arch === 'arm64') {
-         const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
+         const kernelVersion = execSync('uname -r', { silent: true }).stdout.trim();
          vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
 
@@ -312,7 +312,7 @@ export default class Utils {
     * @param device
     */
    static uuid(device: string): string {
-      const uuid = shx.exec(`blkid -s UUID -o value ${device}`).stdout.trim()
+      const uuid = execSync(`blkid -s UUID -o value ${device}`).stdout.trim()
       return uuid
    }
 
@@ -379,7 +379,7 @@ export default class Utils {
     */
    static getSnapshotSize(snapshot_dir = '/'): number {
       let fileSizeInBytes = 0
-      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+      const size = execSync(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
 
       if (size === '') {
          fileSizeInBytes = 0
@@ -398,7 +398,7 @@ export default class Utils {
       if (process.arch === 'ia32') {
          arch = 'i386'
          // 
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+         if (execSync('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
       } else if (process.arch === 'x64') {
@@ -418,7 +418,7 @@ export default class Utils {
       let format = ''
       if (process.arch === 'ia32') {
          format = 'i386-efi'
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+         if (execSync('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             format = 'x86_64-efi'
          }
       } else if (process.arch === 'x64') {
