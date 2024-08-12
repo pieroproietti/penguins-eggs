@@ -166,7 +166,7 @@ export default class Utils {
       }
 
       if (process.arch === 'arm64') {
-         const kernelVersion = execSync('uname -r', { silent: true }).stdout.trim();
+         const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
          vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
 
@@ -312,7 +312,7 @@ export default class Utils {
     * @param device
     */
    static uuid(device: string): string {
-      const uuid = execSync(`blkid -s UUID -o value ${device}`).stdout.trim()
+      const uuid = shx.exec(`blkid -s UUID -o value ${device}`).stdout.trim()
       return uuid
    }
 
@@ -379,7 +379,7 @@ export default class Utils {
     */
    static getSnapshotSize(snapshot_dir = '/'): number {
       let fileSizeInBytes = 0
-      const size = execSync(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
 
       if (size === '') {
          fileSizeInBytes = 0
@@ -398,7 +398,7 @@ export default class Utils {
       if (process.arch === 'ia32') {
          arch = 'i386'
          // 
-         if (execSync('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             arch = 'amd64'
          }
       } else if (process.arch === 'x64') {
@@ -418,7 +418,7 @@ export default class Utils {
       let format = ''
       if (process.arch === 'ia32') {
          format = 'i386-efi'
-         if (execSync('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             format = 'x86_64-efi'
          }
       } else if (process.arch === 'x64') {
