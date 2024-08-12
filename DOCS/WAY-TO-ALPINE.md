@@ -52,13 +52,14 @@ ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
-## autocompletion, git, mandoc, etc
+## autocompletion, git, mandoc, fuse, etc
 
 Copy and past:
 ```
 apk add \
     bash-completion \
     docs \
+    fuse \
     git \
     man-pages \
     mandoc \
@@ -68,6 +69,8 @@ apk add \
     nano \
     rsync \
     shadow  
+
+echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
 ```
 
@@ -139,6 +142,7 @@ To install GRUB in BIOS mode, type:
 ```
 apk add grub grub-bios grub-efi efibootmgr
 grub-install /dev/sda
+
 ```
 ## Installing firmware-linux
 ```
@@ -165,10 +169,12 @@ echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
 setxkeyboard it
 
 ```
+
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `dirs/etc/skel` on my user `/home/artisan`.
 
 ```
+xdg-user-dirs-update
 git  clone https://github.com/pieroproietti/penguins-wardrobe
 rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/ "${HOME}/"
 doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
@@ -177,11 +183,9 @@ doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 ## Development tools
 
-### nodejs, npm e pnpm
+### nodejs pnpm
 ```
-doas apk add nodejs npm
-
-doas npm i pnpm -g
+doas apk add nodejs pnpm
 
 ```
 
@@ -199,9 +203,10 @@ doas apk add firefox
 
 ```
 
+## Install 
 
 ## Install dependencies for penguins-eggs on Alpine
-This packages will finish in a APKBUILD for penguins-eggs on Alpine.
+I don't use more this script, prefere to build the package with abuild.
 
 ```
 doas apk add \
@@ -228,11 +233,6 @@ doas apk add \
 
 ```
 
-# Enable fuse
-```
-echo "fuse" | doas tee /etc/modules-load.d/fuse.conf
-
-```
 
 ## Clone penguins-eggs
 ```
@@ -255,30 +255,61 @@ We want to work with all the conveniences of eggs installed, especially completi
 ## Configure eggs
 
 ```
-doas ./eggs dad -d
-./eggs status
+doas eggs dad -d
+eggs status
 
 ```
-## Produce
+## Produce live ISO
 ```
-doas ./eggs produce --pendrive
+doas eggs produce --pendrive
+
+```
+
+# Packaging penguins-eggs
+```
+doas abuild \
+     alpine-sdk \
+     atools
+
+doas adduser artisan abuild
+```
+
+## user executing abuild member of the abuild group.
+```
+adduser artisan abuild
+
+```
+# create keys
+
+```
+abuild-keygen -n
+```
+
+Insert on `~/.abuild/abuild.conf`:
+```
+PACKAGER_PRIVKEY="/home/artisan/.abuild/piero.proietti@gmail.com-66b8815d.rsa"
+```
+copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys`.
+
+## Create the package
+```
+git clone https://github.com/pieroproietti/penguins-eggs-builds
+cd penguins-eggs-builds/alpine/penguins-eggs
+./clean 
 
 ```
 
 # Actual state 
-After 4 weeks from start this project, I was able to remaster and reinstall a customized Alpine Linux (my classical colibri) acting as the various versions on others distros.
+After a mounth from start this project, I'm able to remaster and reinstall a customized Alpine Linux (my classical colibri and a naked version - just CLI) acting as the various versions on others distros.
 
-You can remaster and reinstall it, we lacks an APKBUILD to create a real package, but I installed it by a script.
+You can remaster and reinstall it, I did an APKBUILD to create a real package, but is not yes merged.
 
-I added now firmwares and grub, but until now never tested it on real hardware.
+You can add  firmwares, but until now never tested it on real hardware.
 
 Stay tuned!
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
-
-I'm looking on [gitlab alpine](https://gitlab.alpinelinux.org/alpine) and on [Alpine Linux](https://alpinelinux.org/), great places... probably too great for me.
-
 
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
