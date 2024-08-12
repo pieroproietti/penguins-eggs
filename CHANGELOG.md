@@ -44,6 +44,11 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 ## penguins-eggs-10.0.25
 From now we have penguins-eggs on: alpine, arch, debian, devuan, manjaro, ubuntu. Isn't that great?
 
+Alpine is so light, can be remastered on a breeze, It's like to have Lego and can build what you want. 
+
+Start with Alpine naked and add... don't work as you like? change it! Add linux-firmware at last to remain light, or add just that you need in your case.
+
+
 ## penguins-eggs-10.0.24
 * Calamares modules configuration it's now the same for: noble, jammy and focal. I get noble configuration working in jammy and focal replacing modules: fstab, mount and users with the previous version.
 
