@@ -135,6 +135,8 @@ export default class CliAutologin {
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
       this.msgRemove(`${chroot}/etc/issue`)
+      const autologin=chroot + '/bin/autologin'
+      execSync(`rm ${autologin}`)
 
     } else if (Utils.isSysvinit()) {
       /**
