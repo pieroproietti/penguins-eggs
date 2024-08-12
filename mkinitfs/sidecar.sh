@@ -9,9 +9,9 @@
 
 DIRECTORY="/sysroot"
 if [ -z "$(find "$DIRECTORY" -mindepth 1)" ]; then
-    echo "sidecar: /sysroot is again emply!"
-    echo "         type 'exit' to return init, then run sidecar.sh again"
-    exit 0
+	echo "sidecar: /sysroot is again emply!"
+	echo "         type 'exit' to return init, then run sidecar.sh again"
+	exit 0
 fi
 
 # Creating mountpoints

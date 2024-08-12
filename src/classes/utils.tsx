@@ -13,8 +13,6 @@ import path from 'path'
 import os from 'os'
 import inquirer from 'inquirer'
 import chalk from 'chalk'
-import Pacman from './pacman.js'
-import { ChildProcess, spawnSync } from 'child_process'
 import { Netmask } from 'netmask'
 
 // libraries
@@ -94,7 +92,6 @@ export default class Utils {
    */
    static isSystemd(): boolean {
       const checkFile = '/tmp/checksystemd'
-      //shx.exec(`ps -p 1 -o comm= >${checkFile}`)
       shx.exec(`cat /proc/1/comm >${checkFile}`)
       const isSystemd = fs.readFileSync(checkFile).includes('systemd')
       shx.exec(`rm ${checkFile}`)
@@ -119,7 +116,6 @@ export default class Utils {
     */
    static isSysvinit(): boolean {
       const checkFile = '/tmp/checkinit'
-      // shx.exec(`ps -p 1 -o comm= >${checkFile}`)
       shx.exec(`cat /proc/1/comm >${checkFile}`)
       const isSysvinit = fs.readFileSync(checkFile).includes('init')
       shx.exec(`rm ${checkFile}`)
