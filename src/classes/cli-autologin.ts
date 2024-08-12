@@ -59,7 +59,7 @@ export default class CliAutologin {
       const inittab = chroot + '/etc/inittab'
       const search=`tty1::respawn:/sbin/getty 38400 tty1`
       let content = ''
-      const replace=`tty1::respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1`
+      const replace=`tty1::respawn:/sbin/getty --autologin ${user} --noclear 38400 tty1`
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].includes(search)) {
