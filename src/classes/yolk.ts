@@ -6,9 +6,9 @@
  * license: MIT
  */
 
+import yaml from 'js-yaml'
 import fs from 'node:fs'
 import shx from 'shelljs'
-import yaml from 'js-yaml'
 
 import { exec } from '../lib/utils.js'
 import Bleach from './bleach.js'

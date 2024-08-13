@@ -114,16 +114,16 @@ class Distro implements IDistro {
     /**
      * Analize distroId
      */
-    if (this.distroId === 'Alpine') {
+    switch (this.distroId) {
+    case 'Alpine': {
       this.familyId = 'alpine'
       this.distroLike = 'Alpine'
       this.codenameId = 'rolling' // questo viene rimosso dal nome
-      this.codenameLikeId = 'alpine' // prende alpine come codebaneLikeId
+      this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-      //this.liveMediumPath = '/run/live/medium/'
       this.squashfs = `live/filesystem.squashfs`
 
-      this.syslinuxPath = '/usr/share/syslinux/' //correct
+      this.syslinuxPath = '/usr/share/syslinux/' // correct
       this.pxelinuxPath = this.syslinuxPath
       this.usrLibPath = '/usr/lib/'
       this.memdiskPath = this.syslinuxPath
@@ -131,7 +131,11 @@ class Distro implements IDistro {
       // At the moment
       this.isCalamaresAvailable = true
 
-    } else if (this.distroId === 'Fedora') {
+    
+    break;
+    }
+
+    case 'Fedora': {
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
       this.codenameId = 'rolling'
@@ -147,7 +151,11 @@ class Distro implements IDistro {
       // At the moment
       this.isCalamaresAvailable = false
 
-    } else if (this.distroId === 'openSUSE') {
+    
+    break;
+    }
+
+    case 'openSUSE': {
       this.familyId = 'suse'
       this.distroLike = 'openSUSE'
       this.codenameId = 'rolling'
@@ -163,7 +171,11 @@ class Distro implements IDistro {
       // At the moment
       this.isCalamaresAvailable = false
 
-    } else {
+    
+    break;
+    }
+
+    default: {
 
       /**
        * Arch/Debian/Devuan/Manjaro and Ubuntu
@@ -378,6 +390,7 @@ class Distro implements IDistro {
 
         // No default
       } // Fine analisi codenameId
+    }
     }
 
     /**

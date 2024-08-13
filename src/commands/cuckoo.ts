@@ -10,8 +10,8 @@ import { Command, Flags } from '@oclif/core'
 
 import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
-import Utils from '../classes/utils.js'
 import Settings from '../classes/settings.js'
+import Utils from '../classes/utils.js'
 import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {

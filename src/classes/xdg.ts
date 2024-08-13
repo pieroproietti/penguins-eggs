@@ -31,6 +31,7 @@ export default class Xdg {
    * @param chroot
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
+    //console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
     if (Pacman.isInstalledGui()) {
       /**
        * SLIM & SLIMSKI
@@ -59,12 +60,11 @@ export default class Xdg {
         const regexDefaultUser = new RegExp(`default_user\\s*${olduser}`, 'g')
         content = content.replace(regexDefaultUser, `default_user ${newuser}`)
         fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
-      }
 
-      /**
-       * LIGHTDM
-       */
-      if (Pacman.packageIsInstalled('lightdm')) {
+        /**
+         * LIGHTDM
+         */
+      } else if (Pacman.packageIsInstalled('lightdm')) {
         const dc = `${chroot}/etc/lightdm/`
         const files = fs.readdirSync(dc)
         for (const elem of files) {
@@ -79,12 +79,10 @@ export default class Xdg {
             }
           }
         }
-      }
-
-      /**
-       * SDDM
-       */
-      if (Pacman.packageIsInstalled('sddm')) {
+      } else if (Pacman.packageIsInstalled('sddm')) {
+        /**
+         * SDDM
+         */
         let sddmChanged = false
         const curFile = `${chroot}/etc/sddm.conf`
         if (fs.existsSync(curFile)) {
@@ -127,13 +125,11 @@ export default class Xdg {
           const curFile = `${chroot}/etc/sddm.conf`
           fs.writeFileSync(curFile, content, 'utf8')
         }
-      }
-
-      /**
-       * GDM/GDM3
-       * in manjaro è /etc/gdm/custom.conf
-       */
-      if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
+      } else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
+        /**
+         * GDM/GDM3
+         * in manjaro è /etc/gdm/custom.conf
+         */
         let gdmConf = `${chroot}/etc/gdm3`
         if (Pacman.packageIsInstalled('gdm3')) {
           gdmConf = `${chroot}/etc/gdm3`
@@ -218,7 +214,7 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       // use .cinnamon NOT cinnamon/
       // removed because it's not necessary
-      //await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
+      // await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
     } else if (Pacman.packageIsInstalled('plasma-desktop')) {
       // use .kde NOT .kde/
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)

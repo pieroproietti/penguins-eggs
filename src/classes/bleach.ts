@@ -30,18 +30,35 @@ export default class Bleach {
 
 
     const distro = new Distro()
-    if (distro.familyId === 'debian') {
+    switch (distro.familyId) {
+    case 'debian': {
       await exec('apt-get clean', echo)
       await exec('apt-get autoclean', echo)
       const lockFile = '/var/lib/apt/lists/lock'
       await exec(`rm ${lockFile} -rf`, echo)
-    } else if (distro.familyId === 'archlinux') {
+    
+    break;
+    }
+
+    case 'archlinux': {
       await exec('pacman -Scc', Utils.setEcho(true))
-    } else if (distro.familyId === 'alpine') {
+    
+    break;
+    }
+
+    case 'alpine': {
       await exec('apk cache clean', echo)
       await exec('apk cache purge', echo)
-    } else if (distro.familyId === 'suse') {
+    
+    break;
+    }
+
+    case 'suse': {
       await exec (`zypper clean`, echo)
+    
+    break;
+    }
+    // No default
     }
 
     await this.cleanHistory(verbose)

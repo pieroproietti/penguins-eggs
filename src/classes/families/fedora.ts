@@ -48,6 +48,7 @@ export default class Fedora {
     if (fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
+
     await exec('dnf remove calamares', echo)
     return retVal
   }

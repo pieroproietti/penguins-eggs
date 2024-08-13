@@ -270,7 +270,7 @@ export default class Utils {
          // Attempt to get the user from logname
          primaryUser = execSync('/usr/bin/logname 2>/dev/null', { encoding: 'utf-8' }).trim();
       } catch (error) {
-         // logname failed, so we continue with other methods
+         // console.log("logname failed, so we continue with other methods")
       }
       if (primaryUser==='root'){
          primaryUser=''
@@ -282,7 +282,7 @@ export default class Utils {
             execSync('command -v doas', { stdio: 'ignore' });
             primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
          } catch (error) {
-            // doas is not installed or DOAS_USER is not set, continue with the next method
+            // console.log("doas is not installed or DOAS_USER is not set, continue with the next method")
          }
       }
 
@@ -291,12 +291,12 @@ export default class Utils {
             // Check for the SUDO_USER
             primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
          } catch (error) {
-            // SUDO_USER is not set, continue with the next method
+            // console.log("SUDO_USER is not set, continue with the next method")
          }
       }
 
       if (primaryUser==='') {
-         // Fallback to the USER environment variable
+         // console.log("Fallback to the USER environment variable")
          primaryUser = process.env.USER || '';
       }
 

@@ -519,11 +519,11 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
-            // autologin
+            // autologin GUI
             if (Pacman.isInstalledGui()) {
                try {
                   message = "Autologin GUI"
-                  percent = 0.76
+                  percent = 0.78
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {

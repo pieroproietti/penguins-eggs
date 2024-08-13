@@ -44,47 +44,74 @@ export default async function packages(this: Sequence): Promise<void> {
       }
     }
 
+    // Alpine
+    if (this.distro.familyId === "alpine") {
+      packages.backend = "apk"
+      
+      if (packagesToRemove != undefined && packagesToRemove.length > 0) {
+        let cmd = `chroot ${this.installTarget} apk del `
+        for (const elem of packagesToRemove) {
+          if (Pacman.packageIsInstalled(elem)) {
+            cmd += elem + ' '
+          }
+        }
+
+        await exec(`${cmd} ${this.toNull}`, this.echo)
+      }
+
+      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+        let cmd = `chroot ${this.installTarget} apk add `
+        for (const elem of packagesToInstall) {
+          cmd += elem + ' '
+        }
+
+        const update = `chroot ${this.installTarget} apk update ${this.toNull}`
+        await exec(update, this.echo)
+        await exec(`${cmd} ${this.toNull}`, this.echo)
+      }
+    }
+
     if (packages.backend === 'apt') {
       // Debian/Devuan/Ubuntu
       if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-          let cmd = `chroot ${this.installTarget} apt-get purge -y `
-          for (const elem of packagesToRemove) {
-            if (Pacman.packageIsInstalled(elem)) {
-              cmd += elem + ' '
-            }
-          }
-
-          await exec(`${cmd} ${this.toNull}`, this.echo)
-          const autoremove = `chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
-          await exec(autoremove, this.echo)
-        }
-
-      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-          let cmd = `chroot ${this.installTarget} apt-get install -y `
-          for (const elem of packagesToInstall) {
+        let cmd = `chroot ${this.installTarget} apt-get purge -y `
+        for (const elem of packagesToRemove) {
+          if (Pacman.packageIsInstalled(elem)) {
             cmd += elem + ' '
           }
-
-          const update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
-          await exec(update, this.echo)
-          await exec(`${cmd} ${this.toNull}`, this.echo)
         }
+
+        await exec(`${cmd} ${this.toNull}`, this.echo)
+        const autoremove = `chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
+        await exec(autoremove, this.echo)
+      }
+
+      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+        let cmd = `chroot ${this.installTarget} apt-get install -y `
+        for (const elem of packagesToInstall) {
+          cmd += elem + ' '
+        }
+
+        const update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
+        await exec(update, this.echo)
+        await exec(`${cmd} ${this.toNull}`, this.echo)
+      }
     } else if (packages.backend === 'pacman') {
       // arch/manjaro
       if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-          let cmd = `chroot ${this.installTarget} pacman -R\n`
-          for (const elem of packagesToRemove) {
-            cmd += elem + ' '
-          }
-
-          await exec(`${cmd} ${echoYes}`, this.echo)
+        let cmd = `chroot ${this.installTarget} pacman -R\n`
+        for (const elem of packagesToRemove) {
+          cmd += elem + ' '
         }
+
+        await exec(`${cmd} ${echoYes}`, this.echo)
+      }
 
       if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-          for (const elem of packagesToInstall) {
-            await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
-          }
+        for (const elem of packagesToInstall) {
+          await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
         }
+      }
     }
   }
 }

@@ -25,7 +25,7 @@ export default class Alpine {
   static async calamaresInstall(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      let cmd = `apk add ${this.packs4calamares}`
+      const cmd = `apk add ${this.packs4calamares}`
       try {
         await exec(cmd, echo)
       } catch {
@@ -50,7 +50,7 @@ export default class Alpine {
   static async calamaresRemove(verbose = true): Promise<boolean> {
     verbose = true // serve per pacman
 
-    let removed = true
+    const removed = true
     const echo = Utils.setEcho(verbose)
 
     await exec(`apk del ${this.packs4calamares}`)

@@ -8,7 +8,7 @@
 
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
-import fs from 'fs'
+import fs from 'node:fs'
 
 import Daddy from '../classes/daddy.js'
 import Utils from '../classes/utils.js'
@@ -22,8 +22,8 @@ export default class Dad extends Command {
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'reset to default values' }),
-    help: Flags.help({ char: 'h' }),
     file: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
+    help: Flags.help({ char: 'h' }),
 
     verbose: Flags.boolean({ char: 'v' })
   }
@@ -42,12 +42,10 @@ export default class Dad extends Command {
         await exec('rm /etc/penguins-eggs.d -rf')
       }
 
-      if (isCustom) {
-        if (!fs.existsSync(fileCustom)) {
+      if (isCustom && !fs.existsSync(fileCustom)) {
           console.log(chalk.red(`Custom configuration file: ${flags.custom} not found!`))
           process.exit(1)
         }
-      }
 
       const daddy = new Daddy()
       daddy.helpMe(reset, isCustom, fileCustom, flags.verbose)

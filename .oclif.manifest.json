@@ -265,13 +265,6 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "file": {
           "char": "f",
           "description": "use a file configuration custom",
@@ -279,6 +272,13 @@
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
         },
         "verbose": {
           "char": "v",
