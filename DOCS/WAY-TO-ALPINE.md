@@ -310,7 +310,7 @@ You can add  firmwares, but until now never tested it on real hardware.
 Stay tuned!
 
 # Someone can follow? 
-This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux.
+This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux. The biggest problem actually are: find a way to get an initrd working with my remastered ISOs, without to use my sidecar - a temporary solution - package calamares on Alpine to use with eggs, there was a [branch=v3.18](https://pkgs.alpinelinux.org/packages?name=calamares&branch=v3.18&repo=&arch=&maintainer=).
 
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
