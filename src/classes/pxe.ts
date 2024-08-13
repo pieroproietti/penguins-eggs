@@ -6,15 +6,13 @@
  * license: MIT
  */
 
-import { dhcpd } from 'node-proxy-dhcpd';
-
-// @ts-ignore
-import tftp from 'tftp'
-
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
+import { dhcpd } from 'node-proxy-dhcpd';
 import nodeStatic from 'node-static'
+// @ts-ignore
+import tftp from 'tftp'
 
 import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 import { exec } from '../lib/utils.js'
@@ -51,6 +49,51 @@ export default class Pxe {
     this.pxeRoot = pxeRoot
   }
 
+
+  /**
+   * build
+   */
+  async build() {
+    if (fs.existsSync(this.pxeRoot)) {
+      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
+    }
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
+    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
+
+    if (this.settings.distro.distroId === 'ManjaroLinux') {
+      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
+    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
+    }
+
+    if (fs.existsSync(this.eggRoot)) {
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
+      await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
+      await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
+    }
+
+    // link iso images in pxe
+    for (const iso of this.isos) {
+      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
+    }
+
+    await this.bios()
+    await this.ipxe()
+    await this.http()
+  }
+
+  /**
+   *
+   * @param dhcpOptions
+   */
+  dhcpStart(dhcpOptions: IDhcpOptions) {
+    new dhcpd(dhcpOptions);
+  }
 
   /**
  * fertilization()
@@ -157,51 +200,6 @@ export default class Pxe {
   }
 
   /**
-   * build
-   */
-  async build() {
-    if (fs.existsSync(this.pxeRoot)) {
-      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
-    }
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
-
-    if (this.settings.distro.distroId === 'ManjaroLinux') {
-      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
-      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
-    }
-
-    if (fs.existsSync(this.eggRoot)) {
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
-    }
-
-    // link iso images in pxe
-    for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
-    }
-
-    await this.bios()
-    await this.ipxe()
-    await this.http()
-  }
-
-  /**
-   *
-   * @param dhcpOptions
-   */
-  dhcpStart(dhcpOptions: IDhcpOptions) {
-    new dhcpd(dhcpOptions);
-  }
-
-  /**
    * start http server for images
    *
    */
@@ -210,7 +208,7 @@ export default class Pxe {
     const httpRoot = this.pxeRoot + '/'
     console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
-    //const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
+    // const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
     const file = new nodeStatic.Server(httpRoot) 
     http
       .createServer((req: IncomingMessage, res: ServerResponse) => {

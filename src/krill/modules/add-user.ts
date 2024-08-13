@@ -27,6 +27,7 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   if (this.distro.familyId === 'archlinux') {
     cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
   }
+
   await exec(cmd, this.echo)
 
   // chapasswd user
@@ -39,6 +40,7 @@ export default async function addUser(this: Sequence, name = 'live', password = 
       this.distro.familyId === 'alpine') {
     group = 'wheel'
   }
+
   cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
   await exec(cmd, this.echo)
 

@@ -9,9 +9,9 @@
 
 import fs from 'node:fs'
 
+import Distro from '../../classes/distro.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
-import Distro from '../../classes/distro.js'
 
 /**
  * On Ubuntu

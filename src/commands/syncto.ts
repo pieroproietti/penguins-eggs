@@ -45,7 +45,6 @@ export default class Syncto extends Command {
 
   luksMountpoint = `/tmp/mnt/${this.luksName}`
 
-
   privateSquashfs = `private.squashfs`
 
   settings = {} as Settings

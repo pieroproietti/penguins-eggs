@@ -8,6 +8,7 @@
 
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
+import { Static } from 'ink'
 import fs, { link } from 'node:fs'
 import path from 'node:path'
 
@@ -16,7 +17,6 @@ import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
-import { Static } from 'ink'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -63,7 +63,7 @@ export default class Produce extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Produce)
-    let pendrive = flags.pendrive !== undefined ? Number(flags.pendrive) : null;
+    const pendrive = flags.pendrive === undefined ? null : Number(flags.pendrive);
 
     if (Utils.isRoot()) {
       /**

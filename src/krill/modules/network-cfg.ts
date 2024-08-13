@@ -7,7 +7,8 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import fs from 'fs'
+import fs from 'node:fs'
+
 import Pacman from '../../classes/pacman.js'
 import Systemctl from '../../classes/systemctl.js'
 import Utils from '../../classes/utils.js'
@@ -63,6 +64,7 @@ export default async function networkCfg(this: Sequence) {
     for (const element of this.network.dns) {
       content += 'nameserver ' + element + '\n'
     }
+
     Utils.write(resolvFile, content)
   }
 }

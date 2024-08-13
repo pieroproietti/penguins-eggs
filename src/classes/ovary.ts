@@ -20,10 +20,10 @@ import shx from 'shelljs'
 
 // interfaces
 import { IAddons, IExcludes } from '../interfaces/index.js'
-import CliAutologin from './cli-autologin.js'
 // libraries
 import { exec } from '../lib/utils.js'
 import Bleach from './bleach.js'
+import CliAutologin from './cli-autologin.js'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager.js'
 import Incubator from './incubation/incubator.js'
 import N8 from './n8.js'
@@ -56,6 +56,8 @@ export default class Ovary {
 
   familyId = ''
 
+  genisoimage = false
+
   incubator = {} as Incubator
 
   nest = ''
@@ -68,13 +70,11 @@ export default class Ovary {
 
   theme = ''
 
-  volid = ''
-
   toNull = ''
 
-  genisoimage = false
-
   verbose = false
+
+  volid = ''
 
   /**
    * Add or remove exclusion
@@ -134,6 +134,7 @@ export default class Ovary {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
         }
+
         if (dir !== 'boot' && dir !== 'lost+found') {
           cmd = `# /${dir} is a directory`
           if (this.mergedAndOverlay(dir)) {
@@ -241,6 +242,7 @@ export default class Ovary {
     if (this.familyId === 'archlinux') {
       deluser = 'userdel'
     }
+
     for (let i = 0; i < users.length - 1; i++) {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} ${deluser} ${users[i]}`, this.verbose))
     }
@@ -274,21 +276,34 @@ export default class Ovary {
 
 
 
-    if (this.familyId === 'debian') {
+    switch (this.familyId) {
+    case 'debian': {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-    } else if (this.familyId === 'alpine') {
+    
+    break;
+    }
+
+    case 'alpine': {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG games ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG input ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG users ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG video ${this.settings.config.user_opt}`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-    } else if (this.familyId === 'archlinux') {
+    
+    break;
+    }
+
+    case 'archlinux': {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
 
       // check or create group: autologin
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
+    
+    break;
+    }
+    // No default
     }
 
     /**
@@ -436,6 +451,7 @@ export default class Ovary {
         if (!noicons) {
           text += this.lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
         }
+
         if (myAddons.adapt) text += this.lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
         if (myAddons.pve) text += this.lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
         if (myAddons.rsupport) text += this.lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
@@ -443,6 +459,7 @@ export default class Ovary {
         if (!noicons) {
           text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
         }
+
         if (myLinks.length > 0) {
           for (const link of myLinks) {
             text += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
@@ -477,6 +494,7 @@ export default class Ovary {
       fs.writeFileSync(script, text, 'utf8')
       await exec(`chmod a+x ${script}`, this.echo)
     }
+
     await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
   }
 
@@ -832,7 +850,7 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    let initrdImg = 'initramfs-lts'
+    const initrdImg = 'initramfs-lts'
     // dracut
     // const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     // await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
@@ -841,28 +859,6 @@ export default class Ovary {
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     const sidecars = path.resolve(__dirname, `../../mkinitfs/*.sh`)
     await exec(`cp ${sidecars} ${this.settings.iso_work}live/`)
-  }
-
-  /**
-   * initrdFedora()
-   */
-  async initrdFedora() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
-    // dracut
-    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const initrdImg = `initramfs-${kernelVersion}`
-    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    //await exec(`cp /boot/initramfs-*.img ${this.settings.iso_work}/live/`, this.echo)
-  }
-
-
-  /**
-   * initrdSuse()
-   */
-  async initrdSuse() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
-    await exec(`cp /boot/initrd-* ${this.settings.iso_work}/live/`, this.echo)
   }
 
   /**
@@ -887,6 +883,7 @@ export default class Ovary {
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
 
+
   /**
    * initrdDebian()
    * Actually based on live* packages
@@ -901,10 +898,32 @@ export default class Ovary {
       isCrypted = true
       await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
+
     await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
     if (isCrypted) {
       await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
+  }
+
+  /**
+   * initrdFedora()
+   */
+  async initrdFedora() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+    // dracut
+    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
+    const initrdImg = `initramfs-${kernelVersion}`
+    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    // await exec(`cp /boot/initramfs-*.img ${this.settings.iso_work}/live/`, this.echo)
+  }
+
+  /**
+   * initrdSuse()
+   */
+  async initrdSuse() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+    await exec(`cp /boot/initrd-* ${this.settings.iso_work}/live/`, this.echo)
   }
 
   /**
@@ -1661,11 +1680,10 @@ export default class Ovary {
       /**
        * exclude.list
        */
-      if (!excludes.static) {
-        /**
+      if (!excludes.static && /**
          * create exclude.list if not exists
          */
-        if (!fs.existsSync('/etc/penguins-eggs/exclude.list')) {
+        !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
           const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
           const excludeListTemplate = excludeListTemplateDir + 'master.list'
           if (!fs.existsSync(excludeListTemplate)) {
@@ -1695,15 +1713,14 @@ export default class Ovary {
           }
 
           const view = {
+            home_list: excludeHome,
+            homes_list: excludeHomes,
             usr_list: excludeUsr,
             var_list: excludeVar,
-            homes_list: excludeHomes,
-            home_list: excludeHome,
           }
           const template = fs.readFileSync(excludeListTemplate, 'utf8')
           fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
         }
-      }
 
       /**
        * NOTE: reCreate = false
@@ -1729,16 +1746,37 @@ export default class Ovary {
          * we need different initfs
          * for different families
          */
-        if (this.familyId === 'archlinux') {
+        switch (this.familyId) {
+        case 'archlinux': {
           await this.initrdArch()
-        } else if (this.familyId === 'alpine') {
+        
+        break;
+        }
+
+        case 'alpine': {
           await this.initrdAlpine()
-        } else if (this.familyId === 'fedora') {
+        
+        break;
+        }
+
+        case 'fedora': {
           await this.initrdFedora()
-        } else if (this.familyId === 'suse') {
+        
+        break;
+        }
+
+        case 'suse': {
           await this.initrdSuse()
-        } else if (this.familyId === 'debian') {
+        
+        break;
+        }
+
+        case 'debian': {
           await this.initrdDebian()
+        
+        break;
+        }
+        // No default
         }
 
         if (this.settings.config.make_efi) {
@@ -1769,6 +1807,7 @@ export default class Ovary {
           // Here we are forcing alwats cliAutologin
           // this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
+
         await this.editLiveFs(clone, cryptedclone)
         mksquashfsCmd = await this.makeSquashfs(scriptOnly, unsecure)
         await this.uBindLiveFs() // Lo smonto prima della fase di backup

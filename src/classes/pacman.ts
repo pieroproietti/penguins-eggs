@@ -15,11 +15,10 @@ import shx from 'shelljs'
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+import Alpine from './families/alpine.js'
 import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
 import Fedora from './families/fedora.js'
-import Alpine from './families/alpine.js'
-
 import Settings from './settings.js'
 import Utils from './utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -85,6 +84,7 @@ export default class Pacman {
       } else if (this.distro().familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
       }
+
       // remove others calamares links
       await exec('rm -f /usr/share/applications/calamares-eggs-debugging.desktop')
       await exec('rm -f /usr/share/applications/calamares-eggs.desktop')
@@ -573,11 +573,10 @@ export default class Pacman {
       if (Archlinux.packageIsInstalled('xorg-server-common')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'alpine') {
-      if (Alpine.packageIsInstalled('xorg-server')) {
+    } else if (this.distro().familyId === 'alpine' && Alpine.packageIsInstalled('xorg-server')) {
         installed = true
       }
-    }
+
     return installed
   }
 

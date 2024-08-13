@@ -13,7 +13,7 @@ import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding } from '../interfaces/index.js'
-import { Text, Box } from 'ink'
+import { Text, Box, Newline} from 'ink'
 
 
 type SummaryProps = {
@@ -74,6 +74,7 @@ export default function Summary({ username='', password='', rootPassword='', hos
               <Box>
                 <Text>Installing </Text><Text color="green">{productName}</Text>
               </Box>
+              <Newline/>
               <Box>
                 <Text></Text><Text color="green">{username}</Text><Text>/</Text><Text color="green">{password} </Text>
                 <Text>pwd root </Text><Text color="green">{rootPassword} </Text>
@@ -95,7 +96,7 @@ export default function Summary({ username='', password='', rootPassword='', hos
             </Box>
           </Box>
         </Box>
-      </Box >
+      </Box>
     </>
   )
 }

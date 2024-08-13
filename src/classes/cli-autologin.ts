@@ -7,15 +7,15 @@
  */
 
 import chalk from 'chalk'
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 
-import Pacman from './pacman.js'
-import Utils from './utils.js'
 // libraries
 import { exec } from '../lib/utils.js'
-import { execSync } from 'node:child_process'
+import Pacman from './pacman.js'
+import Utils from './utils.js'
 const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
@@ -67,8 +67,10 @@ export default class CliAutologin {
         if (lines[i].includes(search)) {
           lines[i] = replace
         }
+
         content += lines[i] + '\n'
       }
+
       fs.writeFileSync(inittab, content, 'utf-8')
       // create /bin/autologin
       const autologin=chroot + '/bin/autologin'
@@ -89,6 +91,7 @@ export default class CliAutologin {
         if (lines[i].includes(search)) {
           lines[i] = replace
         }
+
         content += lines[i] + '\n'
       }
 
@@ -97,70 +100,6 @@ export default class CliAutologin {
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     }
   }
-
-  /**
-   * remove
-   * @param chroot
-   */
-  async remove(chroot = '/') {
-    if (Utils.isSystemd()) {
-      /**
-       * Systemd
-       */
-      const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
-      const dirOverride = path.dirname(fileOverride)
-      if (fs.existsSync(dirOverride)) {
-        shx.exec(`rm ${dirOverride} -rf`)
-      }
-      // shx.exec(`systemctl revert getty@.service`)
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-
-    } else if (Utils.isOpenRc()) {
-      /**
-       * openrc
-       */
-      const inittab = chroot + '/etc/inittab'
-      const search = 'autologin'
-      const replace = `tty1::respawn:/sbin/getty 38400 tty1`
-      let content = ''
-      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(search)) {
-          lines[i] = replace
-        }
-
-        content += lines[i] + '\n'
-      }
-      fs.writeFileSync(inittab, content, 'utf-8')
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-      const autologin=chroot + '/bin/autologin'
-      execSync(`rm ${autologin}`)
-
-    } else if (Utils.isSysvinit()) {
-      /**
-       * sysvinit
-       */
-      const inittab = chroot + '/etc/inittab'
-      const search = '--autologin'
-      const replace = '1:2345:respawn:/sbin/getty 38400 tty1         '
-      let content = ''
-      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(search)) {
-          lines[i] = replace
-        }
-
-        content += lines[i] + '\n'
-      }
-
-      fs.writeFileSync(inittab, content, 'utf-8')
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-    } // to add: openrc and runit for Devuan
-  }
-
 
   /**
    *
@@ -182,6 +121,7 @@ export default class CliAutologin {
     // eggsIssue += stopMessage + '\n'
     fs.writeFileSync(fileIssue, eggsIssue)
   }
+
 
   /**
    *
@@ -222,6 +162,71 @@ export default class CliAutologin {
     eggsMotd += '    create your configuration in /config and ask for a Pull Request' + '\n'
     eggsMotd += stopMessage + '\n'
     fs.writeFileSync(fileMotd, eggsMotd)
+  }
+
+  /**
+   * remove
+   * @param chroot
+   */
+  async remove(chroot = '/') {
+    if (Utils.isSystemd()) {
+      /**
+       * Systemd
+       */
+      const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+      const dirOverride = path.dirname(fileOverride)
+      if (fs.existsSync(dirOverride)) {
+        shx.exec(`rm ${dirOverride} -rf`)
+      }
+
+      // shx.exec(`systemctl revert getty@.service`)
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+
+    } else if (Utils.isOpenRc()) {
+      /**
+       * openrc
+       */
+      const inittab = chroot + '/etc/inittab'
+      const search = 'autologin'
+      const replace = `tty1::respawn:/sbin/getty 38400 tty1`
+      let content = ''
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) {
+          lines[i] = replace
+        }
+
+        content += lines[i] + '\n'
+      }
+
+      fs.writeFileSync(inittab, content, 'utf-8')
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+      const autologin=`${chroot}/bin/autologin`
+      execSync(`rm -f ${autologin}`)
+
+    } else if (Utils.isSysvinit()) {
+      /**
+       * sysvinit
+       */
+      const inittab = chroot + '/etc/inittab'
+      const search = '--autologin'
+      const replace = '1:2345:respawn:/sbin/getty 38400 tty1         '
+      let content = ''
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) {
+          lines[i] = replace
+        }
+
+        content += lines[i] + '\n'
+      }
+
+      fs.writeFileSync(inittab, content, 'utf-8')
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+    } // to add: openrc and runit for Devuan
   }
 
   /**
