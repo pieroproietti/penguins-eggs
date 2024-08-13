@@ -45,8 +45,8 @@ apk add doas
 
 ```
 
- ## sudo as link to doas, shutdown as link to poweroff
-To not get crazy, almost me:
+## sudo as link to doas, shutdown as link to poweroff
+To not get crazy:
 ```
 ln -s /usr/bin/doas /usr/bin/sudo
 
@@ -71,6 +71,16 @@ apk add \
     shadow  
 
 echo "fuse" | tee /etc/modules-load.d/fuse.conf
+
+```
+# Packaging
+```
+doas apk add \
+     abuild \
+     alpine-sdk \
+     atools
+
+doas adduser artisan abuild
 
 ```
 
@@ -246,10 +256,13 @@ pnpm build
 Now we can use eggs from the source:
 
 ## Autocomplete, Desktop icons
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle. 
-We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
+This is not more necessary thanks to the package.
+
+It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle.  We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
+
 ```
 ./install-eggs-dev
+
 ```
 
 ## Configure eggs
@@ -265,36 +278,24 @@ doas eggs produce --pendrive
 
 ```
 
-# Packaging penguins-eggs
-```
-doas abuild \
-     alpine-sdk \
-     atools
-
-doas adduser artisan abuild
-```
-
-## user executing abuild member of the abuild group.
-```
-adduser artisan abuild
-
-```
 # create keys
 
 ```
 abuild-keygen -n
-```
 
+```
 Insert on `~/.abuild/abuild.conf`:
+
 ```
 PACKAGER_PRIVKEY="/home/artisan/.abuild/piero.proietti@gmail.com-66b8815d.rsa"
+
 ```
 copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys`.
 
 ## Create the package
 ```
-git clone https://github.com/pieroproietti/penguins-eggs-builds
-cd penguins-eggs-builds/alpine/penguins-eggs
+git clone https://github.com/pieroproietti/eggs-pkgbuilds
+cd eggs-pkgbuilds/alpine/penguins-eggs
 ./clean 
 
 ```
