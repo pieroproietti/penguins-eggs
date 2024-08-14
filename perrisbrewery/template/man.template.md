@@ -4,6 +4,9 @@ eggs(1) -- the reproductive system of penguins: eggs v{{{packageVersion}}}
 {{toc}}
 
 # SYNOPSIS
+eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.
+
+# INSTALL
 
 AlpineLinux
 ```
@@ -60,8 +63,6 @@ Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group
 
 
 # DESCRIPTION
-
-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as ISO image.
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs CLI installer (krill).
 
