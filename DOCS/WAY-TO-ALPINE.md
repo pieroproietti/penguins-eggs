@@ -176,7 +176,7 @@ echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
 ```
 ## Italian locale or other X
 ```
-setxkeymap it
+setxkbmap it
 
 ```
 
@@ -195,7 +195,7 @@ doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 
 ### nodejs pnpm
 ```
-doas apk add nodejs pnpm
+doas apk add nodejs pnpm@edge
 
 ```
 
@@ -309,12 +309,18 @@ You can remaster and reinstall it, I did an APKBUILD to create a real package, a
 
 You can add  firmwares: `apk add linux-firmware`, personally never tested it on real hardware.
 
+N
+
 Stay tuned!
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux. The biggest problem actually are: 
 * find a way to get an initrd working with my remastered ISOs, without need my [sidecar.sh](https://github.com/pieroproietti/penguins-eggs/blob/master/mkinitfs/sidecar.sh) (a temporary solution);
 * package calamares on Alpine 3.20 to use with eggs, there is a version on [branch=v3.18](https://pkgs.alpinelinux.org/packages?name=calamares&branch=v3.18&repo=&arch=&maintainer=), probably it's just question to actualize.
+
+> [!NOTE]
+> Penguins eggs already support: arch, debian, devuan, manjaro, ubuntu and there are [WAy-TO-FEDORA](./WAY-TO-FEDORA.md) and [WAY-TO-SUSE](./WAY-TO-SUSE.md) you can follow and improve.
+
 
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
