@@ -73,14 +73,14 @@ apk add \
 echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
 ```
-# Packaging
+# Install package tools
 ```
-doas apk add \
+apk add \
      abuild \
      alpine-sdk \
      atools
 
-doas adduser artisan abuild
+adduser artisan abuild
 
 ```
 
@@ -216,7 +216,8 @@ doas apk add firefox
 ## Install 
 
 ## Install dependencies for penguins-eggs on Alpine
-I don't use more this script, prefere to build the package with abuild.
+> [!NOTE]
+> I don't use more this script, prefere to build the package with abuild.
 
 ```
 doas apk add \
@@ -256,7 +257,8 @@ pnpm build
 Now we can use eggs from the source:
 
 ## Autocomplete, Desktop icons
-I don't use more this script, prefere to build the package with abuild.
+> [!NOTE]
+> I don't use more this script, prefere to build the package with abuild.
 
 It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle.  We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
 
