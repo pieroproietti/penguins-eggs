@@ -310,7 +310,9 @@ You can add  firmwares: `apk add linux-firmware`, personally never tested it on 
 Stay tuned!
 
 # Someone can follow? 
-This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux. The biggest problem actually are: find a way to get an initrd working with my remastered ISOs, without to use my sidecar - a temporary solution - package calamares on Alpine to use with eggs, there was a [branch=v3.18](https://pkgs.alpinelinux.org/packages?name=calamares&branch=v3.18&repo=&arch=&maintainer=).
+This is my end for now... but in same way can be an usefull starting point to someone more expert than me on AlpineLinux. The biggest problem actually are: 
+* find a way to get an initrd working with my remastered ISOs, without need my sidecar.sh (a temporary solution);
+* package calamares on Alpine 3.20 to use with eggs, there is a version on [branch=v3.18](https://pkgs.alpinelinux.org/packages?name=calamares&branch=v3.18&repo=&arch=&maintainer=), probably it's just question to actualize.
 
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
