@@ -10,16 +10,18 @@ eggs is a console utility, in active development, who let you to remaster your s
 
 AlpineLinux
 ```
-$ doas apk add penguins-eggs
+$ doas apk add penguins-eggs@testing
 ```
 
 Arch
 ```
 $ sudo pacman -S penguins-eggs
+$ sudo pacman -U {{{packageNameVersioned}}}-1-x86_64.pkg.tar.zst
 ```
 
 Debian/Devuan/Ubuntu
 ```
+$ sudo apt install penguins-eggs
 $ sudo dpkg -i {{{packageNameVersioned}}}.deb
 ```
 
@@ -46,25 +48,22 @@ examples:
 
 ```
 sudo eggs produce
-sudo eggs produce --max
-sudo eggs produce --clone
+sudo eggs produce --pendrive --clone
 sudo eggs kill
 ```
 
-There are too two interactive helpers:
+There are too two interactive helpers, probably you already know:
 
 ```
 eggs mom
 sudo eggs dad
-sudo eggs dad -d
 ```
-
-Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group page or asking me.
+We have a comprehensive guide at https://penguins-eggs.net, help yorself signing on telegram https://t.me/penguins_eggs on  facebook group, or writing me.
 
 
 # DESCRIPTION
 
-The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs CLI installer (krill).
+The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image, to burn on a CD/DVD or copy to a usb key, to boot your system live. Of course, You can easily install your live image using GUI installer (calamares)  or CLI installer (krill) always included.
 
 # COMMANDS
 
