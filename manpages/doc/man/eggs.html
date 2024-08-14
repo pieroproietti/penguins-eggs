@@ -11,13 +11,15 @@
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
     <p>AlpineLinux</p>
-    <pre><code>$ doas apk add penguins-eggs
+    <pre><code>$ doas apk add penguins-eggs@testing
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
+$ sudo pacman -U penguins-eggs_10.0.26-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
-    <pre><code>$ sudo dpkg -i penguins-eggs_10.0.26-1_amd64.deb
+    <pre><code>$ sudo apt install penguins-eggs
+$ sudo dpkg -i penguins-eggs_10.0.26-1_amd64.deb
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
@@ -34,18 +36,16 @@ $ eggs COMMAND
     <p>Most of the commands of eggs need sudo, but there are exceptions for export, info and mom.</p>
     <p>examples:</p>
     <pre><code>sudo eggs produce
-sudo eggs produce --max
-sudo eggs produce --clone
+sudo eggs produce --pendrive --clone
 sudo eggs kill
 </code></pre>
-    <p>There are too two interactive helpers:</p>
+    <p>There are too two interactive helpers, probably you already know:</p>
     <pre><code>eggs mom
 sudo eggs dad
-sudo eggs dad -d
 </code></pre>
-    <p>Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group page or asking me.</p>
+    <p>We have a comprehensive guide at https://penguins-eggs.net, help yorself signing on telegram https://t.me/penguins_eggs on facebook group, or writing me.</p>
     <h1>DESCRIPTION</h1>
-    <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares) or eggs CLI installer (krill).</p>
+    <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image, to burn on a CD/DVD or copy to a usb key, to boot your system live. Of course, You can easily install your live image using GUI installer (calamares) or CLI installer (krill) always included.</p>
     <h1>COMMANDS</h1>
     <ul>
       <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
