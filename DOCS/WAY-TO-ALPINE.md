@@ -176,7 +176,7 @@ echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
 ```
 ## Italian locale or other X
 ```
-setxkeyboard it
+setxkeymap it
 
 ```
 
@@ -301,11 +301,11 @@ cd eggs-pkgbuilds/alpine/penguins-eggs
 ```
 
 # Actual state 
-After a mounth from start this project, I'm able to remaster and reinstall a customized Alpine Linux (my classical colibri and a naked version - just CLI) acting as the various versions on others distros.
+After a mounth from start this project, I'm able to remaster and reinstall a customized Alpine Linux (my classical colibri and a naked version) acting as the various versions on others distros.
 
-You can remaster and reinstall it, I did an APKBUILD to create a real package, but is not yes merged.
+You can remaster and reinstall it, I did an APKBUILD to create a real package, again not merged in aports.
 
-You can add  firmwares, but until now never tested it on real hardware.
+You can add  firmwares: `apk add linux-firmware`, personally never tested it on real hardware.
 
 Stay tuned!
 
