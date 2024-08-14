@@ -4,32 +4,25 @@ eggs(1) -- the reproductive system of penguins: eggs v{{{packageVersion}}}
 {{toc}}
 
 # SYNOPSIS
-Install Debian families (debian/devuan/ubuntu)
+
+AlpineLinux
+```
+$ doas apk add penguins-eggs
+```
+
+Arch
+```
+$ sudo pacman -S penguins-eggs
+```
+
+Debian/Devuan/Ubuntu
 ```
 $ sudo dpkg -i {{{packageNameVersioned}}}.deb
 ```
 
-Install Arch families (Arch, manjaro Linux)
-
-Arch from AUR
+Manjaro
 ```
-$ git clone https://aur.archlinux.org/penguins-eggs.git
-$ cd penguins-eggs.git
-$ makepkg -si
-```
-
-Arch from development repo
-```
-$ git clone https://github.com/pieroproietti/penguins-eggs-arch
-$ cd penguins-eggs-arch
-$ makepkg -si
-```
-
-Manjaro from development repo
-```
-$ git clone https://github.com/pieroproietti/penguins-eggs-manjaro
-$ cd penguins-eggs-manjaro
-$ makepkg -si
+$ sudo pamac install penguins-eggs
 ```
 
 # USAGE
@@ -68,7 +61,7 @@ Help yorself signing on telegram https://t.me/penguins_eggs or in facebook group
 
 # DESCRIPTION
 
-eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as iso image.
+eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as ISO image.
 
 The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image to burn on a CD/DVD or copy to a usb key to boot your system. You can easily install your live system with gui installer (calamares)  or eggs CLI installer (krill).
 
@@ -81,10 +74,10 @@ The scope of this project is to implement the process of remastering your versio
         all eggs configurations are here
 
       /etc/penguins-eggs.d/exclude.list
-        exclude.list rsync
+        exclude.list
 
-      /usr/lib/penguins-eggs (deb package)
-        here eggs is installed
+      /usr/lib/penguins-eggs
+        where eggs is installed
 
 # TROUBLES
 
