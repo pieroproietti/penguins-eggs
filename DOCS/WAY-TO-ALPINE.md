@@ -256,7 +256,7 @@ pnpm build
 Now we can use eggs from the source:
 
 ## Autocomplete, Desktop icons
-This is not more necessary thanks to the package.
+I don't use more this script, prefere to build the package with abuild.
 
 It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle.  We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
 
