@@ -202,13 +202,15 @@ export default class Pacman {
   /**
    * Creazione del file di configurazione /etc/penguins-eggs
    */
-  static async configurationInstall(links = true, verbose = true): Promise<void> {
+  static async configurationInstall(links = true, verbose = false): Promise<void> {
     const confRoot = '/etc/penguins-eggs.d'
     if (!fs.existsSync(confRoot)) {
       execSync(`mkdir ${confRoot}`)
     }
+    if (verbose) {
+      console.log('configuration install: ' + confRoot)
+    }
 
-    console.log('configurationInstall: ' + confRoot)
     const addons = `${confRoot}/addons`
     if (fs.existsSync(addons)) {
       execSync(`rm -rf ${addons}`)
