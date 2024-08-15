@@ -41,6 +41,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.27
+A bit of work to perfectionate packages: Alpine post-install, post-deinstall and on Debian postinst scripts.
+
 ## penguins-eggs-10.0.26
 Working again on Alpine, revised man pages, taking experiences. A APKBUILD is ready to be merger, and I need to release to spread and becouse the eggs code is the same for all the distros.
 
