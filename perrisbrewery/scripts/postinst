@@ -18,66 +18,67 @@ set -e
 # the debian-policy package
 # echo ">>> $0 $1 $2 $3 $4<<<"
 
+pkgname="penguins-eggs"
+
 case "$1" in
     configure)
-        # adapt in /usr/bin
-        if [ -f "/usr/lib/penguins-eggs/addons/eggs/adapt/bin/adapt" ]; then
-            install /usr/lib/penguins-eggs/addons/eggs/adapt/bin/adapt /usr/bin
-        fi
-
-        # love in /usr/bin
-        if [ -f "/usr/lib/penguins-eggs/scripts/love" ]; then
-            install /usr/lib/penguins-eggs/scripts/love /usr/bin
-        fi
-
-        # resy
-        if [ -f "/usr/lib/penguins-eggs/scripts/resy" ]; then
-            install /usr/lib/penguins-eggs/scripts/resy /usr/sbin
-        fi
-
         # Adding bash-completion Debian/Devuan/Ubuntu /etc/bash_completion.d/
         if [ -d "/etc/bash_completion.d/" ]; then
-            if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
-                cp /usr/lib/penguins-eggs/scripts/eggs.bash /etc/bash_completion.d/
+            if [ -f "/usr/lib/$pkgname/scripts/eggs.bash" ]; then
+                cp /usr/lib/$pkgname/scripts/eggs.bash /etc/bash_completion.d/
             fi
         fi    
 
         # Adding bash-completion elementary /usr/share/bash-completion/completions/
         if [ -d "/usr/share/bash-completion/completions/" ]; then
-            if [ -f "/usr/lib/penguins-eggs/scripts/eggs.bash" ]; then
-                cp /usr/lib/penguins-eggs/scripts/eggs.bash /usr/share/bash-completion/completions/
+            if [ -f "/usr/lib/$pkgname/scripts/eggs.bash" ]; then
+                cp /usr/lib/$pkgname/scripts/eggs.bash /usr/share/bash-completion/completions/
             fi
         fi    
 
         # Adding zsh-completion for eggs
         if [ -d "/usr/share/zsh/functions/Completion/Zsh/" ]; then
-            if [ -f "/usr/lib/penguins-eggs/scripts/_eggs" ]; then
-                cp /usr/lib/penguins-eggs/scripts/_eggs /usr/share/zsh/functions/Completion/Zsh/
+            if [ -f "/usr/lib/$pkgname/scripts/_eggs" ]; then
+                cp /usr/lib/$pkgname/scripts/_eggs /usr/share/zsh/functions/Completion/Zsh/
             fi
         fi
 
+        # Install man page
+        if [ -f "/usr/lib/$pkgname/manpages/doc/man/eggs.1.gz" ]; then
+            install -Dm644 /usr/lib/$pkgname/manpages/doc/man/eggs.1.gz /usr/share/man/man1
+        fi
+
+
+        # link to adapt
+        if [ -f "/usr/lib/$pkgname/addons/eggs/adapt/bin/adapt" ]; then
+            install /usr/lib/$pkgname/addons/eggs/adapt/bin/adapt /usr/bin
+        fi
+
+        # link to love
+        if [ -f "/usr/lib/$pkgname/scripts/love" ]; then
+            install /usr/lib/$pkgname/scripts/love /usr/bin
+        fi
+
+        # link to resy
+        if [ -f "/usr/lib/$pkgname/scripts/resy" ]; then
+            install /usr/lib/$pkgname/scripts/resy /usr/sbin
+        fi
+
         # revitalize mom
-        if [ -f "/usr/lib/penguins-eggs/scripts/mom.sh" ]; then  
-            chmod +x /usr/lib/penguins-eggs/scripts/mom.sh
+        if [ -f "/usr/lib/$pkgname/scripts/mom.sh" ]; then  
+            chmod +x /usr/lib/$pkgname/scripts/mom.sh
         fi
 
         # revitalize eui
-        if [ -d "/usr/lib/penguins-eggs/eui" ]; then  
-            chmod +x /usr/lib/penguins-eggs/eui/eui-create-image.sh
-            chmod +x /usr/lib/penguins-eggs/eui/eui-start.sh
-            chmod 0400 /usr/lib/penguins-eggs/eui/eui-users
+        if [ -d "/usr/lib/$pkgname/eui" ]; then  
+            chmod +x /usr/lib/$pkgname/eui/eui-create-image.sh
+            chmod +x /usr/lib/$pkgname/eui/eui-start.sh
+            chmod 0400 /usr/lib/$pkgname/eui/eui-users
         fi
 
-        # Adding man page
-        if [ ! -d "/usr/share/man/man1" ]; then
-            mkdir /usr/share/man/man1 -p
-        fi
-        if [ -f "/usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz" ]; then
-            cp /usr/lib/penguins-eggs/manpages/doc/man/eggs.1.gz /usr/share/man/man1
-        fi
 
         eggs config --nointeractive
-        echo "eggs was installed..." 
+        echo "penguins-eggs was installed..." 
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
