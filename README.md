@@ -60,7 +60,7 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
 ### Alpine Linux
-A package for for [Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) is on the way to be merged on testing. Consult [WAY-TO-ALPINE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-ALPINE.md) for more informations.
+A [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) is on the way to be merged on testing. Consult [WAY-TO-ALPINE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-ALPINE.md) for more informations.
 
 # Introduction
 
