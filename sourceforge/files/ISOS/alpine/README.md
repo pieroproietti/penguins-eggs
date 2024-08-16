@@ -29,23 +29,24 @@ NOTE: Yuo can add `linux-firmware` to use on real hardware.
 
 # Important notes 
 This image will boot only on BIOS systems and will go on `emergency shell`. From the emergency shell:
+
   * `mkdir /mnt`
   * `mount /dev/sr0 /mnt`
   * type `exit`
   * `/mnt/live/sidecar.sh`
   * type `exit`
-  * the system will boot normally
 
-Remember, user: `artisan` password: `evolution`.
+The system will boot normally. Remember, user: `artisan` password: `evolution`.
 
 You can safety install it using krill, and once installed, it's possible to update, install firmware, change it and remaster again.
 
-The main limits, are: my Alpine remaster is not yet able to boot from ISO on UEFI, I wrote a [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) on testing.
+The main limits, are: my Alpine remastered is not yet able to boot from ISO on UEFI, I wrote a [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) on testing.
 
 Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
 ## Video
 I did a video: produce an ISO from Alpine Linux, boot another system with the live and install it using krill a CLI system installer.
+
 * [A new penguin](https://youtu.be/VC4ihHRb1R0)
 
 ## More informations:
