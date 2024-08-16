@@ -42,13 +42,13 @@ penguins-eggs
 `penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
 ### using get-eggs
-It's the most pratical way and is valid for Arch, Debian, Devuan, Ubuntu and Alpine Linux. get-eggs configure automatically `nodesource` when need. Copy and paste:
+It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need and install the right package. Copy and paste:
 ```
 git clone https://github.com/pieroproietti/get-eggs
 cd get-eggs
 sudo ./get-eggs.sh
 ```
-### manual installation
+### Manual installation
 
 #### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
 Just download and install penguins-eggs-10.0.x.
