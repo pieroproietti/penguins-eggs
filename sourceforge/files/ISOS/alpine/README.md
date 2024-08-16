@@ -23,23 +23,24 @@ penguins-eggs
 
 * **egg-of-alpine-colibri** An experimental version from Alpine standard. Look on discussion [Way to Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377).
 
-NOTE: I added now `linux-firmwaer` to use on real hardware.
+NOTE: Yuo can add `linux-firmware` to use on real hardware.
 
 * You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
-## Important notes
-* this image will boot only on BIOS systems;
-* this image will boot and go in emergency shell. Type `exit`, then:
+# Important notes 
+This image will boot only on BIOS systems and will go on `emergency shell`. From the emergency shell:
   * `mkdir /mnt`
   * `mount /dev/sr0 /mnt`
+  * type `exit`
   * `/mnt/live/sidecar.sh`
-  * `exit`
+  * type `exit`
+  * the system will boot normally
 
-The system will boot live from the ISO. Remember, user: `artisan` password: `evolution`.
+Remember, user: `artisan` password: `evolution`.
 
-You can safety install it using krill, and once installed, it's possible to update, change it and remaster again.
+You can safety install it using krill, and once installed, it's possible to update, install firmware, change it and remaster again.
 
-The main limits, are: my Alpine remaster is not yet able to boot from ISO on UEFI, I must to write an APKBUILD to install eggs, actually we rely on a script.
+The main limits, are: my Alpine remaster is not yet able to boot from ISO on UEFI, I wrote a [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) on testing.
 
 Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
