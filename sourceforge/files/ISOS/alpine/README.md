@@ -36,11 +36,15 @@ This image will boot only on BIOS systems and will go on `emergency shell`. From
   * `/mnt/live/sidecar.sh`
   * type `exit`
 
-The system will boot normally. Remember, user: `artisan` password: `evolution`.
+The system will boot normally, and You can safety install it using krill `doas eggs krill`,  and once installed, it's possible to update, install firmware `doas apk add linux-firmware`, customize it and remaster again.
 
-You can safety install it using krill, and once installed, it's possible to update, install firmware, change it and remaster again.
+The main limits of this remasters, are: 
 
-The main limits, are: my Alpine remastered is not yet able to boot from ISO on UEFI, I wrote a [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) on testing.
+* my Alpine remastered is not yet able to boot from ISO on UEFI;
+* I wrote a [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) on testing.
+* will be nice to use calamares as GUI installaer - there is an [Alpine calamares package](https://pkgs.alpinelinux.org/packages?name=calamares&branch=v3.14) from Oliver Smith on community for Alpine 3.14, but was not able to update.
+
+However remastering and reinstalling AlpineLinux is quite fast and this allows big progress by facilitating debugging, after all I started using this distribution less than month.
 
 Extend penguins-eggs to Alpine Linux is a work in progress, please help!
 
