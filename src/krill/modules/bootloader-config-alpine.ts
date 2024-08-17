@@ -20,7 +20,7 @@ export default async function bootloaderConfigAlpine(this: Sequence) {
   let cmd = ''
   if (this.efi) {
     try {
-      cmd = `chroot ${this.installTarget} apk add grub efibootmgr} ${this.toNull}`
+      cmd = `chroot ${this.installTarget} apk add grub grub-efi efibootmgr} ${this.toNull}`
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(error)
@@ -28,7 +28,7 @@ export default async function bootloaderConfigAlpine(this: Sequence) {
     }
   } else {
     try {
-      cmd = `chroot ${this.installTarget} apk add grub ${this.toNull}`
+      cmd = `chroot ${this.installTarget} apk add grub grub-bios ${this.toNull}`
       await exec(cmd, this.echo)
     } catch (error) {
       console.log(error)
