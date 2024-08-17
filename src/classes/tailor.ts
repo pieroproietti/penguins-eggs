@@ -171,7 +171,6 @@ export default class Tailor {
             }
           }
         }
-
         break
       }
 
@@ -364,11 +363,11 @@ export default class Tailor {
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
           if (distro.familyId === 'debian') {
-            exec('apt-get update', Utils.setEcho(false))
+            await exec('apt-get update', Utils.setEcho(false))
           } else if (distro.familyId === 'arch') {
-            exec('pacman -Sy', Utils.setEcho(false))
+            await exec('pacman -Sy', Utils.setEcho(false))
           } else if (distro.familyId === 'alpine') {
-            exec('apk update', Utils.setEcho(false))
+            await exec('apk update', Utils.setEcho(false))
           }
         }
 
@@ -380,11 +379,11 @@ export default class Tailor {
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
             if (distro.familyId === 'debian') {
-              exec('apt-get full-upgrade', Utils.setEcho(false))
+              await exec('apt-get full-upgrade', Utils.setEcho(false))
             } else if (distro.familyId === 'arch') {
-              exec('pacman -Su', Utils.setEcho(false))
+              await exec('pacman -Su', Utils.setEcho(false))
             } else if (distro.familyId === 'alpine') {
-              exec('apk upgrade', Utils.setEcho(false))
+              await exec('apk upgrade', Utils.setEcho(false))
             }
           } //  upgrade true
         } // undefined upgrade
