@@ -221,6 +221,20 @@ export default class Tailor {
 
         break
       }
+
+      case 'Alpine': {
+        tailorList = `${this.costume}/alpine.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Arch`)
+            process.exit()
+          }
+        }
+
+        break
+      }
+
       // No default
     }
 
@@ -389,8 +403,10 @@ export default class Tailor {
           if (packages.length > 1) {
             await this.helperInstall(packages)
           }
-        } else {
+        } else if (distro.familyId === 'arch') {
           await this.helperInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
+        } else if (distro.familyId === 'alpine') {
+          await this.helperInstall(this.materials.sequence.packages, 'packages', `apk add`)
         }
       }
 
