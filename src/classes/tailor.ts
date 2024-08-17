@@ -227,7 +227,7 @@ export default class Tailor {
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/debian.yml`
           if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Arch`)
+            console.log(`no costume definition found compatible Alpine`)
             process.exit()
           }
         }
@@ -363,7 +363,14 @@ export default class Tailor {
         step = 'repositories update'
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
-          await (distro.familyId === 'debian' ? exec('apt-get update', Utils.setEcho(false)) : exec('pacman -Sy', Utils.setEcho(false)))
+          if (distro.familyId === 'debian') {
+            exec('apt-get update', Utils.setEcho(false))
+          } else if (distro.familyId === 'arch') {
+            exec('pacman -Sy', Utils.setEcho(false))
+          } else if (distro.familyId === 'alpine') {
+            exec('apk update', Utils.setEcho(false))
+            exec('apk upgrade', Utils.setEcho(false))
+          }
         }
 
         /**
