@@ -88,6 +88,7 @@ import networkCfg from './modules/network-cfg.js'
 // services-systemd:
 // bootloader-config
 import bootloaderConfig from './modules/bootloader-config.js'
+import bootloaderConfigAlpine from './modules/bootloader-config-alpine.js'
 import bootloaderConfigArch from './modules/bootloader-config-arch.js'
 import bootloaderConfigDebian from './modules/bootloader-config-debian.js'
 import grubcfg from './modules/grubcfg.js'
@@ -134,6 +135,7 @@ export default class Sequence {
    // services-systemd:
    // bootloader-config
    public bootloaderConfig = bootloaderConfig
+   public bootloaderConfigAlpine = bootloaderConfigAlpine
    public bootloaderConfigArch = bootloaderConfigArch
    public bootloaderConfigDebian = bootloaderConfigDebian
    //
