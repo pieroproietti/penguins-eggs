@@ -369,7 +369,6 @@ export default class Tailor {
             exec('pacman -Sy', Utils.setEcho(false))
           } else if (distro.familyId === 'alpine') {
             exec('apk update', Utils.setEcho(false))
-            exec('apk upgrade', Utils.setEcho(false))
           }
         }
 
@@ -380,7 +379,13 @@ export default class Tailor {
           step = 'repositories upgrade'
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
-            await (distro.familyId === 'debian' ? exec('apt-get full-upgrade -y', Utils.setEcho(false)) : exec('pacman -Su', Utils.setEcho(false)))
+            if (distro.familyId === 'debian') {
+              exec('apt-get full-upgrade', Utils.setEcho(false))
+            } else if (distro.familyId === 'arch') {
+              exec('pacman -Su', Utils.setEcho(false))
+            } else if (distro.familyId === 'alpine') {
+              exec('apk upgrade', Utils.setEcho(false))
+            }
           } //  upgrade true
         } // undefined upgrade
       } // end sequence/repositories
