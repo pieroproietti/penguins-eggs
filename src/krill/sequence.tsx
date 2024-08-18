@@ -322,11 +322,6 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         if (chroot) {
-            await emergencyShell(message)
-         }
-
-
          // mountFs
          message = "Mounting target file system "
          percent = 0.09
@@ -337,7 +332,10 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         if (chroot) {
+         let testRoot=`mount!grep ${this.devices.root.mountPoint}`
+         let test = await exec(testRoot)
+         if (test.data === '') {
+            console.log(this.devices)
             await emergencyShell(message)
          }
 
@@ -351,10 +349,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         if (chroot) {
-            await emergencyShell(message)
-         }
-   
+  
          // unpackfs
          message = "Unpacking filesystem "
          percent = 0.15
