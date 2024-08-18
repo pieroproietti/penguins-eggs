@@ -332,12 +332,6 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
          await sleep(500) // diamo il tempo di montare
-         let testRoot=`mount|grep ${this.devices.root.name}`
-         let test = await exec(testRoot)
-         if (test.data === '') {
-            message=`Filesystem / is not mounted on ${this.devices.root.name}`
-            await emergencyShell(message)
-         }
 
          // mountVfs
          message = "Mounting on target VFS "
