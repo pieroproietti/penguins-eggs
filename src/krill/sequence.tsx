@@ -332,7 +332,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-         let testRoot=`mount!grep ${this.devices.root.mountPoint}`
+         let testRoot=`mount!grep ${this.devices.root.name}`
          let test = await exec(testRoot)
          if (test.data === '') {
             console.log(this.devices)
