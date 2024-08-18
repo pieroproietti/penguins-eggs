@@ -335,6 +335,7 @@ export default class Sequence {
          let testRoot=`mount!grep ${this.devices.root.name}`
          let test = await exec(testRoot)
          if (test.data === '') {
+            console.log(`testRoot: ${testRoot}`)
             console.log(this.devices)
             await emergencyShell(message)
          }
