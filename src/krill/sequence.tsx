@@ -331,8 +331,8 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
-         sleep(500) // diamo il tempo di montare
-         
+         await sleep(500) // diamo il tempo di montare
+
          /*
          let testRoot=`mount|grep ${this.devices.root.name}`
          let test = await exec(testRoot)
