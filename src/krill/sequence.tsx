@@ -342,6 +342,12 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         if (chroot) {
+            console.log("Emergency shell")
+            await exec("/bin/bash")
+         }
+
+
          // unpackfs
          message = "Unpacking filesystem "
          percent = 0.15
