@@ -332,16 +332,12 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
          await sleep(500) // diamo il tempo di montare
-
-         /*
          let testRoot=`mount|grep ${this.devices.root.name}`
          let test = await exec(testRoot)
          if (test.data === '') {
-            console.log(`testRoot: ${testRoot}`)
-            console.log(this.devices)
+            message=`Filesystem / is not mounted on ${this.devices.root.name}`
             await emergencyShell(message)
          }
-         */
 
          // mountVfs
          message = "Mounting on target VFS "
@@ -798,8 +794,20 @@ function sleep(ms = 0) {
  * @param message 
  */
 async function emergencyShell(message: string) {
-   console.log(`Emergency shell: ${message}`)
-   cliCursor.show()
-   await exec("/bin/bash")
-   cliCursor.hide()
+   message = message + `type "exit" to exit.`
+   try{
+      await redraw(
+         <>
+            <Title />
+            <Box>
+               <Text>{message}</Text>
+            </Box>
+         </>
+      )
+      cliCursor.show()
+      await exec("/bin/bash")
+      cliCursor.hide()
+   } catch (error) {
+      await Utils.pressKeyToExit(JSON.stringify(error))
+   }
 }
