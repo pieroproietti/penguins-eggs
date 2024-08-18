@@ -322,6 +322,11 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
+         if (chroot) {
+            await emergencyShell(message)
+         }
+
+
          // mountFs
          message = "Mounting target file system "
          percent = 0.09
@@ -330,6 +335,10 @@ export default class Sequence {
             await this.mountFs()
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
+         }
+
+         if (chroot) {
+            await emergencyShell(message)
          }
 
          // mountVfs
@@ -343,11 +352,9 @@ export default class Sequence {
          }
 
          if (chroot) {
-            console.log("Emergency shell")
-            await exec("/bin/bash")
+            await emergencyShell(message)
          }
-
-
+   
          // unpackfs
          message = "Unpacking filesystem "
          percent = 0.15
@@ -785,4 +792,15 @@ function sleep(ms = 0) {
    return new Promise((resolve) => {
       setTimeout(resolve, ms);
    });
+}
+
+/**
+ * 
+ * @param message 
+ */
+async function emergencyShell(message: string) {
+   console.log(`Emergency shell: ${message}`)
+   cliCursor.show()
+   await exec("/bin/bash")
+   cliCursor.hide()
 }
