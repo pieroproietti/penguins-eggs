@@ -454,6 +454,7 @@ sudo eggs produce --max
 * [`eggs install`](#eggs-install)
 * [`eggs kill`](#eggs-kill)
 * [`eggs krill`](#eggs-krill)
+* [`eggs love`](#eggs-love)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs status`](#eggs-status)
@@ -826,6 +827,27 @@ EXAMPLES
 
   sudo eggs install --chroot
 ```
+
+## `eggs love`
+
+the simplest way to get a child
+
+```
+USAGE
+  $ eggs love [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  the simplest way to get a child
+
+EXAMPLES
+  $ eggs love
+```
+
+_See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.28/src/commands/love.ts)_
 
 ## `eggs mom`
 
