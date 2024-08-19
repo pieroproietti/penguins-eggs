@@ -75,6 +75,43 @@
         "analyze.js"
       ]
     },
+    "auto": {
+      "aliases": [],
+      "args": {},
+      "description": "the simplest way to get an egg!",
+      "examples": [
+        "eggs auto"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "auto",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "auto.js"
+      ]
+    },
     "calamares": {
       "aliases": [],
       "args": {},
