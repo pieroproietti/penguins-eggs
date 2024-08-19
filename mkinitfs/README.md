@@ -44,3 +44,12 @@ Le istruzioni di `sidecar.sh` utilizzano `/sysroot` come mountpoint per il mount
 Resta da vedere se è possibile includere questo in un vero init.
 
 
+
+# overlaytmpfs=yes
+When booting from a read-only filesystem, you can specify this flag to have
+your changes written to an in-memory temporary overlayfs.  The underlying
+filesystem will always be mounted read-only, the overlay always writable.
+
+# overlaytmpfsflags=lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work
+Optional comma-separated list of tmpfs(5) mount options when Boverlaytmpfs
+is used.  The default is mode=0755,rw, you cannot override.
