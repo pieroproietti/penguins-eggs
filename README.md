@@ -830,7 +830,7 @@ EXAMPLES
 
 ## `eggs love`
 
-the simplest way to get a child
+the simplest way to get an egg!
 
 ```
 USAGE
@@ -841,10 +841,10 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  the simplest way to get a child
+  the simplest way to get an egg!
 
 EXAMPLES
-  $ eggs love
+  $ eggs auto
 ```
 
 _See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.28/src/commands/love.ts)_
