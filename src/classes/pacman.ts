@@ -236,9 +236,11 @@ export default class Pacman {
     execSync(`mkdir -p ${init}`)
     shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
-    shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
-    shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
+    
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
+    shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
+    shx.cp(path.resolve(__dirname, '../../conf/love.yaml'), confRoot)
+    shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/yolk.yaml'), confRoot)
     // init
     shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')

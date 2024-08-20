@@ -18,7 +18,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * 
  */
-export default class Auto extends Command {
+export default class Love extends Command {
   static description = 'the simplest way to get an egg!'
 
   static examples = ['eggs auto']
@@ -29,7 +29,7 @@ export default class Auto extends Command {
   }
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Auto)
+    const { args, flags } = await this.parse(Love)
 
     let verbose = false
     if (flags.verbose) {
@@ -39,7 +39,7 @@ export default class Auto extends Command {
     const echo = Utils.setEcho(verbose)
 
     Utils.titles(this.id + ' ' + this.argv)
-    const cmds = yaml.load(fs.readFileSync('/etc/penguins-eggs.d/auto.yaml', 'utf8')) as string[]
+    const cmds = yaml.load(fs.readFileSync('/etc/penguins-eggs.d/love.yaml', 'utf8')) as string[]
 
     console.log("The following commands will be executed:")
     console.log()
@@ -47,6 +47,12 @@ export default class Auto extends Command {
       console.log(`- ${cmd}`)
     }
     console.log()
-    await Utils.customConfirm()
+    if (await Utils.customConfirm()) {
+      for (const cmd of cmds) {
+        await exec(cmd)
+      }
+    } else {
+      console.log("Aborted!")
+    }
   }
 }
