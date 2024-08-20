@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.28</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.29</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
@@ -15,11 +15,11 @@
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_10.0.28-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_10.0.29-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_10.0.28-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_10.0.29-1_amd64.deb
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
@@ -27,7 +27,7 @@ $ sudo dpkg -i penguins-eggs_10.0.28-1_amd64.deb
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/10.0.28  
+penguins-eggs/10.0.29  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -61,6 +61,7 @@ sudo eggs dad
       <li><a href="#eggs-install"><code>eggs install</code></a></li>
       <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
       <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
+      <li><a href="#eggs-love"><code>eggs love</code></a></li>
       <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
       <li><a href="#eggs-status"><code>eggs status</code></a></li>
@@ -357,6 +358,21 @@ EXAMPLES
   sudo eggs install --unattended --halt
 
   sudo eggs install --chroot
+</code></pre>
+    <h2><code>eggs love</code></h2>
+    <p>the simplest way to get an egg!</p>
+    <pre><code>USAGE
+  $ eggs love [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  the simplest way to get an egg!
+
+EXAMPLES
+  $ eggs auto
 </code></pre>
     <h2><code>eggs mom</code></h2>
     <p>ask help from mommy - TUI helper</p>
