@@ -41,6 +41,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.29
+* removed link love - conflict with love package - created command `eggs love`;
+* created YAML configuration for `love` in `/etc/penguins-eggs.d/love.yaml`.
+
 ## penguins-eggs-10.0.28
 * wardrobe: you can now dress a naked alpine as albatros or colibri, just `eggs wardrobe get` and `sudo eggs wardrobe wear albatros`;
 * krill: introduced 0.5 sec delay after mount root partifion and before mount vfs, was a need for Alpine.
