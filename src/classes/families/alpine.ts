@@ -62,9 +62,13 @@ export default class Alpine {
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
+
+    let installed=false
+
     try {
       const cmd = 'apk update'
       await exec(cmd, echo)
+      installed = true
     } catch {
       Utils.error(`Alpine.calamaresInstall(): apk update `)
     }
@@ -79,18 +83,19 @@ export default class Alpine {
   /**
    * Alpine: calamaresPolicies
    */
-  static async calamaresPolicies() {
+  static async calamaresPolicies(verbose=true) {
+    const echo = Utils.setEcho(verbose)    
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
+    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
   }
 
   /**
    * Alpine: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    let removed = false
     const echo = Utils.setEcho(verbose)
 
+    let removed = false
     try {
       const cmd = `apk del ${this.packs4calamares.join(' ')}`
       await exec(cmd, echo)
