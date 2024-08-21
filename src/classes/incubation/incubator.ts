@@ -17,6 +17,7 @@ import { IInstaller } from '../../interfaces/i-installer.js'
 import { IDistro, IRemix } from '../../interfaces/index.js'
 import Pacman from '../pacman.js'
 import Utils from '../utils.js'
+import { Alpine } from './distros/alpine.js'
 import { Bionic } from './distros/bionic.js'
 import { Buster } from './distros/buster.js'
 import { Jessie } from './distros/jessie.js'
@@ -199,8 +200,7 @@ export default class Incubator {
        * Alpine
        */
       case 'alpine': {
-        // actually take Buster
-        const alpine = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const alpine = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await alpine.create()
 
         break

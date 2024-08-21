@@ -61,7 +61,7 @@ export default class Alpine {
    * Alpine: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
-    const echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(true) 
     try {
       const cmd = `apk add ${this.packs4calamares}`
       try {
