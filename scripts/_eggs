@@ -184,6 +184,7 @@ _eggs() {
 "install[krill: the CLI system installer - the egg became a penguin!]" \
 "krill[krill: the CLI system installer - the egg became a penguin!]" \
 "kill[kill the eggs/free the nest]" \
+"love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
@@ -247,8 +248,8 @@ dad)
 _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old configuration before to create]" \
 "(-d --default)"{-d,--default}"[reset to default values]" \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-f --file)"{-f,--file}"[use a file configuration custom]:file:_files" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
@@ -296,6 +297,12 @@ _arguments -S \
 "(-i --isos)"{-i,--isos}"[erase all ISOs on remote mount]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+love)
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 mom)
