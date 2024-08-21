@@ -110,287 +110,282 @@ class Distro implements IDistro {
       this.releaseLike = 'unstable'
     }
 
-
     /**
      * Analize distroId
      */
     switch (this.distroId) {
-    case 'Alpine': {
-      this.familyId = 'alpine'
-      this.distroLike = 'Alpine'
-      this.codenameId = 'rolling' // questo viene rimosso dal nome
-      this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
-      this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-      this.squashfs = `live/filesystem.squashfs`
+      case 'Alpine': {
+        this.familyId = 'alpine'
+        this.distroLike = 'Alpine'
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
+        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
+        this.squashfs = `live/filesystem.squashfs`
 
-      this.syslinuxPath = '/usr/share/syslinux/' // correct
-      this.pxelinuxPath = this.syslinuxPath
-      this.usrLibPath = '/usr/lib/'
-      this.memdiskPath = this.syslinuxPath
-      this.isolinuxPath = this.syslinuxPath
-      // At the moment
-      this.isCalamaresAvailable = true
+        this.syslinuxPath = '/usr/share/syslinux/' // correct
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = true
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'Fedora': {
-      this.familyId = 'fedora'
-      this.distroLike = 'Fedora'
-      this.codenameId = 'rolling'
-      this.codenameLikeId = '40'
-      this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
-      this.squashfs = `live/filesystem.squashfs`
+      case 'Fedora': {
+        this.familyId = 'fedora'
+        this.distroLike = 'Fedora'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = '40'
+        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+        this.squashfs = `live/filesystem.squashfs`
 
-      this.syslinuxPath = '/usr/share/syslinux/' 
-      this.pxelinuxPath = this.syslinuxPath
-      this.usrLibPath = '/usr/lib/'
-      this.memdiskPath = this.syslinuxPath
-      this.isolinuxPath = this.syslinuxPath
-      // At the moment
-      this.isCalamaresAvailable = false
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = false
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'openSUSE': {
-      this.familyId = 'suse'
-      this.distroLike = 'openSUSE'
-      this.codenameId = 'rolling'
-      this.codenameLikeId = 'Tumbleweed'
-      this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
-      this.squashfs = `live/filesystem.squashfs`
+      case 'openSUSE': {
+        this.familyId = 'suse'
+        this.distroLike = 'openSUSE'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = 'Tumbleweed'
+        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+        this.squashfs = `live/filesystem.squashfs`
 
-      this.syslinuxPath = '/usr/share/syslinux/' 
-      this.pxelinuxPath = this.syslinuxPath
-      this.usrLibPath = '/usr/lib/'
-      this.memdiskPath = this.syslinuxPath
-      this.isolinuxPath = this.syslinuxPath
-      // At the moment
-      this.isCalamaresAvailable = false
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = false
 
-    
-    break;
-    }
+        break
+      }
 
-    default: {
-
-      /**
-       * Arch/Debian/Devuan/Manjaro and Ubuntu
-       */
-      switch (this.codenameId) {
-        case 'jessie': {
-          // Debian 8 jessie
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'jessie'
-          this.liveMediumPath = '/lib/live/mount/medium/'
-          this.isCalamaresAvailable = false
-
-          break
-        }
-
-        case 'stretch': {
-          // Debian 9 stretch
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'stretch'
-          this.liveMediumPath = '/lib/live/mount/medium/'
-          this.isCalamaresAvailable = false
-
-          break
-        }
-
-        case 'buster': {
-          // Debian 10 buster
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'buster'
-
-          break
-        }
-
-        case 'bullseye': {
-          // Debian 11 bullseye
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'bullseye'
-
-          break
-        }
-
-        case 'bookworm': {
-          // Debian 12 bookworm
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'bookworm'
-
-          break
-        }
-
-        case 'trixie': {
-          // Debian 13 trixie
-          this.distroLike = 'Debian'
-          this.codenameLikeId = 'trixie'
-
-          break
-        }
-
-        case 'beowulf': {
-          // Devuab 3 beowulf
-          this.distroLike = 'Devuan'
-          this.codenameLikeId = 'beowulf'
-
-          break
-        }
-
-        case 'chimaera': {
-          // Devuab 4 chimaera
-          this.distroLike = 'Devuan'
-          this.codenameLikeId = 'chimaera'
-
-          break
-        }
-
-        case 'daedalus': {
-          // Devuan 5 daedalus
-          this.distroLike = 'Devuan'
-          this.codenameLikeId = 'daedalus'
-
-          break
-        }
-
+      default: {
         /**
-         * Ubuntu LTS + actual
+         * Arch/Debian/Devuan/Manjaro and Ubuntu
          */
+        switch (this.codenameId) {
+          case 'jessie': {
+            // Debian 8 jessie
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'jessie'
+            this.liveMediumPath = '/lib/live/mount/medium/'
+            this.isCalamaresAvailable = false
 
-        case 'bionic': {
-          // Ubuntu 18.04 bionic LTS eol aprile 2023
-          this.distroLike = 'Ubuntu'
-          this.codenameLikeId = 'bionic'
-          this.liveMediumPath = '/lib/live/mount/medium/'
+            break
+          }
 
-          break
-        }
+          case 'stretch': {
+            // Debian 9 stretch
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'stretch'
+            this.liveMediumPath = '/lib/live/mount/medium/'
+            this.isCalamaresAvailable = false
 
-        case 'focal': {
-          // Ubuntu 20.04 focal LTS
-          this.distroLike = 'Ubuntu'
-          this.codenameLikeId = 'focal'
+            break
+          }
 
-          break
-        }
+          case 'buster': {
+            // Debian 10 buster
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'buster'
 
-        case 'jammy': {
-          // Ubuntu 22.04 jammy LTS
-          this.distroLike = 'Ubuntu'
-          this.codenameLikeId = 'jammy'
+            break
+          }
 
-          break
-        }
+          case 'bullseye': {
+            // Debian 11 bullseye
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'bullseye'
 
-        case 'noble': {
-          // Ubuntu 24.04 noble LTS
-          this.distroLike = 'Ubuntu'
-          this.codenameLikeId = 'noble'
+            break
+          }
 
-          break
-        }
+          case 'bookworm': {
+            // Debian 12 bookworm
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'bookworm'
 
-        case 'devel': {
-          // Ubuntu rhino
-          this.distroLike = 'Ubuntu'
-          this.codenameLikeId = 'devel'
+            break
+          }
 
-          break
-        }
+          case 'trixie': {
+            // Debian 13 trixie
+            this.distroLike = 'Debian'
+            this.codenameLikeId = 'trixie'
 
-        /**
-         * Arch Linux/Garuda
-         */
-        case 'Spizaetus':
-        case 'n/a':
-        case 'rolling': {
-          this.familyId = 'archlinux'
-          this.distroLike = 'Arch'
-          this.codenameId = 'rolling'
-          this.codenameLikeId = 'rolling'
-          this.liveMediumPath = '/run/archiso/bootmnt/'
-          this.squashfs = `arch/x86_64/airootfs.sfs`
-          break
-        }
+            break
+          }
 
-        default: {
-          /**
-           * find in ./conf/derivaties
-           */
-          interface IDistros {
-            distroLike: string
-            family: string
-            id: string // codenameId
-            ids: string[]
+          case 'beowulf': {
+            // Devuab 3 beowulf
+            this.distroLike = 'Devuan'
+            this.codenameLikeId = 'beowulf'
+
+            break
+          }
+
+          case 'chimaera': {
+            // Devuab 4 chimaera
+            this.distroLike = 'Devuan'
+            this.codenameLikeId = 'chimaera'
+
+            break
+          }
+
+          case 'daedalus': {
+            // Devuan 5 daedalus
+            this.distroLike = 'Devuan'
+            this.codenameLikeId = 'daedalus'
+
+            break
           }
 
           /**
-           * patch per Roy VERIFICARE
+           * Ubuntu LTS + actual
            */
-          let found = false
-          let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
-          if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
-            file = '/etc/penguins-eggs.d/derivatives.yaml'
+
+          case 'bionic': {
+            // Ubuntu 18.04 bionic LTS eol aprile 2023
+            this.distroLike = 'Ubuntu'
+            this.codenameLikeId = 'bionic'
+            this.liveMediumPath = '/lib/live/mount/medium/'
+
+            break
           }
 
-          const content = fs.readFileSync(file, 'utf8')
-          const distros = yaml.load(content) as IDistros[]
-          for (const distro of distros) {
-            if (distro.ids !== undefined) {
-              for (let n = 0; n < distro.ids.length; n++) {
-                if (this.codenameId === distro.ids[n]) {
-                  found = true
-                  this.distroLike = distro.distroLike
-                  this.codenameLikeId = distro.id
-                  this.familyId = distro.family
+          case 'focal': {
+            // Ubuntu 20.04 focal LTS
+            this.distroLike = 'Ubuntu'
+            this.codenameLikeId = 'focal'
+
+            break
+          }
+
+          case 'jammy': {
+            // Ubuntu 22.04 jammy LTS
+            this.distroLike = 'Ubuntu'
+            this.codenameLikeId = 'jammy'
+
+            break
+          }
+
+          case 'noble': {
+            // Ubuntu 24.04 noble LTS
+            this.distroLike = 'Ubuntu'
+            this.codenameLikeId = 'noble'
+
+            break
+          }
+
+          case 'devel': {
+            // Ubuntu rhino
+            this.distroLike = 'Ubuntu'
+            this.codenameLikeId = 'devel'
+
+            break
+          }
+
+          /**
+           * Arch Linux/Garuda
+           */
+          case 'Spizaetus':
+          case 'n/a':
+          case 'rolling': {
+            this.familyId = 'archlinux'
+            this.distroLike = 'Arch'
+            this.codenameId = 'rolling'
+            this.codenameLikeId = 'rolling'
+            this.liveMediumPath = '/run/archiso/bootmnt/'
+            this.squashfs = `arch/x86_64/airootfs.sfs`
+            break
+          }
+
+          default: {
+            /**
+             * find in ./conf/derivaties
+             */
+            interface IDistros {
+              distroLike: string
+              family: string
+              id: string // codenameId
+              ids: string[]
+            }
+
+            /**
+             * patch per Roy VERIFICARE
+             */
+            let found = false
+            let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
+            if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
+              file = '/etc/penguins-eggs.d/derivatives.yaml'
+            }
+
+            const content = fs.readFileSync(file, 'utf8')
+            const distros = yaml.load(content) as IDistros[]
+            for (const distro of distros) {
+              if (distro.ids !== undefined) {
+                for (let n = 0; n < distro.ids.length; n++) {
+                  if (this.codenameId === distro.ids[n]) {
+                    found = true
+                    this.distroLike = distro.distroLike
+                    this.codenameLikeId = distro.id
+                    this.familyId = distro.family
+                  }
                 }
               }
             }
-          }
 
-          if (!found) {
-            console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
-            console.log('')
-            console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
-            console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
-            console.log('If you can create your new iso, you can contribute to the project')
-            console.log('by suggesting your modification.')
-            process.exit(0)
+            if (!found) {
+              console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
+              console.log('')
+              console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
+              console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
+              console.log('If you can create your new iso, you can contribute to the project')
+              console.log('by suggesting your modification.')
+              process.exit(0)
+            }
           }
         }
+
+        /**
+         * setting paths: syslinux, isolinux, usrLibPath
+         */
+        switch (this.familyId) {
+          case 'debian': {
+            this.isolinuxPath = '/usr/lib/ISOLINUX/'
+            this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
+            this.pxelinuxPath = '/usr/lib/PXELINUX/'
+            this.memdiskPath = '/usr/lib/syslinux/'
+            this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
+
+            break
+          }
+
+          case 'archlinux': {
+            this.syslinuxPath = '/usr/lib/syslinux/bios/'
+            this.pxelinuxPath = this.syslinuxPath
+            this.usrLibPath = '/usr/lib/'
+            this.memdiskPath = this.syslinuxPath
+            this.isolinuxPath = this.syslinuxPath
+
+            break
+          }
+
+          // No default
+        } // Fine analisi codenameId
       }
-
-      /**
-       * setting paths: syslinux, isolinux, usrLibPath
-       */
-      switch (this.familyId) {
-        case 'debian': {
-          this.isolinuxPath = '/usr/lib/ISOLINUX/'
-          this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-          this.pxelinuxPath = '/usr/lib/PXELINUX/'
-          this.memdiskPath = '/usr/lib/syslinux/'
-          this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-
-          break
-        }
-
-        case 'archlinux': {
-          this.syslinuxPath = '/usr/lib/syslinux/bios/'
-          this.pxelinuxPath = this.syslinuxPath
-          this.usrLibPath = '/usr/lib/'
-          this.memdiskPath = this.syslinuxPath
-          this.isolinuxPath = this.syslinuxPath
-
-          break
-        }
-
-        // No default
-      } // Fine analisi codenameId
-    }
     }
 
     /**

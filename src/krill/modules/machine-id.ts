@@ -25,11 +25,10 @@ export default async function machineId(this: Sequence): Promise<void> {
   }
 
   const distro = new Distro()
-  if (distro.familyId === "alpine") {
+  if (distro.familyId === 'alpine') {
     await exec(`dbus-uuidgen > ${this.installTarget}/var/lib/dbus/machine-id`)
     await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
   } else {
     await exec(`touch ${file}`)
   }
 }
-

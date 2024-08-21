@@ -7,16 +7,17 @@
  */
 
 import { Command, Flags } from '@oclif/core'
-import fs from 'fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
 import path from 'node:path'
+
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * 
+ *
  */
 export default class Love extends Command {
   static description = 'the simplest way to get an egg!'
@@ -41,18 +42,19 @@ export default class Love extends Command {
     Utils.titles(this.id + ' ' + this.argv)
     const cmds = yaml.load(fs.readFileSync('/etc/penguins-eggs.d/love.yaml', 'utf8')) as string[]
 
-    console.log("The following commands will be executed:")
+    console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
       console.log(`- ${cmd}`)
     }
+
     console.log()
     if (await Utils.customConfirm()) {
       for (const cmd of cmds) {
         await exec(cmd)
       }
     } else {
-      console.log("Aborted!")
+      console.log('Aborted!')
     }
   }
 }

@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 import inquirer from 'inquirer'
 
 export default async function getDomain(initial = ''): Promise<string> {

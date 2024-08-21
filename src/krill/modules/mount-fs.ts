@@ -20,7 +20,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
     await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
   }
 
-  // root Alpine vuole -f per il mount 
+  // root Alpine vuole -f per il mount
   await exec(`mount -t ${this.devices.root.fsType} ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
   await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
   await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)

@@ -35,8 +35,8 @@ export default class Daddy {
 
   /**
    * editConfif
-   * @param c 
-   * @returns 
+   * @param c
+   * @returns
    */
   async editConfig(c: IEggsConfig): Promise<string> {
     // Utils.titles('dad')
@@ -100,15 +100,15 @@ export default class Daddy {
   }
 
   /**
-   * 
-   * @param reset 
-   * @param isCustom 
-   * @param fileCustom 
-   * @param verbose 
+   *
+   * @param reset
+   * @param isCustom
+   * @param fileCustom
+   * @param verbose
    */
   async helpMe(reset = false, isCustom = false, fileCustom = '', verbose = false) {
     if (isCustom) {
-      console.log("using custom file:", fileCustom)
+      console.log('using custom file:', fileCustom)
     }
 
     // Controllo configurazione
@@ -154,7 +154,6 @@ export default class Daddy {
         jsonConf = JSON.stringify(config)
       }
 
-
       // Save new configuration
       const confNew = JSON.parse(jsonConf)
       config.snapshot_basename = confNew.snapshot_basename
@@ -183,6 +182,4 @@ export default class Daddy {
     console.log()
     console.log(chalk.cyan('More help? ') + chalk.white('eggs mom'))
   }
-
 }
-

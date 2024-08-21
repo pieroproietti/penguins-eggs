@@ -46,75 +46,89 @@ export default async function packages(this: Sequence): Promise<void> {
     }
 
     // Alpine
-    if (this.distro.familyId === "alpine") {
-      packages.backend = "apk"
+    if (this.distro.familyId === 'alpine') {
+      packages.backend = 'apk'
     }
 
-    if (packages.backend === 'apt') {
-      /**
-       * apt
-       */
-      if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-        let cmd = `chroot ${this.installTarget} apt-get purge -y `
-        for (const elem of packagesToRemove) {
-          if (Pacman.packageIsInstalled(elem)) {
+    switch (packages.backend) {
+      case 'apt': {
+        /**
+         * apt
+         */
+        if (packagesToRemove != undefined && packagesToRemove.length > 0) {
+          let cmd = `chroot ${this.installTarget} apt-get purge -y `
+          for (const elem of packagesToRemove) {
+            if (Pacman.packageIsInstalled(elem)) {
+              cmd += elem + ' '
+            }
+          }
+
+          await exec(`${cmd} ${this.toNull}`, this.echo)
+          const autoremove = `chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
+          await exec(autoremove, this.echo)
+        }
+
+        if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+          let cmd = `chroot ${this.installTarget} apt-get install -y `
+          for (const elem of packagesToInstall) {
             cmd += elem + ' '
+          }
+
+          const update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
+          await exec(update, this.echo)
+          await exec(`${cmd} ${this.toNull}`, this.echo)
+        }
+
+        break
+      }
+
+      case 'pacman': {
+        /**
+         * pacman
+         */
+        if (packagesToRemove != undefined && packagesToRemove.length > 0) {
+          let cmd = `chroot ${this.installTarget} pacman -R\n`
+          for (const elem of packagesToRemove) {
+            cmd += elem + ' '
+          }
+
+          await exec(`${cmd} ${echoYes}`, this.echo)
+        }
+
+        if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+          for (const elem of packagesToInstall) {
+            await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
           }
         }
 
-        await exec(`${cmd} ${this.toNull}`, this.echo)
-        const autoremove = `chroot ${this.installTarget} apt-get autoremove -y ${this.toNull}`
-        await exec(autoremove, this.echo)
-      }
-      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-        let cmd = `chroot ${this.installTarget} apt-get install -y `
-        for (const elem of packagesToInstall) {
-          cmd += elem + ' '
-        }
-
-        const update = `chroot ${this.installTarget} apt-get update ${this.toNull}`
-        await exec(update, this.echo)
-        await exec(`${cmd} ${this.toNull}`, this.echo)
+        break
       }
 
-    } else if (packages.backend === 'pacman') {
-      /**
-       * pacman
-       */
-      if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-        let cmd = `chroot ${this.installTarget} pacman -R\n`
-        for (const elem of packagesToRemove) {
-          cmd += elem + ' '
+      case 'apk': {
+        /**
+         * apk
+         */
+        if (packagesToRemove != undefined && packagesToRemove.length > 0) {
+          let cmd = `chroot ${this.installTarget} apk del `
+          for (const elem of packagesToRemove) {
+            cmd += elem + ' '
+          }
+
+          await exec(`${cmd} ${this.toNull}`, this.echo)
         }
 
-        await exec(`${cmd} ${echoYes}`, this.echo)
-      }
+        if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+          let cmd = `chroot ${this.installTarget} apk add `
+          for (const elem of packagesToInstall) {
+            cmd += elem + ' '
+          }
 
-      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-        for (const elem of packagesToInstall) {
-          await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
+          await exec(`${cmd} ${this.toNull}`, this.echo)
         }
-      }
 
-    } else if (packages.backend === 'apk') {
-      /**
-       * apk
-       */
-      if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-        let cmd = `chroot ${this.installTarget} apk del `
-        for (const elem of packagesToRemove) {
-          cmd += elem + ' '
-        }
-        await exec(`${cmd} ${this.toNull}`, this.echo)
+        break
       }
-      if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-        let cmd = `chroot ${this.installTarget} apk add `
-        for (const elem of packagesToInstall) {
-          cmd += elem + ' '
-        }
-        await exec(`${cmd} ${this.toNull}`, this.echo)
-      }
+      // No default
     }
   }
 }
-

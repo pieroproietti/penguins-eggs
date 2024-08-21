@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 import inquirer from 'inquirer'
 
 export default async function getGateway(initial: string): Promise<string> {

@@ -31,7 +31,7 @@ export default class Xdg {
    * @param chroot
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
-    //console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
+    // console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
     if (Pacman.isInstalledGui()) {
       /**
        * SLIM & SLIMSKI

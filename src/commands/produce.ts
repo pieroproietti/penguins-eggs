@@ -25,16 +25,16 @@ export default class Produce extends Command {
   static description = 'produce a live image from your system whithout your data'
 
   static examples = [
-    'sudo eggs produce                    # fast compression',    
-    'sudo eggs produce --max              # max compression', 
+    'sudo eggs produce                    # fast compression',
+    'sudo eggs produce --max              # max compression',
     'sudo eggs produce --pendrive         # compression optomized pendrive',
-    'sudo eggs produce --clone            # clone', 
+    'sudo eggs produce --clone            # clone',
     'sudo eggs produce --cryptedclone     # crypted clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --theme lastos',
     'sudo eggs produce --excludes static  # you can customize it',
     'sudo eggs produce --excludes homes   # exclude /home/*',
-    'sudo eggs produce --excludes home    # exclude ~/*',
+    'sudo eggs produce --excludes home    # exclude ~/*'
   ]
 
   static flags = {
@@ -48,7 +48,7 @@ export default class Produce extends Command {
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
     noicon: Flags.boolean({ char: 'N', description: 'no icon eggs on desktop' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    pendrive: Flags.boolean({ char: 'p', description: 'optimized for pendrive: zstd -b 1M -Xcompression-level 15'}),
+    pendrive: Flags.boolean({ char: 'p', description: 'optimized for pendrive: zstd -b 1M -Xcompression-level 15' }),
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
@@ -56,14 +56,14 @@ export default class Produce extends Command {
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
-    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' }),
+    yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Produce)
-    const pendrive = flags.pendrive === undefined ? null : Number(flags.pendrive);
+    const pendrive = flags.pendrive === undefined ? null : Number(flags.pendrive)
 
     if (Utils.isRoot()) {
       /**
@@ -149,7 +149,7 @@ export default class Produce extends Command {
       let compression = compressors.fast()
       if (flags.max) {
         compression = compressors.max()
-      } else if (flags.pendrive){
+      } else if (flags.pendrive) {
         compression = compressors.pendrive('15')
       } else if (flags.standard) {
         compression = compressors.standard()
@@ -218,7 +218,6 @@ export default class Produce extends Command {
         if (flags.addons.includes('rsupport')) {
           myAddons.rsupport = true
         }
-
       }
 
       Utils.titles(this.id + ' ' + this.argv)
@@ -233,4 +232,3 @@ export default class Produce extends Command {
     }
   }
 }
-

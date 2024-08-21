@@ -92,7 +92,7 @@ export default class Install extends Command {
 
     let { crypted } = flags
 
-    const {pve} = flags
+    const { pve } = flags
     if (pve) {
       crypted = false
     }

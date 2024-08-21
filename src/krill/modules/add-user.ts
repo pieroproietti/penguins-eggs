@@ -36,8 +36,7 @@ export default async function addUser(this: Sequence, name = 'live', password = 
 
   // sudo ot wheel
   let group = 'sudo'
-  if (this.distro.familyId === 'archlinux'|| 
-      this.distro.familyId === 'alpine') {
+  if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'alpine') {
     group = 'wheel'
   }
 

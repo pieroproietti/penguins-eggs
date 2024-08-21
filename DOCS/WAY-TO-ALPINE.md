@@ -328,7 +328,8 @@ This is my end for now... but in same way can be an usefull starting point to so
 
 # Calamares GUI installer
 
-Solo per la versione 3.18
+Eggs will istall, or remove, this packages:
+
 ```
 apk add calamares \
     calamares-doc \
@@ -370,51 +371,3 @@ apk add calamares \
 
 ```
 
-]
-
-calamares-3.2.61-r1
-calamares-dev-3.2.61-r1
-calamares-doc-3.2.61-r1
-calamares-extensions-1.2.1-r4
-calamares-extensions-brand-default-mobile-1.2.1-r4
-calamares-extensions-mod-mobile-1.2.1-r4
-calamares-lang-3.2.61-r1
-calamares-mod-bootloader-3.2.61-r1
-calamares-mod-displaymanager-3.2.61-r1
-calamares-mod-finished-3.2.61-r1
-calamares-mod-fsresizer-3.2.61-r1
-calamares-mod-fstab-3.2.61-r1
-calamares-mod-grubcfg-3.2.61-r1
-calamares-mod-hostinfo-3.2.61-r1
-calamares-mod-hwclock-3.2.61-r1
-calamares-mod-interactiveterminal-3.2.61-r1
-calamares-mod-keyboard-3.2.61-r1
-calamares-mod-keyboardq-3.2.61-r1
-calamares-mod-locale-3.2.61-r1
-calamares-mod-localeq-3.2.61-r1
-calamares-mod-luksbootkeyfile-3.2.61-r1
-calamares-mod-luksopenswaphookcfg-3.2.61-r1
-calamares-mod-machineid-3.2.61-r1
-calamares-mod-mkinitfs-3.2.61-r1
-calamares-mod-mount-3.2.61-r1
-calamares-mod-netinstall-3.2.61-r1
-calamares-mod-networkcfg-3.2.61-r1
-calamares-mod-notesqml-3.2.61-r1
-calamares-mod-oemid-3.2.61-r1
-calamares-mod-packagechooser-3.2.61-r1
-calamares-mod-packages-3.2.61-r1
-calamares-mod-partition-3.2.61-r1
-calamares-mod-plasmalnf-3.2.61-r1
-calamares-mod-plymouthcfg-3.2.61-r1
-calamares-mod-preservefiles-3.2.61-r1
-calamares-mod-rawfs-3.2.61-r1
-calamares-mod-removeuser-3.2.61-r1
-calamares-mod-services-openrc-3.2.61-r1
-calamares-mod-shellprocess-3.2.61-r1
-calamares-mod-summary-3.2.61-r1
-calamares-mod-umount-3.2.61-r1
-calamares-mod-unpackfs-3.2.61-r1
-calamares-mod-users-3.2.61-r1
-calamares-mod-webview-3.2.61-r1
-calamares-mod-welcome-3.2.61-r1
-calamares-mod-welcomeq-3.2.61-r1

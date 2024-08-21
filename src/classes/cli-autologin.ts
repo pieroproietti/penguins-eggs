@@ -28,15 +28,14 @@ const stopMessage = 'eggs-stop-message'
  * CliAutologin
  */
 export default class CliAutologin {
-
   /**
    * add
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
   async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     if (Utils.isSystemd()) {
@@ -55,13 +54,11 @@ export default class CliAutologin {
       shx.exec(`chmod +x ${fileOverride}`)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
-
-
     } else if (Utils.isOpenRc()) {
       const inittab = chroot + '/etc/inittab'
       let content = ''
-      const search=`tty1::respawn:/sbin/getty 38400 tty1`
-      const replace=`tty1::respawn:/sbin/getty -L 38400 tty1 -n -l /bin/autologin`
+      const search = `tty1::respawn:/sbin/getty 38400 tty1`
+      const replace = `tty1::respawn:/sbin/getty -L 38400 tty1 -n -l /bin/autologin`
       const lines = fs.readFileSync(inittab, 'utf8').split('\n')
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].includes(search)) {
@@ -73,9 +70,9 @@ export default class CliAutologin {
 
       fs.writeFileSync(inittab, content, 'utf-8')
       // create /bin/autologin
-      const autologin=chroot + '/bin/autologin'
-      content='#!/bin/sh' + '\n'
-      content+=`/bin/login -f ${user}` + '\n'
+      const autologin = chroot + '/bin/autologin'
+      content = '#!/bin/sh' + '\n'
+      content += `/bin/login -f ${user}` + '\n'
       fs.writeFileSync(autologin, content, 'utf-8')
       execSync(`chmod +x ${autologin}`)
 
@@ -121,7 +118,6 @@ export default class CliAutologin {
     // eggsIssue += stopMessage + '\n'
     fs.writeFileSync(fileIssue, eggsIssue)
   }
-
 
   /**
    *
@@ -182,7 +178,6 @@ export default class CliAutologin {
       // shx.exec(`systemctl revert getty@.service`)
       this.msgRemove(`${chroot}/etc/motd`)
       this.msgRemove(`${chroot}/etc/issue`)
-
     } else if (Utils.isOpenRc()) {
       /**
        * openrc
@@ -203,9 +198,8 @@ export default class CliAutologin {
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
       this.msgRemove(`${chroot}/etc/issue`)
-      const autologin=`${chroot}/bin/autologin`
+      const autologin = `${chroot}/bin/autologin`
       execSync(`rm -f ${autologin}`)
-
     } else if (Utils.isSysvinit()) {
       /**
        * sysvinit

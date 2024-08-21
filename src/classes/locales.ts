@@ -38,7 +38,7 @@ export default class Locales {
     if (distro.familyId === 'alpine') {
       cmd = 'locale -a'
     }
- 
+
     // Restituisce i locales abilitati in Debian, per manjaro quelli presenti
     // in /etc/locale.gen anche se #disabilitati
     const enabledLocales: string[] = []
@@ -47,7 +47,7 @@ export default class Locales {
       const lines = result.data.split('\n')
       for (const line of lines) {
         if (distro.familyId === 'alpine') {
-          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim()+ '.UTF-8')
+          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim() + '.UTF-8')
         } else {
           enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim())
         }
@@ -64,24 +64,24 @@ export default class Locales {
     const distro = new Distro()
     let supporteds: string[] = []
     switch (distro.familyId) {
-    case 'alpine': {
-      supporteds = await this.getEnabled()
-    
-    break;
-    }
+      case 'alpine': {
+        supporteds = await this.getEnabled()
 
-    case 'debian': {
+        break
+      }
+
+      case 'debian': {
         supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
-    
-    break;
-    }
 
-    case 'archlinux': {
-      supporteds = (await exec('localectl list-locales', { capture: true, echo: false, ignore: false })).data.split('\n')
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'archlinux': {
+        supporteds = (await exec('localectl list-locales', { capture: true, echo: false, ignore: false })).data.split('\n')
+
+        break
+      }
+      // No default
     }
 
     const elements: string[] = []
