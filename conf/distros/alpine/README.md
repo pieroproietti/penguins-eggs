@@ -1,3 +1,3 @@
 # Alpine
 
-It take all configuration of Debian buster
+It have the configuration for modules, take calamares_modules from buster
