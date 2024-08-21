@@ -54,23 +54,25 @@ export default class Alpine {
     'calamares-mod-users',
     'calamares-mod-webview',
     'calamares-mod-welcome',
-    'calamares-mod-welcomeq',
+    'calamares-mod-welcomeq'
   ]
 
   /**
    * Alpine: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
-    const echo = Utils.setEcho(true) 
+    const echo = Utils.setEcho(true)
     try {
-      const cmd = `apk add ${this.packs4calamares}`
-      try {
-        await exec(cmd, echo)
-      } catch {
-        Utils.error(`Cannot install ${this.packs4calamares}`) // + e.error)
-      }
+      const cmd = 'apk update'
+      await exec(cmd, echo)
     } catch {
-      Utils.error(`Cannot download ${this.packs4calamares}`) // + e.error)
+      Utils.error(`Alpine.calamaresInstall(): apk update `)
+    }
+    const cmd = `apk add ${this.packs4calamares.join(' ')}`
+    try {
+      await exec(cmd, echo)
+    } catch {
+      Utils.error(`Alpine.calamaresInstall(): apk add calamares ... )`)
     }
   }
 
@@ -159,5 +161,5 @@ export default class Alpine {
 
     return available
   }
-  
+
 }
