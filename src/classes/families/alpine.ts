@@ -61,18 +61,18 @@ export default class Alpine {
    * Alpine: calamaresInstall
    */
   static async calamaresInstall(verbose = false): Promise<void> {
-    const echo = Utils.setEcho(true)
+    const echo = Utils.setEcho(verbose)
     try {
       const cmd = 'apk update'
       await exec(cmd, echo)
     } catch {
       Utils.error(`Alpine.calamaresInstall(): apk update `)
     }
-    const cmd = `apk add ${this.packs4calamares.join(' ')}`
     try {
+      const cmd = `apk add ${this.packs4calamares.join(' ')}`
       await exec(cmd, echo)
     } catch {
-      Utils.error(`Alpine.calamaresInstall(): apk add calamares ... )`)
+      Utils.error(`Alpine.calamaresInstall(): apk add calamares ...`)
     }
   }
 
@@ -88,13 +88,23 @@ export default class Alpine {
    * Alpine: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    verbose = true // serve per pacman
-
-    const removed = true
+    let removed = false
     const echo = Utils.setEcho(verbose)
 
-    await exec(`apk del ${this.packs4calamares}`)
-    await exec('rm /etc/calamares -rf', echo)
+    try {
+      const cmd = `apk del ${this.packs4calamares.join(' ')}`
+      await exec(cmd, echo)
+      removed = true
+    } catch {
+      Utils.error(`Alpine.calamaresRemove(): apk del calamares ...`)
+    }
+
+    try {
+      const cmd = `rm /etc/calamares -rf`
+      await exec(cmd, echo)
+    } catch {
+      Utils.error(`Alpine.calamaresRemove(): rm /etc/calamares -rf`)
+    }
 
     return removed
   }
