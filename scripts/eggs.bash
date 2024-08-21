@@ -16,12 +16,13 @@ analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help
-dad --clean --default --help --file --verbose
+dad --clean --default --file --help --verbose
 export:deb --all --clean --help --verbose
 export:iso --checksum --clean --help --verbose
 install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --isos --nointeractive --verbose
+love --help --verbose
 mom --help
 produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
