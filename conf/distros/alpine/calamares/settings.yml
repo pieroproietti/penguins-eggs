@@ -1,0 +1,57 @@
+# Alpine 3.18
+---
+# "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
+modules-search: [ local, /usr/lib/calamares/modules ]
+
+oem-setup: false
+disable-cancel: false
+disable-cancel-during-exec: false
+quit-at-end: false
+
+instances:
+- id:       cleanup
+  module:   shellprocess
+  config:   shellprocess_cleanup.conf
+
+sequence:
+  # Phase 1 - prepare.
+  - show:
+      - welcome
+      - locale
+      - keyboard
+      - partition
+      - users
+      - summary
+
+  # Phase 2 - install.
+  - exec:
+      - partition
+      - mount
+      - unpackfs
+      - machineid
+      - fstab
+      - locale
+      - keyboard
+      - users
+      - displaymanager 
+      - networkcfg
+      - hwclock
+      - services-openrc
+      - bootloader-config
+      - grubcfg
+      - bootloader
+      - packages
+      - luksbootkeyfile
+      - plymouthcfg
+      - mkinitfs
+      - removeuser
+      - umount
+
+  # Phase 3 - postinstall.
+  - show:
+      - finished
+
+# branding
+branding: {{branding}}
+prompt-install: false
+dont-chroot: false

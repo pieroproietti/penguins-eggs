@@ -309,7 +309,6 @@ You can remaster and reinstall it, I did an APKBUILD to create a real package, a
 
 You can add  firmwares: `apk add linux-firmware`, personally never tested it on real hardware.
 
-N
 
 Stay tuned!
 
@@ -327,3 +326,95 @@ This is my end for now... but in same way can be an usefull starting point to so
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
 
+# Calamares GUI installer
+
+Solo per la versione 3.18
+```
+apk add calamares \
+    calamares-doc \
+    calamares-extensions \
+    calamares-lang \
+    calamares-mod-bootloader \
+    calamares-mod-displaymanager \
+    calamares-mod-finished \
+    calamares-mod-fsresizer \
+    calamares-mod-fstab \
+    calamares-mod-grubcfg \
+    calamares-mod-hostinfo \
+    calamares-mod-hwclock \
+    calamares-mod-interactiveterminal \
+    calamares-mod-keyboard \
+    calamares-mod-keyboardq \
+    calamares-mod-locale \
+    calamares-mod-localeq \
+    calamares-mod-luksbootkeyfile \
+    calamares-mod-luksopenswaphookcfg \
+    calamares-mod-machineid \
+    calamares-mod-mkinitfs \
+    calamares-mod-mount \
+    calamares-mod-networkcfg \
+    calamares-mod-packages \
+    calamares-mod-partition \
+    calamares-mod-plasmalnf \
+    calamares-mod-plymouthcfg \
+    calamares-mod-removeuser \
+    calamares-mod-services-openrc \
+    calamares-mod-shellprocess \
+    calamares-mod-summary \
+    calamares-mod-umount \
+    calamares-mod-unpackfs \
+    calamares-mod-users \
+    calamares-mod-webview \
+    calamares-mod-welcome \
+    calamares-mod-welcomeq
+
+```
+
+]
+
+calamares-3.2.61-r1
+calamares-dev-3.2.61-r1
+calamares-doc-3.2.61-r1
+calamares-extensions-1.2.1-r4
+calamares-extensions-brand-default-mobile-1.2.1-r4
+calamares-extensions-mod-mobile-1.2.1-r4
+calamares-lang-3.2.61-r1
+calamares-mod-bootloader-3.2.61-r1
+calamares-mod-displaymanager-3.2.61-r1
+calamares-mod-finished-3.2.61-r1
+calamares-mod-fsresizer-3.2.61-r1
+calamares-mod-fstab-3.2.61-r1
+calamares-mod-grubcfg-3.2.61-r1
+calamares-mod-hostinfo-3.2.61-r1
+calamares-mod-hwclock-3.2.61-r1
+calamares-mod-interactiveterminal-3.2.61-r1
+calamares-mod-keyboard-3.2.61-r1
+calamares-mod-keyboardq-3.2.61-r1
+calamares-mod-locale-3.2.61-r1
+calamares-mod-localeq-3.2.61-r1
+calamares-mod-luksbootkeyfile-3.2.61-r1
+calamares-mod-luksopenswaphookcfg-3.2.61-r1
+calamares-mod-machineid-3.2.61-r1
+calamares-mod-mkinitfs-3.2.61-r1
+calamares-mod-mount-3.2.61-r1
+calamares-mod-netinstall-3.2.61-r1
+calamares-mod-networkcfg-3.2.61-r1
+calamares-mod-notesqml-3.2.61-r1
+calamares-mod-oemid-3.2.61-r1
+calamares-mod-packagechooser-3.2.61-r1
+calamares-mod-packages-3.2.61-r1
+calamares-mod-partition-3.2.61-r1
+calamares-mod-plasmalnf-3.2.61-r1
+calamares-mod-plymouthcfg-3.2.61-r1
+calamares-mod-preservefiles-3.2.61-r1
+calamares-mod-rawfs-3.2.61-r1
+calamares-mod-removeuser-3.2.61-r1
+calamares-mod-services-openrc-3.2.61-r1
+calamares-mod-shellprocess-3.2.61-r1
+calamares-mod-summary-3.2.61-r1
+calamares-mod-umount-3.2.61-r1
+calamares-mod-unpackfs-3.2.61-r1
+calamares-mod-users-3.2.61-r1
+calamares-mod-webview-3.2.61-r1
+calamares-mod-welcome-3.2.61-r1
+calamares-mod-welcomeq-3.2.61-r1

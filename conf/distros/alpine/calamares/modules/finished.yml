@@ -1,0 +1,5 @@
+# Alpine 3.18
+---
+restartNowEnabled: true
+restartNowChecked: true
+restartNowCommand: reboot
