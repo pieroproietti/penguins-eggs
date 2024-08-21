@@ -24,41 +24,40 @@ export default class Bleach {
   async clean(verbose = false) {
     let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
-      echo = { capture: false, echo: true, ignore: true }      
+      echo = { capture: false, echo: true, ignore: true }
       Utils.warning('cleaning the system')
     }
 
-
     const distro = new Distro()
     switch (distro.familyId) {
-    case 'debian': {
-      await exec('apt-get clean', echo)
-      await exec('apt-get autoclean', echo)
-      const lockFile = '/var/lib/apt/lists/lock'
-      await exec(`rm ${lockFile} -rf`, echo)
-    
-    break;
-    }
+      case 'debian': {
+        await exec('apt-get clean', echo)
+        await exec('apt-get autoclean', echo)
+        const lockFile = '/var/lib/apt/lists/lock'
+        await exec(`rm ${lockFile} -rf`, echo)
 
-    case 'archlinux': {
-      await exec('pacman -Scc', Utils.setEcho(true))
-    
-    break;
-    }
+        break
+      }
 
-    case 'alpine': {
-      await exec('apk cache clean', echo)
-      await exec('apk cache purge', echo)
-    
-    break;
-    }
+      case 'archlinux': {
+        await exec('pacman -Scc', Utils.setEcho(true))
 
-    case 'suse': {
-      await exec (`zypper clean`, echo)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'alpine': {
+        await exec('apk cache clean', echo)
+        await exec('apk cache purge', echo)
+
+        break
+      }
+
+      case 'suse': {
+        await exec(`zypper clean`, echo)
+
+        break
+      }
+      // No default
     }
 
     await this.cleanHistory(verbose)

@@ -22,4 +22,4 @@ declare module 'node-proxy-dhcpd' {
 }
 */
 
-declare module 'node-proxy-dhcpd';
+declare module 'node-proxy-dhcpd'

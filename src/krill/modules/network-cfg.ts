@@ -44,7 +44,6 @@ export default async function networkCfg(this: Sequence) {
     }
 
     Utils.write(file, content)
-
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
   } else if (this.distro.familyId === 'arch') {

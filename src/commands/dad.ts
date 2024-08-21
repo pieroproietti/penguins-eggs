@@ -43,9 +43,9 @@ export default class Dad extends Command {
       }
 
       if (isCustom && !fs.existsSync(fileCustom)) {
-          console.log(chalk.red(`Custom configuration file: ${flags.custom} not found!`))
-          process.exit(1)
-        }
+        console.log(chalk.red(`Custom configuration file: ${flags.custom} not found!`))
+        process.exit(1)
+      }
 
       const daddy = new Daddy()
       daddy.helpMe(reset, isCustom, fileCustom, flags.verbose)

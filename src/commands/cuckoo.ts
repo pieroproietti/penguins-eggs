@@ -28,14 +28,13 @@ export default class Cuckoo extends Command {
 
     Utils.titles(this.id + ' ' + this.argv)
 
-
     if (Utils.isRoot()) {
       const settings = new Settings()
       settings.load()
-      
+
       const nest = settings.config.snapshot_mnt
       const pxeRoot = nest + 'pxe'
-      
+
       const pxe = new Pxe(nest, pxeRoot)
       await pxe.fertilization()
       await pxe.build()
@@ -70,7 +69,6 @@ export default class Cuckoo extends Command {
        * service http
        */
       await pxe.httpStart()
-      
     } else {
       Utils.useRoot(this.id)
     }

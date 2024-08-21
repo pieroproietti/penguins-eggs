@@ -65,7 +65,7 @@ export default class Yolk {
     // packages we need
     // const pkgs = ['cryptsetup', 'grub-efi-amd64', 'grub-pc', 'keyutils', 'shim-signed']
     interface IYolk {
-      packages: string[];
+      packages: string[]
     }
     const yolk_yaml = '/etc/penguins-eggs.d/yolk.yaml'
     const yolk = yaml.load(fs.readFileSync(yolk_yaml, 'utf8')) as IYolk

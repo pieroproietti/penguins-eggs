@@ -33,13 +33,13 @@ export default class Syncfrom extends Command {
 
   echo = {}
 
-  luksFile = ''
-
-  luksName = 'luks-volume'
-
   luksDevice = `/dev/mapper/${this.luksName}`
 
+  luksFile = ''
+
   luksMountpoint = `/tmp/mnt/${this.luksName}`
+
+  luksName = 'luks-volume'
 
   remix = {} as IRemix
 

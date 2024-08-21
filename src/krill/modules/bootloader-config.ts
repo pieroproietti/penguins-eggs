@@ -10,11 +10,24 @@
 import Sequence from '../sequence.js'
 
 export default async function bootloaderConfig(this: Sequence): Promise<void> {
-  if (this.distro.familyId === 'alpine') {
-    await this.bootloaderConfigAlpine()
-  } else if (this.distro.familyId === 'archlinux') {
-    await this.bootloaderConfigArch()
-  } else if (this.distro.familyId === 'debian') {
-    await this.bootloaderConfigDebian()
+  switch (this.distro.familyId) {
+    case 'alpine': {
+      await this.bootloaderConfigAlpine()
+
+      break
+    }
+
+    case 'archlinux': {
+      await this.bootloaderConfigArch()
+
+      break
+    }
+
+    case 'debian': {
+      await this.bootloaderConfigDebian()
+
+      break
+    }
+    // No default
   }
 }

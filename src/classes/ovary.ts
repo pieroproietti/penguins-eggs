@@ -237,7 +237,7 @@ export default class Ovary {
       ignore: false
     })
     const users: string[] = result.data.split('\n')
-    
+
     let deluser = 'deluser'
     if (this.familyId === 'archlinux') {
       deluser = 'userdel'
@@ -269,7 +269,7 @@ export default class Ovary {
     // root password
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
-    // Alpine naked don't have /etc/skel 
+    // Alpine naked don't have /etc/skel
     if (fs.existsSync('/etc/skel')) {
       cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
     }
@@ -277,36 +277,34 @@ export default class Ovary {
     // da problemi con il mount sshfs
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
-
-
     switch (this.familyId) {
-    case 'debian': {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-    
-    break;
-    }
+      case 'debian': {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
 
-    case 'alpine': {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG games ${this.settings.config.user_opt}`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG input ${this.settings.config.user_opt}`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG users ${this.settings.config.user_opt}`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG video ${this.settings.config.user_opt}`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-    
-    break;
-    }
+        break
+      }
 
-    case 'archlinux': {
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
+      case 'alpine': {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG games ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG input ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG users ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG video ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
 
-      // check or create group: autologin
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
-      cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'archlinux': {
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
+
+        // check or create group: autologin
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
+
+        break
+      }
+      // No default
     }
 
     /**
@@ -347,7 +345,6 @@ export default class Ovary {
     }
 
     const pathHomeLive = `/home/${this.settings.config.user_opt}`
-
 
     // VOGLIO le icone
     // Copia icona penguins-eggs
@@ -885,7 +882,6 @@ export default class Ovary {
     const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
-
 
   /**
    * initrdDebian()
@@ -1683,47 +1679,49 @@ export default class Ovary {
       /**
        * exclude.list
        */
-      if (!excludes.static && /**
+      if (
+        !excludes.static /**
          * create exclude.list if not exists
-         */
-        !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
-          const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
-          const excludeListTemplate = excludeListTemplateDir + 'master.list'
-          if (!fs.existsSync(excludeListTemplate)) {
-            Utils.warning('Cannot find: ' + excludeListTemplate)
-            process.exit(1)
-          }
-
-          let excludeUsr = ''
-          let excludeVar = ''
-          let excludeHomes = ''
-          let excludeHome = ''
-
-          if (excludes.usr) {
-            excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
-          }
-
-          if (excludes.var) {
-            excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
-          }
-
-          if (excludes.homes) {
-            excludeHomes = fs.readFileSync(`${excludeListTemplateDir}homes.list`, 'utf8')
-          }
-
-          if (excludes.home) {
-            excludeHome = `home/${await Utils.getPrimaryUser()}/*`
-          }
-
-          const view = {
-            home_list: excludeHome,
-            homes_list: excludeHomes,
-            usr_list: excludeUsr,
-            var_list: excludeVar,
-          }
-          const template = fs.readFileSync(excludeListTemplate, 'utf8')
-          fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
+         */ &&
+        !fs.existsSync('/etc/penguins-eggs/exclude.list')
+      ) {
+        const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
+        const excludeListTemplate = excludeListTemplateDir + 'master.list'
+        if (!fs.existsSync(excludeListTemplate)) {
+          Utils.warning('Cannot find: ' + excludeListTemplate)
+          process.exit(1)
         }
+
+        let excludeUsr = ''
+        let excludeVar = ''
+        let excludeHomes = ''
+        let excludeHome = ''
+
+        if (excludes.usr) {
+          excludeUsr = fs.readFileSync(`${excludeListTemplateDir}usr.list`, 'utf8')
+        }
+
+        if (excludes.var) {
+          excludeVar = fs.readFileSync(`${excludeListTemplateDir}var.list`, 'utf8')
+        }
+
+        if (excludes.homes) {
+          excludeHomes = fs.readFileSync(`${excludeListTemplateDir}homes.list`, 'utf8')
+        }
+
+        if (excludes.home) {
+          excludeHome = `home/${await Utils.getPrimaryUser()}/*`
+        }
+
+        const view = {
+          home_list: excludeHome,
+          homes_list: excludeHomes,
+          usr_list: excludeUsr,
+          var_list: excludeVar
+        }
+        const template = fs.readFileSync(excludeListTemplate, 'utf8')
+        fs.writeFileSync(this.settings.config.snapshot_excludes, mustache.render(template, view))
+      }
 
       /**
        * NOTE: reCreate = false
@@ -1750,36 +1748,36 @@ export default class Ovary {
          * for different families
          */
         switch (this.familyId) {
-        case 'archlinux': {
-          await this.initrdArch()
-        
-        break;
-        }
+          case 'archlinux': {
+            await this.initrdArch()
 
-        case 'alpine': {
-          await this.initrdAlpine()
-        
-        break;
-        }
+            break
+          }
 
-        case 'fedora': {
-          await this.initrdFedora()
-        
-        break;
-        }
+          case 'alpine': {
+            await this.initrdAlpine()
 
-        case 'suse': {
-          await this.initrdSuse()
-        
-        break;
-        }
+            break
+          }
 
-        case 'debian': {
-          await this.initrdDebian()
-        
-        break;
-        }
-        // No default
+          case 'fedora': {
+            await this.initrdFedora()
+
+            break
+          }
+
+          case 'suse': {
+            await this.initrdSuse()
+
+            break
+          }
+
+          case 'debian': {
+            await this.initrdDebian()
+
+            break
+          }
+          // No default
         }
 
         if (this.settings.config.make_efi) {

@@ -9,7 +9,7 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import { dhcpd } from 'node-proxy-dhcpd';
+import { dhcpd } from 'node-proxy-dhcpd'
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
@@ -44,11 +44,10 @@ export default class Pxe {
    * @param nest
    * @param pxeRoot
    */
-  constructor(nest = "", pxeRoot = "") {
+  constructor(nest = '', pxeRoot = '') {
     this.nest = nest
     this.pxeRoot = pxeRoot
   }
-
 
   /**
    * build
@@ -92,14 +91,14 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    new dhcpd(dhcpOptions);
+    new dhcpd(dhcpOptions)
   }
 
   /**
- * fertilization()
- *
- * cuckoo's nest
- */
+   * fertilization()
+   *
+   * cuckoo's nest
+   */
   async fertilization() {
     this.settings = new Settings()
     await this.settings.load()
@@ -209,7 +208,7 @@ export default class Pxe {
     console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
     // const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
-    const file = new nodeStatic.Server(httpRoot) 
+    const file = new nodeStatic.Server(httpRoot)
     http
       .createServer((req: IncomingMessage, res: ServerResponse) => {
         file.serve(req, res)
@@ -241,21 +240,15 @@ export default class Pxe {
     tftpServer.listen()
   }
 
-
-
   /**
    * Il resto PRIVATO
    */
-
-
-
 
   /**
    * configure PXE bios
    */
   private async bios() {
     console.log('creating cuckoo configuration: BIOS')
-
 
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
@@ -335,8 +328,6 @@ export default class Pxe {
     fs.writeFileSync(file, content)
   }
 
-
-
   /**
    * configure PXE http server
    */
@@ -365,7 +356,6 @@ export default class Pxe {
     content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
     fs.writeFileSync(file, content)
   }
-
 
   /**
    *
@@ -453,7 +443,6 @@ export default class Pxe {
     const file = `${this.pxeRoot}/autoexec.ipxe`
     fs.writeFileSync(file, content)
   }
-
 
   /**
    *

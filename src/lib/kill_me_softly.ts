@@ -6,8 +6,6 @@
  * license: MIT
  */
 
-
-
 import fs from 'node:fs'
 
 import Utils from '../classes/utils.js'

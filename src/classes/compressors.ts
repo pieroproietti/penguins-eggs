@@ -57,7 +57,7 @@ export default class Compressors {
     return comp
   }
 
-  pendrive(level='15'): string {
+  pendrive(level = '15'): string {
     let comp = 'gzip'
     if (this.isEnabled.zstd) {
       comp = `zstd -b 1M -Xcompression-level ${level}`

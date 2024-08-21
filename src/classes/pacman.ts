@@ -207,6 +207,7 @@ export default class Pacman {
     if (!fs.existsSync(confRoot)) {
       execSync(`mkdir ${confRoot}`)
     }
+
     if (verbose) {
       console.log('configuration install: ' + confRoot)
     }
@@ -236,7 +237,7 @@ export default class Pacman {
     execSync(`mkdir -p ${init}`)
     shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
-    
+
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/love.yaml'), confRoot)
@@ -579,8 +580,8 @@ export default class Pacman {
         installed = true
       }
     } else if (this.distro().familyId === 'alpine' && Alpine.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
+      installed = true
+    }
 
     return installed
   }
