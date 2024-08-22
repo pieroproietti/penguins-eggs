@@ -61,8 +61,6 @@ theme there are additional addons provided:
 * **--adapt** it is an addon that I often use - working mainly on virtual machines - 
 and allows me to to adapt with a click the monitor of the VM to the set 
 video window;
-* __--ichoice__ allows the selection of the installer between calamares and krill 
-(recommended on machines with little memory < 1GB);
 * __--pve__ create a desktop icon to admin a [proxmox-ve](https://www.proxmox.com/en/proxmox-ve) installed locally, it's incredible but can work on the live iso too. You can follow this easy guide: [Install Proxmox VE on Debian 11 Bullseye](https://pve.proxmox.com/wiki/Install_Proxmox_VE_on_Debian_11_Bullseye);
 * __--rsupport__ create an icon for [dwagent](https://www.dwservice.net) that must be installed locally.
 

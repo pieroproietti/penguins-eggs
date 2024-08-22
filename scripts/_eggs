@@ -312,7 +312,7 @@ _arguments -S \
 "*: :_files" ;; 
 produce)
 _arguments -S \
-"*"--addons"[addons to be used: adapt, ichoice, pve, rsupport]:file:_files" \
+"*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone]" \
 "(-C --cryptedclone)"{-C,--cryptedclone}"[crypted clone]" \

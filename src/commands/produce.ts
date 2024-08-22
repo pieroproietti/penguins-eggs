@@ -38,7 +38,7 @@ export default class Produce extends Command {
   ]
 
   static flags = {
-    addons: Flags.string({ description: 'addons to be used: adapt, ichoice, pve, rsupport', multiple: true }),
+    addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
@@ -205,10 +205,6 @@ export default class Produce extends Command {
       if (flags.addons != undefined) {
         if (flags.addons.includes('adapt')) {
           myAddons.adapt = true
-        }
-
-        if (flags.addons.includes('ichoice')) {
-          myAddons.ichoice = true
         }
 
         if (flags.addons.includes('pve')) {
