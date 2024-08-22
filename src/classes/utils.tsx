@@ -78,6 +78,10 @@ export default class Utils {
       let result = ''
       if (codenameId === 'rolling' || codenameId === '') {
          result = 'egg-of_' + distroId.toLowerCase() + '-'
+         if (distroId === 'Alpine') {
+            const releaseId = shx.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
+            result = 'egg-of_' + distroId.toLowerCase() + '-' +releaseId.substring(0, 4) + '-'
+         }
       } else {
          result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
       }
