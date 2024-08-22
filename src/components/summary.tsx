@@ -92,7 +92,7 @@ export default function Summary({ username='', password='', rootPassword='', hos
                 <Text bold={true}>Erase disk </Text>
                 <Text>{installationDevice} formatting: {filesystemType}</Text>
               </Box>
-              <Box><Text color="red">{message}</Text></Box>
+              <Box><Text color="white"backgroundColor="red">{message}</Text></Box>
             </Box>
           </Box>
         </Box>

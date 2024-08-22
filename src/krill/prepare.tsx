@@ -620,7 +620,7 @@ export default class Krill {
 
     let message = "Double check the installation disk: " + partitions.installationDevice
     if (this.unattended && this.nointeractive) {
-      message = "Unattended installation will start in 5 seconds, press CTRL-C to abort!"
+      message = "Unattended installation will start in 5 seconds...\npress CTRL-C to abort!"
     }
 
 

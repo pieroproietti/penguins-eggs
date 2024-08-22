@@ -42,7 +42,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.30
-* ISOs created from Alpine linux, now have default prefix as `egg-of_alpine`-`release`-` processor`, example: `egg-of_alpine-3.21.0_alpha20240807-colibri_amd64_2024-08-22_1222.iso` or `egg-of_alpine-3.18.8-naked_amd64_2024-08-22_1400.iso`;
+* removed link adapt - to evitate possible conflicts - created command `eggs adapt`;
+* ISOs created from Alpine linux, now have default prefix as `egg-of_alpine`-`release`-` processor`. Example: `egg-of_alpine-3.21.0_alpha20240807-colibri_amd64_2024-08-22_1222.iso` or `egg-of_alpine-3.18.8-naked_amd64_2024-08-22_1400.iso`;
+* krill: summary is now better visible and adapted to the view;
+I need help and feedback - expecially on Alpine Linux - if someone expert want to collaborate, will be important for this project.
 
 ## penguins-eggs-10.0.29
 * removed link love - conflict with love package - created command `eggs love`;
