@@ -21,7 +21,7 @@ penguins-eggs
 
 [AlpineLinux](https://alpinelinux.org/), is a security-oriented, lightweight Linux distribution based on musl libc and busybox.
 
-* **egg-of-alpine-colibri** An experimental version from Alpine standard. Look on discussion [Way to Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377).
+* **egg-of-alpine-colibri** An experimental version from Alpine standard. I need your feedback, look on discussion [Way to Alpine](https://github.com/pieroproietti/penguins-eggs/discussions/377).
 
 NOTE: Yuo can add `linux-firmware` to use on real hardware.
 
