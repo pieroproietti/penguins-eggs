@@ -574,7 +574,7 @@
       ],
       "flags": {
         "addons": {
-          "description": "addons to be used: adapt, ichoice, pve, rsupport",
+          "description": "addons to be used: adapt, pve, rsupport",
           "name": "addons",
           "hasDynamicHelp": false,
           "multiple": true,

@@ -41,6 +41,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.30
+* ISOs created from Alpine linux, now have default prefix as `egg-of_alpine`-`release`-` processor`, example: `egg-of_alpine-3.21.0_alpha20240807-colibri_amd64_2024-08-22_1222.iso` or `egg-of_alpine-3.18.8-naked_amd64_2024-08-22_1400.iso`;
+
 ## penguins-eggs-10.0.29
 * removed link love - conflict with love package - created command `eggs love`;
 * created YAML configuration for `love` in `/etc/penguins-eggs.d/love.yaml`.

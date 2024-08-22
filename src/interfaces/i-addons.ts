@@ -8,7 +8,6 @@
 
 export interface IAddons {
   adapt: boolean
-  ichoice: boolean
   pve: boolean
   rsupport: boolean
 }
