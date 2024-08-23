@@ -9,7 +9,6 @@
 
 import fs from 'node:fs'
 
-import Distro from '../../classes/distro.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
@@ -19,13 +18,14 @@ import Sequence from '../sequence.js'
  * https://unix.stackexchange.com/questions/402999/is-it-ok-to-change-etc-machine-id
  */
 export default async function machineId(this: Sequence): Promise<void> {
+  // We delete the machine-id file to force its recreation
   const file = `${this.installTarget}/etc/machine-id`
   if (fs.existsSync(file)) {
     await exec(`rm ${file}`, this.echo)
   }
 
-  const distro = new Distro()
-  if (distro.familyId === 'alpine') {
+  // On Alpine, we need to create the machine-id file
+  if (this.distro.familyId === 'alpine') {
     await exec(`dbus-uuidgen > ${this.installTarget}/var/lib/dbus/machine-id`)
     await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
   } else {
