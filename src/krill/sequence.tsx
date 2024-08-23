@@ -111,6 +111,7 @@ import CFS from '../classes/cfs.js'
 import Title from '../components/title.js'
 
 import cliCursor from 'cli-cursor'
+import { spawnSync } from 'child_process';
 
 /**
  * hatching: installazione o cova!!!
@@ -740,25 +741,27 @@ export default class Sequence {
     * only show the result
     */
    async finished() {
-      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.username} />)
-
       let cmd = "reboot"
       if (this.halt) {
          cmd = "poweroff"
       }
 
+      let message = `Press a key to ${cmd}`
       if (this.unattended && this.nointeractive) {
-         console.log(`System will ${cmd} in 5 seconds...`)
+         message=`System will ${cmd} in 5 seconds...`
+      }
+
+      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.username} />)
+
+      if (this.unattended && this.nointeractive) {
          await sleep(5000)
-         await exec(cmd, { echo: true })
+         await exec(cmd, { echo: false })
       } else {
-         Utils.pressKeyToExit(`Press a key to ${cmd}`)
-         await exec(cmd, { echo: true })
+         spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+         await exec(cmd, { echo: false })
       }
    }
 }
-
-// const ifaces: string[] = fs.readdirSync('/sys/class/net/')
 
 /**
  *
@@ -805,3 +808,4 @@ async function emergencyShell(message: string) {
       await Utils.pressKeyToExit(JSON.stringify(error))
    }
 }
+
