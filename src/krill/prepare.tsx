@@ -462,11 +462,7 @@ export default class Krill {
     } else if (pve) {
       installationMode = 'lvm2'
     }
-
     let filesystemType = 'ext4'
-    if (Pacman.packageIsInstalled("btrfs-progs")) {
-      filesystemType = 'btrfs'
-    }
     let userSwapChoice = 'small'
 
     let partitionsElem: JSX.Element

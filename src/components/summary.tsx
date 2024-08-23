@@ -58,14 +58,14 @@ export default function Summary({ username='', password='', rootPassword='', hos
 
 
   /**
-  * totale width=74
+  * totale width=75
   * step width=15
   * finestra with=59
   */
   return (
     <>
       <Title />
-      <Box width={74} height={11} borderStyle="round" flexDirection="column">
+      <Box width={75} height={11} borderStyle="round" flexDirection="column">
 
         <Box flexDirection="column">
           <Box flexDirection="row">
