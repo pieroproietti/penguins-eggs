@@ -19,10 +19,11 @@ type FinishedProps = {
   installationDevice?: string,
   hostName?: string,
   userName?: string,
+  message?: string
 }
 
 
-export default function Finished({ installationDevice='', hostName='', userName=''}: FinishedProps) {
+export default function Finished({ installationDevice='', hostName='', userName='', message='Press a key to reboot'}: FinishedProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/' // krill
@@ -58,7 +59,7 @@ export default function Finished({ installationDevice='', hostName='', userName=
               <Box><Text>Host name was set as </Text><Text color="green">{hostName}</Text></Box>
               <Box><Text>The user name is </Text><Text color="green">{userName}</Text></Box>
               <Newline/>
-              <Box><Text >Press a key to reboot</Text></Box>
+              <Box><Text backgroundColor="green" color="black">{message}</Text></Box>
             </Box>
           </Box>
         </Box>
