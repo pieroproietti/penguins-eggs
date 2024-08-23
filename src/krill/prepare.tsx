@@ -59,16 +59,16 @@ import os from 'os'
 import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
 import React from 'react';
-import { Box, Text } from 'ink'
 import { render, RenderOptions } from 'ink'
-import Utils from '../classes/utils.js'
 import axios from 'axios'
 import shx from 'shelljs'
+
 import fs from 'fs'
-import Systemctl from '../classes/systemctl.js'
-import Locales from '../classes/locales.js'
 import Keyboards from '../classes/keyboards.js'
+import Locales from '../classes/locales.js'
 import Pacman from '../classes/pacman.js'
+import Systemctl from '../classes/systemctl.js'
+import Utils from '../classes/utils.js'
 
 // libraries
 import { exec } from '../lib/utils.js'
@@ -618,9 +618,9 @@ export default class Krill {
   async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
     let summaryElem: JSX.Element
 
-    let message = "Double check the installation disk: " + partitions.installationDevice
+    let message = `Double check the installation disk: ${partitions.installationDevice}\nwill be completely erased!`
     if (this.unattended && this.nointeractive) {
-      message = "Unattended installation will start in 5 seconds...\npress CTRL-C to abort!"
+      message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
     }
 
 

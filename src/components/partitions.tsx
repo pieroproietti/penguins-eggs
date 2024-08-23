@@ -65,10 +65,13 @@ export default function Partitions({ installationDevice, installationMode, files
                         <Box flexDirection="column">
                         </Box>
                         <Box flexDirection="column">
-                            <Box flexDirection="row">
-                                <Text underline={true}>erase disk:</Text><Text> this will </Text><Text color="red">delete </Text><Text>all data currently</Text>
+                        <Box flexDirection="row">
+                                <Text underline={false}>Note: </Text>
+                                <Box flexDirection="column">
+                                    <Text backgroundColor="red" color="white">this will erase all data currently present on the</Text>
+                                    <Text backgroundColor="red" color="white">installation device: {installationDevice}</Text>
+                                </Box>
                             </Box>
-                            <Box><Text>present on the selected storage device</Text></Box>
                             <Box><Text>BIOS: </Text><Text color="cyan">{bios}</Text></Box>
                             <Box><Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text></Box>
                             <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>

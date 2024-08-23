@@ -74,7 +74,6 @@ export default function Summary({ username='', password='', rootPassword='', hos
               <Box>
                 <Text>Installing </Text><Text color="green">{productName}</Text>
               </Box>
-              <Newline/>
               <Box>
                 <Text></Text><Text color="green">{username}</Text><Text>/</Text><Text color="green">{password} </Text>
                 <Text>pwd root </Text><Text color="green">{rootPassword} </Text>

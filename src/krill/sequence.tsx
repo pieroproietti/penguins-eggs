@@ -58,12 +58,13 @@ import Finished from '../components/finished.js'
 import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
-import Utils from '../classes/utils.js'
-import CliAutologin from '../classes/cli-autologin.js'
-import Pacman from '../classes/pacman.js'
+
 import { installer } from '../classes/incubation/installer.js'
-import Xdg from '../classes/xdg.js';
+import CliAutologin from '../classes/cli-autologin.js'
 import Distro from '../classes/distro.js'
+import Pacman from '../classes/pacman.js'
+import Utils from '../classes/utils.js'
+import Xdg from '../classes/xdg.js';
 
 import { IInstaller, IDevices, IDevice } from '../interfaces/index.js'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
@@ -248,7 +249,6 @@ export default class Sequence {
       this.devices.data = {} as IDevice
       this.devices.swap = {} as IDevice
 
-      //this.distro = new Distro(this.remix)
       this.distro = new Distro()
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
       this.luksFile=`${this.distro.liveMediumPath}live/${this.luksName}`
