@@ -47,14 +47,14 @@ export default function Install({ message="Install", percent=0, spinner = false 
   let progressBar: string = "[" + "█".repeat(progress) + clean + "] " + perc + "%"
 
   /**
-   * totale width=74
+   * totale width=75
    * step width=15
    * finestra with=59
    */
   return (
     <>
       <Title />
-      <Box width={74} height={11} borderStyle="round" flexDirection="column">
+      <Box width={75} height={11} borderStyle="round" flexDirection="column">
         <Box flexDirection="column">
           <Box flexDirection="row">
             <Steps step={8} />

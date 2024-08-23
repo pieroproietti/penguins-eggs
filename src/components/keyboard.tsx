@@ -41,7 +41,7 @@ export default function Keyboard({ keyboardModel = '', keyboardLayout = '', keyb
     version = calamares.strings.version
 
     /**
-    * totale width=74
+    * totale width=75
     * step width=15
     * finestra with=59
     */
@@ -49,7 +49,7 @@ export default function Keyboard({ keyboardModel = '', keyboardLayout = '', keyb
     return (
         <>
             <Title />
-            <Box width={74} height={11} borderStyle="round" flexDirection="column">
+            <Box width={75} height={11} borderStyle="round" flexDirection="column">
                 <Box flexDirection="column">
                     <Box flexDirection="row">
                         <Steps step={3} />
