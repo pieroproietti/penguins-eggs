@@ -197,9 +197,9 @@ export default class Sequence {
 
    // Crypted Clone
    luksName = 'luks-volume'
-   
+
    luksFile = ``
-   
+
    luksDevice = `/dev/mapper/${this.luksName}`
 
    luksMountpoint = `/mnt`
@@ -250,7 +250,7 @@ export default class Sequence {
 
       this.distro = new Distro()
       this.efi = fs.existsSync('/sys/firmware/efi/efivars')
-      this.luksFile=`${this.distro.liveMediumPath}live/${this.luksName}`
+      this.luksFile = `${this.distro.liveMediumPath}live/${this.luksName}`
    }
 
    /**
@@ -259,12 +259,12 @@ export default class Sequence {
     * @param umount
     * @returns
     */
-   async start(domain = '', unattended = false, nointeractive = false, chroot=false, halt = false, verbose = false) {
+   async start(domain = '', unattended = false, nointeractive = false, chroot = false, halt = false, verbose = false) {
 
       // Imposta il domain per flag
       if (domain !== '') {
-         if (domain.at(0)!=='.') {
-            domain = '.' + domain 
+         if (domain.at(0) !== '.') {
+            domain = '.' + domain
          }
          this.network.domain = domain
       }
@@ -342,7 +342,7 @@ export default class Sequence {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
 
-  
+
          // unpackfs
          message = "Unpacking filesystem "
          percent = 0.15
@@ -459,16 +459,14 @@ export default class Sequence {
           * - autologin 
           */
          if (!this.is_clone) {
-            if (this.distro.familyId !=='alpine') {
             // locale
-               message = "Locale"
-               percent = 0.70
-               try {
-                  redraw(<Install message={message} percent={percent} />)
-                  await this.locale()
-               } catch (error) {
-                  await Utils.pressKeyToExit(JSON.stringify(error))
-               }
+            message = "Locale"
+            percent = 0.70
+            try {
+               redraw(<Install message={message} percent={percent} />)
+               await this.locale()
+            } catch (error) {
+               await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
             // keyboard
@@ -481,7 +479,7 @@ export default class Sequence {
             }
 
             // localeCfg
-            if (this.distro.familyId !=='alpine') {
+            if (this.distro.familyId !== 'alpine') {
                message = "Locale Configuration"
                percent = 0.72
                try {
@@ -670,7 +668,7 @@ export default class Sequence {
          if (chroot) {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
             percent = 0.95
-            try{
+            try {
                await redraw(
                   <>
                      <Title />
@@ -746,7 +744,7 @@ export default class Sequence {
 
       let message = `Press a key to ${cmd}`
       if (this.unattended && this.nointeractive) {
-         message=`System will ${cmd} in 5 seconds...`
+         message = `System will ${cmd} in 5 seconds...`
       }
 
       await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.username} />)
@@ -790,7 +788,7 @@ function sleep(ms = 0) {
  */
 async function emergencyShell(message: string) {
    message = message + `type "exit" to exit.`
-   try{
+   try {
       await redraw(
          <>
             <Title />
