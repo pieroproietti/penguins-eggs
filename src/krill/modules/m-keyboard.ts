@@ -19,10 +19,10 @@ import Sequence from '../sequence.js'
  */
 export default async function mKeyboard(this: Sequence): Promise<void> {
   /**
-   * influence: - /etc/default/keyboard (x11)
+   * influence: - /etc/default/keyboard (console)
    *            - /etc/X11/xorg.conf.d/00-keyboard.conf
+   *            - /ext/vconsole.conf (non systemd)
    */
-
   if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
     let cmd = ''
     let content = ''
@@ -40,6 +40,9 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
         Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
       }
     } else {
+      /**
+       * configuro vconsole.conf
+       */
       cmd = `chroot ${this.installTarget} setupcon ${this.toNull}`
       content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
       content += 'KEYMAP="' + this.keyboardLayout + '"\n'
