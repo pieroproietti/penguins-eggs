@@ -80,12 +80,17 @@ export default async function locale(this: Sequence) {
     await exec(`chmod +x ${file}`)
 
     /**
+     * https://docs.alpinelinux.org/user-handbook/0.1a/Installing/manual.html
+     */
+
+    /**
      * timezone
+     * 
      */
     let tz = `/etc/zoneinfo/${this.region}/${this.zone}`
-    await exec(`chroot ${this.installTarget} rm -f ${tz}`)
-    await exec(`chroot ${this.installTarget} install -Dm 0644 ${tz} ${tz}`)
-    //await exec(`export TZ=\'${tz}\'`)
+    await exec(`chroot ${this.installTarget} rm -rf ${tz}`)
+    const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime`
+    await exec(cmd, this.echo)
     await exec(`chroot ${this.installTarget} echo "export TZ=\'${tz}\'" >> /etc/profile.d/timezone.sh`)
   }
 }
