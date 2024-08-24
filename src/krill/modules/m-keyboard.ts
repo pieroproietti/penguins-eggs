@@ -60,5 +60,9 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     content += `Option "XkbModel" "${this.keyboardModel}"\n`
     content += `EndSection\n`
     let file="/etc/X11/xorg.conf.d/00-keyboard.conf"
+    if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
+      Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
+    }
+
   }
 }
