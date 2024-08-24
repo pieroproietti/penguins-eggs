@@ -55,12 +55,7 @@ export default class Install extends Command {
 
     const { flags } = await this.parse(Install)
 
-    let custom = flags.custom!
-
     const { unattended } = flags
-    if (unattended) {
-      custom = 'us'
-    }
 
     // krillConfig
     let krillConfig = {} as IKrillConfig

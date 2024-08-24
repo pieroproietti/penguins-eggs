@@ -147,7 +147,6 @@ export default class Krill {
     this.nointeractive = nointeractive
     this.chroot = chroot
     this.halt = halt
-
   }
 
   /**
