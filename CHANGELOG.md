@@ -41,6 +41,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.31
+* krill: continuing the work of the previous release, checked and revisited almost all the tags of krill, now look better and more intuitive;
+* krill now is able to install alpine, configuring keyboard, locale and timezone; 
+* krill don't show more eventally zram disk.
+
 ## penguins-eggs-10.0.30
 * removed link adapt - to evitate possible conflicts - created command `eggs adapt`;
 * ISOs created from Alpine linux, now have default prefix as `egg-of_alpine`-`release`-` processor`. Example: `egg-of_alpine-3.21.0_alpha20240807-colibri_amd64_2024-08-22_1222.iso` or `egg-of_alpine-3.18.8-naked_amd64_2024-08-22_1400.iso`;
