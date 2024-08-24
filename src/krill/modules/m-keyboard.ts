@@ -50,7 +50,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     }
     await exec(cmd, this.echo)
   } else if (this.distro.familyId === 'alpine') {
-    // vconsole.conf
+    // vconsole.conf Non funziona su alpine
     let content =""
     content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
     content += 'KEYMAP="' + this.keyboardLayout + '"\n'
