@@ -20,7 +20,6 @@ import Sequence from '../sequence.js'
 export default async function mKeyboard(this: Sequence): Promise<void> {
   /**
    * influence: - /etc/default/keyboard (x11)
-   *            - /etc/vconsole.conf (console)
    *            - /etc/X11/xorg.conf.d/00-keyboard.conf
    */
 
@@ -50,16 +49,14 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     }
     await exec(cmd, this.echo)
   } else if (this.distro.familyId === 'alpine') {
-    // vconsole.conf Non funziona su alpine
-    let content =""
-    content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
-    content += 'KEYMAP="' + this.keyboardLayout + '"\n'
-    content += 'FONT=\n'
-    content += 'FONT_MAP=\n'
-    Utils.write(this.installTarget + '/etc/vconsole.conf', content)
+
+    /**
+     * https://docs.alpinelinux.org/user-handbook/0.1a/Installing/manual.html
+     */
+    await exec(`setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
 
     // X11 is OK for Alpine
-    content =""
+    let content =""
     content += `Section "InputClass"\n`
     content += `Identifier "system-keyboard"\n`
     content += `MatchIsKeyboard "on"\n`
@@ -70,6 +67,5 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
       Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
     }
-
   }
 }
