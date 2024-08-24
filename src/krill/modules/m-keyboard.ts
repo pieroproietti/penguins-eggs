@@ -53,7 +53,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     /**
      * https://docs.alpinelinux.org/user-handbook/0.1a/Installing/manual.html
      */
-    await exec(`setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
+    await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
 
     // X11 is OK for Alpine
     let content =""
