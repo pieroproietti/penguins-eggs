@@ -90,6 +90,12 @@ export default async function locale(this: Sequence) {
     let tz = `/etc/zoneinfo/${this.region}/${this.zone}`
     await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/*`, this.echo)
     await exec(`chroot ${this.installTarget} mkdir -p ${tz}`, this.echo)
-    await exec(`chroot ${this.installTarget} echo "export TZ='${tz}'" > /etc/profile.d/timezone.sh`, this.echo)
+
+    file=`${this.installTarget}/etc/profile.d/timezone.sh`
+    content =""
+    content += `#!/bin/sh\n`
+    content += `export TZ='${tz}`
+    Utils.write(file, content)
+    await exec(`chmod +x ${file}`)
   }
 }
