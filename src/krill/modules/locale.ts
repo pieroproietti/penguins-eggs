@@ -94,7 +94,7 @@ export default async function locale(this: Sequence) {
     file=`${this.installTarget}/etc/profile.d/timezone.sh`
     content =""
     content += `#!/bin/sh\n`
-    content += `export TZ='${tz}`
+    content += `export TZ='${tz}'`
     Utils.write(file, content)
     await exec(`chmod +x ${file}`)
   }
