@@ -50,9 +50,16 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     }
     await exec(cmd, this.echo)
   } else if (this.distro.familyId === 'alpine') {
-
-    // Hic sunt leones
+    // vconsole.conf
     let content =""
+    content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
+    content += 'KEYMAP="' + this.keyboardLayout + '"\n'
+    content += 'FONT=\n'
+    content += 'FONT_MAP=\n'
+    Utils.write(this.installTarget + '/etc/vconsole.conf', content)
+
+    // X11 is OK for Alpine
+    content =""
     content += `Section "InputClass"\n`
     content += `Identifier "system-keyboard"\n`
     content += `MatchIsKeyboard "on"\n`
