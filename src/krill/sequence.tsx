@@ -102,7 +102,6 @@ import delLiveUser from './modules/del-live-user.js'
 // umount already imported
 
 // to order in same wat
-import mTimezone from './modules/m-timezone.js'
 import umount from './modules/umount.js'
 import mkfs from './modules/mkfs.js'
 import hostname from './modules/hostname.js'
@@ -153,7 +152,6 @@ export default class Sequence {
    public umountFs = umountFs
    public umountVfs = umountVfs
    // to order in same way
-   public timezone = mTimezone
    public umount = umount
    public mkfs = mkfs
    public hostname = hostname
