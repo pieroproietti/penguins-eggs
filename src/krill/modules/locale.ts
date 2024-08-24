@@ -88,9 +88,8 @@ export default async function locale(this: Sequence) {
      * 
      */
     let tz = `/etc/zoneinfo/${this.region}/${this.zone}`
-    await exec(`chroot ${this.installTarget} rm -rf ${tz}`)
-    const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime`
-    await exec(cmd, this.echo)
-    await exec(`chroot ${this.installTarget} echo "export TZ=\'${tz}\'" >> /etc/profile.d/timezone.sh`)
+    await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/*`, , this.echo)
+    await exec(`chroot ${this.installTarget} mkdir -p ${tz}`, this.echo)
+    await exec(`chroot ${this.installTarget} echo "export TZ='${tz}'" > /etc/profile.d/timezone.sh`, this.echo)
   }
 }
