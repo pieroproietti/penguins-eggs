@@ -231,11 +231,12 @@ export default class Krill {
       keyboardOption: this.krillConfig.keyboardOption
     }
 
-    const driveList: string[] = []
+    let driveList: string[] = []
     drives.forEach((element: string) => {
       driveList.push('/dev/' + element)
     })
-
+    // Elimino i dischi zram
+    driveList = driveList.filter(device => !device.includes('zram'));
     let installationDevice = driveList[0]
     if (driveList.length > 1) {
       installationDevice = await selectInstallationDevice()
