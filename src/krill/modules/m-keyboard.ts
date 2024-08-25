@@ -58,7 +58,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
      */
     await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
 
-    // X11 is OK for Alpine
+    // X11
     let content =""
     content += `Section "InputClass"\n`
     content += `Identifier "system-keyboard"\n`
@@ -70,5 +70,8 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
       Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
     }
+
+    // Wayland TO DO
+
   }
 }
