@@ -89,7 +89,8 @@ export async function captureOutput<T>(fn: () => Promise<unknown>, opts?: Captur
     stdout: [],
   }
 
-  const toString = (str: Uint8Array | string): string => (stripAnsi ? ansis.strip(str.toString()) : str.toString())
+  //const toString = (str: Uint8Array | string): string => (stripAnsi ? ansis.strip(str.toString()) : str.toString())
+  const toString = (str: Uint8Array | string): string => (stripAnsi ? str.toString() : str.toString())
   const getStderr = (): string => output.stderr.map((b) => toString(b)).join('')
   const getStdout = (): string => output.stdout.map((b) => toString(b)).join('')
 
