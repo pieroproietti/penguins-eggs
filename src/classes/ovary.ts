@@ -1024,7 +1024,7 @@ export default class Ovary {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
     } else if (this.familyId === 'alpine') {
-      kp += `alpinebasedirname=/mnt/live/ alpinelivelabel=${this.volid}`
+      kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
     kp += ` cow_spacesize=4G`
     return kp
