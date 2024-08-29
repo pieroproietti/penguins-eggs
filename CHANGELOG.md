@@ -43,7 +43,8 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ## penguins-eggs-10.0.32
 * krill: fix efi installation, forced use mount -t vfat on UEFI;
-* tests: reintroduced tests, to finish.
+* live: introduced bootparameters `alpinelive`, `alpinelivesquashfs` per boot live;
+* tests: reintroduced tests, to use with abuild in alpine, to finish.
 
 ## penguins-eggs-10.0.31
 * krill: continuing the work of the previous release, checked and revisited almost all the tags of krill, now look better and more intuitive;
