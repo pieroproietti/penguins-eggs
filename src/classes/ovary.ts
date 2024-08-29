@@ -845,8 +845,6 @@ export default class Ovary {
     // mkinitfs
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    const sidecars = path.resolve(__dirname, `../../mkinitfs/*.sh`)
-    await exec(`cp ${sidecars} ${this.settings.iso_work}live/`)
   }
 
   /**
@@ -1018,11 +1016,16 @@ export default class Ovary {
 
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
     const { distroId } = this.settings.distro
-    let kp = `boot=live components locales=${process.env.LANG}`
-    if (this.familyId === 'archlinux') {
+    let kp = ""
+    
+    if (this.familyId === 'debian') {
+      kp += `boot=live components locales=${process.env.LANG}`
+    } else if (this.familyId === 'archlinux') {
+      kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
+    } else if (this.familyId === 'alpine') {
+      kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
-
     kp += ` cow_spacesize=4G`
     return kp
   }

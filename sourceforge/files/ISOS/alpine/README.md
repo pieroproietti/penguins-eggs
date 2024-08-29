@@ -36,6 +36,9 @@ This image will boot only on BIOS systems and will go on `emergency shell`. From
   * `/mnt/live/sidecar.sh`
   * type `exit`
 
+`colibri-builder` contain abuild package to create packeges for Alpine Linux. This version, don't need the previous procedure to boot, just type "exit".
+
+
 The system will boot normally, and You can safety install it using krill `doas eggs krill`,  and once installed, it's possible to update, install firmware `doas apk add linux-firmware`, customize it and remaster again.
 
 The main limits of this remasters, are: 
