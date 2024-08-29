@@ -41,6 +41,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.32
+* krill: fix efi installation, forced use mount -t vfat on UEFI;
+* tests: reintroduced tests, to finish.
+
 ## penguins-eggs-10.0.31
 * krill: continuing the work of the previous release, checked and revisited almost all the tags of krill, now look better and more intuitive;
 * krill now is able to install alpine, configuring keyboard, locale and timezone; 
