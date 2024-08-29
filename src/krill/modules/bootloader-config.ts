@@ -71,9 +71,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
      * debian
      */
     case 'debian': {
-      console.log('installing grub debian')
       try {
-        console.log('updating apt')
         cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
