@@ -91,40 +91,27 @@ export default class Utils {
    }
 
    /**
-   * Controlla se il sistema è avviato con systemd
-   * funziona anche in MX che utilizza systemd
-   * ma viene avviato con init
-   */
+    *  isSystemd
+    */
    static isSystemd(): boolean {
-      const checkFile = '/tmp/checksystemd'
-      execSync(`cat /proc/1/comm >${checkFile}`)
-      const isSystemd = fs.readFileSync(checkFile).includes('systemd')
-      execSync(`rm ${checkFile}`)
+      const isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
       return isSystemd
    }
 
    /**
-    * 
-    * @returns 
+    *  isSysvinit
     */
-   static isOpenRc(): boolean {
-      const checkFile = '/tmp/checkinit'
-      execSync(`command -v openrc >${checkFile} 2>&1`) 
-      const isOpenrc = fs.readFileSync(checkFile).includes('openrc')
-      execSync(`rm ${checkFile}`)
-      return isOpenrc
+   static isSysvinit(): boolean {
+      const isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      return isSysvinit
    }
 
    /**
-    *
-    * @returns
+    *  isOpenRc
     */
-   static isSysvinit(): boolean {
-      const checkFile = '/tmp/checkinit'
-      execSync(`cat /proc/1/comm >${checkFile}`)
-      const isSysvinit = fs.readFileSync(checkFile).includes('init')
-      execSync(`rm ${checkFile}`)
-      return isSysvinit
+   static isOpenRc(): boolean {
+      const isOpenRc = fs.readFileSync("/proc/1/comm").includes('openrc')
+      return isOpenRc
    }
 
    /**
@@ -277,11 +264,11 @@ export default class Utils {
       } catch (error) {
          // console.log("logname failed, so we continue with other methods")
       }
-      if (primaryUser==='root'){
-         primaryUser=''
+      if (primaryUser === 'root') {
+         primaryUser = ''
       }
 
-      if (primaryUser==='') {
+      if (primaryUser === '') {
          try {
             // Check if doas is installed and get the DOAS_USER
             execSync('command -v doas', { stdio: 'ignore' });
@@ -291,7 +278,7 @@ export default class Utils {
          }
       }
 
-      if (primaryUser==='') {
+      if (primaryUser === '') {
          try {
             // Check for the SUDO_USER
             primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
@@ -300,12 +287,12 @@ export default class Utils {
          }
       }
 
-      if (primaryUser==='') {
+      if (primaryUser === '') {
          // console.log("Fallback to the USER environment variable")
          primaryUser = process.env.USER || '';
       }
 
-      if (primaryUser==='') {
+      if (primaryUser === '') {
          console.error('Cannot determine the primary user.');
          process.exit(1);
       }
