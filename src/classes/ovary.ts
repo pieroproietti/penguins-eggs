@@ -471,12 +471,11 @@ export default class Ovary {
         text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
         text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
       } else if (Pacman.packageIsInstalled('xfce4-session')) {
-        // f=FILE; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"
-        text += 'chmod +x "$DESKTOP"/*.desktop'
-        // await exec(`f="$DESKTOP"/*.desktop; gio set -t string $f metadata::xfce-exe-checksum "$(sha256sum $f | awk '{print $1}')"`)
+        text +=`# xfce: enable-desktop-links\n`
+        text += `for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
       } else {
-        // OTHERS: CINNAMON/KDE/ETC
-        text += 'chmod +x "$DESKTOP"/*.desktop'
+        text +=`# others: enable-desktop-links\n`
+        text += 'chmod +x "$DESKTOP"/*.desktop\n'
       }
 
       fs.writeFileSync(script, text, 'utf8')
