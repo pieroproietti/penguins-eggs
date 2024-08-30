@@ -317,6 +317,7 @@ export default class Xdg {
   }
 }
 
+
 /**
  * execIfExist
  * @param cmd
