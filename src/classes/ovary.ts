@@ -472,7 +472,7 @@ export default class Ovary {
         text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
       } else if (Pacman.packageIsInstalled('xfce4-session')) {
         text +=`# xfce: enable-desktop-links\n`
-        text += `for f in ~/"$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
+        text += `for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
       } else {
         text +=`# others: enable-desktop-links\n`
         text += 'chmod +x "$DESKTOP"/*.desktop\n'

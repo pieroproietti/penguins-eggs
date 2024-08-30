@@ -41,6 +41,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.33
+* xfce: finally links on the desktop are automatically enabled;
+
+Thanks to Eric Bradshaw for the advice.
+
 ## penguins-eggs-10.0.32
 * krill: fix efi installation, forced use mount -t vfat on UEFI;
 * live: introduced bootparameters `alpinelive`, `alpinelivesquashfs` per boot live;
