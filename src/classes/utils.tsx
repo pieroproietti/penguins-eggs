@@ -99,7 +99,7 @@ export default class Utils {
    }
 
    /**
-    *  isSysvinit
+    * isSysvinit
     */
    static isSysvinit(): boolean {
       const isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
