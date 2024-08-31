@@ -78,7 +78,7 @@ export default class CliAutologin {
 
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
-    } else if (Utils.isSysvinit()) {
+    } else if (Utils.isSysvinit() || Utils.isOpenRc()) {
       const inittab = chroot + '/etc/inittab'
       const search = '1:2345:respawn:/sbin/getty'
       const replace = `1:2345:respawn:/sbin/getty --autologin ${user} 38400 tty1`

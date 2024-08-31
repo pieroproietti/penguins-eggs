@@ -752,10 +752,11 @@ $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
-	echo "Booting with sidecar (penguins-eggs): "
+	echo "Penguins' eggs\n"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: : $KOPT_alpinelivesquashfs"
-	sleep 3
+	echo "Booting from $(blkid -o value -s TYPE $alpinelive): "
+	sleep 5
 
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 
