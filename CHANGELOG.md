@@ -41,6 +41,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.34
+* Alpine Linux: you no longer need to boot the “sidecar” to boot from ISO with overlay, just type “exit” from the recovery shell.
+
+The next step should be to remove the need to go to recovery shell before mounting.
+
 ## penguins-eggs-10.0.33
 * xfce: finally links on the desktop are automatically enabled;
 
