@@ -837,14 +837,15 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
+    const sidecar = path.resolve(__dirname, `../../mkinitfs/initramfs-init.in`)
+    Utils.warning(`copyng ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
+    await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
+
     const initrdImg = 'initramfs-lts'
-    // dracut
-    // const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    // await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    // mkinitfs
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
+
 
   /**
    * initrdArch()
