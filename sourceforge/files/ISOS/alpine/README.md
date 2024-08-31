@@ -28,18 +28,8 @@ NOTE: Yuo can add `linux-firmware` to use on real hardware.
 * You can find more informations on this Linux distro at: [AlpineLinux](https://alpinelinux.org/).
 
 # Important notes 
-This image will boot only on BIOS systems and will go on `emergency shell`. From the emergency shell:
 
-  * `mkdir /mnt`
-  * `mount /dev/sr0 /mnt`
-  * type `exit`
-  * `/mnt/live/sidecar.sh`
-  * type `exit`
-
-`colibri-builder` contain abuild package to create packeges for Alpine Linux. This version, don't need the previous procedure to boot, just type "exit".
-
-
-The system will boot normally, and You can safety install it using krill `doas eggs krill`,  and once installed, it's possible to update, install firmware `doas apk add linux-firmware`, customize it and remaster again.
+This image will boot only on BIOS systems and will go on `emergency shell`. From the emergency shell, just type "exit" to boot the live
 
 The main limits of this remasters, are: 
 
