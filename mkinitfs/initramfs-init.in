@@ -756,16 +756,13 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
 	clear
-	echo "Penguins' eggs"
-	echo "=============="
+	echo "Penguins' eggs: sidecar"
+	echo "======================="
 	echo "booting from: $alpinelive "
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	sleep 5
-
-	# detect fstype
-	fstype=iso9660
+	sleep 10
 
 	# Creating mountpoint
 	mkdir /mnt
