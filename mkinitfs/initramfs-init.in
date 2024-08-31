@@ -755,7 +755,8 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo "Booting with sidecar (penguins-eggs): "
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: : $KOPT_alpinelivesquashfs"
-	
+	sleep 3
+
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 
 	# detect fstype
