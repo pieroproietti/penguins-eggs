@@ -102,7 +102,12 @@ export default class Utils {
     * isSysvinit
     */
    static isSysvinit(): boolean {
-      const isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      let isSysvinit = false
+
+      const isOpenRc = fs.readFileSync("/proc/1/comm").includes('openrc')
+      if (! isOpenRc) {
+         const isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      }
       return isSysvinit
    }
 
