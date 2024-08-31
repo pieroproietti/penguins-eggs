@@ -38,7 +38,12 @@ export default class CliAutologin {
    * @param chroot
    */
   async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+
     if (Utils.isSystemd()) {
+      /**
+       * systemd
+       */
+      Utils.warning("creating CLI autologin systemd")
       const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
       if (fs.existsSync(dirOverride)) {
@@ -55,6 +60,10 @@ export default class CliAutologin {
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isOpenRc()) {
+      /**
+       * openrc 
+       */
+      Utils.warning("creating CLI autologin openrc")
       const inittab = chroot + '/etc/inittab'
       let content = ''
       const search = `tty1::respawn:/sbin/getty 38400 tty1`
@@ -64,21 +73,21 @@ export default class CliAutologin {
         if (lines[i].includes(search)) {
           lines[i] = replace
         }
-
         content += lines[i] + '\n'
       }
-
       fs.writeFileSync(inittab, content, 'utf-8')
-      // create /bin/autologin
       const autologin = chroot + '/bin/autologin'
       content = '#!/bin/sh' + '\n'
       content += `/bin/login -f ${user}` + '\n'
       fs.writeFileSync(autologin, content, 'utf-8')
       execSync(`chmod +x ${autologin}`)
-
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
+      /**
+       * sysvinit
+       */
+      Utils.warning("creating CLI autologin sysvinit")
       const inittab = chroot + '/etc/inittab'
       const search = '1:2345:respawn:/sbin/getty'
       const replace = `1:2345:respawn:/sbin/getty --autologin ${user} 38400 tty1`
