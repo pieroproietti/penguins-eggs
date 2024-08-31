@@ -753,7 +753,7 @@ $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
-	fstype=${blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
+	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
 	clear
 	echo "Penguins' eggs"
@@ -765,7 +765,6 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	sleep 5
 
 	# detect fstype
-    fstype=$(blkid -o value -s TYPE "$alpinelive") # don't work!
 	fstype=iso9660
 
 	# Creating mountpoint
