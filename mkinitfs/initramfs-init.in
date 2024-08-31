@@ -753,15 +753,21 @@ $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
-	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $2}')
-	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $3}')
-	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $4}')
+	a2=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $2}')
+	a3=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $3}')
+	a4=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $4}')
+	a5=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $5}')
+	a6=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $6}')
 
 	clear
 	echo "Penguins' eggs"
 	echo "=============="
 	echo "booting from: $alpinelive "
-	echo "- fstype: $fstype"
+	echo "- fstype: a2 $a2"
+	echo "- fstype: a3 $a3"
+	echo "- fstype: a4 $a4"
+	echo "- fstype: a5 $a5"
+	echo "- fstype: a6 $a6"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
 	sleep 5
