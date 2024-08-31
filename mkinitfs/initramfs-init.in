@@ -753,7 +753,9 @@ $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
-    fstype=$(blkid -o value -s TYPE "$alpinelive") # don't work!
+	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $2}')
+	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $3}')
+	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $4}')
 
 	clear
 	echo "Penguins' eggs"
