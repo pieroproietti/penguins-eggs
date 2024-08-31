@@ -753,12 +753,15 @@ $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
+    fstype=$(blkid -o value -s TYPE "$alpinelive") # don't work!
+
 	clear
 	echo "Penguins' eggs"
 	echo "=============="
-	echo "booting from $(blkid -o value -s TYPE $alpinelive): "
+	echo "booting from: $alpinelive "
+	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
-	echo "- filesystem.squashfs: : $KOPT_alpinelivesquashfs"
+	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
 	sleep 5
 
 	# detect fstype
