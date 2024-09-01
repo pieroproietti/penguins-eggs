@@ -733,7 +733,8 @@ fi
 
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
-
+	fstyoe=iso9660
+	
 	clear
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
@@ -741,7 +742,7 @@ fi
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	sleep 10
+	sleep 5
 
 	# Creating mountpoint
 	mkdir /mnt
