@@ -739,6 +739,7 @@ fi
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
 	echo "booting from: $alpinelive "
+	echo "- rootflags=$rootflags"
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
@@ -746,6 +747,7 @@ fi
 
 	# Creating mountpoint
 	mkdir /mnt
+	$MOCK mount -t tmpfs -o $rootflags tmpfs /mnt
 
 	# mount /dev/sr0
 	mount -t $fstype ${alpinelive} /mnt
