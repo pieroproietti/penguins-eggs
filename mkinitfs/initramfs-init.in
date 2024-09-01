@@ -733,8 +733,8 @@ fi
 
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
-	fstyoe=iso9660
-	
+	fstype=iso9660
+
 	clear
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
