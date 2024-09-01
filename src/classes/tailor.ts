@@ -119,7 +119,6 @@ export default class Tailor {
 
       if (elements.length > 0) {
         let step = `installing ${comment}: `
-        // if not verbose show strElements
         if (!this.verbose) {
           step += strElements.slice(2)
         }
@@ -370,7 +369,7 @@ export default class Tailor {
               break
             }
 
-            case 'arch': {
+            case 'archlinux': {
               await exec('pacman -Sy', Utils.setEcho(false))
 
               break
@@ -378,6 +377,7 @@ export default class Tailor {
 
             case 'alpine': {
               await exec('apk update', Utils.setEcho(false))
+              Utils.pressKeyToExit()
 
               break
             }
@@ -399,7 +399,7 @@ export default class Tailor {
                 break
               }
 
-              case 'arch': {
+              case 'archlinux': {
                 await exec('pacman -Su', Utils.setEcho(false))
 
                 break
@@ -446,7 +446,7 @@ export default class Tailor {
             break
           }
 
-          case 'arch': {
+          case 'archlinux': {
             await this.helperInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
 
             break
