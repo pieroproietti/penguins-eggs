@@ -27,7 +27,7 @@ eend() {
 			echo -n "$last_emsg "
 		fi
 		echo "failed. $*"
-		echo "line 30: initramfs emergency recovery shell launched. Type 'exit' to continue boot"
+		echo "initramfs emergency recovery shell launched. Type 'exit' to continue boot"
 		/bin/busybox sh
 	fi
 }
@@ -719,15 +719,13 @@ else
 	repoopts="-b $repofile"
 fi
 
-
 # locate boot media and mount it
 ebegin "Mounting boot media"
 $MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
 	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
 	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
 	$repoopts -a "$ROOT"/tmp/apkovls
-eend $? 
-
+eend $?
 
 # sidecar START
 if [ -n "${KOPT_alpinelivelabel}" ]; then
@@ -735,11 +733,13 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 
 	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
-	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
-	if [ -z "$alpinelive" ]; then
-		alpinelive=/dev/sr0
+	device=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
+	show_device=device
+	if [ -z "$device" ]; then
+		device=/dev/sr0
 	fi
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
+	show_fstype=fstype
 	if [ -z "$fstype" ]; then
 		fstype=iso9660
 	fi
@@ -747,8 +747,8 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	clear
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
-	echo "- device: $alpinelive"
-	echo "- fstype: $fstype"
+	echo "- device: $show_device"
+	echo "- fstype: $show_fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
 	sleep 5
@@ -779,7 +779,6 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 fi
 # sidecar END
 
-
 # Setup network interfaces
 if $do_networking; then
 	configure_ip
@@ -802,6 +801,7 @@ if [ -n "$KOPT_rootflags" ]; then
 fi
 
 $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+
 
 
 if [ -z "$KOPT_apkovl" ]; then
@@ -1027,7 +1027,7 @@ fi
 
 if [ ! -x "${sysroot}${KOPT_init}" ]; then
 	[ "$KOPT_splash" != "no" ] && echo exit > $sysroot/$splashfile
-	echo "$KOPT_init not found in new root. line 1017 Launching emergency recovery shell"
+	echo "$KOPT_init not found in new root. Launching emergency recovery shell"
 	echo "Type exit to continue boot."
 	/bin/busybox sh
 fi
@@ -1046,6 +1046,6 @@ echo ""
 exec switch_root $switch_root_opts $sysroot $chart_init "$KOPT_init" $KOPT_init_args
 
 [ "$KOPT_splash" != "no" ] && echo exit > $sysroot/$splashfile
-echo "line 1036: initramfs emergency recovery shell launched"
+echo "initramfs emergency recovery shell launched"
 exec /bin/busybox sh
 reboot
