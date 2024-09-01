@@ -719,39 +719,18 @@ else
 	repoopts="-b $repofile"
 fi
 
-# locate boot media and mount it
-ebegin "Mounting boot media"
-$MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
-	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
-	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
-	$repoopts -a "$ROOT"/tmp/apkovls
-eend $?
-
-# Setup network interfaces
-if $do_networking; then
-	configure_ip
-fi
-
-# early console?
-if [ "$SINGLEMODE" = "yes" ]; then
-	echo "Entering single mode. Type 'exit' to continue booting."
-	sh
-fi
-
-# mount tmpfs sysroot
-rootflags="mode=0755"
-if [ -n "$KOPT_root_size" ]; then
-	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
-	rootflags="$rootflags,size=$KOPT_root_size"
-fi
-if [ -n "$KOPT_rootflags" ]; then
-	rootflags="$rootflags,$KOPT_rootflags"
-fi
-
-$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
-
 # sidecar START
-if [ -n "${KOPT_alpinelivelabel}" ]; then
+	if [ -n "${KOPT_alpinelivelabel}" ]; then
+	rootflags="mode=0755"
+	if [ -n "$KOPT_root_size" ]; then
+		echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
+		rootflags="$rootflags,size=$KOPT_root_size"
+	fi
+	if [ -n "$KOPT_rootflags" ]; then
+		rootflags="$rootflags,$KOPT_rootflags"
+	fi
+	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
@@ -789,6 +768,37 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
 # sidecar END
+
+# locate boot media and mount it
+ebegin "Mounting boot media"
+$MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
+	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
+	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
+	$repoopts -a "$ROOT"/tmp/apkovls
+eend $? 
+
+# Setup network interfaces
+if $do_networking; then
+	configure_ip
+fi
+
+# early console?
+if [ "$SINGLEMODE" = "yes" ]; then
+	echo "Entering single mode. Type 'exit' to continue booting."
+	sh
+fi
+
+# mount tmpfs sysroot
+rootflags="mode=0755"
+if [ -n "$KOPT_root_size" ]; then
+	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
+	rootflags="$rootflags,size=$KOPT_root_size"
+fi
+if [ -n "$KOPT_rootflags" ]; then
+	rootflags="$rootflags,$KOPT_rootflags"
+fi
+
+$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 
 if [ -z "$KOPT_apkovl" ]; then
