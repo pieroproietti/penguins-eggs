@@ -1033,6 +1033,6 @@ echo ""
 exec switch_root $switch_root_opts $sysroot $chart_init "$KOPT_init" $KOPT_init_args
 
 [ "$KOPT_splash" != "no" ] && echo exit > $sysroot/$splashfile
-echo "line 1036 initramfs emergency recovery shell launched"
+echo "line 1036: initramfs emergency recovery shell launched"
 exec /bin/busybox sh
 reboot
