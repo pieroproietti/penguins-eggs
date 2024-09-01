@@ -17,7 +17,7 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares-eggs'] // , 'calamares', 'calamares-git']
+  static packs4calamares = ['calamares-eggs'] // , 'calamares']
 
   /**
    * Archlinux: calamaresInstall
@@ -29,7 +29,8 @@ export default class Archlinux {
     // const cal_eggs = 'arco-calamares-3.3.5-02-x86_64.pkg.tar.zst' // 2024-03-10
     // const cal_eggs = 'calamares-garuda-3.3.5.r19.g10acebff4-1-x86_64.pkg.tar.zst' // 2024-03-10
     // const cal_eggs = 'arco-calamares-3.3.6-06-x86_64.pkg.tar.zst' // 24/04/27
-    const cal_eggs = 'calamares-eggs-3.3.8.r39.g80ef430-1-x86_64.pkg.tar.zst' // 12/07/24
+    // const cal_eggs = 'calamares-eggs-3.3.8.r39.g80ef430-1-x86_64.pkg.tar.zst' // 12/07/24
+    const cal_eggs = 'ls ' // // 01/09/2024
 
     let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD/${cal_eggs}/download`
     try {
