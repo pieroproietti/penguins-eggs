@@ -709,7 +709,7 @@ if [ -n "$KOPT_root" ]; then
 	done
 	$MOCK sync
 	exec switch_root $switch_root_opts $sysroot $chart_init "$KOPT_init" $KOPT_init_args
-	echo "line: 712 initramfs emergency recovery shell launched"
+	echo "initramfs emergency recovery shell launched"
 	exec /bin/busybox sh
 fi
 
@@ -720,26 +720,22 @@ else
 fi
 
 # sidecar START
-	if [ -n "${KOPT_alpinelivelabel}" ]; then
+if [ -n "${KOPT_alpinelivelabel}" ]; then
+	ebegin "Mounting boot media"
 	rootflags="mode=0755"
-	if [ -n "$KOPT_root_size" ]; then
-		echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
-		rootflags="$rootflags,size=$KOPT_root_size"
-	fi
-	if [ -n "$KOPT_rootflags" ]; then
-		rootflags="$rootflags,$KOPT_rootflags"
-	fi
+
 	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
-	fstype=iso9660
+	if [ -z "$fstype" ]; then
+		fstype=iso9660
+	fi
 
 	clear
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
-	echo "booting from: $alpinelive "
-	echo "- rootflags=$rootflags"
+	echo "- device: $alpinelive"
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
@@ -747,7 +743,6 @@ fi
 
 	# Creating mountpoint
 	mkdir /mnt
-	$MOCK mount -t tmpfs -o $rootflags tmpfs /mnt
 
 	# mount /dev/sr0
 	mount -t $fstype ${alpinelive} /mnt
@@ -769,6 +764,7 @@ fi
 
 	# just a dummy value for /etc/machine-id
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
+	eend $? 
 fi
 # sidecar END
 
