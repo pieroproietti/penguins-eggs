@@ -727,6 +727,9 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
+	if [ -z "$alpinelive" ]; then
+		alpinelive=/dev/sr0
+	fi
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 	if [ -z "$fstype" ]; then
 		fstype=iso9660
