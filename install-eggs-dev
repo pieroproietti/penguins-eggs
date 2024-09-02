@@ -28,7 +28,6 @@ pnpm i
 pnpm build
 
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
-$SUDO cp addons/eggs/adapt/bin/adapt /usr/local/bin/adapt
 $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1
@@ -43,6 +42,7 @@ $SUDO cp -rf assets /usr/lib/penguins-eggs/
 $SUDO cp -rf bin /usr/lib/penguins-eggs/ 
 $SUDO cp -rf conf /usr/lib/penguins-eggs/ 
 $SUDO cp -rf dist /usr/lib/penguins-eggs/ 
+$SUDO cp -rf dracut /usr/lib/penguins-eggs/ 
 $SUDO cp -rf eui /usr/lib/penguins-eggs/
 $SUDO cp -rf ipxe /usr/lib/penguins-eggs/ 
 $SUDO cp -rf manpages  /usr/lib/penguins-eggs/
@@ -93,6 +93,3 @@ $SUDO chmod +x /tmp/shutdown
 $SUDO mv /tmp/shutdown /usr/sbin
 fi
 
-$SUDO eggs kill -n
-$SUDO eggs produce --pendrive --addons adapt -n
-eggs export iso -c

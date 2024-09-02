@@ -75,7 +75,11 @@ echo "Inizializzazioni aggiuntive possono essere aggiunte qui"
     let initrdImg = 'initramfs-lts'
     // dracut
     const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+
+    
+    // await exec(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, utils.setEcho(true))
+    await exec(`dracut --force --add "dmsquash-live pollcdrom" ${this.settings.iso_work}live/${initrdImg}`, utils.setEcho(true))
+
 ```
 
 # TESTING
