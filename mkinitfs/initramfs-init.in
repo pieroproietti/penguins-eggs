@@ -400,10 +400,6 @@ want_tiny_cloud() {
 	findfs LABEL=cidata >/dev/null 2>&1 || findfs LABEL=CIDATA >/dev/null 2>&1
 }
 
-###################################################
-# start
-###################################################
-
 /bin/busybox mkdir -p "$ROOT"/usr/bin \
 	"$ROOT"/usr/sbin \
 	"$ROOT"/proc \
@@ -637,7 +633,6 @@ if [ -n "$KOPT_aoe" ]; then
 	fi
 fi
 
-
 # zpool reports /dev/zfs missing if it can't read /etc/mtab
 ln -s /proc/mounts "$ROOT"/etc/mtab
 
@@ -750,25 +745,31 @@ fi
 
 $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
-# sidecar START
+# sidecar start 
+# 
+# insert just after: $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+# NOTE: remember to add alpinelivesquashfs alpinelivelabel cow_spacesize to myopt
+#       insert at live 748
+####################################################################################
 if [ -n "${KOPT_alpinelivelabel}" ]; then
-	alpinelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
+	devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
 	clear
 	echo "Penguins' eggs: sidecar"
 	echo "======================="
-	echo "booting from: $alpinelive "
+	echo "booting from: $devicelive"
 	echo "- fstype: $fstype"
-	echo "- label device: $KOPT_alpinelivelabel"
+	echo "- label: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	sleep 10
+	echo "- cow_spacesize: $KOPT_cow_spacesize NOT_USED!"
+	sleep 5
 
 	# Creating mountpoint
 	mkdir /mnt
 
 	# mount /dev/sr0
-	mount -t $fstype ${alpinelive} /mnt
+	mount -t $fstype ${devicelive} /mnt
 
 	# mount filesystem squashfs on /media/root-ro
 	mkdir -p /media/root-ro 
@@ -788,7 +789,7 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	# just a dummy value for /etc/machine-id
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
-# sidecar END
+# sidecar emd   #####################################################################
 
 
 if [ -z "$KOPT_apkovl" ]; then

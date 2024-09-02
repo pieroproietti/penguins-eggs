@@ -838,7 +838,7 @@ export default class Ovary {
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     const sidecar = path.resolve(__dirname, `../../mkinitfs/initramfs-init.in`)
-    Utils.warning(`copyng ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
+    Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
     await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
 
     const initrdImg = 'initramfs-lts'
@@ -1026,7 +1026,7 @@ export default class Ovary {
     } else if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
-    kp += ` cow_spacesize=4G`
+    kp += ` cow_spacesize=2G`
     return kp
   }
 
