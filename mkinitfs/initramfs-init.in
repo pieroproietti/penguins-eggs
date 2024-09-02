@@ -400,10 +400,6 @@ want_tiny_cloud() {
 	findfs LABEL=cidata >/dev/null 2>&1 || findfs LABEL=CIDATA >/dev/null 2>&1
 }
 
-###################################################
-# start
-###################################################
-
 /bin/busybox mkdir -p "$ROOT"/usr/bin \
 	"$ROOT"/usr/sbin \
 	"$ROOT"/proc \
@@ -450,12 +446,11 @@ $MOCK mount -t tmpfs -o nodev,nosuid,noexec shm /dev/shm
 #  acpi_osi="!Windows 2006" xen-pciback.hide=(01:00.0)
 set -- $(cat "$ROOT"/proc/cmdline)
 
-myopts="alpinelivesquashfs alpinelivelabel autodetect_serial chart cow_spacesize 
-    cryptroot cryptdm cryptheader cryptoffset cryptdiscards cryptkey debug_init 
-	ds init init_args keep_apk_new modules pkgs quiet root_size root usbdelay ip 
-	alpine_repo apkovl splash blacklist overlaytmpfs overlaytmpfsflags rootfstype 
-	rootflags nbd resume resume_offset 	s390x_net dasd ssh_key BOOTIF zfcp 
-	uevent_buf_size aoe aoe_iflist aoe_mtu wireguard"
+myopts="autodetect_serial chart cryptroot cryptdm cryptheader cryptoffset
+	cryptdiscards cryptkey debug_init ds init init_args keep_apk_new modules
+	pkgs quiet root_size root usbdelay ip alpine_repo apkovl splash
+	blacklist overlaytmpfs overlaytmpfsflags rootfstype rootflags nbd resume resume_offset
+	s390x_net dasd ssh_key BOOTIF zfcp uevent_buf_size aoe aoe_iflist aoe_mtu wireguard"
 
 for opt; do
 	case "$opt" in
@@ -637,7 +632,6 @@ if [ -n "$KOPT_aoe" ]; then
 	fi
 fi
 
-
 # zpool reports /dev/zfs missing if it can't read /etc/mtab
 ln -s /proc/mounts "$ROOT"/etc/mtab
 
@@ -725,16 +719,31 @@ $MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
 	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
 	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
 	$repoopts -a "$ROOT"/tmp/apkovls
-	# sidecar qua non va
 eend $?
 
-# sidecar qua non va
+# Setup network interfaces
+if $do_networking; then
+	configure_ip
+fi
 
 # early console?
 if [ "$SINGLEMODE" = "yes" ]; then
 	echo "Entering single mode. Type 'exit' to continue booting."
 	sh
 fi
+
+# mount tmpfs sysroot
+rootflags="mode=0755"
+if [ -n "$KOPT_root_size" ]; then
+	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
+	rootflags="$rootflags,size=$KOPT_root_size"
+fi
+if [ -n "$KOPT_rootflags" ]; then
+	rootflags="$rootflags,$KOPT_rootflags"
+fi
+
+# moved after sidecar
+# $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 # sidecar OK
 if [ -n "${KOPT_alpinelivelabel}" ]; then
@@ -781,22 +790,6 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
 # sidecar END
-
-# Setup network interfaces
-if $do_networking; then
-	configure_ip
-fi
-
-
-# mount tmpfs sysroot
-rootflags="mode=0755"
-if [ -n "$KOPT_root_size" ]; then
-	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
-	rootflags="$rootflags,size=$KOPT_root_size"
-fi
-if [ -n "$KOPT_rootflags" ]; then
-	rootflags="$rootflags,$KOPT_rootflags"
-fi
 
 $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
