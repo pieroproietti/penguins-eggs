@@ -729,8 +729,8 @@ $MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
 	# sidecar START
 	if [ -n "${KOPT_alpinelivelabel}" ]; then
 		#
-		rootflags="mode=0755"
-		$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+		#rootflags="mode=0755"
+		#$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 		#
 		devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 		fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
