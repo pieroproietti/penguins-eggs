@@ -725,8 +725,10 @@ $MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
 	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
 	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
 	$repoopts -a "$ROOT"/tmp/apkovls
+	# sidecar qua non va
 eend $?
 
+# sidecar qua non va
 
 # Setup network interfaces
 if $do_networking; then
@@ -751,10 +753,11 @@ fi
 
 $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
-# sidecar
+# sidecar OK
 if [ -n "${KOPT_alpinelivelabel}" ]; then
 	#
 	rootflags="mode=0755"
+	rootflags="$rootflags,size=$KOPT_cow_spacesize"
 	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 	#
 	devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
@@ -767,6 +770,7 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
+	echo "- cow_spacesize: $KOPT_cow_spacesize"
 	sleep 10
 
 	# Creating mountpoint
