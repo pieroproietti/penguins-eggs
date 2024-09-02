@@ -446,11 +446,12 @@ $MOCK mount -t tmpfs -o nodev,nosuid,noexec shm /dev/shm
 #  acpi_osi="!Windows 2006" xen-pciback.hide=(01:00.0)
 set -- $(cat "$ROOT"/proc/cmdline)
 
-myopts="autodetect_serial chart cryptroot cryptdm cryptheader cryptoffset
-	cryptdiscards cryptkey debug_init ds init init_args keep_apk_new modules
-	pkgs quiet root_size root usbdelay ip alpine_repo apkovl splash
-	blacklist overlaytmpfs overlaytmpfsflags rootfstype rootflags nbd resume resume_offset
-	s390x_net dasd ssh_key BOOTIF zfcp uevent_buf_size aoe aoe_iflist aoe_mtu wireguard"
+myopts="alpinelivesquashfs alpinelivelabel autodetect_serial chart cow_spacesize 
+    cryptroot cryptdm cryptheader cryptoffset cryptdiscards cryptkey debug_init 
+	ds init init_args keep_apk_new modules pkgs quiet root_size root usbdelay ip 
+	alpine_repo apkovl splash blacklist overlaytmpfs overlaytmpfsflags rootfstype 
+	rootflags nbd resume resume_offset 	s390x_net dasd ssh_key BOOTIF zfcp 
+	uevent_buf_size aoe aoe_iflist aoe_mtu wireguard"
 
 for opt; do
 	case "$opt" in
