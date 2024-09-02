@@ -725,6 +725,50 @@ $MOCK nlplug-findfs $cryptopts -p /sbin/mdev ${KOPT_debug_init:+-d} \
 	${KOPT_usbdelay:+-t $(( $KOPT_usbdelay * 1000 ))} \
 	${KOPT_uevent_buf_size:+-U $KOPT_uevent_buf_size} \
 	$repoopts -a "$ROOT"/tmp/apkovls
+
+	# sidecar START
+	if [ -n "${KOPT_alpinelivelabel}" ]; then
+		#
+		rootflags="mode=0755"
+		$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+		#
+		devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
+		fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
+
+		clear
+		echo "Penguins' eggs: sidecar"
+		echo "======================="
+		echo "booting from: $devicelive"
+		echo "- fstype: $fstype"
+		echo "- label device: $KOPT_alpinelivelabel"
+		echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
+		sleep 10
+
+		# Creating mountpoint
+		mkdir /mnt
+
+		# mount /dev/sr0
+		mount -t $fstype ${devicelive} /mnt
+
+		# mount filesystem squashfs on /media/root-ro
+		mkdir -p /media/root-ro 
+		mount -t squashfs ${KOPT_alpinelivesquashfs}  /media/root-ro
+
+		# mount tmpfs on /media/root-rw
+		mkdir -p /media/root-rw 
+		mount -t tmpfs root-tmpfs /media/root-rw
+
+		# creare i punti di montaggio necessari
+		mkdir -p /media/root-rw/work 
+		mkdir -p /media/root-rw/root
+
+		# mount  overlayfs on /sysroot
+		mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
+
+		# just a dummy value for /etc/machine-id
+		echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
+	fi
+	# sidecar END
 eend $?
 
 # Setup network interfaces
@@ -750,47 +794,7 @@ fi
 
 $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
-# sidecar START
-if [ -n "${KOPT_alpinelivelabel}" ]; then
-	devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
-	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
-
-	clear
-	echo "MOCK: $MOCK"
-	echo "Penguins' eggs: sidecar"
-	echo "======================="
-	echo "booting from: $devicelive"
-	echo "- fstype: $fstype"
-	echo "- label device: $KOPT_alpinelivelabel"
-	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	sleep 10
-
-	# Creating mountpoint
-	mkdir /mnt
-
-	# mount /dev/sr0
-	mount -t $fstype ${devicelive} /mnt
-
-	# mount filesystem squashfs on /media/root-ro
-	mkdir -p /media/root-ro 
-	mount -t squashfs ${KOPT_alpinelivesquashfs}  /media/root-ro
-
-	# mount tmpfs on /media/root-rw
-	mkdir -p /media/root-rw 
-	mount -t tmpfs root-tmpfs /media/root-rw
-
-	# creare i punti di montaggio necessari
-	mkdir -p /media/root-rw/work 
-	mkdir -p /media/root-rw/root
-
-	# mount  overlayfs on /sysroot
-	mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
-
-	# just a dummy value for /etc/machine-id
-	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
-fi
-# sidecar END
-
+# sidecar
 
 if [ -z "$KOPT_apkovl" ]; then
 	# Not manually set, use the apkovl found by nlplug
