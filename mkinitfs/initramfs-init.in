@@ -743,16 +743,11 @@ if [ -n "$KOPT_rootflags" ]; then
 	rootflags="$rootflags,$KOPT_rootflags"
 fi
 
-# Moved after sidecar
-# $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
-# sidecar OK
+############
+# sidecar OK, just after: $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 if [ -n "${KOPT_alpinelivelabel}" ]; then
-	#
-	rootflags="mode=0755"
-	rootflags="$rootflags,size=$KOPT_cow_spacesize"
-	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
-	#
 	devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
@@ -763,7 +758,7 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo "- fstype: $fstype"
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	echo "- cow_spacesize: $KOPT_cow_spacesize"
+	echo "- cow_spacesize: $KOPT_cow_spacesize not used"
 	sleep 5
 
 	# Creating mountpoint
@@ -791,8 +786,6 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
 # sidecar END
-
-$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 if [ -z "$KOPT_apkovl" ]; then
 	# Not manually set, use the apkovl found by nlplug
