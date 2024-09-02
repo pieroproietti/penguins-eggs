@@ -730,28 +730,11 @@ eend $?
 
 # sidecar qua non va
 
-# Setup network interfaces
-if $do_networking; then
-	configure_ip
-fi
-
 # early console?
 if [ "$SINGLEMODE" = "yes" ]; then
 	echo "Entering single mode. Type 'exit' to continue booting."
 	sh
 fi
-
-# mount tmpfs sysroot
-rootflags="mode=0755"
-if [ -n "$KOPT_root_size" ]; then
-	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
-	rootflags="$rootflags,size=$KOPT_root_size"
-fi
-if [ -n "$KOPT_rootflags" ]; then
-	rootflags="$rootflags,$KOPT_rootflags"
-fi
-
-$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 # sidecar OK
 if [ -n "${KOPT_alpinelivelabel}" ]; then
@@ -771,7 +754,7 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo "- label device: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
 	echo "- cow_spacesize: $KOPT_cow_spacesize"
-	sleep 10
+	sleep 5
 
 	# Creating mountpoint
 	mkdir /mnt
@@ -799,6 +782,23 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 fi
 # sidecar END
 
+# Setup network interfaces
+if $do_networking; then
+	configure_ip
+fi
+
+
+# mount tmpfs sysroot
+rootflags="mode=0755"
+if [ -n "$KOPT_root_size" ]; then
+	echo "WARNING: the boot option root_size is deprecated. Use rootflags instead"
+	rootflags="$rootflags,size=$KOPT_root_size"
+fi
+if [ -n "$KOPT_rootflags" ]; then
+	rootflags="$rootflags,$KOPT_rootflags"
+fi
+
+$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 if [ -z "$KOPT_apkovl" ]; then
 	# Not manually set, use the apkovl found by nlplug
