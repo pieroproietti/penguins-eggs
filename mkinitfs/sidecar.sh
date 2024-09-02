@@ -1,12 +1,17 @@
-$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+myopts="alpinelivesquashfs alpinelivelabel autodetect_serial chart cow_spacesize 
+    cryptroot cryptdm cryptheader cryptoffset cryptdiscards cryptkey debug_init 
+	ds init init_args keep_apk_new modules pkgs quiet root_size root usbdelay ip 
+	alpine_repo apkovl splash blacklist overlaytmpfs overlaytmpfsflags rootfstype 
+	rootflags nbd resume resume_offset 	s390x_net dasd ssh_key BOOTIF zfcp 
+	uevent_buf_size aoe aoe_iflist aoe_mtu wireguard"
 
-# sidecar OK
+# sidecar start 
+# 
+# insert just after: $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+# NOTE: remember to add alpinelivesquashfs alpinelivelabel cow_spacesize to myopt
+#       insert at live 748
+####################################################################################
 if [ -n "${KOPT_alpinelivelabel}" ]; then
-	#
-	rootflags="mode=0755"
-	rootflags="$rootflags,size=$KOPT_cow_spacesize"
-	$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
-	#
 	devicelive=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F: '{print $1}')
 	fstype=$(blkid | grep "${KOPT_alpinelivelabel}" | awk -F' ' '{for(i=1;i<=NF;i++) if ($i ~ /TYPE/) print $i}' | awk -F'"' '{print $2}')
 
@@ -15,9 +20,9 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo "======================="
 	echo "booting from: $devicelive"
 	echo "- fstype: $fstype"
-	echo "- label device: $KOPT_alpinelivelabel"
+	echo "- label: $KOPT_alpinelivelabel"
 	echo "- filesystem.squashfs: $KOPT_alpinelivesquashfs"
-	echo "- cow_spacesize: $KOPT_cow_spacesize"
+	echo "- cow_spacesize: $KOPT_cow_spacesize NOT_USED!"
 	sleep 5
 
 	# Creating mountpoint
@@ -44,4 +49,4 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	# just a dummy value for /etc/machine-id
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
-# sidecar END
+# sidecar emd   #####################################################################
