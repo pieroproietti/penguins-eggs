@@ -743,7 +743,7 @@ if [ -n "$KOPT_rootflags" ]; then
 fi
 
 # moved after sidecar
-# $MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
+$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 # sidecar OK
 if [ -n "${KOPT_alpinelivelabel}" ]; then
@@ -790,8 +790,6 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
 fi
 # sidecar END
-
-$MOCK mount -t tmpfs -o $rootflags tmpfs $sysroot
 
 if [ -z "$KOPT_apkovl" ]; then
 	# Not manually set, use the apkovl found by nlplug
