@@ -9,6 +9,14 @@ Nothing to do - and this is quite ugly: CLI installation don't give full control
 
 I'm short signer, will retry in the mornig seem me to see better!
 
+I tried and was successfull same day after, it was diffult to find a way to install it minimun and ext4.
+
+On the installed select "minimun installation", the button to confirm is up left or down right. 
+
+On Disk, selecte a disk I used a 32G disk, choose the third option, create a bios  boot partition (just 1M), then an ext4 partition. 
+
+Messages are unreadable, really a bad for a short signed persona like me, but we passed.
+
 We can create root password and our `artisan` user.
 
 Installation is graphical and don't need to describe.
@@ -23,9 +31,11 @@ The best is, after reboot, to connect via ssh to can copy and past the command. 
 dnf install \
     lightdm-gtk-greeter \
     spice-vdagent \
+    xfce4-settings \
     xfce4-screensaver \
     xfce4-terminal \
-    xfce4-whiskermenu-plugin 
+    xfce4-whiskermenu-plugin \
+    spice-vdagent
 
 systemctl set-default graphical.target 
 systemctl enable lightdm
@@ -57,22 +67,25 @@ dnf install nodejs pnpm
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` on `/`, then copy `/etc/skel` on the home of current user.
 
 ```
-git  clone https://github.com/pieroproietti/penguins-wardrobe
-
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 cp /etc/skel/.* "${HOME}/." -R
 
 ```
+
 ## eggs development tools
 
 ### Visual studio code
-Download [code](https://code.visualstudio.com/download) rpm version, and install it:
 ```
-sudo dnf install ./code-1.91.1-1720564728.el8.x86_64.rpm 
+git  clone https://github.com/pieroproietti/penguins-wardrobesudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
 
 ```
-
+Then: 
+```
+dnf check-update
+sudo dnf install code
+```
 
 ## dependencies penguins-eggs on Fedora
 This are that we need, almost complete... 
