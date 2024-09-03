@@ -1,47 +1,40 @@
 # Way to Fedora
-We start from the `Fedora-Server-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora server choosing minumun installation, set root password and user. 
 
-I initially just chosen the disk, it was formatted as xfs, I want a simple schema with swap and / formatted ext4, there is no way seem.
+We start from the `Fedora-Everything-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora choosing minumun installation, set root password and user. 
 
-OK, I found the way to text installation, just edit the cmdline and put `inst.text`. 
+On the installion select "minimun installation", button to confirm are alternately up left or down right. 
 
-Nothing to do - and this is quite ugly: CLI installation don't give full control on partitions. Tried with `Rocky-9.4-x86_64-minimal.iso` the same... 
+Select the disk, I used a 32G disk, choose the third option manually: create a bios  boot partition (just 1M), then an ext4 partition. 
 
-I'm short signer, will retry in the mornig seem me to see better!
-
-I tried and was successfull same day after, it was diffult to find a way to install it minimun and ext4.
-
-On the installed select "minimun installation", the button to confirm is up left or down right. 
-
-On Disk, selecte a disk I used a 32G disk, choose the third option, create a bios  boot partition (just 1M), then an ext4 partition. 
-
-Messages are unreadable, really a bad for a short signed persona like me, but we passed.
-
-We can create root password and our `artisan` user.
-
-Installation is graphical and don't need to describe.
+We can create user `artisan` and choose a password.
 
 > [!NOTE]
 > This is tested just on BIOS, under a VM on Proxmox VE.
 
-## reboot
-The best is, after reboot, to connect via ssh to can copy and past the command. Then:
+## reboot and enable uinput
 
-To use spice-vdagent we need to enable uinput:
+To use spice-vdagent we need to enable `uinput`:
 
 ```
 echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
 ```
 
 Then, when it exists:
+
 ```
 sudo chmod 666 /dev/uinput
 ```
-
-We can start
+## reboot
+We can start, The best is to connect via ssh to can copy and past the command. 
 
 ```
-dnf install \
+sudo su
+```
+
+Start to install xfce and spice-vdagent
+
+```
+dnf -y install \
     lightdm-gtk-greeter \
     spice-vdagent \
     xfce4-settings \
@@ -55,12 +48,9 @@ systemctl enable lightdm
 systemctl enable spice-vdagentd
 
 ```
-
-
-
 ## others
 ```
-dnf install \
+dnf -y install \
     bash-completion \
     firefox \
     git \
@@ -71,17 +61,15 @@ dnf install \
 
 ```
 
-### nodejs, npm e pnpm
-```
-dnf install nodejs pnpm
-
-```
-
-
 ## customize colibri from wardrobe
+```
+exit
+```
+
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` on `/`, then copy `/etc/skel` on the home of current user.
 
 ```
+git clone https://github.com/pieroproietti/penguins-eggs
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 cp /etc/skel/.* "${HOME}/." -R
@@ -89,6 +77,12 @@ cp /etc/skel/.* "${HOME}/." -R
 ```
 
 ## eggs development tools
+
+### nodejs, npm e pnpm
+```
+sudo dnf -y install nodejs pnpm
+
+```
 
 ### Visual studio code
 ```
@@ -98,8 +92,9 @@ echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com
 ```
 Then: 
 ```
-dnf check-update
-sudo dnf install code
+sudo dnf check-update
+sudo dnf -y install code
+
 ```
 
 ## dependencies penguins-eggs on Fedora
@@ -145,54 +140,8 @@ Now we can use eggs from the source:
 We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
 ```
 ./install-eggs-dev
-```
-
-## Create a link to ${HOME}/penguins-eggs/eggs
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-```
-sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
-```
-
-## Create a link to ${HOME}/penguins-eggs/eggs
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-```
-sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
-```
-
-## Configuration eggs
 
 ```
-sudo ./eggs dad -d
-./eggs status
-sudo ./eggs produce --pendrive
-
-```
-
-The result at the moment is a not bootable ISO. 
-During `sudo eggs produce` I'm getting this error:
-```
-eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo live:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
-eggs >>> error on command: chroot /home/eggs/.mnt/filesystem.squashfs echo root:evolution | chroot /home/eggs/.mnt/filesystem.squashfs chpasswd, code: 127
-```
-
-We get a `filesystem.squasfs` of 1.3 G and an ISO file 1.5 G.
-
-The ISO is not bootable, must to check why, and there is to check dependencies too.
-
-I have an annoying problem with `spice-vdagent`, work just the first time I install it, later not. 
-
-Of course, before to produce a real ISO we must prepare an `initramfs` capable to load `filesystem.squashfs` and chroot on it.
-
-# Actual state 
-
-After the experience with AlpineLinux, I realized that I must to work on the main branch and check Debian, Arch and Alpine not became broken.
-
-I was able to create a `filesystem.squashfs` that should work and an ISO file booting on BIOS systems. We are about at the same point of Alpine, so we need again:
-- create an `initramfs` file, to loads and mount as new_root `/live/filesystem.squashfs`;
-- fix boot on UEFI for live image, fix something in BIOS too.
-
-# Fedora peoples, someone can help? 
-This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
