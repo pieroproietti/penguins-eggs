@@ -116,10 +116,12 @@ sudo dnf install \
     lsb-release \
     lvm2 \
     dracut \
+    dracut-live \
     nodejs \
     overlayfs-tools \
     parted \
     pnpm \
+    rpcbind \
     rsync \
     syslinux \
     squashfs-tools \
