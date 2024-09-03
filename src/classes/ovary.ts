@@ -897,14 +897,10 @@ export default class Ovary {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
     // dracut
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const pathConf = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    const pathConf = path.resolve(__dirname, `../../dracut/live.conf`)
     const initrdImg = `initramfs-${kernelVersion}`
-    console.log(`dracut --confdir ${pathConf} \
-      ${this.settings.iso_work}live/${initrdImg}`)
-
-    await exec(`dracut --confdir ${pathConf} \
-      ${this.settings.iso_work}live/${initrdImg}`, 
-      Utils.setEcho(true))
+    console.log(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
+    await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
 
   /**
