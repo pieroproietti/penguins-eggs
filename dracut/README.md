@@ -8,24 +8,24 @@ dnf install \
 	dracut-live
 ```
 
-Packages prerequisites
+Packages prerequisites:
 ```
  dnf install \
-		biosdevname \
-		cifs-utils \
-		dmraid \
-		iproute
-		iscsi-initiator-utils \
-		lvm2 \
-		mdadm \
-		nbd \
-		net-tools \
-		nfs-utils \
-		nvme-cli \
-		rng-tools \
-		rpcbind \
-		wicked \
-        device-mapper \
+	biosdevname \
+	cifs-utils \
+	device-mapper \
+	dmraid \
+	iproute \
+	iscsi-initiator-utils \
+	lvm2 \
+	mdadm \
+	nbd \
+	net-tools \
+	nfs-utils \
+	nvme-cli \
+	rng-tools \
+	rpcbind \
+	wicked
 ```
 
 Prerequisites we don't have:
