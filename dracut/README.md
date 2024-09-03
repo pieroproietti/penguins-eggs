@@ -62,13 +62,7 @@ boot flags (root device, network configuration information, etc.)
 cryptsetup-luks ma non esiste in fedora
 
 # Altri comandi che potrebbero servire
-
-* connmanctl
-* connmand
-* connmand-wait-online
-* dmraid
-* rngd
-* wicked
+Install them...
 
 ```
 sudo dnf install \
@@ -80,4 +74,18 @@ sudo dnf install \
 	wicked \
 ```
 
-connman
+We lacks again:
+
+* connmanctl
+* connmand
+* connmand-wait-online
+
+
+```
+sudo dracut -v --conf /usr/lib/penguins-eggs/dracut/live.conf /home/eggs/.mnt/iso/live/initramfs-6.10.6-200.fc40.x86
+dracut: Executing: /usr/bin/dracut -v --conf /usr/lib/penguins-eggs/dracut/live.conf /home/eggs/.mnt/iso/live/initramfs-6.10.6-200.fc40.x86
+dracut: dracut module 'connman' will not be installed, because command 'connmand' could not be found!
+dracut: dracut module 'connman' will not be installed, because command 'connmanctl' could not be found!
+dracut: dracut module 'connman' will not be installed, because command 'connmand-wait-online' could not be found!
+dracut: dracut module 'dmsquash-live' cannot be found or installed.
+```
