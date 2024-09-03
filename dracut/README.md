@@ -42,7 +42,8 @@ We just need hostonly=no and add modules dmsquash-live and pollcdrom.
 ```
 # live.conf dracut
 hostonly="no"
-add_dracutmodules+=" dmsquash-live pollcdrom "
+add_dracutmodules+=" dmsquash-live "
+add_dracutmodules+=" pollcdrom "
 ```
 
 testing:

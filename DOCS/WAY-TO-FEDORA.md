@@ -154,7 +154,7 @@ Remains to be solved:
 * creation of initrd through dracut which is the main problem;
 * chpasswd does not work when creating users in ovary;
 * configuration of calamares for Fedora.
-* creation of penguins-eggs installation package.
+* penguins-eggs rpm installation package [Nodejs packaging](https://docs.fedoraproject.org/en-US/packaging-guidelines/Node.js/).
 
 We are very near the success!
 
