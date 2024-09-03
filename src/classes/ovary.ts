@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora') {
       deluser = 'userdel'
     }
 
