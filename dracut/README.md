@@ -3,14 +3,14 @@
 ## Install
 
 ```
-dnf install \
-	dracut 	
+sudo dnf -y install \
+	dracut \
 	dracut-live
 ```
 
 Packages prerequisites:
 ```
- dnf install \
+sudo dnf -y install \
 	biosdevname \
 	cifs-utils \
 	device-mapper \
@@ -26,6 +26,7 @@ Packages prerequisites:
 	rng-tools \
 	rpcbind \
 	wicked
+
 ```
 
 Prerequisites we don't have:
@@ -34,8 +35,6 @@ Prerequisites we don't have:
 * connmand
 * connmand-wait-online
 * cryptsetup-luks
-
-
 
 # live.conf
 We just need hostonly=no and add modules dmsquash-live and pollcdrom.

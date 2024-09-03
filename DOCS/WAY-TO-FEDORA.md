@@ -10,14 +10,15 @@ We can create user `artisan` and choose a password and press "Done" to finish.
 
 At this point the button "Begin installation" bottom right is enabled, press it to confirm.
 
-The installation will start.
+The installation will start, is not exactly short. At the end will be enabled a buttom on bottom right to reboot.
 
 > [!NOTE]
 > This is tested just on BIOS, under a VM on Proxmox VE.
 
-## reboot and enable uinput
+## Enable uinput
+We can immidiatly connect via ssh with the user we created.
 
-To use spice-vdagent we need to enable `uinput`:
+To use `spice-vdagent` we need to enable `uinput`:
 
 ```
 echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
@@ -73,7 +74,7 @@ exit
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` on `/`, then copy `/etc/skel` on the home of current user.
 
 ```
-git clone https://github.com/pieroproietti/penguins-eggs
+git clone https://github.com/pieroproietti/penguins-wardrobe
 sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
 cp /etc/skel/.* "${HOME}/." -R
@@ -105,7 +106,7 @@ sudo dnf -y install code
 This are that we need, almost complete... 
 
 ```
-sudo dnf install \
+sudo dnf -y install \
     cryptsetup \
     curl \
     dosfstools \
