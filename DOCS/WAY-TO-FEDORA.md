@@ -2,11 +2,15 @@
 
 We start from the `Fedora-Everything-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora choosing minumun installation, set root password and user. 
 
-On the installion select "minimun installation", button to confirm are alternately up left or down right. 
+On `Software selection` select "minimun installation" and confirm with button "Done" up on right.
 
-Select the disk, I used a 32G disk, choose the third option manually: create a bios  boot partition (just 1M), then an ext4 partition. 
+Then on `Installation destination` select the disk. I used a 32G disk, choose the third option advanced custom, then press "Done". On the GUI disk partition, create a minimal partition - just 1M - type `bootBIOS`, then add the remain space to a / partition format ext4.  Press "Done" again and accept changes.
 
-We can create user `artisan` and choose a password.
+We can create user `artisan` and choose a password and press "Done" to finish.
+
+At this point the button "Begin installation" bottom right is enabled, press it to confirm.
+
+The installation will start.
 
 > [!NOTE]
 > This is tested just on BIOS, under a VM on Proxmox VE.
