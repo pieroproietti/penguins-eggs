@@ -27,6 +27,19 @@ Installation is graphical and don't need to describe.
 ## reboot
 The best is, after reboot, to connect via ssh to can copy and past the command. Then:
 
+To use spice-vdagent we need to enable uinput:
+
+```
+echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
+```
+
+Then, when it exists:
+```
+sudo chmod 666 /dev/uinput
+```
+
+We can start
+
 ```
 dnf install \
     lightdm-gtk-greeter \
@@ -42,6 +55,8 @@ systemctl enable lightdm
 systemctl enable spice-vdagentd
 
 ```
+
+
 
 ## others
 ```
