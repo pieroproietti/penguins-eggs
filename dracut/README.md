@@ -69,3 +69,15 @@ cryptsetup-luks ma non esiste in fedora
 * dmraid
 * rngd
 * wicked
+
+```
+sudo dnf install \
+	biosdevname \
+	cifs-utils \
+	dmraid \
+	nvme-cli \
+	rng-tools \
+	wicked \
+```
+
+connman
