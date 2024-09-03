@@ -148,5 +148,15 @@ We want to work with all the conveniences of eggs installed, especially completi
 
 ```
 
+# What we lacks
+
+Remains to be solved:
+* creation of initrd through dracut which is the main problem;
+* chpasswd does not work when creating users in ovary;
+* configuration of calamares for Fedora.
+* creation of penguins-eggs installation package.
+
+We are very near the success!
+
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
