@@ -48,5 +48,5 @@ add_dracutmodules+=" dmsquash-live pollcdrom "
 
 testing:
 ```
-sudo dracut --conf /usr/lib/penguins-eggs/dracut/live.conf /home/eggs/.mnt/iso/live/initramfs-6.10.6-200.fc40.x86_64
+sudo dracut --verbose --conf /usr/lib/penguins-eggs/dracut/live.conf /home/eggs/.mnt/iso/live/initramfs-6.10.6-200.fc40.x86_64
 ```
