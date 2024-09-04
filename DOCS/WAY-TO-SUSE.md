@@ -42,6 +42,22 @@ zypper install \
     xrandr 
 
 ```
+## spice-vdagent
+
+We need to enable uinput:
+
+```
+echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
+
+```
+
+then
+
+```
+sudo zypper install spice-vdagent
+
+```
+
 
 ### nodejs, npm e pnpm
 ```
