@@ -320,54 +320,8 @@ This is my end for now... but in same way can be an usefull starting point to so
 > [!NOTE]
 > Penguins eggs already support: arch, debian, devuan, manjaro, ubuntu and there are [WAy-TO-FEDORA](./WAY-TO-FEDORA.md) and [WAY-TO-SUSE](./WAY-TO-SUSE.md) you can follow and improve.
 
-
 # Video
 * [Install and building ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
-
-# Calamares GUI installer
-
-Eggs will istall, or remove, this packages:
-
-```
-apk add calamares \
-    calamares-doc \
-    calamares-extensions \
-    calamares-lang \
-    calamares-mod-bootloader \
-    calamares-mod-displaymanager \
-    calamares-mod-finished \
-    calamares-mod-fsresizer \
-    calamares-mod-fstab \
-    calamares-mod-grubcfg \
-    calamares-mod-hostinfo \
-    calamares-mod-hwclock \
-    calamares-mod-interactiveterminal \
-    calamares-mod-keyboard \
-    calamares-mod-keyboardq \
-    calamares-mod-locale \
-    calamares-mod-localeq \
-    calamares-mod-luksbootkeyfile \
-    calamares-mod-luksopenswaphookcfg \
-    calamares-mod-machineid \
-    calamares-mod-mkinitfs \
-    calamares-mod-mount \
-    calamares-mod-networkcfg \
-    calamares-mod-packages \
-    calamares-mod-partition \
-    calamares-mod-plasmalnf \
-    calamares-mod-plymouthcfg \
-    calamares-mod-removeuser \
-    calamares-mod-services-openrc \
-    calamares-mod-shellprocess \
-    calamares-mod-summary \
-    calamares-mod-umount \
-    calamares-mod-unpackfs \
-    calamares-mod-users \
-    calamares-mod-webview \
-    calamares-mod-welcome \
-    calamares-mod-welcomeq
-
-```
 
