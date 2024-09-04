@@ -97,7 +97,7 @@ echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com
 ```
 Then: 
 ```
-sudo dnf check-update
+sudo dnf -y check-update
 sudo dnf -y install code
 
 ```
@@ -127,6 +127,23 @@ sudo dnf -y install \
     squashfs-tools \
     sshfs \
     xorriso
+
+sudo dnf -y install \
+	biosdevname \
+	cifs-utils \
+	device-mapper \
+	dmraid \
+	iproute \
+	iscsi-initiator-utils \
+	lvm2 \
+	mdadm \
+	nbd \
+	net-tools \
+	nfs-utils \
+	nvme-cli \
+	rng-tools \
+	rpcbind \
+	wicked
 
 ```
 
