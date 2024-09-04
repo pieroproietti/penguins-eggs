@@ -177,6 +177,9 @@ I tryed on fedora40, fedora39 now I will try on [fedora38](https://archives.fedo
 
 We are very near the success!
 
+# Fedora peoples, someone can help? 
+This is my end for now... and same way can be an usefull starting point to someone more expert than me on Fedora, please help.
+
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
