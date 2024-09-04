@@ -97,3 +97,5 @@ $SUDO chmod +x /tmp/shutdown
 $SUDO mv /tmp/shutdown /usr/sbin
 fi
 
+sudo eggs config -n
+
