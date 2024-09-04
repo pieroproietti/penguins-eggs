@@ -173,7 +173,10 @@ Remains to be solved:
 * configuration of calamares for Fedora.
 * penguins-eggs rpm installation package [Nodejs packaging](https://docs.fedoraproject.org/en-US/packaging-guidelines/Node.js/).
 
+I tryed on fedora40, fedora39 now I will try on [fedora38](https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/36/Everything/x86_64/iso/) here must to work becouse module mdsquash-live;automoutnt, was develoeper here.
+
 We are very near the success!
+
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
