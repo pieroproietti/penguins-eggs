@@ -54,17 +54,10 @@ zypper install nodejs pnpm
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
 ```
-git  clone https://github.com/pieroproietti/penguins-wardrobe
-
-doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
-
-```
-
-Then copy `/etc/skel/` in ${HOME}:
-```
+git clone https://github.com/pieroproietti/penguins-wardrobe
+sudo rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
 rm -rf ${HOME}/.[^.]* ${HOME}/.??*
-rm -r ${HOME}/.[^.]* ${HOME}/.??*
-rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
+cp /etc/skel/.* "${HOME}/." -R
 
 ```
 
@@ -72,8 +65,8 @@ rsync -avx /etc/skel/ "${HOME}/" --include=".*" --exclude="*"
 
 ### Visual studio code
 ```
-zypper ar obs://devel:tools:ide:vscode devel_tools_ide_vscode
-zypper in code
+sudo zypper ar obs://devel:tools:ide:vscode devel_tools_ide_vscode
+sudo zypper install code
 
 ```
 
@@ -118,23 +111,6 @@ We want to work with all the conveniences of eggs installed, especially completi
 ```
 ./install-eggs-dev
 ```
-
-## Create a link to ${HOME}/penguins-eggs/eggs
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle:
-```
-sudo ln -s ${HOME}/penguins-eggs/eggs /usr/bin/eggs`
-```
-
-## Configuration eggs
-
-```
-sudo ./eggs dad -d
-./eggs status
-sudo ./eggs produce --pendrive
-
-```
-
-The result at the moment is a **NOT bootable ISO**.
 
 # openSUSE peoples, someone can help? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
