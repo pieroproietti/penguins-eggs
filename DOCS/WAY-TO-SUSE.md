@@ -59,13 +59,6 @@ sudo zypper install spice-vdagent
 ```
 
 
-### nodejs, npm e pnpm
-```
-zypper install nodejs pnpm
-
-```
-
-
 ## customize colibri from wardrobe
 We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `/home/artisan` my user.
 
@@ -78,6 +71,12 @@ cp /etc/skel/.* "${HOME}/." -R
 ```
 
 ## eggs development tools
+
+### nodejs, npm e pnpm
+```
+zypper install nodejs pnpm
+
+```
 
 ### Visual studio code
 ```
@@ -105,7 +104,7 @@ sudo zypper install \
     parted \
     rsync \
     syslinux \
-    squashfs-tools \
+    squashfs \
     sshfs \
     xorriso
 
@@ -129,7 +128,7 @@ We want to work with all the conveniences of eggs installed, especially completi
 ```
 
 # openSUSE peoples, someone can help? 
-This is my end for now... but in same way can be an usefull starting point to someone more expert than me on Fedora, please help.
+This is my end for now... and same way can be an usefull starting point to someone more expert than me on OpenSuSE, please help.
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)

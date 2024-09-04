@@ -909,8 +909,15 @@ export default class Ovary {
    * initrdSuse()
    */
   async initrdSuse() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
-    await exec(`cp /boot/initrd-* ${this.settings.iso_work}/live/`, this.echo)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} OpenSuSE on ISO/live`)
+    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
+    const pathConf = path.resolve(__dirname, `../../dracut/live.conf`)
+    const initrdImg = `initramfs-${kernelVersion}`
+    console.log("========================================================")
+    console.log(`dracut --verbose --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
+    console.log("========================================================")
+    await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    process.exit(0)
   }
 
   /**
@@ -1798,8 +1805,6 @@ export default class Ovary {
           } else {
             this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
           }
-          // Here we are forcing alwats cliAutologin
-          // this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
         }
 
         await this.editLiveFs(clone, cryptedclone)
