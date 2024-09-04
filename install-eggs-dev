@@ -35,8 +35,12 @@ $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop "${DESKTOP_DIR}"
 cp assets/penguins-eggs.desktop "${DESKTOP_DIR}"
+
+# remove 
 $SUDO rm -rf /usr/lib/penguins-eggs/
 $SUDO mkdir -p /usr/lib/penguins-eggs/ 
+
+# install
 $SUDO cp -rf addons /usr/lib/penguins-eggs/
 $SUDO cp -rf assets /usr/lib/penguins-eggs/
 $SUDO cp -rf bin /usr/lib/penguins-eggs/ 
