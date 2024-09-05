@@ -79,59 +79,60 @@ export default class Calamares extends Command {
 
     console.log(`theme: ${theme}`)
 
+    let installer = 'krill'
+    if (Pacman.calamaresExists()) {
+      installer = 'calamares'
+    }
+
     if (Utils.isRoot(this.id)) {
-      let installer = 'krill'
-      if (Pacman.isInstalledGui()) {
-        installer = 'calamares'
-      }
 
-      if (installer === 'calamares') {
-        if (!nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
-          if (remove) {
-            if (Pacman.calamaresExists()) {
-              await Pacman.calamaresRemove()
-              if (await this.settings.load()) {
-                this.settings.config.force_installer = false
-                this.settings.save(this.settings.config)
-              }
-            }
-
-            process.exit()
-          }
-
-          /**
-           * Install
-           */
-          if (install) {
-            Utils.warning('calamares: install package')
-            await Pacman.calamaresInstall()
+      if (!nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
+        if (remove) {
+          if (Pacman.calamaresExists()) {
+            await Pacman.calamaresRemove()
             if (await this.settings.load()) {
-              this.settings.config.force_installer = true
+              this.settings.config.force_installer = false
               this.settings.save(this.settings.config)
-              policies = true
+              installer="krill"
             }
           }
+
+          process.exit()
         }
 
         /**
-         * policies
+         * Install
          */
-        if (policies) {
-          Utils.warning('calamares: configuring policies')
-          await Pacman.calamaresPolicies()
+        if (install) {
+          Utils.warning('calamares: install package')
+          await Pacman.calamaresInstall()
+          if (await this.settings.load()) {
+            this.settings.config.force_installer = true
+            this.settings.save(this.settings.config)
+            policies = true
+            installer="calamares"
+          }
         }
       }
 
       /**
-      * configure
-      */
-      if (await this.settings.load()) {
-        Utils.warning(`${installer}: create configuration files`)
-        await this.settings.loadRemix(theme)
-        const isClone = false
-        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
-        await this.incubator.config(release)
+       * policies
+       */
+      if (policies) {
+        Utils.warning('calamares: configuring policies')
+        await Pacman.calamaresPolicies()
       }
+    }
+
+    /**
+    * configure
+    */
+    if (await this.settings.load()) {
+      Utils.warning(`${installer}: creating configuration files`)
+      await this.settings.loadRemix(theme)
+      const isClone = false
+      this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
+      await this.incubator.config(release)
     }
   }
 }
