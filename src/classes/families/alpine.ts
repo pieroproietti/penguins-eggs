@@ -81,14 +81,6 @@ export default class Alpine {
     }
   }
 
-  /**
-   * Alpine: calamaresPolicies
-   */
-  static async calamaresPolicies(verbose = true) {
-    const echo = Utils.setEcho(verbose)
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
-  }
 
   /**
    * Alpine: calamaresRemove
