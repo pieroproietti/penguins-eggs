@@ -32,16 +32,6 @@ export default class Opensuse {
   }
 
   /**
-   * calamaresPolicies
-   */
-  static async calamaresPolicies() {
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    /**
-     * Su openSuse occorre vedere come fare!
-     */
-  }
-
-  /**
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {

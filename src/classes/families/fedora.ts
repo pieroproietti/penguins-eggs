@@ -32,13 +32,6 @@ export default class Fedora {
   }
 
   /**
-   * calamaresPolicies
-   */
-  static async calamaresPolicies() {
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-  }
-
-  /**
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
