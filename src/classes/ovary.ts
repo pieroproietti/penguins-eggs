@@ -917,7 +917,6 @@ export default class Ovary {
     console.log(`dracut --verbose --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
     console.log("========================================================")
     await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-    process.exit(0)
   }
 
   /**
