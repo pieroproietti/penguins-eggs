@@ -47,14 +47,6 @@ export default class Archlinux {
   }
 
   /**
-   * Archlinux: calamaresPolicies
-   */
-  static async calamaresPolicies() {
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`)
-  }
-
-  /**
    * Archlinux: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
