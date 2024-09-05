@@ -153,9 +153,10 @@ export default class Utils {
          }
       })
 
-      // btrfs
-      if (vmlinuz.indexOf('@') > 0) {
-         vmlinuz = vmlinuz.substring(vmlinuz.indexOf('@') + 1)
+      // btrfs: eg: /@root/boot/vmlinuz
+      if (vmlinuz.indexOf('@')) {
+         let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
+         vmlinuz = vmlinuz.substring(subvolumeEnd)
       }
 
       /**

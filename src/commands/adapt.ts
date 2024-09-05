@@ -23,7 +23,7 @@ export default class Adapt extends Command {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Adapt)
-
+    
     let verbose = false
     if (flags.verbose) {
       verbose = true
