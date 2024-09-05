@@ -41,6 +41,9 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.36
+* calamares: revisited command
+
 ## penguins-eggs-10.0.35
 * fedora/suse: all seem solved, except creation of initramfs with dracut. I renew [WAY-OF-FEDORE]() and [WAY-TO-SUSE]() and hope someone jump on to finish this hard work. The choice to build an almost universal remastering tool was a great challenge, if not to win it I hope at least to tie it.
 
