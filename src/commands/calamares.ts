@@ -44,6 +44,7 @@ export default class Calamares extends Command {
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
+
     const { verbose } = flags
 
     const { remove } = flags
@@ -52,7 +53,12 @@ export default class Calamares extends Command {
 
     const { release } = flags
 
+    const { nointeractive } = flags
+
+    let { policies } = flags
+
     let theme = 'eggs'
+
     if (flags.theme !== undefined) {
       theme = flags.theme
       if (theme.includes('/')) {
@@ -72,8 +78,6 @@ export default class Calamares extends Command {
     }
 
     console.log(`theme: ${theme}`)
-    let { policies } = flags
-    const { nointeractive } = flags
 
     if (Utils.isRoot(this.id)) {
       let installer = 'krill'
@@ -99,7 +103,7 @@ export default class Calamares extends Command {
            * Install
            */
           if (install) {
-            Utils.warning('Installing calamares')
+            Utils.warning('calamares: install package')
             await Pacman.calamaresInstall()
             if (await this.settings.load()) {
               this.settings.config.force_installer = true
@@ -110,23 +114,23 @@ export default class Calamares extends Command {
         }
 
         /**
-         * Configure
+         * policies
          */
-        if (await this.settings.load()) {
-          Utils.warning(`Configuring ${installer}`)
-          await this.settings.loadRemix(theme)
-          const isClone = false
-          this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
-          await this.incubator.config(release)
-
-          /**
-           * policies
-           */
-          if (policies) {
-            Utils.warning('Configuring policies')
-            await Pacman.calamaresPolicies()
-          }
+        if (policies) {
+          Utils.warning('calamares: configuring policies')
+          await Pacman.calamaresPolicies()
         }
+      }
+
+      /**
+      * configure
+      */
+      if (await this.settings.load()) {
+        Utils.warning(`${installer}: create configuration files`)
+        await this.settings.loadRemix(theme)
+        const isClone = false
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
+        await this.incubator.config(release)
       }
     }
   }
