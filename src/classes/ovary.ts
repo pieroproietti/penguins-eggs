@@ -836,6 +836,17 @@ export default class Ovary {
    * initrdAlpine()
    */
   async initrdAlpine() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+    // dracut
+    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
+    const pathConf = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    const initrdImg = `initramfs-${kernelVersion}`
+    console.log("========================================================")
+    console.log(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
+    console.log("========================================================")
+    await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+
+    /*
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     const sidecar = path.resolve(__dirname, `../../mkinitfs/initramfs-init.in`)
     Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
@@ -844,6 +855,7 @@ export default class Ovary {
     const initrdImg = 'initramfs-lts'
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    */
   }
 
 
