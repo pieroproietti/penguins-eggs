@@ -325,3 +325,5 @@ This is my end for now... but in same way can be an usefull starting point to so
 * [Testing ISO](https://www.youtube.com/watch?v=3MxdBI5fWm8)
 * [remaster and install](https://www.youtube.com/watch?v=zjev4Zg9sHM)
 
+# dracut
+* https://fedoraproject.org/wiki/LiveOS_image
