@@ -837,14 +837,10 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    // dracut
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const pathConf = path.resolve(__dirname, `../../dracut/live.conf.d`)
-    const initrdImg = `initramfs-${kernelVersion}`
-    console.log("========================================================")
-    console.log(`dracut --confdir ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
-    console.log("========================================================")
-    await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    const conf = path.resolve(__dirname, `../../dracut/live.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    await exec(`dracut --verbose --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
 
     /*
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
@@ -919,11 +915,9 @@ export default class Ovary {
   async initrdSuse() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} OpenSuSE on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const pathConf = path.resolve(__dirname, `../../dracut/live.conf`)
-    const initrdImg = `initramfs-${kernelVersion}`
-    console.log("========================================================")
-    console.log(`dracut --verbose --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`)
-    console.log("========================================================")
+    const conf = path.resolve(__dirname, `../../dracut/live.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    await exec(`dracut --verbose --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
     await exec(`dracut --conf ${pathConf} ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
   }
 
