@@ -223,6 +223,11 @@ export default class Utils {
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
          suffix = '.img'
+      } else if (distro.familyId === 'fedora') {
+         initrd = 'initramfs'
+         separator = '-'
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+         suffix = '.img'
       } else if (distro.familyId === 'alpine') {
          initrd = 'initramfs'
          separator = '-'
