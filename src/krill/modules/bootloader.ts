@@ -27,11 +27,11 @@ export default async function bootloader(this: Sequence) {
     await Utils.pressKeyToExit(cmd)
   }
 
-  let grubMkconfig=`grub-mkconfig`
+  cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
   if (this.distro.familyId==='fedora') {
-    grubMkconfig=`grub2-mkconfig`
+    cmd = `chroot ${this.installTarget} grub2-mkconfig -o /boot/grub2/grub.cfg ${this.toNull}`
   }
-  cmd = `chroot ${this.installTarget} ${grubMkconfig} -o /boot/grub/grub.cfg ${this.toNull}`
+  
   try {
     await exec(cmd, this.echo)
   } catch {
