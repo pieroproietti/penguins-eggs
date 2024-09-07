@@ -838,8 +838,8 @@ export default class Ovary {
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/live.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --verbose --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
 
     /*
@@ -904,8 +904,8 @@ export default class Ovary {
   async initrdFedora() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/live.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --verbose --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
   }
 
@@ -915,8 +915,8 @@ export default class Ovary {
   async initrdSuse() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} OpenSuSE on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/live.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/live.conf.d`)
+    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --verbose --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
   }
 
@@ -1033,9 +1033,8 @@ export default class Ovary {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
     } else if (this.familyId === 'fedora') {
-      // inst.stage2=hd:LABEL=${this.volid} sta su fedora
-
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.squashimg=/live/filesystem.squashfs rd.shell rd.debug log_buf_len=1M`
+      kp +=`inst.stage2=hd:LABEL=${this.volid} rd.live.check`
+      // kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.squashimg=/live/filesystem.squashfs rd.shell rd.debug log_buf_len=1M`
     } else if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
