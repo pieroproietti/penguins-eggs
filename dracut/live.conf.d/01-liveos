@@ -1,4 +1,0 @@
-#add_dracutmodules+=" livenet dmsquash-live convertfs pollcdrom qemu qemu-net iso-scan iso9660 "
-add_dracutmodules+=" dmsquash-live convertfs pollcdrom iso-scan iso9660 "
-
-
