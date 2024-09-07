@@ -16,14 +16,22 @@ import Sequence from '../sequence.js'
  * @param this
  */
 export default async function bootloader(this: Sequence) {
-  let cmd = `chroot ${this.installTarget} grub-install ${this.partitions.installationDevice} ${this.toNull}`
+  let grubInstall='grub-install'
+  if (this.distro.familyId==='fedora') {
+    grubInstall='grub2-install'
+  }
+  let cmd = `chroot ${this.installTarget} ${grubInstall} ${this.partitions.installationDevice} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
   } catch {
     await Utils.pressKeyToExit(cmd)
   }
 
-  cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
+  let grubMkconfig=`grub-mkconfig`
+  if (this.distro.familyId==='fedora') {
+    grubMkconfig=`grub2-mkconfig`
+  }
+  cmd = `chroot ${this.installTarget} ${grubMkconfig} -o /boot/grub/grub.cfg ${this.toNull}`
   try {
     await exec(cmd, this.echo)
   } catch {

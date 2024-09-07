@@ -274,7 +274,6 @@ export default class Sequence {
          }
       }
 
-
       this.unattended = unattended
       this.nointeractive = nointeractive
       this.chroot = chroot

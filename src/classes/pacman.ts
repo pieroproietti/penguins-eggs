@@ -477,14 +477,10 @@ export default class Pacman {
       /***********************************************************************************
        * Fedora
        **********************************************************************************/
-
-      /**
-       * Fedora 35 ThirtyFive: eredita da ThirtyFive
-       */
-    } else if (this.distro().codenameLikeId === 'thirtyfive') {
-      const dest = '/etc/penguins-eggs.d/distros/thirtyfive/'
-      const thirtytive = `${rootPen}/conf/distros/thirtyfive/*`
-      await exec(`cp -r ${thirtytive} ${dest}`, echo)
+    } else if (this.distro().codenameLikeId === 'fedora') {
+      const dest = '/etc/penguins-eggs.d/distros/fedora/'
+      const fedora = `${rootPen}/conf/distros/fedora/*`
+      await exec(`cp -r ${fedora} ${dest}`, echo)
 
       /***********************************************************************************
        * Arch Linux

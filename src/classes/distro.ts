@@ -120,7 +120,6 @@ class Distro implements IDistro {
         this.codenameId = 'rolling' // questo viene rimosso dal nome
         this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
         this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-        this.squashfs = `live/filesystem.squashfs`
 
         this.syslinuxPath = '/usr/share/syslinux/' // correct
         this.pxelinuxPath = this.syslinuxPath
@@ -136,10 +135,9 @@ class Distro implements IDistro {
       case 'Fedora': {
         this.familyId = 'fedora'
         this.distroLike = 'Fedora'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = '40'
-        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
-        this.squashfs = `live/filesystem.squashfs`
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'fedora'
+        this.liveMediumPath = '/run/initramfs/live/'
 
         this.syslinuxPath = '/usr/share/syslinux/'
         this.pxelinuxPath = this.syslinuxPath
@@ -147,7 +145,7 @@ class Distro implements IDistro {
         this.memdiskPath = this.syslinuxPath
         this.isolinuxPath = this.syslinuxPath
         // At the moment
-        this.isCalamaresAvailable = false
+        this.isCalamaresAvailable = true
 
         break
       }
@@ -158,7 +156,6 @@ class Distro implements IDistro {
         this.codenameId = 'rolling'
         this.codenameLikeId = 'Tumbleweed'
         this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
-        this.squashfs = `live/filesystem.squashfs`
 
         this.syslinuxPath = '/usr/share/syslinux/'
         this.pxelinuxPath = this.syslinuxPath

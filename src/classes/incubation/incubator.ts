@@ -205,6 +205,17 @@ export default class Incubator {
 
         break
       }
+
+      /**
+       * Fedora
+       */
+      case 'fedora': {
+        const fedora = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await fedora.create()
+
+        break
+      }
+
     }
 
     if (Pacman.calamaresExists()) {
