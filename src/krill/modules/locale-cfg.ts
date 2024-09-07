@@ -8,6 +8,7 @@
  */
 
 import fs from 'node:fs'
+import shx from 'shelljs'
 
 import Sequence from '../sequence.js'
 
@@ -25,19 +26,18 @@ export default async function localeCfg(this: Sequence) {
     // Format: en_US.UTF-8 UTF-8
     supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
   } else if (this.distro.familyId === 'archlinux') {
-    // shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work!
     const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf8').split('\n')
-
-    // Original Format: #en_US.UTF-8 UTF-8
     for (let line of supportedsSource) {
       if (line.slice(0, 2) !== '# ') {
         // se non è un commento
         line = line.slice(1) // Rimuove #
       }
-
       supporteds.push(line)
     }
-    // Format: en_US.UTF-8 UTF-8
+  } else if (this.distro.familyId === 'fedora') {
+    // shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work!
+    shx.exec(`locale -a > /tmp/SUPPORTED`)
+    const supportedsSource = fs.readFileSync('/tmp/SUPPORTED', 'utf8').split('\n')
   }
 
   const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf8').split('\n')

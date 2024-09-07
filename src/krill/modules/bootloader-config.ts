@@ -20,6 +20,30 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
 
   switch (this.distro.familyId) {
     /**
+     * fedora
+     */
+    case 'fedora': {
+      if (this.efi) {
+        try {
+          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-efi-x64 efibootmgr} ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          console.log(error)
+          await Utils.pressKeyToExit(cmd, true)
+        }
+      } else {
+        try {
+          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-pc ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          console.log(error)
+          await Utils.pressKeyToExit(cmd, true)
+        }
+      }
+      break
+    }
+
+    /**
      * alpine
      */
     case 'alpine': {
