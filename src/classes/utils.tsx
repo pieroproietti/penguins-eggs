@@ -668,9 +668,10 @@ export default class Utils {
          '/lib/live/mount', // debian-live
          '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
          '/live/aufs',  // mx-linux
-         '/run/miso/sfs/livefs', // ManjaroLinux
+         '/media/root-rw', // AlpineLinux
          '/run/archiso/airootfs', // Arch
-         '/media/root-rw' // AlpineLinux
+         '/run/miso/sfs/livefs', // ManjaroLinux
+         '/run/rootfsbase' // Fedora
       ]
 
       for (let i = 0; i < paths.length; i++) {

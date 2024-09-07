@@ -1033,12 +1033,11 @@ export default class Ovary {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
     } else if (this.familyId === 'fedora') {
-      // kp +=`inst.stage2=hd:LABEL=${this.volid} rd.live.check  log_buf_len=1M`
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.shell rd.debug  log_buf_len=1M`
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
     } else if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
-    // kp += ` cow_spacesize=2G`
+    kp += ` cow_spacesize=2G`
     return kp
   }
 
