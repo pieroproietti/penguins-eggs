@@ -23,7 +23,12 @@ I always liked it, sometimes hated it because of the need for a license amd rpm,
 
 I am trying to port penguins-eggs to Fedora, that is the state of the art. 
 
-Right now the ISO won't boot, and I can't figure out why.
+From today 7 september 2024 we are able to boot, it was a long histor... Now we need to adapt kril and calamares to install it.
 
 The configurations for dracut are in the [dracut](https://github.com/pieroproietti/penguins-eggs/tree/master/dracut) folder.
+
+Boot params for our ISO are created on ovary.ts, this is a sample:
+```
+initrd=/live/initramfs-6.10.7-200.fc40.x86_64.img root=live:CDLABEL=colibri rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 
+```
 
