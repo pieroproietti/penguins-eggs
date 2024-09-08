@@ -473,16 +473,15 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
 
-            // localeCfg
-            if (this.distro.familyId !== 'alpine') {
+            // localeCfg: no alpine, no fedora
+            if (this.distro.familyId === 'debian' || this.distro.familyId === 'archlinux') {
                message = "Locale Configuration"
                percent = 0.72
                try {
-                  if (this.distro.familyId !== 'fedora') {
-                     await this.localeCfg()
-                     await exec("chroot " + this.installTarget + " locale-gen")
-                  }
-               } catch (error) {
+                  await this.localeCfg()
+                  await exec("chroot " + this.installTarget + " locale-gen")
+               }
+               catch (error) {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
             }
