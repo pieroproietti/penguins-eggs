@@ -23,9 +23,8 @@ export default async function bootloader(this: Sequence) {
   let cmd = `chroot ${this.installTarget} ${grubInstall} ${this.partitions.installationDevice} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
-    if (this.verbose) {
-      await Utils.pressKeyToExit(cmd)
-    }
+    if (this.verbose)
+      await Utils.pressKeyToExit()
   } catch {
     await Utils.pressKeyToExit(cmd)
   }
@@ -37,9 +36,8 @@ export default async function bootloader(this: Sequence) {
   
   try {
     await exec(cmd, this.echo)
-    if (this.verbose) {
-      await Utils.pressKeyToExit(cmd)
-    }
+    if (this.verbose)
+      await Utils.pressKeyToExit()
   } catch {
     await Utils.pressKeyToExit(cmd)
   }
