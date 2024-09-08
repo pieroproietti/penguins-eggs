@@ -34,12 +34,8 @@ export default async function localeCfg(this: Sequence) {
       }
       supporteds.push(line)
     }
-  } else if (this.distro.familyId === 'fedora') {
-    // shx.exec('localectl list-locales > /tmp/SUPPORTED') // with await exec don't work!
-    shx.exec(`locale -a > /tmp/SUPPORTED`)
-    const supportedsSource = fs.readFileSync('/tmp/SUPPORTED', 'utf8').split('\n')
   }
-
+  
   const localeGenSource = fs.readFileSync(`${this.installTarget}/etc/locale.gen`, 'utf8').split('\n')
   let localeGenDest = ''
   const krillBookmark = '#   Locales enabled by krill\n'

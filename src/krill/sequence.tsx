@@ -457,7 +457,9 @@ export default class Sequence {
             percent = 0.70
             try {
                redraw(<Install message={message} percent={percent} />)
-               await this.locale()
+               if (this.distro.familyId !== 'fedora') {
+                  await this.locale()
+               }
             } catch (error) {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
@@ -476,8 +478,10 @@ export default class Sequence {
                message = "Locale Configuration"
                percent = 0.72
                try {
-                  await this.localeCfg()
-                  await exec("chroot " + this.installTarget + " locale-gen")
+                  if (this.distro.familyId !== 'fedora') {
+                     await this.localeCfg()
+                     await exec("chroot " + this.installTarget + " locale-gen")
+                  }
                } catch (error) {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
