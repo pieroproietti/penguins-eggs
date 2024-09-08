@@ -28,9 +28,9 @@ export default async function delLiveUser(this: Sequence) {
       console.log(error)
     } finally {
       if (userExists) {
-        // debian family
+        // debian family and alpine
         let cmd = `chroot ${this.installTarget} deluser --remove-home ${user} ${this.toNull}`
-        if (this.distro.familyId === 'archlinux') {
+        if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'fedora') {
           cmd = `chroot ${this.installTarget} sudo userdel -r ${user} ${this.toNull}`
         }
 
