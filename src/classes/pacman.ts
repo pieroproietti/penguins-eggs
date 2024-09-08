@@ -95,7 +95,7 @@ export default class Pacman {
   /**
    * calamaresPolicies
    */
-  static async calamaresPolicies(verbose=false) {
+  static async calamaresPolicies(verbose = false) {
     const echo = Utils.setEcho(verbose)
     const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
@@ -544,8 +544,10 @@ export default class Pacman {
       if (Archlinux.packageIsInstalled('xwayland')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'alpine' && Alpine.packageIsInstalled('xwayland*')) {
-      installed = true
+    } else if (this.distro().familyId === 'alpine') {
+      if (Alpine.packageIsInstalled('xwayland*')) {
+        installed = true
+      }
     }
 
     return installed
@@ -569,10 +571,11 @@ export default class Pacman {
       if (Archlinux.packageIsInstalled('xorg-server-common')) {
         installed = true
       }
-    } else if (this.distro().familyId === 'alpine' && Alpine.packageIsInstalled('xorg-server')) {
-      installed = true
+    } else if (this.distro().familyId === 'alpine') {
+      if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
     }
-
     return installed
   }
 
