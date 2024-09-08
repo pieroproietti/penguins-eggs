@@ -19,8 +19,8 @@ if [ ! -e /usr/bin/node ]; then
 fi
 
 if [ ! -e dist ]; then
-    echo "dist directory not found, please run 'pnpm build' first"
-    exit 1
+    echo "dist directory not found"
+    # exit 1
 fi
 
 rm -rf node-modules pnpm-lock.yaml dist

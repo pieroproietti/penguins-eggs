@@ -611,7 +611,9 @@ export default class Ovary {
      * LMDE4: utilizza UbuntuMono16.pf2
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
      */
-    shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+    if (fs.existsSync(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`)) {
+      shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+    }
 
     /**
      * cleaning /etc/resolv.conf
