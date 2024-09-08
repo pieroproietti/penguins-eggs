@@ -299,8 +299,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={percent} />)
          isPartitioned = await this.partition()
       } catch (error) {
-         await Utils.pressKeyToExit(JSON.stringify(error))
+         console.log(JSON.stringify(error))
       }
+      if (this.verbose) await Utils.pressKeyToExit(message)
 
       if (isPartitioned) {
 
@@ -311,8 +312,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // mountFs
          message = "Mounting target file system "
@@ -321,9 +323,10 @@ export default class Sequence {
             redraw(<Install message={message} percent={percent} />)
             await this.mountFs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
          await sleep(500) // diamo il tempo di montare
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // mountVfs
          message = "Mounting on target VFS "
@@ -332,9 +335,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.mountVfs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // unpackfs
          message = "Unpacking filesystem "
@@ -343,8 +346,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {
@@ -354,9 +358,10 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('dpkg-unsafe-io')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
@@ -366,9 +371,10 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} spinner={true} />)
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // machineid
          message = 'machineid'
@@ -377,8 +383,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.machineId()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // fstab
          message = "Creating fstab "
@@ -387,8 +394,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.fstab(this.partitions.installationDevice)
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          /**
           * CryptedClone exec eggs syncfrom
@@ -403,12 +411,13 @@ export default class Sequence {
                   await exec(cmd, Utils.setEcho(true))
                   this.is_clone = true // Adesso è un clone
                } catch (error) {
-                  await Utils.pressKeyToExit(cmd)
+                  console.log(JSON.stringify(error))
                }
             } else {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
             }
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // networkcfg
          message = "networkcfg"
@@ -416,8 +425,9 @@ export default class Sequence {
          try {
             await this.networkCfg()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // hostname
          message = "Create hostname "
@@ -426,8 +436,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.hostname(this.network.domain)
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
@@ -437,10 +448,10 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
          }
-
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          /**
           * IF NOT CLONE:
@@ -461,8 +472,9 @@ export default class Sequence {
                   await this.locale()
                }
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // keyboard
             message = "settings keyboard"
@@ -470,8 +482,9 @@ export default class Sequence {
             try {
                await this.keyboard()
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // localeCfg: no alpine, no fedora
             if (this.distro.familyId === 'debian' || this.distro.familyId === 'archlinux') {
@@ -482,9 +495,10 @@ export default class Sequence {
                   await exec("chroot " + this.installTarget + " locale-gen")
                }
                catch (error) {
-                  await Utils.pressKeyToExit(JSON.stringify(error))
+                  console.log(JSON.stringify(error))
                }
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // delLiveUser
             message = "Remove user LIVE"
@@ -493,8 +507,9 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.delLiveUser()
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // addUser
             message = "Add user"
@@ -503,8 +518,9 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // changePassword root
             message = "Add root password"
@@ -513,8 +529,9 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
             // autologin GUI
             if (Pacman.isInstalledGui()) {
@@ -530,11 +547,12 @@ export default class Sequence {
                   }
                   await redraw(<Install message={message} percent={percent} />)
                } catch (error) {
-                  await Utils.pressKeyToExit(JSON.stringify(error))
+                  console.log(JSON.stringify(error))
                }
             }
-         } // IF NOT CLONE END
+            if (this.verbose) await Utils.pressKeyToExit(message)
 
+         } // IF NOT CLONE END
 
          // Remove ALWAYS autologin CLI
          message = "Remove autologin CLI"
@@ -543,9 +561,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.cliAutologin.remove(this.installTarget)
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // bootloader-config
          message = "bootloader-config "
@@ -554,9 +572,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.bootloaderConfig()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // grubcfg
          message = "grubcfg "
@@ -565,9 +583,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // bootloader (grub-install)
          message = "bootloader "
@@ -576,9 +594,10 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
+
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
@@ -588,10 +607,10 @@ export default class Sequence {
                await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-undo')
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // packages
          message = "add/remove same packages"
@@ -600,9 +619,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.packages()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // initramfsCfg
          message = "initramfs configure"
@@ -611,9 +630,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // initramfs
          message = "initramfs "
@@ -622,9 +641,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          /**
           *
@@ -636,9 +655,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.removeInstallerLink()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
@@ -648,9 +667,9 @@ export default class Sequence {
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          /**
           * custom final steps
@@ -665,11 +684,10 @@ export default class Sequence {
                   await redraw(<Install message={message} percent={percent} />)
                   await this.execCalamaresModule(step)
                } catch (error) {
-                  await Utils.pressKeyToExit(JSON.stringify(error))
+                  console.log(JSON.stringify(error))
                }
             }
-            await Utils.pressKeyToExit(message)
-
+            if (this.verbose) await Utils.pressKeyToExit(message)
          }
 
          // chroot
@@ -689,10 +707,10 @@ export default class Sequence {
                await exec(`chroot ${this.installTarget} /bin/bash`)
                cliCursor.hide()
             } catch (error) {
-               await Utils.pressKeyToExit(JSON.stringify(error))
+               console.log(JSON.stringify(error))
             }
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
 
          // umountVfs
@@ -702,10 +720,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.umountVfs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
-
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          message = "umount"
          percent = 0.97
@@ -713,10 +730,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.umountFs()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
-
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
          // finished
          message = "finished"
@@ -725,9 +741,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={percent} />)
             await this.finished()
          } catch (error) {
-            await Utils.pressKeyToExit(JSON.stringify(error))
+            console.log(JSON.stringify(error))
          }
-         await Utils.pressKeyToExit(message)
+         if (this.verbose) await Utils.pressKeyToExit(message)
 
       }
    }
