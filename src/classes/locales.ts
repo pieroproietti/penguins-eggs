@@ -10,55 +10,24 @@ import fs from 'node:fs'
 
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+import Utils from './utils.js'
 
 export default class Locales {
   /**
    *
    */
   async getDefault(): Promise<string> {
-    const file = '/etc/default/locale'
-    const cmd = `grep LANG < ${file}|cut -f2 -d=`
+    const cmd = `locale|grep LANG|cut -f2 -d=`
     let defaultLanguage = 'en_US.UTF-8'
-    if (fs.existsSync(file)) {
-      const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-      if (result.code === 0) {
-        defaultLanguage = result.data.replaceAll('"', '').replaceAll("'", '').trim()
-      }
-    }
-
+    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+    if (result.code === 0) {
+      defaultLanguage = result.data.trim()
+    }    
     return defaultLanguage
   }
 
   /**
-   *
-   */
-  async getEnabled(): Promise<string[]> {
-    const distro = new Distro()
-    let cmd = 'localectl list-locales'
-    if (distro.familyId === 'alpine') {
-      cmd = 'locale -a'
-    }
-
-    // Restituisce i locales abilitati in Debian, per manjaro quelli presenti
-    // in /etc/locale.gen anche se #disabilitati
-    const enabledLocales: string[] = []
-    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-    if (result.code === 0) {
-      const lines = result.data.split('\n')
-      for (const line of lines) {
-        if (distro.familyId === 'alpine') {
-          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim() + '.UTF-8')
-        } else {
-          enabledLocales.push(line.replaceAll('"', '').replaceAll("'", '').trim())
-        }
-      }
-    }
-
-    return enabledLocales
-  }
-
-  /**
-   *
+   * getSupported
    */
   async getSupported(): Promise<string[]> {
     const distro = new Distro()
@@ -66,22 +35,23 @@ export default class Locales {
     switch (distro.familyId) {
       case 'alpine': {
         supporteds = await this.getEnabled()
+        break
+      }
 
+      case 'archlinux': {
+        supporteds = await this.getEnabled()
         break
       }
 
       case 'debian': {
         supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
-
         break
       }
 
-      case 'archlinux': {
-        supporteds = (await exec('localectl list-locales', { capture: true, echo: false, ignore: false })).data.split('\n')
-
+      case 'fedora': {
+        supporteds = await this.getEnabled()
         break
       }
-      // No default
     }
 
     const elements: string[] = []
@@ -91,4 +61,25 @@ export default class Locales {
 
     return elements
   }
+
+  /**
+   * getEnabled
+   */
+  async getEnabled(): Promise<string[]> {
+    let cmd="locale -a"
+    if (Utils.isSystemd()) {
+      cmd="localectl list-locales"
+    }
+
+    const enabledLocales: string[] = []
+    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+    if (result.code === 0) {
+      const lines = result.data.split('\n')
+      for (const line of lines) {
+        enabledLocales.push(line.trim())
+      }
+    }
+    return enabledLocales
+  }
+
 }
