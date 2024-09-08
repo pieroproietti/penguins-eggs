@@ -545,6 +545,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // bootloader-config
          message = "bootloader-config "
@@ -555,6 +556,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // grubcfg
          message = "grubcfg "
@@ -565,6 +567,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // bootloader (grub-install)
          message = "bootloader "
@@ -575,6 +578,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
@@ -587,6 +591,7 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
+         await Utils.pressKeyToExit(message)
 
          // packages
          message = "add/remove same packages"
@@ -597,6 +602,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // initramfsCfg
          message = "initramfs configure"
@@ -607,6 +613,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // initramfs
          message = "initramfs "
@@ -617,6 +624,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          /**
           *
@@ -630,6 +638,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
@@ -641,6 +650,7 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
 
          /**
           * custom final steps
@@ -658,6 +668,8 @@ export default class Sequence {
                   await Utils.pressKeyToExit(JSON.stringify(error))
                }
             }
+            await Utils.pressKeyToExit(message)
+
          }
 
          // chroot
@@ -680,6 +692,8 @@ export default class Sequence {
                await Utils.pressKeyToExit(JSON.stringify(error))
             }
          }
+         await Utils.pressKeyToExit(message)
+
 
          // umountVfs
          message = "umount VFS"
@@ -690,6 +704,8 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
+
 
          message = "umount"
          percent = 0.97
@@ -699,6 +715,8 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
+
 
          // finished
          message = "finished"
@@ -709,6 +727,8 @@ export default class Sequence {
          } catch (error) {
             await Utils.pressKeyToExit(JSON.stringify(error))
          }
+         await Utils.pressKeyToExit(message)
+
       }
    }
 
