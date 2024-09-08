@@ -41,6 +41,13 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.36
+* fedora: this is a great addiction to penguins-eggs, from now we are able to remaster and reinstall fedora 40 too. It was a great effort I hope people will like and start to collaborate.
+
+This project it the only solution  capable to remaster multiple distos, there is nothing similar around. It'a little an inverse of a fork, we trying joining distros and get all together.
+
+Good, bad? I don't know: time will answer. I suggest to use eggs to learn a different distro too, at last is that I do wnen try to extend eggs.
+
 ## penguins-eggs-10.0.35
 * fedora/suse: all seem solved, except creation of initramfs with dracut. I renew [WAY-OF-FEDORE]() and [WAY-TO-SUSE]() and hope someone jump on to finish this hard work. The choice to build an almost universal remastering tool was a great challenge, if not to win it I hope at least to tie it;
 

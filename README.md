@@ -59,8 +59,8 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 #### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
-### Alpine Linux
-A [package for Alpine](https://gitlab.alpinelinux.org/pieroproietti/aports/-/tree/master/testing/penguins-eggs) is on the way to be merged on testing. Consult [WAY-TO-ALPINE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-ALPINE.md) for more informations.
+### Fedora
+There is no installation package for Fedora yet, but you can still use eggs on this distribution by following the procedure described in [WAY-TO-FEDORA](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-FEDORA.md) or by downloading the [fedora colibri](https://sourceforge.net/projects/penguins-eggs/files/ISOS/fedora/) version.
 
 # Introduction
 
@@ -148,8 +148,8 @@ Penguins Eggs Linux spearheads a transformative revolution in the realm of syste
 
 8. supporting multiple distributions
 Eggs supporting multiple distributions and their derivatives
-Supports: Arch, Debian, Devuan, Manjaro, Ubuntu,
- and major derivatives: Linuxmint, KDE neon, EndeavourOS, Garuda, etc. You can easily add more derivatives.
+Supports: Alpine, Arch, Debian, Fedora, Devuan, Manjaro, Ubuntu,
+ and major derivatives like: Linuxmint, KDE neon, EndeavourOS, Garuda, etc. You can easily add more derivatives.
 
 10. supports hardware architectures
 supports a wide range of hardware architectures.
