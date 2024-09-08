@@ -11,10 +11,8 @@ import React, { useState } from 'react'
 import Title from './title.js'
 import Steps from './steps.js'
 
-
 import yaml from 'js-yaml';
 import fs from 'fs';
-import path from 'path';
 
 import { ISettings, IBranding } from '../interfaces/index.js';
 import { Box, Newline, Text } from 'ink';
