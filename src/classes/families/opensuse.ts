@@ -23,9 +23,10 @@ export default class Opensuse {
    *
    */
   static async calamaresInstall(verbose = true): Promise<void> {
-    const echo = Utils.setEcho(verbose)
+    const echo = Utils.setEcho(true)
+    console.log("installazione calamares SuSE")
     try {
-      await exec(`zypper install ${this.packs4calamares.join(' ')}`, echo)
+      await exec(`zypper install calamares`, echo)
     } catch {
       Utils.error(`Opensuse.calamaresInstall()`)
     }
@@ -97,13 +98,11 @@ export default class Opensuse {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    // rpm -qa | grep -i nano
     const cmd = `/usr/bin/zypper search --installed-only ${packageName}`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }
-
     return installed
   }
 }
