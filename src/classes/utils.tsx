@@ -210,34 +210,44 @@ export default class Utils {
     * ricava path per initrdImg
     */
    static initrdImg(): string {
-      let separator = "-"
       const vmlinuz = Utils.vmlinuz()
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
-      let initrd = 'initrd.img'
-      let version = 'linux'
+
+      let initrd = ''
+      let separator= ''
+      let version = ''
       let suffix = ''
 
       let distro = new Distro()
-      if (distro.familyId === 'debian') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+      if (distro.familyId === 'alpine') {
+         initrd = 'initramfs'
+         separator = '-'
+         version = 'lts'
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
+         separator='-'
+         version=='linux'
          suffix = '.img'
+      } else if (distro.familyId === 'debian') {
+         initrd = 'initrd.img'
+         separator = "-"
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       } else if (distro.familyId === 'fedora') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          suffix = '.img'
-      } else if (distro.familyId === 'alpine') {
-         initrd = 'initramfs'
+      } else if (distro.familyId === 'suse') {
+         initrd = 'initrd'
          separator = '-'
-         version = 'lts'
-         suffix = ''
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
 
+      // manjaro eredita da erch
       if (distro.distroId === 'Manjaro') {
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
+
       initrd = path + initrd + separator + version + suffix
       return initrd
    }
