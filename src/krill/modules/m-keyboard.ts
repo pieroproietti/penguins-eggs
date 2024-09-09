@@ -23,7 +23,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
    *            - /etc/X11/xorg.conf.d/00-keyboard.conf
    *            - /ext/vconsole.conf (non systemd)
    */
-  if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
+  if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian' || this.distro.familyId === 'fedora') {
     let cmd = ''
     let content = ''
     if (Utils.isSystemd()) {
