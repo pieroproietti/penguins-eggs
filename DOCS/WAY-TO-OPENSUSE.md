@@ -99,6 +99,7 @@ sudo zypper install \
     lsb-release \
     lvm2 \
     dracut \
+    dracut-tools \
     nodejs \
     npm \
     parted \
