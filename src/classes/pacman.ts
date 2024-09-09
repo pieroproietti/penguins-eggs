@@ -15,10 +15,13 @@ import shx from 'shelljs'
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+
 import Alpine from './families/alpine.js'
 import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
 import Fedora from './families/fedora.js'
+import Opensuse from './families/opensuse.js'
+
 import Settings from './settings.js'
 import Utils from './utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -83,6 +86,8 @@ export default class Pacman {
         }
       } else if (this.distro().familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'suse') {
+        await Opensuse.calamaresInstall(verbose)
       }
 
       // remove others calamares links
@@ -114,6 +119,8 @@ export default class Pacman {
       retVal = await Archlinux.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'suse') {
+      retVal = await Opensuse.calamaresRemove(verbose)
     }
 
     return retVal
@@ -502,6 +509,14 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/alpine/'
       const alpine = `${rootPen}/conf/distros/alpine/`
       await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
+
+      /***********************************************************************************
+      * opensuse
+      **********************************************************************************/
+    } else if (this.distro().codenameLikeId === 'suse') {
+      const dest = '/etc/penguins-eggs.d/distros/suse/'
+      const suse = `${rootPen}/conf/distros/suse/*`
+      await exec(`cp -r ${suse} ${dest}`, echo)
     }
   }
 
@@ -548,6 +563,10 @@ export default class Pacman {
       if (Alpine.packageIsInstalled('xwayland*')) {
         installed = true
       }
+    } else if (this.distro().familyId === 'suse') {
+      if (Opensuse.packageIsInstalled('wayland')) {
+        installed = true
+      }
     }
 
     return installed
@@ -573,6 +592,10 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'suse') {
+      if (Opensuse.packageIsInstalled('xorg-x11-server')) { 
         installed = true
       }
     }
@@ -622,6 +645,8 @@ export default class Pacman {
     } else if (Pacman.distro().familyId === 'archlinux') {
       isUefi = true
     } else if (Pacman.distro().familyId === 'alpine') {
+      isUefi = true
+    } else if (Pacman.distro().familyId === 'suse') {
       isUefi = true
     }
 
@@ -694,6 +719,8 @@ export default class Pacman {
       retVal = await Fedora.packageInstall(packageName)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
+    } else if (this.distro().familyId === 'suse') {
+      retVal = await Opensuse.packageInstall(packageName)
     }
 
     return retVal
@@ -713,6 +740,8 @@ export default class Pacman {
       installed = Archlinux.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'alpine') {
       installed = Alpine.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'suse') {
+      installed = Opensuse.packageIsInstalled(packageName)
     }
 
     return installed
@@ -742,6 +771,8 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'alpine') {
       grubInstalled = 'grub'
+    } else if (this.distro().familyId === 'suse') {
+      grubInstalled = 'grub' //controllare
     }
 
     return grubInstalled
