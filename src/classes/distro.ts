@@ -114,67 +114,38 @@ class Distro implements IDistro {
      * Analize distroId
      */
     switch (this.distroId) {
+      /**
+       * Alpine compatible
+       */
       case 'Alpine': {
         this.familyId = 'alpine'
-        this.distroLike = 'Alpine'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
-        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-
-        this.syslinuxPath = '/usr/share/syslinux/' // correct
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        // At the moment
-        this.isCalamaresAvailable = true
-
         break
       }
 
+      /**
+       * Fedora compatible
+       */
+      case 'NobaraLinux': 
       case 'Fedora': {
         this.familyId = 'fedora'
-        this.distroLike = 'Fedora'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'fedora'
-        this.liveMediumPath = '/run/initramfs/live/'
-
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        // At the moment
-        this.isCalamaresAvailable = true
 
         break
       }
 
+      /**
+       * opensuse compatible
+       */
       case 'openSUSE': {
         this.familyId = 'suse'
-        this.distroLike = 'openSUSE'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = 'Tumbleweed'
-        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
-
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        // At the moment
-        this.isCalamaresAvailable = false
-
         break
       }
 
+      /**
+       * Arch/Debian/Devuan/Manjaro and Ubuntu
+       */
       default: {
-        /**
-         * Arch/Debian/Devuan/Manjaro and Ubuntu
-         */
         switch (this.codenameId) {
           case 'jessie': {
-            // Debian 8 jessie
             this.distroLike = 'Debian'
             this.codenameLikeId = 'jessie'
             this.liveMediumPath = '/lib/live/mount/medium/'
@@ -184,7 +155,6 @@ class Distro implements IDistro {
           }
 
           case 'stretch': {
-            // Debian 9 stretch
             this.distroLike = 'Debian'
             this.codenameLikeId = 'stretch'
             this.liveMediumPath = '/lib/live/mount/medium/'
@@ -194,7 +164,6 @@ class Distro implements IDistro {
           }
 
           case 'buster': {
-            // Debian 10 buster
             this.distroLike = 'Debian'
             this.codenameLikeId = 'buster'
 
@@ -202,7 +171,6 @@ class Distro implements IDistro {
           }
 
           case 'bullseye': {
-            // Debian 11 bullseye
             this.distroLike = 'Debian'
             this.codenameLikeId = 'bullseye'
 
@@ -210,7 +178,6 @@ class Distro implements IDistro {
           }
 
           case 'bookworm': {
-            // Debian 12 bookworm
             this.distroLike = 'Debian'
             this.codenameLikeId = 'bookworm'
 
@@ -218,15 +185,16 @@ class Distro implements IDistro {
           }
 
           case 'trixie': {
-            // Debian 13 trixie
             this.distroLike = 'Debian'
             this.codenameLikeId = 'trixie'
 
             break
           }
 
+          /**
+           * Devuan
+           */
           case 'beowulf': {
-            // Devuab 3 beowulf
             this.distroLike = 'Devuan'
             this.codenameLikeId = 'beowulf'
 
@@ -234,7 +202,6 @@ class Distro implements IDistro {
           }
 
           case 'chimaera': {
-            // Devuab 4 chimaera
             this.distroLike = 'Devuan'
             this.codenameLikeId = 'chimaera'
 
@@ -242,7 +209,6 @@ class Distro implements IDistro {
           }
 
           case 'daedalus': {
-            // Devuan 5 daedalus
             this.distroLike = 'Devuan'
             this.codenameLikeId = 'daedalus'
 
@@ -252,9 +218,7 @@ class Distro implements IDistro {
           /**
            * Ubuntu LTS + actual
            */
-
           case 'bionic': {
-            // Ubuntu 18.04 bionic LTS eol aprile 2023
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'bionic'
             this.liveMediumPath = '/lib/live/mount/medium/'
@@ -263,7 +227,6 @@ class Distro implements IDistro {
           }
 
           case 'focal': {
-            // Ubuntu 20.04 focal LTS
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'focal'
 
@@ -271,7 +234,6 @@ class Distro implements IDistro {
           }
 
           case 'jammy': {
-            // Ubuntu 22.04 jammy LTS
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'jammy'
 
@@ -279,15 +241,16 @@ class Distro implements IDistro {
           }
 
           case 'noble': {
-            // Ubuntu 24.04 noble LTS
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'noble'
 
             break
           }
 
+          /**
+           * Rhino
+           */
           case 'devel': {
-            // Ubuntu rhino
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'devel'
 
@@ -295,7 +258,7 @@ class Distro implements IDistro {
           }
 
           /**
-           * Arch Linux/Garuda
+           * Arch
            */
           case 'Spizaetus':
           case 'n/a':
@@ -309,10 +272,10 @@ class Distro implements IDistro {
             break
           }
 
+          /**
+           * find in derivatives
+           */
           default: {
-            /**
-             * find in ./conf/derivaties
-             */
             interface IDistros {
               distroLike: string
               family: string
@@ -379,11 +342,66 @@ class Distro implements IDistro {
 
             break
           }
-
-          // No default
         } // Fine analisi codenameId
       }
+    } // Fine analisi distroId
+
+    /**
+     * familyId
+     */
+    switch (this.familyId) {
+      case 'alpine': {
+        this.distroLike = 'Alpine'
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
+        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
+
+        this.syslinuxPath = '/usr/share/syslinux/' // correct
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = true
+
+        break
+      }
+
+      case 'fedora': {
+        this.distroLike = 'Fedora'
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'fedora'
+        this.liveMediumPath = '/run/initramfs/live/'
+
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = true
+
+        break
+      }
+
+      case 'suse': {
+        this.distroLike = 'openSUSE'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = 'Tumbleweed'
+        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = false
+
+        break
+      }
     }
+
 
     /**
      * if lsb-release exists
