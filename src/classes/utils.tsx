@@ -214,7 +214,7 @@ export default class Utils {
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
 
       let initrd = ''
-      let separator= ''
+      let separator = ''
       let version = ''
       let suffix = ''
 
@@ -225,8 +225,8 @@ export default class Utils {
          version = 'lts'
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
-         separator='-'
-         version=='linux'
+         separator = '-'
+         version = 'linux'
          suffix = '.img'
       } else if (distro.familyId === 'debian') {
          initrd = 'initrd.img'
@@ -243,7 +243,7 @@ export default class Utils {
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
 
-      // manjaro eredita da erch
+      // manjaro eredita da arch
       if (distro.distroId === 'Manjaro') {
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
