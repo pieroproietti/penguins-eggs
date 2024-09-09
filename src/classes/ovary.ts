@@ -921,7 +921,7 @@ export default class Ovary {
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
   }
 
   /**
