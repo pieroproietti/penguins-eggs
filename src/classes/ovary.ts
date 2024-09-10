@@ -931,31 +931,11 @@ export default class Ovary {
   }
 
   /**
-   * syslinux
+   * syslinux: new version
    */
   async syslinux(theme = 'eggs') {
-    /**
-     * OpenSuSE: ldllinux.c32, libcom32 e libutil.c32 not exists!
-     * ldlinux.c32: È il modulo responsabile per il caricamento del kernel
-     * libcom.c32: È una libreria che contiene varie funzioni di utilità utilizzate da altri moduli .c32.
-     * libutil.c32: Un'altra libreria che fornisce funzionalità comuni utilizzate da diversi moduli di Syslinux.
-    if (this.familyId !== 'suse') {
-      await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    } else {
-      let syspath = path.resolve(__dirname, `../../syslinux/`)
-      await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`chmod +x ${this.settings.iso_work}/isolinux/*.c32`, this.echo)
-    }
-    */
     let syspath = path.resolve(__dirname, `../../syslinux/`)
     await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
-
-    // isolinux.bin no need more
-    // await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
@@ -977,7 +957,6 @@ export default class Ovary {
     this.settings.iso_work + 'isolinux/isolinux.cfg'
     let isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
     if (!fs.existsSync(isolinuxTemplate)) {
-      // isolinuxTemplate = path.resolve(__dirname, '../../addons/templates/isolinux.main.cfg')
       isolinuxTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/isolinux.main.cfg')
     }
 

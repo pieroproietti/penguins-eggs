@@ -468,8 +468,10 @@ export default class Sequence {
             percent = 0.70
             try {
                redraw(<Install message={message} percent={percent} />)
-               if (this.distro.familyId !== 'fedora') {
-                  await this.locale()
+               if (  this.distro.familyId === 'alpine' ||
+                     this.distro.familyId === 'archlinux' ||
+                     this.distro.familyId === 'debian') {
+                        await this.locale()
                }
             } catch (error) {
                console.log(JSON.stringify(error))
@@ -487,7 +489,7 @@ export default class Sequence {
             if (this.verbose) await Utils.pressKeyToExit(message)
 
             // localeCfg: no alpine, no fedora
-            if (this.distro.familyId === 'debian' || this.distro.familyId === 'archlinux') {
+            if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian' ) {
                message = "Locale Configuration"
                percent = 0.72
                try {
