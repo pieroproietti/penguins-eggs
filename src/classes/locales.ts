@@ -52,6 +52,11 @@ export default class Locales {
         supporteds = await this.getEnabled()
         break
       }
+
+      case 'suse': {
+        supporteds = await this.getEnabled()
+        break
+      }
     }
 
     const elements: string[] = []
