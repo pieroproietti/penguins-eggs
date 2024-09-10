@@ -910,7 +910,7 @@ export default class Ovary {
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --conf ${conf} --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
   }
 
   /**
@@ -928,10 +928,6 @@ export default class Ovary {
    *  async isolinux
    */
   async isolinux(theme = 'eggs') {
-    if (this.verbose) {
-      console.log('Ovary: isolinux')
-    }
-
     /**
      * isolinux.bin
      */
@@ -1023,27 +1019,23 @@ export default class Ovary {
    * @returns kernelParameters
    */
   kernelParameters(): string {
-    if (this.verbose) {
-      console.log('Ovary: kernelParameters')
-    }
-
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
+
     const { distroId } = this.settings.distro
     let kp = ""
-    
-    if (this.familyId === 'debian') {
-      kp += `boot=live components locales=${process.env.LANG}`
+    if (this.familyId === 'alpine') {
+      kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
+    } else if (this.familyId === 'debian') {
+      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
     } else if (this.familyId === 'fedora') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
-    }  else if (this.familyId === 'opensuse') {
+    }  else if (this.familyId === 'suse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
-    } else if (this.familyId === 'alpine') {
-      kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     }
-    kp += ` cow_spacesize=2G`
+
     return kp
   }
 
@@ -1897,14 +1889,11 @@ export default class Ovary {
     await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     /**
      * per openSuse non sono riusciuto a determinare
-     * quale pacchetto installi:
-     * ldllinux.c43, libcom32 e libutil.c32
+     * ldllinux.c32, libcom32 e libutil.c32
      */
-    if (this.familyId !== 'suse') {
-      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    }
+    await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
   }
 
   // #######################################################################################
