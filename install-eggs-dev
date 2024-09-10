@@ -57,6 +57,7 @@ $SUDO cp -f .oclif.manifest.json /usr/lib/penguins-eggs/
 $SUDO cp -f package.json /usr/lib/penguins-eggs/
 $SUDO cp -f pnpm-lock.yaml /usr/lib/penguins-eggs/
 $SUDO cp -f scripts  /usr/lib/penguins-eggs/ -R
+$SUDO cp -f syslinux  /usr/lib/penguins-eggs/ -R
 $SUDO ln -s /usr/bin/node /usr/lib/penguins-eggs/bin/node
 
 # create /usr/lib/penguins-eggs/bin/eggs
