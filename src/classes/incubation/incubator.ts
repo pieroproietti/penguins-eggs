@@ -217,9 +217,9 @@ export default class Incubator {
       }
 
       /**
-       * SuSE
+       * opensuse
        */
-      case 'suse': {
+      case 'opensuse': {
         const suse = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await suse.create()
 
