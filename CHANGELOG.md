@@ -41,6 +41,12 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.37
+* After getting to reproduce fedora using dracut, I tried to do the same job with AlpineLinux and OpenSuSE, unfortunately, I was not successful with either. In any case, on OpenSuSE I went ahead anyway; it remains for me to solve the mystery of why it won't boot from live image, I suspect a problem on syslinux. Cannot find on OpenSuSE the files: `ldlinux.c32`, `libcom32.c32` and `libutil.c32`, they are part of syslinux.
+* On the source I check all the cases we must to choose with distros adding OpenSuSE and ordering the others distros: Alpine, Arch, Debian, Fedota and OpenSuSE.
+* Tryed to get NobaraLinux working, was possible di install it, add penguins-eggs and produce ISO, but there are problems and I was unable to install it with krll or calamares.
+* As always if same expert is reading, this project is unique with it's capabilities but It's just an one man show, if possible need help, thanks.
+
 ## penguins-eggs-10.0.36
 * fedora: this is a great addiction to penguins-eggs, from now we are able to remaster and reinstall fedora 40 too. It was a great effort I hope people will like and start to collaborate.
 
