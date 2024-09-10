@@ -1139,7 +1139,9 @@ export default class Ovary {
     fs.writeFileSync(dotDisk + '/mkisofs', text + mkisofs, 'utf-8')
   }
 
-  // #######################################################################################
+  /**
+   * makeEFI
+   */
   async makeEfi(theme = 'eggs') {
     if (this.verbose) {
       console.log('Ovary: makeEfi')
@@ -1370,8 +1372,6 @@ export default class Ovary {
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
 
-    // console.log('end makeEfi')
-    // process.exit()
   }
 
   /**
@@ -1881,25 +1881,17 @@ export default class Ovary {
    * syslinux
    */
   async syslinux() {
-    if (this.verbose) {
-      console.log('Ovary: syslinux')
-    }
-
     await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     /**
-     * per openSuse non sono riusciuto a determinare
-     * ldllinux.c32, libcom32 e libutil.c32
+     * OpenSuSE: ldllinux.c32, libcom32 e libutil.c32 not exists!
      */
     await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
   }
 
-  // #######################################################################################
-  /**
-   * makeEfi
-   */
+
   /**
    *
    * @param cmd
@@ -1916,8 +1908,6 @@ export default class Ovary {
       await Utils.pressKeyToExit(cmd)
     }
   }
-
-  // #######################################################################################
 
   /**
    * ubind del fs live
@@ -2207,9 +2197,7 @@ function isMiso(distro: string): boolean {
 }
 
 /**
- * se non zuppa, pan bagnato
- * @param distro
- * @returns
+ * isArchiso: se non zuppa, pan bagnato
  */
 function isArchiso(distro: string): boolean {
   return !isMiso(distro)
