@@ -216,6 +216,16 @@ export default class Incubator {
         break
       }
 
+      /**
+       * SuSE
+       */
+      case 'suse': {
+        const suse = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await suse.create()
+
+        break
+      }
+
     }
 
     if (Pacman.calamaresExists()) {
