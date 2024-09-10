@@ -73,7 +73,8 @@
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
-        "/scripts"
+        "/scripts",
+        "/syslinux"
     ],
     "homepage": "https://penguins-eggs.net",
     "keywords": [

@@ -480,10 +480,10 @@ export default class Ovary {
         text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
         text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
       } else if (Pacman.packageIsInstalled('xfce4-session')) {
-        text +=`# xfce: enable-desktop-links\n`
+        text += `# xfce: enable-desktop-links\n`
         text += `for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
       } else {
-        text +=`# others: enable-desktop-links\n`
+        text += `# others: enable-desktop-links\n`
         text += 'chmod +x "$DESKTOP"/*.desktop\n'
       }
 
@@ -931,17 +931,32 @@ export default class Ovary {
   }
 
   /**
-   *  async isolinux
+   * syslinux
    */
-  async isolinux(theme = 'eggs') {
+  async syslinux(theme = 'eggs') {
     /**
-     * isolinux.bin
-     */
-    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+     * OpenSuSE: ldllinux.c32, libcom32 e libutil.c32 not exists!
+     * ldlinux.c32: È il modulo responsabile per il caricamento del kernel
+     * libcom.c32: È una libreria che contiene varie funzioni di utilità utilizzate da altri moduli .c32.
+     * libutil.c32: Un'altra libreria che fornisce funzionalità comuni utilizzate da diversi moduli di Syslinux.
+    if (this.familyId !== 'suse') {
+      await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    } else {
+      let syspath = path.resolve(__dirname, `../../syslinux/`)
+      await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
+      await exec(`chmod +x ${this.settings.iso_work}/isolinux/*.c32`, this.echo)
+    }
+    */
+    let syspath = path.resolve(__dirname, `../../syslinux/`)
+    await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
 
-    /**
-     * isolinux.theme.cfg
-     */
+    // isolinux.bin no need more
+    // await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
     if (this.theme.includes('/')) {
@@ -1034,7 +1049,7 @@ export default class Ovary {
       /**
        * tempt for dracut
        * kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
-       */ 
+       */
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
@@ -1042,7 +1057,7 @@ export default class Ovary {
       kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
     } else if (this.familyId === 'fedora') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
-    }  else if (this.familyId === 'suse') {
+    } else if (this.familyId === 'suse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
     }
 
@@ -1749,13 +1764,12 @@ export default class Ovary {
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
         await this.incubator.config(release)
 
-        await this.syslinux()
-        await this.isolinux(this.theme)
+        await this.syslinux(this.theme)
+        //await this.isolinux(this.theme)
         await this.kernelCopy()
 
         /**
-         * we need different initfs
-         * for different families
+         * differents initfs for different families
          */
         switch (this.familyId) {
           case 'archlinux': {
@@ -1787,7 +1801,6 @@ export default class Ovary {
 
             break
           }
-          // No default
         }
 
         if (this.settings.config.make_efi) {
@@ -1887,22 +1900,6 @@ export default class Ovary {
     }
   }
 
-  /**
-   * syslinux
-   */
-  async syslinux() {
-    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    /**
-     * OpenSuSE: ldllinux.c32, libcom32 e libutil.c32 not exists!
-     * ldlinux.c32: È il modulo responsabile per il caricamento del kernel
-     * libcom.c32: È una libreria che contiene varie funzioni di utilità utilizzate da altri moduli .c32.
-     * libutil.c32: Un'altra libreria che fornisce funzionalità comuni utilizzate da diversi moduli di Syslinux.
-     */
-    await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-  }
 
 
   /**
