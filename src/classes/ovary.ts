@@ -1895,6 +1895,9 @@ export default class Ovary {
     await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     /**
      * OpenSuSE: ldllinux.c32, libcom32 e libutil.c32 not exists!
+     * ldlinux.c32: È il modulo responsabile per il caricamento del kernel
+     * libcom.c32: È una libreria che contiene varie funzioni di utilità utilizzate da altri moduli .c32.
+     * libutil.c32: Un'altra libreria che fornisce funzionalità comuni utilizzate da diversi moduli di Syslinux.
      */
     await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
