@@ -848,7 +848,6 @@ export default class Ovary {
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
     const sidecar = path.resolve(__dirname, `../../mkinitfs/initramfs-init.in`)
     Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
     await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
@@ -856,6 +855,13 @@ export default class Ovary {
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+
+    /** tempt for dracut
+    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
+    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
+    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    */
   }
 
 
@@ -1025,6 +1031,10 @@ export default class Ovary {
     let kp = ""
     if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
+      /**
+       * tempt for dracut
+       * kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
+       */ 
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
