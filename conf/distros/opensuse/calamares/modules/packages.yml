@@ -1,0 +1,6 @@
+# # Alpine 3.18
+# packages
+---
+backend: apk
+
+{{operations}}

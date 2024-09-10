@@ -513,9 +513,9 @@ export default class Pacman {
       /***********************************************************************************
       * opensuse
       **********************************************************************************/
-    } else if (this.distro().codenameLikeId === 'suse') {
-      const dest = '/etc/penguins-eggs.d/distros/suse/'
-      const suse = `${rootPen}/conf/distros/suse/*`
+    } else if (this.distro().codenameLikeId === 'opensuse') {
+      const dest = '/etc/penguins-eggs.d/distros/opensuse/'
+      const suse = `${rootPen}/conf/distros/opensuse/*`
       await exec(`cp -r ${suse} ${dest}`, echo)
     }
   }

@@ -386,8 +386,8 @@ class Distro implements IDistro {
       case 'suse': {
         this.distroLike = 'openSUSE'
         this.codenameId = 'rolling'
-        this.codenameLikeId = 'Tumbleweed'
-        this.liveMediumPath = '/run/install/repo/' // ? è il mount della root su cd di installatione
+        this.codenameLikeId = 'opensuse'
+        this.liveMediumPath = '/run/initramfs/live/' // è il mount della root su cd di installatione
 
         this.syslinuxPath = '/usr/share/syslinux/'
         this.pxelinuxPath = this.syslinuxPath
