@@ -105,6 +105,7 @@ sudo zypper install \
     parted \
     rsync \
     syslinux \
+    syslinux-extlinux \
     squashfs \
     sshfs \
     xorriso
