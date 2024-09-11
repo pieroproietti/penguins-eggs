@@ -7,6 +7,8 @@
  */
 
 import React, { useState } from 'react'
+import Spinner from 'ink-spinner'
+
 import yaml from 'js-yaml'
 import fs from 'fs'
 
@@ -39,7 +41,8 @@ export default function Install({ message="Install", percent=0, spinner = false 
   productName = calamares.strings.productName
   version = calamares.strings.version
 
-  let perc = Math.round(percent * 100)
+  //let perc = Math.round(percent * 100)
+  let perc=percent
   let barLen = 52
   let progress = Math.round(barLen * percent)
   let todo = barLen - progress
@@ -61,14 +64,19 @@ export default function Install({ message="Install", percent=0, spinner = false 
             <Box flexDirection="column">
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />
-              <Box flexDirection="row"><Text>Step: </Text><Text color="cyan">{message}</Text></Box>
-              <Newline/>
+              <Box flexDirection="row">
+                <Text>Step: <Spinner type="dots" /></Text>
+                <Text color="cyan"> {message}</Text>
+              </Box>
+              <Newline />
               <Box><Text>Progress:</Text></Box>
               <Box><Text>{progressBar}</Text></Box>
             </Box>
           </Box>
         </Box>
       </Box >
+      <Text>
+      </Text>      
     </>
   )
 }
