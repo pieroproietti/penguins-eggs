@@ -13,6 +13,8 @@ import Sequence from '../sequence.js'
 
 /**
  * mkfs
+ * 
+ * mke2fs - create an ext2/ext3/ext4 file system -F force, -t type
  */
 export default async function mkfs(this: Sequence): Promise<boolean> {
   const result = true
