@@ -64,7 +64,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // No default
   }
 
-  console.log(installMode, this.efi)
   if (installMode === 'standard' && !this.efi) {
     /**
      * ===========================================================================================
