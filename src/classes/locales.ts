@@ -53,7 +53,7 @@ export default class Locales {
         break
       }
 
-      case 'suse': {
+      case 'opensuse': {
         supporteds = await this.getEnabled()
         break
       }

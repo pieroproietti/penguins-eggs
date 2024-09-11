@@ -136,7 +136,7 @@ class Distro implements IDistro {
        * opensuse compatible
        */
       case 'openSUSE': {
-        this.familyId = 'suse'
+        this.familyId = 'opensuse'
         break
       }
 
@@ -383,7 +383,7 @@ class Distro implements IDistro {
         break
       }
 
-      case 'suse': {
+      case 'opensuse': {
         this.distroLike = 'openSUSE'
         this.codenameId = 'rolling'
         this.codenameLikeId = 'opensuse'

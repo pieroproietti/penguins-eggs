@@ -237,7 +237,7 @@ export default class Utils {
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          suffix = '.img'
-      } else if (distro.familyId === 'suse') {
+      } else if (distro.familyId === 'opensuse') {
          initrd = 'initrd'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)

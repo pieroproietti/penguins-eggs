@@ -52,7 +52,7 @@ export default class Bleach {
         break
       }
 
-      case 'suse': {
+      case 'opensuse': {
         await exec(`zypper clean`, echo)
 
         break
