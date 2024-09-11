@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'suse') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse') {
       deluser = 'userdel'
     }
 
@@ -1036,7 +1036,7 @@ export default class Ovary {
       kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
     } else if (this.familyId === 'fedora') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
-    } else if (this.familyId === 'suse') {
+    } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
     }
 
@@ -1769,7 +1769,7 @@ export default class Ovary {
             break
           }
 
-          case 'suse': {
+          case 'opensuse': {
             await this.initrdSuse()
 
             break
