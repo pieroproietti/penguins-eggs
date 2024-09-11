@@ -44,6 +44,8 @@ class Distro implements IDistro {
    * Costruttore
    */
   constructor() {
+    let found = false
+
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
     this.codenameLikeId = ''
@@ -260,7 +262,6 @@ class Distro implements IDistro {
           /**
            * Arch
            */
-          case 'Spizaetus':
           case 'n/a':
           case 'rolling': {
             this.familyId = 'archlinux'
@@ -286,7 +287,6 @@ class Distro implements IDistro {
             /**
              * patch per Roy VERIFICARE
              */
-            let found = false
             let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
             if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
               file = '/etc/penguins-eggs.d/derivatives.yaml'
@@ -305,16 +305,6 @@ class Distro implements IDistro {
                   }
                 }
               }
-            }
-
-            if (!found) {
-              console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
-              console.log('')
-              console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
-              console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
-              console.log('If you can create your new iso, you can contribute to the project')
-              console.log('by suggesting your modification.')
-              process.exit(0)
             }
           }
         }
@@ -347,61 +337,6 @@ class Distro implements IDistro {
     } // Fine analisi distroId
 
     /**
-     * familyId
-     */
-    switch (this.familyId) {
-      case 'alpine': {
-        this.distroLike = 'Alpine'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
-        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-
-        this.syslinuxPath = '/usr/share/syslinux/' // correct
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        // At the moment
-        this.isCalamaresAvailable = false
-
-        break
-      }
-
-      case 'fedora': {
-        this.distroLike = 'Fedora'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'fedora'
-        this.liveMediumPath = '/run/initramfs/live/'
-
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        this.isCalamaresAvailable = true
-
-        break
-      }
-
-      case 'opensuse': {
-        this.distroLike = 'openSUSE'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = 'opensuse'
-        this.liveMediumPath = '/run/initramfs/live/' // è il mount della root su cd di installatione
-
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
-        this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
-        this.isCalamaresAvailable = true
-
-        break
-      }
-    }
-
-
-    /**
      * if lsb-release exists
      */
     const lsbConfig = '/etc/lsb-release'
@@ -421,6 +356,74 @@ class Distro implements IDistro {
     if (this.distroId === 'ManjaroLinux' || this.distroId.toLowerCase().includes('biglinux')) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
+    }
+
+    /**
+     * all the distros without codename: Alpine, fedora, opensuse
+     */
+    switch (this.familyId) {
+      case 'alpine': {
+        this.distroLike = 'Alpine'
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
+        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
+
+        this.syslinuxPath = '/usr/share/syslinux/' // correct
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        // At the moment
+        this.isCalamaresAvailable = false
+        found=true
+
+        break
+      }
+
+      case 'fedora': {
+        this.distroLike = 'Fedora'
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameLikeId = 'fedora'
+        this.liveMediumPath = '/run/initramfs/live/'
+
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        this.isCalamaresAvailable = true
+        found=true
+
+        break
+      }
+
+      case 'opensuse': {
+        this.distroLike = 'openSUSE'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = 'opensuse'
+        this.liveMediumPath = '/run/initramfs/live/' // è il mount della root su cd di installatione
+
+        this.syslinuxPath = '/usr/share/syslinux/'
+        this.pxelinuxPath = this.syslinuxPath
+        this.usrLibPath = '/usr/lib/'
+        this.memdiskPath = this.syslinuxPath
+        this.isolinuxPath = this.syslinuxPath
+        this.isCalamaresAvailable = true
+        found=true
+
+        break
+      }
+
+      if (!found) {
+        console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
+        console.log('')
+        console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
+        console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
+        console.log('If you can create your new iso, you can contribute to the project')
+        console.log('by suggesting your modification.')
+        process.exit(0)
+      }
+
     }
   }
 }
