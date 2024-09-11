@@ -333,7 +333,7 @@ export default class Sequence {
          } catch (error) {
             showProblem(message, JSON.stringify(error))
          }
-         
+
 
          // unpackfs
          message = "Unpacking filesystem "
@@ -362,7 +362,7 @@ export default class Sequence {
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'sources-yolk'
-            await redraw(<Install message={message} percent={43}/>)
+            await redraw(<Install message={message} percent={43} />)
             try {
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
@@ -394,7 +394,7 @@ export default class Sequence {
 
 
          /**
-          * CryptedClone exec eggs syncfrom
+          * IF CryptedClone
           */
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
@@ -411,6 +411,8 @@ export default class Sequence {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
             }
          }
+         // END CryptedClone
+
 
          // networkcfg
          message = "Network configuration"
@@ -448,26 +450,21 @@ export default class Sequence {
 
          /**
           * IF NOT CLONE:
-          * - locale
-          * - keyboard
-          * - localeCfg
-          * - delLiveUser
-          * - adduser
-          * - autologin 
           */
          if (!this.is_clone) {
-            // locale
+
+            // locale Alpine, archlinux, Debian
             message = "Locale"
             redraw(<Install message={message} percent={70} />)
-            try {
-               if (this.distro.familyId === 'alpine' ||
-                  this.distro.familyId === 'archlinux' ||
-                  this.distro.familyId === 'debian') {
+            if (this.distro.familyId === 'alpine' ||
+               this.distro.familyId === 'archlinux' ||
+               this.distro.familyId === 'debian') {
+               try {
                   await this.locale()
                   sleep(50)
+               } catch (error) {
+                  showProblem(message, JSON.stringify(error))
                }
-            } catch (error) {
-               showProblem(message, JSON.stringify(error))
             }
 
 
@@ -482,7 +479,7 @@ export default class Sequence {
             }
 
 
-            // localeCfg: no alpine, no fedora
+            // localeCfg: solo Debian 
             if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
                message = "Locale Configuration"
                redraw(<Install message={message} percent={72} />)
@@ -505,7 +502,7 @@ export default class Sequence {
                sleep(50)
             } catch (error) {
                showProblem(message, JSON.stringify(error))
-}
+            }
 
 
             // addUser
@@ -548,6 +545,7 @@ export default class Sequence {
                }
             }
          } // IF NOT CLONE END
+
 
          // Remove ALWAYS autologin CLI
          message = "Remove autologin CLI"
