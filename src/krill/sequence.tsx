@@ -345,10 +345,13 @@ export default class Sequence {
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
+            await sleep(500) // Attende 1/2 secondo
          } catch (error) {
             console.log(JSON.stringify(error))
          }
          if (this.verbose) await Utils.pressKeyToExit(message)
+         
+
 
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {

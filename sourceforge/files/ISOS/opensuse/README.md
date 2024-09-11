@@ -17,14 +17,14 @@ penguins-eggs
 
 # OpenSuSE
 
-OpenSuSE needs no introduction, in “Musica ribelle” Eugenio Finardi sang about the “doors of the world that are up in Germany,” it is still like that!
+OpenSuSE needs no introduction, in [“Musica ribelle”](https://www.youtube.com/watch?v=KwQ_BqUCB4E) [Eugenio Finardi](https://it.wikipedia.org/wiki/Eugenio_Finardi) sang about the “gates of the cosmos that are up in Germany”, it is still like that!
 
-As with Fedora we are in our beginnings, but another door has opened, the door to the world!
+As with Fedora we are in our beginnings, but another door has opened, the gates of the cosmos!
 
 The configurations for dracut are in the [dracut](https://github.com/pieroproietti/penguins-eggs/tree/master/dracut) folder.
 
 Boot params for our ISO are created on ovary.ts, this is a sample:
 ```
-initrd=/live/initramfs-6.10.7-200.fc40.x86_64.img root=live:CDLABEL=colibri rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 
+ppend initrd=/live/initrd-6.10.8-1-default root=live:CDLABEL=colibri rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs
 ```
 
