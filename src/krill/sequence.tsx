@@ -314,6 +314,8 @@ export default class Sequence {
          } catch (error) {
             console.log(JSON.stringify(error))
          }
+         message = `After: ${message},You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
+         await emergencyShell(message)
          if (this.verbose) await Utils.pressKeyToExit(message)
 
          // mountFs
@@ -337,6 +339,8 @@ export default class Sequence {
          } catch (error) {
             console.log(JSON.stringify(error))
          }
+         message = `After: ${message},You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
+         await emergencyShell(message)
          if (this.verbose) await Utils.pressKeyToExit(message)
 
          // unpackfs
@@ -345,7 +349,7 @@ export default class Sequence {
          try {
             await redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
-            await sleep(500) // Attende 1/2 secondo
+            await sleep(1000) // Attende 1/2 secondo
          } catch (error) {
             console.log(JSON.stringify(error))
          }
@@ -698,22 +702,7 @@ export default class Sequence {
          // chroot
          if (chroot) {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
-            percent = 0.95
-            try {
-               await redraw(
-                  <>
-                     <Title />
-                     <Box>
-                        <Text>{message}</Text>
-                     </Box>
-                  </>
-               )
-               cliCursor.show()
-               await exec(`chroot ${this.installTarget} /bin/bash`)
-               cliCursor.hide()
-            } catch (error) {
-               console.log(JSON.stringify(error))
-            }
+            await emergencyShell(message)
          }
          if (this.verbose) await Utils.pressKeyToExit(message)
 
@@ -824,7 +813,6 @@ function sleep(ms = 0) {
  * @param message 
  */
 async function emergencyShell(message: string) {
-   message = message + `type "exit" to exit.`
    try {
       await redraw(
          <>
@@ -841,4 +829,3 @@ async function emergencyShell(message: string) {
       await Utils.pressKeyToExit(JSON.stringify(error))
    }
 }
-

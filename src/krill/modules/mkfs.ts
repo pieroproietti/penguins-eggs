@@ -27,7 +27,6 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
         this.devices.boot.fsType = 'ext2'
         this.devices.boot.mountPoint = '/boot'
       }
-
       await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
     }
 
