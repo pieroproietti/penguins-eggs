@@ -198,7 +198,6 @@ export default class Sequence {
 
    luksMountpoint = `/mnt`
 
-   // Clone (Uncrypted)
    is_clone = fs.existsSync('penguins-eggs.d/is_clone')
 
    is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
@@ -287,172 +286,165 @@ export default class Sequence {
       // start
       await this.settings.load()
 
-      // partition
-      let percent = 0.0
+      let percent = 0
       let message = ""
       let isPartitioned = false
 
       message = "Creating partitions"
       percent = 0.03
       let currErr = ''
+      await redraw(<Install message={message} percent={0} />)
       try {
-         await redraw(<Install message={message} percent={percent} />)
          isPartitioned = await this.partition()
+         sleep(50)
       } catch (error) {
-         currErr = JSON.stringify(error)
+         showProblem(message, JSON.stringify(error))
       }
-      if (this.verbose) await showProblem(message, currErr)
 
       if (isPartitioned) {
          // formatting
          message = "Formatting file system "
-         percent = 0.06
+         await redraw(<Install message={message} percent={6} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.mkfs()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // mountFs
          message = "Mounting target file system "
-         percent = 0.09
+         redraw(<Install message={message} percent={9} />)
          try {
-            redraw(<Install message={message} percent={percent} />)
             await this.mountFs()
             await sleep(500) // diamo il tempo di montare
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
-         // message = `After: ${message},You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
-         // await emergencyShell(message)
+
 
          // mountVfs
          message = "Mounting on target VFS "
-         percent = 0.12
+         await redraw(<Install message={message} percent={12} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.mountVfs()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+         
 
          // unpackfs
          message = "Unpacking filesystem "
-         percent = 0.15
+         await redraw(<Install message={message} percent={15} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.unpackfs()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {
             message = "dpkg-unsafe-io"
-            percent = 0.40
+            await redraw(<Install message={message} percent={40} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('dpkg-unsafe-io')
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'sources-yolk'
-            percent = 0.43
+            await redraw(<Install message={message} percent={43}/>)
             try {
-               await redraw(<Install message={message} percent={percent} spinner={true} />)
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // machineid
          message = 'machineid'
-         percent = 0.46
+         await redraw(<Install message={message} percent={46} />)
          try {
-            await redraw(<Install message={message} percent={percent} spinner={true} />)
             await this.machineId()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // fstab
          message = "Creating fstab "
-         percent = 0.49
+         await redraw(<Install message={message} percent={49} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.fstab(this.partitions.installationDevice)
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          /**
           * CryptedClone exec eggs syncfrom
           */
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
+            await redraw(<Install message={message} percent={55} />)
             if (fs.existsSync(this.luksFile)) {
-               percent = 0.55
                let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
                try {
-                  await redraw(<Install message={message} percent={percent} spinner={true} />)
                   await exec(cmd, Utils.setEcho(true))
                   this.is_clone = true // Adesso è un clone
                } catch (error) {
-                  currErr = JSON.stringify(error)
+                  showProblem(message, JSON.stringify(error))
                }
             } else {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
             }
          }
-         if (this.verbose) await showProblem(message, currErr)
 
          // networkcfg
-         message = "networkcfg"
-         percent = 0.61
+         message = "Network configuration"
+         await redraw(<Install message={message} percent={61} />)
          try {
             await this.networkCfg()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
 
          // hostname
          message = "Create hostname "
-         percent = 0.64
+         await redraw(<Install message={message} percent={64} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.hostname(this.network.domain)
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
             message = "dpkg-unsafe-io-undo"
-            percent = 0.65
+            await redraw(<Install message={message} percent={65} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          /**
           * IF NOT CLONE:
@@ -466,213 +458,212 @@ export default class Sequence {
          if (!this.is_clone) {
             // locale
             message = "Locale"
-            percent = 0.70
+            redraw(<Install message={message} percent={70} />)
             try {
-               redraw(<Install message={message} percent={percent} />)
                if (this.distro.familyId === 'alpine' ||
                   this.distro.familyId === 'archlinux' ||
                   this.distro.familyId === 'debian') {
                   await this.locale()
+                  sleep(50)
                }
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
-            if (this.verbose) await showProblem(message, currErr)
+
 
             // keyboard
-            message = "settings keyboard"
-            percent = 0.71
+            message = "Settings keyboard"
+            redraw(<Install message={message} percent={71} />)
             try {
                await this.keyboard()
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
-            if (this.verbose) await showProblem(message, currErr)
+
 
             // localeCfg: no alpine, no fedora
             if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
                message = "Locale Configuration"
-               percent = 0.72
+               redraw(<Install message={message} percent={72} />)
                try {
                   await this.localeCfg()
                   await exec("chroot " + this.installTarget + " locale-gen")
+                  sleep(50)
                }
                catch (error) {
-                  currErr = JSON.stringify(error)
+                  showProblem(message, JSON.stringify(error))
                }
             }
-            if (this.verbose) await showProblem(message, currErr)
+
 
             // delLiveUser
-            message = "Remove user LIVE"
-            percent = 0.73
+            message = "Remove live user"
+            await redraw(<Install message={message} percent={73} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.delLiveUser()
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
-            }
-            if (this.verbose) await showProblem(message, currErr)
+               showProblem(message, JSON.stringify(error))
+}
+
 
             // addUser
-            message = "Add user"
-            percent = 0.74
+            message = `Add user ${this.users.username}`
+            await redraw(<Install message={message} percent={74} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
-            if (this.verbose) await showProblem(message, currErr)
+
 
             // changePassword root
             message = "Add root password"
-            percent = 0.75
+            await redraw(<Install message={message} percent={75} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.changePassword('root', this.users.rootPassword)
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
-            if (this.verbose) await showProblem(message, currErr)
+
 
             // autologin GUI
             if (Pacman.isInstalledGui()) {
                try {
                   message = "Autologin GUI"
-                  percent = 0.78
+                  await redraw(<Install message={message} percent={78} />)
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {
                         await exec(`chroot ${this.installTarget} groupadd autologin`)
                         await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.username} autologin`)
+                        sleep(50)
                      }
                   }
-                  await redraw(<Install message={message} percent={percent} />)
                } catch (error) {
-                  currErr = JSON.stringify(error)
+                  showProblem(message, JSON.stringify(error))
                }
             }
-            if (this.verbose) await showProblem(message, currErr)
-
          } // IF NOT CLONE END
 
          // Remove ALWAYS autologin CLI
          message = "Remove autologin CLI"
-         percent = 0.80
+         await redraw(<Install message={message} percent={80} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.cliAutologin.remove(this.installTarget)
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // bootloader-config
          message = "bootloader-config "
-         percent = 0.81
+         await redraw(<Install message={message} percent={81} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.bootloaderConfig()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // grubcfg
          message = "grubcfg "
-         percent = 0.82
+         await redraw(<Install message={message} percent={82} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.grubcfg()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // bootloader (grub-install)
          message = "bootloader "
-         percent = 0.83
+         await redraw(<Install message={message} percent={83} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.bootloader()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
 
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
             message = "sources-yolk-undo"
-            percent = 0.84
+            await redraw(<Install message={message} percent={84} />)
             try {
-               await redraw(<Install message={message} percent={percent} />)
                await this.execCalamaresModule('sources-yolk-undo')
+               sleep(50)
             } catch (error) {
-               currErr = JSON.stringify(error)
+               showProblem(message, JSON.stringify(error))
             }
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // packages
          message = "add/remove same packages"
-         percent = 0.85
+         await redraw(<Install message={message} percent={85} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.packages()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // initramfsCfg
          message = "initramfs configure"
-         percent = 0.86
+         await redraw(<Install message={message} percent={86} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.initramfsCfg(this.partitions.installationDevice)
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // initramfs
          message = "initramfs "
-         percent = 0.87
+         await redraw(<Install message={message} percent={87} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.initramfs()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          /**
           *
           * remove CLI/GUI installer link
           */
          message = "remove GUI installer link"
-         percent = 0.88
+         await redraw(<Install message={message} percent={88} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.removeInstallerLink()
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
-         percent = 0.89
+         await redraw(<Install message={message} percent={89} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
+            sleep(50)
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          /**
           * custom final steps
@@ -682,15 +673,15 @@ export default class Sequence {
          if (steps.length > 0) {
             for (const step of steps) {
                message = `running ${step}`
-               percent = 0.90
+               await redraw(<Install message={message} percent={90} />)
                try {
-                  await redraw(<Install message={message} percent={percent} />)
                   await this.execCalamaresModule(step)
+                  sleep(50)
                } catch (error) {
-                  currErr = JSON.stringify(error)
+                  showProblem(message, JSON.stringify(error))
                }
             }
-            if (this.verbose) await showProblem(message, currErr)
+
          }
 
          // chroot
@@ -698,41 +689,35 @@ export default class Sequence {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
             await emergencyShell(message)
          }
-         if (this.verbose) await showProblem(message, currErr)
 
 
          // umountVfs
          message = "umount VFS"
-         percent = 0.96
+         await redraw(<Install message={message} percent={96} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.umountVfs()
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          message = "umount"
-         percent = 0.97
+         await redraw(<Install message={message} percent={97} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.umountFs()
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
+
 
          // finished
          message = "finished"
-         percent = 100.0
+         await redraw(<Install message={message} percent={100} />)
          try {
-            await redraw(<Install message={message} percent={percent} />)
             await this.finished()
          } catch (error) {
-            currErr = JSON.stringify(error)
+            showProblem(message, JSON.stringify(error))
          }
-         if (this.verbose) await showProblem(message, currErr)
-
       }
    }
 
