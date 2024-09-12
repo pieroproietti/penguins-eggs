@@ -280,7 +280,7 @@ export default class Sequence {
       await this.settings.load()
 
       let message = ""
-      let minSleep = 10
+      let minSleep = 30
       let isPartitioned = false
 
       message = "Creating partitions"
@@ -290,7 +290,7 @@ export default class Sequence {
          isPartitioned = await this.partition()
          sleep(minSleep)
       } catch (error) {
-         showProblem(message, error)
+         await this.showProblem(message, error)
       }
 
       if (isPartitioned) {
@@ -301,7 +301,7 @@ export default class Sequence {
             await this.mkfs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -312,7 +312,7 @@ export default class Sequence {
             await this.mountFs()
             await sleep(500) // diamo il tempo di montare
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
          // mountVfs
@@ -322,7 +322,7 @@ export default class Sequence {
             await this.mountVfs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -333,33 +333,33 @@ export default class Sequence {
             await this.unpackfs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {
-            message = "dpkg-unsafe-io"
+            message = "Debian: dpkg-unsafe-io"
             await redraw(<Install message={message} percent={40} />)
             sleep(minSleep)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io')
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
          }
 
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
-            message = 'sources-yolk'
+            message = 'Debian: sources-yolk'
             await redraw(<Install message={message} percent={43} />)
             try {
                await this.execCalamaresModule('sources-yolk')
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
          }
 
@@ -371,7 +371,7 @@ export default class Sequence {
             await this.machineId()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -382,7 +382,7 @@ export default class Sequence {
             await this.fstab(this.partitions.installationDevice)
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -399,7 +399,7 @@ export default class Sequence {
                   this.is_clone = true // Adesso è un clone
                   sleep(minSleep)
                } catch (error) {
-                  showProblem(message, error)
+                  await this.showProblem(message, error)
                }
             } else {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
@@ -413,7 +413,7 @@ export default class Sequence {
             await this.networkCfg()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
          // hostname
@@ -423,34 +423,35 @@ export default class Sequence {
             await this.hostname(this.network.domain)
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
-            message = "dpkg-unsafe-io-undo"
+            message = "Debian: dpkg-unsafe-io-undo"
             await redraw(<Install message={message} percent={65} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
          }
 
 
          /**
-          * IF NOT CLONE:
-          * - locale
-          * - keyboard
-          * - localeCfg
-          * - delLiveUser
-          * - adduser
-          * - autologin 
+          * IF NOT CLONE: 
+          * locale, 
+          * keyboard, 
+          * localeCfg, 
+          * delLiveUser, 
+          * adduser, 
+          * addRootPassword, 
+          * autologin GUI
           */
          if (!this.is_clone) {
-            // locale
+            // NOT_CLONE: locale
             message = "Locale"
             redraw(<Install message={message} percent={70} />)
             try {
@@ -461,23 +462,24 @@ export default class Sequence {
                   sleep(minSleep)
                }
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
 
 
-            // keyboard
+            // NOT_CLONE: keyboard
             message = "Settings keyboard"
             redraw(<Install message={message} percent={71} />)
             try {
                await this.keyboard()
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
 
 
-            // localeCfg: no alpine, no fedora
-            if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
+            // NOT_CLONE: localeCfg
+            if (this.distro.familyId === 'archlinux' ||
+               this.distro.familyId === 'debian') {
                message = "Locale Configuration"
                redraw(<Install message={message} percent={72} />)
                try {
@@ -486,45 +488,45 @@ export default class Sequence {
                   sleep(minSleep)
                }
                catch (error) {
-                  showProblem(message, error)
+                  await this.showProblem(message, error)
                }
             }
 
 
-            // delLiveUser
+            // NOT_CLONE: delLiveUser
             message = "Remove live user"
             await redraw(<Install message={message} percent={73} />)
             try {
                await this.delLiveUser()
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
 
 
-            // addUser
+            // NOT_CLONE: addUser
             message = `Add user ${this.users.username}`
             await redraw(<Install message={message} percent={74} />)
             try {
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
 
 
-            // changePassword root
+            // NOT_CLONE: addRootPassword
             message = "Add root password"
             await redraw(<Install message={message} percent={75} />)
             try {
                await this.changePassword('root', this.users.rootPassword)
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
 
 
-            // autologin GUI
+            // NOT_CLONE: autologin GUI
             if (Pacman.isInstalledGui()) {
                try {
                   message = "Autologin GUI"
@@ -538,19 +540,19 @@ export default class Sequence {
                      }
                   }
                } catch (error) {
-                  showProblem(message, error)
+                  await this.showProblem(message, error)
                }
             }
          } // IF NOT CLONE END
 
-         // Remove ALWAYS autologin CLI
+         // ALWAYS remove autologin CLI
          message = "Remove autologin CLI"
          await redraw(<Install message={message} percent={80} />)
          try {
             await this.cliAutologin.remove(this.installTarget)
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -561,7 +563,7 @@ export default class Sequence {
             await this.bootloaderConfig()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -572,7 +574,7 @@ export default class Sequence {
             await this.grubcfg()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -583,7 +585,7 @@ export default class Sequence {
             await this.bootloader()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -595,7 +597,7 @@ export default class Sequence {
                await this.execCalamaresModule('sources-yolk-undo')
                sleep(minSleep)
             } catch (error) {
-               showProblem(message, error)
+               await this.showProblem(message, error)
             }
          }
 
@@ -607,7 +609,7 @@ export default class Sequence {
             await this.packages()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -618,7 +620,7 @@ export default class Sequence {
             await this.initramfsCfg(this.partitions.installationDevice)
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -629,7 +631,7 @@ export default class Sequence {
             await this.initramfs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -643,7 +645,7 @@ export default class Sequence {
             await this.removeInstallerLink()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -655,7 +657,7 @@ export default class Sequence {
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
@@ -672,16 +674,16 @@ export default class Sequence {
                   await this.execCalamaresModule(step)
                   sleep(minSleep)
                } catch (error) {
-                  showProblem(message, error)
+                  await this.showProblem(message, error)
                }
             }
-
          }
+
 
          // chroot
          if (chroot) {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
-            await emergencyShell(message)
+            await this.emergencyShell(message)
          }
 
 
@@ -692,29 +694,42 @@ export default class Sequence {
             await this.umountVfs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
 
          message = "umount"
-         await redraw(<Install message={message} percent={97} />)
+         await redraw(<Install message={message} percent={99} />)
          try {
             await this.umountFs()
             sleep(minSleep)
          } catch (error) {
-            showProblem(message, error)
+            await this.showProblem(message, error)
          }
 
-
-         // finished
-         message = "finished"
-         await redraw(<Install message={message} percent={99} />)
-         try {
-            await this.finished()
-            sleep(minSleep)
-         } catch (error) {
-            showProblem(message, error)
+         // Finished
+         let cmd = "reboot"
+         if (this.halt) {
+            cmd = "poweroff"
          }
+         message = `Press a key to ${cmd}`
+         if (this.unattended && this.nointeractive) {
+            message = `System will ${cmd} in 5 seconds...`
+         }
+
+         await redraw(<Finished
+            installationDevice={this.partitions.installationDevice}
+            hostName={this.users.hostname}
+            userName={this.users.username}
+            message={message} />)
+   
+   
+         if (this.unattended && this.nointeractive) {
+            await sleep(5000)
+         } else {
+            spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+         }
+         await exec(cmd, { echo: false })
       }
    }
 
@@ -735,34 +750,56 @@ export default class Sequence {
       }
    }
 
+
    /**
-    * only show the result
-    */
-   async finished() {
-      let cmd = "reboot"
-      if (this.halt) {
-         cmd = "poweroff"
-      }
-
-      let message = `Press a key to ${cmd}`
-      if (this.unattended && this.nointeractive) {
-         message = `System will ${cmd} in 5 seconds...`
-      }
-
-      await redraw(<Finished 
-                        installationDevice={this.partitions.installationDevice} 
-                        hostName={this.users.hostname} 
-                        userName={this.users.username}
-                        message={message} />)
-
-      if (this.unattended && this.nointeractive) {
-         await sleep(5000)
-         await exec(cmd, { echo: false })
-      } else {
-         spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
-         await exec(cmd, { echo: false })
+    * 
+   * @param message 
+   */
+   async emergencyShell(message: string) {
+      try {
+         await redraw(
+            <>
+               <Title />
+               <Box>
+                  <Text>{message}</Text>
+               </Box>
+            </>
+         )
+         cliCursor.show()
+         await exec("/bin/bash")
+         cliCursor.hide()
+      } catch (error) {
+         await Utils.pressKeyToExit(JSON.stringify(error))
       }
    }
+
+   /**
+    * 
+    * @param message 
+    */
+   async showProblem(message: string, currErr: any) {
+      message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
+      try {
+         await redraw(
+            <>
+               <Title />
+               <Box>
+                  <Text>{message}</Text>
+               </Box>
+               <Box>
+                  <Text>Error: {currErr}</Text>
+               </Box>
+            </>
+         )
+         cliCursor.show()
+         await exec("/bin/bash")
+         cliCursor.hide()
+      } catch (error) {
+         await Utils.pressKeyToExit(JSON.stringify(error))
+      }
+   }
+
+
 }
 
 /**
@@ -770,10 +807,10 @@ export default class Sequence {
  * @param elem
  */
 async function redraw(elem: JSX.Element) {
-   let opt: RenderOptions = {}
-   opt.patchConsole = false
-   opt.debug = false
    console.clear()
+   let opt: RenderOptions = {}
+   opt.patchConsole = true
+   opt.debug = false
    render(elem, opt)
 }
 
@@ -786,53 +823,4 @@ function sleep(ms = 0) {
    return new Promise((resolve) => {
       setTimeout(resolve, ms);
    });
-}
-
-/**
- * 
- * @param message 
- */
-async function emergencyShell(message: string) {
-   try {
-      await redraw(
-         <>
-            <Title />
-            <Box>
-               <Text>{message}</Text>
-            </Box>
-         </>
-      )
-      cliCursor.show()
-      await exec("/bin/bash")
-      cliCursor.hide()
-   } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
-   }
-}
-
-
-/**
- * 
- * @param message 
- */
-async function showProblem(message: string, currErr: any) {
-   message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
-   try {
-      await redraw(
-         <>
-            <Title />
-            <Box>
-               <Text>{message}</Text>
-            </Box>
-            <Box>
-               <Text>Error: {currErr}</Text>
-            </Box>
-         </>
-      )
-      cliCursor.show()
-      await exec("/bin/bash")
-      cliCursor.hide()
-   } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
-   }
 }

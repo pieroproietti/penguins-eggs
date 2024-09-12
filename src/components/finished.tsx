@@ -25,12 +25,13 @@ type FinishedProps = {
 
 export default function Finished({ 
                         installationDevice='', 
-                        hostName='', userName='', 
-                        message=''}: FinishedProps) {
+                        hostName='', 
+                        userName='', 
+                        message='Press a key to continue...'}: FinishedProps) {
 
   let productName = 'unknown'
   let version = 'x.x.x'
-  let configRoot = '/etc/penguins-eggs.d/krill/' // krill
+  let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
       configRoot = '/etc/calamares/'
   }
@@ -63,7 +64,7 @@ export default function Finished({
               <Box><Text>Host name was set as </Text><Text color="green">{hostName}</Text></Box>
               <Box><Text>The user name is </Text><Text color="green">{userName}</Text></Box>
               <Newline/>
-              <Box><Text backgroundColor="green" color="white">{message}</Text></Box>
+              <Box><Text backgroundColor="white" color="black">{message}</Text></Box>
             </Box>
           </Box>
         </Box>

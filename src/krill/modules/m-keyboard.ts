@@ -53,13 +53,12 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'alpine') {
-
     /**
      * https://docs.alpinelinux.org/user-handbook/0.1a/Installing/manual.html
+     * 
+     * Alpine dovrebbe fare tutto con `setup-keymap us us`
+     * ma a questo punto non va in chroot
      */
-    /**
-     * Alpine dovrebbe fare tutto con setup-keymap us us
-     */
-    await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
+    // await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
   }
 }
