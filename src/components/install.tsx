@@ -62,11 +62,11 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />
               <Box flexDirection="row">
-                <Text>Step: <Spinner type="dots" /></Text>
+                <Text>Step: </Text>
                 <Text color="cyan"> {message}</Text>
               </Box>
               <Newline />
-              <Box><Text>Progress:</Text></Box>
+              <Box><Text>Progress: <Spinner type="dots" /></Text></Box>
               <Box><Text>{progressBar}</Text></Box>
             </Box>
           </Box>
