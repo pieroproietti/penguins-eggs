@@ -809,7 +809,7 @@ export default class Sequence {
 async function redraw(elem: JSX.Element) {
    console.clear()
    let opt: RenderOptions = {}
-   opt.patchConsole = true
+   opt.patchConsole = false
    opt.debug = false
    render(elem, opt)
 }
