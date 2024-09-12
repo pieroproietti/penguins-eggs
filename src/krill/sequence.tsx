@@ -807,7 +807,7 @@ export default class Sequence {
  * @param elem
  */
 async function redraw(elem: JSX.Element) {
-   console.clear()
+   // console.clear()
    let opt: RenderOptions = {}
    opt.patchConsole = false
    opt.debug = false
