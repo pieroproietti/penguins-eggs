@@ -144,7 +144,6 @@ export default class Sequence {
    public mkfs = mkfs
    public hostname = hostname
 
-
    installer = {} as IInstaller
 
    installTarget = '/tmp/calamares-krill-root'
