@@ -8,12 +8,6 @@
  */
 
 /**
- * Note: I'm using REACT here to get a TUI,
- *       via ink library https://github.com/vadimdemedes/ink
- */
-
-
-/**
  * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
  *
  *
@@ -98,14 +92,14 @@ import initramfs from './modules/initramfs.js'
 import delLiveUser from './modules/del-live-user.js'
 // umount already imported
 
-// to order in same wat
+// to order in same way
 import umount from './modules/umount.js'
 import mkfs from './modules/mkfs.js'
 import hostname from './modules/hostname.js'
 
 import CFS from '../classes/cfs.js'
-import Title from '../components/title.js'
 
+import Title from '../components/title.js'
 import cliCursor from 'cli-cursor'
 import { spawnSync } from 'child_process';
 
@@ -291,12 +285,12 @@ export default class Sequence {
 
       message = "Creating partitions"
       let currErr = ''
-      await redraw(<Install message={message} percent={0} />)
+      await redraw(<Install message={message} percent={1} />)
       try {
          isPartitioned = await this.partition()
          sleep(50)
       } catch (error) {
-         showProblem(message, JSON.stringify(error))
+         currErr=JSON.stringify(error)
       }
 
       if (isPartitioned) {
@@ -307,8 +301,9 @@ export default class Sequence {
             await this.mkfs()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
+         Utils.pressKeyToExit()
 
 
          // mountFs
@@ -318,9 +313,9 @@ export default class Sequence {
             await this.mountFs()
             await sleep(500) // diamo il tempo di montare
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
-
+         Utils.pressKeyToExit()
 
          // mountVfs
          message = "Mounting on target VFS "
@@ -329,7 +324,7 @@ export default class Sequence {
             await this.mountVfs()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
          
 
@@ -340,7 +335,7 @@ export default class Sequence {
             await this.unpackfs()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -352,7 +347,7 @@ export default class Sequence {
                await this.execCalamaresModule('dpkg-unsafe-io')
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
          }
 
@@ -364,7 +359,7 @@ export default class Sequence {
             try {
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
          }
 
@@ -376,7 +371,7 @@ export default class Sequence {
             await this.machineId()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -387,7 +382,7 @@ export default class Sequence {
             await this.fstab(this.partitions.installationDevice)
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -403,7 +398,7 @@ export default class Sequence {
                   await exec(cmd, Utils.setEcho(true))
                   this.is_clone = true // Adesso è un clone
                } catch (error) {
-                  showProblem(message, JSON.stringify(error))
+                  currErr=JSON.stringify(error)
                }
             } else {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
@@ -417,7 +412,7 @@ export default class Sequence {
             await this.networkCfg()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
          // hostname
@@ -427,7 +422,7 @@ export default class Sequence {
             await this.hostname(this.network.domain)
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -439,7 +434,7 @@ export default class Sequence {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
          }
 
@@ -465,7 +460,7 @@ export default class Sequence {
                   sleep(50)
                }
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
 
 
@@ -476,7 +471,7 @@ export default class Sequence {
                await this.keyboard()
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
 
 
@@ -490,7 +485,7 @@ export default class Sequence {
                   sleep(50)
                }
                catch (error) {
-                  showProblem(message, JSON.stringify(error))
+                  currErr=JSON.stringify(error)
                }
             }
 
@@ -502,7 +497,7 @@ export default class Sequence {
                await this.delLiveUser()
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
 }
 
 
@@ -513,7 +508,7 @@ export default class Sequence {
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
 
 
@@ -524,7 +519,7 @@ export default class Sequence {
                await this.changePassword('root', this.users.rootPassword)
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
 
 
@@ -542,7 +537,7 @@ export default class Sequence {
                      }
                   }
                } catch (error) {
-                  showProblem(message, JSON.stringify(error))
+                  currErr=JSON.stringify(error)
                }
             }
          } // IF NOT CLONE END
@@ -554,7 +549,7 @@ export default class Sequence {
             await this.cliAutologin.remove(this.installTarget)
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -565,7 +560,7 @@ export default class Sequence {
             await this.bootloaderConfig()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -576,7 +571,7 @@ export default class Sequence {
             await this.grubcfg()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -587,7 +582,7 @@ export default class Sequence {
             await this.bootloader()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -599,7 +594,7 @@ export default class Sequence {
                await this.execCalamaresModule('sources-yolk-undo')
                sleep(50)
             } catch (error) {
-               showProblem(message, JSON.stringify(error))
+               currErr=JSON.stringify(error)
             }
          }
 
@@ -611,7 +606,7 @@ export default class Sequence {
             await this.packages()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -622,7 +617,7 @@ export default class Sequence {
             await this.initramfsCfg(this.partitions.installationDevice)
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -633,7 +628,7 @@ export default class Sequence {
             await this.initramfs()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -647,7 +642,7 @@ export default class Sequence {
             await this.removeInstallerLink()
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -659,7 +654,7 @@ export default class Sequence {
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
             sleep(50)
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -676,7 +671,7 @@ export default class Sequence {
                   await this.execCalamaresModule(step)
                   sleep(50)
                } catch (error) {
-                  showProblem(message, JSON.stringify(error))
+                  currErr=JSON.stringify(error)
                }
             }
 
@@ -695,7 +690,7 @@ export default class Sequence {
          try {
             await this.umountVfs()
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -704,7 +699,7 @@ export default class Sequence {
          try {
             await this.umountFs()
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
 
 
@@ -714,7 +709,7 @@ export default class Sequence {
          try {
             await this.finished()
          } catch (error) {
-            showProblem(message, JSON.stringify(error))
+            currErr=JSON.stringify(error)
          }
       }
    }
