@@ -374,7 +374,7 @@ class Distro implements IDistro {
         this.memdiskPath = this.syslinuxPath
         this.isolinuxPath = this.syslinuxPath
         // At the moment
-        this.isCalamaresAvailable = false
+        this.isCalamaresAvailable = true
         found=true
 
         break

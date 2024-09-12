@@ -14,7 +14,6 @@ import shx from 'shelljs'
 
 import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'
 import { exec } from '../../lib/utils.js'
-import Utils from '../utils.js'
 import { settings } from './fisherman-helper/settings.js'
 
 // _dirname
@@ -168,7 +167,7 @@ export default class Fisherman {
   }
 
   /**
-   * write setting
+   * write settings
    */
   async createCalamaresSettings(theme = 'eggs', isClone = false) {
     await settings(this.installer.template, this.installer.configRoot, theme, isClone)

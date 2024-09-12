@@ -53,7 +53,7 @@ export default function Install({ message="Install", percent=0, spinner = false 
    * totale width=75
    * step width=15
    * finestra with=59
-   * <Title />
+   *               <Box><Text>{progressBar}</Text></Box>
    */
   return (
     <>
@@ -66,18 +66,17 @@ export default function Install({ message="Install", percent=0, spinner = false 
               <Box flexDirection="row"><Text>Installing: </Text><Text color="cyan">{productName}</Text></Box>
               <Newline />
               <Box flexDirection="row">
-                <Text>Step: </Text> 
-                <Text color="cyan">{message}</Text>
+                <Text>Step: </Text>
+                <Text color="cyan"> {message}</Text>
               </Box>
               <Newline />
-              <Box><Text>Installing... </Text><Spinner type="dots" /></Box>
-              <Box><Text>{progressBar}</Text></Box>
+              <Box><Text>Install... <Spinner type="dots" /></Text></Box>
             </Box>
           </Box>
         </Box>
       </Box >
-      <Box>
-      </Box>      
+      <Text>
+      </Text>      
     </>
   )
 }

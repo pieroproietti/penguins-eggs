@@ -285,7 +285,7 @@ export default class Sequence {
       // start
       await this.settings.load()
 
-      let minSleep = 500
+      let minSleep = 50
 
       // Partition
       let isPartitioned = false
@@ -811,7 +811,7 @@ async function emergencyShell(message: string) {
  * @param message 
  */
 async function showProblem(message: string, currErr: any) {
-   let error=JSON.stringify(currErr)
+   let error='' //JSON.stringify(currErr)
    let info = `We are after: ${message}, error: ${error}`
    try {
       await redraw(
