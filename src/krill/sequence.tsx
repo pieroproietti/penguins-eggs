@@ -281,16 +281,17 @@ export default class Sequence {
       await this.settings.load()
 
       let message = ""
+      let minSleep = 10
       let isPartitioned = false
 
       message = "Creating partitions"
       let currErr = ''
-      await redraw(<Install message={message} percent={1} />)
+      await redraw(<Install message={message} percent={0} />)
       try {
          isPartitioned = await this.partition()
-         sleep(50)
+         sleep(minSleep)
       } catch (error) {
-         currErr=JSON.stringify(error)
+         showProblem(message, error)
       }
 
       if (isPartitioned) {
@@ -299,11 +300,10 @@ export default class Sequence {
          await redraw(<Install message={message} percent={6} />)
          try {
             await this.mkfs()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
-         Utils.pressKeyToExit()
 
 
          // mountFs
@@ -313,29 +313,28 @@ export default class Sequence {
             await this.mountFs()
             await sleep(500) // diamo il tempo di montare
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
-         Utils.pressKeyToExit()
 
          // mountVfs
          message = "Mounting on target VFS "
          await redraw(<Install message={message} percent={12} />)
          try {
             await this.mountVfs()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
-         
+
 
          // unpackfs
          message = "Unpacking filesystem "
          await redraw(<Install message={message} percent={15} />)
          try {
             await this.unpackfs()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -343,11 +342,12 @@ export default class Sequence {
          if (this.distro.familyId === 'debian') {
             message = "dpkg-unsafe-io"
             await redraw(<Install message={message} percent={40} />)
+            sleep(minSleep)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io')
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
          }
 
@@ -355,11 +355,12 @@ export default class Sequence {
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'sources-yolk'
-            await redraw(<Install message={message} percent={43}/>)
+            await redraw(<Install message={message} percent={43} />)
             try {
                await this.execCalamaresModule('sources-yolk')
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
          }
 
@@ -369,9 +370,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={46} />)
          try {
             await this.machineId()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -380,9 +381,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={49} />)
          try {
             await this.fstab(this.partitions.installationDevice)
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -397,8 +398,9 @@ export default class Sequence {
                try {
                   await exec(cmd, Utils.setEcho(true))
                   this.is_clone = true // Adesso è un clone
+                  sleep(minSleep)
                } catch (error) {
-                  currErr=JSON.stringify(error)
+                  showProblem(message, error)
                }
             } else {
                await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
@@ -410,9 +412,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={61} />)
          try {
             await this.networkCfg()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
          // hostname
@@ -420,9 +422,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={64} />)
          try {
             await this.hostname(this.network.domain)
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -432,9 +434,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={65} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
          }
 
@@ -457,10 +459,10 @@ export default class Sequence {
                   this.distro.familyId === 'archlinux' ||
                   this.distro.familyId === 'debian') {
                   await this.locale()
-                  sleep(50)
+                  sleep(minSleep)
                }
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
 
 
@@ -469,9 +471,9 @@ export default class Sequence {
             redraw(<Install message={message} percent={71} />)
             try {
                await this.keyboard()
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
 
 
@@ -482,10 +484,10 @@ export default class Sequence {
                try {
                   await this.localeCfg()
                   await exec("chroot " + this.installTarget + " locale-gen")
-                  sleep(50)
+                  sleep(minSleep)
                }
                catch (error) {
-                  currErr=JSON.stringify(error)
+                  showProblem(message, error)
                }
             }
 
@@ -495,10 +497,10 @@ export default class Sequence {
             await redraw(<Install message={message} percent={73} />)
             try {
                await this.delLiveUser()
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
-}
+               showProblem(message, error)
+            }
 
 
             // addUser
@@ -506,9 +508,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={74} />)
             try {
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
 
 
@@ -517,9 +519,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={75} />)
             try {
                await this.changePassword('root', this.users.rootPassword)
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
 
 
@@ -533,11 +535,11 @@ export default class Sequence {
                      if (this.distro.distroLike === 'Arch') {
                         await exec(`chroot ${this.installTarget} groupadd autologin`)
                         await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.username} autologin`)
-                        sleep(50)
+                        sleep(minSleep)
                      }
                   }
                } catch (error) {
-                  currErr=JSON.stringify(error)
+                  showProblem(message, error)
                }
             }
          } // IF NOT CLONE END
@@ -547,9 +549,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={80} />)
          try {
             await this.cliAutologin.remove(this.installTarget)
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -558,9 +560,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={81} />)
          try {
             await this.bootloaderConfig()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -569,9 +571,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={82} />)
          try {
             await this.grubcfg()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -580,9 +582,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={83} />)
          try {
             await this.bootloader()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -592,9 +594,9 @@ export default class Sequence {
             await redraw(<Install message={message} percent={84} />)
             try {
                await this.execCalamaresModule('sources-yolk-undo')
-               sleep(50)
+               sleep(minSleep)
             } catch (error) {
-               currErr=JSON.stringify(error)
+               showProblem(message, error)
             }
          }
 
@@ -604,9 +606,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={85} />)
          try {
             await this.packages()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -615,9 +617,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={86} />)
          try {
             await this.initramfsCfg(this.partitions.installationDevice)
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -626,9 +628,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={87} />)
          try {
             await this.initramfs()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -640,9 +642,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={88} />)
          try {
             await this.removeInstallerLink()
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -652,9 +654,9 @@ export default class Sequence {
          try {
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
-            sleep(50)
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -669,9 +671,9 @@ export default class Sequence {
                await redraw(<Install message={message} percent={90} />)
                try {
                   await this.execCalamaresModule(step)
-                  sleep(50)
+                  sleep(minSleep)
                } catch (error) {
-                  currErr=JSON.stringify(error)
+                  showProblem(message, error)
                }
             }
 
@@ -689,8 +691,9 @@ export default class Sequence {
          await redraw(<Install message={message} percent={96} />)
          try {
             await this.umountVfs()
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
@@ -698,18 +701,20 @@ export default class Sequence {
          await redraw(<Install message={message} percent={97} />)
          try {
             await this.umountFs()
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
 
 
          // finished
          message = "finished"
-         await redraw(<Install message={message} percent={100} />)
+         await redraw(<Install message={message} percent={99} />)
          try {
             await this.finished()
+            sleep(minSleep)
          } catch (error) {
-            currErr=JSON.stringify(error)
+            showProblem(message, error)
          }
       }
    }
@@ -745,7 +750,11 @@ export default class Sequence {
          message = `System will ${cmd} in 5 seconds...`
       }
 
-      await redraw(<Finished installationDevice={this.partitions.installationDevice} hostName={this.users.hostname} userName={this.users.username} />)
+      await redraw(<Finished 
+                        installationDevice={this.partitions.installationDevice} 
+                        hostName={this.users.hostname} 
+                        userName={this.users.username}
+                        message={message} />)
 
       if (this.unattended && this.nointeractive) {
          await sleep(5000)
@@ -807,26 +816,24 @@ async function emergencyShell(message: string) {
  * 
  * @param message 
  */
-async function showProblem(message: string, currErr: string) {
-   if (currErr !== '') {
-      message = `You are after ${message}, error: ${currErr}`
-      try {
-         await redraw(
-            <>
-               <Title />
-               <Box>
-                  <Text>You are after {message}</Text>
-               </Box>
-               <Box>
-                  <Text>Error: {currErr}</Text>
-               </Box>
-            </>
-         )
-         cliCursor.show()
-         await exec("/bin/bash")
-         cliCursor.hide()
-      } catch (error) {
-         await Utils.pressKeyToExit(JSON.stringify(error))
-      }
+async function showProblem(message: string, currErr: any) {
+   message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
+   try {
+      await redraw(
+         <>
+            <Title />
+            <Box>
+               <Text>{message}</Text>
+            </Box>
+            <Box>
+               <Text>Error: {currErr}</Text>
+            </Box>
+         </>
+      )
+      cliCursor.show()
+      await exec("/bin/bash")
+      cliCursor.hide()
+   } catch (error) {
+      await Utils.pressKeyToExit(JSON.stringify(error))
    }
 }
