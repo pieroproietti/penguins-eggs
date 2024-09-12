@@ -66,7 +66,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
                 <Text color="cyan"> {message}</Text>
               </Box>
               <Newline />
-              <Box><Text>Progress: <Spinner type="dots" /></Text></Box>
+              <Box><Text>Installing <Spinner type="simpleDotsScrolling" /></Text></Box>
               <Box><Text>{progressBar}</Text></Box>
             </Box>
           </Box>
