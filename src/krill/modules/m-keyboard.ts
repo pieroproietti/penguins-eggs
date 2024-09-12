@@ -51,27 +51,15 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
       Utils.write(this.installTarget + '/etc/vconsole.conf', content)
     }
     await exec(cmd, this.echo)
+
   } else if (this.distro.familyId === 'alpine') {
 
     /**
      * https://docs.alpinelinux.org/user-handbook/0.1a/Installing/manual.html
      */
+    /**
+     * Alpine dovrebbe fare tutto con setup-keymap us us
+     */
     await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
-
-    // X11
-    let content =""
-    content += `Section "InputClass"\n`
-    content += `Identifier "system-keyboard"\n`
-    content += `MatchIsKeyboard "on"\n`
-    content += `Option "XkbLayout" "${this.keyboardLayout}"\n`
-    content += `Option "XkbModel" "${this.keyboardModel}"\n`
-    content += `EndSection\n`
-    let file="/etc/X11/xorg.conf.d/00-keyboard.conf"
-    if (fs.existsSync(this.installTarget + '/etc/X11/xorg.conf.d')) {
-      Utils.write(this.installTarget + '/etc/X11/xorg.conf.d/00-keyboard.conf', content)
-    }
-
-    // Wayland TO DO
-
   }
 }
