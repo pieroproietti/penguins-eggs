@@ -19,6 +19,7 @@
         "cli-cursor": "^4.0.0",
         "debug": "^4.3.7",
         "ink": "^5.0.1",
+        "ink-progress-bar": "^3.0.0",
         "ink-spinner": "^5.0.0",
         "inquirer": "^9.3.6",
         "js-yaml": "^4.1.0",

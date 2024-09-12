@@ -22,11 +22,10 @@ import Steps from './steps.js'
 type InstallProps = {
   message?: string,
   percent?: number,
-  spinner?: boolean
 }
 
 
-export default function Install({ message="Install", percent=0, spinner = false }: InstallProps) {
+export default function Install({ message="Install", percent=1 }: InstallProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
@@ -41,13 +40,11 @@ export default function Install({ message="Install", percent=0, spinner = false 
   productName = calamares.strings.productName
   version = calamares.strings.version
 
-  //let perc = Math.round(percent * 100)
-  let perc=percent
-  let barLen = 52
-  let progress = Math.round(barLen * percent)
+  let barLen = 53
+  let progress = Math.round(barLen * percent/100)
   let todo = barLen - progress
   let clean: string = "·".repeat(todo)
-  let progressBar: string = "[" + "█".repeat(progress) + clean + "] " + perc + "%"
+  let progressBar: string = "[" + "█".repeat(progress) + clean + "] " + percent + "%"
 
   /**
    * totale width=75
