@@ -48,10 +48,10 @@ export default async function locale(this: Sequence) {
 
     // timezone Arch Debian
     if (fs.existsSync('/etc/localtime')) {
-      const cmd = `chroot ${this.installTarget} unlink /etc/localtime`
+      const cmd = `chroot ${this.installTarget} unlink /etc/localtime ${this.toNull}`
       await exec(cmd, this.echo)
     }
-    const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime`
+    const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime ${this.toNull}`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'alpine') {
@@ -88,14 +88,14 @@ export default async function locale(this: Sequence) {
      * 
      */
     let tz = `/etc/zoneinfo/${this.region}/${this.zone}`
-    await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/*`, this.echo)
-    await exec(`chroot ${this.installTarget} mkdir -p ${tz}`, this.echo)
+    await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/* ${this.toNull}`, this.echo)
+    await exec(`chroot ${this.installTarget} mkdir -p ${tz} ${this.toNull}`, this.echo)
 
     file=`${this.installTarget}/etc/profile.d/timezone.sh`
     content =""
     content += `#!/bin/sh\n`
     content += `export TZ='${tz}'`
     Utils.write(file, content)
-    await exec(`chmod +x ${file}`)
+    await exec(`chmod +x ${file} ${this.toNull}`)
   }
 }

@@ -50,6 +50,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
    * totale width=75
    * step width=15
    * finestra with=59
+   *                 <Text><Spinner type="simpleDotsScrolling" /></Text>
    */
   return (
     <>
@@ -64,7 +65,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
               <Box flexDirection="row">
                 <Text>Step: </Text>
                 <Text color="cyan">{message} </Text>
-                <Text><Spinner type="simpleDotsScrolling" /></Text>
+                <Text><Spinner type="simpleDotsScrolling" /></Text>                
               </Box>
               <Newline />
               <Box><Text>{progressBar}</Text></Box>

@@ -27,7 +27,7 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     let cmd = ''
     let content = ''
     if (Utils.isSystemd()) {
-      cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout}`
+      cmd = `chroot ${this.installTarget} localectl set-keymap ${this.keyboardLayout} ${this.toNull}`
       content = '# See penguins-eggs/src/krill/modules/set-keyboard.ts\n\n'
       content += "# Read and parsed by systemd-localed. It's probably wise not to edit this file\n"
       content += '# manually too freely.\n'

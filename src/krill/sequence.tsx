@@ -49,6 +49,7 @@ import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../components/install.js'
 import Finished from '../components/finished.js'
 
+
 import fs from 'fs'
 import yaml from 'js-yaml'
 import shx from 'shelljs'
@@ -353,7 +354,7 @@ export default class Sequence {
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
-            message = 'Debian: sources-yolk'
+            message = 'Debian sources-yolk'
             await redraw(<Install message={message} percent={43} />)
             try {
                await this.execCalamaresModule('sources-yolk')
@@ -429,7 +430,7 @@ export default class Sequence {
 
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
-            message = "Debian: dpkg-unsafe-io-undo"
+            message = "Debian dpkg-unsafe-io-undo"
             await redraw(<Install message={message} percent={65} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
@@ -458,6 +459,7 @@ export default class Sequence {
                if (this.distro.familyId === 'alpine' ||
                   this.distro.familyId === 'archlinux' ||
                   this.distro.familyId === 'debian') {
+                  
                   await this.locale()
                   sleep(minSleep)
                }
@@ -484,7 +486,7 @@ export default class Sequence {
                redraw(<Install message={message} percent={72} />)
                try {
                   await this.localeCfg()
-                  await exec("chroot " + this.installTarget + " locale-gen")
+                  await exec("chroot " + this.installTarget + " locale-gen" + this.toNull)
                   sleep(minSleep)
                }
                catch (error) {
@@ -534,8 +536,8 @@ export default class Sequence {
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {
-                        await exec(`chroot ${this.installTarget} groupadd autologin`)
-                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.username} autologin`)
+                        await exec(`chroot ${this.installTarget} groupadd autologin ${this.toNull}`)
+                        await exec(`chroot ${this.installTarget} gpasswd -a ${this.users.username} autologin ${this.toNull}`)
                         sleep(minSleep)
                      }
                   }
@@ -798,8 +800,6 @@ export default class Sequence {
          await Utils.pressKeyToExit(JSON.stringify(error))
       }
    }
-
-
 }
 
 /**
@@ -807,10 +807,10 @@ export default class Sequence {
  * @param elem
  */
 async function redraw(elem: JSX.Element) {
-   // console.clear()
    let opt: RenderOptions = {}
    opt.patchConsole = false
-   opt.debug = false
+   opt.debug = true
+   console.clear()
    render(elem, opt)
 }
 
