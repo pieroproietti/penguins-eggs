@@ -155,31 +155,24 @@ pnpm i
 pnpm build
 
 ```
+Now we can use eggs from the source, but it's possible to install it with the command from the source directory:
 
-Now we can use eggs from the source:
-
-## Autocomplete, Desktop icons
-We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc:
 ```
 ./install-eggs-dev
 
 ```
+This will configure too Autocomplete, Desktop icons and all the components of penguins-eggs.
+
+> [!NOTE]
+> Will be a great help for this project to have an RPM package of penguins-eggs, if someone want to assist on this will be appreciate.
 
 # What we lacks
 
 Remains to be solved:
-* creation of initrd through dracut which is the main problem;
-* chpasswd does not work when creating users in ovary;
 * configuration of calamares for Fedora.
 * penguins-eggs rpm installation package [Nodejs packaging](https://docs.fedoraproject.org/en-US/packaging-guidelines/Node.js/).
 
 I tryed on fedora40, fedora39 now I will try on [fedora38](https://archives.fedoraproject.org/pub/archive/fedora/linux/releases/36/Everything/x86_64/iso/) here must to work becouse module mdsquash-live;automoutnt, was develoeper here.
-
-We are very near the success!
-
-# Fedora peoples, someone can help? 
-This is my end for now... and same way can be an usefull starting point to someone more expert than me on Fedora, please help.
-
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
