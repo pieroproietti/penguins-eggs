@@ -41,6 +41,12 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.38
+* krill: revised completely, introduced a spinner during installation and cleaning things;
+* OpenSuSE start from live, but can't install;
+* Alpine Linux krill is not working in this edition;
+* To get penguins-eggs on fedora, follow [WAY-TO-FEDORA](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-FEDORA.md), again don't have way to create a package, not too expert on Fedora. If someone want help.
+
 ## penguins-eggs-10.0.37
 * After getting to reproduce fedora using dracut, I tried to do the same job with AlpineLinux and OpenSuSE, unfortunately, I was not successful with either. In any case, on OpenSuSE I went ahead anyway; it remains for me to solve the mystery of why it won't boot from live image, I suspect a problem on syslinux. Cannot find on OpenSuSE the files: `ldlinux.c32`, `libcom32.c32` and `libutil.c32`, they are part of syslinux.
 * On the source I check all the cases we must to choose with distros adding OpenSuSE and ordering the others distros: Alpine, Arch, Debian, Fedota and OpenSuSE.

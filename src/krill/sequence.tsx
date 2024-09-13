@@ -281,9 +281,9 @@ export default class Sequence {
       }
 
       // Escludo spinner da alpine ed opensuse
-      if (this.distro.familyId == 'alpine'){
+      if (this.distro.familyId === 'alpine') {
          this.spinner = false
-      } else (this.distro.familyId == 'opensuse'){
+      } else if (this.distro.familyId === 'opensuse'){
          this.spinner = false
       }
 
@@ -687,11 +687,11 @@ export default class Sequence {
          if (this.halt) {
             cmd = "poweroff"
          }
+
          message = `Press a key to ${cmd}`
          if (this.unattended && this.nointeractive) {
             message = `System will ${cmd} in 5 seconds...`
          }
-
          await redraw(<Finished
             installationDevice={this.partitions.installationDevice}
             hostName={this.users.hostname}
