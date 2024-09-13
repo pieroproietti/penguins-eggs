@@ -565,7 +565,7 @@ export default class Sequence {
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
-            message = "sources-yolk-undo"
+            message = "Debian sources-yolk-undo"
             await redraw(<Install message={message} percent={84} />)
             try {
                await this.execCalamaresModule('sources-yolk-undo')
@@ -576,7 +576,7 @@ export default class Sequence {
 
 
          // packages
-         message = "add/remove same packages"
+         message = "Add/remove packages..."
          await redraw(<Install message={message} percent={85} />)
          try {
             await this.packages()
