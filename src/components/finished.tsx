@@ -7,7 +7,7 @@
  */
 
 import React, { useState } from 'react'
-import { Box, Newline, Text } from 'ink'
+import { Box, Newline, Text, Spacer } from 'ink'
 import Title from './title.js'
 import Steps from './steps.js'
 
@@ -64,7 +64,7 @@ export default function Finished({
               <Box><Text>Host name was set as </Text><Text color="green">{hostName}</Text></Box>
               <Box><Text>The user name is </Text><Text color="green">{userName}</Text></Box>
               <Newline/>
-              <Box><Text backgroundColor="white" color="black">{message}</Text></Box>
+              <Box><Spacer/><Text backgroundColor="white" color="black">{message}</Text></Box>
             </Box>
           </Box>
         </Box>
