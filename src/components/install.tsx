@@ -22,16 +22,17 @@ import Steps from './steps.js'
 type InstallProps = {
   message?: string,
   percent?: number,
+  spinner?: boolean,
 }
 
 
-export default function Install({ message="Install", percent=1 }: InstallProps) {
+export default function Install({ message = "Install", percent = 0, spinner = false }: InstallProps) {
   let productName = 'unknown'
   let version = 'x.x.x'
   let configRoot = '/etc/penguins-eggs.d/krill/'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
     configRoot = '/etc/calamares/'
-   }
+  }
 
   const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as ISettings
   const branding = settings.branding
@@ -41,7 +42,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
   version = calamares.strings.version
 
   let barLen = 53
-  let progress = Math.round(barLen * percent/100)
+  let progress = Math.round(barLen * percent / 100)
   let todo = barLen - progress
   let clean: string = "·".repeat(todo)
   let progressBar: string = "[" + "█".repeat(progress) + clean + "] " + percent + "%"
@@ -65,7 +66,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
               <Box flexDirection="row">
                 <Text>Step: </Text>
                 <Text color="cyan">{message} </Text>
-                <Text><Spinner type="simpleDotsScrolling" /></Text>                
+                {spinner && <Text><Spinner type="simpleDotsScrolling" /></Text>}
               </Box>
               <Newline />
               <Box><Text>{progressBar}</Text></Box>
@@ -74,7 +75,7 @@ export default function Install({ message="Install", percent=1 }: InstallProps) 
         </Box>
       </Box >
       <Text>
-      </Text>      
+      </Text>
     </>
   )
 }

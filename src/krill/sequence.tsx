@@ -177,6 +177,8 @@ export default class Sequence {
 
    toNull = ' > /dev/null 2>&1'
 
+   spinner = true
+
    settings = {} as Settings
 
    remix = {} as IRemix
@@ -275,6 +277,14 @@ export default class Sequence {
       this.echo = Utils.setEcho(this.verbose)
       if (this.verbose) {
          this.toNull = ''
+         this.spinner = false
+      }
+
+      // Escludo spinner da alpine ed opensuse
+      if (this.distro.familyId == 'alpine'){
+         this.spinner = false
+      } else (this.distro.familyId == 'opensuse'){
+         this.spinner = false
       }
 
       // start
@@ -282,7 +292,7 @@ export default class Sequence {
 
       let isPartitioned = false
       let message = "Creating partitions"
-      await redraw(<Install message={message} percent={0} />)
+      await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
       try {
          isPartitioned = await this.partition()
       } catch (error) {
@@ -292,7 +302,7 @@ export default class Sequence {
       if (isPartitioned) {
          // formatting
          message = "Formatting file system "
-         await redraw(<Install message={message} percent={6} />)
+         await redraw(<Install message={message} percent={6} spinner={this.spinner} />)
          try {
             await this.mkfs()
          } catch (error) {
@@ -302,7 +312,7 @@ export default class Sequence {
 
          // mountFs
          message = "Mounting target file system "
-         redraw(<Install message={message} percent={9} />)
+         redraw(<Install message={message} percent={9} spinner={this.spinner} />)
          try {
             await this.mountFs()
             await sleep(500) // diamo il tempo di montare
@@ -312,7 +322,7 @@ export default class Sequence {
 
          // mountVfs
          message = "Mounting on target VFS "
-         await redraw(<Install message={message} percent={12} />)
+         await redraw(<Install message={message} percent={12} spinner={this.spinner} />)
          try {
             await this.mountVfs()
          } catch (error) {
@@ -322,7 +332,7 @@ export default class Sequence {
 
          // unpackfs
          message = "Unpacking filesystem "
-         await redraw(<Install message={message} percent={15} />)
+         await redraw(<Install message={message} percent={15} spinner={this.spinner} />)
          try {
             await this.unpackfs()
          } catch (error) {
@@ -333,7 +343,7 @@ export default class Sequence {
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {
             message = "Debian: dpkg-unsafe-io"
-            await redraw(<Install message={message} percent={40} />)
+            await redraw(<Install message={message} percent={40} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io')
             } catch (error) {
@@ -345,7 +355,7 @@ export default class Sequence {
          // sources-yolk
          if (this.distro.familyId === 'debian') {
             message = 'Debian sources-yolk'
-            await redraw(<Install message={message} percent={43} />)
+            await redraw(<Install message={message} percent={43} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('sources-yolk')
             } catch (error) {
@@ -356,7 +366,7 @@ export default class Sequence {
 
          // machineid
          message = 'machineid'
-         await redraw(<Install message={message} percent={46} />)
+         await redraw(<Install message={message} percent={46} spinner={this.spinner} />)
          try {
             await this.machineId()
          } catch (error) {
@@ -366,7 +376,7 @@ export default class Sequence {
 
          // fstab
          message = "Creating fstab "
-         await redraw(<Install message={message} percent={49} />)
+         await redraw(<Install message={message} percent={49} spinner={this.spinner} />)
          try {
             await this.fstab(this.partitions.installationDevice)
          } catch (error) {
@@ -379,7 +389,7 @@ export default class Sequence {
           */
          if (this.is_crypted_clone) {
             message = "Restore private data from crypted clone "
-            await redraw(<Install message={message} percent={55} />)
+            await redraw(<Install message={message} percent={55} spinner={this.spinner} />)
             if (fs.existsSync(this.luksFile)) {
                let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
                try {
@@ -395,7 +405,7 @@ export default class Sequence {
 
          // networkcfg
          message = "Network configuration"
-         await redraw(<Install message={message} percent={61} />)
+         await redraw(<Install message={message} percent={61} spinner={this.spinner} />)
          try {
             await this.networkCfg()
          } catch (error) {
@@ -404,7 +414,7 @@ export default class Sequence {
 
          // hostname
          message = "Create hostname "
-         await redraw(<Install message={message} percent={64} />)
+         await redraw(<Install message={message} percent={64} spinner={this.spinner} />)
          try {
             await this.hostname(this.network.domain)
          } catch (error) {
@@ -415,7 +425,7 @@ export default class Sequence {
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
             message = "Debian dpkg-unsafe-io-undo"
-            await redraw(<Install message={message} percent={65} />)
+            await redraw(<Install message={message} percent={65} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
             } catch (error) {
@@ -437,7 +447,7 @@ export default class Sequence {
          if (!this.is_clone) {
             // NOT_CLONE: locale
             message = "Locale"
-            redraw(<Install message={message} percent={70} />)
+            redraw(<Install message={message} percent={70} spinner={this.spinner} />)
             try {
                if (this.distro.familyId === 'alpine' ||
                   this.distro.familyId === 'archlinux' ||
@@ -452,7 +462,7 @@ export default class Sequence {
 
             // NOT_CLONE: keyboard
             message = "Settings keyboard"
-            redraw(<Install message={message} percent={71} />)
+            redraw(<Install message={message} percent={71} spinner={this.spinner} />)
             try {
                await this.keyboard()
             } catch (error) {
@@ -464,7 +474,7 @@ export default class Sequence {
             if (this.distro.familyId === 'archlinux' ||
                this.distro.familyId === 'debian') {
                message = "Locale Configuration"
-               redraw(<Install message={message} percent={72} />)
+               redraw(<Install message={message} percent={72} spinner={this.spinner} />)
                try {
                   await this.localeCfg()
                   await exec("chroot " + this.installTarget + " locale-gen" + this.toNull)
@@ -477,7 +487,7 @@ export default class Sequence {
 
             // NOT_CLONE: delLiveUser
             message = "Remove live user"
-            await redraw(<Install message={message} percent={73} />)
+            await redraw(<Install message={message} percent={73} spinner={this.spinner} />)
             try {
                await this.delLiveUser()
             } catch (error) {
@@ -487,7 +497,7 @@ export default class Sequence {
 
             // NOT_CLONE: addUser
             message = `Add user ${this.users.username}`
-            await redraw(<Install message={message} percent={74} />)
+            await redraw(<Install message={message} percent={74} spinner={this.spinner} />)
             try {
                await this.addUser(this.users.username, this.users.password, this.users.fullname, '', '', '')
             } catch (error) {
@@ -497,7 +507,7 @@ export default class Sequence {
 
             // NOT_CLONE: addRootPassword
             message = "Add root password"
-            await redraw(<Install message={message} percent={75} />)
+            await redraw(<Install message={message} percent={75} spinner={this.spinner} />)
             try {
                await this.changePassword('root', this.users.rootPassword)
             } catch (error) {
@@ -509,7 +519,7 @@ export default class Sequence {
             if (Pacman.isInstalledGui()) {
                try {
                   message = "Autologin GUI"
-                  await redraw(<Install message={message} percent={78} />)
+                  await redraw(<Install message={message} percent={78} spinner={this.spinner} />)
                   if (this.users.autologin) {
                      await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
                      if (this.distro.distroLike === 'Arch') {
@@ -525,7 +535,7 @@ export default class Sequence {
 
          // ALWAYS remove autologin CLI
          message = "Remove autologin CLI"
-         await redraw(<Install message={message} percent={80} />)
+         await redraw(<Install message={message} percent={80} spinner={this.spinner} />)
          try {
             await this.cliAutologin.remove(this.installTarget)
          } catch (error) {
@@ -535,7 +545,7 @@ export default class Sequence {
 
          // bootloader-config
          message = "bootloader-config "
-         await redraw(<Install message={message} percent={81} />)
+         await redraw(<Install message={message} percent={81} spinner={this.spinner} />)
          try {
             await this.bootloaderConfig()
          } catch (error) {
@@ -545,7 +555,7 @@ export default class Sequence {
 
          // grubcfg
          message = "grubcfg "
-         await redraw(<Install message={message} percent={82} />)
+         await redraw(<Install message={message} percent={82} spinner={this.spinner} />)
          try {
             await this.grubcfg()
          } catch (error) {
@@ -555,7 +565,7 @@ export default class Sequence {
 
          // bootloader (grub-install)
          message = "bootloader "
-         await redraw(<Install message={message} percent={83} />)
+         await redraw(<Install message={message} percent={83} spinner={this.spinner} />)
          try {
             await this.bootloader()
          } catch (error) {
@@ -566,7 +576,7 @@ export default class Sequence {
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
             message = "Debian sources-yolk-undo"
-            await redraw(<Install message={message} percent={84} />)
+            await redraw(<Install message={message} percent={84} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('sources-yolk-undo')
             } catch (error) {
@@ -577,7 +587,7 @@ export default class Sequence {
 
          // packages
          message = "Add/remove packages..."
-         await redraw(<Install message={message} percent={85} />)
+         await redraw(<Install message={message} percent={85} spinner={this.spinner} />)
          try {
             await this.packages()
          } catch (error) {
@@ -587,7 +597,7 @@ export default class Sequence {
 
          // initramfsCfg
          message = "initramfs configure"
-         await redraw(<Install message={message} percent={86} />)
+         await redraw(<Install message={message} percent={86} spinner={this.spinner} />)
          try {
             await this.initramfsCfg(this.partitions.installationDevice)
          } catch (error) {
@@ -597,7 +607,7 @@ export default class Sequence {
 
          // initramfs
          message = "initramfs "
-         await redraw(<Install message={message} percent={87} />)
+         await redraw(<Install message={message} percent={87} spinner={this.spinner} />)
          try {
             await this.initramfs()
          } catch (error) {
@@ -610,7 +620,7 @@ export default class Sequence {
           * remove CLI/GUI installer link
           */
          message = "remove GUI installer link"
-         await redraw(<Install message={message} percent={88} />)
+         await redraw(<Install message={message} percent={88} spinner={this.spinner} />)
          try {
             await this.removeInstallerLink()
          } catch (error) {
@@ -620,7 +630,7 @@ export default class Sequence {
 
          // remove /etc/penguins_eggs.d/is_clone*
          message = "Cleanup"
-         await redraw(<Install message={message} percent={89} />)
+         await redraw(<Install message={message} percent={89} spinner={this.spinner} />)
          try {
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
             await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
@@ -637,7 +647,7 @@ export default class Sequence {
          if (steps.length > 0) {
             for (const step of steps) {
                message = `running ${step}`
-               await redraw(<Install message={message} percent={90} />)
+               await redraw(<Install message={message} percent={90} spinner={this.spinner} />)
                try {
                   await this.execCalamaresModule(step)
                } catch (error) {
@@ -656,7 +666,7 @@ export default class Sequence {
 
          // umountVfs
          message = "umount VFS"
-         await redraw(<Install message={message} percent={96} />)
+         await redraw(<Install message={message} percent={96} spinner={this.spinner} />)
          try {
             await this.umountVfs()
          } catch (error) {
@@ -665,7 +675,7 @@ export default class Sequence {
 
 
          message = "umount"
-         await redraw(<Install message={message} percent={99} />)
+         await redraw(<Install message={message} percent={99} spinner={this.spinner} />)
          try {
             await this.umountFs()
          } catch (error) {
