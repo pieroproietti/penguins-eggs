@@ -21,14 +21,14 @@ export default async function machineId(this: Sequence): Promise<void> {
   // We delete the machine-id file to force its recreation
   const file = `${this.installTarget}/etc/machine-id`
   if (fs.existsSync(file)) {
-    await exec(`rm ${file}`, this.echo)
+    await exec(`rm ${file} ${this.toNull}`, this.echo)
   }
 
   // On Alpine, we need to create the machine-id file
   if (this.distro.familyId === 'alpine') {
-    await exec(`dbus-uuidgen > ${this.installTarget}/var/lib/dbus/machine-id`)
-    await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
+    await exec(`dbus-uuidgen > ${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
+    await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id ${this.toNull}`)
   } else {
-    await exec(`touch ${file}`)
+    await exec(`touch ${file} ${this.toNull}`)
   }
 }
