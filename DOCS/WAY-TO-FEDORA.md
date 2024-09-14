@@ -63,7 +63,8 @@ dnf -y install \
     git \
     lsb-release \
     rsync \
-    xdg-user-dirs
+    xdg-user-dirs \
+    zstd
 
 ```
 
