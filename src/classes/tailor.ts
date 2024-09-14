@@ -234,6 +234,19 @@ export default class Tailor {
         break
       }
 
+      case 'Fedora': {
+        tailorList = `${this.costume}/fedora.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Alpine`)
+            process.exit()
+          }
+        }
+
+        break
+      }
+
       // No default
     }
 
@@ -381,7 +394,16 @@ export default class Tailor {
 
               break
             }
+
+            case 'fedora': {
+              await exec('dnf update', Utils.setEcho(false))
+              Utils.pressKeyToExit()
+
+              break
+            }
+
             // No default
+
           }
         }
 
@@ -410,6 +432,13 @@ export default class Tailor {
 
                 break
               }
+
+              case 'fedora': {
+                await exec('dnf upgrade', Utils.setEcho(false))
+
+                break
+              }
+
               // No default
             }
           } //  upgrade true
@@ -457,6 +486,13 @@ export default class Tailor {
 
             break
           }
+
+          case 'fedora': {
+            await this.helperInstall(this.materials.sequence.packages, 'packages', `dnf install`)
+
+            break
+          }
+
           // No default
         }
       }
