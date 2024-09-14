@@ -237,7 +237,7 @@ export default class Tailor {
       case 'Fedora': {
         tailorList = `${this.costume}/fedora.yml`
         if (!fs.existsSync(tailorList)) {
-          console.log(`no costume definition found compatible Alpine`)
+          console.log(`no costume definition found compatible Fedora`)
           process.exit()
         }
 
@@ -387,14 +387,12 @@ export default class Tailor {
 
             case 'alpine': {
               await exec('apk update', Utils.setEcho(false))
-              Utils.pressKeyToExit()
 
               break
             }
 
             case 'fedora': {
               await exec('dnf update', Utils.setEcho(false))
-              Utils.pressKeyToExit()
 
               break
             }
