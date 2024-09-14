@@ -46,23 +46,24 @@ dnf -y install \
     xfce4-screensaver \
     xfce4-terminal \
     xfce4-whiskermenu-plugin \
-    spice-vdagent
+    spice-vdagent \
+    firefox \
+    xrandr 
+
 
 systemctl set-default graphical.target 
 systemctl enable lightdm
 systemctl enable spice-vdagentd
 
 ```
-## others
+## others CLI
 ```
 dnf -y install \
     bash-completion \
-    firefox \
     git \
     lsb-release \
     rsync \
-    xdg-user-dirs \
-    xrandr 
+    xdg-user-dirs
 
 ```
 
