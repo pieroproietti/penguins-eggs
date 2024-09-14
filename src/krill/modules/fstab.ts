@@ -116,8 +116,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
   }
-  console.log(text)
-  Utils.pressKeyToExit()
+  //console.log(text)
+  //Utils.pressKeyToExit()
   Utils.write(fstab, text)
 }
 
