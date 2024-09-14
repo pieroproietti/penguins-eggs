@@ -237,8 +237,11 @@ export default class Tailor {
       case 'Fedora': {
         tailorList = `${this.costume}/fedora.yml`
         if (!fs.existsSync(tailorList)) {
-          console.log(`no costume definition found compatible Fedora`)
-          process.exit()
+          tailorList = `${this.costume}/debian.yml`
+            if (!fs.existsSync(tailorList)) {
+              console.log(`no costume definition found compatible Fedora`)
+              process.exit()
+            }
         }
 
         break
