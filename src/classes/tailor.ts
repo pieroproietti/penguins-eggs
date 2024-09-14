@@ -488,7 +488,7 @@ export default class Tailor {
           }
 
           case 'fedora': {
-            await this.helperInstall(this.materials.sequence.packages, 'packages', `dnf install`)
+            await this.helperInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
 
             break
           }
