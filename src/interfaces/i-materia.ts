@@ -16,32 +16,31 @@ export interface IRepos {
 
 export interface IMateria {
   author: string
-  customize: {
-    dirs: boolean
-    // hostname: boolean
-    scripts: string[]
-  }
+
   description: string
   distributions: string[]
   name: string
   reboot: boolean
   release: string
   sequence: {
-    accessories: string[]
-    debs: boolean
-    // dependencies: string[]
-    packages: string[]
-    packages_no_install_recommends: string[]
-    packages_python: string[]
-    preinst: string[]
     repositories: {
       sources_list: string[]
       sources_list_d: string[]
       update: boolean
       upgrade: boolean
     }
+    preinst: string[]
+    packages: string[]
+    packages_no_install_recommends: string[]
+    packages_python: string[]
+    debs: boolean
+    accessories: string[]
     try_accessories: string[]
     try_packages: string[]
     try_packages_no_install_recommends: string[]
+  }
+  customize: {
+    dirs: boolean
+    scripts: string[]
   }
 }
