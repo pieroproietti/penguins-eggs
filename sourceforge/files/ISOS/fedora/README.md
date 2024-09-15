@@ -17,9 +17,16 @@ penguins-eggs
 
 # Fedora
 
+* **egg-of-fedora-colibri** (XFCE, devtools)
+* **egg-of-fedora-albatros**  (KDE, office, multimedia, graphics))
+* **egg-of-fedora-duck** (CINNAMON, office, multimedia, graphics)
+* **egg-of-fedora-owl**  (XFCE, office, multimedia, graphics))
+
 Fedora doesn't need much introduction, Red Hat was the first Linux I managed to install back in 2000, then I switched to Debian.
 
 I always liked it, sometimes hated it because of the need for a license amd rpm, still a great system.
+
+## 
 
 I am trying to port penguins-eggs to Fedora, that is the state of the art. 
 
