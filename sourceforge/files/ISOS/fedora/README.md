@@ -23,9 +23,9 @@ penguins-eggs
 * **egg-of-fedora-duck** (CINNAMON, office, multimedia, graphics)
 * **egg-of-fedora-owl**  (XFCE, office, multimedia, graphics))
 
-Fedora doesn't need much introduction, Red Hat was the first Linux I managed to install back in 2000, then I switched to Debian.
+Fedora doesn't need much introduction, Redhat was the first Linux I managed to install back in 2000, then I switched to Debian.
 
-I always liked it, sometimes hated it because of the need for a license amd rpm, still a great system.
+I always liked it, sometimes hated it because of the need for a license - I'm speacking of Redhat - and rpm, still a great system.
 
 ## 
 
@@ -45,7 +45,8 @@ It's also possible to dress our naked system as colibri, just:
 # Help need
 I'm not too expert on fedora, and in all the ways we have the follow problems:
 
-* fedora ISOs remastered with eggs can't boot on EFI;
-* until now I'm not able to configure calamares on fedora.
+* again was not able to create an rpm package for penguins-eggs;
+* until now I'm not able to configure calamares on fedora;
+* fedora ISOs remastered with eggs can't boot on EFI.
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs.
