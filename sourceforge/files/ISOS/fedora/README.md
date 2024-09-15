@@ -49,4 +49,4 @@ I'm not too expert on fedora, and in all the ways we have the follow problems:
 * until now I'm not able to configure calamares on fedora;
 * fedora ISOs remastered with eggs can't boot on EFI.
 
-You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs.
+You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
