@@ -17,6 +17,7 @@ penguins-eggs
 
 # Fedora
 
+* **egg-of-fedora-naked** (CLI, minimal reproductive installation)
 * **egg-of-fedora-colibri** (XFCE, devtools)
 * **egg-of-fedora-albatros**  (KDE, office, multimedia, graphics))
 * **egg-of-fedora-duck** (CINNAMON, office, multimedia, graphics)
@@ -39,4 +40,12 @@ Boot params for our ISO are created on ovary.ts, this is a sample:
 initrd=/live/initramfs-6.10.7-200.fc40.x86_64.img root=live:CDLABEL=colibri rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 
 ```
 It's also possible to dress our naked system as colibri, just:
-`eggs wardrobe get`, then `sudo eggs wardrobe wear` and I'm trying to prepare albatros too.
+`eggs wardrobe get`, then `sudo eggs wardrobe wear` and I'm trying to prepare albatros, duck and owl too.
+
+# Help need
+I'm not too expert on fedora, and in all the ways we have the follow problems:
+
+* fedora ISOs remastered with eggs can't boot on EFI;
+* until now I'm not able to configure calamares on fedora.
+
+You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs.
