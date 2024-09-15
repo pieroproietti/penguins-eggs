@@ -105,8 +105,9 @@
   distroLike: Ubuntu
   family: debian
   ids:
-    - wilma # Linux Mint 22
-    - devel # Rhino
+    - wilma  # Linux Mint 22
+    - devel  # Rhino
+    - abuntu # Abuntu
 
 #
 # ARCH
