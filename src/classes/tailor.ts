@@ -522,7 +522,7 @@ export default class Tailor {
         this.titles('tailor')
         console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
         console.log(content)
-        Utils.pressKeyToExit('Press a key to continue...')
+        sleep(2000) // Wait 2 seconds
       }
     }
 
