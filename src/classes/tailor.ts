@@ -44,12 +44,12 @@ export default class Tailor {
    *
    */
   async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
-    
+
     if (verbose) {
       this.verbose = true
-      this.toNull=''
+      this.toNull = ''
     }
-    
+
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
 
@@ -166,11 +166,10 @@ export default class Tailor {
           break
         }
 
-        case 'try_accessory':
         case 'accessory': {
           Utils.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
-          
+
           console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvv')
           console.log('Accessory will not be installed, operations will continue.\n')
           console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^')
@@ -316,28 +315,28 @@ export default class Tailor {
        * install packages
        */
       if (this.materials.sequence.packages !== undefined) {
-        switch (distro.familyId) {
-          case 'debian': {
-            const packages = await this.packagesExists(this.materials.sequence.packages, true, 'packages')
-            if (packages.length > 1) {
+        const packages = await this.packagesExists(this.materials.sequence.packages)
+        if (packages.length > 1) {
+          switch (distro.familyId) {
+            case 'debian': {
               await this.packagesInstall(packages)
+              break
             }
-            break
-          }
 
-          case 'archlinux': {
-            await this.packagesInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
-            break
-          }
+            case 'archlinux': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
+              break
+            }
 
-          case 'alpine': {
-            await this.packagesInstall(this.materials.sequence.packages, 'packages', `apk add`)
-            break
-          }
+            case 'alpine': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `apk add`)
+              break
+            }
 
-          case 'fedora': {
-            await this.packagesInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
-            break
+            case 'fedora': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
+              break
+            }
           }
         }
       }
@@ -390,10 +389,10 @@ export default class Tailor {
       /**
        * finalize/customize
        */
-      if (this.materials.finalize.customize && fs.existsSync(`/${this.costume}/dirs`)) {
-        step = 'finalize/customize: copying dirs to /'
+      if (this.materials.finalize.customize && fs.existsSync(`/${this.costume}/sysroot`)) {
+        step = `finalize/customize: copying ${this.costume}/sysroot/ to /`
         Utils.warning(step)
-        let cmd = `rsync -avx  ${this.costume}/dirs/* / ${this.toNull}`
+        let cmd = `rsync -avx  ${this.costume}/sysroot/* / ${this.toNull}`
         await exec(cmd, this.echo)
 
         // chown
@@ -403,11 +402,11 @@ export default class Tailor {
         /**
          * Copyng skel in /home/user
          */
-        if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
+        if (fs.existsSync(`${this.costume}/sysroot/etc/skel`)) {
           const user = await Utils.getPrimaryUser()
           step = `finalize/customize: copying skel in /home/${user}/`
           Utils.warning(step)
-          cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/  ${this.toNull}`
+          cmd = `rsync -avx  ${this.costume}/sysroot/etc/skel/.config /home/${user}/  ${this.toNull}`
           await exec(cmd, this.echo)
           await exec(`chown ${user}:${user} /home/${user}/ -R`)
         }
@@ -450,7 +449,7 @@ export default class Tailor {
    * @param section
    * @returns
    */
-  async packagesExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
+  async packagesExists(packages: string[]): Promise<string[]> {
     const packages_we_want = '/tmp/packages_we_want'
     const packages_not_exists = '/tmp/packages_not_exists'
     const packages_exists = '/tmp/packages_exists'
@@ -469,36 +468,37 @@ export default class Tailor {
         content += elem + '\n'
       }
     }
-
     fs.writeFileSync(packages_we_want, content, 'utf-8')
 
-    /**
-     * packages_exists
-     */
     const distro = new Distro()
-    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`))
+    if (distro.familyId === "debian") {
+      await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+    } else if (distro.familyId === "archlinux") {
+      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+    } else if (distro.familyId === "alpine") {
+      await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+    } else if (distro.familyId === 'fedora') {
+      await exec(`dnf list available | awk '{print $1}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`dnf list available | awk '{print $1}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+    }
+    const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
+    console.log(not_exist_packages)
+    console.log(not_exist_packages.length)
 
-    /**
-     * packages_not_exists
-     */
-    if (verbose) {
-      await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`))
-      const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
-      if (not_exist_packages.length > 1) {
-        // Una riga c'è sempre
-        let content = ''
-        // for (const elem of not_exist_packages) {
-        for (let i = 0; i < not_exist_packages.length - 1; i++) {
-          content += `- ${not_exist_packages[i]}\n`
-        }
-
-        Utils.titles()
-        console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
-        console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvv')
-        console.log(content)
-        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-        sleep(3000) // Wait 3 seconds
+    if (not_exist_packages.length > 1) {
+      // Una riga c'è sempre
+      let content = ''
+      for (let i = 0; i < not_exist_packages.length - 1; i++) {
+        content += `- ${not_exist_packages[i]}\n`
       }
+
+      Utils.titles()
+      console.log(chalk.cyan(this.materials.name) + ',following packages was not found:')
+      console.log(content)
+      await sleep(5000) // Wait 5 seconds
     }
 
     return fs.readFileSync(packages_exists, 'utf8').split('\n')
@@ -567,6 +567,6 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
  */
 function sleep(ms = 0) {
   return new Promise((resolve) => {
-     setTimeout(resolve, ms);
+    setTimeout(resolve, ms);
   });
 }
