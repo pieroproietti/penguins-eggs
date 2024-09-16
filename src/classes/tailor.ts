@@ -46,100 +46,6 @@ export default class Tailor {
 
   /**
    *
-   * @param packages
-   * @param verbose
-   * @param section
-   * @returns
-   */
-  async helperExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
-    const packages_we_want = '/tmp/packages_we_want'
-    const packages_not_exists = '/tmp/packages_not_exists'
-    const packages_exists = '/tmp/packages_exists'
-
-    await exec(`rm -f ${packages_we_want}`)
-    await exec(`rm -f ${packages_not_exists}`)
-    await exec(`rm -f ${packages_exists}`)
-
-    /**
-     * packages_we_want
-     */
-    let content = ''
-    packages.sort()
-    for (const elem of packages) {
-      if (!Pacman.packageIsInstalled(elem)) {
-        content += elem + '\n'
-      }
-    }
-
-    fs.writeFileSync(packages_we_want, content, 'utf-8')
-
-    /**
-     * packages_exists
-     */
-    const distro = new Distro()
-    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`))
-
-    /**
-     * packages_not_exists
-     */
-    if (verbose) {
-      await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`))
-      const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
-      if (not_exist_packages.length > 1) {
-        // Una riga c'è sempre
-        let content = ''
-        // for (const elem of not_exist_packages) {
-        for (let i = 0; i < not_exist_packages.length - 1; i++) {
-          content += `- ${not_exist_packages[i]}\n`
-        }
-
-        this.titles('tailor')
-        console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
-        console.log(content)
-        Utils.pressKeyToExit('Press a key to continue...')
-      }
-    }
-
-    return fs.readFileSync(packages_exists, 'utf8').split('\n')
-  }
-
-  /**
-   * - check if every package if installed
-   * - if find any packages to install, install it
-   */
-  async helperInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
-    if (packages[0] !== null) {
-      const elements: string[] = []
-      let strElements = ''
-      for (const elem of packages) {
-        elements.push(elem)
-        cmd += ` ${elem}`
-        strElements += `, ${elem}`
-      }
-
-      if (elements.length > 0) {
-        let step = `installing ${comment}: `
-        if (!this.verbose) {
-          step += strElements.slice(2)
-        }
-
-        /**
-         * prova 3 volte
-         */
-        const limit = 3
-        for (let tempts = 1; tempts < limit; tempts++) {
-          this.titles(step)
-          Utils.warning(`tempts ${tempts} of ${limit}`)
-          if (await tryCheckSuccess(cmd, this.echo)) {
-            break
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   *
    */
   async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
     this.verbose = verbose
@@ -259,60 +165,23 @@ export default class Tailor {
           break
         }
 
+        case 'try_accessory':
         case 'accessory': {
           this.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
           console.log('Accessory will not be installed, operations will continue.\n')
-          Utils.pressKeyToExit()
-          return
-        }
-
-        case 'try_accessory': {
+          sleep(500)
           return
         }
       }
     }
 
-    /**
-     * distro e sources_list
-     * vengono definite qua perchè servono a tutti
-     */
-    const sources_list = new SourcesList()
-    let step = ''
-
-    if (this.materials.distributions !== undefined) {
-      step = 'analyzing distribution'
-      Utils.warning(step)
-
-      if (!(await sources_list.distribution(this.materials.distributions))) {
-        switch (this.category) {
-          case 'costume': {
-            this.titles('step')
-            console.log('Costume ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
-            console.log('Costume will not be installed, operations will abort.\n')
-            Utils.pressKeyToExit()
-            process.exit()
-            break
-          }
-
-          case 'accessory': {
-            this.titles('step')
-            console.log('Accessory ' + chalk.cyan(this.materials.name) + ' is not compatible \nwith your ' + chalk.cyan(distro.distroId + '/' + distro.codenameId) + ' system.\n')
-            console.log('Accessory will not be installed, operations will continue.\n')
-            Utils.pressKeyToExit()
-            return
-          }
-
-          case 'try_accessory': {
-            return
-          }
-        }
-      }
-    }
 
     /**
      * sequence
      */
+    const sources_list = new SourcesList()
+    let step = ''
     if (this.materials.sequence !== undefined) {
       step = 'analyzing sequence'
       Utils.warning(step)
@@ -445,25 +314,25 @@ export default class Tailor {
       if (this.materials.sequence.packages !== undefined) {
         switch (distro.familyId) {
           case 'debian': {
-            const packages = await this.helperExists(this.materials.sequence.packages, true, 'packages')
+            const packages = await this.packagesExists(this.materials.sequence.packages, true, 'packages')
             if (packages.length > 1) {
-              await this.helperInstall(packages)
+              await this.packagesInstall(packages)
             }
             break
           }
 
           case 'archlinux': {
-            await this.helperInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
+            await this.packagesInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
             break
           }
 
           case 'alpine': {
-            await this.helperInstall(this.materials.sequence.packages, 'packages', `apk add`)
+            await this.packagesInstall(this.materials.sequence.packages, 'packages', `apk add`)
             break
           }
 
           case 'fedora': {
-            await this.helperInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
+            await this.packagesInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
             break
           }
         }
@@ -474,9 +343,9 @@ export default class Tailor {
        */
       if (distro.familyId === 'debian') {
         if (this.materials.sequence.try_packages !== undefined) {
-          const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
+          const try_packages = await this.packagesExists(this.materials.sequence.try_packages, false)
           if (try_packages.length > 1) {
-            await this.helperInstall(try_packages, 'try packages ')
+            await this.packagesInstall(try_packages, 'try packages ')
           }
         }
 
@@ -622,6 +491,101 @@ export default class Tailor {
 
   /**
    *
+   * @param packages
+   * @param verbose
+   * @param section
+   * @returns
+   */
+  async packagesExists(packages: string[], verbose = false, section = ''): Promise<string[]> {
+    const packages_we_want = '/tmp/packages_we_want'
+    const packages_not_exists = '/tmp/packages_not_exists'
+    const packages_exists = '/tmp/packages_exists'
+
+    await exec(`rm -f ${packages_we_want}`)
+    await exec(`rm -f ${packages_not_exists}`)
+    await exec(`rm -f ${packages_exists}`)
+
+    /**
+     * packages_we_want
+     */
+    let content = ''
+    packages.sort()
+    for (const elem of packages) {
+      if (!Pacman.packageIsInstalled(elem)) {
+        content += elem + '\n'
+      }
+    }
+
+    fs.writeFileSync(packages_we_want, content, 'utf-8')
+
+    /**
+     * packages_exists
+     */
+    const distro = new Distro()
+    await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`))
+
+    /**
+     * packages_not_exists
+     */
+    if (verbose) {
+      await (distro.familyId === 'debian' ? exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`) : exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`))
+      const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
+      if (not_exist_packages.length > 1) {
+        // Una riga c'è sempre
+        let content = ''
+        // for (const elem of not_exist_packages) {
+        for (let i = 0; i < not_exist_packages.length - 1; i++) {
+          content += `- ${not_exist_packages[i]}\n`
+        }
+
+        this.titles('tailor')
+        console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
+        console.log(content)
+        Utils.pressKeyToExit('Press a key to continue...')
+      }
+    }
+
+    return fs.readFileSync(packages_exists, 'utf8').split('\n')
+  }
+
+
+  /**
+ * - check if every package if installed
+ * - if find any packages to install, install it
+ */
+  async packagesInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+    if (packages[0] !== null) {
+      const elements: string[] = []
+      let strElements = ''
+      for (const elem of packages) {
+        elements.push(elem)
+        cmd += ` ${elem}`
+        strElements += `, ${elem}`
+      }
+
+      if (elements.length > 0) {
+        let step = `installing ${comment}: `
+        if (!this.verbose) {
+          step += strElements.slice(2)
+        }
+
+        /**
+         * prova 3 volte
+         */
+        const limit = 3
+        for (let tempts = 1; tempts < limit; tempts++) {
+          this.titles(step)
+          Utils.warning(`tempts ${tempts} of ${limit}`)
+          if (await tryCheckSuccess(cmd, this.echo)) {
+            break
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   *
    * @param command
    */
   titles(command = '') {
@@ -650,4 +614,15 @@ async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
   }
 
   return success
+}
+
+/**
+ *
+ * @param ms
+ * @returns
+ */
+function sleep(ms = 0) {
+  return new Promise((resolve) => {
+     setTimeout(resolve, ms);
+  });
 }
