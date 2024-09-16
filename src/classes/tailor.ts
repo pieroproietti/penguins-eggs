@@ -30,8 +30,8 @@ export default class Tailor {
   private category = 'costume'
   private costume = ''
   private echo = {}
+  private toNull = ' > /dev/null 2>&1'
   private verbose = false
-
   private wardrobe = ''
 
   /**
@@ -48,7 +48,12 @@ export default class Tailor {
    *
    */
   async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
-    this.verbose = verbose
+    
+    if (verbose) {
+      this.verbose = true
+      this.toNull=''
+    }
+    
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
 
@@ -342,12 +347,6 @@ export default class Tailor {
        * Debian: try_packages, debs
        */
       if (distro.familyId === 'debian') {
-        if (this.materials.sequence.try_packages !== undefined) {
-          const try_packages = await this.packagesExists(this.materials.sequence.try_packages, false)
-          if (try_packages.length > 1) {
-            await this.packagesInstall(try_packages, 'try packages ')
-          }
-        }
 
         if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
           step = 'installing local packages'
@@ -437,13 +436,13 @@ export default class Tailor {
        * customize/dirs
        */
       if (this.materials.customize.dirs && fs.existsSync(`/${this.costume}/dirs`)) {
-        step = 'copying dirs'
+        step = 'copying customizations'
         Utils.warning(step)
-        let cmd = `rsync -avx  ${this.costume}/dirs/* /`
+        let cmd = `rsync -avx  ${this.costume}/dirs/* / ${this.toNull}`
         await exec(cmd, this.echo)
 
         // chown root:root /etc -R
-        cmd = 'chown root:root /etc/sudoers.d /etc/skel -R'
+        cmd = `chown root:root /etc/sudoers.d /etc/skel -R ${this.toNull}`
         await exec(cmd, this.echo)
 
         /**
@@ -451,7 +450,7 @@ export default class Tailor {
          */
         if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
           const user = await Utils.getPrimaryUser()
-          step = `copying skel in /home/${user}/`
+          step = `Copying skel in /home/${user}/`
           Utils.warning(step)
           cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/`
           await exec(cmd, this.echo)
@@ -460,7 +459,7 @@ export default class Tailor {
       }
 
       /**
-       * customize/runs
+       * customize/cmds
        */
       if (this.materials.customize.cmds !== undefined && Array.isArray(this.materials.customize.cmds)) {
         step = 'customize commands'
