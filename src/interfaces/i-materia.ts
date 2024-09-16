@@ -20,7 +20,6 @@ export interface IMateria {
   description: string
   distributions: string[]
   name: string
-  reboot: boolean
   release: string
   sequence: {
     repositories: {
@@ -32,13 +31,12 @@ export interface IMateria {
     cmds: string[]
     packages: string[]
     packages_python: string[]
-    debs: boolean
     accessories: string[]
-    try_packages: string[]
     try_accessories: string[]
   }
   customize: {
     dirs: boolean
     cmds: string[]
   }
+  reboot: boolean
 }

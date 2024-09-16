@@ -344,24 +344,6 @@ export default class Tailor {
       }
 
       /**
-       * Debian: try_packages, debs
-       */
-      if (distro.familyId === 'debian') {
-
-        if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
-          step = 'installing local packages'
-          Utils.warning(step)
-          let pathDebs = `${this.costume}/debs/${distro.codenameLikeId}`
-          if (!fs.existsSync(pathDebs)) {
-            pathDebs = `${this.costume}/debs`
-          }
-          if (fs.existsSync(pathDebs)) {
-            await exec(`dpkg -i ${pathDebs}/*.deb`)
-          }
-        }
-      }
-
-      /**
        * sequence/packages_python
        */
       if (this.materials.sequence.packages_python !== undefined && Array.isArray(this.materials.sequence.packages_python)) {
