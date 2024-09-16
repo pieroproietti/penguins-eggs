@@ -162,7 +162,7 @@ export default class Tailor {
     } else {
       switch (this.category) {
         case 'costume': {
-          this.titles(`${this.category}: ${this.costume}`)
+          Utils.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
           console.log('Costume will not be installed, operations will abort.\n')
           Utils.pressKeyToExit()
@@ -172,10 +172,13 @@ export default class Tailor {
 
         case 'try_accessory':
         case 'accessory': {
-          this.titles(`${this.category}: ${this.costume}`)
+          Utils.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
+          
+          console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvv')
           console.log('Accessory will not be installed, operations will continue.\n')
-          sleep(500)
+          console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+          sleep(3000)
           return
         }
       }
@@ -519,10 +522,12 @@ export default class Tailor {
           content += `- ${not_exist_packages[i]}\n`
         }
 
-        this.titles('tailor')
+        Utils.titles()
         console.log('Following packages from ' + chalk.cyan(this.materials.name) + ' section: ' + chalk.cyan(section) + ', was not found:')
+        console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvv')
         console.log(content)
-        sleep(2000) // Wait 2 seconds
+        console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        sleep(3000) // Wait 3 seconds
       }
     }
 
@@ -555,7 +560,7 @@ export default class Tailor {
          */
         const limit = 3
         for (let tempts = 1; tempts < limit; tempts++) {
-          this.titles(step)
+          Utils.titles(step)
           Utils.warning(`tempts ${tempts} of ${limit}`)
           if (await tryCheckSuccess(cmd, this.echo)) {
             break
@@ -565,18 +570,6 @@ export default class Tailor {
     }
   }
 
-  /**
-   *
-   * @param command
-   */
-  titles(command = '') {
-    console.clear()
-    console.log('')
-    console.log(' E G G S: the reproductive system of penguins')
-    console.log('')
-    console.log(chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') + chalk.bgWhite.blue(" Perri's Brewery edition ") + chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       '))
-    console.log('wearing: ' + chalk.bgBlack.cyan(this.costume) + ' ' + chalk.bgBlack.white(command) + '\n')
-  }
 }
 
 /**
