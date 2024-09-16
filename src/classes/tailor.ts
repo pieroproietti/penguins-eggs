@@ -7,20 +7,16 @@
  */
 
 import chalk from 'chalk'
-import yaml from 'js-yaml'
 import fs from 'node:fs'
-// pjson
-import { createRequire } from 'node:module'
+import yaml from 'js-yaml'
 import path from 'node:path'
 
-import { IEggsConfig, IMateria } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
+import { IMateria } from '../interfaces/index.js'
 import Distro from './distro.js'
 import Pacman from './pacman.js'
 import SourcesList from './sources_list.js'
 import Utils from './utils.js'
-const require = createRequire(import.meta.url)
-const pjson = require('../../package.json')
 
 /**
  *
@@ -384,50 +380,24 @@ export default class Tailor {
             }
           }
         }
-
-        /**
-         * Debian: try_accessories
-         */
-        if (distro.familyId === 'debian') {
-          if (this.materials.sequence.try_accessories !== undefined &&
-            Array.isArray(this.materials.sequence.try_accessories)
-          ) {
-            step = 'wearing try_accessories'
-            for (const elem of this.materials.sequence.try_accessories) {
-              if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-                continue
-              }
-
-              if (elem.slice(0, 2) === './') {
-                // local accessory
-                const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
-                await tailor.prepare(verbose)
-              } else {
-                // global accessory
-                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
-                await tailor.prepare(verbose)
-              }
-            }
-          } // no-try-accessories
-        } // no-debian
       } // no-accessories
     } // end sequence
 
     /**
      * customize
      */
-    if (this.materials.customize !== undefined) {
+    if (this.materials.finalize !== undefined) {
       /**
-       * customize/dirs
+       * finalize/customize
        */
-      if (this.materials.customize.dirs && fs.existsSync(`/${this.costume}/dirs`)) {
-        step = 'copying customizations'
+      if (this.materials.finalize.customize && fs.existsSync(`/${this.costume}/dirs`)) {
+        step = 'finalize/customize: copying dirs to /'
         Utils.warning(step)
         let cmd = `rsync -avx  ${this.costume}/dirs/* / ${this.toNull}`
         await exec(cmd, this.echo)
 
-        // chown root:root /etc -R
-        cmd = `chown root:root /etc/sudoers.d /etc/skel -R ${this.toNull}`
+        // chown
+        cmd = `chown root:root /etc/sudoers.d /etc/skel -R`
         await exec(cmd, this.echo)
 
         /**
@@ -435,22 +405,22 @@ export default class Tailor {
          */
         if (fs.existsSync(`${this.costume}/dirs/etc/skel`)) {
           const user = await Utils.getPrimaryUser()
-          step = `Copying skel in /home/${user}/`
+          step = `finalize/customize: copying skel in /home/${user}/`
           Utils.warning(step)
-          cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/`
+          cmd = `rsync -avx  ${this.costume}/dirs/etc/skel/.config /home/${user}/  ${this.toNull}`
           await exec(cmd, this.echo)
           await exec(`chown ${user}:${user} /home/${user}/ -R`)
         }
       }
 
       /**
-       * customize/cmds
+       * finalize/cmds
        */
-      if (this.materials.customize.cmds !== undefined && Array.isArray(this.materials.customize.cmds)) {
-        step = 'customize commands'
+      if (this.materials.finalize.cmds !== undefined && Array.isArray(this.materials.finalize.cmds)) {
+        step = 'finalize/commands'
         Utils.warning(step)
 
-        for (const cmd of this.materials.customize.cmds) {
+        for (const cmd of this.materials.finalize.cmds) {
           if (fs.existsSync(`${this.costume}/${cmd}`)) {
             await exec(`${this.costume}/${cmd} ${this.materials.name}`, Utils.setEcho(true))
           } else {

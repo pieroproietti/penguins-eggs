@@ -32,10 +32,9 @@ export interface IMateria {
     packages: string[]
     packages_python: string[]
     accessories: string[]
-    try_accessories: string[]
   }
-  customize: {
-    dirs: boolean
+  finalize: {
+    customize: boolean
     cmds: string[]
   }
   reboot: boolean
