@@ -170,7 +170,6 @@ export default class Tailor {
             }
           }
         }
-
         break
       }
 
@@ -186,7 +185,6 @@ export default class Tailor {
             }
           }
         }
-
         break
       }
 
@@ -204,7 +202,6 @@ export default class Tailor {
             }
           }
         }
-
         break
       }
 
@@ -217,7 +214,6 @@ export default class Tailor {
             process.exit()
           }
         }
-
         break
       }
 
@@ -230,7 +226,6 @@ export default class Tailor {
             process.exit()
           }
         }
-
         break
       }
 
@@ -238,21 +233,22 @@ export default class Tailor {
         tailorList = `${this.costume}/fedora.yml`
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/debian.yml`
-            if (!fs.existsSync(tailorList)) {
-              console.log(`no costume definition found compatible Fedora`)
-              process.exit()
-            }
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Fedora`)
+            process.exit()
+          }
         }
-
         break
       }
+    } // end analyze
 
-      // No default
-    }
 
+    /**
+     * find materials
+     */
     if (fs.existsSync(tailorList)) {
       this.materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
-    } else
+    } else {
       switch (this.category) {
         case 'costume': {
           this.titles(`${this.category}: ${this.costume}`)
@@ -260,7 +256,6 @@ export default class Tailor {
           console.log('Costume will not be installed, operations will abort.\n')
           Utils.pressKeyToExit()
           process.exit()
-
           break
         }
 
@@ -275,8 +270,8 @@ export default class Tailor {
         case 'try_accessory': {
           return
         }
-        // No default
       }
+    }
 
     /**
      * distro e sources_list
@@ -297,7 +292,6 @@ export default class Tailor {
             console.log('Costume will not be installed, operations will abort.\n')
             Utils.pressKeyToExit()
             process.exit()
-
             break
           }
 
@@ -312,7 +306,6 @@ export default class Tailor {
           case 'try_accessory': {
             return
           }
-          // No default
         }
       }
     }
@@ -378,30 +371,23 @@ export default class Tailor {
           switch (distro.familyId) {
             case 'debian': {
               await exec('apt-get update', Utils.setEcho(false))
-
               break
             }
 
             case 'archlinux': {
               await exec('pacman -Sy', Utils.setEcho(false))
-
               break
             }
 
             case 'alpine': {
               await exec('apk update', Utils.setEcho(false))
-
               break
             }
 
             case 'fedora': {
               await exec('dnf update', Utils.setEcho(false))
-
               break
             }
-
-            // No default
-
           }
         }
 
@@ -415,46 +401,40 @@ export default class Tailor {
             switch (distro.familyId) {
               case 'debian': {
                 await exec('apt-get full-upgrade', Utils.setEcho(false))
-
                 break
               }
 
               case 'archlinux': {
                 await exec('pacman -Su', Utils.setEcho(false))
-
                 break
               }
 
               case 'alpine': {
                 await exec('apk upgrade', Utils.setEcho(false))
-
                 break
               }
 
               case 'fedora': {
                 await exec('dnf upgrade', Utils.setEcho(false))
-
                 break
               }
-
-              // No default
             }
           } //  upgrade true
         } // undefined upgrade
       } // end sequence/repositories
 
       /**
-       * sequence/preinst
+       * sequence/cmds
        */
-      if (this.materials.sequence.preinst !== undefined && Array.isArray(this.materials.sequence.preinst)) {
-        step = 'preinst scripts'
+      if (this.materials.sequence.cmds !== undefined && Array.isArray(this.materials.sequence.cmds)) {
+        step = 'sequence commands'
         Utils.warning(step)
-        for (const script of this.materials.sequence.preinst) {
-          if (fs.existsSync(`${this.costume}/${script}`)) {
-            await exec(`${this.costume}/${script} ${this.materials.name}`, Utils.setEcho(true))
+        for (const cmd of this.materials.sequence.cmds) {
+          if (fs.existsSync(`${this.costume}/${cmd}`)) {
+            await exec(`${this.costume}/${cmd} ${this.materials.name}`, Utils.setEcho(true))
           } else {
-            // exec script real env
-            await exec(`${script} ${this.materials.name}`, Utils.setEcho(true))
+            // exec cmd real env
+            await exec(`${cmd} ${this.materials.name}`, Utils.setEcho(true))
           }
         }
       }
@@ -469,46 +449,30 @@ export default class Tailor {
             if (packages.length > 1) {
               await this.helperInstall(packages)
             }
-
             break
           }
 
           case 'archlinux': {
             await this.helperInstall(this.materials.sequence.packages, 'packages', `pacman -Sy --noconfirm`)
-
             break
           }
 
           case 'alpine': {
             await this.helperInstall(this.materials.sequence.packages, 'packages', `apk add`)
-
             break
           }
 
           case 'fedora': {
             await this.helperInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
-
             break
           }
-
-          // No default
         }
       }
 
+      /**
+       * Debian: try_packages, debs
+       */
       if (distro.familyId === 'debian') {
-        /**
-         * sequence/packages_no_install_recommends
-         */
-        if (this.materials.sequence.packages_no_install_recommends !== undefined) {
-          const packages_no_install_recommends = await this.helperExists(this.materials.sequence.packages_no_install_recommends, true, 'packages_no_install_recommends')
-          if (packages_no_install_recommends.length > 1) {
-            await this.helperInstall(packages_no_install_recommends, 'packages without recommends and suggests', 'apt-get install --no-install-recommends --no-install-suggests -yq ')
-          }
-        }
-
-        /**
-         * sequence/try_packages
-         */
         if (this.materials.sequence.try_packages !== undefined) {
           const try_packages = await this.helperExists(this.materials.sequence.try_packages, false)
           if (try_packages.length > 1) {
@@ -516,19 +480,6 @@ export default class Tailor {
           }
         }
 
-        /**
-         * sequence/try_packages_no_install_recommends
-         */
-        if (this.materials.sequence.try_packages_no_install_recommends !== undefined) {
-          const try_packages_no_install_recommends = await this.helperExists(this.materials.sequence.try_packages_no_install_recommends, false)
-          if (try_packages_no_install_recommends.length > 1) {
-            await this.helperInstall(try_packages_no_install_recommends, 'try packages without recommends and suggests', 'apt-get install --no-install-recommends --no-install-suggests -yq ')
-          }
-        }
-
-        /**
-         * sequence/debs
-         */
         if (this.materials.sequence.debs !== undefined && this.materials.sequence.debs) {
           step = 'installing local packages'
           Utils.warning(step)
@@ -536,8 +487,6 @@ export default class Tailor {
           if (!fs.existsSync(pathDebs)) {
             pathDebs = `${this.costume}/debs`
           }
-
-          // if exists pathDebs
           if (fs.existsSync(pathDebs)) {
             await exec(`dpkg -i ${pathDebs}/*.deb`)
           }
@@ -564,7 +513,6 @@ export default class Tailor {
        * sequence/accessories
        */
       if (!no_accessories) {
-        // accessories
         if (this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
           step = 'wearing accessories'
           for (const elem of this.materials.sequence.accessories) {
@@ -573,35 +521,42 @@ export default class Tailor {
             }
 
             if (elem.slice(0, 2) === './') {
+              // local accessory
               const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
               await tailor.prepare(verbose)
             } else {
+              // global accessory
               const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
               await tailor.prepare(verbose)
             }
           }
         }
 
-        if (
-          distro.familyId === 'debian' && // try_accessories
-          this.materials.sequence.try_accessories !== undefined &&
-          Array.isArray(this.materials.sequence.try_accessories)
-        ) {
-          step = 'wearing try_accessories'
-          for (const elem of this.materials.sequence.try_accessories) {
-            if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-              continue
-            }
+        /**
+         * Debian: try_accessories
+         */
+        if (distro.familyId === 'debian') {
+          if (this.materials.sequence.try_accessories !== undefined &&
+            Array.isArray(this.materials.sequence.try_accessories)
+          ) {
+            step = 'wearing try_accessories'
+            for (const elem of this.materials.sequence.try_accessories) {
+              if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+                continue
+              }
 
-            if (elem.slice(0, 2) === './') {
-              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
-              await tailor.prepare(verbose)
-            } else {
-              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
-              await tailor.prepare(verbose)
+              if (elem.slice(0, 2) === './') {
+                // local accessory
+                const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'try_accessory')
+                await tailor.prepare(verbose)
+              } else {
+                // global accessory
+                const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'try_accessory')
+                await tailor.prepare(verbose)
+              }
             }
-          }
-        }
+          } // no-try-accessories
+        } // no-debian
       } // no-accessories
     } // end sequence
 
@@ -636,19 +591,18 @@ export default class Tailor {
       }
 
       /**
-       * customize/scripts
+       * customize/runs
        */
-      if (this.materials.customize.scripts !== undefined && Array.isArray(this.materials.customize.scripts)) {
-        step = 'customize script'
+      if (this.materials.customize.cmds !== undefined && Array.isArray(this.materials.customize.cmds)) {
+        step = 'customize commands'
         Utils.warning(step)
 
-        for (const script of this.materials.customize.scripts) {
-          if (fs.existsSync(`${this.costume}/${script}`)) {
-            // exec script in costume passing costume-name
-            await exec(`${this.costume}/${script} ${this.materials.name}`, Utils.setEcho(true))
+        for (const cmd of this.materials.customize.cmds) {
+          if (fs.existsSync(`${this.costume}/${cmd}`)) {
+            await exec(`${this.costume}/${cmd} ${this.materials.name}`, Utils.setEcho(true))
           } else {
-            // exec script real env
-            await exec(`${script}`, Utils.setEcho(true))
+            // exec cmd real env
+            await exec(`${cmd}`, Utils.setEcho(true))
           }
         }
       }
