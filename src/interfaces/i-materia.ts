@@ -29,18 +29,16 @@ export interface IMateria {
       update: boolean
       upgrade: boolean
     }
-    preinst: string[]
+    cmds: string[]
     packages: string[]
-    packages_no_install_recommends: string[]
     packages_python: string[]
     debs: boolean
     accessories: string[]
-    try_accessories: string[]
     try_packages: string[]
-    try_packages_no_install_recommends: string[]
+    try_accessories: string[]
   }
   customize: {
     dirs: boolean
-    scripts: string[]
+    cmds: string[]
   }
 }
