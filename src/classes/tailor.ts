@@ -178,10 +178,10 @@ export default class Tailor {
         case 'accessory': {
           Utils.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
-
-          console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvv')
-          console.log('Accessory will not be installed, operations will continue.\n')
-          console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+          console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv')
+          console.log('Accessory will not be installed,')
+          console.log('operations will continue.')
+          console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
           sleep(3000)
           return
         }
@@ -478,7 +478,8 @@ export default class Tailor {
     } else if (distro.familyId === "alpine") {
       cmd=`apk search -e ${wanted}`
     } else if (distro.familyId === 'fedora') {
-      cmd=`dnf list --available`
+      //cmd=`dnf list --available`
+      cmd=`dnf list available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
 
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
