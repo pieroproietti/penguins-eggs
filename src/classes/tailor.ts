@@ -29,7 +29,7 @@ export default class Tailor {
   private toNull = ' > /dev/null 2>&1'
   private verbose = false
   private wardrobe = ''
-  private log = `/var/log/eggs-wardrobe-wear.log`
+  private log = `wardrobe.log`
 
   /**
    * @param wardrobe
@@ -53,7 +53,13 @@ export default class Tailor {
 
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
-    fs.writeFileSync(this.log, "eggs wardrobe wear\n")
+    if (!fs.existsSync(this.log)) {
+      fs.writeFileSync(this.log, "# eggs wardrobe wear\n\n")
+    }
+    fs.appendFileSync(this.log, `## ${this.costume}\n`)
+    fs.appendFileSync(this.log, `Packages not found:\n`)
+
+    
 
     /**
      * check curl presence
@@ -484,16 +490,14 @@ export default class Tailor {
         exists.push(elem)
       } else {
         not_exists.push(elem)
-        console.log(elem + `\n`)
-        fs.appendFileSync('output.txt', `\n${elem}`)
+        fs.appendFileSync(this.log, `- ${elem}\n`)
       }
     }
     
-    if (not_exists.length>1) {
+    if (not_exists.length>0) {
       console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
       for (const elem of not_exists) {
         console.log(`-${elem}`)
-        fs.appendFileSync(this.log, `- ${elem}\n`)
       }
       console.log()
       console.log("Wait 3 seconds")
