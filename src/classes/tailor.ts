@@ -481,13 +481,11 @@ export default class Tailor {
       await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
       await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
     } else if (distro.familyId === 'fedora') {
-      await exec(`dnf list available | awk '{print $1}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-      await exec(`dnf list available | awk '{print $1}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      await exec(`dnf list --available | awk '{print $1}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
+      await exec(`dnf list --available | awk '{print $1}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
     }
     const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
-    console.log(not_exist_packages)
-    console.log(not_exist_packages.length)
-
+    
     if (not_exist_packages.length > 1) {
       // Una riga c'è sempre
       let content = ''
