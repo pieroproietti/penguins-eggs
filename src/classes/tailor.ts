@@ -492,7 +492,8 @@ export default class Tailor {
     if (not_exists.length>1) {
       console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
       for (const elem of not_exists) {
-        fs.appendFileSync(this.log, `- ${elem}`)
+        console.log(`-${elem}`)
+        fs.appendFileSync(this.log, `- ${elem}\n`)
       }
       console.log()
       console.log("Wait 3 seconds")
