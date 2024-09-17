@@ -29,7 +29,7 @@ export default class Tailor {
   private toNull = ' > /dev/null 2>&1'
   private verbose = false
   private wardrobe = ''
-  private log = `wardrobe.log`
+  private log = ''
 
   /**
    * @param wardrobe
@@ -38,6 +38,7 @@ export default class Tailor {
   constructor(costume: string, category = 'costume') {
     this.costume = costume
     this.wardrobe = path.dirname(path.dirname(costume))
+    this.log=path.dirname(this.wardrobe)+"/wardrobe.log"
     this.category = category
   }
 
