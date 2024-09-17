@@ -450,19 +450,22 @@ export default class Tailor {
    * @returns
    */
   async packagesExists(wanted: string[]): Promise<string[]> {
+    
     wanted.sort()
 
     let available: string[]=[]
     const distro = new Distro()
+    let cmd =""
     if (distro.familyId === "debian") {
-      available = (await exec(`apt-cache --no-generate pkgnames`)).data.split('/n')
+      cmd=`apt-cache --no-generate pkgnames`
     } else if (distro.familyId === "archlinux") {
-      available = (await exec(`pacman -S --list | awk '{print $2}'`)).data.split('/n')
+      cmd=`pacman -S --list | awk '{print $2}'`
     } else if (distro.familyId === "alpine") {
-      available = (await exec(`apk search -e ${wanted}`)).data.split('/n')
+      cmd=`apk search -e ${wanted}`
     } else if (distro.familyId === 'fedora') {
-      available = (await exec(`dnf list --available`)).data.split('/n')
+      cmd=`dnf list --available`
     }
+    available = (await exec(cmd, this.echo)).data.split('/n')
     available.sort()
 
     let exists: string[]=[]
