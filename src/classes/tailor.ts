@@ -449,57 +449,38 @@ export default class Tailor {
    * @param section
    * @returns
    */
-  async packagesExists(packages: string[]): Promise<string[]> {
-    const packages_we_want = '/tmp/packages_we_want'
-    const packages_not_exists = '/tmp/packages_not_exists'
-    const packages_exists = '/tmp/packages_exists'
+  async packagesExists(wanted: string[]): Promise<string[]> {
+    wanted.sort()
 
-    await exec(`rm -f ${packages_we_want}`)
-    await exec(`rm -f ${packages_not_exists}`)
-    await exec(`rm -f ${packages_exists}`)
-
-    /**
-     * packages_we_want
-     */
-    let content = ''
-    packages.sort()
-    for (const elem of packages) {
-      if (!Pacman.packageIsInstalled(elem)) {
-        content += elem + '\n'
-      }
-    }
-    fs.writeFileSync(packages_we_want, content, 'utf-8')
-
+    let available: string[]=[]
     const distro = new Distro()
     if (distro.familyId === "debian") {
-      await exec(`apt-cache --no-generate pkgnames | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-      await exec(`apt-cache --no-generate pkgnames | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      available = (await exec(`apt-cache --no-generate pkgnames`)).data.split('/n')
     } else if (distro.familyId === "archlinux") {
-      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-      await exec(`pacman -S --list | awk '{print $2}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      available = (await exec(`pacman -S --list | awk '{print $2}'`)).data.split('/n')
     } else if (distro.familyId === "alpine") {
-      await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-      await exec(`apk search -e $(cat ${packages_we_want}) | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      available = (await exec(`apk search -e ${wanted}`)).data.split('/n')
     } else if (distro.familyId === 'fedora') {
-      await exec(`dnf list --available | awk '{print $1}' | sort | comm -12 - ${packages_we_want} > ${packages_exists}`)
-      await exec(`dnf list --available | awk '{print $1}' | sort | comm -13 - ${packages_we_want} > ${packages_not_exists}`)
+      available = (await exec(`dnf list --available`)).data.split('/n')
     }
-    const not_exist_packages = fs.readFileSync(packages_not_exists, 'utf8').split('\n')
-    
-    if (not_exist_packages.length > 1) {
-      // Una riga c'è sempre
-      let content = ''
-      for (let i = 0; i < not_exist_packages.length - 1; i++) {
-        content += `- ${not_exist_packages[i]}\n`
+    available.sort()
+
+    let exists: string[]=[]
+    let not_exists: string[]=[]
+    for (const elem of wanted) {
+      if (available.includes(elem)){
+        exists.push(elem)
+      } else {
+        not_exists.push(elem)
       }
-
-      Utils.titles()
-      console.log(chalk.cyan(this.materials.name) + ',following packages was not found:')
-      console.log(content)
-      await sleep(5000) // Wait 5 seconds
     }
+    
+    Utils.titles()
+    console.log(chalk.cyan(this.materials.name) + ',following packages was not found:')
+    console.log(not_exists)
+    await sleep(5000) // Wait 5 seconds
 
-    return fs.readFileSync(packages_exists, 'utf8').split('\n')
+    return exists
   }
 
 
