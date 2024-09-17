@@ -450,7 +450,6 @@ export default class Tailor {
    * @returns
    */
   async packagesExists(wanted: string[]): Promise<string[]> {
-    
     wanted.sort()
 
     let available: string[]=[]
@@ -465,7 +464,7 @@ export default class Tailor {
     } else if (distro.familyId === 'fedora') {
       cmd=`dnf list --available`
     }
-    available = (await exec(cmd, this.echo)).data.split('/n')
+    available = (await exec(cmd, { capture: true, echo: false })).data.split('/n')
     available.sort()
 
     let exists: string[]=[]
