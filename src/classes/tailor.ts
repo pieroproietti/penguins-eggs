@@ -450,6 +450,7 @@ export default class Tailor {
    * @returns
    */
   async packagesExists(wanted: string[]): Promise<string[]> {
+    Utils.warning(`checking packages exists ${this.costume}`)
     wanted.sort()
 
     let available: string[]=[]
@@ -464,9 +465,10 @@ export default class Tailor {
     } else if (distro.familyId === 'fedora') {
       cmd=`dnf list --available`
     }
-    available = (await exec(cmd, { capture: true, echo: false })).data.split('/n')
-    available.sort()
 
+    //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    available.sort()
     let exists: string[]=[]
     let not_exists: string[]=[]
     for (const elem of wanted) {
@@ -477,10 +479,13 @@ export default class Tailor {
       }
     }
     
-    Utils.titles()
-    console.log(chalk.cyan(this.materials.name) + ',following packages was not found:')
-    console.log(not_exists)
-    await sleep(5000) // Wait 5 seconds
+    console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
+    for (const elem of not_exists) {
+      console.log(`- ${elem}`)
+    }
+    console.log()
+    console.log("Wait 3 seconds")
+    await sleep(3000) 
 
     return exists
   }
@@ -491,6 +496,7 @@ export default class Tailor {
  * - if find any packages to install, install it
  */
   async packagesInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+    Utils.warning(`installing existing packages ${this.costume}`)
     if (packages[0] !== null) {
       const elements: string[] = []
       let strElements = ''
