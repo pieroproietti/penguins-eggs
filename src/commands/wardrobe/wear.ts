@@ -13,6 +13,7 @@ import path from 'node:path'
 
 import Tailor from '../../classes/tailor.js'
 import Utils from '../../classes/utils.js'
+import { exec } from '../../lib/utils.js'
 
 /**
  *
@@ -84,6 +85,8 @@ export default class Wear extends Command {
     if (await Utils.customConfirm(`Prepare your costume: ${costume}? Select yes to continue...`)) {
       if (Utils.isRoot()) {
         const tailor = new Tailor(costume)
+        // delete previous log
+        await exec(`rm -f ${path.dirname(wardrobe)}+"/wardrobe.log`)
         await tailor.prepare(verbose, no_accessories, no_firmwares)
       } else {
         Utils.useRoot(this.id)

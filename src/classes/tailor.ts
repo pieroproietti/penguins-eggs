@@ -468,7 +468,6 @@ export default class Tailor {
     Utils.warning(`checking packages exists ${this.costume}`)
     wanted.sort()
 
-    let available: string[]=[]
     const distro = new Distro()
     let cmd =""
     if (distro.familyId === "debian") {
@@ -478,11 +477,11 @@ export default class Tailor {
     } else if (distro.familyId === "alpine") {
       cmd=`apk search -e ${wanted}`
     } else if (distro.familyId === 'fedora') {
-      //cmd=`dnf list --available`
       cmd=`dnf list available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
 
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    let available: string[]=[]
     available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
     available.sort()
     let exists: string[]=[]
