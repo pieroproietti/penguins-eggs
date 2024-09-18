@@ -27,6 +27,7 @@ rm -rf node-modules pnpm-lock.yaml dist
 pnpm i
 pnpm build
 
+xdg-user-dirs-update --force
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
 $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
