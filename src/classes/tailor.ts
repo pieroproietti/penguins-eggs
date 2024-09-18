@@ -475,7 +475,7 @@ export default class Tailor {
     } else if (distro.familyId === "archlinux") {
       cmd=`pacman -S --list | awk '{print $2}'`
     } else if (distro.familyId === "alpine") {
-      cmd=`apk search -e ${wanted}`
+      cmd=`apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
     } else if (distro.familyId === 'fedora') {
       cmd=`dnf list available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
