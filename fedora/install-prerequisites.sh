@@ -1,0 +1,37 @@
+dnf -y install \
+    bash-completion \
+    biosdevname \
+    cifs-utils \
+    cryptsetup \
+    curl \
+    device-mapper \
+    dmraid \
+    dosfstools \
+    dracut \
+    dracut-live \
+    fuse \
+    git \
+    iproute \
+    iscsi-initiator-utils \
+    jq \
+    lsb-release \
+    lvm2 \
+    mdadm \
+    nbd \
+    net-tools \
+    nfs-utils \
+    nodejs \
+    nvme-cli \
+    overlayfs-tools \
+    parted \
+    pnpm \
+    rng-tools \
+    rpcbind \
+    rsync \
+    squashfs-tools \
+    sshfs \
+    syslinux \
+    wicked \
+    xdg-user-dirs \
+    xorriso \
+    zstd
