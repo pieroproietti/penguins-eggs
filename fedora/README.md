@@ -15,41 +15,47 @@ The installation will start, is not exactly short. At the end will be enabled a 
 > [!NOTE]
 > This is tested just on BIOS, under a VM on Proxmox VE.
 
-## Enable uinput
-We can immidiatly connect via ssh with the user we created.
-
-To use `spice-vdagent` we need to enable `uinput`:
+## rename host
+Our installed system is not named now, we can name it, I use in case of CLI minimun system the name `naked`.
 
 ```
-echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
+sudo nano /etc/hostname
 ```
 
-Then, when it exists:
+then, add a line:
+```
+127.0.1.1   naked
+```
+to `\etc\hosts`.
 
-```
-sudo chmod 666 /dev/uinput
-```
+## Disable selinux
+Edit `/etc/selinux/config` and replace `SELINUX=enforced` with `SELINUX=disabled`.
+
 ## reboot
-We can start, The best is to connect via ssh to can copy and past the command. 
+reboot.
 
-```
-sudo su
-```
-
-# Install prerequisites
-
-Just run ```sudo ./install-prerequisites.sh```
-
-After installed this packages, we can clone penguins-eggs:
+## install eggs
+First we clone penguins-eggs repository.
 
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
-cd penguins-eggs
+```
+
+Then we install prerequisites:
+```
+cd ~/penguins-eggs/fedora
+sudo ./install-prerequisites.sh
+```
+At this point, we transpile and install penguins-eggs:
+```
+cd ~/penguins-eggs
 pnpm i
 ./install-eggs-dev
 ```
+## Create our first image
 
-Before to run eggs love is better rename our host, I usually put naked on /etc/hostname and add a line 127.0.1.1 naked on /etc/hosts.
+When finish, we can just run: ```eggs love``` and build our first fedora naked ISO.
 
-When finish, we can just run: ```eggs love``` and build our fedora naked ISO.
+It's installable and reproductive: once installed you can produce a live system from your installed one, just running: `eggs love`.
+
 
