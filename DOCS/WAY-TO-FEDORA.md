@@ -1,4 +1,4 @@
-ls # Way to Fedora
+# Way to Fedora
 
 We start from the `Fedora-Everything-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora choosing minimun installation, set root password and user. 
 
