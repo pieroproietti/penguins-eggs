@@ -48,48 +48,19 @@ ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
-## Install prerequisites
-```
-apk add \
-    alpine-conf \
-    apk-tools \
-    bash-completion \
-    cryptsetup \
-    curl \
-    docs \
-    dosfstools \
-    fuse \
-    git \
-    jq \
-    lsb-release \
-    lsblk \
-    lvm2 \
-    man-pages \
-    mandoc \
-    mandoc-apropos \
-    mkinitfs \
-    musl-locales \
-    musl-utils \
-    nano \
-    nodejs \
-    npm \
-    parted \
-    rsync \
-    shadow \
-    squashfs-tools \
-    sshfs \
-    syslinux \
-    xorriso
-
-echo "fuse" | tee /etc/modules-load.d/fuse.conf
-
-npm i pnpm -g
-```
-
 ## Clone penguins-eggs
 
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
+```
+
+## Install prerequisites
+```
+doas penguins-eggs/DOCS/NAKED/alpine/install-prerequisites.sh
+
+```
+## Install penguins-eggs
+```
 cd penguins-eggs
 pnpm i
 ./install-eggs-dev
