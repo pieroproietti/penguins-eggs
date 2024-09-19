@@ -89,6 +89,7 @@ $SUDO mv /tmp/eggs /usr/lib/penguins-eggs/bin/eggs
 $SUDO rm -f /usr/bin/eggs
 $SUDO ln -s /usr/lib/penguins-eggs/bin/eggs /usr/bin/eggs
 
+# create /usr/sbin/shutdown
 if [ ! -e /usr/sbin/shutdown ]; then
 echo "creating /usr/sbin/shutdown"
 cat << 'EOF' > /tmp/shutdown
@@ -99,5 +100,11 @@ $SUDO chmod +x /tmp/shutdown
 $SUDO mv /tmp/shutdown /usr/sbin
 fi
 
+# create a symlink to /usr/bin/code
+if [ -e /usr/bin/code-oss ]; then
+    $SUDO ln -s /usr/bin/code-oss /usr/bin/code
+fi
+
 sudo eggs config -n
+
 
