@@ -27,8 +27,11 @@ apk add \
     squashfs-tools \
     sshfs \
     syslinux \
+    xdg-user-dirs \
     xorriso
 
 echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
 npm i pnpm -g
+mkdir /usr/share/icons
+
