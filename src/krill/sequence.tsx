@@ -280,10 +280,8 @@ export default class Sequence {
          this.spinner = false
       }
 
-      // Escludo spinner da alpine ed opensuse
-      if (this.distro.familyId === 'alpine') {
-         this.spinner = true
-      } else if (this.distro.familyId === 'opensuse'){
+      // Escludo spinner da opensuse
+      if (this.distro.familyId === 'opensuse'){
          this.spinner = false
       }
 
