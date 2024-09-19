@@ -1,3 +1,4 @@
+# install-prerequisites
 apk add \
     alpine-conf \
     apk-tools \
@@ -30,8 +31,20 @@ apk add \
     xdg-user-dirs \
     xorriso
 
+# install grub
+apk add \
+    grub \
+    grub-bios \
+    grub-efi \
+    efibootmgr
+
+grub-install /dev/sda
+
+# fuse
 echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
-npm i pnpm -g
+# create dirs
 mkdir /usr/share/icons
+mkdir /usr/share/applications
 
+npm i pnpm -g
