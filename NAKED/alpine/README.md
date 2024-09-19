@@ -21,20 +21,13 @@ Now, from root we give the following commands:
 
 We add nano 
 ```
-apk add nano
+apk add nano git
 ```
 
 ## Configuration of the repositories
 ```
 rm /etc/apk/repositories
 nano /etc/apk/repositories
-
-```
-
-## sudo as link to doas
-To not get crazy:
-```
-ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
@@ -56,4 +49,3 @@ pnpm i
 ./install-eggs-dev
 
 ```
-
