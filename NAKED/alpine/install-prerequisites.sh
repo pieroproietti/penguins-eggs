@@ -1,3 +1,9 @@
+#!/bin/bash
+
+# This script installs prerequisites for penguins-eggs
+# on alpine linux, it is intended for development purposes 
+# only
+
 # install-prerequisites
 apk add \
     alpine-conf \
