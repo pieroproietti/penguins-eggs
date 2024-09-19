@@ -1,7 +1,6 @@
 # Alpine naked
 
-# Way to Alpine
-We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine.
+We start from the `alpine-standard-3.20.3-x86_64.iso` image, which is only 203 MB, and go to install alpine.
 
 Log as root without password, then install it: `setup-alpine`.
 
@@ -19,19 +18,13 @@ su
 
 Now, from root we give the following commands:
 
-We add nano 
+We add git, nano and lsb-release:
+
 ```
 apk add git lsb-release nano
-```
-
-## Configuration of the repositories
-```
-rm /etc/apk/repositories
-nano /etc/apk/repositories
-
 chsh -s /bin/bash
-```
 
+```
 
 ## Clone penguins-eggs
 
@@ -49,5 +42,9 @@ doas penguins-eggs/DOCS/NAKED/alpine/install-prerequisites.sh
 cd penguins-eggs
 pnpm i
 ./install-eggs-dev
+chsh -s /bin/bash
 
 ```
+
+## eggs love
+Now we can build our ISOs, just `eggs love`.
