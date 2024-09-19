@@ -31,6 +31,19 @@ apk add \
     xdg-user-dirs \
     xorriso
 
+# fuse
+echo "fuse" | tee /etc/modules-load.d/fuse.conf
+
+# install pnpm
+npm i pnpm -g
+
+# create dirs
+mkdir /usr/share/icons
+mkdir /usr/share/applications
+
+# ln sudo
+ln -s /usr/bin/doas /usr/bin/sudo
+
 # install grub
 apk add \
     grub \
@@ -39,16 +52,3 @@ apk add \
     efibootmgr
 
 grub-install /dev/sda
-
-# fuse
-echo "fuse" | tee /etc/modules-load.d/fuse.conf
-
-# create dirs
-mkdir /usr/share/icons
-mkdir /usr/share/applications
-
-# sudo
-ln -s /usr/bin/doas /usr/bin/sudo
-
-# install pnpm
-npm i pnpm -g
