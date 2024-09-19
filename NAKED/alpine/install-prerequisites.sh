@@ -47,4 +47,8 @@ echo "fuse" | tee /etc/modules-load.d/fuse.conf
 mkdir /usr/share/icons
 mkdir /usr/share/applications
 
+# sudo
+ln -s /usr/bin/doas /usr/bin/sudo
+
+# install pnpm
 npm i pnpm -g

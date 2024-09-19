@@ -31,16 +31,6 @@ nano /etc/apk/repositories
 
 ```
 
-copy and past:
-```
-#/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.20/main
-http://dl-cdn.alpinelinux.org/alpine/v3.20/community
-@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-@edge https://dl-cdn.alpinelinux.org/alpine/edge/community
-
-```
-
 ## sudo as link to doas
 To not get crazy:
 ```
