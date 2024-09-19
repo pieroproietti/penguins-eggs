@@ -29,7 +29,9 @@ apk add nano git
 rm /etc/apk/repositories
 nano /etc/apk/repositories
 
+chsh -s /bin/bash
 ```
+
 
 ## Clone penguins-eggs
 

@@ -52,3 +52,6 @@ apk add \
     efibootmgr
 
 grub-install /dev/sda
+
+# bash
+chsh -s /bin/bash
