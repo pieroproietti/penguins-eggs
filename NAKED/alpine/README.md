@@ -21,7 +21,7 @@ Now, from root we give the following commands:
 
 We add nano 
 ```
-apk add nano git
+apk add git lsb-release nano
 ```
 
 ## Configuration of the repositories

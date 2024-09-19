@@ -4,6 +4,15 @@
 # on alpine linux, it is intended for development purposes 
 # only
 
+# check if we are on alpine
+if [ ! -f /etc/alpine-release ]; then
+    echo "This script is intended for alpine linux only"
+    exit 1
+fi
+
+# update
+apk update
+
 # install-prerequisites
 apk add \
     alpine-conf \
