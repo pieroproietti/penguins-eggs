@@ -13,16 +13,17 @@ dnf -y install \
     lsb-release \
     lvm2 \
     nodejs \
-    nvme-cli \
+    npm \
     overlayfs-tools \
     parted \
-    pnpm \
     rsync \
     squashfs-tools \
     sshfs \
     xdg-user-dirs \
     xorriso \
     zstd
+
+npm i pnpm -g
 
 # biosdevname \
 # cifs-utils \
@@ -36,3 +37,5 @@ dnf -y install \
 # rpcbind \
 # syslinux \
 # wicked \
+
+# nvme-cli \
