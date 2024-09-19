@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 
 # This script installs prerequisites for penguins-eggs
 # on alpine linux, it is intended for development purposes 
