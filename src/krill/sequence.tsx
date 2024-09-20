@@ -268,6 +268,13 @@ export default class Sequence {
          }
       }
 
+      /**
+       * dmsetup remove_all
+       */
+      if (this.distro.familyId === 'opensuse') {
+         await exec('dmsetup remove_all')
+      }
+
       this.unattended = unattended
       this.nointeractive = nointeractive
       this.chroot = chroot
@@ -279,11 +286,6 @@ export default class Sequence {
          this.toNull = ''
          this.spinner = false
       }
-
-      // Escludo spinner da opensuse
-      // if (this.distro.familyId === 'opensuse'){
-      //    this.spinner = false
-      // }
 
       // start
       await this.settings.load()
@@ -314,9 +316,6 @@ export default class Sequence {
          try {
             let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
-            if (this.chroot) {
-               await this.emergencyShell('You are in emergency shell - after mountFs- type "exit" to exit.')
-            }
          } catch (error) {
             await this.showProblem(message, error)
          }
