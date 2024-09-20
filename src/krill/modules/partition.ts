@@ -68,7 +68,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
   if (this.distro.familyId === 'opensuse') {
     // OpenSUSE
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-    // crea partizione bootBIOS da 10MB e ext4 da 11MB a 100%
     await exec(`parted --script mkpart primary ext2 1MiB 10MiB`, this.echo)
     await exec(`parted --script mkpart primary ext4 11MiB 100%`, this.echo)
     await exec(`parted --script ${installDevice} set 1 bios_grub on`, this.echo) // sda1
