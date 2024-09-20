@@ -17,7 +17,7 @@ import Sequence from '../sequence.js'
  */
 export default async function bootloader(this: Sequence) {
   let grubInstall='grub-install'
-  if (this.distro.familyId === 'fedora') {
+  if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
     grubInstall='grub2-install'
   }
   let cmd = `chroot ${this.installTarget} ${grubInstall} ${this.partitions.installationDevice} ${this.toNull}`
