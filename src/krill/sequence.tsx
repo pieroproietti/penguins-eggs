@@ -741,7 +741,7 @@ export default class Sequence {
             </>
          )
          cliCursor.show()
-         await exec("/bin/bash")
+         await exec(`chroot ${this.installTarget} /bin/bash`)
          cliCursor.hide()
       } catch (error) {
          await Utils.pressKeyToExit(JSON.stringify(error))
