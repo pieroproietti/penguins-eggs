@@ -57,7 +57,7 @@ export default class CliAutologin {
       content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
       fs.writeFileSync(fileOverride, content)
       shx.exec(`chmod +x ${fileOverride}`)
-      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isOpenRc()) {
       /**
@@ -81,7 +81,7 @@ export default class CliAutologin {
       content += `/bin/login -f ${user}` + '\n'
       fs.writeFileSync(autologin, content, 'utf-8')
       execSync(`chmod +x ${autologin}`)
-      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
       /**
@@ -102,7 +102,7 @@ export default class CliAutologin {
       }
 
       fs.writeFileSync(inittab, content, 'utf-8')
-      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     }
   }

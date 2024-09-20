@@ -281,9 +281,9 @@ export default class Sequence {
       }
 
       // Escludo spinner da opensuse
-      if (this.distro.familyId === 'opensuse'){
-         this.spinner = false
-      }
+      // if (this.distro.familyId === 'opensuse'){
+      //    this.spinner = false
+      // }
 
       // start
       await this.settings.load()
