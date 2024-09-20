@@ -117,15 +117,15 @@ export default class CliAutologin {
    * @param chroot
    */
   async addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
-    const fileIssue = `${chroot}/etc/issue`
-    this.msgRemove(fileIssue)
+    // const fileIssue = `${chroot}/etc/issue`
+    //this.msgRemove(fileIssue)
 
-    const eggsIssue = fs.readFileSync(fileIssue, 'utf8')
+    // const eggsIssue = fs.readFileSync(fileIssue, 'utf8')
     // eggsIssue += startMessage + '\n'
     // eggsIssue += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
     // eggsIssue += 'You can login with user: ' + chalk.bold(user) + ' and password: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'
     // eggsIssue += stopMessage + '\n'
-    fs.writeFileSync(fileIssue, eggsIssue)
+    // fs.writeFileSync(fileIssue, eggsIssue)
   }
 
   /**
@@ -186,7 +186,7 @@ export default class CliAutologin {
 
       // shx.exec(`systemctl revert getty@.service`)
       this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
+      // this.msgRemove(`${chroot}/etc/issue`)
     } else if (Utils.isOpenRc()) {
       /**
        * openrc
@@ -206,7 +206,7 @@ export default class CliAutologin {
 
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
+      //this.msgRemove(`${chroot}/etc/issue`)
       const autologin = `${chroot}/bin/autologin`
       execSync(`rm -f ${autologin}`)
     } else if (Utils.isSysvinit()) {
@@ -228,7 +228,7 @@ export default class CliAutologin {
 
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
+      //this.msgRemove(`${chroot}/etc/issue`)
     } // to add: openrc and runit for Devuan
   }
 
