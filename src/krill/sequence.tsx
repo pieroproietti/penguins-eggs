@@ -314,11 +314,8 @@ export default class Sequence {
          try {
             let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
-            // check if the mount was successful
-
             if (this.distro.familyId === 'opensuse') {
-               console.log('opensuse recovery shell') 
-               await exec(`/bin/bash`)
+               await this.emergencyShell('You are in emergency shell, type "exit" to exit.')
             }
          } catch (error) {
             await this.showProblem(message, error)
