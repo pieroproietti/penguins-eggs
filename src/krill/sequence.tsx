@@ -315,8 +315,9 @@ export default class Sequence {
             let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
             // check if the mount was successful
-            if (!fs.existsSync(this.installTarget + this.devices.root.mountPoint)) {
-               await Utils.pressKeyToExit('mountFs: root not mounted.')
+
+            if (this.distro.familyId === 'opensuse') {
+               console.log('opensuse recovery shell') 
                await exec(`/bin/bash`)
             }
          } catch (error) {
