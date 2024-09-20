@@ -27,4 +27,6 @@ Boot params for our ISO are created on ovary.ts, this is a sample:
 ```
 ppend initrd=/live/initrd-6.10.8-1-default root=live:CDLABEL=colibri rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs
 ```
+It's not yet full functional, for same reason don't create the user, but can be installed, login with root/evolution and create user.
+
 
