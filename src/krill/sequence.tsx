@@ -316,8 +316,8 @@ export default class Sequence {
             await sleep(500) // diamo il tempo di montare
             // check if the mount was successful
             if (!fs.existsSync(this.installTarget + this.devices.root.mountPoint)) {
-               await Utils.pressKeyToExit('mountFs: root not mounted')
-               await this.emergencyShell('mountFs: root not mounted')
+               await Utils.pressKeyToExit('mountFs: root not mounted.')
+               await exec(`/bin/bash`)
             }
          } catch (error) {
             await this.showProblem(message, error)
