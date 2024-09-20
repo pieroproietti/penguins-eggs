@@ -312,8 +312,13 @@ export default class Sequence {
          message = "Mounting target file system "
          redraw(<Install message={message} percent={9} spinner={this.spinner} />)
          try {
-            await this.mountFs()
+            let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
+            // check if the mount was successful
+            if (!fs.existsSync(this.installTarget + this.devices.root.mountPoint)) {
+               await Utils.pressKeyToExit('mountFs: root not mounted')
+               await this.emergencyShell('mountFs: root not mounted')
+            }
          } catch (error) {
             await this.showProblem(message, error)
          }
