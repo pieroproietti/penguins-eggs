@@ -55,6 +55,21 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           console.log(error)
           await Utils.pressKeyToExit(cmd, true)
         }
+      } 
+    }
+
+    /**
+     * opensuse
+     */
+    case 'opensuse': {
+      if (this.efi) {
+        try {
+          cmd = `chroot ${this.installTarget} zypper install -y grub2 grub2-i386-pc grub2-x86_64-efi- efibootmgr} ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          console.log(error)
+          await Utils.pressKeyToExit(cmd, true)
+        }
       } else {
         try {
           cmd = `chroot ${this.installTarget} apk add grub grub-bios ${this.toNull}`
