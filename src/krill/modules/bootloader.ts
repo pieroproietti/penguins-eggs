@@ -28,7 +28,7 @@ export default async function bootloader(this: Sequence) {
   }
 
   cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
-  if (this.distro.familyId === 'fedora') {
+  if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse' ) {
     cmd = `chroot ${this.installTarget} grub2-mkconfig -o /boot/grub2/grub.cfg ${this.toNull}`
   }
   try {
