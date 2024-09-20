@@ -1,3 +1,7 @@
 # opensuse naked
 
-Problema con /etc/issue che è un link a /run/issue
+* added check if /etc/issue is a symlink;
+* for same reason, don't mount the disk... so can't install;
+
+
+
