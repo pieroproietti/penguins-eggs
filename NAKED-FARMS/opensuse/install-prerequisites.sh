@@ -22,5 +22,9 @@ zypper install \
     xdg-user-dirs \
     xorriso
 
+# Enable uinput
+echo "uinput" | tee /etc/modules-load.d/uinput.conf
+
 # Install pnpm
 npm i pnpm -g
+
