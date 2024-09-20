@@ -8,7 +8,7 @@
 
 import chalk from 'chalk'
 import { execSync } from 'node:child_process'
-import fs from 'node:fs'
+import fs, { link } from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
 
@@ -57,7 +57,7 @@ export default class CliAutologin {
       content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
       fs.writeFileSync(fileOverride, content)
       shx.exec(`chmod +x ${fileOverride}`)
-      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isOpenRc()) {
       /**
@@ -81,7 +81,7 @@ export default class CliAutologin {
       content += `/bin/login -f ${user}` + '\n'
       fs.writeFileSync(autologin, content, 'utf-8')
       execSync(`chmod +x ${autologin}`)
-      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
+      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     } else if (Utils.isSysvinit()) {
       /**
@@ -102,8 +102,8 @@ export default class CliAutologin {
       }
 
       fs.writeFileSync(inittab, content, 'utf-8')
-      // await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
+      await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
     }
   }
 
@@ -117,15 +117,18 @@ export default class CliAutologin {
    * @param chroot
    */
   async addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
-    // const fileIssue = `${chroot}/etc/issue`
-    //this.msgRemove(fileIssue)
-
-    // const eggsIssue = fs.readFileSync(fileIssue, 'utf8')
-    // eggsIssue += startMessage + '\n'
-    // eggsIssue += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
-    // eggsIssue += 'You can login with user: ' + chalk.bold(user) + ' and password: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'
-    // eggsIssue += stopMessage + '\n'
-    // fs.writeFileSync(fileIssue, eggsIssue)
+    const fileIssue = `${chroot}/etc/issue`
+    if (fs.existsSync(fileIssue)) {
+      if (!fs.lstatSync(fileIssue).isSymbolicLink()) {
+        this.msgRemove(fileIssue)
+        let content = fs.readFileSync(fileIssue, 'utf8')
+        content += startMessage + '\n'
+        content += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
+        content += 'You can login with user: ' + chalk.bold(user) + ' and password: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n'
+        content += stopMessage + '\n'
+        fs.writeFileSync(fileIssue, content)
+      }
+    }
   }
 
   /**
@@ -152,7 +155,6 @@ export default class CliAutologin {
     if (!fs.existsSync(fileMotd)) {
       await exec(`touch ${fileMotd}`)
     }
-
     this.msgRemove(fileMotd)
 
     let eggsMotd = fs.readFileSync(fileMotd, 'utf8')
@@ -184,9 +186,8 @@ export default class CliAutologin {
         shx.exec(`rm ${dirOverride} -rf`)
       }
 
-      // shx.exec(`systemctl revert getty@.service`)
       this.msgRemove(`${chroot}/etc/motd`)
-      // this.msgRemove(`${chroot}/etc/issue`)
+      this.msgRemove(`${chroot}/etc/issue`)
     } else if (Utils.isOpenRc()) {
       /**
        * openrc
@@ -206,7 +207,7 @@ export default class CliAutologin {
 
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
-      //this.msgRemove(`${chroot}/etc/issue`)
+      this.msgRemove(`${chroot}/etc/issue`)
       const autologin = `${chroot}/bin/autologin`
       execSync(`rm -f ${autologin}`)
     } else if (Utils.isSysvinit()) {
@@ -225,10 +226,12 @@ export default class CliAutologin {
 
         content += lines[i] + '\n'
       }
-
+      // motd
       fs.writeFileSync(inittab, content, 'utf-8')
       this.msgRemove(`${chroot}/etc/motd`)
-      //this.msgRemove(`${chroot}/etc/issue`)
+
+      // issue
+      this.msgRemove(`${chroot}/etc/issue`)
     } // to add: openrc and runit for Devuan
   }
 
@@ -238,25 +241,26 @@ export default class CliAutologin {
    */
   private async msgRemove(path: string) {
     if (fs.existsSync(path)) {
-      const rows = fs.readFileSync(path, 'utf8').split('\n')
-      let cleaned = ''
+      if (!fs.lstatSync(path).isSymbolicLink()) {
+        const rows = fs.readFileSync(path, 'utf8').split('\n')
+        let cleaned = ''
 
-      let remove = false
-      for (const row of rows) {
-        if (row.includes(startMessage)) {
-          remove = true
-        }
+        let remove = false
+        for (const row of rows) {
+          if (row.includes(startMessage)) {
+            remove = true
+          }
 
-        if (!remove && row !== '') {
-          cleaned += row + '\n'
-        }
+          if (!remove && row !== '') {
+            cleaned += row + '\n'
+          }
 
-        if (row.includes(stopMessage)) {
-          remove = false
+          if (row.includes(stopMessage)) {
+            remove = false
+          }
         }
+        fs.writeFileSync(path, cleaned, 'utf-8')
       }
-
-      fs.writeFileSync(path, cleaned, 'utf-8')
     }
   }
 }
