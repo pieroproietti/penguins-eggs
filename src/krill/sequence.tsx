@@ -314,8 +314,8 @@ export default class Sequence {
          try {
             let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
-            if (this.distro.familyId === 'opensuse') {
-               await this.emergencyShell('You are in emergency shell, type "exit" to exit.')
+            if (this.chroot) {
+               await this.emergencyShell('You are in emergency shell - after mountFs- type "exit" to exit.')
             }
          } catch (error) {
             await this.showProblem(message, error)
@@ -656,7 +656,6 @@ export default class Sequence {
                }
             }
          }
-
 
          // chroot
          if (chroot) {
