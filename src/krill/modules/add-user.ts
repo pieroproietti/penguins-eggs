@@ -30,7 +30,8 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   } else if (this.distro.familyId === 'fedora') {
     cmd = `chroot ${this.installTarget} adduser ${name} -m --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }  else if (this.distro.familyId === 'opensuse') {
-    cmd = `chroot ${this.installTarget} adduser ${name} -m -s /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+    // qua è useradd... ma dico io!
+    cmd = `chroot ${this.installTarget} useradd ${name} -m -s /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
   await exec(cmd, this.echo)
 
@@ -45,14 +46,10 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
   await exec(cmd, this.echo)
 
-  // autologin
-  try {
-    await exec(cmd, this.echo)
-    if (this.distro.familyId === 'archlinux') {
-      await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
-      await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
-    }
-  } catch {
-    await Utils.pressKeyToExit(cmd)
+  // add autologin group in archlinux
+  await exec(cmd, this.echo)
+  if (this.distro.familyId === 'archlinux') {
+    await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
+    await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
   }
 }
