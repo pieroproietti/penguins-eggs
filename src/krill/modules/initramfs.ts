@@ -46,5 +46,12 @@ export default async function initramfs(this: Sequence) {
     } catch {
       await Utils.pressKeyToExit(cmd)
     }
+  } else if (this.distro.familyId === 'alpine') {    
+  } else if (this.distro.familyId === 'fedora') {    
+    let cmd='dracut'
+    await exec(cmd, Utils.setEcho(true))
+  } else if (this.distro.familyId === 'opensuse') {    
+    let cmd='dracut'
+    await exec(cmd, Utils.setEcho(true))
   }
 }
