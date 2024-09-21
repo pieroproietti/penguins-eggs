@@ -52,6 +52,12 @@ export default class Bleach {
         break
       }
 
+      case 'fedora': {
+        await exec(`dnf clean all`, echo)
+
+        break
+      }
+
       case 'opensuse': {
         await exec(`zypper clean`, echo)
 
