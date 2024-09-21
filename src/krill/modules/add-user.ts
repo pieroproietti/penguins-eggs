@@ -28,10 +28,9 @@ export default async function addUser(this: Sequence, name = 'live', password = 
   if (this.distro.familyId === 'archlinux') {
     cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
   } else if (this.distro.familyId === 'fedora') {
-    cmd = `chroot ${this.installTarget} adduser ${name} -m --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+    cmd = `chroot ${this.installTarget} adduser ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }  else if (this.distro.familyId === 'opensuse') {
-    // qua è useradd... ma dico io!
-    cmd = `chroot ${this.installTarget} useradd ${name} -m -s /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+    cmd = `chroot ${this.installTarget} useradd ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
   await exec(cmd, this.echo)
 
