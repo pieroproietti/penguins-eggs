@@ -48,5 +48,8 @@ dnf -y install \
 # install pnpm
 npm i pnpm -g
 
+# mkdir /usr/share/icons
+mkdir -p /usr/share/icons
+
 # disable selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
