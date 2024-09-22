@@ -31,3 +31,7 @@ pacman -Syu --noconfirm --needed \
 
 	# install pnpm
     npm i pnpm -g
+
+    # mkdir /usr/share/icons
+    mkdir -p /usr/share/icons
+    
