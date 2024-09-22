@@ -937,6 +937,12 @@ export default class Ovary {
     let syspath = path.resolve(__dirname, `../../syslinux/`)
     await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
 
+    // syslinux was deleted
+    await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+
+
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
     if (this.theme.includes('/')) {
