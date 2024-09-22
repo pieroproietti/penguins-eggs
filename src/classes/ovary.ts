@@ -942,9 +942,8 @@ export default class Ovary {
     // await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     // await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
-    // syslinux da syspath
+    // syslinux da syspath NON funzions su Arch
     let syspath = path.resolve(__dirname, `../../syslinux`)
-    // await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
