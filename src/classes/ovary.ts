@@ -936,15 +936,20 @@ export default class Ovary {
   async syslinux(theme = 'eggs') {
 
     // syslinux
-    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
-    // isolinux
-    let syspath = path.resolve(__dirname, `../../syslinux/`)
-    await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
+    // syslinux da syspath
+    let syspath = path.resolve(__dirname, `../../syslinux`)
+    // await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
