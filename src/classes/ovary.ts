@@ -951,6 +951,11 @@ export default class Ovary {
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
     /**
+     * isolinux.bin
+    */
+    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+
+    /**
      * isolinux.cfg from isolinux.main.cfg
      */
     const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
