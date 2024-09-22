@@ -162,11 +162,10 @@ export default class CliAutologin {
     eggsMotd += Utils.flag() + '\n'
     eggsMotd += 'You are logged as: ' + chalk.bold(user) + ' your password is: ' + chalk.bold(userPasswd) + ', root password: ' + chalk.bold(rootPasswd) + '\n\n'
     eggsMotd += 'install              : ' + chalk.bold(installer) + '\n'
-    eggsMotd += '  unattended         : ' + chalk.bold('sudo eggs install --unattended  # us configuration') + '\n'
-    eggsMotd += '  chroot             : ' + chalk.bold('sudo eggs install --chroot # chroot on installed before to end') + '\n'
-    eggsMotd += 'PXE server           : ' + chalk.bold('sudo eggs cuckoo') + '\n'
-    eggsMotd += '(*) to get your custom unattended configuration: fork https://github.com/pieroproietti/penguins-wardrobe' + '\n'
-    eggsMotd += '    create your configuration in /config and ask for a Pull Request' + '\n'
+    eggsMotd += ' --unattended        : ' + chalk.bold('sudo eggs install --unattended') + '\n'
+    eggsMotd += ' --chroot            : ' + chalk.bold('sudo eggs install --chroot') + '\n'
+    eggsMotd += ' --help              : ' + chalk.bold('sudo eggs install --help') + '\n'
+    eggsMotd += '\n'
     eggsMotd += stopMessage + '\n'
     fs.writeFileSync(fileMotd, eggsMotd)
   }
