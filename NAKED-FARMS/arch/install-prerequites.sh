@@ -56,4 +56,3 @@ pacman -Syu --noconfirm --needed \
 
 	# enable sudo for wheel group
 	sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
-	
