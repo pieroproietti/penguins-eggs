@@ -934,14 +934,17 @@ export default class Ovary {
    * syslinux: new version
    */
   async syslinux(theme = 'eggs') {
-    let syspath = path.resolve(__dirname, `../../syslinux/`)
-    await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
 
-    // syslinux was deleted
+    // syslinux
+    await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
+    // isolinux
+    let syspath = path.resolve(__dirname, `../../syslinux/`)
+    await exec(`cp ${syspath}/* ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
