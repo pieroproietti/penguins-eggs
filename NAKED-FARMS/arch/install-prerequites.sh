@@ -16,6 +16,7 @@ pacman -Syu --noconfirm --needed \
 		mtools \
 		nbd \
 		nodejs \
+        npm \
 		pacman-contrib \
 		parted \
 		procps-ng \
@@ -25,6 +26,8 @@ pacman -Syu --noconfirm --needed \
 		squashfs-tools \
 		sshfs \
 		syslinux \
+        xdg-user-dirs \
 		xdg-utils
-        
-	
+
+	# install pnpm
+    npm i pnpm -g
