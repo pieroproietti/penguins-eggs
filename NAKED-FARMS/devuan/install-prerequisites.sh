@@ -6,9 +6,9 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-# check if we are on debian
+# check if we are on devuan
 if [ ! -f /etc/os-release ]; then
-    echo "This script is only for Debian"
+    echo "This script is only for Devuan"
     exit
 fi
 
@@ -20,6 +20,7 @@ apt-get install -y \
     dosfstools \
     dpkg-dev \
     git \
+    grub-efi-amd64-bin \
     isolinux \
     jq \
     live-boot \

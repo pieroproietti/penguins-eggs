@@ -20,6 +20,7 @@ apt-get install -y \
     dosfstools \
     dpkg-dev \
     git \
+    grub-efi-amd64-bin \
     isolinux \
     jq \
     live-boot \
