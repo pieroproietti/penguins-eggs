@@ -949,6 +949,10 @@ export default class Ovary {
     await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+    //isolinux.bin
+    //await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
@@ -963,10 +967,6 @@ export default class Ovary {
 
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
-    /**
-     * isolinux.bin
-    */
-    await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     /**
      * isolinux.cfg from isolinux.main.cfg
