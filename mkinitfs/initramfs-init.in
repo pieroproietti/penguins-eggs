@@ -786,7 +786,9 @@ if [ -n "${KOPT_alpinelivelabel}" ]; then
 	mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work $sysroot
 
 	# just a dummy value for /etc/machine-id
-	echo 21733847458759515a19bd2466cdd5de | tee /sysroot/etc/machine-id
+	MACHINE_UUID=$(cat "$ROOT"/sys/class/dmi/id/product_uuid 2>/dev/null)
+	machine_id="${MACHINE_UUID//-/}"
+	echo $machine_id | tee /sysroot/etc/machine-id > /dev/null
 fi
 # sidecar emd   #####################################################################
 
