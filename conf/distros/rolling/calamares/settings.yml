@@ -40,7 +40,7 @@ sequence:
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      - grubcfg
+      # grubcfg 
       - bootloader
       - packages
       - luksbootkeyfile
