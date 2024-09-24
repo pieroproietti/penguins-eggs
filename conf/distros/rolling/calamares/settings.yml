@@ -40,7 +40,7 @@ sequence:
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      - grubcfg
+      # grubcfg 
       - bootloader
       - packages
       - luksbootkeyfile
@@ -87,3 +87,5 @@ prompt-install: false
 # YAML: boolean.
 dont-chroot: false
 
+# preso da debian
+quit-at-end: false
