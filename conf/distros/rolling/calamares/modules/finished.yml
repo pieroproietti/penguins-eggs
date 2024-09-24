@@ -31,7 +31,8 @@
 #       This is new behavior.
 #
 # The three combinations of legacy values are still supported.
-restartNowMode: user-unchecked
+#restartNowMode: user-unchecked 
+restartNowEnabled: true
 restartNowChecked: true
 # If the checkbox is shown, and the checkbox is checked, then when
 # Calamares exits from the finished-page it will run this command.
