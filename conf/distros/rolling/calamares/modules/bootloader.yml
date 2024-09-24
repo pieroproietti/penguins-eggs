@@ -34,8 +34,7 @@ loaderEntries:
   - "console-mode keep"
 
 # systemd-boot and refind support custom kernel params
-kernelParams: [ "quiet", "rootflags=subvol=@" ]
-#kernelParams: 
+kernelParams: [ "quiet"]
 
 # A list of kernel names that refind should accept as kernels
 #refindKernelList: [ "linux","linux-lts","linux-zen","linux-hardened" ]
