@@ -1,16 +1,5 @@
 # arch
-# calamares 3.9
----
-# SPDX-FileCopyrightText: no
-# SPDX-License-Identifier: CC0-1.0
-#
-# Bootloader configuration. The bootloader is installed to allow
-# the system to start (and pick one of the installed operating
-# systems to run).
-#
-# Take note that Debian-derivatives that use unmodified GRUB EFI packages
-# should specifically set *efiBootloaderId* to "debian" because that is
-# hard-coded in `grubx64.efi`.
+# calamares 3.3
 ---
 # A variable from global storage which overrides the value of efiBootLoader
 #efiBootLoaderVar: "packagechooser_bootloader"
@@ -18,7 +7,6 @@
 # Define which bootloader you want to use for EFI installations
 # Possible options are 'grub', 'sb-shim', 'refind` and 'systemd-boot'.
 efiBootLoader: "grub"
-
 
 # systemd-boot configuration files settings
 
@@ -34,7 +22,7 @@ loaderEntries:
   - "console-mode keep"
 
 # systemd-boot and refind support custom kernel params
-kernelParams: [ "quiet"]
+kernelParams: [ "quiet" ]
 
 # A list of kernel names that refind should accept as kernels
 #refindKernelList: [ "linux","linux-lts","linux-zen","linux-hardened" ]
