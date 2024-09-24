@@ -19,6 +19,7 @@
 # Possible options are 'grub', 'sb-shim', 'refind` and 'systemd-boot'.
 efiBootLoader: "grub"
 
+
 # systemd-boot configuration files settings
 
 # kernelSearchPath is the path relative to the root of the install to search for kernels
@@ -33,7 +34,8 @@ loaderEntries:
   - "console-mode keep"
 
 # systemd-boot and refind support custom kernel params
-kernelParams: [ "quiet" ]
+kernelParams: [ "quiet", "rootflags=subvol=@" ]
+#kernelParams: 
 
 # A list of kernel names that refind should accept as kernels
 #refindKernelList: [ "linux","linux-lts","linux-zen","linux-hardened" ]
