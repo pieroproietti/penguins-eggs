@@ -1,5 +1,16 @@
 # arch
-# calamares 3.3
+# calamares 3.9
+---
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
+#
+# Bootloader configuration. The bootloader is installed to allow
+# the system to start (and pick one of the installed operating
+# systems to run).
+#
+# Take note that Debian-derivatives that use unmodified GRUB EFI packages
+# should specifically set *efiBootloaderId* to "debian" because that is
+# hard-coded in `grubx64.efi`.
 ---
 # A variable from global storage which overrides the value of efiBootLoader
 #efiBootLoaderVar: "packagechooser_bootloader"
