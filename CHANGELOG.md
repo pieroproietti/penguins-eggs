@@ -41,8 +41,17 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.40
+* fixed a bug in krill machine-id on alpine;
+* calamares on arch have restart checked on close as default;
+* removed grubcfg module from arch calamares, seem not more necessary;
+* wrote a short README.md for troubles in Arch using an ISO created on btrfs to install ext4 and viceversa;
+* renamed NAKED-FARMS to DEV-FARMS - the procedures inside can be used on CLI and GUI systems - so this is more appropriate name;
+* wrote simple README.md on how to create a naked on DEV-FARMS.
+
 ## penguins-eggs-10.0.39
 * bugfix archlinux package;
+
 ## penguins-eggs-10.0.38
 * krill: revised completely, introduced a spinner during installation and cleaning things;
 * OpenSuSE start from live, but can't install;
