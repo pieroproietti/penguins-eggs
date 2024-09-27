@@ -31,7 +31,9 @@ export default async function initramfs(this: Sequence) {
     /**
      * Archlinux
      */
-    let cmd=`chroot ${this.installTarget} mkinitfs`
+    let initrdImg = Utils.initrdImg()
+    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
+    let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}`
     await exec(cmd, this.echo)
 
     /*
