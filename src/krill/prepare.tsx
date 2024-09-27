@@ -263,7 +263,7 @@ export default class Krill {
 
     let hostname = this.krillConfig.hostname
     if (hostname === '') {
-      hostname = shx.exec('cat /etc/hostname').trim()
+      hostname = shx.exec('cat /etc/hostname', { silent: true }).trim()
     }
 
     if (ip) {
@@ -644,7 +644,7 @@ export default class Krill {
   private async pvExist(): Promise<boolean> {
     let exist = false
     const check = `#!/bin/sh\npvdisplay |grep "PV Name" >/dev/null && echo 1|| echo 0`
-    if (shx.exec(check).stdout.trim() === '1') {
+    if (shx.exec(check, { silent: true }).stdout.trim() === '1') {
       exist = true
     }
     return exist

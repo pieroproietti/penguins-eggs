@@ -855,13 +855,6 @@ export default class Ovary {
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
-
-    /** tempt for dracut
-    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
-    */
   }
 
 
@@ -916,7 +909,7 @@ export default class Ovary {
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
   }
 
   /**
@@ -927,7 +920,7 @@ export default class Ovary {
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
   }
 
   /**
