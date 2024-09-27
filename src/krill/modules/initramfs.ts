@@ -20,20 +20,18 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default async function initramfs(this: Sequence) {
   if (this.distro.familyId === 'debian') {
-    let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
-    try {
-      await exec(cmd, this.echo)
-    } catch {
-      await Utils.pressKeyToExit(cmd)
-    }
 
+    /**
+     * Debian
+     */
+    let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
     cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
-    try {
-      await exec(cmd, this.echo)
-    } catch {
-      await Utils.pressKeyToExit(cmd)
-    }
+    await exec(cmd, Utils.setEcho(true))
   } else if (this.distro.familyId === 'archlinux') {
+
+    /**
+     * Archlinux
+     */
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     //let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
@@ -41,19 +39,28 @@ export default async function initramfs(this: Sequence) {
     if (this.distro.distroId === 'Manjaro') {
       cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
     }
-
-    try {
-      await exec(cmd, Utils.setEcho(true))
-    } catch {
-      await Utils.pressKeyToExit(cmd)
-    }
+    await exec(cmd, Utils.setEcho(true))
   } else if (this.distro.familyId === 'alpine') {
-    
+
+    /**
+     * Alpine
+     */
+
   } else if (this.distro.familyId === 'fedora') {    
-    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
-    Utils.pressKeyToExit()
+
+    /**
+     * Fedora
+     */
+    let cmd=`chroot ${this.installTarget} dracut -fv}`
+    await exec(cmd, Utils.setEcho(true))
   } else if (this.distro.familyId === 'opensuse') {    
+
+    /**
+     * Opensuse
+     */
     let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
     await exec(cmd, Utils.setEcho(true))
   }
+
+
 } 
