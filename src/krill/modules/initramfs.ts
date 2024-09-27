@@ -44,6 +44,8 @@ export default async function initramfs(this: Sequence) {
     /**
      * Alpine
      */
+    let cmd=`chroot ${this.installTarget} mkinitfs`
+    await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'fedora') {    
     /**
