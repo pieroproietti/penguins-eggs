@@ -19,33 +19,20 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initramfs()
  */
 export default async function initramfs(this: Sequence) {
+  let initrdImg = Utils.initrdImg()
   if (this.distro.familyId === 'debian') {
     /**
      * Debian
      */
-    let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
-    cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
+    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/${initrdImg} ${this.toNull}`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'archlinux') {
     /**
      * Archlinux
      */
-    let initrdImg = Utils.initrdImg()
-    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}`
     await exec(cmd, this.echo)
-
-    /*
-    let initrdImg = Utils.initrdImg()
-    initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    //let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
-    let cmd = `mkinitcpio -g ${this.installTarget}/boot/${initrdImg}`
-    if (this.distro.distroId === 'Manjaro') {
-      cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
-    }
-    await exec(cmd, Utils.setEcho(true))
-    */
 
   } else if (this.distro.familyId === 'alpine') {
     /**
