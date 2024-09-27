@@ -20,15 +20,14 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default async function initramfs(this: Sequence) {
   if (this.distro.familyId === 'debian') {
-
     /**
      * Debian
      */
     let cmd = `chroot ${this.installTarget} mkinitramfs -o ~/initrd.img-$(uname -r) ${this.toNull}`
     cmd = `chroot ${this.installTarget} mv ~/initrd.img-$(uname -r) /boot ${this.toNull}`
-    await exec(cmd, Utils.setEcho(true))
-  } else if (this.distro.familyId === 'archlinux') {
+    await exec(cmd, this.echo)
 
+  } else if (this.distro.familyId === 'archlinux') {
     /**
      * Archlinux
      */
@@ -37,30 +36,28 @@ export default async function initramfs(this: Sequence) {
     //let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
     let cmd = `mkinitcpio -g ${this.installTarget}/boot/${initrdImg}`
     if (this.distro.distroId === 'Manjaro') {
-      cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
+      cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
     }
     await exec(cmd, Utils.setEcho(true))
-  } else if (this.distro.familyId === 'alpine') {
 
+  } else if (this.distro.familyId === 'alpine') {
     /**
      * Alpine
      */
 
   } else if (this.distro.familyId === 'fedora') {    
-
     /**
      * Fedora
      */
-    let cmd=`chroot ${this.installTarget} dracut -fv}`
-    await exec(cmd, Utils.setEcho(true))
-  } else if (this.distro.familyId === 'opensuse') {    
+    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
+    await exec(cmd, this.echo)
 
+  } else if (this.distro.familyId === 'opensuse') {    
     /**
      * Opensuse
      */
     let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
-    await exec(cmd, Utils.setEcho(true))
+    await exec(cmd, this.echo)
+
   }
-
-
 } 
