@@ -36,7 +36,8 @@ export default async function initramfs(this: Sequence) {
   } else if (this.distro.familyId === 'archlinux') {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
+    //let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
+    let cmd = `mkinitcpio -g ${this.installTarget}/boot/${initrdImg}`
     if (this.distro.distroId === 'Manjaro') {
       cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}` // ${this.toNull}
     }
@@ -49,10 +50,10 @@ export default async function initramfs(this: Sequence) {
   } else if (this.distro.familyId === 'alpine') {
     
   } else if (this.distro.familyId === 'fedora') {    
-    let cmd=`chroot ${this.installTarget} dracut -P ${this.toNull}`
-    await exec(cmd, Utils.setEcho(true))
+    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
+    Utils.pressKeyToExit()
   } else if (this.distro.familyId === 'opensuse') {    
-    let cmd=`chroot ${this.installTarget} dracut -P ${this.toNull}`
+    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
     await exec(cmd, Utils.setEcho(true))
   }
 } 
