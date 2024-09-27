@@ -301,7 +301,7 @@ export default class Sequence {
 
       if (isPartitioned) {
          // formatting
-         message = "Formatting file system "
+         message = "Formatting file system"
          await redraw(<Install message={message} percent={6} spinner={this.spinner} />)
          try {
             await this.mkfs()
@@ -311,7 +311,7 @@ export default class Sequence {
 
 
          // mountFs
-         message = "Mounting target file system "
+         message = "Mounting target file system"
          redraw(<Install message={message} percent={9} spinner={this.spinner} />)
          try {
             let success = await this.mountFs()
@@ -321,7 +321,7 @@ export default class Sequence {
          }
 
          // mountVfs
-         message = "Mounting on target VFS "
+         message = "Mounting on target VFS"
          await redraw(<Install message={message} percent={12} spinner={this.spinner} />)
          try {
             await this.mountVfs()
@@ -331,7 +331,7 @@ export default class Sequence {
 
 
          // unpackfs
-         message = "Unpacking filesystem "
+         message = "Unpacking filesystem"
          await redraw(<Install message={message} percent={15} spinner={this.spinner} />)
          try {
             await this.unpackfs()
@@ -342,7 +342,7 @@ export default class Sequence {
 
          // dpkg-unsafe-io
          if (this.distro.familyId === 'debian') {
-            message = "Debian: dpkg-unsafe-io"
+            message = "Force dpkg-unsafe-io"
             await redraw(<Install message={message} percent={40} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io')
@@ -354,7 +354,7 @@ export default class Sequence {
 
          // sources-yolk
          if (this.distro.familyId === 'debian') {
-            message = 'Debian sources-yolk'
+            message = 'Add sources-yolk'
             await redraw(<Install message={message} percent={43} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('sources-yolk')
@@ -375,7 +375,7 @@ export default class Sequence {
 
 
          // fstab
-         message = "Creating fstab "
+         message = "Creating fstab"
          await redraw(<Install message={message} percent={49} spinner={this.spinner} />)
          try {
             await this.fstab(this.partitions.installationDevice)
@@ -388,7 +388,7 @@ export default class Sequence {
           * CryptedClone exec eggs syncfrom
           */
          if (this.is_crypted_clone) {
-            message = "Restore private data from crypted clone "
+            message = "Restore private data from crypted clone"
             await redraw(<Install message={message} percent={55} spinner={this.spinner} />)
             if (fs.existsSync(this.luksFile)) {
                let cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
@@ -413,7 +413,7 @@ export default class Sequence {
          }
 
          // hostname
-         message = "Create hostname "
+         message = "Create hostname"
          await redraw(<Install message={message} percent={64} spinner={this.spinner} />)
          try {
             await this.hostname(this.network.domain)
@@ -424,7 +424,7 @@ export default class Sequence {
 
          // dpkg-unsafe-io-undo
          if (this.distro.familyId === 'debian') {
-            message = "Debian dpkg-unsafe-io-undo"
+            message = "Remove dpkg-unsafe-io"
             await redraw(<Install message={message} percent={65} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('dpkg-unsafe-io-undo')
@@ -544,7 +544,7 @@ export default class Sequence {
 
 
          // bootloader-config
-         message = "bootloader-config "
+         message = "bootloader-config"
          await redraw(<Install message={message} percent={81} spinner={this.spinner} />)
          try {
             await this.bootloaderConfig()
@@ -554,7 +554,7 @@ export default class Sequence {
 
 
          // grubcfg
-         message = "grubcfg "
+         message = "grubcfg"
          await redraw(<Install message={message} percent={82} spinner={this.spinner} />)
          try {
             await this.grubcfg()
@@ -564,7 +564,7 @@ export default class Sequence {
 
 
          // bootloader (grub-install)
-         message = "bootloader "
+         message = "bootloader"
          await redraw(<Install message={message} percent={83} spinner={this.spinner} />)
          try {
             await this.bootloader()
@@ -575,7 +575,7 @@ export default class Sequence {
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
-            message = "Debian sources-yolk-undo"
+            message = "Remove sources-yolk"
             await redraw(<Install message={message} percent={84} spinner={this.spinner} />)
             try {
                await this.execCalamaresModule('sources-yolk-undo')
@@ -586,7 +586,7 @@ export default class Sequence {
 
 
          // packages
-         message = "Add/remove packages..."
+         message = "Add/remove packages"
          await redraw(<Install message={message} percent={85} spinner={this.spinner} />)
          try {
             await this.packages()
@@ -606,7 +606,7 @@ export default class Sequence {
 
 
          // initramfs
-         message = "initramfs "
+         message = "initramfs"
          await redraw(<Install message={message} percent={87} spinner={this.spinner} />)
          try {
             await this.initramfs()
@@ -619,7 +619,7 @@ export default class Sequence {
           *
           * remove CLI/GUI installer link
           */
-         message = "remove GUI installer link"
+         message = "Remove GUI installer link"
          await redraw(<Install message={message} percent={88} spinner={this.spinner} />)
          try {
             await this.removeInstallerLink()
