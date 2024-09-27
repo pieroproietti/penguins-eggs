@@ -874,7 +874,6 @@ export default class Ovary {
     }
 
     const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-    //await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, this.echo)
   }
 

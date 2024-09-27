@@ -24,15 +24,13 @@ export default async function initramfs(this: Sequence) {
     /**
      * Debian
      */
-    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/${initrdImg} ${this.toNull}`
+    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/${initrdImg}`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'archlinux') {
     /**
      * Archlinux
      */
-    // let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg} ${this.toNull}`
-    // await exec(cmd, this.echo)
     let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
     await exec(cmd, this.echo)
 
@@ -47,14 +45,14 @@ export default async function initramfs(this: Sequence) {
     /**
      * Fedora
      */
-    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
+    let cmd=`chroot ${this.installTarget} dracut -f`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'opensuse') {    
     /**
      * Opensuse
      */
-    let cmd=`chroot ${this.installTarget} dracut -f ${this.toNull}`
+    let cmd=`chroot ${this.installTarget} dracut -f`
     await exec(cmd, this.echo)
 
   }
