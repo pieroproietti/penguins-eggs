@@ -102,7 +102,9 @@ fi
 
 # create a symlink to /usr/bin/code
 if [ -e /usr/bin/code-oss ]; then
-    $SUDO ln -s /usr/bin/code-oss /usr/bin/code
+    if [ ! -e /usr/bin/code ]; then
+        $SUDO ln -s /usr/bin/code-oss /usr/bin/code
+    fi
 fi
 
 sudo eggs config -n

@@ -31,7 +31,7 @@ export default async function initramfs(this: Sequence) {
     /**
      * Archlinux
      */
-    let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}`
+    let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg} ${this.toNull}`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'alpine') {

@@ -563,13 +563,10 @@ export default class Ovary {
       await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
       if (this.settings.config.ssh_pass) {
-        /** removed on 2023-12-28
-         * await exec(`echo 'PermitRootLogin yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
-         */
-        await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       } else {
-        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
-        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
+        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
+        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
       }
     }
 
@@ -877,7 +874,8 @@ export default class Ovary {
     }
 
     const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
-    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    //await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, this.echo)
   }
 
   /**
