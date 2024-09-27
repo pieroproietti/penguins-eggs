@@ -31,6 +31,10 @@ export default async function initramfs(this: Sequence) {
     /**
      * Archlinux
      */
+    let cmd=`chroot ${this.installTarget} mkinitfs`
+    await exec(cmd, this.echo)
+
+    /*
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     //let cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/arch/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
@@ -39,6 +43,7 @@ export default async function initramfs(this: Sequence) {
       cmd = `mkinitcpio -c ${path.resolve(__dirname, '../../../mkinitcpio/manjaro/mkinitcpio-install.conf')} -g ${this.installTarget}/boot/${initrdImg}`
     }
     await exec(cmd, Utils.setEcho(true))
+    */
 
   } else if (this.distro.familyId === 'alpine') {
     /**
