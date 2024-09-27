@@ -19,7 +19,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initramfs()
  */
 export default async function initramfs(this: Sequence) {
-  let initrdImg = Utils.initrdImg()
+  let initrdImg = path.basename(Utils.initrdImg())
   if (this.distro.familyId === 'debian') {
     /**
      * Debian
