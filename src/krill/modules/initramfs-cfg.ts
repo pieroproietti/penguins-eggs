@@ -21,9 +21,6 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
     let text = ''
     text += this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file' ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
-
     Utils.write(file, text)
-  } else if (this.distro.familyId === 'archlinux') {
-    console.log('initramfsCfg skipped')
   }
 }

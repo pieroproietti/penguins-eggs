@@ -9,9 +9,9 @@ sudo dnf -y install \
 	dracut-live
 ```
 
-### suse
+### opensuse
 ```
-sudo dnf -y install \
+sudo zypper -y install \
 	dracut \
 	dracut-tools
 ```
