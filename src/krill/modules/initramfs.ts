@@ -19,11 +19,11 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initramfs()
  */
 export default async function initramfs(this: Sequence) {
-  let initrdImg = path.basename(Utils.initrdImg())
   if (this.distro.familyId === 'debian') {
     /**
      * Debian
      */
+    let initrdImg = path.basename(Utils.initrdImg())
     let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/${initrdImg}`
     await exec(cmd, this.echo)
 
@@ -31,6 +31,7 @@ export default async function initramfs(this: Sequence) {
     /**
      * Archlinux
      */
+    let initrdImg = path.basename(Utils.initrdImg())
     let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
     await exec(cmd, this.echo)
 
