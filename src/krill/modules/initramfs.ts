@@ -23,8 +23,7 @@ export default async function initramfs(this: Sequence) {
     /**
      * Debian
      */
-    let initrdImg = path.basename(Utils.initrdImg())
-    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/${initrdImg}`
+    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/initrd.img-$(uname -r)`
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'archlinux') {
