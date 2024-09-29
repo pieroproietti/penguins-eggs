@@ -17,7 +17,6 @@ export interface IDistro {
   isCalamaresAvailable: boolean
   liveMediumPath: string
   releaseId: string
-  releaseLike: string
   squashfs: string
   supportUrl: string
   syslinuxPath: string

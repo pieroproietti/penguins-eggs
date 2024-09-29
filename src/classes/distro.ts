@@ -31,7 +31,6 @@ class Distro implements IDistro {
   isCalamaresAvailable: boolean
   liveMediumPath: string
   releaseId: string
-  releaseLike: string
   squashfs: string
   supportUrl: string
   syslinuxPath: string
@@ -42,7 +41,7 @@ class Distro implements IDistro {
    */
   constructor() {
     let found = false
-
+    // Tutti i default sono per Debian
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
     this.codenameLikeId = ''
@@ -59,25 +58,6 @@ class Distro implements IDistro {
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
     this.usrLibPath = '/usr/lib'
 
-    const os_release = '/etc/os-release'
-    if (fs.existsSync(os_release)) {
-      let lines: string[] = []
-      if (fs.existsSync(os_release)) {
-        const data = fs.readFileSync(os_release, 'utf8')
-        lines = data.split('\n')
-      }
-
-      // per ogni riga
-      for (const line of lines) {
-        if (line.startsWith('HOME_URL=')) {
-          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '')
-        } else if (line.startsWith('SUPPORT_URL=')) {
-          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '')
-        } else if (line.startsWith('BUG_REPORT_URL=')) {
-          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '')
-        }
-      }
-    }
 
     /**
      * lsb_release -cs per codename (version)
@@ -88,22 +68,8 @@ class Distro implements IDistro {
     this.releaseId = shell.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
     this.distroId = shell.exec('lsb_release -is', { silent: true }).stdout.toString().trim()
 
-    /**
-     * releaseLike = releaseId
-     */
-    this.releaseLike = this.releaseId
-
-    /**
-     * Per casi equivoci conviene normalizzare codenameId
-     *  -i, --id           show distributor ID
-     *  -r, --release      show release number of this distribution
-     *  -c, --codename     show code name of this distribution
-     */
-    if (this.distroId === 'Debian' && this.releaseId === 'unstable' && this.codenameId === 'sid') {
+    if (this.distroId === 'Debian' && this.codenameId === 'sid') {
       this.codenameId = 'trixie'
-    } else if (this.distroId === 'Debian' && this.releaseId === 'testing/unstable') {
-      this.codenameId = 'trixie'
-      this.releaseLike = 'unstable'
     }
 
     if (this.distroId.includes('BigLinux')) {
@@ -111,9 +77,9 @@ class Distro implements IDistro {
     }
 
     /**
-     * Per Alpine, Fedora ed OpenSUSE basta distroId
-     * Debian, Devuan, Ubuntu e derivate ricodono in
-     * default e si analizza codebaseId
+     * Per Alpine, Fedora ed OpenSUSE basta distroId,
+     * Debian, Devuan, Ubuntu e derivate ricadono in
+     * default e si analizza il codebaseId
      * 
      */
     switch (this.distroId) {
@@ -155,9 +121,13 @@ class Distro implements IDistro {
       }
 
       /**
-       * Arch/Debian/Devuan/Manjaro and Ubuntu
+       * Arch/Debian/Devuan and Ubuntu
+       * analizzo i codebase conosciuti
        */
       default: {
+        /**
+         * Debian
+         */
         switch (this.codenameId) {
           case 'jessie': {
             this.distroLike = 'Debian'
@@ -230,7 +200,7 @@ class Distro implements IDistro {
           }
 
           /**
-           * Ubuntu LTS + actual
+           * Ubuntu
            */
           case 'bionic': {
             this.distroLike = 'Ubuntu'
@@ -261,9 +231,7 @@ class Distro implements IDistro {
             break
           }
 
-          /**
-           * Rhino
-           */
+          // rhino
           case 'devel': {
             this.distroLike = 'Ubuntu'
             this.codenameLikeId = 'devel'
@@ -286,7 +254,7 @@ class Distro implements IDistro {
           }
 
           /**
-           * find in derivatives
+           * derivatives
            */
           default: {
             interface IDistros {
@@ -334,7 +302,9 @@ class Distro implements IDistro {
     } // Fine analisi distroId
 
 
-    // Last touchs
+    /**
+     * Ultimi ritocchi
+     */
 
     /**
      * Debian: /usr/lib/x86_64-linux-gnu
@@ -345,13 +315,37 @@ class Distro implements IDistro {
     }
 
     /**
-     * ManjaroLinux and BigLinux
+     * ManjaroLinux e derivate
      */
     if (this.distroId === 'ManjaroLinux' || this.distroId === 'BigLinux') {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
+
+    /**
+     * lottura os_release per i pulsanti
+     */
+    const os_release = '/etc/os-release'
+    if (fs.existsSync(os_release)) {
+      let lines: string[] = []
+      if (fs.existsSync(os_release)) {
+        const data = fs.readFileSync(os_release, 'utf8')
+        lines = data.split('\n')
+      }
+
+      // per ogni riga
+      for (const line of lines) {
+        if (line.startsWith('HOME_URL=')) {
+          this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '')
+        } else if (line.startsWith('SUPPORT_URL=')) {
+          this.supportUrl = line.slice('SUPPORT_URL='.length).replaceAll('"', '')
+        } else if (line.startsWith('BUG_REPORT_URL=')) {
+          this.bugReportUrl = line.slice('BUG_REPORT_URL='.length).replaceAll('"', '')
+        }
+      }
+    }
   }
+
 }
 
 export default Distro

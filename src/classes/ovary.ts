@@ -565,8 +565,8 @@ export default class Ovary {
       if (this.settings.config.ssh_pass) {
         await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       } else {
-        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
-        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
+        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       }
     }
 
@@ -868,7 +868,7 @@ export default class Ovary {
     let fileConf = 'arch'
     if (isMiso(distroId)) {
       fileConf = 'manjarolinux'
-      if (distroId.toLowerCase().includes('biglinux')) {
+      if (distroId === "BigLinux") {
         fileConf = 'biglinux'
       }
     }
@@ -2186,7 +2186,7 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
  */
 function isMiso(distro: string): boolean {
   let found = false
-  if (distro.includes('ManjaroLinux') || distro.toLowerCase().includes('biglinux')) {
+  if (distro === 'ManjaroLinux' || distro === `BigLinux`) {
     found = true
   }
 
