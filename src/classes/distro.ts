@@ -29,10 +29,7 @@ class Distro implements IDistro {
   familyId: string
   homeUrl: string
   isCalamaresAvailable: boolean
-  isolinuxPath: string // to-remove
   liveMediumPath: string
-  memdiskPath: string // to-remove
-  pxelinuxPath: string // to-remove
   releaseId: string
   releaseLike: string
   squashfs: string
@@ -60,10 +57,7 @@ class Distro implements IDistro {
     this.squashfs = 'live/filesystem.squashfs'
     this.supportUrl = 'https://penguins-eggs.net'
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
-    this.isolinuxPath = this.syslinuxPath // to-remove
-    this.memdiskPath = this.syslinuxPath // to-remove
-    this.pxelinuxPath = this.syslinuxPath // to-remove
-  
+
     this.usrLibPath = '/usr/lib'
 
     const os_release = '/etc/os-release'

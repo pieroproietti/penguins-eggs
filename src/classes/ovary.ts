@@ -2041,7 +2041,7 @@ export default class Ovary {
 
     let isoHybridMbr = ''
     if (this.settings.config.make_isohybrid) {
-      const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
+      const isolinuxFile = this.settings.distro.syslinuxPath + 'isohdpfx.bin'
       if (fs.existsSync(isolinuxFile)) {
         isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
       } else {
