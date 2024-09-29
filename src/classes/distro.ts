@@ -57,7 +57,6 @@ class Distro implements IDistro {
     this.squashfs = 'live/filesystem.squashfs'
     this.supportUrl = 'https://penguins-eggs.net'
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
-
     this.usrLibPath = '/usr/lib'
 
     const os_release = '/etc/os-release'
@@ -107,8 +106,15 @@ class Distro implements IDistro {
       this.releaseLike = 'unstable'
     }
 
+    if (this.distroId.includes('BigLinux')) {
+      this.distroId = "BigLinux"
+    }
+
     /**
-     * Analize distroId
+     * Per Alpine, Fedora ed OpenSUSE basta distroId
+     * Debian, Devuan, Ubuntu e derivate ricodono in
+     * default e si analizza codebaseId
+     * 
      */
     switch (this.distroId) {
       /**
@@ -116,15 +122,22 @@ class Distro implements IDistro {
        */
       case 'Alpine': {
         this.familyId = 'alpine'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
+
         break
       }
 
       /**
        * Fedora compatible
        */
-      case 'NobaraLinux': 
+      case 'NobaraLinux':
       case 'Fedora': {
         this.familyId = 'fedora'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling' // così viene rimosso dal nome
+        this.liveMediumPath = '/run/initramfs/live/'
 
         break
       }
@@ -134,6 +147,10 @@ class Distro implements IDistro {
        */
       case 'openSUSE': {
         this.familyId = 'opensuse'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling'
+        this.liveMediumPath = '/run/initramfs/live/'
+
         break
       }
 
@@ -301,104 +318,38 @@ class Distro implements IDistro {
                 }
               }
             }
+            if (!found) {
+              console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
+              console.log('')
+              console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
+              console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
+              console.log('If you can create your new iso, you can contribute to the project')
+              console.log('by suggesting your modification.')
+              process.exit(0)
+            }
           }
         }
 
-        /**
-         * setting paths: syslinux, isolinux, usrLibPath
-         */
-        switch (this.familyId) {
-          case 'debian': {
-            this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-
-            break
-          }
-
-          case 'archlinux': {
-            this.usrLibPath = '/usr/lib/'
-
-            break
-          }
-        } // Fine analisi codenameId
       }
     } // Fine analisi distroId
 
+
+    // Last touchs
+
     /**
-     * if lsb-release exists
+     * Debian: /usr/lib/x86_64-linux-gnu
+     *         /usr/lib/aarch64-linux-gnu
      */
-    const lsbConfig = '/etc/lsb-release'
-    if (fs.existsSync(lsbConfig)) {
-      this.distroId = Utils.searchOnFile(lsbConfig, `DISTRIB_ID`)
-      this.codenameId = Utils.searchOnFile(lsbConfig, `DISTRIB_CODENAME`)
-      // patch for BigLinux
-      if (this.distroId.toLowerCase().includes('biglinux')) {
-        this.distroId = 'biglinux'
-      }
+    if (this.familyId === "Debian") {
+      this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
     }
 
     /**
      * ManjaroLinux and BigLinux
      */
-
-    if (this.distroId === 'ManjaroLinux' || this.distroId.toLowerCase().includes('biglinux')) {
+    if (this.distroId === 'ManjaroLinux' || this.distroId === 'BigLinux') {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
-    }
-
-    /**
-     * all the distros without codename: Alpine, fedora, opensuse
-     */
-    switch (this.familyId) {
-      case 'alpine': {
-        this.distroLike = 'Alpine'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
-        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-
-        this.usrLibPath = '/usr/lib/'
-        // At the moment
-        this.isCalamaresAvailable = true
-        found=true
-
-        break
-      }
-
-      case 'fedora': {
-        this.distroLike = 'Fedora'
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
-        this.codenameLikeId = 'fedora'
-        this.liveMediumPath = '/run/initramfs/live/'
-
-        this.usrLibPath = '/usr/lib/'
-        this.isCalamaresAvailable = true
-        found=true
-
-        break
-      }
-
-      case 'opensuse': {
-        this.distroLike = 'openSUSE'
-        this.codenameId = 'rolling'
-        this.codenameLikeId = 'opensuse'
-        this.liveMediumPath = '/run/initramfs/live/' // è il mount della root su cd di installatione
-
-        this.usrLibPath = '/usr/lib/'
-        this.isCalamaresAvailable = true
-        found=true
-
-        break
-      }
-
-      if (!found) {
-        console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
-        console.log('')
-        console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
-        console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
-        console.log('If you can create your new iso, you can contribute to the project')
-        console.log('by suggesting your modification.')
-        process.exit(0)
-      }
-
     }
   }
 }
