@@ -52,7 +52,6 @@ class Distro implements IDistro {
     this.isCalamaresAvailable = true
     this.liveMediumPath = '/run/live/medium/'
     this.releaseId = ''
-    this.releaseLike = ''
     this.squashfs = 'live/filesystem.squashfs'
     this.supportUrl = 'https://penguins-eggs.net'
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
