@@ -29,10 +29,10 @@ class Distro implements IDistro {
   familyId: string
   homeUrl: string
   isCalamaresAvailable: boolean
-  isolinuxPath: string
+  isolinuxPath: string // to-remove
   liveMediumPath: string
-  memdiskPath: string
-  pxelinuxPath: string
+  memdiskPath: string // to-remove
+  pxelinuxPath: string // to-remove
   releaseId: string
   releaseLike: string
   squashfs: string
@@ -54,15 +54,16 @@ class Distro implements IDistro {
     this.familyId = 'debian'
     this.homeUrl = 'https://penguins-eggs.net'
     this.isCalamaresAvailable = true
-    this.isolinuxPath = ''
     this.liveMediumPath = '/run/live/medium/'
-    this.memdiskPath = ''
-    this.pxelinuxPath = ''
     this.releaseId = ''
     this.releaseLike = ''
     this.squashfs = 'live/filesystem.squashfs'
     this.supportUrl = 'https://penguins-eggs.net'
-    this.syslinuxPath = ''
+    this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
+    this.isolinuxPath = this.syslinuxPath // to-remove
+    this.memdiskPath = this.syslinuxPath // to-remove
+    this.pxelinuxPath = this.syslinuxPath // to-remove
+  
     this.usrLibPath = '/usr/lib'
 
     const os_release = '/etc/os-release'
@@ -314,21 +315,13 @@ class Distro implements IDistro {
          */
         switch (this.familyId) {
           case 'debian': {
-            this.isolinuxPath = '/usr/lib/ISOLINUX/'
-            this.syslinuxPath = '/usr/lib/syslinux/modules/bios/'
-            this.pxelinuxPath = '/usr/lib/PXELINUX/'
-            this.memdiskPath = '/usr/lib/syslinux/'
             this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
 
             break
           }
 
           case 'archlinux': {
-            this.syslinuxPath = '/usr/lib/syslinux/bios/'
-            this.pxelinuxPath = this.syslinuxPath
             this.usrLibPath = '/usr/lib/'
-            this.memdiskPath = this.syslinuxPath
-            this.isolinuxPath = this.syslinuxPath
 
             break
           }
@@ -368,11 +361,7 @@ class Distro implements IDistro {
         this.codenameLikeId = 'alpine' // prende alpine come codenaneLikeId
         this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
-        this.syslinuxPath = '/usr/share/syslinux/' // correct
-        this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
         // At the moment
         this.isCalamaresAvailable = true
         found=true
@@ -386,11 +375,7 @@ class Distro implements IDistro {
         this.codenameLikeId = 'fedora'
         this.liveMediumPath = '/run/initramfs/live/'
 
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
         this.isCalamaresAvailable = true
         found=true
 
@@ -403,11 +388,7 @@ class Distro implements IDistro {
         this.codenameLikeId = 'opensuse'
         this.liveMediumPath = '/run/initramfs/live/' // è il mount della root su cd di installatione
 
-        this.syslinuxPath = '/usr/share/syslinux/'
-        this.pxelinuxPath = this.syslinuxPath
         this.usrLibPath = '/usr/lib/'
-        this.memdiskPath = this.syslinuxPath
-        this.isolinuxPath = this.syslinuxPath
         this.isCalamaresAvailable = true
         found=true
 
