@@ -648,6 +648,8 @@ export default class Pacman {
       isUefi = true
     } else if (Pacman.distro().familyId === 'opensuse') {
       isUefi = true
+    } else if (Pacman.distro().familyId === 'void') {
+      isUefi = true
     }
 
     return isUefi

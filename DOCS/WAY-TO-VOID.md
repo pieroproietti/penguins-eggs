@@ -1,5 +1,5 @@
 # Way to Void Linux
-We start from the `void-live-x86_64-20240314-xfce.iso` image, use `void-installer` to install the system. Sencerelly I started before with musl version, I will retry, but had problems with code.
+We start from the `void-live-x86_64-20240314-xfce.iso` image, use `void-installer` to install the system. Sencerelly I started before with musl version, I will retry, but had problems with code, I will retry it later.
 
 > [!NOTE]
 > This is tested just on BIOS, under a VM on Proxmox VE.
@@ -27,15 +27,15 @@ After that we can enable spice-vdagent with
 ``` 
 sudo ln -s /etc/sv/spice-vdagentd /var/service/
 ``` 
-I need to use spice-vdagent, becouse I'm in a VM, the same is for xandr who let me to resize the display to the windows. 
+I need to use `spice-vdagent` becouse I'm in a VM, the same is for `xrandr` who let me to resize the display to the windows. 
 
-For xfce4 we add xfce4-whiskermenu-plugin too to work with my favourite theme colibri.
+For xfce4 we need to add `xfce4-whiskermenu-plugin` too to work with my favourite theme colibri.
 ``` 
 sudo  xbps-install xfce4-whiskermenu-plugin
 ``` 
 
 ## Italian keyboard
-Italian keyboard is not selected from void-installer, so I configure it in this way:
+Italian keyboard is not selected from `void-installer` for X11, so I configure it in this way:
 
 ```
 sudo mkdir /etc/X11/xorg.conf.d -p
@@ -49,6 +49,13 @@ Section "InputClass"
     MatchIsKeyboard "on"
     Option "XkbLayout" "it"
 EndSection
+```
+
+## just a symlink
+becouse for other we have bash-completion configuration on `/etc/bash_completion.d` we just create it as a link to the real place:
+
+```
+sudo ln -s /usr/share/bash-completion/completions/ /etc/bash_completion.d
 ```
 
 ## autocompletion, git, fuse, etc
@@ -128,6 +135,14 @@ It is tedious to always put ./eggs to start eggs from source, we can create a sy
 ./install-eggs-dev
 
 ```
+
+# Well now is time to start to change penguins-eggs
+The first thing to do is to add the new distro: VoidLinux
+
+Is a `rolling` so we don't have to do so much here, just add the distro in `/src/classes/distro.ts`.
+
+We need to see that is the software used to build `initramfs` and create a configuration for our live. Here we used `dracut` already present becouse of fedora and opensuse.
+
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on VoidLinux. The biggest problem actually are: 

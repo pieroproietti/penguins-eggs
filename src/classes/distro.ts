@@ -120,6 +120,19 @@ class Distro implements IDistro {
       }
 
       /**
+       * void compatible
+       */
+      case 'VoidLinux': {
+        this.familyId = 'void'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling'
+        this.liveMediumPath = '/run/initramfs/live/' // we must discover
+
+        break
+      }
+
+
+      /**
        * Arch/Debian/Devuan and Ubuntu
        * analizzo i codebase conosciuti
        */
