@@ -64,7 +64,11 @@ Copy and past:
 ```
 sudo xbps-install  \
     bash-completion \
+    dracut-crypt-ssh \
+    dracut-network \
+    dracut-uefi \
     fuse \
+    fuse-sshfs \
     git \
     man-pages \
     nano \

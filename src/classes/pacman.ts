@@ -774,7 +774,9 @@ export default class Pacman {
     } else if (this.distro().familyId === 'alpine') {
       grubInstalled = 'grub'
     } else if (this.distro().familyId === 'opensuse') {
-      grubInstalled = 'grub' //controllare
+      grubInstalled = 'grub'
+    } else if (this.distro().familyId === 'void') {
+      grubInstalled = 'grub'
     }
 
     return grubInstalled

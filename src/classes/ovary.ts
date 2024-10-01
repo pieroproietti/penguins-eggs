@@ -1788,6 +1788,11 @@ export default class Ovary {
 
             break
           }
+          case 'void': {
+            await this.initrdSuse()
+
+            break
+          }
         }
 
         if (this.settings.config.make_efi) {
