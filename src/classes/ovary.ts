@@ -2058,25 +2058,10 @@ export default class Ovary {
       }
     }
 
-    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
-    let uefi_elToritoAltBoot = ''
-    let uefi_e = ''
-    let uefi_isohybridGptBasdat = ''
-    let uefi_noEmulBoot = ''
-    if (this.settings.config.make_efi) {
-      uefi_elToritoAltBoot = '-eltorito-alt-boot'
-      uefi_e = '-e boot/grub/efiboot.img'
-      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
-      uefi_noEmulBoot = '-no-emul-boot'
-    }
-
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
-      // -append_partition 2 0xef /path/to/efi.img 
-      // --efi-boot efi.img 
-
-      command = `genisoimage \
+        command = `genisoimage \
         -iso-level 3 \
         -allow-limited-size \
         -joliet-long \
@@ -2091,14 +2076,35 @@ export default class Ovary {
         -boot-load-size 4 \
         -boot-info-table \
         -eltorito-alt-boot \
-        -append_partition 2 0xef boot/grub/efiboot.img \
         -e boot/grub/efiboot.img \
         -o ${output} ${this.settings.iso_work}`
 
       return command
     }
 
-    // xorriso
+    /**
+     * xorriso
+     */
+    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    let uefi_elToritoAltBoot = ''
+    let uefi_e = ''
+    let uefi_isohybridGptBasdat = ''
+    let uefi_noEmulBoot = ''
+    if (this.settings.config.make_efi) {
+      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      uefi_e = '-e boot/grub/efiboot.img'
+      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
+      uefi_noEmulBoot = '-no-emul-boot'
+    }
+    /**
+     * L'immagine efi è efiboot.img ed è
+     * presente in boot/grub/efiboot.img
+     * per cui:
+     * -append_partition 2 0xef efiboot.img
+     * --efi-boot efiboot.img
+     * non sono necessari
+     */
+
     command = `xorriso -as mkisofs \
      -J \
      -joliet-long \
@@ -2119,6 +2125,7 @@ export default class Ovary {
      -o ${output} ${this.settings.iso_work}`
 
     return command
+
   }
 
   /**
