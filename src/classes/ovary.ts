@@ -918,6 +918,8 @@ export default class Ovary {
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
+    // clean dracut cache 
+    await exec(`rm -rf /var/tmp/dracut*`, this.echo)
   }
 
   /**

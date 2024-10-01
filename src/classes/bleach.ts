@@ -66,7 +66,6 @@ export default class Bleach {
 
       case 'void': {
         await exec(`xbps-remove -O`, echo)
-
         break
       }
       
