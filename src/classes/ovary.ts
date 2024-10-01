@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'void') {
       deluser = 'userdel'
     }
 
@@ -1046,6 +1046,8 @@ export default class Ovary {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
     } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs  apparmor=0`
+    } else if (this.familyId === 'void') {
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
     }
 
     return kp

@@ -241,6 +241,11 @@ export default class Utils {
          initrd = 'initrd'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+      } else if (distro.familyId === 'void') {
+         initrd = 'initramfs'
+         separator = '-'
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+         suffix = '.img'
       }
 
       // manjaro eredita da arch
