@@ -91,29 +91,6 @@ doas rsync -avx  penguins-wardrobe/costumes/colibri/sysroot/ /
 
 ```
 
-## Install 
-
-## Install dependencies for penguins-eggs on Alpine
-
-
-```
-sudo xbps-install \
-    cryptsetup \
-    curl \
-    dosfstools \
-    fuse \
-    git \
-    jq \
-    lvm2 \
-    nodejs \
-    parted \
-    rsync \
-    squashfs-tools \
-    xorriso
-
-```
-
-
 ## Clone penguins-eggs
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
@@ -123,12 +100,9 @@ pnpm build
 
 ```
 
-Now we can use eggs from the source:
+Now we can use eggs:
 
 ## Autocomplete, Desktop icons
-> [!NOTE]
-> I don't use more this script, prefere to build the package with abuild.
-
 It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle.  We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
 
 ```
@@ -140,6 +114,13 @@ It is tedious to always put ./eggs to start eggs from source, we can create a sy
 The first thing to do is to add the new distro: VoidLinux
 
 Is a `rolling` so we don't have to do so much here, just add the distro in `/src/classes/distro.ts`.
+
+We create a folder unde `/conf/distros/` for our distro:
+```
+mkdir conf/distros/void
+```
+and a `README.md` inside it, for now empty, jkust the title `# VoidLinux`.
+
 
 We need to see that is the software used to build `initramfs` and create a configuration for our live. Here we used `dracut` already present becouse of fedora and opensuse.
 
