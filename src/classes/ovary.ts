@@ -2073,6 +2073,9 @@ export default class Ovary {
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
+      // -append_partition 2 0xef /path/to/efi.img 
+      // --efi-boot efi.img 
+
       command = `genisoimage \
         -iso-level 3 \
         -allow-limited-size \
@@ -2088,6 +2091,7 @@ export default class Ovary {
         -boot-load-size 4 \
         -boot-info-table \
         -eltorito-alt-boot \
+        -append_partition 2 0xef boot/grub/efiboot.img \
         -e boot/grub/efiboot.img \
         -o ${output} ${this.settings.iso_work}`
 
