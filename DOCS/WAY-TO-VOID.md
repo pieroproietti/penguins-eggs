@@ -128,6 +128,8 @@ and a `README.md` inside it, for now empty, jkust the title `# VoidLinux`.
 
 We need to see that is the software used to build `initramfs` and create a configuration for our live. Here we used `dracut` already present becouse of fedora and opensuse.
 
+I removed dmsquash-live-ntfs, added dracut-network to get an initramfs valid.
+
 
 # Someone can follow? 
 This is my end for now... but in same way can be an usefull starting point to someone more expert than me on VoidLinux. The biggest problem actually are: 
