@@ -1,20 +1,19 @@
 #!/bin/bash
 clear
-echo "Penguins' eggs: sidecar"
-echo "======================="
-sleep 5
+echo "Penguins' eggs: sidecar.sh"
+echo "=========================="
+sleep 2
 
-# mount filesystem squashfs on /media/root-ro
-mkdir -p /media/root-ro 
-mount -t squashfs /run/initramfs/live/live/filesystem.squashfs /media/root-ro
+# filesystem squashfs is mounted on 
+# /run/rootfsbase
 
 # mount tmpfs on /media/root-rw
-mkdir -p /media/root-rw 
-mount -t tmpfs root-tmpfs /media/root-rw
+mkdir -p /run/root-rw 
+mount -t tmpfs root-tmpfs /run/root-rw
 
 # creare i punti di montaggio necessari
-mkdir -p /media/root-rw/work 
-mkdir -p /media/root-rw/root
+mkdir -p /run/root-rw/work 
+mkdir -p /run/root-rw/root
 
 # mount  overlayfs on /sysroot
-mount -t overlay overlay -o lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work /sysroot
+mount -t overlay overlay -o lowerdir=/run/rootfsbase,upperdir=/run/root-rw/root,workdir=/run/root-rw/work /sysroot
