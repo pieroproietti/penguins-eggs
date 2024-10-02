@@ -102,6 +102,7 @@ class Distro implements IDistro {
         this.familyId = 'fedora'
         this.distroLike = this.distroId
         this.codenameId = 'rolling' // così viene rimosso dal nome
+        this.codenameLikeId = this.distroId
         this.liveMediumPath = '/run/initramfs/live/'
 
         break
@@ -114,6 +115,7 @@ class Distro implements IDistro {
         this.familyId = 'opensuse'
         this.distroLike = this.distroId
         this.codenameId = 'rolling'
+        this.codenameLikeId = this.distroId
         this.liveMediumPath = '/run/initramfs/live/'
 
         break
@@ -126,6 +128,7 @@ class Distro implements IDistro {
         this.familyId = 'voidlinux'
         this.distroLike = this.distroId
         this.codenameId = 'rolling'
+        this.codenameLikeId = this.distroId
         this.liveMediumPath = '/run/initramfs/live/' // we must discover
 
         break
