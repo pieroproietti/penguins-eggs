@@ -30,6 +30,7 @@ dnf -y install \
     dracut-live \
     fuse \
     git \
+    grub2-tools-extra \
     jq \
     lsb-release \
     lvm2 \

@@ -15,12 +15,8 @@ export interface IDistro {
   familyId: string
   homeUrl: string
   isCalamaresAvailable: boolean
-  isolinuxPath: string
   liveMediumPath: string
-  memdiskPath: string
-  pxelinuxPath: string
   releaseId: string
-  releaseLike: string
   squashfs: string
   supportUrl: string
   syslinuxPath: string

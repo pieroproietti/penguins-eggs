@@ -261,15 +261,16 @@ export default class Pxe {
     // pxe
     const distro = new Distro()
 
-    await this.tryCatch(`ln -s ${distro.pxelinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    await this.tryCatch(`ln -s ${distro.pxelinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
     // syslinux
     await this.tryCatch(`ln -s ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
     await this.tryCatch(`ln -s ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
     await this.tryCatch(`ln -s ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
     await this.tryCatch(`ln -s ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
-    await this.tryCatch(`ln -s ${distro.memdiskPath}memdisk ${this.pxeRoot}/memdisk`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}memdisk ${this.pxeRoot}/memdisk`)
+
     await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
     let content = ''

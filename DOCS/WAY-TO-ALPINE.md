@@ -181,13 +181,13 @@ setxkbmap it
 ```
 
 ## customize colibri from wardrobe
-We just copy customization from penguins-wardrobe, on the folder `dirs` under `penguins-wardrobe/costumes/colibri/` and `dirs/etc/skel` on my user `/home/artisan`.
+We just copy customization from penguins-wardrobe, on the folder `sysroot` under `penguins-wardrobe/costumes/colibri/` and `sysroot/etc/skel` on my user `/home/artisan`.
 
 ```
 xdg-user-dirs-update
 git  clone https://github.com/pieroproietti/penguins-wardrobe
-rsync -avx  penguins-wardrobe/costumes/colibri/dirs/etc/skel/ "${HOME}/"
-doas rsync -avx  penguins-wardrobe/costumes/colibri/dirs/ /
+rsync -avx  penguins-wardrobe/costumes/colibri/sysroot/etc/skel/ "${HOME}/"
+doas rsync -avx  penguins-wardrobe/costumes/colibri/sysroot/ /
 
 ```
 

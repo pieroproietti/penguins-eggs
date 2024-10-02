@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'void') {
       deluser = 'userdel'
     }
 
@@ -565,8 +565,8 @@ export default class Ovary {
       if (this.settings.config.ssh_pass) {
         await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       } else {
-        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
-        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`,this.echo)
+        await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+        await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
       }
     }
 
@@ -868,7 +868,7 @@ export default class Ovary {
     let fileConf = 'arch'
     if (isMiso(distroId)) {
       fileConf = 'manjarolinux'
-      if (distroId.toLowerCase().includes('biglinux')) {
+      if (distroId === "BigLinux") {
         fileConf = 'biglinux'
       }
     }
@@ -899,21 +899,10 @@ export default class Ovary {
   }
 
   /**
-   * initrdFedora()
+   * initrdDracut()
    */
-  async initrdFedora() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
-    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
-  }
-
-  /**
-   * initrdSuse()
-   */
-  async initrdSuse() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} OpenSuSE on ISO/live`)
+  async initrdDracut() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
@@ -1046,6 +1035,8 @@ export default class Ovary {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
     } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs  apparmor=0`
+    } else if (this.familyId === 'void') {
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
     }
 
     return kp
@@ -1772,19 +1763,24 @@ export default class Ovary {
           }
 
           case 'fedora': {
-            await this.initrdFedora()
+            await this.initrdDracut()
 
             break
           }
 
           case 'opensuse': {
-            await this.initrdSuse()
+            await this.initrdDracut()
 
             break
           }
 
           case 'debian': {
             await this.initrdDebian()
+
+            break
+          }
+          case 'void': {
+            await this.initrdDracut()
 
             break
           }
@@ -2041,7 +2037,7 @@ export default class Ovary {
 
     let isoHybridMbr = ''
     if (this.settings.config.make_isohybrid) {
-      const isolinuxFile = this.settings.distro.isolinuxPath + 'isohdpfx.bin'
+      const isolinuxFile = this.settings.distro.syslinuxPath + 'isohdpfx.bin'
       if (fs.existsSync(isolinuxFile)) {
         isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
       } else {
@@ -2049,22 +2045,10 @@ export default class Ovary {
       }
     }
 
-    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
-    let uefi_elToritoAltBoot = ''
-    let uefi_e = ''
-    let uefi_isohybridGptBasdat = ''
-    let uefi_noEmulBoot = ''
-    if (this.settings.config.make_efi) {
-      uefi_elToritoAltBoot = '-eltorito-alt-boot'
-      uefi_e = '-e boot/grub/efiboot.img'
-      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
-      uefi_noEmulBoot = '-no-emul-boot'
-    }
-
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
-      command = `genisoimage \
+        command = `genisoimage \
         -iso-level 3 \
         -allow-limited-size \
         -joliet-long \
@@ -2085,7 +2069,29 @@ export default class Ovary {
       return command
     }
 
-    // xorriso
+    /**
+     * xorriso
+     */
+    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    let uefi_elToritoAltBoot = ''
+    let uefi_e = ''
+    let uefi_isohybridGptBasdat = ''
+    let uefi_noEmulBoot = ''
+    if (this.settings.config.make_efi) {
+      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      uefi_e = '-e boot/grub/efiboot.img'
+      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
+      uefi_noEmulBoot = '-no-emul-boot'
+    }
+    /**
+     * L'immagine efi è efiboot.img ed è
+     * presente in boot/grub/efiboot.img
+     * per cui:
+     * -append_partition 2 0xef efiboot.img
+     * --efi-boot efiboot.img
+     * non sono necessari
+     */
+
     command = `xorriso -as mkisofs \
      -J \
      -joliet-long \
@@ -2106,6 +2112,7 @@ export default class Ovary {
      -o ${output} ${this.settings.iso_work}`
 
     return command
+
   }
 
   /**
@@ -2186,7 +2193,7 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
  */
 function isMiso(distro: string): boolean {
   let found = false
-  if (distro.includes('ManjaroLinux') || distro.toLowerCase().includes('biglinux')) {
+  if (distro === 'ManjaroLinux' || distro === `BigLinux`) {
     found = true
   }
 
