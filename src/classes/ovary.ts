@@ -899,27 +899,14 @@ export default class Ovary {
   }
 
   /**
-   * initrdFedora()
+   * initrdDracut()
    */
-  async initrdFedora() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Fedora on ISO/live`)
+  async initrdDracut() {
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
-  }
-
-  /**
-   * initrdSuse()
-   */
-  async initrdSuse() {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} OpenSuSE on ISO/live`)
-    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
-    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
-    // clean dracut cache 
-    await exec(`rm -rf /var/tmp/dracut*`, this.echo)
   }
 
   /**
@@ -1776,13 +1763,13 @@ export default class Ovary {
           }
 
           case 'fedora': {
-            await this.initrdFedora()
+            await this.initrdDracut()
 
             break
           }
 
           case 'opensuse': {
-            await this.initrdSuse()
+            await this.initrdDracut()
 
             break
           }
@@ -1793,7 +1780,7 @@ export default class Ovary {
             break
           }
           case 'void': {
-            await this.initrdSuse()
+            await this.initrdDracut()
 
             break
           }
