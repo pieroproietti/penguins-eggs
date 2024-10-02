@@ -18,15 +18,15 @@ if [ ! -e /usr/bin/node ]; then
     exit 1
 fi
 
-if [ ! -e dist ]; then
-    echo "dist directory not found"
-    # exit 1
+# install modules
+if [ ! -e node-modules ]; then
+    echo "installing nodejs modules"
+    rm -rf pnpm-lock.yaml dist
+    pnpm i
 fi
 
-rm -rf node-modules pnpm-lock.yaml dist
-pnpm i
+# build
 pnpm build
-
 xdg-user-dirs-update --force
 $SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
 $SUDO cp g4/* /usr/local/bin

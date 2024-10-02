@@ -648,6 +648,8 @@ export default class Pacman {
       isUefi = true
     } else if (Pacman.distro().familyId === 'opensuse') {
       isUefi = true
+    } else if (Pacman.distro().familyId === 'void') {
+      isUefi = true
     }
 
     return isUefi
@@ -772,7 +774,9 @@ export default class Pacman {
     } else if (this.distro().familyId === 'alpine') {
       grubInstalled = 'grub'
     } else if (this.distro().familyId === 'opensuse') {
-      grubInstalled = 'grub' //controllare
+      grubInstalled = 'grub'
+    } else if (this.distro().familyId === 'void') {
+      grubInstalled = 'grub'
     }
 
     return grubInstalled
