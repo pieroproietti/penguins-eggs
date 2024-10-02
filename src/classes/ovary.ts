@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'void') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'voidlinux') {
       deluser = 'userdel'
     }
 
@@ -896,7 +896,7 @@ export default class Ovary {
   }
 
   /**
-   * dracut() Fedora/Opensuse/Void
+   * dracut() Fedora/Opensuse/Voidlinux
    */
   async initrdDracut() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
@@ -1017,7 +1017,7 @@ export default class Ovary {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
     } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs  apparmor=0`
-    } else if (this.familyId === 'void') {
+    } else if (this.familyId === 'voidlinux') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
     }
 
@@ -1761,7 +1761,7 @@ export default class Ovary {
 
             break
           }
-          case 'void': {
+          case 'voidlinux': {
             await this.initrdDracut()
 
             break

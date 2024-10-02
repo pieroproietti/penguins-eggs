@@ -21,6 +21,7 @@ import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
 import Fedora from './families/fedora.js'
 import Opensuse from './families/opensuse.js'
+import Voidlinux from './families/voidlinux.js'
 
 import Settings from './settings.js'
 import Utils from './utils.js'
@@ -88,6 +89,8 @@ export default class Pacman {
         await Alpine.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'voidlinux') {
+        await Voidlinux.calamaresInstall(verbose)
       }
 
       // remove others calamares links
@@ -121,6 +124,8 @@ export default class Pacman {
       retVal = await Alpine.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'voidlinux') {
+      retVal = await Voidlinux.calamaresRemove(verbose)
     }
 
     return retVal
@@ -517,6 +522,14 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/opensuse/'
       const suse = `${rootPen}/conf/distros/opensuse/*`
       await exec(`cp -r ${suse} ${dest}`, echo)
+
+      /***********************************************************************************
+      * voidlinux
+      **********************************************************************************/
+    } else if (this.distro().codenameLikeId === 'voidlinux') {
+      const dest = '/etc/penguins-eggs.d/distros/voidlinux/'
+      const voidLinux = `${rootPen}/conf/distros/voidlinux/*`
+      await exec(`cp -r ${voidLinux} ${dest}`, echo)
     }
   }
 
@@ -565,6 +578,10 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'opensuse') {
       if (Opensuse.packageIsInstalled('wayland')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'voidlinux') {
+      if (Voidlinux.packageIsInstalled('wayland')) {
         installed = true
       }
     }
@@ -648,7 +665,7 @@ export default class Pacman {
       isUefi = true
     } else if (Pacman.distro().familyId === 'opensuse') {
       isUefi = true
-    } else if (Pacman.distro().familyId === 'void') {
+    } else if (Pacman.distro().familyId === 'voidlinux') {
       isUefi = true
     }
 
@@ -775,7 +792,7 @@ export default class Pacman {
       grubInstalled = 'grub'
     } else if (this.distro().familyId === 'opensuse') {
       grubInstalled = 'grub'
-    } else if (this.distro().familyId === 'void') {
+    } else if (this.distro().familyId === 'voidlinux') {
       grubInstalled = 'grub'
     }
 

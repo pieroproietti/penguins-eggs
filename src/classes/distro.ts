@@ -120,10 +120,10 @@ class Distro implements IDistro {
       }
 
       /**
-       * void compatible
+       * voidlinux compatible
        */
       case 'VoidLinux': {
-        this.familyId = 'void'
+        this.familyId = 'voidlinux'
         this.distroLike = this.distroId
         this.codenameId = 'rolling'
         this.liveMediumPath = '/run/initramfs/live/' // we must discover
