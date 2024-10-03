@@ -41,6 +41,21 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.41
+* fixed a lot of things;
+* tested against BigLinux, once again;
+* introduced - not yet working - VoidLinux.
+
+With the addition of alpinelinux, fedora and opensuse, penguins-eggs is changing - especially from a development perspective.
+
+I have started to intensively use a source-based installation method, which -simulates- the installation of a real package for the distribution.
+
+This saves me a lot of development and testing time. 
+
+On the other hand, having real installation packages allows for better user support and easier upgrades.
+
+I could really use someone to take care of implementing penguins-eggs packages for these three distributions. On Alpine Linux everything is almost ready, basically only Alpine's approval is missing, for fedora and opensuse it is a matter of creating an rpm package from the npm package and adding the dependencies specified in the prerequisites.
+
 ## penguins-eggs-10.0.40
 * fixed a bug in krill machine-id on alpine;
 * calamares on arch have restart checked on close as default;
