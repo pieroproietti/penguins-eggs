@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'void') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'voidlinux') {
       deluser = 'userdel'
     }
 
@@ -841,7 +841,7 @@ export default class Ovary {
   }
 
   /**
-   * initrdAlpine()
+   * mkinitfs()
    */
   async initrdAlpine() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
@@ -856,8 +856,7 @@ export default class Ovary {
 
 
   /**
-   * initrdArch()
-   * necessita di echoYes
+   * mkinitcpio()
    */
   async initrdArch() {
     let initrdImg = Utils.initrdImg()
@@ -878,9 +877,7 @@ export default class Ovary {
   }
 
   /**
-   * initrdDebian()
-   * Actually based on live* packages
-   * We must upgrade to initrdCreate for Debian/Ubuntu
+   * mkinitramfs() Debian
    */
   async initrdDebian(verbose = false) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Debian/Devuan/Ubuntu on ISO/live`)
@@ -899,7 +896,7 @@ export default class Ovary {
   }
 
   /**
-   * initrdDracut()
+   * dracut() Fedora/Opensuse/Voidlinux
    */
   async initrdDracut() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
@@ -910,18 +907,10 @@ export default class Ovary {
   }
 
   /**
-   * syslinux: new version
+   * syslinux: da syspath
    */
   async syslinux(theme = 'eggs') {
 
-    // syslinux
-    // await exec(`cp ${this.settings.distro.syslinuxPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    // await exec(`cp ${this.settings.distro.syslinuxPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    // await exec(`cp ${this.settings.distro.syslinuxPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    // await exec(`cp ${this.settings.distro.syslinuxPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    // await exec(`cp ${this.settings.distro.syslinuxPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-
-    // syslinux da syspath NON funzions su Arch
     let syspath = path.resolve(__dirname, `../../syslinux`)
     await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
@@ -929,9 +918,6 @@ export default class Ovary {
     await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
-    //isolinux.bin
-    //await exec(`cp ${this.settings.distro.isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
-
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
@@ -1022,10 +1008,6 @@ export default class Ovary {
     let kp = ""
     if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
-      /**
-       * tempt for dracut
-       * kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
-       */
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
       kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
@@ -1035,8 +1017,8 @@ export default class Ovary {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
     } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs  apparmor=0`
-    } else if (this.familyId === 'void') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
+    } else if (this.familyId === 'voidlinux') {
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.debug`
     }
 
     return kp
@@ -1779,7 +1761,7 @@ export default class Ovary {
 
             break
           }
-          case 'void': {
+          case 'voidlinux': {
             await this.initrdDracut()
 
             break
