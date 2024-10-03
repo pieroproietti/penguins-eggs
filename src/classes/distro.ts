@@ -88,7 +88,8 @@ class Distro implements IDistro {
       case 'Alpine': {
         this.familyId = 'alpine'
         this.distroLike = this.distroId
-        this.codenameId = 'rolling' // questo viene rimosso dal nome
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.codenameLikeId = this.familyId // per krill
         this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
         break
@@ -101,7 +102,7 @@ class Distro implements IDistro {
       case 'Fedora': {
         this.familyId = 'fedora'
         this.distroLike = this.distroId
-        this.codenameId = 'rolling' // così viene rimosso dal nome
+        this.codenameId = 'rolling' // viene rimosso dal nome
         this.codenameLikeId = this.familyId // per krill
         this.liveMediumPath = '/run/initramfs/live/'
 
@@ -114,7 +115,7 @@ class Distro implements IDistro {
       case 'openSUSE': {
         this.familyId = 'opensuse'
         this.distroLike = this.distroId
-        this.codenameId = 'rolling'
+        this.codenameId = 'rolling' // viene rimosso dal nome
         this.codenameLikeId = this.familyId // per krill
         this.liveMediumPath = '/run/initramfs/live/'
 
