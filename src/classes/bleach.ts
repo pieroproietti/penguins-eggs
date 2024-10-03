@@ -64,7 +64,7 @@ export default class Bleach {
         break
       }
 
-      case 'void': {
+      case 'voidlinux': {
         await exec(`xbps-remove -O`, echo)
         break
       }

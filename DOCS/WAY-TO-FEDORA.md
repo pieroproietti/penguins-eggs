@@ -181,3 +181,16 @@ I tryed on fedora40, fedora39 now I will try on [fedora38](https://archives.fedo
 
 # Links
 [dracut manual](https://github.com/dracutdevs/dracut/blob/master/man/dracut.usage.asc)
+
+# Remove old kernels 
+```
+dnf list installed kernel
+```
+
+```
+dnf remove $(rpm rpm -qa | grep VERSION)
+```
+
+Then sudo `rm /boot/loaders/LOADER-TO-REMOVE`.
+
+

@@ -241,7 +241,7 @@ export default class Utils {
          initrd = 'initrd'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-      } else if (distro.familyId === 'void') {
+      } else if (distro.familyId === 'voidlinux') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
