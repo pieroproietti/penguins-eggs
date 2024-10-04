@@ -228,6 +228,9 @@ export default class Utils {
          separator = '-'
          version = 'linux'
          suffix = '.img'
+         if (distro.distroId === 'ManjaroLinux' || distro.distroId === 'BigLinux') {
+            version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+         }
       } else if (distro.familyId === 'debian') {
          initrd = 'initrd.img'
          separator = "-"
