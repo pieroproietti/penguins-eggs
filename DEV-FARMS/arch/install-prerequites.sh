@@ -46,7 +46,8 @@ pacman -Syu --noconfirm --needed \
 		syslinux \
 		wget \
 		xdg-utils \
-        xdg-user-dirs
+        xdg-user-dirs \
+		xorriso
 
 	# install pnpm
     npm i pnpm -g
