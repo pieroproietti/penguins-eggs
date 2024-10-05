@@ -11,6 +11,7 @@
   ids:
     - debbie # LMDE4
     - siena # Ufficiozero siena
+    - byzantium # pureos
 
 - id: bullseye
   distroLike: Debian
