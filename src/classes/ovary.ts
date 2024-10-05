@@ -239,7 +239,7 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse'|| this.familyId === 'voidlinux') {
+    if (this.familyId === 'archlinux' || this.familyId === 'fedora' || this.familyId === 'opensuse' || this.familyId === 'voidlinux') {
       deluser = 'userdel'
     }
 
@@ -861,11 +861,12 @@ export default class Ovary {
   async initrdArch() {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} ArchLinux on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using mkinitcpio on ISO/live`)
 
     const { distroId } = this.settings.distro
     let fileConf = 'arch'
     if (isMiso(distroId)) {
+      // default manjarolinux
       fileConf = 'manjarolinux'
       if (distroId === "BigLinux") {
         fileConf = 'biglinux'
@@ -1010,7 +1011,12 @@ export default class Ovary {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
-      kp += isMiso(distroId) ? ` misobasedir=manjaro misolabel=${this.volid}` : ` archisobasedir=arch archisolabel=${this.volid}`
+      if (isMiso(distroId)) {
+        kp += ` misobasedir=manjaro misolabel=${this.volid}`
+        shx.exec(`mkdir -p ${this.settings.iso_work}.miso`)
+      } else {
+        kp += ` archisobasedir=arch archisolabel=${this.volid}`
+      }
     } else if (this.familyId === 'debian') {
       kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
     } else if (this.familyId === 'fedora') {
@@ -2030,7 +2036,7 @@ export default class Ovary {
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
-        command = `genisoimage \
+      command = `genisoimage \
         -iso-level 3 \
         -allow-limited-size \
         -joliet-long \
