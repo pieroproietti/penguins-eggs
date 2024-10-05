@@ -187,7 +187,7 @@ export default class Pacman {
 
     if (!this.calamaresExists()) {
       config.force_installer = false
-      console.log('Due the lacks of calamares package set force_installer = false')
+      // console.log('Due the lacks of calamares package set force_installer = false')
     }
 
     if (!Pacman.isUefi() && Utils.uefiArch() !== 'i386') {
@@ -657,15 +657,7 @@ export default class Pacman {
       if (Utils.uefiArch() !== 'i386' && this.packageIsInstalled('grub-efi-' + Utils.uefiArch() + '-bin')) {
         isUefi = true
       }
-    } else if (Pacman.distro().familyId === 'fedora') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'archlinux') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'alpine') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'opensuse') {
-      isUefi = true
-    } else if (Pacman.distro().familyId === 'voidlinux') {
+    } else {
       isUefi = true
     }
 

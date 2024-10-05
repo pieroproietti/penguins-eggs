@@ -38,49 +38,41 @@ export default class Config extends Command {
   static async install(i: IInstall, nointeractive = false, verbose = false) {
     const echo = Utils.setEcho(verbose)
 
-    Utils.warning('config: so, we install')
+    Utils.warning("sudo eggs config")
 
     if (i.configurationInstall) {
-      Utils.warning('creating configuration...')
+      Utils.warning('- creating configuration...')
       await Pacman.configurationInstall(verbose)
     }
 
     if (i.configurationRefresh) {
-      Utils.warning('refreshing configuration for new machine...')
+      Utils.warning('- refreshing configuration for new machine...')
       await Pacman.configurationMachineNew(verbose)
     }
 
     if (i.distroTemplate) {
-      Utils.warning('copying distro templates...')
+      Utils.warning('- copying distro templates...')
       await Pacman.distroTemplateInstall(verbose)
     }
 
-    if (i.needApt && !nointeractive && !nointeractive && Pacman.distro().familyId === 'debian') {
-      Utils.warning('updating system...')
+    if (i.needUpdate && !nointeractive && Pacman.distro().familyId === 'debian') {
+      Utils.warning('- updating system...')
       await exec('apt-get update --yes', echo)
     }
 
-    if (i.efi) {
-      if (nointeractive) {
-        Utils.error('config: you are on a system UEFI')
-        Utils.warning('I suggest You to install grub-efi-' + Utils.uefiArch() + '-bin before to produce your ISO.\nJust write:\n    sudo apt install grub-efi-' + Utils.uefiArch())
-      } else if (Pacman.distro().familyId === 'debian') {
-        Utils.warning('Installing uefi support...')
-        await exec('apt-get install grub-efi-' + Utils.uefiArch() + '-bin --yes', echo)
-      }
+    if (i.addEfi && Pacman.distro().familyId === 'debian') {
+      Utils.warning('- installing UEFI support')
+      await exec('apt-get install grub-efi-' + Utils.uefiArch() + '-bin --yes', echo)
     }
 
     if (i.calamares && Pacman.isCalamaresAvailable()) {
-      if (nointeractive) {
-        Utils.warning('I suggest You to install calamares GUI installer before to produce your ISO.\nJust write:\n    sudo eggs calamares --install')
-      } else {
-        Utils.warning('Installing calamares...')
-        await Pacman.calamaresInstall(verbose)
-        await Pacman.calamaresPolicies()
-      }
+      let message="- you are on a graphic system,\n"
+      message   +="           is suggested to install the GUI installer calamares.\n"
+      message   +="           Just type: eggs calamares --install"
+      Utils.warning(message)
     }
 
-    if (i.needApt && !nointeractive) {
+    if (i.needUpdate && !nointeractive) {
       Utils.warning('cleaning the system...')
       if (Pacman.distro().familyId === 'debian') {
         const bleach = new Bleach()
@@ -99,78 +91,25 @@ export default class Config extends Command {
 
     i.distroTemplate = !Pacman.distroTemplateCheck()
 
-    if (Utils.uefiArch() !== 'i386') {
-      i.efi = !Pacman.isUefi()
+    i.addEfi = !Pacman.isUefi()
+    // debian only
+    if (Pacman.distro().familyId === 'debian') {
+      i.needUpdate = true
     }
 
-    if (!cryptedclone && !Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable() && !Pacman.packageIsInstalled('live-installer')) {
-      Utils.warning('Config: you are on a graphic system, I suggest to install the GUI installer calamares')
-      i.calamares = nointeractive ? false : await Utils.customConfirm('Want You install calamares?')
+    i.calamares=false
+    if (!cryptedclone && 
+        !Pacman.calamaresExists() && 
+        Pacman.isInstalledGui() && 
+        Pacman.isCalamaresAvailable()) {
+
+        i.calamares = true
     }
 
     i.configurationInstall = !Pacman.configurationCheck()
     if (!i.configurationInstall) {
       i.configurationRefresh = !Pacman.configurationMachineNew()
     }
-
-    if (i.efi || i.calamares) {
-      i.needApt = true
-    }
-
-    /**
-     * Visualizza cosa c'è da fare
-     */
-    if (!nointeractive) {
-      if (i.needApt) {
-        console.log('- update the system')
-        if (Pacman.distro().familyId === 'debian') {
-          console.log(chalk.yellow('  apt-get update --yes\n'))
-        }
-      }
-
-      if (i.efi && Pacman.distro().familyId === 'debian' && Utils.uefiArch() !== 'i386') {
-        console.log('- install efi packages')
-        console.log(chalk.yellow('  apt install -y grub-efi-' + Utils.uefiArch() + '-bin\n'))
-      }
-
-      if (i.configurationInstall) {
-        console.log("- creating configuration's files...")
-        Pacman.configurationInstall(verbose)
-      }
-
-      if (i.configurationRefresh) {
-        console.log("- refreshing configuration's files...")
-        Pacman.configurationFresh()
-      }
-
-      if (i.distroTemplate) {
-        console.log('- copy distro template\n')
-      }
-
-      if (i.calamares) {
-        console.log('- install calamares')
-        if (Pacman.distro().familyId === 'debian') {
-          const packages = Pacman.debs4calamares
-          console.log(chalk.yellow('  will install: ' + packages.join(' ') + '\n'))
-        }
-      }
-
-      if (i.needApt) {
-        console.log('- cleaning packages\n')
-      }
-
-      if (i.configurationInstall) {
-        console.log('- creating/updating configuration')
-        console.log('  files: ' + chalk.yellow('/etc/penguins-eggs.d/eggs.yaml'))
-      } else if (i.configurationRefresh) {
-        console.log('- refreshing configuration for new machine')
-      }
-
-      if (i.needApt) {
-        Utils.warning("Be sure! It's just a series of apt install from your repo.\nYou can follows them using flag --verbose")
-      }
-    }
-
     return i
   }
 
@@ -205,15 +144,9 @@ export default class Config extends Command {
         await Pacman.manPageInstall(verbose)
       }
 
-      // Vediamo che cosa c'è da fare...
-      Utils.warning('what we need?')
       const i = await Config.thatWeNeed(nointeractive, verbose)
-      if (i.needApt || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
-        if (nointeractive) {
-          await Config.install(i, nointeractive, verbose)
-        } else if (await Utils.customConfirm()) {
-          await Config.install(i, nointeractive, verbose)
-        }
+      if (i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
+        await Config.install(i, nointeractive, verbose)
       }
     } else {
       Utils.useRoot(this.id)

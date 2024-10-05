@@ -11,7 +11,7 @@ export interface IInstall {
   configurationInstall: boolean
   configurationRefresh: boolean
   distroTemplate: boolean
-  efi: boolean
-  needApt: boolean
+  addEfi: boolean
+  needUpdate: boolean
   prerequisites: boolean
 }
