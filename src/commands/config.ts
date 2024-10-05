@@ -7,7 +7,6 @@
  */
 
 import { Command, Flags } from '@oclif/core'
-import chalk from 'chalk'
 
 import Bleach from '../classes/bleach.js'
 import Pacman from '../classes/pacman.js'
@@ -120,11 +119,6 @@ export default class Config extends Command {
 
     if (!nointeractive) {
       Utils.titles(this.id + ' ' + this.argv)
-      if (Utils.isDebPackage()) {
-        Utils.warning('running as package .deb')
-      } else if (Utils.isSources()) {
-        Utils.warning('running as sources')
-      }
     }
 
     if (Utils.isRoot(this.id)) {
