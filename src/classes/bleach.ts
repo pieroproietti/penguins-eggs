@@ -40,7 +40,7 @@ export default class Bleach {
       }
 
       case 'archlinux': {
-        await exec('pacman -Scc', Utils.setEcho(true))
+        await exec('pacman -Scc --noconfirm ', Utils.setEcho(true))
 
         break
       }
