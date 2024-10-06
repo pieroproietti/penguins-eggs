@@ -43,7 +43,7 @@ Versions are listed on reverse order, the first is the last one. Old versions ar
 
 ## penguins-eggs-10.0.41
 * fixed a lot of things;
-* tested against BigLinux, once again;
+* manjarolinux, biglinux fixed;
 * introduced - not yet working - VoidLinux.
 
 With the addition of alpinelinux, fedora and opensuse, penguins-eggs is changing - especially from a development perspective.
