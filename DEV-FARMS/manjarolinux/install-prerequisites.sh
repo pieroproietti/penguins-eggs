@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script installs prerequisites for penguins-eggs
-# on manjaro, it is intended for development purposes 
+# on manjaro/biglinux, it is intended for development purposes 
 
 # check if the script is running as root
 if [ "$EUID" -ne 0 ]; then
@@ -16,42 +16,36 @@ if [ ! -f /etc/arch-release ]; then
 fi
 
 pacman -Syu --noconfirm --needed \
-		arch-install-scripts \
-		bash-completion \
-		dosfstools \
-		erofs-utils \
-		findutils \
-		git \
-		grub \
-		jq \
-		libarchive \
-		libisoburn \
-		lsb-release \
-		lvm2 \
-		mkinitcpio-archiso \
-		mkinitcpio-nfs-utils \
-		mtools \
-		nano \
-		nbd \
-		nodejs \
-        npm \
-		pacman-contrib \
-		parted \
-		procps-ng \
-		pv \
-		python \
-		rsync \
-		squashfs-tools \
-		sshfs \
-		syslinux \
-		wget \
-		xdg-utils \
-        xdg-user-dirs \
-		xorriso \
-        manjaro-tools-iso-git
-
-	# install pnpm
-    npm i pnpm -g
+	arch-install-scripts \
+	bash-completion \
+	calamares \
+	dosfstools \
+	erofs-utils \
+	findutils \
+	git \
+	grub \
+	jq \
+	libarchive \
+	libisoburn \
+	lsb-release \
+	lvm2 \
+	manjaro-tools-iso \
+	mkinitcpio-nfs-utils \
+	mtools \
+	nbd \
+	nodejs \
+	pacman-contrib \
+	parted \
+	pnpm \
+	procps-ng \
+	pv \
+	python \
+	rsync \
+	squashfs-tools \
+	sshfs \
+	syslinux \
+	xdg-utils \
+	zsh-completions
 
     # mkdir /usr/share/icons
     mkdir -p /usr/share/icons
