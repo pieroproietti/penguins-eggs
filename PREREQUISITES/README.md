@@ -1,4 +1,4 @@
-# DEV-FARMS
+# PREREQUISITES
 
 It is possible to install penguins-eggs from zero and without the native package.
 
