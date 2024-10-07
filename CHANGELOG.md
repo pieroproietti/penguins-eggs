@@ -61,8 +61,8 @@ I could really use someone to take care of implementing penguins-eggs packages f
 * calamares on arch have restart checked on close as default;
 * removed grubcfg module from arch calamares, seem not more necessary;
 * wrote a short README.md for troubles in Arch using an ISO created on btrfs to install ext4 and viceversa;
-* renamed NAKED-FARMS to DEV-FARMS - the procedures inside can be used on CLI and GUI systems - so this is more appropriate name;
-* wrote simple README.md on how to create a naked on DEV-FARMS.
+* renamed NAKED-FARMS to PREREQUISITES - the procedures inside can be used on CLI and GUI systems - so this is more appropriate name;
+* wrote simple README.md on how to create a naked on PREREQUISITES.
 
 ## penguins-eggs-10.0.39
 * bugfix archlinux package;
