@@ -21,7 +21,7 @@ sudo PREREQUISITES/<distro>/install.sh
 ./install-dev-eggs
 ```
 
-On Alpine, after installation, change your shell on bash if you want autocomplete: `chsh -s /bin/bash.
+On Alpine, after installation, change your shell on bash if you want autocomplete: `chsh -s /bin/bash`.
 
 # Thats all folks!
 
