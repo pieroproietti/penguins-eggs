@@ -23,6 +23,11 @@ sudo PREREQUISITES/<distro>/install.sh
 
 On Alpine, after installation, change your shell on bash if you want autocomplete: `chsh -s /bin/bash`.
 
+# Produce your first live
+Using this way, on mostly distros, we need to give: `sudo eggs dad --default` to create the configuration files, then we are one step from our ISO: `eggs love`.
+
+Of course there is much more again to tell, consult this [repo](https://github.com/pieroproietti/penguins-eggs) and [penguins-eggs.net](https://penguins-eggs.net).
+
 # That's all, Folks!
 
- One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! 
+One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! 
