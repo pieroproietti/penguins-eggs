@@ -31,7 +31,7 @@ export default class Bleach {
     const distro = new Distro()
     switch (distro.familyId) {
       case 'debian': {
-        await exec(`apt remove $(dpkg -l | grep linux-image | awk '{print $2}' | grep -v $(uname -r))`)
+        // await exec(`apt remove $(dpkg -l | grep linux-image | awk '{print $2}' | grep -v $(uname -r))`)
         await exec('apt-get clean', echo)
         await exec('apt-get autoclean', echo)
         const lockFile = '/var/lib/apt/lists/lock'
@@ -41,14 +41,14 @@ export default class Bleach {
       }
 
       case 'archlinux': {
-        await exec(`pacman -R $(pacman -Q | grep linux | grep -v $(uname -r))`)
+        // await exec(`pacman -R $(pacman -Q | grep linux | grep -v $(uname -r))`)
         await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
 
         break
       }
 
       case 'alpine': {
-        await exec(`apk del $(apk info | grep linux- | grep -v $(uname -r))`)
+        // await exec(`apk del $(apk info | grep linux- | grep -v $(uname -r))`) 
         await exec('apk cache clean', echo)
         await exec('apk cache purge', echo)
 
@@ -63,7 +63,7 @@ export default class Bleach {
       }
 
       case 'opensuse': {
-        await exec(`zypper remove $(rpm -qa | grep kernel | grep -v $(uname -r))`)
+        // await exec(`zypper remove $(rpm -qa | grep kernel | grep -v $(uname -r))`)
         await exec(`zypper clean`, echo)
 
         break
