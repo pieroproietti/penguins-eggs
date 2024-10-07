@@ -23,13 +23,6 @@ sudo PREREQUISITES/<distro>/install.sh
 
 On Alpine, after installation, change your shell on bash if you want autocomplete: `chsh -s /bin/bash`.
 
-# Thats all folks!
+# That's all, Folks!
 
-
-
-
-
-
-
-
-
+ One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! 
