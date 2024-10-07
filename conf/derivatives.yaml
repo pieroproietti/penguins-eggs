@@ -38,6 +38,7 @@
   ids:
     - lory    # Parrot lory
     - orchid  # VanillaOS
+    - excalibur # Devuan 
 
 #
 # DEVUAN
