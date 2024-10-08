@@ -23,8 +23,8 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 # Devuan excalibur
 
 ## **naked** - just the juice, without GUI. You can start here to build your revolution!
-## **jwm** - - A minimal desktop: JWM, Double Commander, xterm, mousepad, GParted;
-## **colibri** - A light xfce4 for developers you can easily start to improve eggs installing colibri.
+## **jwm** - a minimal desktop: JWM, Double Commander, xterm, mousepad, GParted;
+## **colibri** - light xfce4 for developers you can easily start to improve eggs installing colibri.
 
 ## More informations:
 
