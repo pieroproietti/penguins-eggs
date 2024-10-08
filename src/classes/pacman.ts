@@ -391,7 +391,14 @@ export default class Pacman {
     } else if (this.distro().codenameLikeId === 'daedalus') {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      /**
+       * Devuan excalibur: eredita tutto da buster
+       */
+    } else if (this.distro().codenameLikeId === 'excalibur') {
+      const dest = '/etc/penguins-eggs.d/distros/excalibur'
+      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
+      
       /***********************************************************************************
        * Ubuntu
        **********************************************************************************/
