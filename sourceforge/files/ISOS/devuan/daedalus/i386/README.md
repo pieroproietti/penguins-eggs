@@ -1,2 +1,2 @@
-# Debian bookworm i386
+# # Devuan daedalus i386
 
