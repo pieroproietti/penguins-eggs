@@ -148,6 +148,13 @@ export default class Incubator {
         break
       }
 
+      case 'excalibur': {
+        const excalibur = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await excalibur.create()
+
+        break
+      }
+
       /**
        * UBUNTU
        */
