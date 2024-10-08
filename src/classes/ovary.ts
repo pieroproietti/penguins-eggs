@@ -881,7 +881,7 @@ export default class Ovary {
    * mkinitramfs() Debian
    */
   async initrdDebian(verbose = false) {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Debian/Devuan/Ubuntu on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using mkinitramfs on ISO/live`)
 
     let isCrypted = false
 

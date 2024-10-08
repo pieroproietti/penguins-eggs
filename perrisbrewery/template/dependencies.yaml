@@ -24,17 +24,15 @@ common:
   - rsync
   - squashfs-tools
   - sshfs # eggs
-  - syslinux-common
   - xorriso | genisoimage
 
 # dependencies arch specific
 arch:
   amd64:
   - grub-efi-amd64-bin
-  - syslinux
-
-  i386:
-  - syslinux
 
   arm64:
   - syslinux-efi
+
+  i386:
+  - curl # repeated
