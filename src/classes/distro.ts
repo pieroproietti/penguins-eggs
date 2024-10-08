@@ -215,6 +215,13 @@ class Distro implements IDistro {
             break
           }
 
+          case 'excalibur': {
+            this.distroLike = 'Devuan'
+            this.codenameLikeId = 'excalibur'
+
+            break
+          }
+
           /**
            * Ubuntu
            */
