@@ -91,3 +91,14 @@ grub-install /dev/sda
 
 # bash
 chsh -s /bin/bash
+
+# create /usr/sbin/shutdown
+if [ ! -e /usr/sbin/shutdown ]; then
+echo "creating /usr/sbin/shutdown"
+cat << 'EOF' > /tmp/shutdown
+#!/usr/bin/env bash
+/sbin/poweroff
+EOF
+chmod +x /tmp/shutdown
+mv /tmp/shutdown /usr/sbin
+fi
