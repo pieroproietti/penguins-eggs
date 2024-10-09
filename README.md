@@ -59,8 +59,10 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 #### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
-### Fedora
-There is no installation package for Fedora yet, but you can still use eggs on this distribution by following the procedure described in [WAY-TO-FEDORA](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-FEDORA.md) or by downloading the [fedora colibri](https://sourceforge.net/projects/penguins-eggs/files/ISOS/fedora/) version.
+### Other: Alpine, Fedora and openSuSE
+There is no installation package for this distros, but is simple to install penguins-eggs from sources as described [here](https://github.com/pieroproietti/penguins-eggs/tree/master/PREREQUISITES#prerequisites). 
+
+Volunteer to package penguins-eggs on these three distributions? Write me: piero.proietti@gmail.com.
 
 # Introduction
 
