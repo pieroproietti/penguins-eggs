@@ -10,8 +10,8 @@ But this way is very pratical during development, no need to build the package a
 
 # INSTALLATION
 
-We need package `lsb-release` installed, this is default for mostly distros, but not on `AlpineLinux`  and `ArchLinux`.
-* on Alpine, decomment   `/etc/apk/repositories`, then `doas apk add lsb-release`;
+Before to start, we need the package `lsb-release` installed, this is default for mostly distros, but not on `AlpineLinux`  and `ArchLinux`.
+* on Alpine, uncomment   `/etc/apk/repositories`, then `doas apk add lsb-release`;
 * on Arch, just `sudo pacman -S lsb-release`.
 
 ```
