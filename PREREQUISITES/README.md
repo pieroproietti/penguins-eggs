@@ -11,8 +11,8 @@ But this way is very pratical during development, no need to build the package a
 # INSTALLATION
 
 Before to start, we need the package `lsb-release` installed, this is default for mostly distros, but not on `AlpineLinux`  and `ArchLinux`.
-* on Alpine, uncomment   `/etc/apk/repositories`, then `doas apk add lsb-release`;
-* on Arch, just `sudo pacman -S lsb-release`.
+* on Alpine, uncomment community from `/etc/apk/repositories`, then `doas apk add lsb-release`;
+* on Arch, just install it: `sudo pacman -S lsb-release`.
 
 ```
 git clone https://github.com/pieroproietti/penguins-eggs
