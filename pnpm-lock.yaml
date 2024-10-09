@@ -16,7 +16,7 @@ importers:
         version: 3.2.5
       '@oclif/plugin-help':
         specifier: ^6.2.13
-        version: 6.2.13
+        version: 6.2.14
       '@oclif/plugin-version':
         specifier: ^2.2.14
         version: 2.2.14
@@ -431,10 +431,6 @@ packages:
 
   '@oclif/plugin-autocomplete@3.2.5':
     resolution: {integrity: sha512-JJWctXyk/RkA+KuLsRkYopNvs8E2K3ZFTVOt1lJR+jVwH7VnOqN1iVl19GkzVzvbsGcGvVaBCDS82cvpeST7Nw==}
-    engines: {node: '>=18.0.0'}
-
-  '@oclif/plugin-help@6.2.13':
-    resolution: {integrity: sha512-IgLytXXYfuTs6dV7xhgt4xhE4Mjx8/29/4iH6jp9TKDblopCBnZ3q1VMlHfhhLsJ4Q+rSjP/QCHtiO3HnXk69Q==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-help@6.2.14':
@@ -1518,6 +1514,7 @@ packages:
   eslint@8.57.1:
     resolution: {integrity: sha512-ypowyDxpVSYpkXr9WPv2PAZCtNip1Mv5KTW0SCurXv/9iOpcrH9PaqUElksqEB6pChqHGDRCFTyrZlGhnLNGiA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -3816,10 +3813,6 @@ snapshots:
       ejs: 3.1.10
     transitivePeerDependencies:
       - supports-color
-
-  '@oclif/plugin-help@6.2.13':
-    dependencies:
-      '@oclif/core': 4.0.27
 
   '@oclif/plugin-help@6.2.14':
     dependencies:
@@ -6216,7 +6209,7 @@ snapshots:
     dependencies:
       '@oclif/core': 4.0.27
       '@oclif/plugin-autocomplete': 3.2.5
-      '@oclif/plugin-help': 6.2.13
+      '@oclif/plugin-help': 6.2.14
       '@oclif/plugin-version': 2.2.14
       '@oclif/test': 4.0.9(@oclif/core@4.0.27)
       chalk: 4.1.2
