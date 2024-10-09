@@ -6,7 +6,7 @@ This way is a need for: alpine, fedora and opensuse - where we don't have yet a 
 
 The main limit is: in a system created with this procedure, penguins-eggs can be updated just with the same procedure, becouse package manager don't know it at all.
 
-But this way is very pratical during development, no need to build package and test, this is sometime long enought, tedius and unpratical when we are developing.
+But this way is very pratical during development, no need to build the package and test it, this is sometime long enought, tedius and unpratical when we are developing, there are specialists.
 
 # INSTALLATION
 
