@@ -93,7 +93,7 @@ export default class Calamares extends Command {
             if (await this.settings.load()) {
               this.settings.config.force_installer = false
               this.settings.save(this.settings.config)
-              installer="krill"
+              installer = "krill"
             }
           }
 
@@ -110,7 +110,7 @@ export default class Calamares extends Command {
             this.settings.config.force_installer = true
             this.settings.save(this.settings.config)
             policies = true
-            installer="calamares"
+            installer = "calamares"
           }
         }
       }
@@ -122,17 +122,18 @@ export default class Calamares extends Command {
         Utils.warning('calamares: configuring policies')
         await Pacman.calamaresPolicies()
       }
-    }
 
-    /**
-    * configure
-    */
-    if (await this.settings.load()) {
-      Utils.warning(`${installer}: creating configuration files`)
-      await this.settings.loadRemix(theme)
-      const isClone = false
-      this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
-      await this.incubator.config(release)
+      /**
+      * configure
+      */
+      if (await this.settings.load()) {
+        Utils.warning(`${installer}: creating configuration files`)
+        await this.settings.loadRemix(theme)
+        const isClone = false
+        this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
+        await this.incubator.config(release)
+      }
+
     }
   }
 }
