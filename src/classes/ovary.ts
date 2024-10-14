@@ -368,10 +368,14 @@ export default class Ovary {
     /**
      * Scrivania/install-system.desktop
      */
-    let installerUrl = 'install-system.desktop'
-    let installerIcon = 'install-system.sh'
+    let installerLink = 'install-system.desktop'
+    let installerIcon = 'utilities-terminal'
     if (Pacman.calamaresExists()) {
-      shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      if (this.settings.distro.distroId === 'BigLinux') {
+        shx.cp(path.resolve(__dirname, `../../addons/eggs/theme/applications/install-biglinux.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/install-system.desktop`)
+      } else {
+        shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+      }
     } else if (Pacman.packageIsInstalled('live-installer')) {
       // carico la policy per live-installer
       const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
@@ -383,11 +387,11 @@ export default class Ovary {
       shx.cp(path.resolve(__dirname, '../../assets/live-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
       shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
 
-      installerUrl = 'penguins-live-installer.desktop'
+      installerLink = 'penguins-live-installer.desktop'
       installerIcon = 'utilities-terminal'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
-      installerUrl = 'penguins-krill.desktop'
+      installerLink = 'penguins-krill.desktop'
       installerIcon = 'utilities-terminal'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
@@ -443,7 +447,7 @@ export default class Ovary {
       text += '  DESKTOP=$(xdg-user-dir DESKTOP)\n'
       text += '  sleep 1\n'
       text += 'done\n'
-      text += `cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
+      text += `cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
       if (Pacman.packageIsInstalled('lxde-core')) {
         if (!noicons) {
           text += this.lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
@@ -476,9 +480,9 @@ export default class Ovary {
         text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
         text += 'test -f "$DESKTOP"/op && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
         text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
-        text += `test -f /usr/share/applications/${installerUrl} && cp /usr/share/applications/${installerUrl} "$DESKTOP"\n`
-        text += `test -f "$DESKTOP"/${installerUrl} && chmod a+x "$DESKTOP"/${installerUrl}\n`
-        text += `test -f "$DESKTOP"/${installerUrl} && gio set "$DESKTOP"/${installerUrl} metadata::trusted true\n`
+        text += `test -f /usr/share/applications/${installerLink} && cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
+        text += `test -f "$DESKTOP"/${installerLink} && chmod a+x "$DESKTOP"/${installerLink}\n`
+        text += `test -f "$DESKTOP"/${installerLink} && gio set "$DESKTOP"/${installerLink} metadata::trusted true\n`
       } else if (Pacman.packageIsInstalled('xfce4-session')) {
         text += `# xfce: enable-desktop-links\n`
         text += `for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
