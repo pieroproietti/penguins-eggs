@@ -5,8 +5,10 @@ Name=Install System
 GenericName=System Installer
 Keywords=calamares;system;installer;
 #Exec=sh -c "pkexec /usr/bin/calamares"
-Exec=/usr/sbin/install-system.sh
-TryExec=/usr/sbin/install-system.sh
+#Exec=/usr/sbin/install-system.sh
+Exec=/usr/bin/calamares_polkit %f
+#TryExec=/usr/sbin/install-system.sh
+TryExec=Exec=/usr/bin/calamares_polkit %f
 Comment=Calamares — System Installer
 Icon=install-system
 Terminal=false
