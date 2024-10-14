@@ -369,7 +369,6 @@ export default class Ovary {
      * Scrivania/install-system.desktop
      */
     let installerLink = 'install-system.desktop'
-    let installerIcon = 'utilities-terminal'
     if (Pacman.calamaresExists()) {
       if (this.settings.distro.distroId === 'BigLinux') {
         let file2edit=path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
@@ -388,11 +387,9 @@ export default class Ovary {
       shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
 
       installerLink = 'penguins-live-installer.desktop'
-      installerIcon = 'utilities-terminal'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
       installerLink = 'penguins-krill.desktop'
-      installerIcon = 'utilities-terminal'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     }
 
