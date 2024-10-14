@@ -372,10 +372,10 @@ export default class Ovary {
     let installerIcon = 'utilities-terminal'
     if (Pacman.calamaresExists()) {
       if (this.settings.distro.distroId === 'BigLinux') {
-        shx.cp(path.resolve(__dirname, `../../addons/eggs/theme/applications/install-biglinux.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/install-system.desktop`)
-      } else {
-        shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+        let file2edit=path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
+        await exec (`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
       }
+      shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
       // carico la policy per live-installer
       const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
