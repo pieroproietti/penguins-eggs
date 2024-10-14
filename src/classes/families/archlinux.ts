@@ -49,7 +49,7 @@ export default class Archlinux {
     let removed = false
     const echo = Utils.setEcho(verbose)
 
-    const calPKGs = ['arco-calamares', 'calamares', 'calamares-garuda']
+    const calPKGs = ['calamares', 'calamares-eggs']
     for (const calPKG of calPKGs) {
       if (await this.packagePacmanAvailable(calPKG)) {
         await exec(`pacman -R ${calPKG}`, echo)
