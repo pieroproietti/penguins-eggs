@@ -4,8 +4,8 @@ Version=1.0
 Name=Install System
 GenericName=System Installer
 Keywords=calamares;system;installer;
-Exec=/usr/sbin/install-system.sh
-TryExec=/usr/sbin/install-system.sh
+Exec=Exec=/usr/bin/calamares_polkit %f
+TryExec=Exec=/usr/bin/calamares_polkit %f
 Comment=Calamares — System Installer
 Icon=install-system
 Terminal=false
