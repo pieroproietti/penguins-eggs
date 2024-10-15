@@ -8,9 +8,12 @@
 
 import { Command, Flags } from '@oclif/core'
 
+import Distro from '../../classes/distro.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
+
+import {IEggsConfigTools} from '../../interfaces/i-config-tools.js'
 
 export default class ExportDeb extends Command {
   static description = 'export deb/docs/iso to the destination host'
@@ -24,42 +27,78 @@ export default class ExportDeb extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
+  all = false
+
+  clean = false
+
+  verbose = false
+
+  echo = {}
+
+  Tu = new Tools()
+
+  /**
+   * 
+   */
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ExportDeb)
     Utils.titles(this.id + ' ' + this.argv)
-
-    const Tu = new Tools()
     Utils.warning(ExportDeb.description)
-    await Tu.loadSettings()
 
-    const echo = Utils.setEcho(flags.verbose)
+    // Ora servono in più parti
+    this.all = flags.all
+    this.clean = flags.clean
+    this.verbose = flags.verbose
+    this.echo = Utils.setEcho(this.verbose)
+    await this.Tu.loadSettings()
+
+
+
+    let distro = new Distro()
+    if (distro.familyId === "debian") {
+      Utils.warning("debian packages")
+      await this.debs()
+    } else if (distro.familyId === "archlinux") {
+      if (distro.distroId === "manjarolinux" || distro.distroId === "BigLinux") {
+        Utils.warning("manjaro packages")
+      } else {
+        Utils.warning("arch packages")
+      }
+    } else if (distro.familyId === "alpine") {
+      Utils.warning("alpine packages")
+    }
+  }
+
+  /**
+   * 
+   */
+  private async debs() {
 
     let arch = Utils.uefiArch()
-    if (flags.all) {
+    if (this.all) {
       arch = '*'
     }
-
     arch += '.deb'
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
-    cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb} ${remoteMountpoint}\n`
-    if (flags.clean) {
-      cmd += `rm -f ${remoteMountpoint}/${Tu.config.filterDeb}${arch}\n`
+    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.remotePathDeb} ${remoteMountpoint}\n`
+    if (this.clean) {
+      cmd += `rm -f ${remoteMountpoint}/${this.Tu.config.filterDeb}${arch}\n`
     }
 
-    cmd += `cp ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch}  ${remoteMountpoint}\n`
+    cmd += `cp ${this.Tu.config.localPathDeb}${this.Tu.config.filterDeb}${arch}  ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
-    if (!flags.verbose) {
-      if (flags.clean) {
-        console.log(`remove: ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.filterDeb}${arch}`)
+    if (!this.verbose) {
+      if (this.clean) {
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.filterDeb}${arch}`)
       }
-
-      console.log(`copy: ${Tu.config.localPathDeb}${Tu.config.filterDeb}${arch} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathDeb}`)
+      console.log(`copy: ${this.Tu.config.localPathDeb}${this.Tu.config.filterDeb}${arch} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.remotePathDeb}`)
     }
 
-    await exec(cmd, echo)
+    await exec(cmd, this.echo)
+
   }
 }
