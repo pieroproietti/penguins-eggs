@@ -1,5 +1,5 @@
 # AlpineLinux
 
-I have not yet been able to get my packages accepted on AlpineLinux, at any rate pending success, you can find them here.
+I have not yet been able to get my [packages](https://gitlab.alpinelinux.org/pieroproietti/aports/) accepted on AlpineLinux, pending approval, you can find them here.
 
 ![](https://www.alpinelinux.org/alpinelinux-logo.svg)
