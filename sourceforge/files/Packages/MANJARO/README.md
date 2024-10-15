@@ -17,4 +17,4 @@ Where is a delay from publishing the package an to be available for all.
 
 Here You can find the last published package.
 
-![](https://manjaro.org/_ipx/w_1100/branch.webp)
+![](https://penguins-eggs.net/img/manjaro.svg)
