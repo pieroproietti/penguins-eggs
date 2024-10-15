@@ -9,8 +9,6 @@ penguins-eggs
 [![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
 [![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)[![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
-# AlpineLinux
+# penguins-eggs packages
 
-I have not yet been able to get my [packages](https://gitlab.alpinelinux.org/pieroproietti/aports/) accepted on AlpineLinux, pending approval, you can find them here.
-
-![](https://www.alpinelinux.org/alpinelinux-logo.svg)
+![](https://nara.getarchive.net/media/steve-bridges-warehouse-specialist-stocks-packages-4a654d?zoom=true)
