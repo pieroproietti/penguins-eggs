@@ -7,7 +7,7 @@ penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
 remoteHost: 192.168.1.2
 
 # path to remote host
-remotePathDeb: /eggs/
+remotePathDeb: /eggs/debs
 remotePathIso: /var/lib/vz/template/iso/
 
 # always root
