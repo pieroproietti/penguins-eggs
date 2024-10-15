@@ -15,4 +15,4 @@ penguins-eggs is published at [AUR](https://aur.archlinux.org/packages/penguins-
 
 You can find the latest version here.
 
-![](https://it.wikipedia.org/wiki/Arch_Linux#/media/File:Archlinux-logo-standard-version.svg)
+![](https://penguins-eggs.net/img/arch.svg)
