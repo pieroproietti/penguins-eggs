@@ -11,4 +11,4 @@ penguins-eggs
 
 # penguins-eggs packages
 
-![](https://nara.getarchive.net/media/steve-bridges-warehouse-specialist-stocks-packages-4a654d?zoom=true)
+![](https://nara.getarchive.net/media/steve-bridges-warehouse-specialist-stocks-packages-4a654d)
