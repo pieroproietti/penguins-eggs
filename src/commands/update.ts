@@ -129,6 +129,9 @@ export default class Update extends Command {
       if (await Utils.customConfirm(`Want to install ${filterAur}`)) {
         await exec(`pacman -U /tmp/${filterAur}`)
       }
+
+    } else if (this.distro.familyId === 'alpine') {
+      console.log("not yet implemented!")
     }
   }
 
