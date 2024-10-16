@@ -14,7 +14,7 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import os from 'node:os'
 
-import {IEggsConfigTools} from '../../interfaces/i-config-tools.js'
+import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
 
 export default class ExportDeb extends Command {
   static description = 'export deb/docs/iso to the destination host'
@@ -80,8 +80,8 @@ export default class ExportDeb extends Command {
    */
   private async aur() {
     const localPathAur = `/home/${this.user}/penguins-eggs-pkgbuilds/aur/penguins-eggs`
-    const remotePathAur=this.Tu.config.remotePathPackages + "/aur"
-    const filterAur= `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+    const remotePathAur = this.Tu.config.remotePathPackages + "/aur"
+    const filterAur = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathAur} ${remoteMountpoint}\n`
@@ -108,23 +108,22 @@ export default class ExportDeb extends Command {
    * DEBS
    */
   private async debs() {
-    const localPathDeb = `/home/${this.user}/penguins-eggs/perrisbrewery/workdir/`
-    const remotePathDeb=this.Tu.config.remotePathPackages + "/debs"
+    const localPathDeb = `/home/${this.user}/penguins-eggs/perrisbrewery/workdir`
+    const remotePathDeb = this.Tu.config.remotePathPackages + "/debs"
     let arch = Utils.uefiArch()
     if (this.all) {
       arch = '*'
     }
-    arch += '.deb'
-    const filterDeb= `penguins-eggs_10.?.*-?_${arch}`
+    const filterDeb = `penguins-eggs_10.?.*-?_${arch}.deb`
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/${this.Tu.config.filterPackages}${arch}\n`
+      cmd += `rm -f ${remoteMountpoint}/${filterDeb}\n`
     }
 
-    cmd += `cp ${this.Tu.config.localPathDeb}/${filterDeb}${arch}  ${remoteMountpoint}\n`
+    cmd += `cp ${localPathDeb}/${filterDeb} ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
@@ -132,7 +131,7 @@ export default class ExportDeb extends Command {
       if (this.clean) {
         console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filterDeb}`)
       }
-      console.log(`copy: ${this.Tu.config.localPathDeb}/${filterDeb} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb}`)
+      console.log(`copy: ${localPathDeb}/${filterDeb} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb}`)
     }
 
     await exec(cmd, this.echo)
