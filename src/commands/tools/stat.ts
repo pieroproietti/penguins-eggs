@@ -62,7 +62,7 @@ export default class ToolsStat extends Command {
     }
 
     this.log('start: ' + start + ', end: ' + end + '\n')
-    await this.show(start, end, 'DEBS')
+    await this.show(start, end, 'Packages/DEBS')
     console.log()
     await this.show(start, end, 'ISOS')
   }
@@ -73,7 +73,7 @@ export default class ToolsStat extends Command {
    * @param end
    * @param type
    */
-  async show(start: string, end: string, type = 'DEBS') {
+  async show(start: string, end: string, type: string) {
     let url = `https://sourceforge.net/projects/penguins-eggs/files/${type}/stats/json`
     const request = '?start_date=' + start + '&end_date=' + end
     url += request

@@ -16,6 +16,12 @@ import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 import { execSync } from 'child_process'
 
+import axios from 'axios'
+import https from 'node:https'
+const agent = new https.Agent({
+  rejectUnauthorized: false
+})
+
 /**
  *
  */
@@ -30,6 +36,27 @@ export default class Update extends Command {
   }
 
   distro = new Distro()
+
+  /**
+   * run
+   */
+  async run(): Promise<void> {
+    Utils.titles(this.id + ' ' + this.argv)
+    const { flags } = await this.parse(Update)
+    Utils.titles(this.id + ' ' + this.argv)
+
+    if (Utils.isRoot()) {
+      if (Utils.isSources()) {
+        Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
+      } else if (Utils.isDebPackage()) {
+        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
+      }
+
+      await this.chooseUpdate()
+    } else {
+      Utils.useRoot(this.id)
+    }
+  }
 
   async chooseUpdate() {
     console.log()
@@ -141,10 +168,10 @@ export default class Update extends Command {
   async getPkgFromSourceforge() {
     let repo = ''
     let cmd = ''
-    let url='https://sourceforge.net/projects/penguins-eggs/files/Packages'
+    let url = 'https://sourceforge.net/projects/penguins-eggs/files/Packages'
     let filter = `penguins-eggs`
     if (this.distro.familyId === "debian") {
-      repo="DEBS"
+      repo = "DEBS"
       url = `${url}/${repo}/${Utils.uefiArch()}`
       filter = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
       cmd = `sudo dpkg -i ${filter}`
@@ -155,20 +182,21 @@ export default class Update extends Command {
       if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
         repo = 'MANJARO'
       }
-      url=`${url}/${repo}`
-    } 
+      url = `${url}/${repo}`
+    }
     let command = `Open your browser at:\n`
     command += `${url}\n`
     command += `select and download the package: ${filter},\n`
     command += `then type the command:\n`
     command += `${cmd}`
     console.log(command)
+    await this.show(url)
   }
 
   /**
-   *
-   * @param aptVersion
-   */
+ *
+ * @param aptVersion
+ */
   getFromSources() {
     console.log('You can upgrade getting a new version from git:')
     console.log('cd ~/penguins-eggs')
@@ -183,21 +211,28 @@ export default class Update extends Command {
     console.log('npm install')
   }
 
-  async run(): Promise<void> {
-    Utils.titles(this.id + ' ' + this.argv)
-    const { flags } = await this.parse(Update)
-    Utils.titles(this.id + ' ' + this.argv)
+  /**
+   * show
+   */
+  async show(url: string) {
+    url += `/stats/json`
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    // adjust 0 before single digit date
+    const day = ('0' + yesterday.getDate()).slice(-2)
+    const month = ('0' + (yesterday.getMonth() + 1)).slice(-2)
+    const year = yesterday.getFullYear()
 
-    if (Utils.isRoot()) {
-      if (Utils.isSources()) {
-        Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
-      } else if (Utils.isDebPackage()) {
-        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
-      }
+    const end = year + '-' + month + '-' + day
+    let start = year + '-' + month + '-' + day
 
-      await this.chooseUpdate()
-    } else {
-      Utils.useRoot(this.id)
+    const request = '?start_date=' + start + '&end_date=' + end
+    url += request
+
+    const res = await axios.get(url, { httpsAgent: agent })
+    console.log("\nStatistics: yesterday downloads")
+    for (const country of res.data.countries) {
+      console.log('- ' + country[0] + ': ' + country[1])
     }
   }
 }
