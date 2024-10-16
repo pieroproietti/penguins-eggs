@@ -694,20 +694,6 @@ export default class Pacman {
   }
 
   /**
-   * restuisce VERO se il pacchetto è installato
-   * @param debPackage
-   */
-  static async packageAvailable(packageName: string): Promise<boolean> {
-    let available = false
-
-    if (this.distro().familyId === 'debian') {
-      available = Debian.packageIsInstalled(packageName)
-    }
-
-    return available
-  }
-
-  /**
    *
    * @param debPackage
    * @returns

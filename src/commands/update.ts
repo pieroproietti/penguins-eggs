@@ -95,7 +95,7 @@ export default class Update extends Command {
    */
   async choosePkg(): Promise<string> {
     const choices: string[] = ['abort']
-    choices.push('apt', 'lan', 'sourceforge', 'sources')
+    choices.push('lan', 'repos', 'sourceforge', 'sources')
 
     const questions: Array<Record<string, any>> = [
       {
@@ -118,12 +118,11 @@ export default class Update extends Command {
    */
   async getPkgFromRepo() {
     if (this.distro.familyId === "debian") {
-      if (await Pacman.packageAvailable('eggs')) {
-        await exec('apt reinstall eggs')
-      } else {
-        console.log('eggs is not present in your repositories')
-        console.log('but you can upgrade from internet')
-      }
+      await exec('apt install penguins-eggs')
+    } else if (this.distro.familyId === 'archlinux') {
+      await exec('pacman -S penguins-eggs')
+    } else if (this.distro.familyId === 'alpine') {
+      console.log(`Not yet implemented on ${this.distro.distroId}`)
     }
   }
 
@@ -208,7 +207,7 @@ export default class Update extends Command {
     console.log('')
     console.log('Before to use eggs from sources, remember to install npm packages:')
     console.log('cd ~/penguins-eggs')
-    console.log('npm install')
+    console.log('pnpm install')
   }
 
   /**
@@ -231,6 +230,7 @@ export default class Update extends Command {
 
     const res = await axios.get(url, { httpsAgent: agent })
     console.log("\nStatistics to get an idea: yesterday downloads")
+    console.log()
     for (const country of res.data.countries) {
       console.log('- ' + country[0] + ': ' + country[1])
     }
