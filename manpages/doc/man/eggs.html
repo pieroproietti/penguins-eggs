@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.42</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.43</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
@@ -15,11 +15,11 @@
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_10.0.42-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_10.0.43-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_10.0.42-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_10.0.43-1_amd64.deb
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
@@ -27,7 +27,7 @@ $ sudo dpkg -i penguins-eggs_10.0.42-1_amd64.deb
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/10.0.42  
+penguins-eggs/10.0.43  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -55,8 +55,8 @@ sudo eggs dad
       <li><a href="#eggs-config"><code>eggs config</code></a></li>
       <li><a href="#eggs-cuckoo"><code>eggs cuckoo</code></a></li>
       <li><a href="#eggs-dad"><code>eggs dad</code></a></li>
-      <li><a href="#eggs-export-deb"><code>eggs export deb</code></a></li>
       <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
+      <li><a href="#eggs-export-pkg"><code>eggs export pkg</code></a></li>
       <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
       <li><a href="#eggs-install"><code>eggs install</code></a></li>
       <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
@@ -218,27 +218,6 @@ EXAMPLES
 
   sudo dad --default
 </code></pre>
-    <h2><code>eggs export deb</code></h2>
-    <p>export deb/docs/iso to the destination host</p>
-    <pre><code>USAGE
-  $ eggs export deb [-a] [-c] [-h] [-v]
-
-FLAGS
-  -a, --all      export all archs
-  -c, --clean    remove old .deb before to copy
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  export deb/docs/iso to the destination host
-
-EXAMPLES
-  $ eggs export deb
-
-  $ eggs export deb --clean
-
-  $ eggs export deb --all
-</code></pre>
     <h2><code>eggs export iso</code></h2>
     <p>export iso in the destination host</p>
     <pre><code>USAGE
@@ -257,6 +236,27 @@ EXAMPLES
   $ eggs export iso
 
   $ eggs export iso --clean
+</code></pre>
+    <h2><code>eggs export pkg</code></h2>
+    <p>export pkg/iso to the destination host</p>
+    <pre><code>USAGE
+  $ eggs export pkg [-a] [-c] [-h] [-v]
+
+FLAGS
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export pkg/iso to the destination host
+
+EXAMPLES
+  $ eggs export pkg
+
+  $ eggs export pkg --clean
+
+  $ eggs export pkg --all
 </code></pre>
     <h2><code>eggs help [COMMAND]</code></h2>
     <p>Display help for eggs.</p>
