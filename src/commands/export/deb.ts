@@ -64,8 +64,9 @@ export default class ExportDeb extends Command {
       Utils.warning("debian packages")
       await this.debs()
     } else if (distro.familyId === "archlinux") {
-      if (distro.distroId === "manjarolinux" || distro.distroId === "BigLinux") {
+      if (distro.distroId === "ManjaroLinux" || distro.distroId === "BigLinux") {
         Utils.warning("manjaro packages")
+        this.manjaro()
       } else {
         Utils.warning("arch packages")
         this.aur()
@@ -73,6 +74,35 @@ export default class ExportDeb extends Command {
     } else if (distro.familyId === "alpine") {
       Utils.warning("alpine packages")
     }
+  }
+
+  /**
+   * manjaro
+   */
+  private async manjaro() {
+    const localPathManjaro = `/home/${this.user}/penguins-eggs-pkgbuilds/manjaro/penguins-eggs`
+    const remotePathManjaro = this.Tu.config.remotePathPackages + "/manjaro"
+    const filterManjaro = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+    const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
+    let cmd = `mkdir ${remoteMountpoint}\n`
+    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathManjaro} ${remoteMountpoint}\n`
+    if (this.clean) {
+      cmd += `rm -f ${remoteMountpoint}/${filterManjaro}\n`
+    }
+
+    cmd += `cp ${localPathManjaro}/${filterManjaro} ${remoteMountpoint}\n`
+    cmd += 'sync\n'
+    cmd += `umount ${remoteMountpoint}\n`
+    cmd += `rm -rf ${remoteMountpoint}\n`
+    if (!this.verbose) {
+      if (this.clean) {
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filterManjaro}`)
+      }
+      console.log(`copy: ${localPathManjaro}/${filterManjaro} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathManjaro}`)
+    }
+
+    await exec(cmd, this.echo)
+
   }
 
   /**
