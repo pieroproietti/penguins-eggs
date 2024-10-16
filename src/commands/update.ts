@@ -230,7 +230,7 @@ export default class Update extends Command {
     url += request
 
     const res = await axios.get(url, { httpsAgent: agent })
-    console.log("\nStatistics: yesterday downloads")
+    console.log("\nStatistics to get an idea: yesterday downloads")
     for (const country of res.data.countries) {
       console.log('- ' + country[0] + ': ' + country[1])
     }
