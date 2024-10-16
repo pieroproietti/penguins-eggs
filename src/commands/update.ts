@@ -8,13 +8,13 @@
 
 import { Command, Flags } from '@oclif/core'
 import inquirer from 'inquirer'
-import shx from 'shelljs'
 import Distro from '../classes/distro.js'
 
 import Pacman from '../classes/pacman.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
+import { execSync } from 'child_process'
 
 /**
  *
@@ -48,8 +48,8 @@ export default class Update extends Command {
         break
       }
 
-      case 'manual': {
-        this.getPkgManually()
+      case 'sourceforge': {
+        this.getPkgFromSourceforge()
 
         break
       }
@@ -68,7 +68,7 @@ export default class Update extends Command {
    */
   async choosePkg(): Promise<string> {
     const choices: string[] = ['abort']
-    choices.push('apt', 'lan', 'manual', 'sources')
+    choices.push('apt', 'lan', 'sourceforge', 'sources')
 
     const questions: Array<Record<string, any>> = [
       {
@@ -131,16 +131,36 @@ export default class Update extends Command {
       }
 
     } else if (this.distro.familyId === 'alpine') {
-      console.log("not yet implemented!")
+      console.log(`Not yet implemented on ${this.distro.distroId}`)
     }
   }
 
   /**
    *
    */
-  async getPkgManually() {
-    console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/Packages/')
-    console.log('\nand install it with:')
+  async getPkgFromSourceforge() {
+    let repo = "DEBS"
+    let cmd = "sudo apt install <package-name>"
+    let url="https://sourceforge.net/projects/penguins-eggs/files/Packages"
+    let filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+    if (this.distro.familyId === "debian") {
+      repo="DEBS"
+      filter = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
+      cmd = `sudo apt install ${filter}`
+    } else if (this.distro.familyId === 'archlinux') {
+      repo = "AUR"
+      filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+      cmd = `sudo pacman -U ${filter}`
+      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
+        repo = 'MANJARO'
+      }
+    } 
+    let command = `Open your browser at:\n`
+    command += `${url}/${repo}\n`
+    command += `select and download the package: ${filter},\n`
+    command += `then type the command:\n`
+    command += `${cmd}`
+    console.log(command)
   }
 
   /**
