@@ -7,7 +7,7 @@ penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
 remoteHost: 192.168.1.2
 
 # path to remote host
-remotePathDeb: /eggs/debs
+remotePathPackages: /eggs
 remotePathIso: /var/lib/vz/template/iso/
 
 # always root
@@ -18,4 +18,4 @@ localPathDeb: /home/artisan/penguins-eggs/perrisbrewery/workdir/
 localPathIso: /home/eggs
 
 # filter package files
-filterDeb: penguins-eggs_10.?.*-?_
+filterPackages: penguins-eggs_10.?.*-?

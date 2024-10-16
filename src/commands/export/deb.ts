@@ -12,6 +12,7 @@ import Distro from '../../classes/distro.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
+import os from 'node:os'
 
 import {IEggsConfigTools} from '../../interfaces/i-config-tools.js'
 
@@ -26,6 +27,8 @@ export default class ExportDeb extends Command {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
+
+  user = ''
 
   all = false
 
@@ -46,6 +49,8 @@ export default class ExportDeb extends Command {
     Utils.warning(ExportDeb.description)
 
     // Ora servono in più parti
+
+    this.user = os.userInfo().username;
     this.all = flags.all
     this.clean = flags.clean
     this.verbose = flags.verbose
@@ -63,6 +68,7 @@ export default class ExportDeb extends Command {
         Utils.warning("manjaro packages")
       } else {
         Utils.warning("arch packages")
+        this.aur()
       }
     } else if (distro.familyId === "alpine") {
       Utils.warning("alpine packages")
@@ -70,32 +76,63 @@ export default class ExportDeb extends Command {
   }
 
   /**
-   * 
+   * AUR
    */
-  private async debs() {
-
-    let arch = Utils.uefiArch()
-    if (this.all) {
-      arch = '*'
-    }
-    arch += '.deb'
-
+  private async aur() {
+    const localPathAur = `/home/${this.user}/penguins-eggs-pkgbuilds/aur/penguins-eggs`
+    const remotePathAur=this.Tu.config.remotePathPackages + "/aur"
+    const filterAur= `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
-    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.remotePathDeb} ${remoteMountpoint}\n`
+    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathAur} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/${this.Tu.config.filterDeb}${arch}\n`
+      cmd += `rm -f ${remoteMountpoint}/${filterAur}\n`
     }
 
-    cmd += `cp ${this.Tu.config.localPathDeb}${this.Tu.config.filterDeb}${arch}  ${remoteMountpoint}\n`
+    cmd += `cp ${localPathAur}/${filterAur} ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
-        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.filterDeb}${arch}`)
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filterAur}`)
       }
-      console.log(`copy: ${this.Tu.config.localPathDeb}${this.Tu.config.filterDeb}${arch} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${this.Tu.config.remotePathDeb}`)
+      console.log(`copy: ${localPathAur}/${filterAur} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathAur}`)
+    }
+
+    await exec(cmd, this.echo)
+
+  }
+
+  /**
+   * DEBS
+   */
+  private async debs() {
+    const localPathDeb = `/home/${this.user}/penguins-eggs/perrisbrewery/workdir/`
+    const remotePathDeb=this.Tu.config.remotePathPackages + "/debs"
+    let arch = Utils.uefiArch()
+    if (this.all) {
+      arch = '*'
+    }
+    arch += '.deb'
+    const filterDeb= `penguins-eggs_10.?.*-?_${arch}`
+
+    const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
+    let cmd = `mkdir ${remoteMountpoint}\n`
+    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb} ${remoteMountpoint}\n`
+    if (this.clean) {
+      cmd += `rm -f ${remoteMountpoint}/${this.Tu.config.filterPackages}${arch}\n`
+    }
+
+    cmd += `cp ${this.Tu.config.localPathDeb}/${filterDeb}${arch}  ${remoteMountpoint}\n`
+    cmd += 'sync\n'
+    cmd += `umount ${remoteMountpoint}\n`
+    cmd += `rm -rf ${remoteMountpoint}\n`
+    if (!this.verbose) {
+      if (this.clean) {
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filterDeb}`)
+      }
+      console.log(`copy: ${this.Tu.config.localPathDeb}/${filterDeb} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb}`)
     }
 
     await exec(cmd, this.echo)

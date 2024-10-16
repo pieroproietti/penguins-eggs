@@ -14,12 +14,12 @@ import Settings from './settings.js'
 import Utils from './utils.js'
 
 interface IEggsConfigTools {
-  filterDeb: string
+  filterPackages: string
   localPathDeb: string
   localPathDoc: string
   localPathIso: string
   remoteHost: string
-  remotePathDeb: string
+  remotePathPackages: string
   remotePathDoc: string
   remotePathIso: string
   remoteUser: string
@@ -50,7 +50,7 @@ export default class Tools {
       const loaded = yaml.load(fs.readFileSync(this.tools_yaml, 'utf8')) as IEggsConfigTools
       this.config.remoteHost = loaded.remoteHost
       this.config.remoteUser = loaded.remoteUser
-      this.config.remotePathDeb = loaded.remotePathDeb
+      this.config.remotePathPackages = loaded.remotePathPackages
       this.config.remotePathDoc = loaded.remotePathDoc
       this.config.remotePathIso = loaded.remotePathIso
 
@@ -58,7 +58,7 @@ export default class Tools {
       this.config.localPathDoc = loaded.localPathDoc
       this.config.localPathIso = loaded.localPathIso
 
-      this.config.filterDeb = loaded.filterDeb
+      this.config.filterPackages = loaded.filterPackages
 
       /**
        * da eggs
