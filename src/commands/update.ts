@@ -29,11 +29,8 @@ export default class Update extends Command {
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
-  /**
-   * Altrimenti, seleziona il tipo di
-   * aggiornamento desiderato
-   * indipendentemente dal flag
-   */
+  distro = new Distro()
+
   async chooseUpdate() {
     console.log()
     const choose = await this.choosePkg()
@@ -93,9 +90,8 @@ export default class Update extends Command {
    *
    */
   async getPkgFromRepo() {
-    let distro = new Distro()
-    if (distro.familyId === "debian") {
-      if (await Pacman.packageAptAvailable('eggs')) {
+    if (this.distro.familyId === "debian") {
+      if (await Pacman.packageAvailable('eggs')) {
         await exec('apt reinstall eggs')
       } else {
         console.log('eggs is not present in your repositories')
@@ -109,17 +105,30 @@ export default class Update extends Command {
    */
   async getPkgFromLan() {
     const Tu = new Tools()
-
     await Tu.loadSettings()
 
     Utils.warning('import from lan')
 
-    const filterDeb = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
-    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filterDeb} /tmp`
-    await exec(cmd, { capture: true, echo: true })
+    if (this.distro.familyId === "debian") {
+      const filterDeb = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filterDeb} /tmp`
+      await exec(cmd, { capture: true, echo: true })
 
-    if (await Utils.customConfirm(`Want to install ${filterDeb}`)) {
-      await exec(`dpkg -i /tmp/${filterDeb}`)
+      if (await Utils.customConfirm(`Want to install ${filterDeb}`)) {
+        await exec(`dpkg -i /tmp/${filterDeb}`)
+      }
+
+    } else if (this.distro.familyId === 'archlinux') {
+      let repo = "aur"
+      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
+        const repo = 'manjaro'
+      }
+      const filterAur = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filterAur} /tmp`
+      await exec(cmd, { capture: true, echo: true })
+      if (await Utils.customConfirm(`Want to install ${filterAur}`)) {
+        await exec(`pacman -U /tmp/${filterAur}`)
+      }
     }
   }
 
