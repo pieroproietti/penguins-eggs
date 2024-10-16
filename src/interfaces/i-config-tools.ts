@@ -8,12 +8,9 @@
 
 export interface IEggsConfigTools {
   filterPackages: string
-  localPathDeb: string
-  localPathDoc: string
   localPathIso: string
   remoteHost: string
   remotePathPackages: string
-  remotePathDoc: string
   remotePathIso: string
   remoteUser: string
 }

@@ -16,10 +16,10 @@ import os from 'node:os'
 
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
 
-export default class ExportDeb extends Command {
-  static description = 'export deb/docs/iso to the destination host'
+export default class ExportPkg extends Command {
+  static description = 'export pkg/iso to the destination host'
 
-  static examples = ['eggs export deb', 'eggs export deb --clean', 'eggs export deb --all']
+  static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
 
   static flags = {
     all: Flags.boolean({ char: 'a', description: 'export all archs' }),
@@ -44,9 +44,9 @@ export default class ExportDeb extends Command {
    * 
    */
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(ExportDeb)
+    const { args, flags } = await this.parse(ExportPkg)
     Utils.titles(this.id + ' ' + this.argv)
-    Utils.warning(ExportDeb.description)
+    Utils.warning(ExportPkg.description)
 
     // Ora servono in più parti
 

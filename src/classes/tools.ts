@@ -14,13 +14,9 @@ import Settings from './settings.js'
 import Utils from './utils.js'
 
 interface IEggsConfigTools {
-  filterPackages: string
-  localPathDeb: string
-  localPathDoc: string
   localPathIso: string
   remoteHost: string
   remotePathPackages: string
-  remotePathDoc: string
   remotePathIso: string
   remoteUser: string
 }
@@ -51,14 +47,10 @@ export default class Tools {
       this.config.remoteHost = loaded.remoteHost
       this.config.remoteUser = loaded.remoteUser
       this.config.remotePathPackages = loaded.remotePathPackages
-      this.config.remotePathDoc = loaded.remotePathDoc
       this.config.remotePathIso = loaded.remotePathIso
 
-      this.config.localPathDeb = loaded.localPathDeb
-      this.config.localPathDoc = loaded.localPathDoc
       this.config.localPathIso = loaded.localPathIso
 
-      this.config.filterPackages = loaded.filterPackages
 
       /**
        * da eggs

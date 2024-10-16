@@ -10,25 +10,25 @@ _eggs_export() {
   case "$state" in
     cmds)
 _values "completions" \
-"deb[export deb/docs/iso to the destination host]" \
 "iso[export iso in the destination host]" \
+"pkg[export pkg/iso to the destination host]" \
 
       ;;
     args)
       case $line[1] in
-        "deb")
+        "iso")
           _arguments -S \
-"(-a --all)"{-a,--all}"[export all archs]" \
-"(-c --clean)"{-c,--clean}"[remove old .deb before to copy]" \
+"(-C --checksum)"{-C,--checksum}"[export checksums md5 and sha256]" \
+"(-c --clean)"{-c,--clean}"[delete old ISOs before to copy]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files"
         ;;
-        "iso")
+        "pkg")
           _arguments -S \
-"(-C --checksum)"{-C,--checksum}"[export checksums md5 and sha256]" \
-"(-c --clean)"{-c,--clean}"[delete old ISOs before to copy]" \
+"(-a --all)"{-a,--all}"[export all archs]" \
+"(-c --clean)"{-c,--clean}"[remove old .deb before to copy]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
@@ -172,7 +172,7 @@ _eggs() {
   case "$state" in
     cmds)
       _values "completions" \
-"export[export deb/docs/iso to the destination host]" \
+"export[export iso in the destination host]" \
 "tools[clean system log, apt, etc]" \
 "wardrobe[get warorobe]" \
 "adapt[adapt monitor resolution for VM only]" \
