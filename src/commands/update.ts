@@ -9,6 +9,7 @@
 import { Command, Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import shx from 'shelljs'
+import Distro from '../classes/distro.js'
 
 import Pacman from '../classes/pacman.js'
 import Tools from '../classes/tools.js'
@@ -35,23 +36,23 @@ export default class Update extends Command {
    */
   async chooseUpdate() {
     console.log()
-    const choose = await this.chosenDeb()
+    const choose = await this.choosePkg()
     Utils.titles(`updating via ${choose}`)
     switch (choose) {
       case 'apt': {
-        await this.getDebFromApt()
+        await this.getPkgFromRepo()
 
         break
       }
 
       case 'lan': {
-        await this.getDebFromLan()
+        await this.getPkgFromLan()
 
         break
       }
 
       case 'manual': {
-        this.getDebFromManual()
+        this.getPkgManually()
 
         break
       }
@@ -68,7 +69,7 @@ export default class Update extends Command {
   /**
    *
    */
-  async chosenDeb(): Promise<string> {
+  async choosePkg(): Promise<string> {
     const choices: string[] = ['abort']
     choices.push('apt', 'lan', 'manual', 'sources')
 
@@ -91,20 +92,24 @@ export default class Update extends Command {
   /**
    *
    */
-  async getDebFromApt() {
-    if (await Pacman.packageAptAvailable('eggs')) {
-      await exec('apt reinstall eggs')
-    } else {
-      console.log('eggs is not present in your repositories')
-      console.log('but you can upgrade from internet')
+  async getPkgFromRepo() {
+    let distro = new Distro()
+    if (distro.familyId === "debian") {
+      if (await Pacman.packageAptAvailable('eggs')) {
+        await exec('apt reinstall eggs')
+      } else {
+        console.log('eggs is not present in your repositories')
+        console.log('but you can upgrade from internet')
+      }
     }
   }
 
   /**
    * download da LAN
    */
-  async getDebFromLan() {
+  async getPkgFromLan() {
     const Tu = new Tools()
+
     await Tu.loadSettings()
 
     Utils.warning('import from lan')
@@ -121,10 +126,9 @@ export default class Update extends Command {
   /**
    *
    */
-  async getDebFromManual() {
-    console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/packages-deb/')
+  async getPkgManually() {
+    console.log('Download package from: \n\nhttps://sourceforge.net/projects/penguins-eggs/files/Packages/')
     console.log('\nand install it with:')
-    console.log('\nsudo dpkg -i eggs_x.x.x-1.deb')
   }
 
   /**
