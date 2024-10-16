@@ -121,7 +121,7 @@ export default class Update extends Command {
     } else if (this.distro.familyId === 'archlinux') {
       let repo = "aur"
       if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
-        const repo = 'manjaro'
+        repo = 'manjaro'
       }
       const filterAur = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filterAur} /tmp`
@@ -150,12 +150,12 @@ export default class Update extends Command {
       cmd = `sudo dpkg -i ${filter}`
     } else if (this.distro.familyId === 'archlinux') {
       repo = "AUR"
-      url=`${url}/${repo}`
       filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       cmd = `sudo pacman -U ${filter}`
       if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
         repo = 'MANJARO'
       }
+      url=`${url}/${repo}`
     } 
     let command = `Open your browser at:\n`
     command += `${url}\n`
