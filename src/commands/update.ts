@@ -139,16 +139,18 @@ export default class Update extends Command {
    *
    */
   async getPkgFromSourceforge() {
-    let repo = "DEBS"
-    let cmd = "sudo apt install <package-name>"
-    let url="https://sourceforge.net/projects/penguins-eggs/files/Packages"
-    let filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+    let repo = ''
+    let cmd = ''
+    let url='https://sourceforge.net/projects/penguins-eggs/files/Packages'
+    let filter = `penguins-eggs`
     if (this.distro.familyId === "debian") {
       repo="DEBS"
+      url = `${url}/${repo}/${Utils.uefiArch()}`
       filter = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
-      cmd = `sudo apt install ${filter}`
+      cmd = `sudo dpkg -i ${filter}`
     } else if (this.distro.familyId === 'archlinux') {
       repo = "AUR"
+      url=`${url}/${repo}`
       filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       cmd = `sudo pacman -U ${filter}`
       if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
@@ -156,7 +158,7 @@ export default class Update extends Command {
       }
     } 
     let command = `Open your browser at:\n`
-    command += `${url}/${repo}\n`
+    command += `${url}\n`
     command += `select and download the package: ${filter},\n`
     command += `then type the command:\n`
     command += `${cmd}`
