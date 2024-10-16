@@ -108,11 +108,13 @@ export default class Update extends Command {
     await Tu.loadSettings()
 
     Utils.warning('import from lan')
-    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}${Tu.config.filterPackages}${Utils.uefiArch()}.deb /tmp`
+
+    const filterDeb = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
+    const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filterDeb} /tmp`
     await exec(cmd, { capture: true, echo: true })
 
-    if (await Utils.customConfirm(`Want to install ${Tu.config.filterPackages}${Utils.uefiArch()}.deb`)) {
-      await exec(`dpkg -i /tmp/${Tu.config.filterPackages}${Utils.uefiArch()}.deb`)
+    if (await Utils.customConfirm(`Want to install ${filterDeb}`)) {
+      await exec(`dpkg -i /tmp/${filterDeb}`)
     }
   }
 
