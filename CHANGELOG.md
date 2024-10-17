@@ -6,8 +6,8 @@ penguins-eggs
 [![blog](https://img.shields.io/badge/blog-penguin's%20eggs-cyan)](https://penguins-eggs.net)
 [![guide](https://img.shields.io/badge/guide-penguin's%20eggs-cyan)](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
 [![npm version](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![deb](https://img.shields.io/badge/deb-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/DEBS)
-[![pkgbuild](https://img.shields.io/badge/pkgbuild-packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/PKGBUILD)
+[![Packages](https://img.shields.io/badge/packages-blue)](https://sourceforge.net/projects/penguins-eggs/files/Packages)
+
 [![iso](https://img.shields.io/badge/iso-images-cyan)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
 
 # Penguins' eggs releases 
@@ -40,6 +40,11 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
+
+## penguins-eggs-10.0.43
+* export deb changed to export pkg: now export packages differents, not only deb, but manjaro and aur packages. (Note: this is more for penguins-eggs developers than users;)
+* update: as on export pkg, now update from different packages depending on the distro in use. (Unfortunately was not able to get the list of the packages from sourceforge, this ws the idea)
+I hope in this way will be more easy for me to publish new packages on sourceforge.
 
 ## penguins-eggs-10.0.42
 * Debian/Devuan/Ubuntu: remove dependencies from syslinux;
