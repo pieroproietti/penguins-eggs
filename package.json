@@ -34,7 +34,7 @@
     },
     "devDependencies": {
         "@oclif/prettier-config": "^0.2.1",
-        "@oclif/test": "^4.0.9",
+        "@oclif/test": "^4.0.10",
         "@types/chai": "^4.3.19",
         "@types/debug": "^4.1.12",
         "@types/inquirer": "^9.0.7",
