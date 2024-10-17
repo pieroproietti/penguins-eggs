@@ -63,7 +63,7 @@ export default class Update extends Command {
     const choose = await this.choosePkg()
     Utils.titles(`updating via ${choose}`)
     switch (choose) {
-      case 'apt': {
+      case 'repos': {
         await this.getPkgFromRepo()
 
         break
@@ -117,13 +117,19 @@ export default class Update extends Command {
    *
    */
   async getPkgFromRepo() {
+    let cmd=""
     if (this.distro.familyId === "debian") {
-      await exec('apt install penguins-eggs')
+      cmd='apt install penguins-eggs'
     } else if (this.distro.familyId === 'archlinux') {
-      await exec('pacman -S penguins-eggs')
+      cmd = 'pacman -S penguins-eggs'
+      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
+        cmd = `pamac install penguins-egga`
+      }
     } else if (this.distro.familyId === 'alpine') {
       console.log(`Not yet implemented on ${this.distro.distroId}`)
     }
+    console.log(cmd)
+    await exec(cmd)
   }
 
   /**
