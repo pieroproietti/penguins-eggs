@@ -82,7 +82,7 @@ export default class ExportPkg extends Command {
   private async manjaro() {
     const localPathManjaro = `/home/${this.user}/penguins-eggs-pkgbuilds/manjaro/penguins-eggs`
     const remotePathManjaro = this.Tu.config.remotePathPackages + "/manjaro"
-    const filterManjaro = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+    const filterManjaro = `penguins-eggs-10.?.*-?-any.pkg.tar.*`
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathManjaro} ${remoteMountpoint}\n`
