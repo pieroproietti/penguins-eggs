@@ -49,7 +49,7 @@ export default class Update extends Command {
       if (Utils.isSources()) {
         Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
       } else if (Utils.isDebPackage()) {
-        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package .deb`)
+        Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package`)
       }
 
       await this.chooseUpdate()
@@ -203,17 +203,14 @@ export default class Update extends Command {
  * @param aptVersion
  */
   getFromSources() {
-    console.log('You can upgrade getting a new version from git:')
-    console.log('cd ~/penguins-eggs')
-    console.log('git pull')
-    console.log('')
-    console.log('Or You can also create a fresh installation on your hone:')
+    console.log('You can get a fresh installation, cloning penguins-eggs:')
     console.log('cd ~')
     console.log('git clone https://github.com/pieroproietti/penguins-eggs')
     console.log('')
-    console.log('Before to use eggs from sources, remember to install npm packages:')
-    console.log('cd ~/penguins-eggs')
-    console.log('pnpm install')
+    console.log('Then, open your browser to read detailed instructions:')
+    console.log('https://github.com/pieroproietti/penguins-eggs/blob/master/PREREQUISITES/README.md')
+    console.log('')
+    console.log('')
   }
 
   /**
