@@ -79,8 +79,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       '@oclif/test':
-        specifier: ^4.0.9
-        version: 4.0.9(@oclif/core@4.0.29)
+        specifier: ^4.0.10
+        version: 4.0.10(@oclif/core@4.0.29)
       '@types/chai':
         specifier: ^4.3.19
         version: 4.3.20
@@ -452,8 +452,8 @@ packages:
   '@oclif/prettier-config@0.2.1':
     resolution: {integrity: sha512-XB8kwQj8zynXjIIWRm+6gO/r8Qft2xKtwBMSmq1JRqtA6TpwpqECqiu8LosBCyg2JBXuUy2lU23/L98KIR7FrQ==}
 
-  '@oclif/test@4.0.9':
-    resolution: {integrity: sha512-xDGBFBNE6ckoBT9EhMi6ZvwAaEeJRGvRmn2qZWujJl9EJ56a72KHZsvTJVgl2p/AQ2vZ1UH06YZ440GOnjExzQ==}
+  '@oclif/test@4.0.10':
+    resolution: {integrity: sha512-NXS6gw0McR0pURpYD2PlWXbzMGnMzEXCoNLW4tfqP93E1D350G0EwSyz03ucvJIzbcnMnjDNnj2sVPHsf1c8XQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
@@ -3848,7 +3848,7 @@ snapshots:
 
   '@oclif/prettier-config@0.2.1': {}
 
-  '@oclif/test@4.0.9(@oclif/core@4.0.29)':
+  '@oclif/test@4.0.10(@oclif/core@4.0.29)':
     dependencies:
       '@oclif/core': 4.0.29
       ansis: 3.3.2
@@ -6212,7 +6212,7 @@ snapshots:
       '@oclif/plugin-autocomplete': 3.2.6
       '@oclif/plugin-help': 6.2.15
       '@oclif/plugin-version': 2.2.15
-      '@oclif/test': 4.0.9(@oclif/core@4.0.29)
+      '@oclif/test': 4.0.10(@oclif/core@4.0.29)
       chalk: 4.1.2
       fs-extra: 8.1.0
       inquirer: 8.2.4
