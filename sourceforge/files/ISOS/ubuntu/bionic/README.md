@@ -27,26 +27,6 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 ## **naked**
 Just the juice, without GUI. You can start here to build your revolution!
 
-##  colibri (*)
-A light xfce4 for developers you can easily start to improve eggs installing colibri.
-
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
-
-(*) Here we use nodejs 16.x to be compatible with glibc 2.27 and there is not calamares installer, just krill.
-
-## ometascan
-An Ubuntu bionic colibri plus [metadefender-core](https://www.opswat.com/products/metadefender/core) installed without licence. To use it you must ask for a trial licence at [opswat](https://www.opswat.com/):
-
-* Navigate to the OPSWAT Contact page via this [Link](https://www.opswat.com/contact)
-* Fill out the form with all of the required information.
-* Include additional details, as well as your reason for obtaining the trial license, in the Comments field.
-* Upon completion, click Submit, as highlighted in the screenshot below.
-* You should be contacted by the OPSWAT CX team shortly with a trial key for the requested product.
-
-postgres password is set to `evolution`.
-
-I was successfull to start it from ISO, on my machine 16 GB RAM, but experiments problems with 8 GB VM, until now I don't tested it more, for the lacks of a trial licence.
-
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)

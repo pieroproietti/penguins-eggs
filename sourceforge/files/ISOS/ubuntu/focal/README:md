@@ -11,13 +11,13 @@ penguins-eggs
 
 # Penguins' eggs remastered ISOs
 
-All ISOs are based on Ubuntu focal
+All ISOs are based on Ubuntu focal 20.04 LTS
 
 # user/password
 * ```live/evolution```
 * ```root/evolution```
 
-All the ISOs include nodejs and eggs installed (.npm package), so you can update your eggs tool with the command:
+All the ISOs include eggs installed, so you can update your eggs tool with the command:
 
 ```sudo eggs update```
 
@@ -27,10 +27,6 @@ Ubuntu is a Linux distribution based on Debian mostly composed of free and open-
 ## **naked**
 Just the juice, without GUI. You can start here to build your revolution!
 
-##  **colibri**
-A light xfce4 for developers you can easily start to improve eggs installing colibri.
-
-![colibri](https://a.fsdn.com/con/app/proj/penguins-eggs/screenshots/colibri.png/245/183)
 
 ## More informations:
 
