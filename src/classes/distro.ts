@@ -333,7 +333,7 @@ class Distro implements IDistro {
      * Debian: /usr/lib/x86_64-linux-gnu
      *         /usr/lib/aarch64-linux-gnu
      */
-    if (this.familyId === "Debian") {
+    if (this.familyId === "debian") {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
     }
 
