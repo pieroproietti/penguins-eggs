@@ -11,7 +11,7 @@ penguins-eggs
 
 # Penguins' eggs remastered ISOs
 
-All ISOs are based on Ubuntu oracular 24.10
+All ISOs are based on Ubuntu noble 24.04 LTS
 
 # user/password
 * ```live/evolution```
