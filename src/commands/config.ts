@@ -91,18 +91,14 @@ export default class Config extends Command {
     i.distroTemplate = !Pacman.distroTemplateCheck()
 
     i.addEfi = !Pacman.isUefi()
-    // debian only
-    if (Pacman.distro().familyId === 'debian') {
-      i.needUpdate = true
-    }
-
     i.calamares=false
     if (!cryptedclone && 
         !Pacman.calamaresExists() && 
         Pacman.isInstalledGui() && 
         Pacman.isCalamaresAvailable()) {
 
-        i.calamares = true
+          i.needUpdate = true
+          i.calamares = true
     }
 
     i.configurationInstall = !Pacman.configurationCheck()
