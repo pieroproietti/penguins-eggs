@@ -66,7 +66,7 @@
 #
 # UBUNTU
 #
-# bionic derivated
+# bionic 18.04 derivated
 - id: bionic
   distroLike: Ubuntu
   family: debian
@@ -78,14 +78,14 @@
     - tricia # Linux Mint
     - vieste # Ufficiozero vieste
 
-# focal derivated
+# focal 20.04 derivated
 - id: focal
   distroLike: Ubuntu
   family: debian
   ids:
     - tropea # UfficioZero tropea
 
-# jammy derivated
+# jammy 22.04 derivated
 - id: jammy
   distroLike: Ubuntu
   family: debian
@@ -102,14 +102,17 @@
     - victoria # Linux Mint
     - virginia # LinuxMint
 
+# noble 24.04 derivated
 - id: noble
   distroLike: Ubuntu
   family: debian
   ids:
-    - wilma  # Linux Mint 22
-    - devel  # Rhino
+    - oracular # Ubuntu oracular 24.10
     - abuntu # Abuntu
+    - devel  # Rhino
+    - wilma  # Linux Mint 22
 
+- id: 
 #
 # ARCH
 #
