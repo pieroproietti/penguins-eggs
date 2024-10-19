@@ -1,5 +1,5 @@
 # Way to Alpine
-We start from the `alpine-standard-3.20.1-x86_64.iso` image, which is only 203 MB, and go to install alpine.
+We start from the `alpine-standard-3.20.3-x86_64.iso` image, which is only 203 MB, and go to install alpine.
 
 Log as root without password, then install it: `setup-alpine`.
 
@@ -9,16 +9,11 @@ just follow the instructions, choose `sys` as disk.
 > This is tested just on BIOS, under a VM on Proxmox VE.
 
 ## reboot
-The best is, after reboot, to connect via ssh to can copy and past the command. Then:
-
-```
-su
-```
-
 Now, from root we give the following commands:
 
 We add nano 
 ```
+su
 apk add nano
 ```
 
@@ -52,6 +47,33 @@ ln -s /usr/bin/doas /usr/bin/sudo
 
 ```
 
+## add user to wheel
+add your user to groups `wheel` and others... 
+
+```
+adduser artisan wheel
+
+```
+
+## Installing grub (BIOS)
+penguins-eggs support mainly grub for installing, so we must to install use it. 
+Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
+
+To install GRUB in BIOS mode, type:
+
+```
+apk add grub grub-bios grub-efi efibootmgr
+grub-install /dev/sda
+
+```
+## Installing firmware-linux
+Eventually, for usage in real world...
+
+```
+apk add linux-firmware
+
+```
+
 ## autocompletion, git, mandoc, fuse, etc
 
 Copy and past:
@@ -67,13 +89,14 @@ apk add \
     musl-locales \
     musl-utils \
     nano \
-    rsync \
     shadow  
 
 echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
 ```
 # Install package tools
+If we are developers, and want to create packages:
+
 ```
 apk add \
      abuild \
@@ -84,80 +107,13 @@ adduser artisan abuild
 
 ```
 
-## add user to wheel
-add your user to groups `wheel` and others... 
+## install penguins-eggs
+We can add our penguins-eggs. Download the binary packages for AlpineLinux from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/Packages/ALPINE/). Penguins-eggs is noarch, so you will find just x86_64 folder, but the package can be installed on others architecture.
 
 ```
-adduser artisan audio
-adduser artisan cdrom
-adduser artisan games
-adduser artisan input
-adduser artisan users
-adduser artisan video
-adduser artisan wheel
+doas penguins-eggs-10.0.44-r0.apk penguins-eggs-bash-completion-10.0.44-r0.apk penguins-eggs-doc-10.0.44-r0.apk
 
-```
-## Install x11
-```
-setup-xorg-base
-
-```
-
-## xfce4 installation
-```
-apk add \
-    elogind \
-    lightdm-gtk-greeter \
-    polkit-elogind \
-    xfce4 \
-    xfce4-screensaver \
-    xfce4-terminal \
-    xfce4-whiskermenu-plugin
-
-apk add \
-    setxkbmap \
-    xdg-user-dirs \
-    xrandr 
-
-rc-update add dbus
-rc-service dbus start
-
-rc-update add lightdm
-rc-service lightdm start
-
-```
-
-## install spice-vdagent
-spice-vdagent is usefull to have cut and copy beetwhen VM and host and resize the windows of VM:
-
-I added `xrandr` package too to resize the VM window with `eggs adapt`.
-
-```
-apk add \
-    spice-vdagent \
-    spice-vdagent-openrc
-    
-rc-update add spice-vdagentd
-rc-service spice-vdagentd start
-
-```
-
-
-## Installing grub (BIOS)
-penguins-eggs support mainly grub for installing, so we must to install use it. 
-Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
-
-To install GRUB in BIOS mode, type:
-
-```
-apk add grub grub-bios grub-efi efibootmgr
-grub-install /dev/sda
-
-```
-## Installing firmware-linux
-```
-apk add linux-firmware
-
+doas eggs config
 ```
 
 # reboot
@@ -169,33 +125,13 @@ chsh -s /bin/bash
 
 ```
 
-## Italian locale or other
-```
-echo "LANG=it_IT.UTF-8" | doas tee /etc/locale.conf
 
+## customize colibri using wardrobe
+We already have penguins-eggs installed, so using wardrobe is just a question of a command:
 ```
-## Italian locale or other X
+eggs wardrobe get
+eggs wasrrobe wear colibri
 ```
-setxkbmap it
-
-```
-
-## customize colibri from wardrobe
-We just copy customization from penguins-wardrobe, on the folder `sysroot` under `penguins-wardrobe/costumes/colibri/` and `sysroot/etc/skel` on my user `/home/artisan`.
-
-```
-xdg-user-dirs-update
-git  clone https://github.com/pieroproietti/penguins-wardrobe
-rsync -avx  penguins-wardrobe/costumes/colibri/sysroot/etc/skel/ "${HOME}/"
-doas rsync -avx  penguins-wardrobe/costumes/colibri/sysroot/ /
-
-```
-
-## Development tools
-
-### nodejs pnpm
-```
-doas apk add nodejs pnpm@edge
 
 ```
 
@@ -204,66 +140,6 @@ doas apk add nodejs pnpm@edge
 doas apk add code-oss@testing
 
 doas ln -s /usr/bin/code-oss /usr/bin/code
-
-```
-
-### Firefox
-```
-doas apk add firefox
-
-```
-
-## Install 
-
-## Install dependencies for penguins-eggs on Alpine
-> [!NOTE]
-> I don't use more this script, prefere to build the package with abuild.
-
-```
-doas apk add \
-    alpine-conf \
-    apk-tools \
-    cryptsetup \
-    curl \
-    dosfstools \
-    fuse \
-    git \
-    jq \
-    lsblk \
-    lsb-release \
-    lvm2 \
-    mkinitfs \
-    nodejs \
-    npm \
-    parted \
-    rsync \
-    syslinux \
-    squashfs-tools \
-    sshfs \
-    xorriso
-
-```
-
-
-## Clone penguins-eggs
-```
-git clone https://github.com/pieroproietti/penguins-eggs
-cd penguins-eggs
-pnpm i
-pnpm build
-
-```
-
-Now we can use eggs from the source:
-
-## Autocomplete, Desktop icons
-> [!NOTE]
-> I don't use more this script, prefere to build the package with abuild.
-
-It is tedious to always put ./eggs to start eggs from source, we can create a symbolic link to avoid the hassle.  We want to work with all the conveniences of eggs installed, especially completing commands with TAB, links, etc, so I wrote this script to have all. Just type:
-
-```
-./install-eggs-dev
 
 ```
 
@@ -327,3 +203,4 @@ This is my end for now... but in same way can be an usefull starting point to so
 
 # dracut
 * https://fedoraproject.org/wiki/LiveOS_image
+
