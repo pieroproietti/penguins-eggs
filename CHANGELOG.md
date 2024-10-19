@@ -40,6 +40,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 # Changelog
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
+## penguins-eggs-10.0.44
+* `eggs export pkg` and `eggs update` now work also for AlpineLinux. This will let me to publish Alpine packages on sourceforge.
+* I revisited [WAY-TO-ALPINE]() in consideration, now there is already an installable package penguins-eggs.
+
 ## penguins-eggs-10.0.43
 * export deb changed to export pkg: now export packages differents, not only deb, but manjaro and aur packages. (Note: this is more for penguins-eggs developers than users;)
 * update: as on export pkg, now update from different packages depending on the distro in use. (Unfortunately was not able to get the list of the packages from sourceforge, this ws the idea)
