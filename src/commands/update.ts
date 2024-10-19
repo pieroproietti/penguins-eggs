@@ -123,10 +123,10 @@ export default class Update extends Command {
     } else if (this.distro.familyId === 'archlinux') {
       cmd = 'pacman -S penguins-eggs'
       if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
-        cmd = `pamac install penguins-egga`
+
       }
     } else if (this.distro.familyId === 'alpine') {
-      console.log(`Not yet implemented on ${this.distro.distroId}`)
+      cmd = `apk add penguins-egga`
     }
     console.log(cmd)
     await exec(cmd)
@@ -163,7 +163,17 @@ export default class Update extends Command {
       }
 
     } else if (this.distro.familyId === 'alpine') {
-      console.log(`Not yet implemented on ${this.distro.distroId}`)
+      let arch='x86_64'
+      if (process.arch === 'ia32') {
+        arch='i386'
+      }
+      const filter = `penguins-eggs*10.?.*-r*.apk`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/alpine/${arch}/${filter} /tmp`
+      await exec(cmd, { capture: true, echo: true })
+
+      if (await Utils.customConfirm(`Want to install ${filter}`)) {
+        await exec(`apk add /tmp/${filter}`)
+      }
     }
   }
 

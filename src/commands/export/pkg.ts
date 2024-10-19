@@ -15,6 +15,7 @@ import { exec } from '../../lib/utils.js'
 import os from 'node:os'
 
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
+import { execSync } from 'node:child_process'
 
 export default class ExportPkg extends Command {
   static description = 'export pkg/iso to the destination host'
@@ -49,8 +50,13 @@ export default class ExportPkg extends Command {
     Utils.warning(ExportPkg.description)
 
     // Ora servono in più parti
-
-    this.user = os.userInfo().username;
+    this.user = os.userInfo().username
+    if (this.user === 'root') {
+      this.user = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim()
+      if (this.user=== '') {
+        this.user = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim()
+      }
+    }
     this.all = flags.all
     this.clean = flags.clean
     this.verbose = flags.verbose
@@ -73,7 +79,38 @@ export default class ExportPkg extends Command {
       }
     } else if (distro.familyId === "alpine") {
       Utils.warning("alpine packages")
+      this.alpine()
     }
+  }
+
+  /**
+   * alpine
+   */
+  private async alpine() {
+    let arch='x86_64'
+    if (process.arch === 'ia32') {
+      arch='i386'
+    }
+    const localPath = `/home/${this.user}/packages/alpine/${arch}`
+    const remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
+    const filter = `penguins-eggs*10.?.*-r*.apk`
+    const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
+    let cmd = `mkdir ${remoteMountpoint}\n`
+    cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
+    if (this.clean) {
+      cmd += `rm -f ${remoteMountpoint}/${filter}\n`
+    }
+    cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
+    cmd += 'sync\n'
+    cmd += `umount ${remoteMountpoint}\n`
+    cmd += `rm -rf ${remoteMountpoint}\n`
+    if (!this.verbose) {
+      if (this.clean) {
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filter}`)
+      }
+      console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
+    }
+    await exec(cmd, this.echo)
   }
 
   /**
@@ -100,9 +137,7 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPathManjaro}/${filterManjaro} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathManjaro}`)
     }
-
     await exec(cmd, this.echo)
-
   }
 
   /**
