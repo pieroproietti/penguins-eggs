@@ -168,7 +168,7 @@ export default class Update extends Command {
         arch='i386'
       }
       const filter = `penguins-eggs*10.?.*-r*.apk`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/alpine/${arch}/${filter} /tmp`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/alpine/${filter} /tmp`
       await exec(cmd, { capture: true, echo: true })
 
       if (await Utils.customConfirm(`Want to install ${filter}`)) {
