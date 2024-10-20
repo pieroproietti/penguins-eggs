@@ -96,11 +96,10 @@ export default class Config extends Command {
     if (!cryptedclone && 
         !Pacman.calamaresExists() && 
         Pacman.isInstalledGui() && 
-        Pacman.isCalamaresAvailable() &&
         Pacman.isCalamaresAvailable()) {
 
-          i.calamares = true
-        }
+      i.calamares = true
+    }
 
     i.configurationInstall = !Pacman.configurationCheck()
     if (!i.configurationInstall) {

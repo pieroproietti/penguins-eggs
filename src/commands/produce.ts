@@ -222,7 +222,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (i.calamares) {
-        let message="You are on a GUI system, calamares is available, but not installed\n"
+        let message="this is a GUI system, calamares is available, but NOT installed\n"
         Utils.warning(message)
       }
 

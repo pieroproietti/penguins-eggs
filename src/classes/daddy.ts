@@ -123,6 +123,15 @@ export default class Daddy {
       await Pacman.distroTemplateInstall(verbose)
     }
 
+    //Calamares 
+    if (!Pacman.calamaresExists() && 
+        Pacman.isInstalledGui() && 
+        Pacman.isCalamaresAvailable()) {
+
+      console.log('- this is a GUI system, calamares is available, but NOT installed')
+    }
+          
+
     // show and edit configuration
     this.settings = new Settings()
     let config = {} as IEggsConfig
