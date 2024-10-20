@@ -92,7 +92,7 @@ export default class ExportPkg extends Command {
       arch='i386'
     }
     const localPath = `/home/${this.user}/packages/alpine/${arch}`
-    const remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
+    const remotePath = `${this.Tu.config.remotePathPackages}/alpine/`
     const filter = `penguins-eggs*10.?.*-r*.apk`
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
