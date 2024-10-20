@@ -46,7 +46,11 @@ export default class Love extends Command {
       process.exit(0)
     }
     
-    const cmds = yaml.load(fs.readFileSync('/etc/penguins-eggs.d/love.yaml', 'utf8')) as string[]
+    let loveConf='/etc/penguins-eggs.d/love.yaml'
+    if (!fs.existsSync(loveConf)) {
+      loveConf=__dirname + '/../../conf/love.yaml'
+    }
+    const cmds = yaml.load(fs.readFileSync(loveConf, 'utf8')) as string[]
 
     console.log('The following commands will be executed:')
     console.log()
