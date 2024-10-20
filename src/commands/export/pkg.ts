@@ -63,8 +63,6 @@ export default class ExportPkg extends Command {
     this.echo = Utils.setEcho(this.verbose)
     await this.Tu.loadSettings()
 
-
-
     let distro = new Distro()
     if (distro.familyId === "debian") {
       Utils.warning("debian packages")
@@ -196,8 +194,6 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPathDeb}/${filterDeb} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb}`)
     }
-
     await exec(cmd, this.echo)
-
   }
 }
