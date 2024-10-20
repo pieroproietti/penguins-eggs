@@ -63,8 +63,6 @@ export default class ExportPkg extends Command {
     this.echo = Utils.setEcho(this.verbose)
     await this.Tu.loadSettings()
 
-
-
     let distro = new Distro()
     if (distro.familyId === "debian") {
       Utils.warning("debian packages")
@@ -92,7 +90,7 @@ export default class ExportPkg extends Command {
       arch='i386'
     }
     const localPath = `/home/${this.user}/packages/alpine/${arch}`
-    const remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
+    const remotePath = `${this.Tu.config.remotePathPackages}/alpine/`
     const filter = `penguins-eggs*10.?.*-r*.apk`
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `mkdir ${remoteMountpoint}\n`
@@ -164,9 +162,7 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPathAur}/${filterAur} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathAur}`)
     }
-
     await exec(cmd, this.echo)
-
   }
 
   /**
@@ -198,8 +194,6 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPathDeb}/${filterDeb} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePathDeb}`)
     }
-
     await exec(cmd, this.echo)
-
   }
 }
