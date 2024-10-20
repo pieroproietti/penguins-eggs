@@ -59,16 +59,17 @@ export default class Config extends Command {
       await exec('apt-get update --yes', echo)
     }
 
+    if (i.calamares) {
+      let message = "- You are on a graphic system, is suggested\n"
+      message    +="           to install the GUI installer calamares.\n"
+      message    +='           just type: "sudo eggs calamares --install"'
+      Utils.warning(message)
+    }
+
+
     if (i.addEfi && Pacman.distro().familyId === 'debian') {
       Utils.warning('- installing UEFI support')
       await exec('apt-get install grub-efi-' + Utils.uefiArch() + '-bin --yes', echo)
-    }
-
-    if (i.calamares && Pacman.isCalamaresAvailable()) {
-      let message="- you are on a graphic system,\n"
-      message   +="           is suggested to install the GUI installer calamares.\n"
-      message   +="           Just type: eggs calamares --install"
-      Utils.warning(message)
     }
 
     if (i.needUpdate && !nointeractive) {
@@ -95,16 +96,17 @@ export default class Config extends Command {
     if (!cryptedclone && 
         !Pacman.calamaresExists() && 
         Pacman.isInstalledGui() && 
+        Pacman.isCalamaresAvailable() &&
         Pacman.isCalamaresAvailable()) {
 
-          i.needUpdate = true
           i.calamares = true
-    }
+        }
 
     i.configurationInstall = !Pacman.configurationCheck()
     if (!i.configurationInstall) {
       i.configurationRefresh = !Pacman.configurationMachineNew()
     }
+
     return i
   }
 

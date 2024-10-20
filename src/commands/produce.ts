@@ -16,6 +16,8 @@ import Compressors from '../classes/compressors.js'
 import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
+import { IInstall } from '../interfaces/index.js'
+import Pacman from '../classes/pacman.js'
 import Config from './config.js'
 
 // _dirname
@@ -197,7 +199,7 @@ export default class Produce extends Command {
       }
 
       const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
-      if ((i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate) && (await Utils.customConfirm('Select yes to continue...'))) {
+      if ((i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate)) {
         await Config.install(i, nointeractive, verbose)
       }
 
@@ -219,6 +221,11 @@ export default class Produce extends Command {
       Utils.titles(this.id + ' ' + this.argv)
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
+      if (i.calamares) {
+        let message="You are on a GUI system, calamares is available, but not installed\n"
+        Utils.warning(message)
+      }
+
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
         await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
         ovary.finished(scriptOnly)
