@@ -53,7 +53,7 @@ export default class ExportPkg extends Command {
     this.user = os.userInfo().username
     if (this.user === 'root') {
       this.user = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim()
-      if (this.user=== '') {
+      if (this.user === '') {
         this.user = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim()
       }
     }
@@ -76,8 +76,12 @@ export default class ExportPkg extends Command {
         this.aur()
       }
     } else if (distro.familyId === "alpine") {
-      Utils.warning("alpine packages")
-      this.alpine()
+      if (Utils.isRoot()) {
+        Utils.warning("alpine packages")
+        this.alpine()
+      } else {
+        Utils.useRoot(this.id)
+      }
     }
   }
 
@@ -85,9 +89,9 @@ export default class ExportPkg extends Command {
    * alpine
    */
   private async alpine() {
-    let arch='x86_64'
+    let arch = 'x86_64'
     if (process.arch === 'ia32') {
-      arch='i386'
+      arch = 'i386'
     }
     const localPath = `/home/${this.user}/packages/alpine/${arch}`
     const remotePath = `${this.Tu.config.remotePathPackages}/alpine/`

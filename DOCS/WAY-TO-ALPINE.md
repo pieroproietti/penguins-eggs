@@ -19,79 +19,52 @@ apk add nano
 
 ## Configuration of the repositories
 ```
-rm /etc/apk/repositories
-nano /etc/apk/repositories
-
+doas nano /etc/apk/repositories
 ```
+And remove the comment on the community repo:
 
-copy and past:
 ```
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.20/main
-http://dl-cdn.alpinelinux.org/alpine/v3.20/community
-@testing https://dl-cdn.alpinelinux.org/alpine/edge/testing
-@edge https://dl-cdn.alpinelinux.org/alpine/edge/community
+http://dl-cdn.alpinelinux.org/alpine/v3.30/main
+http://dl-cdn.alpinelinux.org/alpine/v3.30/community
 
 ```
+
+### Adding git and lsb-relese
 
 ``` 
 apk update
-apk add doas
+apk add git lsb-relese
 
 ```
 
-## sudo as link to doas, shutdown as link to poweroff
-To not get crazy:
+## Clone penguins-eggs
 ```
-ln -s /usr/bin/doas /usr/bin/sudo
-
+git clone https://github.com/pieroproietti/penguins-eggs
 ```
 
-## add user to wheel
-add your user to groups `wheel` and others... 
-
+## Adding prerequisites
 ```
-adduser artisan wheel
+cd penguins-eggs/PREREQUISITES/alpive
+doas ./install.sh
 
 ```
 
-## Installing grub (BIOS)
-penguins-eggs support mainly grub for installing, so we must to install use it. 
-Actually I'm playng on Alpine just with BIOS system, I'm postponing UEFI for later.
+This will install penguins-eggs dependecies and add some utilities, fuse and and links.
 
-To install GRUB in BIOS mode, type:
-
-```
-apk add grub grub-bios grub-efi efibootmgr
-grub-install /dev/sda
+## install penguins-eggs
+We can add our penguins-eggs. Download the binary packages for AlpineLinux from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/Packages/ALPINE/). Penguins-eggs is noarch, so you will find just x86_64 folder, but the package can be installed on others architecture.
 
 ```
+doas penguins-eggs-10.0.44-r0.apk penguins-eggs-bash-completion-10.0.44-r0.apk penguins-eggs-doc-10.0.44-r0.apk
+
+```
+
 ## Installing firmware-linux
 Eventually, for usage in real world...
 
 ```
 apk add linux-firmware
-
-```
-
-## autocompletion, git, mandoc, fuse, etc
-
-Copy and past:
-```
-apk add \
-    bash-completion \
-    docs \
-    fuse \
-    git \
-    man-pages \
-    mandoc \
-    mandoc-apropos \
-    musl-locales \
-    musl-utils \
-    nano \
-    shadow  
-
-echo "fuse" | tee /etc/modules-load.d/fuse.conf
 
 ```
 # Install package tools
@@ -107,15 +80,6 @@ adduser artisan abuild
 
 ```
 
-## install penguins-eggs
-We can add our penguins-eggs. Download the binary packages for AlpineLinux from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/Packages/ALPINE/). Penguins-eggs is noarch, so you will find just x86_64 folder, but the package can be installed on others architecture.
-
-```
-doas penguins-eggs-10.0.44-r0.apk penguins-eggs-bash-completion-10.0.44-r0.apk penguins-eggs-doc-10.0.44-r0.apk
-
-doas eggs config
-```
-
 # reboot
 Reboot, then login as user artisan.
 
@@ -125,14 +89,11 @@ chsh -s /bin/bash
 
 ```
 
-
 ## customize colibri using wardrobe
-We already have penguins-eggs installed, so using wardrobe is just a question of a command:
+We already have penguins-eggs installed, so dressing using wardrobe is just a question of a two commands:
 ```
 eggs wardrobe get
-eggs wasrrobe wear colibri
-```
-
+doas eggs wasrrobe wear colibri
 ```
 
 ### Visual studio code or others

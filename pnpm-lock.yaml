@@ -15,8 +15,8 @@ importers:
         specifier: ^3.2.6
         version: 3.2.6
       '@oclif/plugin-help':
-        specifier: ^6.2.15
-        version: 6.2.15
+        specifier: ^6.2.16
+        version: 6.2.16
       '@oclif/plugin-version':
         specifier: ^2.2.15
         version: 2.2.15
@@ -79,8 +79,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       '@oclif/test':
-        specifier: ^4.0.10
-        version: 4.0.10(@oclif/core@4.0.29)
+        specifier: ^4.1.0
+        version: 4.1.0(@oclif/core@4.0.29)
       '@types/chai':
         specifier: ^4.3.19
         version: 4.3.20
@@ -433,8 +433,8 @@ packages:
     resolution: {integrity: sha512-PLBvRFt4DRRGcLFTOPcqCOi79Jp03bxXGlbF3kAMzZx9jX2fjiRT54nYnC8qJzL+tcLLA7Oz9b9S07uHTuGu5A==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-help@6.2.15':
-    resolution: {integrity: sha512-P4UBgEDhNfx7KX522r0rtGbH4ZLg2GPR5MJRHqlhAp7N8E7DNsg5F2j2BP6gUhzwq6wpFMsWDbif/8daKQx4eg==}
+  '@oclif/plugin-help@6.2.16':
+    resolution: {integrity: sha512-1x/Bm0LebDouDOfsjkOz+6AXqY6gIZ6JmmU/KuF/GnUmowDvj5i3MFlP9uBTiN8UsOUeT9cdLwnc1kmitHWFTg==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-not-found@3.2.22':
@@ -452,8 +452,8 @@ packages:
   '@oclif/prettier-config@0.2.1':
     resolution: {integrity: sha512-XB8kwQj8zynXjIIWRm+6gO/r8Qft2xKtwBMSmq1JRqtA6TpwpqECqiu8LosBCyg2JBXuUy2lU23/L98KIR7FrQ==}
 
-  '@oclif/test@4.0.10':
-    resolution: {integrity: sha512-NXS6gw0McR0pURpYD2PlWXbzMGnMzEXCoNLW4tfqP93E1D350G0EwSyz03ucvJIzbcnMnjDNnj2sVPHsf1c8XQ==}
+  '@oclif/test@4.1.0':
+    resolution: {integrity: sha512-2ugir6NhRsWJqHM9d2lMEWNiOTD678Jlx5chF/fg6TCAlc7E6E/6+zt+polrCTnTIpih5P/HxOtDekgtjgARwQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
@@ -3819,7 +3819,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/plugin-help@6.2.15':
+  '@oclif/plugin-help@6.2.16':
     dependencies:
       '@oclif/core': 4.0.29
 
@@ -3848,7 +3848,7 @@ snapshots:
 
   '@oclif/prettier-config@0.2.1': {}
 
-  '@oclif/test@4.0.10(@oclif/core@4.0.29)':
+  '@oclif/test@4.1.0(@oclif/core@4.0.29)':
     dependencies:
       '@oclif/core': 4.0.29
       ansis: 3.3.2
@@ -6074,7 +6074,7 @@ snapshots:
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
       '@oclif/core': 4.0.29
-      '@oclif/plugin-help': 6.2.15
+      '@oclif/plugin-help': 6.2.16
       '@oclif/plugin-not-found': 3.2.22
       '@oclif/plugin-warn-if-update-available': 3.1.19
       async-retry: 1.3.3
@@ -6210,9 +6210,9 @@ snapshots:
     dependencies:
       '@oclif/core': 4.0.29
       '@oclif/plugin-autocomplete': 3.2.6
-      '@oclif/plugin-help': 6.2.15
+      '@oclif/plugin-help': 6.2.16
       '@oclif/plugin-version': 2.2.15
-      '@oclif/test': 4.0.10(@oclif/core@4.0.29)
+      '@oclif/test': 4.1.0(@oclif/core@4.0.29)
       chalk: 4.1.2
       fs-extra: 8.1.0
       inquirer: 8.2.4
