@@ -41,7 +41,10 @@ Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd
 Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
 
 ## penguins-eggs-10.0.45
-* `eggs love` now not fail if eggs is not configured yet;
+* `eggs love` now not fail if eggs is not configured yet and, configuration is made with `eggs dad --defailt`;
+* `eggs produce` bugfix, `eggs produce` under certain conditions asked for confirmation twice;
+* removed package `pxelinux`, `isolinux` dependecies on debian;
+* removed compatibility functions for node8, not more necessary.
 
 ## penguins-eggs-10.0.44
 * `eggs export pkg` and `eggs update` now work also for AlpineLinux. This will let me to publish Alpine packages on sourceforge.
