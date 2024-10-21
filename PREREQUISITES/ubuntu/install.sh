@@ -20,7 +20,6 @@ apt-get install -y \
     dosfstools \
     dpkg-dev \
     git \
-    isolinux \
     jq \
     live-boot \
     live-boot-doc \
@@ -32,7 +31,6 @@ apt-get install -y \
     nodejs \
     npm \
     parted \
-    pxelinux \
     rsync \
     squashfs-tools \
     sshfs \

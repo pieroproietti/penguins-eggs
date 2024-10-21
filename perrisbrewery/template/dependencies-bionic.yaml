@@ -9,7 +9,6 @@ common:
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
-  - isolinux # eggs
   - jq # mom
   - live-boot # eggs
   - live-boot-doc # eggs
@@ -20,7 +19,6 @@ common:
   - nodejs (>= 16)
   - live-boot # questo va reinstallato
   - parted 
-  - pxelinux # cuckoo
   - rsync
   - squashfs-tools
   - sshfs # eggs
