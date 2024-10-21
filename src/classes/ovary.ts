@@ -26,7 +26,6 @@ import Bleach from './bleach.js'
 import CliAutologin from './cli-autologin.js'
 import { displaymanager } from './incubation/fisherman-helper/displaymanager.js'
 import Incubator from './incubation/incubator.js'
-import N8 from './n8.js'
 import Pacman from './pacman.js'
 import PveLive from './pve-live.js'
 import Settings from './settings.js'
@@ -129,7 +128,7 @@ export default class Ovary {
 
     for (const dir of dirs) {
       cmds.push(startLine)
-      if (N8.isDirectory(dir)) {
+      if (fs.statSync(`/${dir}`).isDirectory()) {
         if (dir === 'boot') {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
@@ -165,14 +164,14 @@ export default class Ovary {
             cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
           }
         }
-      } else if (N8.isFile(dir)) {
+      } else if (fs.statSync(`/${dir}`).isFile()) {
         cmds.push(`# /${dir} is just a file`, titleLine)
         if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
           cmds.push('# file exist... skip')
         } else {
           cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, this.verbose))
         }
-      } else if (N8.isSymbolicLink(dir)) {
+      } else if (fs.statSync(`/${dir}`).isSymbolicLink()) {
         lnkDest = fs.readlinkSync(`/${dir}`)
         cmds.push(
           `# /${dir} is a symbolic link to /${lnkDest} in the system`,
@@ -1909,10 +1908,9 @@ export default class Ovary {
       })
 
       for (const dir of bindDirs) {
-        const dirname = N8.dirent2string(dir)
-
+        const dirname = dir.name
         cmds.push('#############################################################')
-        if (N8.isDirectory(dirname)) {
+        if (fs.statSync(`/${dirname}`).isDirectory()) {
           cmds.push(`\n# directory: ${dirname}`)
           if (this.mergedAndOverlay(dirname)) {
             cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
@@ -1932,10 +1930,10 @@ export default class Ovary {
             // We can't remove first level nest
             cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
           }
-        } else if (N8.isFile(dirname)) {
+        } else if (fs.statSync(`/${dirname}`).isFile()) {
           cmds.push(`\n# ${dirname} = file`)
           cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
-        } else if (N8.isSymbolicLink(dirname)) {
+        } else if (fs.statSync(`/${dirname}`).isSymbolicLink()) {
           cmds.push(`\n# ${dirname} = symbolicLink`)
           cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }

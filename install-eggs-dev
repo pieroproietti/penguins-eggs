@@ -28,7 +28,7 @@ fi
 # build
 pnpm build
 xdg-user-dirs-update --force
-$SUDO cp scripts/eggs.bash /etc/bash_completion.d/eggs
+$SUDO cp scripts/eggs.bash /usr/share/bash-completion/completions/
 $SUDO cp g4/* /usr/local/bin
 $SUDO cp assets/eggs.png /usr/share/icons/
 $SUDO mkdir -p /usr/share/man/man1

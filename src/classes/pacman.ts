@@ -45,16 +45,12 @@ export default class Pacman {
    * @param verbose
    */
   static async autocompleteInstall(verbose = false) {
-    if (this.distro().familyId === 'debian') {
-      if (Pacman.packageIsInstalled('bash-completion')) {
-        if (fs.existsSync('/usr/share/bash-completion/completions/')) {
-          await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-        } else if (fs.existsSync('/etc/bash_completion.d/')) {
-          await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
-        }
+    if (Pacman.packageIsInstalled('bash-completion')) {
+      if (fs.existsSync('/usr/share/bash-completion/completions/')) {
+        await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
+      } else if (fs.existsSync('/etc/bash_completion.d/')) {
+        await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
       }
-    } else if (this.distro().familyId === 'archlinux' && Pacman.packageIsInstalled('bash-completion')) {
-      await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
     }
   }
 
@@ -75,7 +71,7 @@ export default class Pacman {
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
-        if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux' ) {
+        if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
           const cmd = `pacman -Sy --noconfirm calamares`
           try {
             await exec(cmd, Utils.setEcho(true))
@@ -398,7 +394,7 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/excalibur'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
-      
+
       /***********************************************************************************
        * Ubuntu
        **********************************************************************************/
@@ -619,7 +615,7 @@ export default class Pacman {
         installed = true
       }
     } else if (this.distro().familyId === 'opensuse') {
-      if (Opensuse.packageIsInstalled('xorg-x11-server')) { 
+      if (Opensuse.packageIsInstalled('xorg-x11-server')) {
         installed = true
       }
     }

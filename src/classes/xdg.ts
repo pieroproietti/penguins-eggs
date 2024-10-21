@@ -13,7 +13,6 @@ import shx from 'shelljs'
 // libraries
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
-import N8 from './n8.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
 
@@ -69,7 +68,8 @@ export default class Xdg {
         const files = fs.readdirSync(dc)
         for (const elem of files) {
           const curFile = dc + elem
-          if (!N8.isDirectory(curFile)) {
+          if (!fs.statSync(`/${curFile}`).isDirectory()) {
+          //if (!N8.isDirectory(curFile)) {
             let content = fs.readFileSync(curFile, 'utf8')
             const find = '[Seat:*]'
             if (content.includes(find)) {

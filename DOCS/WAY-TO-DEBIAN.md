@@ -78,7 +78,6 @@ sudo apt install \
   dosfstools \
   dpkg-dev \
   git \
-  isolinux \
   jq \
   live-boot \
   live-boot-doc \
