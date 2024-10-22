@@ -5,12 +5,12 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
 import chalk from 'chalk'
 import mustache from 'mustache'
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
+import yaml from 'js-yaml'
 
 import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'
 import { exec } from '../../lib/utils.js'
@@ -96,7 +96,7 @@ export default class Fisherman {
    * @param name
    * @param replaces [['search','replace']]
    */
-  async buildModule(name: string, vendor = '') {
+  async buildModule(name: string, vendor = 'eggs') {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
     /**
@@ -139,7 +139,6 @@ export default class Fisherman {
         if (calamaresVersion === '3.2') {
           options = 'bind'
         }
-
         const view = { options }
         const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
         fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
@@ -290,4 +289,5 @@ export default class Fisherman {
       // No default
     }
   }
+
 }

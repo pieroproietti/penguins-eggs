@@ -6,6 +6,11 @@
  * license: MIT
  */
 
+// pjson
+import { createRequire } from 'node:module'
+const require = createRequire(import.meta.url)
+const pjson = require('../../../package.json')
+
 // partition
 import yaml from 'js-yaml'
 import fs from 'node:fs'
@@ -30,6 +35,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 // const branding = require('./branding.js').branding
 import { branding } from './branding.js'
+import Fisherman from './fisherman.js'
 
 /**
  *
@@ -236,9 +242,35 @@ export default class Incubator {
     }
 
     if (Pacman.calamaresExists()) {
-      partitionCustomize()
+        partitionCustomize()
+        await this.compact()
     }
   }
+
+    /**
+   * 
+   */
+  private async compact() {
+      let path = '/etc/calamares/modules/'
+      const elements = fs.readdirSync(path)
+      for (const elem of elements) {
+        let file = path + elem
+        let fileContent = fs.readFileSync(file, 'utf8')
+        let yamlContent = yaml.load(fileContent)
+        let destContent = `# ${elem}, created by penguins-eggs ${pjson.version}\n`
+        destContent += '---\n'
+        destContent += yaml.dump(yamlContent)
+        fs.writeFileSync(file, destContent, 'utf8')
+      }
+      let file='/etc/calamares/settings.conf'
+      let fileContent = fs.readFileSync(file, 'utf8')
+      let yamlContent = yaml.load(fileContent)
+      let destContent = `# settings.conf, created by penguins-eggs ${pjson.version}\n`
+      destContent += '---\n'
+      destContent += yaml.dump(yamlContent)
+      fs.writeFileSync(file, destContent, 'utf8')
+    }
+  
 
   /**
    *
