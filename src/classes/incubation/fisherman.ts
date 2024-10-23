@@ -22,6 +22,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 import {ICalamaresDisplaymanager} from '../../interfaces/i-calamares-displaymanager.js'
 import {ICalamaresFinished} from '../../interfaces/i-calamares-finished.js'
+import {ICalamaresPackages, Operation} from '../../interfaces/i-calamares-packages.js'
 
 // pjson
 import { createRequire } from 'node:module'
@@ -32,7 +33,7 @@ const pjson = require('../../../package.json')
  * vecchi require che vanno sostituiti con import
  */
 import { displaymanager } from './fisherman-helper/displaymanager.js'
-import { remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
+import { remove, remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
 interface IReplaces {
   replace: string
@@ -263,7 +264,7 @@ export default class Fisherman {
     let file = `/etc/calamares/modules/${name}.conf`
     let fileContent = fs.readFileSync(file, 'utf8')
     let yamlValues = yaml.load(fileContent) as ICalamaresFinished
-    yamlValues.restartNowCommand = 'reboot
+    yamlValues.restartNowCommand = 'reboot'
     let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
     destContent += yaml.dump(yamlValues)
@@ -274,6 +275,7 @@ export default class Fisherman {
    * Al momento rimane con la vecchia configurazione
    */
   async modulePackages(distro: IDistro, release = false) {
+
     const name = 'packages'
     // const removePackages = require('./fisherman-helper/packages').remove
     // const tryInstall = require('./fisherman-helper/packages').tryInstall
@@ -293,6 +295,37 @@ export default class Fisherman {
 
     shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
   }
+  
+  /*
+    const name = 'packages'
+    this.buildModule(name)
+    let file = `/etc/calamares/modules/${name}.conf`
+    let fileContent = fs.readFileSync(file, 'utf8')
+    let values = yaml.load(fileContent) as ICalamaresPackages
+    console.log(values)
+    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
+    destContent += '---\n'
+    destContent += yaml.dump(values)
+
+    // const removePackages = require('./fisherman-helper/packages').remove
+    // const tryInstall = require('./fisherman-helper/packages').tryInstall
+    
+
+    const yamlInstall = tryInstall(distro)
+
+    let yamlRemove = ''
+    if (release) {
+      yamlRemove = removePackages(distro)
+    }
+
+    let operations = ''
+    if (yamlRemove !== '' || yamlInstall !== '') {
+      operations = 'operations:\n' + yamlRemove + yamlInstall
+    }
+
+    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
+  }
+  */
 
   /**
    * Al momento rimane con la vecchia configurazione
