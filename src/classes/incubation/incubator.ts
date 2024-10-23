@@ -16,6 +16,7 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
+import { exec } from '../../lib/utils.js'
 
 import { ICalamaresPartition } from '../../interfaces/i-calamares-partition.js'
 import { IInstaller } from '../../interfaces/i-installer.js'
@@ -251,6 +252,7 @@ export default class Incubator {
    * 
    */
   private async compact() {
+      // modules
       let path = '/etc/calamares/modules/'
       const elements = fs.readdirSync(path)
       for (const elem of elements) {
@@ -262,6 +264,8 @@ export default class Incubator {
         destContent += yaml.dump(yamlContent)
         fs.writeFileSync(file, destContent, 'utf8')
       }
+
+      // settings
       let file='/etc/calamares/settings.conf'
       let fileContent = fs.readFileSync(file, 'utf8')
       let yamlContent = yaml.load(fileContent)
@@ -430,11 +434,15 @@ function write(file: string, content: string, verbose = false) {
 /**
  *
  */
-function partitionCustomize() {
+async function partitionCustomize() {
   const filePartition = '/etc/calamares/modules/partition.conf'
   const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as ICalamaresPartition
-  partition.defaultFileSystemType = 'ext4'
+
+  // detect filesystem type
+  let test = await exec(`df -T / | awk 'NR==2 {print $2}'`,{capture: true, echo: false})
+  partition.defaultFileSystemType = test.data.trim()
   partition.availableFileSystemTypes = ['ext4']
+
   if (Pacman.packageIsInstalled('btrfs-progs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
