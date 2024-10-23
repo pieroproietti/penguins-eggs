@@ -243,7 +243,7 @@ export default class Incubator {
     }
 
     if (Pacman.calamaresExists()) {
-        partitionCustomize()
+        await partitionCustomize()
         await this.compact()
     }
   }
