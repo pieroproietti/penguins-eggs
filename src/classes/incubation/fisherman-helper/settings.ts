@@ -48,7 +48,7 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   }
 
   let hasDisplaymanager = '# '
-  if (displaymanager() !== '') {
+  if (displaymanager().length > 0) {
     hasDisplaymanager = '- '
   }
 

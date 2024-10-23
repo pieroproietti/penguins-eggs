@@ -5,23 +5,35 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
-// import { boolean } from "@oclif/core/lib/parser"
-
 export interface ICalamaresPartition {
-  alwaysShowPartitionLabels: boolean // true
-  availableFileSystemTypes: string[] //  ["ext4"]
-  // swapPartitionName:      swap
-  // ensureSuspendToDisk:    true
-  defaultFileSystemType: string //  "ext4"
-  // neverCreateSwap:        false
-  drawNestedPartitions: boolean // false
-  efiSystemPartition: string //    "/boot/efi"
-  // allowManualPartitioning:   true
-  initialPartitioningChoice: string // none
-  initialSwapChoice: string // none
-  // enableLuksAutomatedPartitioning:    true
-  requiredStorage: 6
-  // efiSystemPartitionSize:     300M
-  userSwapChoices: string[]
+  efiSystemPartition: string; 
+  efiSystemPartitionSize?: string; // 300M
+  userSwapChoices: string[];
+  swapPartitionName?: string;
+  drawNestedPartitions: boolean;
+  alwaysShowPartitionLabels: boolean;
+  initialPartitioningChoice: string;
+  initialSwapChoice: string;
+  defaultFileSystemType: string;
+  availableFileSystemTypes: string[];
+  requiredStorage: number;
+  ensureSuspendToDisk?: boolean;
+  neverCreateSwap?: boolean;
+  defaultPartitionTableType?: string;
+  requiredPartitionTableType?: string | string[];
+  enableLuksAutomatedPartitioning?: boolean;
+  partitionLayout?: PartitionLayout[];
+}
+
+export interface PartitionLayout {
+  name: string;
+  type?: string;
+  uuid?: string;
+  attributes?: string;
+  filesystem?: string;
+  mountPoint?: string;
+  size: string;
+  minSize?: string;
+  maxSize?: string;
+  features?: { [key: string]: boolean | number | string };
 }

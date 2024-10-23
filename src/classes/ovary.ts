@@ -1792,7 +1792,7 @@ export default class Ovary {
             /**
              * GUI installed but NOT Desktop Manager: just create motd and issue
              */
-            if (displaymanager() === '') {
+            if (displaymanager().length > 0) {
               this.cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
               this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
             }

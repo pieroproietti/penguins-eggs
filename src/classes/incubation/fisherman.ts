@@ -19,6 +19,15 @@ import { settings } from './fisherman-helper/settings.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
+
+import {ICalamaresDisplaymanager} from '../../interfaces/i-calamares-displaymanager.js'
+import {ICalamaresFinished} from '../../interfaces/i-calamares-finished.js'
+
+// pjson
+import { createRequire } from 'node:module'
+const require = createRequire(import.meta.url)
+const pjson = require('../../../package.json')
+
 /**
  * vecchi require che vanno sostituiti con import
  */
@@ -173,74 +182,6 @@ export default class Fisherman {
   }
 
   /**
-   * usa i moduli-ts
-   */
-  async moduleDisplaymanager() {
-    const name = 'displaymanager'
-    // const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
-    this.buildModule(name)
-    shx.sed('-i', '{{displaymanagers}}', displaymanager(), this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleFinished() {
-    const name = 'finished'
-    await this.buildModule(name)
-    const restartNowCommand = 'reboot'
-    shx.sed('-i', '{{restartNowCommand}}', restartNowCommand, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * ====================================================================================
-   * M O D U L E S
-   * ====================================================================================
-   */
-
-  /**
-   * usa i moduli-ts
-   */
-  async modulePackages(distro: IDistro, release = false) {
-    const name = 'packages'
-    // const removePackages = require('./fisherman-helper/packages').remove
-    // const tryInstall = require('./fisherman-helper/packages').tryInstall
-    this.buildModule(name)
-
-    const yamlInstall = tryInstall(distro)
-
-    let yamlRemove = ''
-    if (release) {
-      yamlRemove = removePackages(distro)
-    }
-
-    let operations = ''
-    if (yamlRemove !== '' || yamlInstall !== '') {
-      operations = 'operations:\n' + yamlRemove + yamlInstall
-    }
-
-    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleRemoveuser(username: string) {
-    const name = 'removeuser'
-    this.buildModule(name)
-    shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  async moduleUnpackfs() {
-    const name = 'unpackfs'
-    this.buildModule(name)
-    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
-  }
-
-  /**
    *
    * @param name
    */
@@ -290,4 +231,84 @@ export default class Fisherman {
     }
   }
 
+    /**
+   * ====================================================================================
+   * M O D U L E S
+   * ====================================================================================
+   */
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleDisplaymanager() {
+    const name = 'displaymanager'
+    // const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
+    this.buildModule(name)
+    let file = `/etc/calamares/modules/${name}.conf`
+    let fileContent = fs.readFileSync(file, 'utf8')
+    let yamlValues = yaml.load(fileContent) as ICalamaresDisplaymanager
+    yamlValues.displaymanagers = displaymanager()
+    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
+    destContent += '---\n'
+    destContent += yaml.dump(yamlValues)
+    fs.writeFileSync(file, destContent, 'utf8')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleFinished() {
+    const name = 'finished'
+    await this.buildModule(name)
+    let file = `/etc/calamares/modules/${name}.conf`
+    let fileContent = fs.readFileSync(file, 'utf8')
+    let yamlValues = yaml.load(fileContent) as ICalamaresFinished
+    yamlValues.restartNowCommand = 'reboot
+    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
+    destContent += '---\n'
+    destContent += yaml.dump(yamlValues)
+  }
+
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async modulePackages(distro: IDistro, release = false) {
+    const name = 'packages'
+    // const removePackages = require('./fisherman-helper/packages').remove
+    // const tryInstall = require('./fisherman-helper/packages').tryInstall
+    this.buildModule(name)
+
+    const yamlInstall = tryInstall(distro)
+
+    let yamlRemove = ''
+    if (release) {
+      yamlRemove = removePackages(distro)
+    }
+
+    let operations = ''
+    if (yamlRemove !== '' || yamlInstall !== '') {
+      operations = 'operations:\n' + yamlRemove + yamlInstall
+    }
+
+    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleRemoveuser(username: string) {
+    const name = 'removeuser'
+    this.buildModule(name)
+    shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
+  }
+
+  /**
+   * Al momento rimane con la vecchia configurazione
+   */
+  async moduleUnpackfs() {
+    const name = 'unpackfs'
+    this.buildModule(name)
+    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
+  }
 }

@@ -11,36 +11,34 @@ import Pacman from '../../pacman.js'
 /**
  * restituisce displaymanagers in uso
  */
-export function displaymanager(): string {
-  let text = ''
+export function displaymanager(): string [] {
+  let ret: string [] = []
 
-  text += addIfExist('slim')
-  text += addIfExist('sddm')
-  text += addIfExist('lightdm')
-  text += addIfExist('gdm')
-  text += addIfExist('gdm3')
-  text += addIfExist('mdm')
-  text += addIfExist('lxdm')
-  text += addIfExist('kdm')
-  return text
-}
-
-/*
- * @param package2check
- */
-function addIfExist(package2check: string): string {
-  let content = ''
-
-  if (Pacman.packageIsInstalled(package2check)) {
-    let displayManager = package2check
-    if (package2check === 'gdm3') {
-      // gdm3 is treat as gdm
-      displayManager = 'gdm'
-    }
-
-    content = `- ${displayManager}\n`
-    // text += text === '' ? `- ${displayManager}\n` : `                 - ${displayManager}\n`
+  if (Pacman.packageIsInstalled('gdm')) {
+    ret.push('gdm')
   }
-
-  return content
+  if (Pacman.packageIsInstalled('gdm3')) {
+    // gdm3 viene trattato come gdm
+    ret.push('gdm')
+  }
+  if (Pacman.packageIsInstalled('kdm')) {
+    ret.push('kdm')
+  }
+  if (Pacman.packageIsInstalled('lightdm')) {
+    ret.push('lightdm')
+  }
+  if (Pacman.packageIsInstalled('lxdm')) {
+    ret.push('lxdm')
+  }
+  if (Pacman.packageIsInstalled('mdm')) {
+    ret.push('mdm')
+  }
+  if (Pacman.packageIsInstalled('sddm')) {
+    ret.push('sddm')
+  }
+  if (Pacman.packageIsInstalled('slim')) {
+    ret.push('slim')
+  }
+  return ret
 }
+
