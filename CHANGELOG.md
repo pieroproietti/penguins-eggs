@@ -12,6 +12,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.46-2
+* `bugfix`: the previus version `penguins-eggs-10.0.46-1` was working only on GUI using calamares, but generate an error - due a bug - on CLI systems or GUI system without calamares.
+
 ## penguins-eggs-10.0.46
 * `calamares`: now, using calamares, the default filesystem selected is the original filesystem of the parent system;
 * `calamares`: all modules in `/etc/calamares/modules` and `/etc/calamares/settings.conf` are reformatted, removing

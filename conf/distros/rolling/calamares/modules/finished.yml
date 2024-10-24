@@ -37,7 +37,7 @@ restartNowChecked: true
 # If the checkbox is shown, and the checkbox is checked, then when
 # Calamares exits from the finished-page it will run this command.
 # If not set, falls back to "shutdown -r now".
-restartNowCommand: {{restartNowCommand}}
+restartNowCommand: none
 
 # When the last page is (successfully) reached, send a DBus notification
 # to the desktop that the installation is done. This works only if the

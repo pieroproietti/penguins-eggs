@@ -83,7 +83,7 @@ export default class Incubator {
     const verbose = true
     const echo = Utils.setEcho(verbose)
 
-    Utils.warning(`creating ${installer().name} configuration files`)
+    Utils.warning(`creating ${installer().name} configuration files on ${installer().configRoot}`)
     this.createInstallerDirs()
     this.createBranding()
 
