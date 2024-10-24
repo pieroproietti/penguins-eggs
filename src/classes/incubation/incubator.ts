@@ -83,6 +83,7 @@ export default class Incubator {
     const verbose = true
     const echo = Utils.setEcho(verbose)
 
+    Utils.warning(`creating ${installer().name} configuration files`)
     this.createInstallerDirs()
     this.createBranding()
 
@@ -244,19 +245,19 @@ export default class Incubator {
 
     if (Pacman.calamaresExists()) {
         await partitionCustomize()
-        await this.compact()
     }
+    Utils.warning(`cleanup ${installer().name} configuration files`)
+    await this.cleanup()
   }
 
     /**
    * 
    */
-  private async compact() {
+  private async cleanup() {
       // modules
-      let path = '/etc/calamares/modules/'
-      const elements = fs.readdirSync(path)
+      const elements = fs.readdirSync(this.installer.modules)
       for (const elem of elements) {
-        let file = path + elem
+        let file = this.installer.modules + elem
         let fileContent = fs.readFileSync(file, 'utf8')
         let yamlContent = yaml.load(fileContent)
         let destContent = `# ${elem}, created by penguins-eggs ${pjson.version}\n`
@@ -266,7 +267,7 @@ export default class Incubator {
       }
 
       // settings
-      let file='/etc/calamares/settings.conf'
+      let file=this.installer.configRoot + '/settings.conf'
       let fileContent = fs.readFileSync(file, 'utf8')
       let yamlContent = yaml.load(fileContent)
       let destContent = `# settings.conf, created by penguins-eggs ${pjson.version}\n`
