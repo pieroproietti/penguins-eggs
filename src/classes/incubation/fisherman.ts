@@ -29,9 +29,6 @@ import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const pjson = require('../../../package.json')
 
-/**
- * vecchi require che vanno sostituiti con import
- */
 import { displaymanager } from './fisherman-helper/displaymanager.js'
 import { remove, remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
@@ -245,7 +242,7 @@ export default class Fisherman {
     const name = 'displaymanager'
     // const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
     this.buildModule(name)
-    let file = `/etc/calamares/modules/${name}.conf`
+    let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
     let yamlValues = yaml.load(fileContent) as ICalamaresDisplaymanager
     yamlValues.displaymanagers = displaymanager()
@@ -261,7 +258,7 @@ export default class Fisherman {
   async moduleFinished() {
     const name = 'finished'
     await this.buildModule(name)
-    let file = `/etc/calamares/modules/${name}.conf`
+    let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
     let yamlValues = yaml.load(fileContent) as ICalamaresFinished
     yamlValues.restartNowCommand = 'reboot'
