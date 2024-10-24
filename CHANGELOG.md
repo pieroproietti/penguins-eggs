@@ -9,40 +9,14 @@ penguins-eggs
 [![pkg](https://img.shields.io/badge/packages-bin-blue)](https://sourceforge.net/projects/penguins-eggs/files/Packages)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
-# Penguins' eggs releases 
-
-Detailed instructions for usage are published on the [Penguins' eggs guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide). You can follow the project also consulting the [commit history](https://github.com/pieroproietti/penguins-eggs/commits/master) and asking for support on [telegram channel](https://t.me/penguins_eggs). 
-
-## penguins-eggs-10.0.x installation
-`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
-
-### using get-eggs
-It's the most pratical way and is valid for Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need. Copy and paste:
-```
-git clone https://github.com/pieroproietti/get-eggs
-cd get-eggs
-sudo ./get-eggs.sh
-```
-### manual installation
-
-#### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
-Just download and install penguins-eggs-10.0.x.
-
-#### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
-Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
-
-#### Debian 9 stretch, Ubuntu 18.04 bionic
-Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
-
-# Architectures
-Since version `9.6.x` Penguins' eggs is released - as Debian package - for: `amd64`, `i386` and `arm64` architectures, supporting the majority of PCs, old ones and single board systems like Raspberry Pi. Read more on the article [Triple somersault!](https://penguins-eggs.net/blog/triple-somersault).
-
 # Changelog
-Versions are listed on reverse order, the first is the last one. Old versions are moved to [versions](https://sourceforge.net/projects/penguins-eggs/files/DEBS/versions/). 
+Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.46
-* calamares: reformat all calamares modules on `/etc/calamares/`;
-* update to `calamares-3.3.10 for arch.
+* `calamares`: now, using calamares, the default filesystem selected is the original filesystem of the parent system;
+* `calamares`: all modules in `/etc/calamares/modules` and `/etc/calamares/settings.conf` are reformatted, removing
+the comments;
+* `calamares`: the package `calamares-eggs` for ArchLinux was aligned to the new release `calamares-3.3.10`.
 
 ## penguins-eggs-10.0.45
 * `eggs love` now not fail if eggs is not configured yet and, configuration is made with `eggs dad --defailt`;
