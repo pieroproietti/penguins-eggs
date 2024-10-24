@@ -1,0 +1,6 @@
+# Debian/bookworm
+---
+unpack:
+    -   source: {{source}}
+        sourcefs: "squashfs"
+        destination: ""
