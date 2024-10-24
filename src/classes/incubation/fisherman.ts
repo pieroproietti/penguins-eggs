@@ -244,11 +244,11 @@ export default class Fisherman {
     this.buildModule(name)
     let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
-    let yamlValues = yaml.load(fileContent) as ICalamaresDisplaymanager
-    yamlValues.displaymanagers = displaymanager()
+    let values = yaml.load(fileContent) as ICalamaresDisplaymanager
+    values.displaymanagers = displaymanager()
     let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
-    destContent += yaml.dump(yamlValues)
+    destContent += yaml.dump(values)
     fs.writeFileSync(file, destContent, 'utf8')
   }
 
@@ -260,11 +260,12 @@ export default class Fisherman {
     await this.buildModule(name)
     let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
-    let yamlValues = yaml.load(fileContent) as ICalamaresFinished
-    yamlValues.restartNowCommand = 'reboot'
+    let values = yaml.load(fileContent) as ICalamaresFinished
+    values.restartNowCommand='reboot'
     let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
-    destContent += yaml.dump(yamlValues)
+    destContent += yaml.dump(values)
+    fs.writeFileSync(file, destContent, 'utf8')
   }
 
 
