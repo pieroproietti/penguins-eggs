@@ -1,6 +1,0 @@
-# # Alpine 3.18
----
-unpack:
-    -   source: {{source}}
-        sourcefs: "squashfs"
-        destination: ""
