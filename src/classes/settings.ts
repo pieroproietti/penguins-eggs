@@ -10,10 +10,10 @@ import chalk from 'chalk'
 import yaml from 'js-yaml'
 // packages
 import fs from 'node:fs'
-// pjson
-import { createRequire } from 'node:module'
 import os from 'node:os'
 import shx from 'shelljs'
+// pjson
+import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const pjson = require('../../package.json')
 
