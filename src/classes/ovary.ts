@@ -111,9 +111,7 @@ export default class Ovary {
     }
 
     /**
-     * Attenzione:
-     * fs.readdirSync('/', { withFileTypes: true })
-     * viene ignorato da Node8, ma da problemi da Node10 in poi
+     * dirs = readdirsync /
      */
     const dirs = fs.readdirSync('/')
     const startLine = '#############################################################'
@@ -128,8 +126,35 @@ export default class Ovary {
 
     for (const dir of dirs) {
       cmds.push(startLine)
-      if (fs.statSync(`/${dir}`).isDirectory()) {
-        if (dir === 'boot') {
+      let statDir = fs.lstatSync(`/${dir}`)
+
+      /**
+       * Link
+       */
+      if (statDir.isSymbolicLink()) {
+
+        lnkDest = fs.readlinkSync(`/${dir}`)
+        cmds.push(
+          `# /${dir} is a symbolic link to /${lnkDest} in the system`,
+          '# we need just to recreate it',
+          `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
+          "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
+          titleLine
+        )
+        if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
+          cmds.push('# SymbolicLink exist... skip')
+        } else if (fs.existsSync(lnkDest)) {
+          cmds.push(`ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
+        } else {
+          cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
+        }
+
+      /**
+       * Directory
+       */
+    } else if (statDir.isDirectory()) {
+
+      if (dir === 'boot') {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
         }
@@ -140,7 +165,7 @@ export default class Ovary {
             /**
              * mergedAndOverlay creazione directory, overlay e mount rw
              */
-            cmds.push(`${cmd} need to be presente, and rw`, titleLine, '# create mountpoint lower')
+            cmds.push(`${cmd} need to be present, and rw`, titleLine, '# create mountpoint lower')
             cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`), `# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
             cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), '# now remount it ro')
             cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
@@ -164,28 +189,17 @@ export default class Ovary {
             cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
           }
         }
-      } else if (fs.statSync(`/${dir}`).isFile()) {
+
+        /**
+       * File
+       */
+      } else if (statDir.isFile()) {
+
         cmds.push(`# /${dir} is just a file`, titleLine)
         if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
           cmds.push('# file exist... skip')
         } else {
           cmds.push(await rexec(`cp /${dir} ${this.settings.work_dir.merged}`, this.verbose))
-        }
-      } else if (fs.statSync(`/${dir}`).isSymbolicLink()) {
-        lnkDest = fs.readlinkSync(`/${dir}`)
-        cmds.push(
-          `# /${dir} is a symbolic link to /${lnkDest} in the system`,
-          '# we need just to recreate it',
-          `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
-          "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
-          titleLine
-        )
-        if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
-          cmds.push('# SymbolicLink exist... skip')
-        } else if (fs.existsSync(lnkDest)) {
-          cmds.push(`ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`)
-        } else {
-          cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
         }
       }
 
@@ -1549,8 +1563,18 @@ export default class Ovary {
       console.log('Ovary: mergedAndOverlay')
     }
 
-    // agginto bin per autologin su Alpine
-    const mountDirs = ['bin', 'etc', 'usr', 'var']
+    /**
+     * Debian: usrmerged
+     * bin -> usr/bin
+     * lib -> usr/lib
+     * lib64 -> usr/lib64
+     * sbin -> usr/sbin
+     * 
+     * 'bin' rimossa da overlay
+     */
+    
+    // aggiunto bin per autologin su Alpine
+    const mountDirs = ['etc', 'usr', 'var']
     let mountDir = ''
     let overlay = false
     for (mountDir of mountDirs) {
