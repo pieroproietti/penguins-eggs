@@ -12,6 +12,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.47
+* I will later write the changement... but now you can remaster, install, remaster and install again and so on at infinite. 
+
 ## penguins-eggs-10.0.46-2
 * `bugfix`: the previus version `penguins-eggs-10.0.46-1` was working only on GUI using calamares, but generate an error - due a bug - on CLI systems or GUI system without calamares.
 
