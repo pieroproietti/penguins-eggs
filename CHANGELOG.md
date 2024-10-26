@@ -13,10 +13,23 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.47
-* I will later write the changement... but now you can remaster, install, remaster and install again and so on at infinite. 
+In switching from version `v10.0.44` to `v10.0.45`, I removed a class written a long time ago, 
+to make eggs compatible with node8.x version and, of course, no longer needed.
+
+Unfortunately, in rewriting it, I went to use the `fs.statSync()` function. 
+which for `isSymbolicLink()` return not the value of the `path`, but that of the destination link.
+
+This caused `/bin`, `/sbin`, `/lib` and `/lib64` to be interpreted as directories and
+not as symbolic links.
+
+eggs, was correctly performed both in the creation of the ISO and its installation, 
+but the system remastered was not 'fertile'. so to speak.  The generated ISO would not boot.
+
+It was, of course, a sneaky error, difficult to find and understand.
 
 ## penguins-eggs-10.0.46-2
-* `bugfix`: the previus version `penguins-eggs-10.0.46-1` was working only on GUI using calamares, but generate an error - due a bug - on CLI systems or GUI system without calamares.
+* `bugfix`: the previous version `penguins-eggs-10.0.46-1` was working only on GUI using calamares, but generate an error - 
+due a bug - on CLI systems or GUI system without calamares.
 
 ## penguins-eggs-10.0.46
 * `calamares`: now, using calamares, the default filesystem selected is the original filesystem of the parent system;
