@@ -25,7 +25,10 @@ not as symbolic links.
 eggs, was correctly performed both in the creation of the ISO and its installation, 
 but the system remastered was not 'fertile'. so to speak.  The generated ISO would not boot.
 
-It was, of course, a sneaky error, difficult to find and understand.
+Now I have replaced `fs.statSync()` with `fs.lstatSync()` which gives the correct answer in 
+case of symbolic links.
+
+This was a sneaky mistake that was difficult to detect and understand.
 
 ## penguins-eggs-10.0.46-2
 * `bugfix`: the previous version `penguins-eggs-10.0.46-1` was working only on GUI using calamares, but generate an error - 
