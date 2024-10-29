@@ -1,4 +1,4 @@
-# # Alpine 3.18
+# Debian/Bookworm
 # Writes an openswap configuration with LUKS settings to the given path
 ---
 # Path of the configuration file to write (in the target system)

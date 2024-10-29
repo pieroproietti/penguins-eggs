@@ -1,4 +1,4 @@
-# Alpine 3.18
+# Debian/Bookworm
 ---
 mountOptions:
   default: defaults,noatime
