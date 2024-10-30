@@ -13,7 +13,7 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.48
-* added `wget` ad dependencies on all distros, removed syslinux on all distros;
+* added `wget` as dependencies on all distros; removed dependencies from syslinux on all distros;
 * added warm on eggs calamares if not used with sudo;
 * updated calamares templates on alpine, fedora and opensuse (just a copy from updated buster).
 
