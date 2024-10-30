@@ -76,12 +76,8 @@ export default class ExportPkg extends Command {
         this.aur()
       }
     } else if (distro.familyId === "alpine") {
-      // if (Utils.isRoot()) {
         Utils.warning("alpine packages")
         this.alpine()
-      //} else {
-      //  Utils.useRoot(this.id)
-      //}
     }
   }
 
