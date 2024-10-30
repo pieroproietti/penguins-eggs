@@ -1,4 +1,4 @@
-# # Alpine 3.18
+# Debian/Bookworm
 # Mount filesystems in the target (generally, before treating the
 # target as a usable chroot / "live" system). Filesystems are
 # automatically mounted from the partitioning module. Filesystems

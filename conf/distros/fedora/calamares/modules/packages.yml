@@ -1,6 +1,6 @@
-# # Alpine 3.18
+# Debian/Buster et others
 # packages
 ---
-backend: apk
+backend: apt
 
 {{operations}}

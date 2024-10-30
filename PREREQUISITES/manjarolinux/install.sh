@@ -43,7 +43,7 @@ pacman -Syu --noconfirm --needed \
 	rsync \
 	squashfs-tools \
 	sshfs \
-	syslinux \
+	wget \
 	xdg-utils \
 	zsh-completions
 

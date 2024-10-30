@@ -1,12 +1,11 @@
-# Alpine 3.18
+# Debian/bookworm
 # Configure one or more display managers (e.g. SDDM)
 # with a "best effort" approach.
 ---
 #The DM module attempts to set up all the DMs found in this list, in that precise order.
 #It also sets up autologin, if the feature is enabled in globalstorage.
 #The displaymanagers list can also be set in globalstorage, and in that case it overrides anything set up here.
-displaymanagers: 
-{{displaymanagers}}
+displaymanagers: none
 
 #Enable the following settings to force a desktop environment in your displaymanager configuration file:
 #defaultDesktopEnvironment:
