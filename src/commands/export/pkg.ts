@@ -70,14 +70,18 @@ export default class ExportPkg extends Command {
     } else if (distro.familyId === "archlinux") {
       if (distro.distroId === "ManjaroLinux" || distro.distroId === "BigLinux") {
         Utils.warning("manjaro packages")
-        this.manjaro()
+        await this.manjaro()
       } else {
         Utils.warning("arch packages")
-        this.aur()
+        await this.aur()
       }
     } else if (distro.familyId === "alpine") {
-        Utils.warning("alpine packages")
-        this.alpine()
+      Utils.warning("alpine packages")
+      if (Utils.isRoot()) {
+        await this.alpine()
+      } else {
+        Utils.useRoot(this.id)
+      }
     }
   }
 

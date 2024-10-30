@@ -13,9 +13,8 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.48
-* added warmin on eggs calamares for sudo usage;
-* remove isroot for alpine on `eggs export pkg`;
-* updated calamares templates on fedora and opensuse;
+* added warm on eggs calamares if not used with sudo;
+* updated calamares templates on alpine, fedora and opensuse (just a copy from updated buster).
 
 ## penguins-eggs-10.0.47
 In switching from version `v10.0.44` to `v10.0.45`, I removed a class written a long time ago, 
