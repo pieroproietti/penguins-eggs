@@ -27,11 +27,12 @@ Some of the reasons for the success of Linux Mint are:
 It works out of the box, with full multimedia support and is extremely easy to use.
 It's both free of cost and open source.
 It's community-driven. Users are encouraged to send feedback to the project so that their ideas can be used to improve Linux Mint.
-Based on Debian and Ubuntu, it provides about 30,000 packages and one of the best software managers.
+Based on Ubuntu, it provides about 30,000 packages and one of the best software managers.
 It's safe and reliable. Thanks to a conservative approach to software updates, a unique Update Manager and the robustness of its Linux architecture, Linux Mint requires very little maintenance (no regressions, no antivirus, no anti-spyware...etc).
 
-* **elsie** - LMDE5 (based on Debian bullseye)
-* **vera** - Linuxmint 21.1 cinnamon/mate/xfce4 (based on Ubuntu jammy)
+* `vera` - Linuxmint 21.1 cinnamon/mate/xfce4 (based on Ubuntu jammy)
+* `victoria` - Linuxmint 21.2 cinnamon/mate/xfce4 (based on Ubuntu jammy)
+* `wilma` - Linuxmint 22.1 cinnamon/mate/xfce4 (based on Ubuntu noble)
 
 ## More informations:
 

@@ -42,6 +42,7 @@ dnf -y install \
     rsync \
     squashfs-tools \
     sshfs \
+    wget \
     xdg-user-dirs \
     xorriso \
     zstd

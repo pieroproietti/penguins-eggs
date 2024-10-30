@@ -1,4 +1,4 @@
-# Alpine 3.18
+# Debian bookworm
 # Bootloader configuration. The bootloader is installed to allow
 # the system to start (and pick one of the installed operating
 # systems to run).

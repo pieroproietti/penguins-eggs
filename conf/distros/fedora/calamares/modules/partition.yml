@@ -1,4 +1,4 @@
-# # Alpine 3.18
+# Debian/Buster et others
 # partition.yaml
 ---
 # This setting specifies the mount point of the EFI system partition. Some

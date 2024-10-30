@@ -34,6 +34,7 @@ apt-get install -y \
     rsync \
     squashfs-tools \
     sshfs \
+    wget \
     xorriso
 
 # Install pnpm

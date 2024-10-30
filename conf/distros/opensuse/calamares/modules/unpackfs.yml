@@ -1,4 +1,4 @@
-# # Alpine 3.18
+# Debian/bookworm
 ---
 unpack:
     -   source: {{source}}

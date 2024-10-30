@@ -1,0 +1,8 @@
+# Debian Buster
+# sources-yolk-undo
+---
+type: "job"
+name: "sources-yolk-undo"
+interface: "process"
+command: "/usr/sbin/sources-yolk.sh -u"
+timeout: 600

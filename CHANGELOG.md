@@ -12,6 +12,11 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.48
+* added `wget` as dependencies on all distros; removed dependencies from syslinux on all distros;
+* added warm on eggs calamares if not used with sudo;
+* updated calamares templates on alpine, fedora and opensuse (just a copy from updated buster).
+
 ## penguins-eggs-10.0.47
 In switching from version `v10.0.44` to `v10.0.45`, I removed a class written a long time ago, 
 to make eggs compatible with node8.x version and, of course, no longer needed.

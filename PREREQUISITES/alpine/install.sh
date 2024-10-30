@@ -63,6 +63,7 @@ apk add \
     shadow \
     squashfs-tools \
     sshfs \
+    wget \
     xdg-user-dirs \
     xorriso
 

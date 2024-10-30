@@ -31,7 +31,7 @@ zypper install -y \
     rsync \
     squashfs \
     sshfs \
-    syslinux \
+    wget \
     xdg-user-dirs \
     xorriso
 

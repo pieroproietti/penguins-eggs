@@ -132,7 +132,8 @@ export default class Calamares extends Command {
         this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, theme, isClone, verbose)
         await this.incubator.config(release)
       }
-
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }

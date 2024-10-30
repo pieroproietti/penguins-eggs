@@ -36,7 +36,7 @@ $SUDO cp manpages/doc/man/eggs.1.gz /usr/share/man/man1
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp addons/eggs/adapt/applications/eggs-adapt.desktop "${DESKTOP_DIR}"
 cp assets/penguins-eggs.desktop "${DESKTOP_DIR}"
-
+for f in "$DESKTOP_DIR"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done
 # remove 
 $SUDO rm -rf /usr/lib/penguins-eggs/
 $SUDO mkdir -p /usr/lib/penguins-eggs/ 

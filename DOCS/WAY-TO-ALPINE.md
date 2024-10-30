@@ -1,4 +1,5 @@
 # Way to Alpine
+
 We start from the `alpine-standard-3.20.3-x86_64.iso` image, which is only 203 MB, and go to install alpine.
 
 Log as root without password, then install it: `setup-alpine`.
@@ -25,8 +26,8 @@ And remove the comment on the community repo:
 
 ```
 #/media/cdrom/apks
-http://dl-cdn.alpinelinux.org/alpine/v3.30/main
-http://dl-cdn.alpinelinux.org/alpine/v3.30/community
+http://dl-cdn.alpinelinux.org/alpine/v3.20/main
+http://dl-cdn.alpinelinux.org/alpine/v3.20/community
 
 ```
 
@@ -45,7 +46,7 @@ git clone https://github.com/pieroproietti/penguins-eggs
 
 ## Adding prerequisites
 ```
-cd penguins-eggs/PREREQUISITES/alpive
+cd penguins-eggs/PREREQUISITES/alpine
 doas ./install.sh
 
 ```
@@ -80,6 +81,13 @@ adduser artisan abuild
 
 ```
 
+# add user to wheel
+add your user to groups wheel and others...
+```
+adduser artisan wheel
+adduser artisan floppy
+
+```
 # reboot
 Reboot, then login as user artisan.
 

@@ -1,5 +1,5 @@
-# Alpine 3.18
+# Debian/Bookworm
 ---
 restartNowEnabled: true
 restartNowChecked: true
-restartNowCommand: reboot
+restartNowCommand: none
