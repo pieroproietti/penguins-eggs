@@ -536,6 +536,9 @@ export default class Tailor {
         for (let tempts = 1; tempts < limit; tempts++) {
           Utils.titles(step)
           Utils.warning(`tempts ${tempts} of ${limit}`)
+          if (this.verbose) {
+            console.log(cmd)
+          }
           if (await tryCheckSuccess(cmd, this.echo)) {
             break
           }
