@@ -551,12 +551,6 @@ export default class Tailor {
    * @returns
    */
   async tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
-    if (!fs.existsSync(this.log)) {
-      fs.writeFileSync(this.log, "# eggs wardrobe wear\n\n")
-    }
-    fs.appendFileSync(this.log, `## ${cmd}\n`)
-    fs.appendFileSync(this.log, `\n`)
-
     let success = false
     try {
       await exec(cmd, echo)
