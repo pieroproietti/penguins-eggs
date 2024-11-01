@@ -536,10 +536,7 @@ export default class Tailor {
         for (let tempts = 1; tempts < limit; tempts++) {
           Utils.titles(step)
           Utils.warning(`tempts ${tempts} of ${limit}`)
-          if (this.verbose) {
-            console.log(cmd)
-          }
-          if (await tryCheckSuccess(cmd, this.echo)) {
+          if (await this.tryCheckSuccess(cmd, this.echo)) {
             break
           }
         }
@@ -547,33 +544,39 @@ export default class Tailor {
     }
   }
 
-}
+  /**
+   *
+   * @param cmd
+   * @param echo
+   * @returns
+   */
+  async tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
+    if (!fs.existsSync(this.log)) {
+      fs.writeFileSync(this.log, "# eggs wardrobe wear\n\n")
+    }
+    fs.appendFileSync(this.log, `## ${cmd}\n`)
+    fs.appendFileSync(this.log, `\n`)
 
-/**
- *
- * @param cmd
- * @param echo
- * @returns
- */
-async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
-  let success = false
-  try {
-    await exec(cmd, echo)
-    success = true
-  } catch {
-    success = false
+    let success = false
+    try {
+      await exec(cmd, echo)
+      success = true
+    } catch {
+      success = false
+    }
+
+    return success
   }
-
-  return success
 }
 
-/**
- *
- * @param ms
- * @returns
- */
-function sleep(ms = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+
+  /**
+   *
+   * @param ms
+   * @returns
+   */
+  function sleep(ms = 0) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
