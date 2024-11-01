@@ -477,7 +477,7 @@ export default class Tailor {
     } else if (distro.familyId === "alpine") {
       cmd=`apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
     } else if (distro.familyId === 'fedora') {
-      cmd=`dnf list available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+      cmd=`dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
 
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
