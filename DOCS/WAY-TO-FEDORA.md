@@ -184,7 +184,7 @@ I tryed on fedora40, fedora39 now I will try on [fedora38](https://archives.fedo
 
 # Remove old kernels 
 ```
-dnf list installed kernel
+dnf list --installed kernel
 ```
 
 ```

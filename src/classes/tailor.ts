@@ -477,7 +477,7 @@ export default class Tailor {
     } else if (distro.familyId === "alpine") {
       cmd=`apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
     } else if (distro.familyId === 'fedora') {
-      cmd=`dnf list available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+      cmd=`dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
 
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
@@ -536,7 +536,7 @@ export default class Tailor {
         for (let tempts = 1; tempts < limit; tempts++) {
           Utils.titles(step)
           Utils.warning(`tempts ${tempts} of ${limit}`)
-          if (await tryCheckSuccess(cmd, this.echo)) {
+          if (await this.tryCheckSuccess(cmd, this.echo)) {
             break
           }
         }
@@ -544,33 +544,33 @@ export default class Tailor {
     }
   }
 
-}
+  /**
+   *
+   * @param cmd
+   * @param echo
+   * @returns
+   */
+  async tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
+    let success = false
+    try {
+      await exec(cmd, echo)
+      success = true
+    } catch {
+      success = false
+    }
 
-/**
- *
- * @param cmd
- * @param echo
- * @returns
- */
-async function tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
-  let success = false
-  try {
-    await exec(cmd, echo)
-    success = true
-  } catch {
-    success = false
+    return success
   }
-
-  return success
 }
 
-/**
- *
- * @param ms
- * @returns
- */
-function sleep(ms = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
+
+  /**
+   *
+   * @param ms
+   * @returns
+   */
+  function sleep(ms = 0) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
