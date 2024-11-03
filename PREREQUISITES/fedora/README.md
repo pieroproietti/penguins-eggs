@@ -43,8 +43,8 @@ git clone https://github.com/pieroproietti/penguins-eggs
 
 Then we install prerequisites:
 ```
-cd ~/penguins-eggs/fedora
-sudo ./install-prerequisites.sh
+cd ~/penguins-eggs/PREREQUISITES/fedora
+sudo ./install.sh
 ```
 At this point, we transpile and install penguins-eggs:
 ```
