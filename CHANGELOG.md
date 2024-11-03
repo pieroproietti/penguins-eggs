@@ -12,6 +12,10 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.49
+Trying to add RockyLinux and AlmaLinux to penguins-eggs.
+
+
 ## penguins-eggs-10.0.48
 * added `wget` as dependencies on all distros; removed dependencies from syslinux on all distros;
 * added warm on eggs calamares if not used with sudo;
