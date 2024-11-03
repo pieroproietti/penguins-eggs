@@ -1,6 +1,6 @@
 # Fedora naked
 
-We start from the `Fedora-Everything-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora choosing minimun installation, set root password and user. 
+We start from the `Rocky-9.4-x86_64-minimal.iso` image, which is 1,7G, and go to install RockyLinux choosing minimun installation, set root password and user. 
 
 On `Software selection` select "minimun installation" and confirm with button "Done" up on right.
 
@@ -43,7 +43,7 @@ git clone https://github.com/pieroproietti/penguins-eggs
 
 Then we install prerequisites:
 ```
-cd ~/penguins-eggs/PREREQUISITES/fedora
+cd ~/penguins-eggs/PREREQUISITES/rockylinux
 sudo ./install.sh
 ```
 At this point, we transpile and install penguins-eggs:

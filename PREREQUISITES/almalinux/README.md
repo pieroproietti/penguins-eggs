@@ -1,6 +1,6 @@
-# Fedora naked
+# AlmaLinux
 
-We start from the `Fedora-Everything-netinst-x86_64-40-1.14.iso` image, which is 765M, and go to install Fedora choosing minimun installation, set root password and user. 
+We start from the `AlmaLinux-9.4-x86_64-minimal.iso` image, which is 1,9G, and go to install AlmaLinux choosing minimun installation, set root password and user. 
 
 On `Software selection` select "minimun installation" and confirm with button "Done" up on right.
 
@@ -43,7 +43,7 @@ git clone https://github.com/pieroproietti/penguins-eggs
 
 Then we install prerequisites:
 ```
-cd ~/penguins-eggs/PREREQUISITES/fedora
+cd ~/penguins-eggs/PREREQUISITES/almalinux
 sudo ./install.sh
 ```
 At this point, we transpile and install penguins-eggs:
@@ -57,5 +57,3 @@ pnpm i
 When finish, we can just run: ```eggs love``` and build our first fedora naked ISO.
 
 It's installable and reproductive: once installed you can produce a live system from your installed one, just running: `eggs love`.
-
-
