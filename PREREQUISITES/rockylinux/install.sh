@@ -56,5 +56,3 @@ sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 # sshfs
 # dmraid
 # lsb_release OK
-
-

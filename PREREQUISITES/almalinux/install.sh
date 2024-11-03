@@ -51,3 +51,8 @@ mkdir -p /usr/share/icons
 
 # disable selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+# overlayfs-tools
+# sshfs
+# dmraid
+# lsb_release OK
