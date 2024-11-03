@@ -18,7 +18,6 @@ fi
 # add epel-release
 dnf install epel-release
 
-
 # enable crb
 dnf config-manager --set-enabled crb
 

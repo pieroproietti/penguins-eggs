@@ -63,10 +63,9 @@ class Distro implements IDistro {
      * lsb_release -is per distribuzione
      * lsb_release -rs per release
      */
-    let lsb_release = path.resolve(__dirname, '../../script/lsb_release')
-    this.codenameId = shell.exec(`${lsb_release} -cs`, { silent: true }).stdout.toString().trim()
-    this.releaseId = shell.exec(`${lsb_release}  -rs`, { silent: true }).stdout.toString().trim()
-    this.distroId = shell.exec(`${lsb_release}  -is`, { silent: true }).stdout.toString().trim()
+    this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
+    this.releaseId = shell.exec(`lsb_release -rs`, { silent: true }).stdout.toString().trim()
+    this.distroId = shell.exec(`lsb_release -is`, { silent: true }).stdout.toString().trim()
 
     if (this.distroId === 'Debian' && this.codenameId === 'sid') {
       this.codenameId = 'trixie'

@@ -49,10 +49,10 @@ export default async function information(verbose = false): Promise<void> {
         </Box>
     )
 
-    let lsb_release = path.resolve(__dirname, '../../script/lsb_release')
-    const codenameId = shx.exec(`${lsb_release} -cs`, { silent: true }).stdout.toString().trim()
-    const releaseId = shx.exec(`${lsb_release}  -rs`, { silent: true }).stdout.toString().trim()
-    const distroId = shx.exec(`${lsb_release}  -is`, { silent: true }).stdout.toString().trim()
+    //let lsb_release = path.resolve(__dirname, '../../script/lsb_release')
+    const codenameId = shx.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
+    const releaseId = shx.exec(`lsb_release -rs`, { silent: true }).stdout.toString().trim()
+    const distroId = shx.exec(`lsb_release -is`, { silent: true }).stdout.toString().trim()
     const Distro = () => (
         <Box flexDirection='column'>
             <Box borderStyle="round" marginRight={2} flexDirection='row' >
