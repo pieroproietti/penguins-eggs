@@ -17,7 +17,7 @@ penguins-eggs
 
 # AlmaLinux
 
-Almalinux a free Linux OS for the community, by the community
+[Almalinux](https://almalinux.org/) a free Linux OS for the community, by the community.
 
 An Open Source, community owned and governed, forever-free enterprise Linux distribution, focused on long-term stability, providing a robust production-grade platform. AlmaLinux OS is binary compatible with RHEL®.
 
