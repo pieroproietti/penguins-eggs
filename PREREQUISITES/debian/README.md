@@ -7,7 +7,7 @@ Hhowever, it is possible to install and use eggs in this way, and in some cases,
 We start from a recent `debian-12.6.x-amd64-netinst.iso` image and just install it at minimum delecting all, except standard sysstem utilies.
 
 ## reboot
-After reboot just run `sudo ./install-prerequisits.sh`, then after finish, con in the main folder `~/penguins-eggs` and run `./install-eggs-dev.sh`.
+After reboot just run `sudo ./PREREQUISITES/install.sh`, then after finish, con in the main folder `~/penguins-eggs` and run `./install-eggs-dev.sh`.
 
 That's all!
 

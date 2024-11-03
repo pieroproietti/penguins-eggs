@@ -34,7 +34,7 @@ git clone https://github.com/pieroproietti/penguins-eggs
 
 ## Install prerequisites
 ```
-doas penguins-eggs/DOCS/NAKED/alpine/install-prerequisites.sh
+doas penguins-eggs/PREREQUISITES/alpine/install.sh
 
 ```
 ## Install penguins-eggs

@@ -278,7 +278,7 @@ export default class Ovary {
     // Create user using useradd
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
 
-    // live password Don't work with SELINUX
+    // live password don't work with SELINUX
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
     // root password Don't work with SELINUX

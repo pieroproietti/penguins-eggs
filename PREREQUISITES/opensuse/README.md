@@ -4,9 +4,9 @@ I used `openSUSE-Tumbleweed-DVD-x86_64-Snapshot20240820-Media.iso` minimal insta
 
 After completed installation, just reboot, clone penguins-eggs,
 
-`cd penguins-eggs/NAKED-FARMS/opensudo`
+`cd penguins-eggs/PREREQUISITES/opensudo`
 
-`sudo ./install-prerequisites.sh`
+`sudo ./PREREQUISITES/install.sh`
 
 then after finish, con in the main folder `~/penguins-eggs` and run `./install-eggs-dev.sh`.
 
