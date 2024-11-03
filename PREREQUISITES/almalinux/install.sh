@@ -10,8 +10,8 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # check if we are on fedora
-if [ ! -f /etc/rocky-release ]; then
-    echo "This script is intended for rocky linux only"
+if [ ! -f /etc/almalinux-release ]; then
+    echo "This script is intended for almalinux only"
     exit 1
 fi
 
@@ -24,7 +24,6 @@ dnf -y install \
     cryptsetup \
     curl \
     device-mapper \
-    dmraid \
     dosfstools \
     dracut \
     dracut-live \
@@ -32,23 +31,20 @@ dnf -y install \
     git \
     grub2-tools-extra \
     jq \
-    lsb-release \
     lvm2 \
     nodejs \
     npm \
     nvme-cli \
-    overlayfs-tools \
     parted \
     rsync \
     squashfs-tools \
-    sshfs \
     wget \
     xdg-user-dirs \
     xorriso \
     zstd
 
 # install pnpm
-npm i pnpm -g
+npm i pnpm@8 -g
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
