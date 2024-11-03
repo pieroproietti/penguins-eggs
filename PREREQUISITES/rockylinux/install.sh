@@ -18,9 +18,12 @@ fi
 # add epel-release
 dnf install epel-release
 
+
 # update
 dnf -y update
 
+# enable crb
+dnf config-manager --set-enabled crb
 
 dnf -y install \
     bash-completion \
