@@ -15,21 +15,20 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# AlmaLinux
+# RockyLinux
+Enterprise Linux, the community way.
 
-[Almalinux](https://almalinux.org/) a free Linux OS for the community, by the community.
+[RockyLinux](https://rockylinux.org/) is an open-source enterprise operating system designed to be 100% bug-for-bug compatible with Red Hat Enterprise Linux®. It is under intensive development by the community.
 
-An Open Source, community owned and governed, forever-free enterprise Linux distribution, focused on long-term stability, providing a robust production-grade platform. AlmaLinux OS is binary compatible with RHEL®.
-
-* **egg-of-almalinux-naked** (CLI, minimal reproductive installation)
+* **egg-of-rockylinux-naked** (CLI, minimal reproductive installation)
 
 **NOTE:** this ISO is NOT_BOOTING_CORRECTLY, download it just to test it on `dracut` emergency shell, and give suggestions.
 
 # Help need
-I'm not too expert on AlmaLinux, and in all the ways we have the follow problems:
+I'm not too expert on RockyLinux, and in all the ways we have the follow problems:
 
 * again was not able to create an rpm package for penguins-eggs;
-* until now I'm not able to configure calamares on AlmaLinux;
-* AlmaLinux ISOs remastered with eggs can't boot on EFI.
+* until now I'm not able to configure calamares on RockyLinux;
+* RockyLinux ISOs remastered with eggs can't boot on EFI.
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
