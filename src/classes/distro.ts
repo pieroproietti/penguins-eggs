@@ -98,8 +98,9 @@ class Distro implements IDistro {
       /**
        * Fedora compatible
        */
-      case 'NobaraLinux':
-      case 'Fedora': {
+      case 'AlmaLinux':
+        case 'RockyLinux':
+        case 'Fedora': {
         this.familyId = 'fedora'
         this.distroLike = this.distroId
         this.codenameId = 'rolling' // viene rimosso dal nome
