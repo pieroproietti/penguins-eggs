@@ -39,6 +39,7 @@ dnf -y install \
     git \
     grub2-tools-extra \
     jq \
+    lsb-release \
     lvm2 \
     nodejs \
     npm \
