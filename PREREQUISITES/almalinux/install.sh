@@ -15,6 +15,9 @@ if [ ! -f /etc/almalinux-release ]; then
     exit 1
 fi
 
+# add epel-release
+dnf install epel-release
+
 # update
 dnf -y update
 
@@ -40,6 +43,7 @@ dnf -y install \
     squashfs-tools \
     wget \
     xdg-user-dirs \
+    sshfs \
     xorriso \
     zstd
 
@@ -52,7 +56,6 @@ mkdir -p /usr/share/icons
 # disable selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
+# we lacks
 # overlayfs-tools
-# sshfs
 # dmraid
-# lsb_release OK
