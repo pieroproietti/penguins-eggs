@@ -15,6 +15,10 @@ if [ ! -f /etc/rocky-release ]; then
     exit 1
 fi
 
+if [ -f ,/nodesource_setup ]; then
+    ./nodesource_setup
+fi
+
 # add epel-release
 dnf install epel-release
 
@@ -42,7 +46,6 @@ dnf -y install \
     lsb-release \
     lvm2 \
     nodejs \
-    npm \
     nvme-cli \
     parted \
     rsync \
@@ -54,7 +57,7 @@ dnf -y install \
     zstd
 
 # install pnpm
-npm i pnpm@8 -g
+npm i pnpm -g
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
