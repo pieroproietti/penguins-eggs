@@ -15,21 +15,20 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# Fedora
+# RockyLinux
+Enterprise Linux, the community way.
 
-* **egg-of-fedora-naked** (CLI, minimal reproductive installation)
-* **egg-of-fedora-colibri** (XFCE, devtools)
+[RockyLinux](https://rockylinux.org/) is an open-source enterprise operating system designed to be 100% bug-for-bug compatible with Red Hat Enterprise Linux®. It is under intensive development by the community.
 
-Fedora doesn't need much introduction, Redhat was the first Linux I managed to install back in 2000, then I switched to Debian and a lot of others.
+* **egg-of-rockylinux-naked** (CLI, minimal reproductive installation)
 
-I always liked it, sometimes hated: redhat licence and rpm, but still a great system.
-
+**NOTE:** this ISO is NOT_BOOTING_CORRECTLY, download it just to test it on `dracut` emergency shell, and give suggestions.
 
 # Help need
-I'm not too expert on fedora, and in all the ways we have the follow problems:
+I'm not too expert on RockyLinux, and in all the ways we have the follow problems:
 
 * again was not able to create an rpm package for penguins-eggs;
-* until now I'm not able to configure calamares on fedora;
-* fedora ISOs remastered with eggs can't boot on EFI.
+* until now I'm not able to configure calamares on RockyLinux;
+* RockyLinux ISOs remastered with eggs can't boot on EFI.
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
