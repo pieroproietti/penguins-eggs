@@ -15,21 +15,21 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# Fedora
+# AlmaLinux
 
-* **egg-of-fedora-naked** (CLI, minimal reproductive installation)
-* **egg-of-fedora-colibri** (XFCE, devtools)
+[Almalinux](https://almalinux.org/) a free Linux OS for the community, by the community.
 
-Fedora doesn't need much introduction, Redhat was the first Linux I managed to install back in 2000, then I switched to Debian and a lot of others.
+An Open Source, community owned and governed, forever-free enterprise Linux distribution, focused on long-term stability, providing a robust production-grade platform. AlmaLinux OS is binary compatible with RHEL®.
 
-I always liked it, sometimes hated: redhat licence and rpm, but still a great system.
+* **egg-of-almalinux-naked** (CLI, minimal reproductive installation)
 
+**NOTE:** this ISO is NOT_BOOTING_CORRECTLY, download it just to test it on `dracut` emergency shell, and give suggestions.
 
 # Help need
-I'm not too expert on fedora, and in all the ways we have the follow problems:
+I'm not too expert on AlmaLinux, and in all the ways we have the follow problems:
 
 * again was not able to create an rpm package for penguins-eggs;
-* until now I'm not able to configure calamares on fedora;
-* fedora ISOs remastered with eggs can't boot on EFI.
+* until now I'm not able to configure calamares on AlmaLinux;
+* AlmaLinux ISOs remastered with eggs can't boot on EFI.
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
