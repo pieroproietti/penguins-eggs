@@ -21,8 +21,15 @@ Enterprise Linux, the community way.
 [RockyLinux](https://rockylinux.org/) is an open-source enterprise operating system designed to be 100% bug-for-bug compatible with Red Hat Enterprise Linux®. It is under intensive development by the community.
 
 * **egg-of-rockylinux-naked** (CLI, minimal reproductive installation)
+* **egg-of-rockylinux-colibri** (XFCE, devtools)
 
-**NOTE:** this ISO is NOT_BOOTING_CORRECTLY, download it just to test it on `dracut` emergency shell, and give suggestions.
+**NOTE:** this ISOs are NOT_BOOTING_CORRECTLY. In particular>
+
+* egg-of-rockylinux-naked: don't boot the ISO;
+* egg-of-rockylinux-colibru: the ISO boot and install, but the installed system not.
+
+**work in progress** 
+
 
 # Help need
 I'm not too expert on RockyLinux, and in all the ways we have the follow problems:
