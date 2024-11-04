@@ -56,7 +56,7 @@ export default class Bleach {
       }
 
       case 'fedora': {
-        await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
+        // await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
         await exec(`dnf clean all`, echo)
 
         break
