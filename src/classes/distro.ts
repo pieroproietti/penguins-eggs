@@ -102,7 +102,7 @@ class Distro implements IDistro {
         case 'RockyLinux':
         case 'Fedora': {
         this.familyId = 'fedora'
-        this.distroLike = this.distroId
+        this.distroLike = 'Fedora'
         this.codenameId = 'rolling' // viene rimosso dal nome
         this.codenameLikeId = this.familyId // per krill
         this.liveMediumPath = '/run/initramfs/live/'
