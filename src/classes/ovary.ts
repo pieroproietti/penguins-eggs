@@ -928,11 +928,13 @@ export default class Ovary {
 
     let syspath = path.resolve(__dirname, `../../syslinux`)
     await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${syspath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+    // just fo x64 arch
+    await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
@@ -2048,7 +2050,7 @@ export default class Ovary {
 
     let isoHybridMbr = ''
     if (this.settings.config.make_isohybrid) {
-      const isolinuxFile = this.settings.distro.syslinuxPath + 'isohdpfx.bin'
+      const isolinuxFile = this.settings.distro.syslinuxPath + '/isohdpfx.bin'
       if (fs.existsSync(isolinuxFile)) {
         isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
       } else {
