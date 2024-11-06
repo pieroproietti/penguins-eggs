@@ -24,6 +24,13 @@ export default async function machineId(this: Sequence): Promise<void> {
     await exec(`rm ${file} ${this.toNull}`, this.echo)
   }
 
+  /**
+   * machine/id always new now
+   */
+  await exec(`dbus-uuidgen --ensure=${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
+  await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`) 
+
+  /*
   // On Alpine, we need to create the machine-id file
   if (this.distro.familyId === 'alpine') {
     await exec(`dbus-uuidgen --ensure=${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
@@ -31,4 +38,5 @@ export default async function machineId(this: Sequence): Promise<void> {
   } else {
     await exec(`touch ${file} ${this.toNull}`)
   }
+  */
 }
