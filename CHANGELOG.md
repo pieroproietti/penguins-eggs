@@ -13,8 +13,7 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.49
-Trying to add RockyLinux and AlmaLinux to penguins-eggs.
-
+* `krill`: trying to add RockyLinux and AlmaLinux to penguins-eggs, we updated our TUI system installer to manage systemd-boot entries. The result is the two main open-source enterprise operating systems: AlmaLinux and RockyLinux, now work with penguins-eggs and is possible to build instalable custom servers or desktop.
 
 ## penguins-eggs-10.0.48
 * added `wget` as dependencies on all distros; removed dependencies from syslinux on all distros;
