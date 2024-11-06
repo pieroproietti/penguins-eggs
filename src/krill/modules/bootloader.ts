@@ -13,6 +13,7 @@ import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 import fs from 'node:fs'
 import path from 'node:path'
+import { subscribe } from 'node:diagnostics_channel'
 
 /**
  *
@@ -42,19 +43,36 @@ export default async function bootloader(this: Sequence) {
 
   // update boot/loader/entries/
   const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
-  const uuid = Utils.uuid(this.devices.root.name)
   if (fs.existsSync(pathEntries)) {
-    console.log(`${pathEntries} exists!`)
+    const uuid = Utils.uuid(this.devices.root.name)
+    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
+    await renameLoaderEntries(pathEntries, machineId)
     await updateLoaderEntries(pathEntries, uuid)
-  } else {
-    console.log(`${pathEntries} NOT exists!`)
   }
-  await Utils.pressKeyToExit()
 }
-
 
 /**
  * 
+ * @param directoryPath 
+ * @param machineId 
+ */
+async function renameLoaderEntries(directoryPath: string, machineId: string): Promise<void> {
+  const files: string[] = fs.readdirSync(directoryPath)
+  if (files.length > 0) {
+    for (const file of files) {
+      const oldPath = path.join(directoryPath, file)
+      let current = file.substring(34)
+      current = machineId + current
+      const newPath = path.join(directoryPath, current)
+      await exec(`mv ${oldPath} ${newPath}`)
+    }
+  }
+}
+
+/**
+ * 
+ * @param directoryPath 
+ * @param newUUID 
  */
 async function updateLoaderEntries(directoryPath: string, newUUID: string): Promise<void> {
   const files: string[] = fs.readdirSync(directoryPath)
@@ -65,12 +83,11 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
       console.log(`entry: ${filePath}`)
       let source = fs.readFileSync(filePath, 'utf8')
       let lines = source.split('\n')
-      let content=''
+      let content = ''
       for (let line of lines) {
-        if (line.includes('UUID=')) { 
-          console.log('=======================')
+        if (line.includes('UUID=')) {
           const at = line.indexOf('UUID=')
-          const p1 = line.substring(0, at +5)
+          const p1 = line.substring(0, at + 5)
           const p2 = newUUID
           const p3 = line.substring(at + 5 + 36)
           console.log("Orig: " + line)
@@ -78,9 +95,6 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
           console.log("p2: " + p2)
           console.log("p3: " + p3)
           line = p1 + p2 + p3
-          console.log("p1+p2+p3: " + p1 + p2 + p3)
-          console.log("new line: " + line)
-          console.log('=======================')
         }
         content += line + '\n'
       }
