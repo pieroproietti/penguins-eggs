@@ -78,7 +78,7 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
           console.log("p2: " + p2)
           console.log("p3: " + p3)
           line = p1 + p2 + p3
-          console.log("p1+p2+p3: " + p1 + p3 + p3)
+          console.log("p1+p2+p3: " + p1 + p2 + p3)
           console.log("new line: " + line)
           console.log('=======================')
         }
