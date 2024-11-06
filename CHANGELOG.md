@@ -14,10 +14,11 @@ Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.49
 * `krill`: trying to add RockyLinux and AlmaLinux to penguins-eggs, we updated our TUI system 
-installer to manage systemd-boot entries. The result is the two main open-source enterprise 
+installer to manage `systemd-boot` entries if present. The result is the two main open-source enterprise 
 operating systems: AlmaLinux and RockyLinux now work with penguins-eggs and is possible to build 
 instalable custom servers or desktop;
-* added `isohdpfx.bin` as part of syslinux configuration.
+* added `isohdpfx.bin` as part of syslinux configuration. Actually we use - for all the distros - a subset of [syslinux v6.03](https://wiki.syslinux.org/wiki/index.php?title=Syslinux_6_Changelog#Changes_in_6.03), 
+from [kernel.org](https://mirrors.edge.kernel.org/pub/linux/utils/boot/syslinux/) and embedded inside eggs. 
 
 ## penguins-eggs-10.0.48
 * added `wget` as dependencies on all distros; removed dependencies from syslinux on all distros;
