@@ -61,7 +61,7 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
   if (files.length > 0) {
     for (const file of files) {
       const oldPath = path.join(directoryPath, file)
-      let current = file.substring(34)
+      let current = file.substring(32)
       current = machineId + current
       const newPath = path.join(directoryPath, current)
       await exec(`mv ${oldPath} ${newPath}`)
