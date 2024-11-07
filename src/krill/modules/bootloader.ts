@@ -78,9 +78,7 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
   const files: string[] = fs.readdirSync(directoryPath)
   if (files.length > 0) {
     for (const file of files) {
-      console.log(file)
       const filePath = path.join(directoryPath, file)
-      console.log(`entry: ${filePath}`)
       let source = fs.readFileSync(filePath, 'utf8')
       let lines = source.split('\n')
       let content = ''
@@ -90,10 +88,6 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
           const p1 = line.substring(0, at + 5)
           const p2 = newUUID
           const p3 = line.substring(at + 5 + 36)
-          console.log("Orig: " + line)
-          console.log("p1: " + p1)
-          console.log("p2: " + p2)
-          console.log("p3: " + p3)
           line = p1 + p2 + p3
         }
         content += line + '\n'
