@@ -19,7 +19,7 @@ All ISOs are based on Devuan daedalus
 
 All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 
-# Devuan daedalus
+# Devuan excalibur
 
 * **naked** - just the juice, without GUI. You can start here to build your revolution!
 *  **colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
@@ -34,6 +34,8 @@ If you have recognition problems, edit the `/etc/os-release` file and replace at
 witth the line:
 
 `VERSION_CODENAME=“excalibur”`.
+
+You can download the original Devuan Excalibut at https://www.devuan.org/get-devuan.
 
 
 ## More informations:
