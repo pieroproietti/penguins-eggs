@@ -7,13 +7,11 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import { dir } from 'node:console'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 import fs from 'node:fs'
 import path from 'node:path'
-import { subscribe } from 'node:diagnostics_channel'
 
 /**
  *
