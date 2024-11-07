@@ -62,7 +62,12 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
       let current = file.substring(32)
       current = machineId + current
       const newPath = path.join(directoryPath, current)
-      await exec(`mv ${oldPath} ${newPath}`)
+      const cmd = `mv ${oldPath} ${newPath}`
+      try {
+        await exec(cmd)  
+      } catch (error) {
+        console.log(`error executing: ${cmd}`)
+      }
     }
   }
 }
