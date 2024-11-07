@@ -23,14 +23,6 @@ Enterprise Linux, the community way.
 * **egg-of-rockylinux-naked** (CLI, minimal reproductive installation)
 * **egg-of-rockylinux-colibri** (XFCE, devtools)
 
-**NOTE:** this ISOs are NOT_BOOTING_CORRECTLY. In particular>
-
-* egg-of-rockylinux-naked: don't boot the ISO;
-* egg-of-rockylinux-colibru: the ISO boot and install, but the installed system not.
-
-**work in progress** 
-
-
 # Help need
 I'm not too expert on RockyLinux, and in all the ways we have the follow problems:
 
