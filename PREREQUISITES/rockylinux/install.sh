@@ -15,8 +15,8 @@ if [ ! -f /etc/rocky-release ]; then
     exit 1
 fi
 
-if [ -f ,/nodesource_setup ]; then
-    ./nodesource_setup
+if [ -f ,/nodesource_setup.sh ]; then
+    ./nodesource_setup.sh
 fi
 
 # add epel-release
@@ -64,7 +64,3 @@ mkdir -p /usr/share/icons
 
 # disable selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-
-# we lacks
-# overlayfs-tools
-# dmraid
