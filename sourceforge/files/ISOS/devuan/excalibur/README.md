@@ -25,6 +25,17 @@ All ISOs include eggs, you can udate it with: ```sudo eggs update```.
 *  **colibri** A light xfce4 for developers you can easily start to improve eggs installing colibri.
 * **gnome** just a naked Devuan dressed with gnome, customize it!
 
+## NOTE:
+
+If you have recognition problems, edit the `/etc/os-release` file and replace at the line:
+
+`VERSION_CODENAME=“Excalibur Trinity”`
+
+witth the line:
+
+`VERSION_CODENAME=“excalibur”`.
+
+
 ## More informations:
 
 * Repository: [penguins-eggs](https://github.com/pieroproietti/penguins-eggs)
