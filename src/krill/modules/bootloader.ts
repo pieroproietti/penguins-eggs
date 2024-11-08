@@ -67,15 +67,17 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
   const files: string[] = fs.readdirSync(directoryPath)
   if (files.length > 0) {
     for (const file of files) {
-      const oldPath = path.join(directoryPath, file)
-      let current = file.substring(32)
-      current = machineId + current
-      const newPath = path.join(directoryPath, current)
-      const cmd = `mv ${oldPath} ${newPath}`
-      try {
-        await exec(cmd)
-      } catch (error) {
-        console.log(`error executing: ${cmd}`)
+      if (file.length > 32) {
+        const oldEntry = path.join(directoryPath, file)
+        let current = file.substring(32)
+        current = machineId + current
+        const newEntry = path.join(directoryPath, current)
+        const cmd = `mv ${oldEntry} ${newEntry}`
+        try {
+          await exec(cmd)
+        } catch (error) {
+          console.log(`error executing: ${cmd}`)
+        }
       }
     }
   }
