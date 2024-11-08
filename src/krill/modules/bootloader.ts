@@ -18,6 +18,23 @@ import path from 'node:path'
  * @param this
  */
 export default async function bootloader(this: Sequence) {
+
+  /**
+   * look at: https://systemd.io/BOOT/
+   */
+
+  // update boot/loader/entries/
+  const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
+  if (fs.existsSync(pathEntries)) {
+    const uuid = Utils.uuid(this.devices.root.name)
+    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
+    await renameLoaderEntries(pathEntries, machineId)
+    await updateLoaderEntries(pathEntries, machineId, uuid)
+  }
+
+  /**
+   * GRUB
+   */
   let grubInstall = 'grub-install'
   if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
     grubInstall = 'grub2-install'
@@ -39,14 +56,6 @@ export default async function bootloader(this: Sequence) {
     await Utils.pressKeyToExit(cmd)
   }
 
-  // update boot/loader/entries/
-  const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
-  if (fs.existsSync(pathEntries)) {
-    const uuid = Utils.uuid(this.devices.root.name)
-    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-    await renameLoaderEntries(pathEntries, machineId)
-    await updateLoaderEntries(pathEntries, uuid)
-  }
 }
 
 /**
@@ -64,7 +73,7 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
       const newPath = path.join(directoryPath, current)
       const cmd = `mv ${oldPath} ${newPath}`
       try {
-        await exec(cmd)  
+        await exec(cmd)
       } catch (error) {
         console.log(`error executing: ${cmd}`)
       }
@@ -77,7 +86,7 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
  * @param directoryPath 
  * @param newUUID 
  */
-async function updateLoaderEntries(directoryPath: string, newUUID: string): Promise<void> {
+async function updateLoaderEntries(directoryPath: string, machineId: string, newUUID: string): Promise<void> {
   const files: string[] = fs.readdirSync(directoryPath)
   if (files.length > 0) {
     for (const file of files) {
@@ -86,12 +95,32 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
       let lines = source.split('\n')
       let content = ''
       for (let line of lines) {
+        /**
+         * REPLACE UUID
+         */
         if (line.includes('UUID=')) {
           const at = line.indexOf('UUID=')
-          const p1 = line.substring(0, at + 5)
-          const p2 = newUUID
-          const p3 = line.substring(at + 5 + 36)
-          line = p1 + p2 + p3
+          const start = line.substring(0, at + 5)
+          const stop = line.substring(at + 5 + 36)
+          line = start + newUUID + stop
+        }
+
+        /**
+         * REPLACE machineId
+         */
+        // version 0-rescue-
+        if (line.includes('version 0-rescue-')) {
+          line = `version 0-rescue-${machineId}`
+        }
+
+        // linux /boot/vmlinuz-0-rescue-
+        if (line.includes('vmlinuz-0-rescue-')) {
+          line = `vmlinuz-0-rescue-${machineId}`
+        }
+
+        // initrd /boot/initramfs-0-rescue-
+        if (line.includes('initrd /boot/initramfs-0-rescue-')) {
+          line = `initrd /boot/initramfs-0-rescue-${machineId}.img`
         }
         content += line + '\n'
       }
@@ -99,3 +128,5 @@ async function updateLoaderEntries(directoryPath: string, newUUID: string): Prom
     }
   }
 }
+
+
