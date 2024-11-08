@@ -30,7 +30,7 @@ export default async function machineId(this: Sequence): Promise<void> {
    * machine/id always new now
    */
   if (Utils.isSystemd()) {
-    await exec(`${this.installTarget} systemd-machine-id-setup`)
+    await exec(`chroot ${this.installTarget} systemd-machine-id-setup`)
   } else {
     await exec(`dbus-uuidgen --ensure=${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
     await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
