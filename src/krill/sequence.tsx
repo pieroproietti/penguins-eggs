@@ -566,15 +566,11 @@ export default class Sequence {
          // bootloader (grub-install)
          message = "bootloader"
          await redraw(<Install message={message} percent={83} spinner={this.spinner} />)
-         await this.bootloader()
-         /*
          try {
             await this.bootloader()
          } catch (error) {
             await this.showProblem(message, error)
          }
-         */
-
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
@@ -762,9 +758,6 @@ export default class Sequence {
                <Title />
                <Box>
                   <Text>{message}</Text>
-               </Box>
-               <Box>
-                  <Text>Error: {currErr}</Text>
                </Box>
             </>
          )

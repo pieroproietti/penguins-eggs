@@ -27,22 +27,12 @@ export default async function machineId(this: Sequence): Promise<void> {
   }
 
   /**
-   * machine/id always new now
+   * machine/id ALWAYS new 
    */
   if (Utils.isSystemd()) {
     await exec(`chroot ${this.installTarget} systemd-machine-id-setup`)
   } else {
-    await exec(`dbus-uuidgen --ensure=${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
-    await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`)
+    await exec(`chroot ${this.installTarget} dbus-uuidgen --ensure=/var/lib/dbus/machine-id ${this.toNull}`)
+    await exec(`chroot ${this.installTarget} cp /var/lib/dbus/machine-id /etc/machine-id`)
   }
-
-  /*
-  // On Alpine, we need to create the machine-id file
-  if (this.distro.familyId === 'alpine') {
-    await exec(`dbus-uuidgen --ensure=${this.installTarget}/var/lib/dbus/machine-id ${this.toNull}`)
-    await exec(`cp ${this.installTarget}/var/lib/dbus/machine-id ${this.installTarget}/etc/machine-id`) 
-  } else {
-    await exec(`touch ${file} ${this.toNull}`)
-  }
-  */
 }
