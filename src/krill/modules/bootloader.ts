@@ -130,5 +130,3 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
     }
   }
 }
-
-
