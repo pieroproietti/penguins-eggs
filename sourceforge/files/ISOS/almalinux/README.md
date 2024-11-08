@@ -23,8 +23,6 @@ An Open Source, community owned and governed, forever-free enterprise Linux dist
 
 * **egg-of-almalinux-naked** (CLI, minimal reproductive installation)
 
-**NOTE:** this ISO is NOT_BOOTING_CORRECTLY, download it just to test it on `dracut` emergency shell, and give suggestions.
-
 # Help need
 I'm not too expert on AlmaLinux, and in all the ways we have the follow problems:
 
