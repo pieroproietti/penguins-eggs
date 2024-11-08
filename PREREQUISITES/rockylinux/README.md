@@ -1,6 +1,6 @@
-# Fedora naked
+# RockyLinux/AlmaLinux 
 
-We start from the `Rocky-9.4-x86_64-minimal.iso` image, which is 1,7G, and go to install RockyLinux choosing minimun installation, set root password and user. 
+We start from the `Rocky-9.4-x86_64-minimal.iso` or `Almalinux-9.4-x86_64-minimal.iso` image, which are 1,7G, and go to install choosing minimun installation, set root password and user. 
 
 On `Software selection` select "minimun installation" and confirm with button "Done" up on right.
 
@@ -26,7 +26,7 @@ then, add a line:
 ```
 127.0.1.1   naked
 ```
-to `\etc\hosts`.
+to `/etc/hosts`.
 
 ## Disable selinux
 Edit `/etc/selinux/config` and replace `SELINUX=enforced` with `SELINUX=disabled`.
@@ -44,8 +44,15 @@ git clone https://github.com/pieroproietti/penguins-eggs
 Then we install prerequisites:
 ```
 cd ~/penguins-eggs/PREREQUISITES/rockylinux
+```
+
+first, we need to enable nodesource repo for nodejs >10, just `sudo ./nodesource_setup.sh`.
+
+Then we can install the prerequisites:
+```
 sudo ./install.sh
 ```
+
 At this point, we transpile and install penguins-eggs:
 ```
 cd ~/penguins-eggs
@@ -57,5 +64,3 @@ pnpm i
 When finish, we can just run: ```eggs love``` and build our first fedora naked ISO.
 
 It's installable and reproductive: once installed you can produce a live system from your installed one, just running: `eggs love`.
-
-
