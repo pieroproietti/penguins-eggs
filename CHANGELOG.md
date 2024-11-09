@@ -11,12 +11,16 @@ penguins-eggs
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
+## penguins-eggs-10.0.50
+* `krill`: bugfix on module for `machine-id` creation on new installation;
+* `RockyLinux` and `AlmaLinux` now work nicelly with penguins-eggs and is 
+possible to build  instalable custom servers or desktop.
+
+The result is the two main open-source enterprise operating systems.
 
 ## penguins-eggs-10.0.49
 * `krill`: trying to add RockyLinux and AlmaLinux to penguins-eggs, we updated our TUI system 
-installer to manage `systemd-boot` entries if present. The result is the two main open-source enterprise 
-operating systems: AlmaLinux and RockyLinux now work with penguins-eggs and is possible to build 
-instalable custom servers or desktop;
+installer to manage `systemd-boot` entries if present;
 * added `isohdpfx.bin` as part of syslinux configuration. Actually we use - for all the distros - a subset of [syslinux v6.03](https://wiki.syslinux.org/wiki/index.php?title=Syslinux_6_Changelog#Changes_in_6.03), 
 from [kernel.org](https://mirrors.edge.kernel.org/pub/linux/utils/boot/syslinux/) and embedded inside eggs. 
 

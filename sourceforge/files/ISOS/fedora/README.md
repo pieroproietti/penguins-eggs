@@ -24,12 +24,11 @@ Fedora doesn't need much introduction, Redhat was the first Linux I managed to i
 
 I always liked it, sometimes hated: redhat licence and rpm, but still a great system.
 
-
 # Help need
-I'm not too expert on fedora, and in all the ways we have the follow problems:
+I'm not too expert on Fedora, and in all the ways we have the follow problems:
 
+* Fedora ISOs remastered with eggs can't boot on EFI.
 * again was not able to create an rpm package for penguins-eggs;
-* until now I'm not able to configure calamares on fedora;
-* fedora ISOs remastered with eggs can't boot on EFI.
+* until now I'm not able to configure calamares on AlmaLinux;
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
