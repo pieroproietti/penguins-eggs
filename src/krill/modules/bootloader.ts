@@ -98,13 +98,22 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
       let content = ''
       for (let line of lines) {
         /**
-         * REPLACE UUID
+         * REPLACE root=UUID=
          */
-        if (line.includes('UUID=')) {
-          const at = line.indexOf('UUID=')
-          const start = line.substring(0, at + 5)
-          const stop = line.substring(at + 5 + 36)
+        if (line.includes('root=UUID=')) {
+          const at = line.indexOf('root=UUID=')
+          const start = line.substring(0, at + 10)
+          const stop = line.substring(at + 10 + 36)
           line = start + newUUID + stop
+        }
+
+        /**
+         * REMOVE resume=UUID=
+         */
+        if (line.includes('resume=UUID=')) {
+          const at = line.indexOf('resume=UUID=')
+          const start = line.substring(0, at -1)
+          line = start
         }
 
         /**
