@@ -109,9 +109,8 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
 
         if (line.includes('resume=UUID=')) {
           const at = line.indexOf('resume=UUID=')
-          const start = line.substring(0, at + 13)
-          const stop = line.substring(at + 13 + 36)
-          line = start + newUUID + stop
+          const start = line.substring(0, at)
+          line = start
         }
 
         /**
