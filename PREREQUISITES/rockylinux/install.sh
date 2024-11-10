@@ -11,8 +11,10 @@ fi
 
 # check if we are on fedora
 if [ ! -f /etc/rocky-release ]; then
-    echo "This script is intended for rocky linux only"
-    exit 1
+    if [ ! -f /etc/almalinux-release ]; then
+        echo "This script is intended for rockylinux or almalinux!"
+        exit 1
+    fi
 fi
 
 if [ -f ,/nodesource_setup.sh ]; then
