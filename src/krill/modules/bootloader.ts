@@ -98,7 +98,7 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
       let content = ''
       for (let line of lines) {
         /**
-         * REPLACE UUID
+         * REPLACE root=UUID=
          */
         if (line.includes('root=UUID=')) {
           const at = line.indexOf('root=UUID=')
@@ -107,9 +107,12 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
           line = start + newUUID + stop
         }
 
+        /**
+         * REMOVE resume=UUID=
+         */
         if (line.includes('resume=UUID=')) {
           const at = line.indexOf('resume=UUID=')
-          const start = line.substring(0, at)
+          const start = line.substring(0, at -1)
           line = start
         }
 
