@@ -145,6 +145,8 @@ export default class Tailor {
         break
       }
 
+      case 'AlmaLinux':
+      case 'RockyLinux':
       case 'Fedora': {
         tailorList = `${this.costume}/fedora.yml`
         if (!fs.existsSync(tailorList)) {
