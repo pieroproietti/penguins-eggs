@@ -9,10 +9,12 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# check if we are on fedora
+# check if we are on fedora or NobaraLinux
 if [ ! -f /etc/fedora-release ]; then
-    echo "This script is intended for fedora linux only"
-    exit 1
+    if [ ! -f /etc/nobara-release ]; then
+        echo "This script is intended for fedora or nobaralinux!"
+        exit 1
+    fi
 fi
 
 # update
