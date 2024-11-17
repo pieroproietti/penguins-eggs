@@ -1,4 +1,4 @@
-# Debian/bookworm
+# Fedora
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [ local, /usr/lib/calamares/modules ]
@@ -65,8 +65,6 @@ sequence:
       - partition
       - mount
       - unpackfs
-      - dpkg-unsafe-io
-      - sources-yolk
       {{hasSystemd}}machineid
       - fstab
       - locale
@@ -85,9 +83,7 @@ sequence:
       - plymouthcfg
       - initramfscfg
       - initramfs
-      - dpkg-unsafe-io-undo
       - removeuser
-      - sources-yolk-undo
       - cleanup
       - umount
 
