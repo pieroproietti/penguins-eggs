@@ -99,6 +99,7 @@ class Distro implements IDistro {
        * Fedora compatible
        */
       case 'AlmaLinux':
+        case 'NobaraLinux':
         case 'RockyLinux':
         case 'Fedora': {
         this.familyId = 'fedora'
