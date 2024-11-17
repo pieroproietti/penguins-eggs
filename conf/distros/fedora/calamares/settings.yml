@@ -70,19 +70,18 @@ sequence:
       - locale
       - keyboard
       - localecfg
+      - luksbootkeyfile
+      - dracutlukscfg
       {{createUsers}}users
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
       {{hasSystemd}}services-systemd 
-      - bootloader-config
+      - dracut
       - grubcfg
       - bootloader
       - packages
-      - luksbootkeyfile
-      - plymouthcfg
-      - initramfscfg
-      - initramfs
+      - shellprocess
       - removeuser
       - cleanup
       - umount
