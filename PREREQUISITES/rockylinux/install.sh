@@ -9,7 +9,7 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# check if we are on fedora
+# check if we are on rocky or almalinux
 if [ ! -f /etc/rocky-release ]; then
     if [ ! -f /etc/almalinux-release ]; then
         echo "This script is intended for rockylinux or almalinux!"
