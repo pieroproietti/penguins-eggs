@@ -81,7 +81,6 @@ sequence:
       - grubcfg
       - bootloader
       - packages
-      - shellprocess
       - removeuser
       - cleanup
       - umount
