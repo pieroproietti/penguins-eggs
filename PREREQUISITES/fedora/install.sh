@@ -12,8 +12,10 @@ fi
 # check if we are on fedora or NobaraLinux
 if [ ! -f /etc/fedora-release ]; then
     if [ ! -f /etc/nobara-release ]; then
-        echo "This script is intended for fedora or nobaralinux!"
-        exit 1
+        if [ ! -f /etc/openmamba-release ]; then
+            echo "This script is intended for fedora, nobaralinux or openmamba!"
+            exit 1
+        fi
     fi
 fi
 
