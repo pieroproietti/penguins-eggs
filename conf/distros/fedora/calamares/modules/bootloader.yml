@@ -30,7 +30,7 @@ timeout: "10"
 grubInstall: "grub2-install"
 grubMkconfig: "grub2-mkconfig"
 grubCfg: "/boot/grub/grub.cfg"
-grubProbe: "grub-probe"
+grubProbe: "grub2-probe"
 efiBootMgr: "efibootmgr"
 
 # Optionally set the bootloader ID to use for EFI. This is passed to
