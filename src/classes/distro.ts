@@ -100,6 +100,7 @@ class Distro implements IDistro {
        */
       case 'AlmaLinux':
         case 'NobaraLinux':
+        case 'openmamba':
         case 'RockyLinux':
         case 'Fedora': {
         this.familyId = 'fedora'
