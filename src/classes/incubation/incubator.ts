@@ -226,7 +226,7 @@ export default class Incubator {
        * Fedora
        */
       case 'fedora': {
-        const fedora = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const fedora = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await fedora.create()
 
         break
@@ -272,7 +272,7 @@ export default class Incubator {
       let file=this.installer.configRoot + '/settings.conf'
       let fileContent = fs.readFileSync(file, 'utf8')
       let yamlContent = yaml.load(fileContent)
-      let destContent = `# settings.conf, created by penguins-eggs ${pjson.version}\n`
+      let destContent = `# settings.conf on ${this.distro.distroId}/${this.distro.codenameId} penguins-eggs ${pjson.version}\n`
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
       fs.writeFileSync(file, destContent, 'utf8')
