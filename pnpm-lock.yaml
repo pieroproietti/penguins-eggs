@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@oclif/core':
         specifier: ^4.0.30
-        version: 4.0.32
+        version: 4.0.33
       '@oclif/plugin-autocomplete':
         specifier: ^3.2.7
         version: 3.2.10
@@ -80,7 +80,7 @@ importers:
         version: 0.2.1
       '@oclif/test':
         specifier: ^4.1.0
-        version: 4.1.1(@oclif/core@4.0.32)
+        version: 4.1.2(@oclif/core@4.0.33)
       '@types/chai':
         specifier: ^4.3.19
         version: 4.3.20
@@ -122,7 +122,7 @@ importers:
         version: 8.57.1
       eslint-config-oclif:
         specifier: ^5.2.1
-        version: 5.2.1(eslint@8.57.1)
+        version: 5.2.2(eslint@8.57.1)
       eslint-config-oclif-typescript:
         specifier: ^3.1.12
         version: 3.1.12(eslint@8.57.1)(typescript@5.6.3)
@@ -501,8 +501,8 @@ packages:
     resolution: {integrity: sha512-Fg93aNFvXzBq5L7ztVHFP2nYwWU1oTCq48G0TjF/qC1UN36KWa2H5Hsm72kERd5x/sjy2M2Tn4kDEorUlpXOlw==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/core@4.0.32':
-    resolution: {integrity: sha512-O3jfIAhqaJxXI2dzF81PLTMhKpFFA0Nyz8kfBnc9WYDJnvdmXK0fVAOSpwpi2mHTow/9FXxY6Kww8+Kbe7/sag==}
+  '@oclif/core@4.0.33':
+    resolution: {integrity: sha512-NoTDwJ2L/ywpsSjcN7jAAHf3m70Px4Yim2SJrm16r70XpnfbNOdlj1x0HEJ0t95gfD+p/y5uy+qPT/VXTh/1gw==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-autocomplete@3.2.10':
@@ -528,8 +528,8 @@ packages:
   '@oclif/prettier-config@0.2.1':
     resolution: {integrity: sha512-XB8kwQj8zynXjIIWRm+6gO/r8Qft2xKtwBMSmq1JRqtA6TpwpqECqiu8LosBCyg2JBXuUy2lU23/L98KIR7FrQ==}
 
-  '@oclif/test@4.1.1':
-    resolution: {integrity: sha512-eltLnzdRKXaCQbwl7fSWHUHaHGvYNld0gpKjav6QHvM03w7NV7k4jYMEwQXwf+qmh9LuaFyADDi/tpZfrWNQVQ==}
+  '@oclif/test@4.1.2':
+    resolution: {integrity: sha512-N8eibgRnH/5TTExC/RxjpLuVbyAy0bGXKHdJxD75tLxH01Ygds90gnSDtkNm14z6kPH90ac+A+LwY1IFZmg1bg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@oclif/core': '>= 3.0.0'
@@ -1291,8 +1291,8 @@ packages:
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
-  cross-spawn@7.0.5:
-    resolution: {integrity: sha512-ZVJrKKYunU38/76t0RMOulHOnUcbU9GbpWKAOZ0mhjr7CX6FVrH+4FrAapSOekrgFQ3f/8gwMEuIft0aKq6Hug==}
+  cross-spawn@7.0.6:
+    resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
   csstype@3.1.3:
@@ -1464,8 +1464,8 @@ packages:
     resolution: {integrity: sha512-hEXU/PEJyjeLiTrCmgcmx0+FHwVpqipkKSykesdMsk2v43Mqh5bq2j3cyxHXZBCOxpTACVlM6KG7d4LFaWoVHQ==}
     engines: {node: '>=18.0.0'}
 
-  eslint-config-oclif@5.2.1:
-    resolution: {integrity: sha512-f0I7oB3lkbEnTqH+F18tKNmZG78aDjiCWz7co0Zbz6s12k655jUvb6FtzHniCmATqaHfcVVdrOldBT6P3bKpxA==}
+  eslint-config-oclif@5.2.2:
+    resolution: {integrity: sha512-NNTyyolSmKJicgxtoWZ/hoy2Rw56WIoWCFxgnBkXqDgi9qPKMwZs2Nx2b6SHLJvCiWWhZhWr5V46CFPo3PSPag==}
     engines: {node: '>=18.0.0'}
 
   eslint-config-prettier@9.1.0:
@@ -1700,8 +1700,8 @@ packages:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
 
-  flatted@3.3.1:
-    resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
+  flatted@3.3.2:
+    resolution: {integrity: sha512-AiwGJM8YcNOaobumgtng+6NHuOqC3A7MixFeDafM3X9cIUM+xUXoS5Vfgf+OihAYe20fxqNM9yPBXJzRtZ/4eA==}
 
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
@@ -4044,7 +4044,7 @@ snapshots:
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
 
-  '@oclif/core@4.0.32':
+  '@oclif/core@4.0.33':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.3.2
@@ -4067,7 +4067,7 @@ snapshots:
 
   '@oclif/plugin-autocomplete@3.2.10':
     dependencies:
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       ansis: 3.3.2
       debug: 4.3.7(supports-color@8.1.1)
       ejs: 3.1.10
@@ -4076,12 +4076,12 @@ snapshots:
 
   '@oclif/plugin-help@6.2.18':
     dependencies:
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
 
   '@oclif/plugin-not-found@3.2.28(@types/node@20.17.6)':
     dependencies:
       '@inquirer/prompts': 7.1.0(@types/node@20.17.6)
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       ansis: 3.3.2
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
@@ -4089,12 +4089,12 @@ snapshots:
 
   '@oclif/plugin-version@2.2.16':
     dependencies:
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       ansis: 3.3.2
 
   '@oclif/plugin-warn-if-update-available@3.1.23':
     dependencies:
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       ansis: 3.3.2
       debug: 4.3.7(supports-color@8.1.1)
       http-call: 5.3.0
@@ -4105,7 +4105,7 @@ snapshots:
 
   '@oclif/prettier-config@0.2.1': {}
 
-  '@oclif/test@4.1.1(@oclif/core@3.27.0)':
+  '@oclif/test@4.1.2(@oclif/core@3.27.0)':
     dependencies:
       '@oclif/core': 3.27.0
       ansis: 3.3.2
@@ -4113,9 +4113,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@oclif/test@4.1.1(@oclif/core@4.0.32)':
+  '@oclif/test@4.1.2(@oclif/core@4.0.33)':
     dependencies:
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       ansis: 3.3.2
       debug: 4.3.7(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -5059,7 +5059,7 @@ snapshots:
 
   create-require@1.1.1: {}
 
-  cross-spawn@7.0.5:
+  cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
       shebang-command: 2.0.0
@@ -5276,7 +5276,7 @@ snapshots:
       - typescript
       - vue-eslint-parser
 
-  eslint-config-oclif@5.2.1(eslint@8.57.1):
+  eslint-config-oclif@5.2.2(eslint@8.57.1):
     dependencies:
       eslint-config-xo-space: 0.35.0(eslint@8.57.1)
       eslint-plugin-mocha: 10.5.0(eslint@8.57.1)
@@ -5452,7 +5452,7 @@ snapshots:
       '@ungap/structured-clone': 1.2.0
       ajv: 6.12.6
       chalk: 4.1.2
-      cross-spawn: 7.0.5
+      cross-spawn: 7.0.6
       debug: 4.3.7(supports-color@8.1.1)
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
@@ -5571,13 +5571,13 @@ snapshots:
 
   flat-cache@3.2.0:
     dependencies:
-      flatted: 3.3.1
+      flatted: 3.3.2
       keyv: 4.5.4
       rimraf: 3.0.2
 
   flat@5.0.2: {}
 
-  flatted@3.3.1: {}
+  flatted@3.3.2: {}
 
   follow-redirects@1.15.9(debug@4.3.7):
     optionalDependencies:
@@ -6364,7 +6364,7 @@ snapshots:
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
-      '@oclif/core': 4.0.32
+      '@oclif/core': 4.0.33
       '@oclif/plugin-help': 6.2.18
       '@oclif/plugin-not-found': 3.2.28(@types/node@20.17.6)
       '@oclif/plugin-warn-if-update-available': 3.1.23
@@ -6482,7 +6482,7 @@ snapshots:
   password-prompt@1.1.3:
     dependencies:
       ansi-escapes: 4.3.2
-      cross-spawn: 7.0.5
+      cross-spawn: 7.0.6
 
   patch-console@2.0.0: {}
 
@@ -6509,7 +6509,7 @@ snapshots:
       '@oclif/plugin-autocomplete': 3.2.10
       '@oclif/plugin-help': 6.2.18
       '@oclif/plugin-version': 2.2.16
-      '@oclif/test': 4.1.1(@oclif/core@3.27.0)
+      '@oclif/test': 4.1.2(@oclif/core@3.27.0)
       chalk: 4.1.2
       fs-extra: 8.1.0
       inquirer: 8.2.4

@@ -1,4 +1,4 @@
-# Debian bookworm
+# Fedora
 # Bootloader configuration. The bootloader is installed to allow
 # the system to start (and pick one of the installed operating
 # systems to run).
@@ -27,10 +27,10 @@ timeout: "10"
 # GRUB functionality (notably grub-probe) to work. As needed, you may use
 # complete paths like `/usr/bin/efibootmgr` for the executables.
 #
-grubInstall: "grub-install"
-grubMkconfig: "grub-mkconfig"
+grubInstall: "grub2-install"
+grubMkconfig: "grub2-mkconfig"
 grubCfg: "/boot/grub/grub.cfg"
-grubProbe: "grub-probe"
+grubProbe: "grub2-probe"
 efiBootMgr: "efibootmgr"
 
 # Optionally set the bootloader ID to use for EFI. This is passed to
@@ -45,7 +45,7 @@ efiBootMgr: "efibootmgr"
 # (problematic characters, see above, are replaced).
 #
 # efiBootloaderId: "dirname"
-efiBootloaderId: "Debian"
+efiBootloaderId: "fedora"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootia32.efi or bootx64.efi depending on
