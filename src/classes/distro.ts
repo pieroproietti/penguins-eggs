@@ -352,7 +352,7 @@ class Distro implements IDistro {
      */
     if (this.familyId === "debian") {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-    } else (this.familyId === "opensuse") {
+    } else if (this.familyId === "opensuse") {
       this.usrLibPath = '/usr/lib64/'
     }  
 
