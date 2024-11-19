@@ -1,4 +1,4 @@
-# Debian/Buster et others
+# Fedora
 # partition.yaml
 ---
 # This setting specifies the mount point of the EFI system partition. Some
