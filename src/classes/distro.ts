@@ -352,7 +352,9 @@ class Distro implements IDistro {
      */
     if (this.familyId === "debian") {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-    }
+    } else (this.familyId === "opensuse") {
+      this.usrLibPath = '/usr/lib64/'
+    }  
 
     /**
      * ManjaroLinux e derivate
