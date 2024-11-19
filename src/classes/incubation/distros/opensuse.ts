@@ -1,5 +1,5 @@
 /**
- * ./src/classes/incubation/distros/rolling.ts
+ * ./src/classes/incubation/distros/opensuse.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -8,13 +8,12 @@
 
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../cfs.js'
-import Pacman from '../../pacman.js'
 import Fisherman from '../fisherman.js'
 
 /**
  *
  */
-export class Rolling {
+export class Opensuse {
   distro: IDistro
 
   installer = {} as IInstaller
@@ -27,7 +26,7 @@ export class Rolling {
 
   theme: string
 
-  user_opt: string
+  user_opt: string 
 
   verbose = false
 
@@ -61,25 +60,26 @@ export class Rolling {
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs()
+    await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale', this.theme)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
+    await fisherman.buildModule('dracutcfg')
     await fisherman.buildModule('users', this.theme)
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    // await fisherman.buildModule('services-systemd')
-    // await fisherman.buildCalamaresModule('bootloader-config', true)
+    await fisherman.buildModule('services-systemd')
+    await fisherman.buildModule('dracut')
     await fisherman.buildModule('grubcf')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
-    await fisherman.buildModule('luksbootkeyfile')
+    //await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
-    // await fisherman.buildModule('initramfscfg')
-    // await fisherman.buildModule('initramfs')
+    //await fisherman.buildModule('mkinitfs')
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.shellprocess('removelink')
+    await fisherman.buildCalamaresModule('cleanup', true)
 
     /**
      * cfs: custom final steps
