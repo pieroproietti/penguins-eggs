@@ -29,6 +29,7 @@ import { Buster } from './distros/buster.js'
 import { Jessie } from './distros/jessie.js'
 import { Noble } from './distros/noble.js'
 import { Rolling } from './distros/rolling.js'
+import { Opensuse } from './distros/opensuse.js'
 import { installer } from './installer.js'
 
 // _dirname
@@ -260,7 +261,8 @@ export default class Incubator {
         let file = this.installer.modules + elem
         let fileContent = fs.readFileSync(file, 'utf8')
         let yamlContent = yaml.load(fileContent)
-        let destContent = `# ${elem}, created by penguins-eggs ${pjson.version}\n`
+        
+        let destContent = `# ${elem} on ${this.distro.distroId}, penguins-eggs ${pjson.version}\n`
         destContent += '---\n'
         destContent += yaml.dump(yamlContent)
         fs.writeFileSync(file, destContent, 'utf8')

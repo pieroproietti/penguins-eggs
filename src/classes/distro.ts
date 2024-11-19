@@ -76,7 +76,8 @@ class Distro implements IDistro {
     }
 
     /**
-     * Per Alpine, Fedora ed OpenSUSE basta distroId,
+     * Alpine, Fedora, openmamba, opensuse, VoidLinux solo distroId.
+     * 
      * Debian, Devuan, Ubuntu e derivate ricadono in
      * default e si analizza il codebaseId
      * 
@@ -111,6 +112,7 @@ class Distro implements IDistro {
         break
       }
 
+
       /**
        * openmamba
        */
@@ -127,7 +129,15 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-      case 'openSUSE': {
+      case 'opensuse': {
+        this.familyId = 'opensuse'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.codenameLikeId = this.familyId // per krill
+        this.liveMediumPath = '/run/initramfs/live/' // check
+
+        break
+      }
 
       /**
        * voidlinux compatible
