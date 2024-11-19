@@ -129,7 +129,7 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-      case 'opensuse': {
+      case 'openSUSE': {
         this.familyId = 'opensuse'
         this.distroLike = this.distroId
         this.codenameId = 'rolling' // viene rimosso dal nome
