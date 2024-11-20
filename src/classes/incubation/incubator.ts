@@ -30,6 +30,7 @@ import { Jessie } from './distros/jessie.js'
 import { Noble } from './distros/noble.js'
 import { Rolling } from './distros/rolling.js'
 import { Opensuse } from './distros/opensuse.js'
+import { Openmamba } from './distros/openmamba.js'
 import { installer } from './installer.js'
 
 // _dirname
@@ -228,6 +229,16 @@ export default class Incubator {
       case 'fedora': {
         const fedora = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await fedora.create()
+
+        break
+      }
+
+      /**
+       * opensuse
+       */
+      case 'openmamba': {
+        const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await mamba.create()
 
         break
       }

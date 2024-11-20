@@ -519,6 +519,14 @@ export default class Pacman {
       await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
+      * openmamba
+      **********************************************************************************/
+    } else if (this.distro().codenameLikeId === 'openmamba') {
+      const dest = '/etc/penguins-eggs.d/distros/openmamba/'
+      const mamba = `${rootPen}/conf/distros/openmamba/*`
+      await exec(`cp -r ${mamba} ${dest}`, echo)
+
+      /***********************************************************************************
       * opensuse
       **********************************************************************************/
     } else if (this.distro().codenameLikeId === 'opensuse') {
@@ -756,7 +764,7 @@ export default class Pacman {
    * @returns grub
    */
   static whichGrubIsInstalled(): string {
-    let grubInstalled = ''
+    let grubInstalled = 'grub'
     if (this.distro().familyId === 'debian') {
       if (this.packageIsInstalled('grub-common')) {
         grubInstalled = 'grub'

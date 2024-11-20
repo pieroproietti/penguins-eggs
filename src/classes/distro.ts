@@ -118,7 +118,7 @@ class Distro implements IDistro {
        */
       case 'openmamba': {
         this.familyId = 'openmamba'
-        this.distroLike = this.distroId
+        this.distroLike = 'openmamba'
         this.codenameId = 'rolling' // viene rimosso dal nome
         this.codenameLikeId = this.familyId // per krill
         this.liveMediumPath = '/run/initramfs/live/' // check
