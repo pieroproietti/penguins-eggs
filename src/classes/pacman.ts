@@ -20,6 +20,7 @@ import Alpine from './families/alpine.js'
 import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
 import Fedora from './families/fedora.js'
+import Openmamba from './families/openmamba.js'
 import Opensuse from './families/opensuse.js'
 import Voidlinux from './families/voidlinux.js'
 
@@ -83,6 +84,8 @@ export default class Pacman {
         }
       } else if (this.distro().familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'openmamba') {
+        await Openmamba.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'voidlinux') {
@@ -118,6 +121,8 @@ export default class Pacman {
       retVal = await Archlinux.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'openmamba') {
+      retVal = await Openmamba.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'voidlinux') {
@@ -587,6 +592,10 @@ export default class Pacman {
       if (Alpine.packageIsInstalled('xwayland*')) {
         installed = true
       }
+    } else if (this.distro().familyId === 'openmamba') {
+      if (Openmamba.packageIsInstalled('wayland')) {
+        installed = true
+      }
     } else if (this.distro().familyId === 'opensuse') {
       if (Opensuse.packageIsInstalled('wayland')) {
         installed = true
@@ -620,6 +629,10 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'openmamba') {
+      if (Opensuse.packageIsInstalled('xorg-server')) {
         installed = true
       }
     } else if (this.distro().familyId === 'opensuse') {
@@ -727,6 +740,8 @@ export default class Pacman {
       retVal = await Fedora.packageInstall(packageName)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
+    } else if (this.distro().familyId === 'openmamba') {
+      retVal = await Openmamba.packageInstall(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
     }
@@ -748,6 +763,8 @@ export default class Pacman {
       installed = Archlinux.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'alpine') {
       installed = Alpine.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'openmamba') {
+      installed = Openmamba.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
     }
