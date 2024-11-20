@@ -24,8 +24,9 @@ export default class Openmamba {
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
+
     try {
-      await exec(`dnf install -y ${this.packs4calamares.join(' ')}`, echo)
+      await exec(`dnf install ${this.packs4calamares.join(' ')}`, echo)
     } catch {
       Utils.error(`fedora.calamaresInstall()`)
     }
@@ -84,7 +85,7 @@ export default class Openmamba {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: false }) === '0') {
       retVal = true
     }
 

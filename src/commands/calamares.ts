@@ -41,6 +41,13 @@ export default class Calamares extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
+    if (Pacman.isInstalledXorg()) {
+      console.log("xorg")
+    }
+    if (Pacman.isInstalledWayland()) {
+      console.log("wayland")
+    }
+  
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
