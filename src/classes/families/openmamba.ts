@@ -1,5 +1,5 @@
 /**
- * ./src/classes/families/fedora.ts
+ * ./src/classes/families/openmamba.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -17,17 +17,15 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Openmamba {
-  static packs4calamares = ['calamares']
-
   /**
    *
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      await exec(`dnf install -y ${this.packs4calamares.join(' ')}`, echo)
+      await exec('dnf install calamares -y',echo)
     } catch {
-      Utils.error(`fedora.calamaresInstall()`)
+      Utils.error(`openmamba.calamaresInstall()`)
     }
   }
 
@@ -84,7 +82,7 @@ export default class Openmamba {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: false }) === '0') {
       retVal = true
     }
 

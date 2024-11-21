@@ -6,6 +6,7 @@
  * license: MIT
  */
 
+import os from 'os'
 import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
@@ -23,6 +24,7 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  * @remarks all the utilities
  */
 export default class Xdg {
+
   /**
    *
    * @param olduser
@@ -30,6 +32,7 @@ export default class Xdg {
    * @param chroot
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
+
     // console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
     if (Pacman.isInstalledGui()) {
       /**
@@ -69,7 +72,6 @@ export default class Xdg {
         for (const elem of files) {
           const curFile = dc + elem
           if (!fs.statSync(`/${curFile}`).isDirectory()) {
-          //if (!N8.isDirectory(curFile)) {
             let content = fs.readFileSync(curFile, 'utf8')
             const find = '[Seat:*]'
             if (content.includes(find)) {
@@ -78,6 +80,15 @@ export default class Xdg {
               fs.writeFileSync(curFile, content, 'utf8')
             }
           }
+        }
+      } else if (Pacman.packageIsInstalled('lxdm')) {
+        let lxdmConf = '/etc/lxdm/lxdm.conf'
+        if (fs.existsSync(lxdmConf)) {
+          let content = fs.readFileSync(lxdmConf, 'utf8')
+          const regex = new RegExp(`autologin\\s*=\\s*${olduser}`, 'g') // remove spaces            
+          content = content.replace(regex, `autologin=${newuser}`)
+          fs.writeFileSync(lxdmConf, content, 'utf8')
+          console.log(content)
         }
       } else if (Pacman.packageIsInstalled('sddm')) {
         /**
@@ -150,6 +161,7 @@ export default class Xdg {
       }
     }
   }
+
 
   /**
    *
@@ -352,3 +364,4 @@ async function rmIfExist(file2Remove: string, recursive = '') {
     await exec(`rm -f${recursive} ${file2Remove}`)
   }
 }
+

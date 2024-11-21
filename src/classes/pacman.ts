@@ -20,6 +20,7 @@ import Alpine from './families/alpine.js'
 import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
 import Fedora from './families/fedora.js'
+import Openmamba from './families/openmamba.js'
 import Opensuse from './families/opensuse.js'
 import Voidlinux from './families/voidlinux.js'
 
@@ -70,6 +71,8 @@ export default class Pacman {
         await Debian.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'openmamba') {
+        await Openmamba.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
         if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
           const cmd = `pacman -Sy --noconfirm calamares`
@@ -81,6 +84,7 @@ export default class Pacman {
         } else {
           await Archlinux.calamaresInstall(verbose)
         }
+
       } else if (this.distro().familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'opensuse') {
@@ -118,6 +122,8 @@ export default class Pacman {
       retVal = await Archlinux.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'openmamba') {
+      retVal = await Openmamba.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'voidlinux') {
@@ -519,6 +525,14 @@ export default class Pacman {
       await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
+      * openmamba
+      **********************************************************************************/
+    } else if (this.distro().codenameLikeId === 'openmamba') {
+      const dest = '/etc/penguins-eggs.d/distros/openmamba/'
+      const mamba = `${rootPen}/conf/distros/openmamba/*`
+      await exec(`cp -r ${mamba} ${dest}`, echo)
+
+      /***********************************************************************************
       * opensuse
       **********************************************************************************/
     } else if (this.distro().codenameLikeId === 'opensuse') {
@@ -579,6 +593,10 @@ export default class Pacman {
       if (Alpine.packageIsInstalled('xwayland*')) {
         installed = true
       }
+    } else if (this.distro().familyId === 'openmamba') {
+      if (Openmamba.packageIsInstalled('wayland')) {
+        installed = true
+      }
     } else if (this.distro().familyId === 'opensuse') {
       if (Opensuse.packageIsInstalled('wayland')) {
         installed = true
@@ -612,6 +630,10 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'openmamba') {
+      if (Openmamba.packageIsInstalled('xorg-server')) {
         installed = true
       }
     } else if (this.distro().familyId === 'opensuse') {
@@ -719,6 +741,8 @@ export default class Pacman {
       retVal = await Fedora.packageInstall(packageName)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
+    } else if (this.distro().familyId === 'openmamba') {
+      retVal = await Openmamba.packageInstall(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
     }
@@ -740,6 +764,8 @@ export default class Pacman {
       installed = Archlinux.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'alpine') {
       installed = Alpine.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'openmamba') {
+      installed = Openmamba.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
     }
@@ -756,7 +782,7 @@ export default class Pacman {
    * @returns grub
    */
   static whichGrubIsInstalled(): string {
-    let grubInstalled = ''
+    let grubInstalled = 'grub'
     if (this.distro().familyId === 'debian') {
       if (this.packageIsInstalled('grub-common')) {
         grubInstalled = 'grub'
@@ -772,7 +798,9 @@ export default class Pacman {
     } else if (this.distro().familyId === 'alpine') {
       grubInstalled = 'grub'
     } else if (this.distro().familyId === 'opensuse') {
-      grubInstalled = 'grub'
+      if (this.packageIsInstalled('grub2-common')) {
+        grubInstalled = 'grub2'
+      }
     } else if (this.distro().familyId === 'voidlinux') {
       grubInstalled = 'grub'
     }

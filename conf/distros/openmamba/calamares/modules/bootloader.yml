@@ -1,4 +1,3 @@
-# OpenSuSE
 # SPDX-FileCopyrightText: no
 # SPDX-License-Identifier: CC0-1.0
 #
@@ -15,7 +14,7 @@
 
 # Define which bootloader you want to use for EFI installations
 # Possible options are 'grub', 'sb-shim', 'refind` and 'systemd-boot'.
-efiBootLoader: "sb-shim"
+efiBootLoader: "grub"
 
 # systemd-boot configuration files settings
 
@@ -42,10 +41,10 @@ kernelParams: [ "quiet" ]
 # GRUB functionality (notably grub-probe) to work. As needed, you may use
 # complete paths like `/usr/bin/efibootmgr` for the executables.
 #
-grubInstall: "grub2-install"
-grubMkconfig: "grub2-mkconfig"
-grubCfg: "/boot/grub2/grub.cfg"
-grubProbe: "grub2-probe"
+grubInstall: "grub-install"
+grubMkconfig: "grub-mkconfig"
+grubCfg: "/boot/grub/grub.cfg"
+grubProbe: "grub-probe"
 efiBootMgr: "efibootmgr"
 
 # Optionally set the bootloader ID to use for EFI. This is passed to
@@ -73,9 +72,7 @@ efiBootMgr: "efibootmgr"
 #       packages may need to set this to "debian" because that is
 #       hard-coded in `grubx64.efi`.
 #
-# PACKAGER NOTE: If you really want to change this value, you will also have to
-#                change the hardcoded directory name in the grub2(-efi) package.
-efiBootloaderId: "fedora"
+# efiBootloaderId: "dirname"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootia32.efi or bootx64.efi depending on

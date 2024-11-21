@@ -1,4 +1,4 @@
-# Debian/Bookworm
+# OpenSuSE
 ---
 mountOptions:
   default: defaults,noatime

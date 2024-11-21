@@ -244,10 +244,15 @@ export default class Utils {
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          suffix = '.img'
+      } else if (distro.familyId === 'openmamba') {
+         initrd = 'initramfs'
+         separator = '-'
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       } else if (distro.familyId === 'opensuse') {
          initrd = 'initrd'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+
       } else if (distro.familyId === 'voidlinux') {
          initrd = 'initramfs'
          separator = '-'
@@ -259,6 +264,7 @@ export default class Utils {
       if (distro.distroId === 'Manjaro') {
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       }
+
 
       initrd = path + initrd + separator + version + suffix
       return initrd
