@@ -6,6 +6,7 @@
  * license: MIT
  */
 
+import os from 'os'
 import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
@@ -23,6 +24,7 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  * @remarks all the utilities
  */
 export default class Xdg {
+
   /**
    *
    * @param olduser
@@ -30,6 +32,7 @@ export default class Xdg {
    * @param chroot
    */
   static async autologin(olduser: string, newuser: string, chroot = '/') {
+
     // console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
     if (Pacman.isInstalledGui()) {
       /**
@@ -352,3 +355,4 @@ async function rmIfExist(file2Remove: string, recursive = '') {
     await exec(`rm -f${recursive} ${file2Remove}`)
   }
 }
+

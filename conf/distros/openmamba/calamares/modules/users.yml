@@ -183,7 +183,7 @@ passwordRequirements:
 # the checkbox. This checkbox allows the user to choose to disable
 # password-strength-checks. By default the box is **hidden**, so
 # that you have to pick a password that satisfies the checks.
-allowWeakPasswords: false
+allowWeakPasswords: true
 # You can control the initial state for the 'strong passwords' checkbox here.
 # Possible values are:
 #  - true to uncheck or

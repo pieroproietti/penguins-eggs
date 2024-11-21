@@ -88,6 +88,6 @@
 # for its destination name, as in the example below.
 
 unpack:
-    -   source: "/run/initramfs/live/LiveOS/squashfs.img"
+    -   source: {{source}}
         sourcefs: "squashfs"
         destination: ""

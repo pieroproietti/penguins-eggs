@@ -331,7 +331,7 @@ export default class Ovary {
       }
 
       case 'openmamba': {
-        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sysadmin ${this.settings.config.user_opt}`, this.verbose))
+        cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sysadmin autologin ${this.settings.config.user_opt}`, this.verbose))
 
         break
       }
