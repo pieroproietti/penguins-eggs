@@ -71,6 +71,8 @@ export default class Pacman {
         await Debian.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'openmamba') {
+        await Openmamba.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
         if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
           const cmd = `pacman -Sy --noconfirm calamares`
@@ -82,10 +84,9 @@ export default class Pacman {
         } else {
           await Archlinux.calamaresInstall(verbose)
         }
+
       } else if (this.distro().familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
-      } else if (this.distro().familyId === 'openmamba') {
-        await Openmamba.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'voidlinux') {
@@ -632,7 +633,7 @@ export default class Pacman {
         installed = true
       }
     } else if (this.distro().familyId === 'openmamba') {
-      if (Opensuse.packageIsInstalled('xorg-server')) {
+      if (Openmamba.packageIsInstalled('xorg-server')) {
         installed = true
       }
     } else if (this.distro().familyId === 'opensuse') {
