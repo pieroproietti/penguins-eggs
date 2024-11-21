@@ -1,4 +1,4 @@
-# Debian/bookworm
+# OpenSuSE
 # added Whether to copy entropy from the host
 ---
 # Whether to create /etc/machine-id for systemd.

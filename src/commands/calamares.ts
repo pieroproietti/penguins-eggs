@@ -40,7 +40,7 @@ export default class Calamares extends Command {
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
-
+  
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)

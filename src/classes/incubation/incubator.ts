@@ -30,6 +30,7 @@ import { Jessie } from './distros/jessie.js'
 import { Noble } from './distros/noble.js'
 import { Rolling } from './distros/rolling.js'
 import { Opensuse } from './distros/opensuse.js'
+import { Openmamba } from './distros/openmamba.js'
 import { installer } from './installer.js'
 
 // _dirname
@@ -226,7 +227,7 @@ export default class Incubator {
        * Fedora
        */
       case 'fedora': {
-        const fedora = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const fedora = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await fedora.create()
 
         break
@@ -235,8 +236,18 @@ export default class Incubator {
       /**
        * opensuse
        */
+      case 'openmamba': {
+        const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await mamba.create()
+
+        break
+      }
+
+      /**
+       * opensuse
+       */
       case 'opensuse': {
-        const suse = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const suse = new Opensuse(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await suse.create()
 
         break
@@ -272,7 +283,7 @@ export default class Incubator {
       let file=this.installer.configRoot + '/settings.conf'
       let fileContent = fs.readFileSync(file, 'utf8')
       let yamlContent = yaml.load(fileContent)
-      let destContent = `# settings.conf, created by penguins-eggs ${pjson.version}\n`
+      let destContent = `# settings.conf on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
       fs.writeFileSync(file, destContent, 'utf8')

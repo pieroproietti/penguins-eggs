@@ -118,10 +118,10 @@ class Distro implements IDistro {
        */
       case 'openmamba': {
         this.familyId = 'openmamba'
-        this.distroLike = this.distroId
+        this.distroLike = 'openmamba'
         this.codenameId = 'rolling' // viene rimosso dal nome
         this.codenameLikeId = this.familyId // per krill
-        this.liveMediumPath = '/run/initramfs/live/' // check
+        this.liveMediumPath = '/run/initramfs/live/'
 
         break
       }
@@ -129,7 +129,7 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-      case 'opensuse': {
+      case 'openSUSE': {
         this.familyId = 'opensuse'
         this.distroLike = this.distroId
         this.codenameId = 'rolling' // viene rimosso dal nome
@@ -352,7 +352,9 @@ class Distro implements IDistro {
      */
     if (this.familyId === "debian") {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-    }
+    } else if (this.familyId === "opensuse") {
+      this.usrLibPath = '/usr/lib64/'
+    }  
 
     /**
      * ManjaroLinux e derivate
