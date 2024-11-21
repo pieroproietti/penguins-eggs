@@ -72,7 +72,6 @@ export default class Xdg {
         for (const elem of files) {
           const curFile = dc + elem
           if (!fs.statSync(`/${curFile}`).isDirectory()) {
-          //if (!N8.isDirectory(curFile)) {
             let content = fs.readFileSync(curFile, 'utf8')
             const find = '[Seat:*]'
             if (content.includes(find)) {
@@ -81,6 +80,14 @@ export default class Xdg {
               fs.writeFileSync(curFile, content, 'utf8')
             }
           }
+        }
+      } else if (Pacman.packageIsInstalled('lxdm')) {
+        let lxdmConf = '/etc/lxdm/lxdm.conf'
+        if (fs.existsSync(lxdmConf)) {
+          let content = fs.readFileSync(lxdmConf, 'utf8')
+          const regex = new RegExp(`autologin-user\\s*=\\s*${olduser}`, 'g') // remove spaces            
+          content = content.replace(regex, `autologin-user=${newuser}`)
+          fs.writeFileSync(lxdmConf, content, 'utf8')
         }
       } else if (Pacman.packageIsInstalled('sddm')) {
         /**
@@ -153,6 +160,7 @@ export default class Xdg {
       }
     }
   }
+
 
   /**
    *
