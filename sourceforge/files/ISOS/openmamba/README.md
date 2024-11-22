@@ -11,13 +11,7 @@ penguins-eggs
 
 # Penguins' eggs remastered ISOs
 
-# user/password
-* ```live/evolution```
-* ```root/evolution```
-
-# Openmamba
 ![](https://openmamba.org/it/wp-content/uploads/sites/3/2019/11/openmamba-306x55.png)
-
 
 openmamba GNU/Linux is a distribution for personal computers that can be used on notebooks, desktops, servers and Raspberry Pi computers. It works as an installable live DVD/USB images, offering one of two desktop environments: KDE Plasma or LXQt. The distribution uses RPM packages managed through the DNF package manager. Software can also be fetched and installed from Flatpak repositories.
 
@@ -29,6 +23,8 @@ openmamba GNU/Linux is a distribution for personal computers that can be used on
 ## eggs-of-openmamba-lxqt
 ## eggs-of-openmamba-plasma
 
+
+![](https://openmamba.org/it/wp-content/uploads/sites/3/2019/11/openmamba-306x55.png)
 
 ## Opensource and free
 [openmamba](https://openmamba.org/it/) is opensource software, so you are free to download, use, modify and copy it.
