@@ -88,7 +88,6 @@ export default class Xdg {
           const regex = new RegExp(`autologin\\s*=\\s*${olduser}`, 'g') // remove spaces            
           content = content.replace(regex, `autologin=${newuser}`)
           fs.writeFileSync(lxdmConf, content, 'utf8')
-          console.log(content)
         }
       } else if (Pacman.packageIsInstalled('sddm')) {
         /**
