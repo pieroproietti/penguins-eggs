@@ -23,6 +23,8 @@ openmamba GNU/Linux is a distribution for personal computers that can be used on
 ## eggs-of-openmamba-lxqt
 ## eggs-of-openmamba-plasma
 
+> [!NOTE]
+> We still have something to refine with the openmamba remastering, particularly the anomaly of a larger size of the source ISO.
 
 ![](https://openmamba.org/it/wp-content/uploads/sites/3/2019/11/openmamba-306x55.png)
 
