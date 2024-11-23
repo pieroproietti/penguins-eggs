@@ -233,6 +233,17 @@ export default class Incubator {
         break
       }
 
+
+      /**
+       * aldus correggere
+       */
+      case 'aldos': {
+          const aldos = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await aldos.create()
+
+        break
+      }
+
       /**
        * opensuse
        */

@@ -253,9 +253,11 @@ export default class Ovary {
 
     let deluser = 'deluser'
     if (this.familyId === 'archlinux' || 
+      this.familyId === 'aldos' || 
       this.familyId === 'fedora' || 
       this.familyId === 'openmamba' || 
       this.familyId === 'opensuse' || 
+      this.familyId === 'aldos' || 
       this.familyId === 'voidlinux') {
       deluser = 'userdel'
     }
@@ -1796,6 +1798,12 @@ export default class Ovary {
           }
 
           case 'openmamba': {
+            await this.initrdDracut()
+
+            break
+          }
+
+          case 'aldus': {
             await this.initrdDracut()
 
             break
