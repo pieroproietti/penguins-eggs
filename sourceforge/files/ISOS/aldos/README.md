@@ -15,9 +15,9 @@ penguins-eggs
 * ```live/evolution```
 * ```root/evolution```
 
-# AlDOS
+# ALDOS
 
-[AlDOS](https://www.alcancelibre.org/aldos) a free Linux OS for the community, by the community.
+[ALDOS](https://www.alcancelibre.org/aldos) a free Linux OS for the community, by the community.
 
 ALDOS is an operating system with long-term support and primarily geared for use as a desktop operating system using a traditional desktop metaphor interface. It is developed, designed and maintained by Joel Barrios Dueñas -through Alcance Libre-from a well-known and popular GNU/Linux community distribution-which in turn is sponsored by a major company specializing in enterprise operating systems-with security packages and patches released for enterprise operating systems.
 
