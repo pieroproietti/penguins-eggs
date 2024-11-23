@@ -79,6 +79,7 @@ export default class Utils {
       if (codenameId === 'rolling' || codenameId === '') {
          result = 'egg-of_' + distroId.toLowerCase() + '-'
          if (
+            distroId === 'ALDOS' || 
             distroId === 'AlmaLinux' || 
             distroId === 'Alpine' || 
             distroId === 'Fedora' || 
