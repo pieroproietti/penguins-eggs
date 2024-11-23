@@ -34,9 +34,6 @@ yum -y install \
     jq \
     lvm2 \
     nodejs \
-    npm \
-    nvme-cli \
-    overlayfs-tools \
     parted \
     rsync \
     squashfs-tools \
