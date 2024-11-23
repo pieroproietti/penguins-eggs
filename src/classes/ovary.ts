@@ -1803,7 +1803,7 @@ export default class Ovary {
             break
           }
 
-          case 'aldus': {
+          case 'aldos': {
             await this.initrdDracut()
 
             break

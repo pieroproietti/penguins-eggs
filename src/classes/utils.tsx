@@ -248,6 +248,10 @@ export default class Utils {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+      } else if (distro.familyId === 'aldos') {
+         initrd = 'initramfs'
+         separator = '-'
+         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
       } else if (distro.familyId === 'opensuse') {
          initrd = 'initrd'
          separator = '-'
