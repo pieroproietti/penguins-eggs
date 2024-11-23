@@ -16,6 +16,7 @@ import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 
+import Aldos from './families/aldos.js'
 import Alpine from './families/alpine.js'
 import Archlinux from './families/archlinux.js'
 import Debian from './families/debian.js'
@@ -73,6 +74,8 @@ export default class Pacman {
         await Fedora.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'openmamba') {
         await Openmamba.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'aldos') {
+        await Aldos.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
         if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
           const cmd = `pacman -Sy --noconfirm calamares`
@@ -124,6 +127,8 @@ export default class Pacman {
       retVal = await Alpine.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'openmamba') {
       retVal = await Openmamba.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'aldos') {
+      retVal = await Aldos.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'voidlinux') {
@@ -533,6 +538,15 @@ export default class Pacman {
       await exec(`cp -r ${mamba} ${dest}`, echo)
 
       /***********************************************************************************
+      * aldos
+      **********************************************************************************/
+    } else if (this.distro().codenameLikeId === 'aldos') {
+      const dest = '/etc/penguins-eggs.d/distros/aldos/'
+      const aldos = `${rootPen}/conf/distros/aldos/*`
+      await exec(`cp -r ${aldos} ${dest}`, echo)
+
+
+      /***********************************************************************************
       * opensuse
       **********************************************************************************/
     } else if (this.distro().codenameLikeId === 'opensuse') {
@@ -597,6 +611,10 @@ export default class Pacman {
       if (Openmamba.packageIsInstalled('wayland')) {
         installed = true
       }
+    } else if (this.distro().familyId === 'aldos') {
+      if (Aldos.packageIsInstalled('wayland')) {
+        installed = true
+      }
     } else if (this.distro().familyId === 'opensuse') {
       if (Opensuse.packageIsInstalled('wayland')) {
         installed = true
@@ -634,6 +652,10 @@ export default class Pacman {
       }
     } else if (this.distro().familyId === 'openmamba') {
       if (Openmamba.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (this.distro().familyId === 'aldos') {
+      if (Aldos.packageIsInstalled('xorg-server')) {
         installed = true
       }
     } else if (this.distro().familyId === 'opensuse') {
@@ -743,6 +765,8 @@ export default class Pacman {
       retVal = await Alpine.packageInstall(packageName)
     } else if (this.distro().familyId === 'openmamba') {
       retVal = await Openmamba.packageInstall(packageName)
+    } else if (this.distro().familyId === 'aldos') {
+      retVal = await Aldos.packageInstall(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
     }
@@ -766,6 +790,8 @@ export default class Pacman {
       installed = Alpine.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'openmamba') {
       installed = Openmamba.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'aldos') {
+      installed = Aldos.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
     }
@@ -788,6 +814,10 @@ export default class Pacman {
         grubInstalled = 'grub'
       }
     } else if (this.distro().familyId === 'fedora') {
+      if (this.packageIsInstalled('grub2-common.noarch')) {
+        grubInstalled = 'grub2'
+      }
+    } else if (this.distro().familyId === 'aldos') {
       if (this.packageIsInstalled('grub2-common.noarch')) {
         grubInstalled = 'grub2'
       }

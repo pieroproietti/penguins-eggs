@@ -84,6 +84,20 @@ class Distro implements IDistro {
      */
     switch (this.distroId) {
       /**
+       * ALDOS
+       */
+      case 'ALDOS': {
+        this.familyId = 'aldos'
+        this.distroLike = 'ALDOS'
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.codenameLikeId = this.familyId // per krill
+        this.liveMediumPath = '/run/initramfs/live/'
+
+        break
+      }
+
+
+      /**
        * Alpine compatible
        */
       case 'Alpine': {
