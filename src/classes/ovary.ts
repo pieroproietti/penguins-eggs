@@ -1055,7 +1055,7 @@ export default class Ovary {
     } else if (this.familyId === 'aldos') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
     } else if (this.familyId === 'opensuse') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0 rootfstype=auto ro liveimg nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
     } else if (this.familyId === 'voidlinux') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.debug`
     }
