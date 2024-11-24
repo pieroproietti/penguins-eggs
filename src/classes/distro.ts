@@ -127,7 +127,6 @@ class Distro implements IDistro {
         break
       }
 
-
       /**
        * openmamba
        */
@@ -170,7 +169,7 @@ class Distro implements IDistro {
 
       /**
        * Arch/Debian/Devuan and Ubuntu
-       * analizzo i codebase conosciuti
+       * analize codenameId
        */
       default: {
         /**
