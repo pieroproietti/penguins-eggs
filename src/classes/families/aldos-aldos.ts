@@ -1,6 +1,5 @@
 /**
- * THIS IS A DUMMY ALDOS
- * ./src/classes/families/fedora.ts
+ * ./src/classes/families/aldos.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -18,7 +17,6 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Aldos {
-  static packs4calamares = ['calamares']
 
   /**
    *
@@ -26,9 +24,9 @@ export default class Aldos {
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      await exec(`dnf install -y ${this.packs4calamares.join(' ')}`, echo)
+      await exec(`yum install -y calamares}`, echo)
     } catch {
-      Utils.error(`fedora.calamaresInstall()`)
+      Utils.error(`aldos.calamaresInstall()`)
     }
   }
 
@@ -43,7 +41,7 @@ export default class Aldos {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    await exec('dnf remove calamares', echo)
+    await exec('yum remove -y calamares', echo)
     return retVal
   }
 
@@ -69,7 +67,7 @@ export default class Aldos {
    */
   static async packageAvailable(packageName: string): Promise<boolean> {
     let available = false
-    const cmd = `/usr/bin/dnf list --available ${packageName} | grep Package:`
+    const cmd = `/usr/bin/yum list --available ${packageName} | grep Package:`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       available = true
@@ -85,7 +83,7 @@ export default class Aldos {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec(`/usr/bin/yum install ${packageName}`, { silent: true }) === '0') {
       retVal = true
     }
 
@@ -98,7 +96,7 @@ export default class Aldos {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    const cmd = `/usr/bin/dnf list --installed ${packageName}`
+    const cmd = `/usr/bin/yum list --installed ${packageName}`
     const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
