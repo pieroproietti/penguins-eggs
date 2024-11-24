@@ -29,53 +29,27 @@ export default class Bleach {
     }
 
     const distro = new Distro()
-    switch (distro.familyId) {
-      case 'debian': {
-        // await exec(`apt remove $(dpkg -l | grep linux-image | awk '{print $2}' | grep -v $(uname -r))`)
-        await exec('apt-get clean', echo)
-        await exec('apt-get autoclean', echo)
-        const lockFile = '/var/lib/apt/lists/lock'
-        await exec(`rm ${lockFile} -rf`, echo)
+    if (distro.familyId === 'alpine') {
+      await exec('apk cache clean', echo)
+      await exec('apk cache purge', echo)
 
-        break
-      }
+    } else if (distro.familyId === 'archlinux') {
+      await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
 
-      case 'archlinux': {
-        // await exec(`pacman -R $(pacman -Q | grep linux | grep -v $(uname -r))`)
-        await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
+    } else if (distro.familyId === 'debian') {
+      await exec('apt-get clean', echo)
+      await exec('apt-get autoclean', echo)
+      await exec(`rm /var/lib/apt/lists/lock -rf`, echo)
 
-        break
-      }
+    } else if (distro.familyId === 'fedora' || distro.familyId === 'openmamba') {
+      await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
+      await exec(`dnf clean all`, echo)
 
-      case 'alpine': {
-        // await exec(`apk del $(apk info | grep linux- | grep -v $(uname -r))`) 
-        await exec('apk cache clean', echo)
-        await exec('apk cache purge', echo)
-
-        break
-      }
-
-      case 'fedora':
-      case 'openmamba': {
-        await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
-        await exec(`dnf clean all`, echo)
-
-        break
-      }
-
-      case 'opensuse': {
-        // await exec(`zypper remove $(rpm -qa | grep kernel | grep -v $(uname -r))`)
-        await exec(`zypper clean`, echo)
-
-        break
-      }
-
-      case 'voidlinux': {
-        await exec(`xbps-remove -O`, echo)
-        break
-      }
+    } else if (distro.familyId === 'opensuse') {
+      await exec(`zypper clean`, echo)
       
-      // No default
+    } else if (distro.familyId === 'voidlinux') {
+      await exec(`xbps-remove -O`, echo)
     }
 
     await this.cleanHistory(verbose)
