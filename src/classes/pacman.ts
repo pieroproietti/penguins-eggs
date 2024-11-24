@@ -68,28 +68,24 @@ export default class Pacman {
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     if (this.isInstalledGui()) {
-      if (this.distro().familyId === 'debian') {
+
+      if (this.distro().familyId === 'aldos') {
+        await Aldos.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'alpine') {
+        await Alpine.calamaresInstall(verbose)
+      } else if (this.distro().familyId === 'archlinux') {
+        if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
+          const cmd = `pacman -Sy --noconfirm calamares`
+          await exec(cmd, Utils.setEcho(true))
+        } else {
+          await Archlinux.calamaresInstall(verbose)
+        }
+      } else if (this.distro().familyId === 'debian') {
         await Debian.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'fedora') {
         await Fedora.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'openmamba') {
         await Openmamba.calamaresInstall(verbose)
-      } else if (this.distro().familyId === 'aldos') {
-        await Aldos.calamaresInstall(verbose)
-      } else if (this.distro().familyId === 'archlinux') {
-        if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
-          const cmd = `pacman -Sy --noconfirm calamares`
-          try {
-            await exec(cmd, Utils.setEcho(true))
-          } catch {
-            Utils.error(`manjaro: ${cmd}`) // + e.error)
-          }
-        } else {
-          await Archlinux.calamaresInstall(verbose)
-        }
-
-      } else if (this.distro().familyId === 'alpine') {
-        await Alpine.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'voidlinux') {
@@ -117,18 +113,18 @@ export default class Pacman {
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
     let retVal = false
-    if (this.distro().familyId === 'debian') {
+    if (this.distro().familyId === 'aldos') {
+      retVal = await Aldos.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'alpine') {
+      retVal = await Alpine.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'archlinux') {
+      retVal = await Archlinux.calamaresRemove(verbose)
+    } else if (this.distro().familyId === 'debian') {
       retVal = await Debian.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'fedora') {
       retVal = await Fedora.calamaresRemove(verbose)
-    } else if (this.distro().familyId === 'archlinux') {
-      retVal = await Archlinux.calamaresRemove(verbose)
-    } else if (this.distro().familyId === 'alpine') {
-      retVal = await Alpine.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'openmamba') {
       retVal = await Openmamba.calamaresRemove(verbose)
-    } else if (this.distro().familyId === 'aldos') {
-      retVal = await Aldos.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
     } else if (this.distro().familyId === 'voidlinux') {
@@ -755,22 +751,23 @@ export default class Pacman {
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
 
-    if (this.distro().familyId === 'debian') {
-      retVal = await Debian.packageInstall(packageName)
-    } else if (this.distro().familyId === 'archlinux') {
-      retVal = await Archlinux.packageInstall(packageName)
-    } else if (this.distro().familyId === 'fedora') {
-      retVal = await Fedora.packageInstall(packageName)
+    if (this.distro().familyId === 'aldos') {
+      retVal = await Aldos.packageInstall(packageName)
     } else if (this.distro().familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
+    } else if (this.distro().familyId === 'archlinux') {
+      retVal = await Archlinux.packageInstall(packageName)
+    } else if (this.distro().familyId === 'debian') {
+      retVal = await Debian.packageInstall(packageName)
+    } else if (this.distro().familyId === 'fedora') {
+      retVal = await Fedora.packageInstall(packageName)
     } else if (this.distro().familyId === 'openmamba') {
       retVal = await Openmamba.packageInstall(packageName)
-    } else if (this.distro().familyId === 'aldos') {
-      retVal = await Aldos.packageInstall(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
+    } else if (this.distro().familyId === 'voidlinux') {
+      retVal = await Voidlinux.packageInstall(packageName)
     }
-
     return retVal
   }
 
@@ -780,22 +777,23 @@ export default class Pacman {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    if (this.distro().familyId === 'debian') {
+    if (this.distro().familyId === 'aldos') {
+      installed = Aldos.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'alpine') {
+      installed = Alpine.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'archlinux') {
+      installed = Archlinux.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'debian') {
       installed = Debian.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'fedora') {
       installed = Fedora.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'archlinux') {
-      installed = Archlinux.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'alpine') {
-      installed = Alpine.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'openmamba') {
       installed = Openmamba.packageIsInstalled(packageName)
-    } else if (this.distro().familyId === 'aldos') {
-      installed = Aldos.packageIsInstalled(packageName)
     } else if (this.distro().familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
+    } else if (this.distro().familyId === 'voidlinux') {
+      installed = Voidlinux.packageIsInstalled(packageName)
     }
-
     return installed
   }
 
@@ -805,36 +803,17 @@ export default class Pacman {
 
   /**
    *
-   * @returns grub
+   * @returns grubInstalled
    */
-  static whichGrubIsInstalled(): string {
-    let grubInstalled = 'grub'
-    if (this.distro().familyId === 'debian') {
-      if (this.packageIsInstalled('grub-common')) {
-        grubInstalled = 'grub'
-      }
-    } else if (this.distro().familyId === 'fedora') {
-      if (this.packageIsInstalled('grub2-common.noarch')) {
-        grubInstalled = 'grub2'
-      }
-    } else if (this.distro().familyId === 'aldos') {
-      if (this.packageIsInstalled('grub2-common.noarch')) {
-        grubInstalled = 'grub2'
-      }
-    } else if (this.distro().familyId === 'archlinux') {
-      if (this.packageIsInstalled('grub')) {
-        grubInstalled = 'grub'
-      }
-    } else if (this.distro().familyId === 'alpine') {
-      grubInstalled = 'grub'
-    } else if (this.distro().familyId === 'opensuse') {
-      if (this.packageIsInstalled('grub2-common')) {
-        grubInstalled = 'grub2'
-      }
-    } else if (this.distro().familyId === 'voidlinux') {
-      grubInstalled = 'grub'
+  static grubName(): string {
+    let grubName = 'grub'
+    if (this.distro().familyId === 'aldos' ||
+      this.distro().familyId === 'fedora' ||
+      this.distro().familyId === 'opensuse') {
+
+      grubName = 'grub2'
     }
 
-    return grubInstalled
+    return grubName
   }
 }

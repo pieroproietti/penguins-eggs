@@ -149,12 +149,12 @@ export default class Ovary {
           cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
         }
 
-      /**
-       * Directory
-       */
-    } else if (statDir.isDirectory()) {
+        /**
+         * Directory
+         */
+      } else if (statDir.isDirectory()) {
 
-      if (dir === 'boot') {
+        if (dir === 'boot') {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
         }
@@ -252,12 +252,11 @@ export default class Ovary {
     const users: string[] = result.data.split('\n')
 
     let deluser = 'deluser'
-    if (this.familyId === 'archlinux' || 
-      this.familyId === 'aldos' || 
-      this.familyId === 'fedora' || 
-      this.familyId === 'openmamba' || 
-      this.familyId === 'opensuse' || 
-      this.familyId === 'aldos' || 
+    if (this.familyId === 'aldos' ||
+      this.familyId === 'archlinux' ||
+      this.familyId === 'fedora' ||
+      this.familyId === 'openmamba' ||
+      this.familyId === 'opensuse' ||
       this.familyId === 'voidlinux') {
       deluser = 'userdel'
     }
@@ -397,8 +396,8 @@ export default class Ovary {
     let installerLink = 'install-system.desktop'
     if (Pacman.calamaresExists()) {
       if (this.settings.distro.distroId === 'BigLinux') {
-        let file2edit=path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
-        await exec (`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
+        let file2edit = path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
+        await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
       }
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
@@ -1036,7 +1035,10 @@ export default class Ovary {
 
     const { distroId } = this.settings.distro
     let kp = ""
-    if (this.familyId === 'alpine') {
+
+    if (this.familyId === 'aldos') {
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
+    } else if (this.familyId === 'alpine') {
       kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (this.familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
@@ -1049,12 +1051,9 @@ export default class Ovary {
     } else if (this.familyId === 'debian') {
       kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
     } else if (this.familyId === 'fedora') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0` //  rd.shell rd.debug  log_buf_len=1M
+      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
     } else if (this.familyId === 'openmamba') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
-    } else if (this.familyId === 'aldos') {
-      //kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto ro liveimg rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
     } else if (this.familyId === 'opensuse') {
       kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`
     } else if (this.familyId === 'voidlinux') {
@@ -1179,7 +1178,7 @@ export default class Ovary {
     /**
      * il pachetto grub/grub2 DEVE essere presente
      */
-    const grubName = Pacman.whichGrubIsInstalled()
+    const grubName = Pacman.grubName()
     if (grubName === '') {
       Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
       process.exit(1)
@@ -1592,7 +1591,7 @@ export default class Ovary {
      * 
      * 'bin' rimossa da overlay
      */
-    
+
     // aggiunto bin per autologin su Alpine
     const mountDirs = ['etc', 'usr', 'var']
     let mountDir = ''
@@ -1781,53 +1780,18 @@ export default class Ovary {
         /**
          * differents initfs for different families
          */
-        switch (this.familyId) {
-          case 'archlinux': {
-            await this.initrdArch()
-
-            break
-          }
-
-          case 'alpine': {
-            await this.initrdAlpine()
-
-            break
-          }
-
-          case 'fedora': {
-            await this.initrdDracut()
-
-            break
-          }
-
-          case 'openmamba': {
-            await this.initrdDracut()
-
-            break
-          }
-
-          case 'aldos': {
-            await this.initrdDracut()
-
-            break
-          }
-
-          case 'opensuse': {
-            await this.initrdDracut()
-
-            break
-          }
-
-          case 'debian': {
-            await this.initrdDebian()
-
-            break
-          }
-          case 'voidlinux': {
-            await this.initrdDracut()
-
-            break
-          }
+        if (this.familyId === 'alpine') {
+          await this.initrdAlpine()
+        } else if (this.familyId === 'archlinux') {
+          await this.initrdArch()
+        } else if (this.familyId === 'debian') {
+          await this.initrdDebian()
+        } else if (this.familyId === 'aldos' ||
+                  this.familyId === 'fedora' ||
+                  this.familyId === 'openmamba' ||
+                  this.familyId === 'opensuse' ||
+                  this.familyId === 'voidlinux') {
+          await this.initrdDracut()
         }
 
         if (this.settings.config.make_efi) {
