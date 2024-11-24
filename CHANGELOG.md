@@ -11,6 +11,17 @@ penguins-eggs
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
+## penguins-eggs-10.0.51
+I am undecided whether to make a new release and I will not, in the sense that this release does not add much for Alpine, Arch, Debian, Devuan, Fedora, Manjaro, openSuSE and Ubuntu. However, in a burst of creativity I am adding three more distributions almost simultaneously: ALDOS, openMamba and VoidLinux. 
+This is the current status:
+* [ALDOS](https://www.alcancelibre.org/aldos): is being remastered, but so far I have not been able to boot the distro from live, I have asked the author for help;
+* [openmamba](https://openmamba.org/it/): it is remastered and installed with krill, calamares - for some reason - still doesn't work for me and generates rather heavy ISOs due probably to some exclusion to do;
+* [voidLinux](https://voidlinux.org/): although it is the first one I tried to include, it is still far from being closed, as in the meantime I fell in love with Openmamba and gave it a try on ALDUS.
+
+So no package will be released of this version, but a release will still be done and then start again with a devel branch.
+
+It would be greatly appreciated if experts from these three distributions would like to collaborate, from doing tests to making suggestions or, reviewing the code.
+
 ## penguins-eggs-10.0.50
 * `krill`: bugfix on module for `machine-id` creation on new installation;
 * `RockyLinux` and `AlmaLinux` now work nicelly with penguins-eggs and is 
