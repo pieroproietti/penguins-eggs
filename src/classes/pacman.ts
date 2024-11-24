@@ -75,8 +75,7 @@ export default class Pacman {
         await Alpine.calamaresInstall(verbose)
       } else if (this.distro().familyId === 'archlinux') {
         if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
-          const cmd = `pacman -Sy --noconfirm calamares`
-          await exec(cmd, Utils.setEcho(true))
+          await exec(`pacman -Sy --noconfirm calamares`, Utils.setEcho(true))
         } else {
           await Archlinux.calamaresInstall(verbose)
         }
