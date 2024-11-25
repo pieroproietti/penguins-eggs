@@ -198,7 +198,7 @@ export default class Incubator {
 
 
   /**
-   * 
+   * Rewrite modules 
    */
   private async cleanup() {
     // modules
@@ -235,8 +235,10 @@ export default class Incubator {
     }
 
     const file = dir + 'branding.desc'
-    const content = branding(this.remix, this.distro, this.theme, this.verbose)
-    write(file, content, this.verbose)
+    let destContent = `# branding.desc on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
+    destContent += '---\n'
+    destContent += branding(this.remix, this.distro, this.theme, this.verbose)
+    write(file, destContent, this.verbose)
   }
 
   /**
