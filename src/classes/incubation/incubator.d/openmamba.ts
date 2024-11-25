@@ -76,7 +76,9 @@ export class Openmamba {
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('plymouthcfg')
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.buildModule('penmamba-postinstall')
+    // await fisherman.buildModule('penmamba-postinstall')
+    console.log("distro:", this.distro)
+    console.log("openmamba NON usa cleanup")
     // await fisherman.buildCalamaresModule('cleanup', true)
 
     /**

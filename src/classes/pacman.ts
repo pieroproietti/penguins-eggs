@@ -504,7 +504,6 @@ export default class Pacman {
       /***********************************************************************************
        * Arch Linux
        **********************************************************************************/
-
     } else if (codenameLikeId === 'rolling') {
       const dest = '/etc/penguins-eggs.d/distros/rolling/'
       const rolling = `${rootPen}/conf/distros/rolling/*`
@@ -523,6 +522,7 @@ export default class Pacman {
       * openmamba
       **********************************************************************************/
     } else if (codenameLikeId === 'openmamba') {
+      // eredita solo da openmamba
       const dest = '/etc/penguins-eggs.d/distros/openmamba/'
       const mamba = `${rootPen}/conf/distros/openmamba/*`
       await exec(`cp -r ${mamba} ${dest}`, echo)

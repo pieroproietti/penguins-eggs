@@ -161,10 +161,13 @@ export default class Incubator {
        * openmamba
        */
     } else if (codenameLikeId === 'openmamba') {
+      const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+      await mamba.create()
 
       /**
        * opensuse
        */
+    } else if (codenameLikeId === 'opensuse') {
       const suse = new Opensuse(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await suse.create()
 
@@ -193,14 +196,14 @@ export default class Incubator {
       await partitionCustomize()
     }
     Utils.warning(`cleanup ${installer().name} configuration files`)
-    await this.cleanup()
+    await this.cleanupConfiguration()
   }
 
 
   /**
    * Rewrite modules 
    */
-  private async cleanup() {
+  private async cleanupConfiguration() {
     // modules
     const elements = fs.readdirSync(this.installer.modules)
     for (const elem of elements) {
