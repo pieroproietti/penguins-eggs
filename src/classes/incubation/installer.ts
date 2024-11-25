@@ -31,7 +31,6 @@ export function installer(): IInstaller {
   const installer = {} as IInstaller
 
   // configRoot
-
   installer.configRoot = ''
   if (Pacman.calamaresExists()) {
     installer.name = 'calamares'
@@ -42,24 +41,16 @@ export function installer(): IInstaller {
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
     installer.multiarch = Pacman.distro().usrLibPath + '/krill/'
   }
-
   installer.modules = installer.configRoot + 'modules/'
   installer.multiarchModules = installer.multiarch + 'modules/'
 
   /**
-   * se distro.isCalamaresAvailable()
-   * i template di calamares e krill sono gli stessi
+   * i template calamares/krill sono gli stessi
    */
   const distro = new Distro()
-  if (distro.isCalamaresAvailable) {
-    installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/calamares/'
-    installer.templateModules = installer.template + 'modules/'
-    installer.templateMultiarch = installer.template + 'calamares-modules/'
-  } else {
-    installer.template = '/etc/penguins-eggs.d/distros/' + distro.codenameLikeId + '/krill/'
-    installer.templateModules = installer.template + 'modules/'
-    installer.templateMultiarch = installer.template + 'krill-modules/'
-  }
+  installer.template = `/etc/penguins-eggs.d/distros/${distro.codenameLikeId}/${installer.name}/`
+  installer.templateModules = `${installer.template}modules/`
+  installer.templateMultiarch = `${installer.template}${installer.name}-modules/`
 
   return installer
 }

@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
-    "version": "10.0.51",
+    "version": "10.0.52",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -10,7 +10,7 @@
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
         "@oclif/core": "^4.0.30",
-        "@oclif/plugin-autocomplete": "^3.2.7",
+        "@oclif/plugin-autocomplete": "^3.2.11",
         "@oclif/plugin-help": "^6.2.16",
         "@oclif/plugin-version": "^2.2.15",
         "ansis": "^3.3.2",
@@ -52,7 +52,7 @@
         "eslint-config-oclif-typescript": "^3.1.12",
         "eslint-config-prettier": "^9.1.0",
         "mocha": "^10.8.1",
-        "oclif": "^4.15.20",
+        "oclif": "^4.15.29",
         "perrisbrewery": "^10.0.2",
         "prettier": "^3.3.3",
         "shx": "^0.3.4",
