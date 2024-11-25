@@ -31,6 +31,8 @@ import PveLive from './pve-live.js'
 import Settings from './settings.js'
 import Systemctl from './systemctl.js'
 import Users from './users.js'
+import Diversions from './diversions.js'
+
 // classes
 import Utils from './utils.js'
 import Xdg from './xdg.js'
@@ -251,16 +253,7 @@ export default class Ovary {
     })
     const users: string[] = result.data.split('\n')
 
-    let deluser = 'deluser'
-    if (this.familyId === 'aldos' ||
-      this.familyId === 'archlinux' ||
-      this.familyId === 'fedora' ||
-      this.familyId === 'openmamba' ||
-      this.familyId === 'opensuse' ||
-      this.familyId === 'voidlinux') {
-      deluser = 'userdel'
-    }
-
+    let deluser = Diversions.deluser(this.familyId)
     for (let i = 0; i < users.length - 1; i++) {
       cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} ${deluser} ${users[i]}`, this.verbose))
     }
@@ -977,7 +970,7 @@ export default class Ovary {
       process.exit()
     }
 
-    const kernel_parameters = this.kernelParameters()
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
       fullname: this.settings.remix.fullname.toUpperCase(),
@@ -1024,43 +1017,6 @@ export default class Ovary {
       Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
       process.exit(1)
     }
-  }
-
-  /**
-   *
-   * @returns kernelParameters
-   */
-  kernelParameters(): string {
-    // GRUB_CMDLINE_LINUX='ipv6.disable=1'
-
-    const { distroId } = this.settings.distro
-    let kp = ""
-
-    if (this.familyId === 'aldos') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
-    } else if (this.familyId === 'alpine') {
-      kp += `alpinelivelabel=${this.volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
-    } else if (this.familyId === 'archlinux') {
-      kp += `boot=live components locales=${process.env.LANG}`
-      if (isMiso(distroId)) {
-        kp += ` misobasedir=manjaro misolabel=${this.volid}`
-        shx.exec(`mkdir -p ${this.settings.iso_work}.miso`)
-      } else {
-        kp += ` archisobasedir=arch archisolabel=${this.volid}`
-      }
-    } else if (this.familyId === 'debian') {
-      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
-    } else if (this.familyId === 'fedora') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
-    } else if (this.familyId === 'openmamba') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
-    } else if (this.familyId === 'opensuse') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`
-    } else if (this.familyId === 'voidlinux') {
-      kp += `root=live:CDLABEL=${this.volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.debug`
-    }
-
-    return kp
   }
 
   /**
@@ -1178,7 +1134,7 @@ export default class Ovary {
     /**
      * il pachetto grub/grub2 DEVE essere presente
      */
-    const grubName = Pacman.grubName()
+    const grubName = Diversions.grubName(this.familyId)
     if (grubName === '') {
       Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
       process.exit(1)
@@ -1378,7 +1334,7 @@ export default class Ovary {
       process.exit()
     }
 
-    const kernel_parameters = this.kernelParameters()
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
     const grubDest = `${isoDir}/boot/grub/grub.cfg`
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
