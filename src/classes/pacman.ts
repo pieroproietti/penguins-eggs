@@ -505,9 +505,6 @@ export default class Pacman {
        * Arch Linux
        **********************************************************************************/
 
-      /**
-       * Endeavour rolling: eredita da rolling
-       */
     } else if (codenameLikeId === 'rolling') {
       const dest = '/etc/penguins-eggs.d/distros/rolling/'
       const rolling = `${rootPen}/conf/distros/rolling/*`
@@ -586,7 +583,19 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'debian') {
+    if (familyId === 'aldos') {
+      if (Aldos.packageIsInstalled('wayland')) {
+        installed = true
+      }
+    } else if (familyId === 'alpine') {
+      if (Alpine.packageIsInstalled('xwayland*')) {
+        installed = true
+      }
+    } else if (familyId === 'archlinux') {
+      if (Archlinux.packageIsInstalled('xwayland')) {
+        installed = true
+      }
+    } else if (familyId === 'debian') {
       if (Debian.packageIsInstalled('xwayland')) {
         installed = true
       }
@@ -594,20 +603,8 @@ export default class Pacman {
       if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
         installed = true
       }
-    } else if (familyId === 'archlinux') {
-      if (Archlinux.packageIsInstalled('xwayland')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
-      if (Alpine.packageIsInstalled('xwayland*')) {
-        installed = true
-      }
     } else if (familyId === 'openmamba') {
       if (Openmamba.packageIsInstalled('wayland')) {
-        installed = true
-      }
-    } else if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('wayland')) {
         installed = true
       }
     } else if (familyId === 'opensuse') {
@@ -630,8 +627,20 @@ export default class Pacman {
   static isInstalledXorg(): boolean {
     let installed = false
 
-    const familyId=this.distro().familyId
-    if (familyId === 'debian') {
+    const familyId = this.distro().familyId
+    if (familyId === 'aldos') {
+      if (Aldos.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (familyId === 'alpine') {
+      if (Alpine.packageIsInstalled('xorg-server')) {
+        installed = true
+      }
+    } else if (familyId === 'archlinux') {
+      if (Archlinux.packageIsInstalled('xorg-server-common')) {
+        installed = true
+      }
+    } else if (familyId === 'debian') {
       if (Debian.packageIsInstalled('xserver-xorg-core')) {
         installed = true
       }
@@ -639,20 +648,8 @@ export default class Pacman {
       if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
         installed = true
       }
-    } else if (familyId === 'archlinux') {
-      if (Archlinux.packageIsInstalled('xorg-server-common')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
-      if (Alpine.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
     } else if (familyId === 'openmamba') {
       if (Openmamba.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
-    } else if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('xorg-server')) {
         installed = true
       }
     } else if (familyId === 'opensuse') {
@@ -779,8 +776,8 @@ export default class Pacman {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    
-    const familyId  = this.distro().familyId
+
+    const familyId = this.distro().familyId
     if (familyId === 'aldos') {
       installed = Aldos.packageIsInstalled(packageName)
     } else if (familyId === 'alpine') {
