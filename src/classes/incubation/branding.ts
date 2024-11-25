@@ -42,20 +42,13 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
    * to work on EFI
    */
   let bootloaderEntryName = ''
-  switch (distro.distroId.toLowerCase()) {
-    case 'devuan':
-    case 'lmde':
-    case 'syslinuxos': {
-      bootloaderEntryName = 'Debian'
-
-      break
-    }
-
-    default: {
-      bootloaderEntryName = distro.distroId
-    }
+  const distroId = distro.distroId.toLowerCase()
+  if (distroId === 'devuan' || distroId === 'lmde' || distroId === 'syslinuxos') {
+    bootloaderEntryName = 'Debian'
+  } else {
+    bootloaderEntryName = distro.distroId
   }
-
+  
   const productLogo = `${remix.branding}-logo.png`
   const productIcon = `${remix.branding}-logo.png`
   const productWelcome = 'welcome.png'
