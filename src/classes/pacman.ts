@@ -16,14 +16,14 @@ import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 
-import Aldos from './families/aldos.js'
-import Alpine from './families/alpine.js'
-import Archlinux from './families/archlinux.js'
-import Debian from './families/debian.js'
-import Fedora from './families/fedora.js'
-import Openmamba from './families/openmamba.js'
-import Opensuse from './families/opensuse.js'
-import Voidlinux from './families/voidlinux.js'
+import Aldos from './pacman.d/aldos.js'
+import Alpine from './pacman.d/alpine.js'
+import Archlinux from './pacman.d/archlinux.js'
+import Debian from './pacman.d/debian.js'
+import Fedora from './pacman.d/fedora.js'
+import Openmamba from './pacman.d/openmamba.js'
+import Opensuse from './pacman.d/opensuse.js'
+import Voidlinux from './pacman.d/voidlinux.js'
 
 import Settings from './settings.js'
 import Utils from './utils.js'
@@ -805,19 +805,4 @@ export default class Pacman {
     return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
   }
 
-  /**
-   *
-   * @returns grubInstalled
-   */
-  static grubName(): string {
-    let grubName = 'grub'
-    if (this.distro().familyId === 'aldos' ||
-      this.distro().familyId === 'fedora' ||
-      this.distro().familyId === 'opensuse') {
-
-      grubName = 'grub2'
-    }
-
-    return grubName
-  }
 }
