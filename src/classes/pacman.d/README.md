@@ -1,6 +1,6 @@
-# Families
+# pacman.d
 
-This classes, abstract same `pacman` functions used with eggs to install/remove/check packages, then the resulting methods are used on eggs.
+This classes named after the distro, abstract same `pacman` functions used with eggs to install/remove/check packages, then the resulting methods are used on eggs.
 
 ## History
 I started with Debian but always with the idea to expand eggs to others distros, come a long time before to really trying: just eggs was not mature enought and too difficult to have all together.
