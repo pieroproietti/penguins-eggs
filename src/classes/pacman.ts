@@ -364,14 +364,14 @@ export default class Pacman {
        */
     } else if (codenameLikeId === 'jessie') {
       const dest = '/etc/penguins-eggs.d/distros/jessie'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
+      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
 
       /**
        * Debian 9 stretch:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
        */
     } else if (codenameLikeId === 'stretch') {
       const dest = '/etc/penguins-eggs.d/distros/stretch'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
+      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
 
       /**
        * Debian 10 buster: eredita tutto da buster
