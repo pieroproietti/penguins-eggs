@@ -12,7 +12,7 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## v10.0.52
+## penguins-eggs-10.0.52
 One more phase of code reorganization without adding new features. 
 
 I intervened mainly on `pacman.ts` by restructuring it and renaming `pacman.d` the folder for various distributions; on `bleach.ts`. `distro.ts`, `ovary.ts`,  and created `diversions.ts` class in which I tried to collect what I could.
