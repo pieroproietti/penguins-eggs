@@ -239,7 +239,6 @@ export default class Fisherman {
    */
   async moduleDisplaymanager() {
     const name = 'displaymanager'
-    // const displaymanager = require('./fisherman-helper/displaymanager').displaymanager
     this.buildModule(name)
     let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
@@ -269,7 +268,7 @@ export default class Fisherman {
 
 
   /**
-   * Al momento rimane con la vecchia configurazione
+   * packages
    */
   async modulePackages(distro: IDistro, release = false) {
 
@@ -301,7 +300,7 @@ export default class Fisherman {
   }
 
   /**
-   * Al momento rimane con la vecchia configurazione
+   * unpackFs
    */
   async moduleUnpackfs() {
     const name = 'unpackfs'
