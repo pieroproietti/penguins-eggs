@@ -15,18 +15,11 @@ Versions are listed on reverse order, the first is the last one.
 ## penguins-eggs-10.0.52
 One more phase of code reorganization without adding new features. 
 
-I intervened mainly on `pacman.ts` by restructuring it and renaming `pacman.d` the folder for various distributions; on `bleach.ts`. `distro.ts`, `ovary.ts`,  and created `diversions.ts` class in which I tried to collect what I could.
+I intervened mainly on [pacman.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/classes/pacman.ts) by restructuring it and renaming [pacman.d](https://github.com/pieroproietti/penguins-eggs/tree/master/src/classes/pacman.d) the folder for various distributions; on [bleach.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/classes/bleach.ts). [distro.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/classes/distro.ts), [ovary.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/classes/ovary.ts),  and created [diversions.ts](https://github.com/pieroproietti/penguins-eggs/blob/master/src/classes/diversions.ts) class in which I tried to collect what I could.
 
-In general it should be easier to get your hands on the code.
+Later, I reorganize again pacman method   [distroTemplateInstall](https://github.com/pieroproietti/penguins-eggs/blob/9b559f05e726546b20ef5b67be67fcd40da0254b/src/classes/pacman.ts#L312) and tested on Ubuntu noble and Debian bookworm.
 
-## penguins-eggs-10.0.52
-One more phase of code reorganization without adding new features.
-
-I intervened mainly on pacman.ts by restructuring it and renaming pacman.d the folder for various distributions; on bleach.ts. distro.ts, ovary.ts, and created diversions.ts class in which I tried to collect what I could.
-
-Later, I reorganize again pacman method `distroTemplateInstall`, tested on Ubuntu noble and Debian bookworm. 
-
-It seem not breack, but I want to release.
+It seem not breack, but I need to release.
 
 ## penguins-eggs-10.0.51
 I am undecided whether to make a new release and I will not, in the sense that this release does not add much for Alpine, Arch, Debian, Devuan, Fedora, Manjaro, openSuSE and Ubuntu. However, in a burst of creativity I am adding three more distributions almost simultaneously: ALDOS, openMamba and VoidLinux. 
