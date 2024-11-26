@@ -302,6 +302,7 @@ export default class Pacman {
    */
   static distroTemplateCheck(): boolean {
     const { codenameLikeId } = this.distro()
+    console.log(codenameLikeId)
     return fs.existsSync(`/etc/penguins-eggs.d/distros/${codenameLikeId}`)
   }
 
