@@ -329,7 +329,40 @@ export default class Pacman {
      * Debian 8 jessie:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
      */
     const codenameLikeId = this.distro().codenameLikeId
-    if (codenameLikeId === 'jessie') {
+
+      /***********************************************************************************
+      * aldos
+      **********************************************************************************/
+    if (codenameLikeId === 'aldos') {
+      const dest = '/etc/penguins-eggs.d/distros/aldos/'
+      const aldos = `${rootPen}/conf/distros/aldos/*`
+      await exec(`cp -r ${aldos} ${dest}`, echo)
+
+      /***********************************************************************************
+       * Alpine
+       **********************************************************************************/
+    } else if (codenameLikeId === 'alpine') {
+      // eredita solo da alpine
+      const dest = '/etc/penguins-eggs.d/distros/alpine/'
+      const alpine = `${rootPen}/conf/distros/alpine/`
+      await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
+
+      /***********************************************************************************
+       * Arch Linux
+       **********************************************************************************/
+    } else if (codenameLikeId === 'rolling') {
+      const dest = '/etc/penguins-eggs.d/distros/rolling/'
+      const rolling = `${rootPen}/conf/distros/rolling/*`
+      await exec(`cp -r ${rolling} ${dest}`, echo)
+
+      /***********************************************************************************
+       * Debian
+       **********************************************************************************/
+
+      /**
+       * Debian 8 jessie
+       */
+    } else if (codenameLikeId === 'jessie') {
       const dest = '/etc/penguins-eggs.d/distros/jessie'
       await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/krill`, echo)
 
@@ -399,6 +432,30 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/excalibur'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
+      /***********************************************************************************
+       * Fedora
+       **********************************************************************************/
+    } else if (codenameLikeId === 'fedora') {
+      const dest = '/etc/penguins-eggs.d/distros/fedora/'
+      const fedora = `${rootPen}/conf/distros/fedora/*`
+      await exec(`cp -r ${fedora} ${dest}`, echo)
+
+      /***********************************************************************************
+      * openmamba
+      **********************************************************************************/
+    } else if (codenameLikeId === 'openmamba') {
+      // eredita solo da openmamba
+      const dest = '/etc/penguins-eggs.d/distros/openmamba/'
+      const mamba = `${rootPen}/conf/distros/openmamba/*`
+      await exec(`cp -r ${mamba} ${dest}`, echo)
+
+      /***********************************************************************************
+      * opensuse
+      **********************************************************************************/
+    } else if (codenameLikeId === 'opensuse') {
+      const dest = '/etc/penguins-eggs.d/distros/opensuse/'
+      const suse = `${rootPen}/conf/distros/opensuse/*`
+      await exec(`cp -r ${suse} ${dest}`, echo)
 
       /***********************************************************************************
        * Ubuntu
@@ -493,57 +550,6 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
       await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
       await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
-
-      /***********************************************************************************
-       * Fedora
-       **********************************************************************************/
-    } else if (codenameLikeId === 'fedora') {
-      const dest = '/etc/penguins-eggs.d/distros/fedora/'
-      const fedora = `${rootPen}/conf/distros/fedora/*`
-      await exec(`cp -r ${fedora} ${dest}`, echo)
-
-      /***********************************************************************************
-       * Arch Linux
-       **********************************************************************************/
-    } else if (codenameLikeId === 'rolling') {
-      const dest = '/etc/penguins-eggs.d/distros/rolling/'
-      const rolling = `${rootPen}/conf/distros/rolling/*`
-      await exec(`cp -r ${rolling} ${dest}`, echo)
-
-      /***********************************************************************************
-       * Alpine
-       **********************************************************************************/
-    } else if (codenameLikeId === 'alpine') {
-      // eredita solo da alpine
-      const dest = '/etc/penguins-eggs.d/distros/alpine/'
-      const alpine = `${rootPen}/conf/distros/alpine/`
-      await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
-
-      /***********************************************************************************
-      * openmamba
-      **********************************************************************************/
-    } else if (codenameLikeId === 'openmamba') {
-      // eredita solo da openmamba
-      const dest = '/etc/penguins-eggs.d/distros/openmamba/'
-      const mamba = `${rootPen}/conf/distros/openmamba/*`
-      await exec(`cp -r ${mamba} ${dest}`, echo)
-
-      /***********************************************************************************
-      * aldos
-      **********************************************************************************/
-    } else if (codenameLikeId === 'aldos') {
-      const dest = '/etc/penguins-eggs.d/distros/aldos/'
-      const aldos = `${rootPen}/conf/distros/aldos/*`
-      await exec(`cp -r ${aldos} ${dest}`, echo)
-
-
-      /***********************************************************************************
-      * opensuse
-      **********************************************************************************/
-    } else if (codenameLikeId === 'opensuse') {
-      const dest = '/etc/penguins-eggs.d/distros/opensuse/'
-      const suse = `${rootPen}/conf/distros/opensuse/*`
-      await exec(`cp -r ${suse} ${dest}`, echo)
 
       /***********************************************************************************
       * voidlinux
