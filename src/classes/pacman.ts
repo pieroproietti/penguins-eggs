@@ -530,7 +530,7 @@ export default class Pacman {
       /***********************************************************************************
       * aldos
       **********************************************************************************/
-    } else if (codenameLikeId === 'ALDOS') {
+    } else if (codenameLikeId === 'aldos') {
       const dest = '/etc/penguins-eggs.d/distros/aldos/'
       const aldos = `${rootPen}/conf/distros/aldos/*`
       await exec(`cp -r ${aldos} ${dest}`, echo)
