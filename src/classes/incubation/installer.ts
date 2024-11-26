@@ -48,7 +48,7 @@ export function installer(): IInstaller {
    * i template calamares/krill sono gli stessi
    */
   const distro = new Distro()
-  installer.template = `/etc/penguins-eggs.d/distros/${distro.codenameLikeId}/${installer.name}/`
+  installer.template = `/etc/penguins-eggs.d/distros/${distro.codenameLikeId}/calamares/`
   installer.templateModules = `${installer.template}modules/`
   installer.templateMultiarch = `${installer.template}${installer.name}-modules/`
 
