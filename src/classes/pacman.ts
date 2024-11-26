@@ -330,9 +330,9 @@ export default class Pacman {
      */
     const codenameLikeId = this.distro().codenameLikeId
 
-      /***********************************************************************************
-      * aldos
-      **********************************************************************************/
+    /***********************************************************************************
+    * aldos
+    **********************************************************************************/
     if (codenameLikeId === 'aldos') {
       const dest = '/etc/penguins-eggs.d/distros/aldos/'
       const aldos = `${rootPen}/conf/distros/aldos/*`
@@ -469,15 +469,7 @@ export default class Pacman {
 
       const bionic = `${rootPen}/conf/distros/bionic`
       await exec(`cp -r ${bionic}/* ${dest}`, echo)
-
-      // Poi da buster
-      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu focal: eredita da noble e buster
@@ -486,17 +478,8 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/focal'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
-
-      //  backport per focal e jammy: fstab, mount, users
       await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
-
-      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu 22.04 jammy: eredita da noble e buster
@@ -505,17 +488,8 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
-
-      //  backport per focal e jammy: fstab, mount, users
       await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
-
-      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu noble: e la nuova baseline per ubuntu
@@ -525,14 +499,7 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/noble'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
-
-      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu rhino: eredita da noble e buster
@@ -542,14 +509,7 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/devel'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
-
-      await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
-      await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
-      await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+      await partialFromBuster(dest, echo)
 
       /***********************************************************************************
       * voidlinux
@@ -810,3 +770,22 @@ export default class Pacman {
   }
 
 }
+
+/**
+ * 
+ * @param dest 
+ * @param echo 
+ */
+async function partialFromBuster(dest: string, echo: {}) {
+  const rootPen = Utils.rootPenguin()
+  const buster = `${rootPen}/conf/distros/buster`
+  
+  await exec(`cp -r ${buster}/calamares/calamares-modules/cleanup ${dest}/calamares/calamares-modules/cleanup`, echo)
+  await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk ${dest}/calamares/calamares-modules/sources-yolk`, echo)
+  await exec(`cp -r ${buster}/calamares/calamares-modules/sources-yolk-undo ${dest}/calamares/calamares-modules/sources-yolk-undo`, echo)
+  await exec(`cp -r ${buster}/calamares/modules/displaymanager.yml ${dest}/calamares/modules/displaymanager.yml`, echo)
+  await exec(`cp -r ${buster}/calamares/modules/packages.yml ${dest}/calamares/modules/packages.yml`, echo)
+  await exec(`cp -r ${buster}/calamares/modules/removeuser.yml ${dest}/calamares/modules/removeuser.yml`, echo)
+  await exec(`cp -r ${buster}/calamares/modules/unpackfs.yml ${dest}/calamares/modules/unpackfs.yml`, echo)
+}
+
