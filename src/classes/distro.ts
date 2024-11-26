@@ -101,17 +101,6 @@ class Distro implements IDistro {
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
       /**
-       * Arch 
-       */
-    } else if (this.distroId === 'rolling' || this.distroId === 'n/a') {
-      this.familyId = 'archlinux'
-      this.distroLike = 'Arch'
-      this.codenameId = 'rolling'
-      this.codenameLikeId = 'rolling'
-      this.liveMediumPath = '/run/archiso/bootmnt/'
-      this.squashfs = `arch/x86_64/airootfs.sfs`
-
-      /**
        * Fedora/RHEL compatible
        */
     } else if (this.distroId === 'AlmaLinux' ||
@@ -161,9 +150,20 @@ class Distro implements IDistro {
        */
 
       /**
+       * Arch 
+       */
+      if (this.codenameId === 'rolling' || this.codenameId === 'n/a') {
+        this.familyId = 'archlinux'
+        this.distroLike = 'Arch'
+        this.codenameId = 'rolling'
+        this.codenameLikeId = 'rolling'
+        this.liveMediumPath = '/run/archiso/bootmnt/'
+        this.squashfs = `arch/x86_64/airootfs.sfs`
+
+      /**
        * Debian jessie
        */
-      if (this.codenameId === 'jessie') {
+      } else if (this.codenameId === 'jessie') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
         this.liveMediumPath = '/lib/live/mount/medium/'
