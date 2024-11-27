@@ -70,7 +70,6 @@ export class Alpine {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-openrc')
-    await fisherman.buildCalamaresModule('bootloader-config', true)
     await fisherman.buildModule('grubcf')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
@@ -78,7 +77,6 @@ export class Alpine {
     await fisherman.buildModule('plymouthcfg')
     await fisherman.buildModule('mkinitfs')
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.buildCalamaresModule('cleanup', true)
 
     /**
      * cfs: custom final steps
