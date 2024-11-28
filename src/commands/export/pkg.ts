@@ -137,7 +137,7 @@ export default class ExportPkg extends Command {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/fedora"
-      filter = `penguins-eggs-10.?.*-?-*.rpm`
+      filter = `penguins-eggs-10.?.*-?fedora.*.rpm`
 
       /**
        * openmamba
@@ -145,8 +145,9 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'openmamba') {
       Utils.warning("openmamba rpm packages")
       localPath = `/usr/src/RPM/RPMS/x86_64`
+      
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
-      filter = `penguins-eggs-10.?.*-?-*.rpm`
+      filter = `penguins-eggs-10.?.*-?mamba.*.rpm`
 
       /**
        * opensuse
