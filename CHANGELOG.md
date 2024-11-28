@@ -12,6 +12,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.53
+We are adding rpm packages for openmamba and fedora, with the occasion it became necessary to rewrite the package export function, used by the developer.
+
 ## penguins-eggs-10.0.52
 One more phase of code reorganization without adding new features. 
 
