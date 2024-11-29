@@ -64,6 +64,10 @@ export default class Diversions {
 
     if (familyId === 'aldos') {
       kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
+      //initrd0.img root=live:CDLABEL=ALDOS6420241128 rootfstype=auto ro liveimg quiet rd.locale.LANG=es_MX.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16 rd.vconsole.keymap=es rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM  
+
+      //kp += `root=live:CDLABEL=${volid}        rootfstype=auto ro liveimg       rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16  rd.vconsole.keymap=es rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM rd.live.dir=/live rd.live.squashimg=filesystem.squashfs `
+      //       root=live:CDLABEL=ALDOS6420241128 rootfstype=auto ro liveimg quiet rd.locale.LANG=es_MX.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16 rd.vconsole.keymap=es  rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM  
     } else if (familyId === 'alpine') {
       kp += `alpinelivelabel=${volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (familyId === 'archlinux') {
