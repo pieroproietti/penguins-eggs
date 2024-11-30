@@ -1942,14 +1942,14 @@ export default class Ovary {
           const nest = this.settings.config.snapshot_dir.split('/')
           if (dirname !== nest[1]) {
             // We can't remove first level nest
-            cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
+            cmds.push(await rexec(`rm -rf ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
           }
         } else if (fs.statSync(`/${dirname}`).isFile()) {
           cmds.push(`\n# ${dirname} = file`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+          cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         } else if (fs.statSync(`/${dirname}`).isSymbolicLink()) {
           cmds.push(`\n# ${dirname} = symbolicLink`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+          cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }
       }
     }
