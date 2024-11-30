@@ -1768,6 +1768,17 @@ export default class Ovary {
           await this.initrdDracut()
         }
 
+        /**
+         * temporaneamente disabilito uefi
+         */
+        if (this.familyId === 'aldos' ||
+          this.familyId === 'fedora' ||
+          this.familyId === 'openmamba' ||
+          this.familyId === 'opensuse' ||
+          this.familyId === 'voidlinux') {
+            this.settings.config.make_efi=false
+        }
+        
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
         }
