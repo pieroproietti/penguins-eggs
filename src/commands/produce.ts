@@ -27,9 +27,10 @@ export default class Produce extends Command {
   static description = 'produce a live image from your system whithout your data'
 
   static examples = [
-    'sudo eggs produce                    # fast compression',
-    'sudo eggs produce --max              # max compression',
-    'sudo eggs produce --pendrive         # compression optomized pendrive',
+    'sudo eggs produce                    # zstd fast compression',
+    'sudo eggs produce --standard         # xz compression',
+    'sudo eggs produce --max              # xz max compression',
+    'sudo eggs produce --pendrive         # zstd compression optimized pendrive',
     'sudo eggs produce --clone            # clone',
     'sudo eggs produce --cryptedclone     # crypted clone',
     'sudo eggs produce --basename=colibri',
@@ -54,7 +55,7 @@ export default class Produce extends Command {
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
-    standard: Flags.boolean({ char: 'f', description: 'standard compression: xz -b 1M' }),
+    standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
