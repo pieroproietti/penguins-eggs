@@ -95,7 +95,7 @@ export default class ExportPkg extends Command {
       /**
        * Arch/Manjaro 
        */
-    } else if (familyId === 'archLinux') {
+    } else if (familyId === 'archlinux') {
 
       /**
        * Manjaro
