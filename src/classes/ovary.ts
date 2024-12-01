@@ -1878,12 +1878,12 @@ export default class Ovary {
 
       /**
        * patch per aldos
-       */
       if (this.familyId === 'aldos') {
         await exec(`mkdir ${this.settings.iso_work}LiveOS -p`, this.echo)
         fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}LiveOS/squashfs.img`)
       }
-
+      */
+      
 
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }

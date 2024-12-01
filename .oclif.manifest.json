@@ -561,9 +561,10 @@
       "args": {},
       "description": "produce a live image from your system whithout your data",
       "examples": [
-        "sudo eggs produce                    # fast compression",
-        "sudo eggs produce --max              # max compression",
-        "sudo eggs produce --pendrive         # compression optomized pendrive",
+        "sudo eggs produce                    # zstd fast compression",
+        "sudo eggs produce --standard         # xz compression",
+        "sudo eggs produce --max              # xz max compression",
+        "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
         "sudo eggs produce --clone            # clone",
         "sudo eggs produce --cryptedclone     # crypted clone",
         "sudo eggs produce --basename=colibri",
@@ -672,7 +673,7 @@
           "type": "boolean"
         },
         "standard": {
-          "char": "f",
+          "char": "S",
           "description": "standard compression: xz -b 1M",
           "name": "standard",
           "allowNo": false,
