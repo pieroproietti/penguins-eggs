@@ -394,7 +394,9 @@ export default class Ovary {
       }
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
-      // carico la policy per live-installer
+      /**
+       * LMD£ live-installer
+       */
       const policySource = path.resolve(__dirname, '../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
       const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
       shx.cp(policySource, policyDest)
@@ -406,6 +408,22 @@ export default class Ovary {
 
       installerLink = 'penguins-live-installer.desktop'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+    } else if (Pacman.packageIsInstalled('ubiquity')) {
+
+      /**
+       * UBUNTU ubiquity
+       */
+      const policySource = path.resolve(__dirname, '../../assets/ubiquity-installer/com.github.pieroproietti.penguins-eggs.policy')
+      const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
+      shx.cp(policySource, policyDest)
+      await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
+
+      // carico in filesystem.live packages-remove
+      shx.cp(path.resolve(__dirname, '../../assets/ubiquity-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
+      shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
+
+      installerLink = 'penguins-ubiquity-installer.desktop'
+      shx.cp(path.resolve(__dirname, '../../assets/penguins-ubiquity-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else {
       installerLink = 'penguins-krill.desktop'
       shx.cp(path.resolve(__dirname, '../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
@@ -923,7 +941,11 @@ export default class Ovary {
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
+    if (this.familyId === 'aldos') {
+      await exec(`dracut  --force --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+    } else {
+      await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
+    }
   }
 
   /**
@@ -1750,6 +1772,17 @@ export default class Ovary {
           await this.initrdDracut()
         }
 
+        /**
+         * temporaneamente disabilito uefi
+         */
+        if (this.familyId === 'aldos' ||
+          this.familyId === 'fedora' ||
+          this.familyId === 'openmamba' ||
+          this.familyId === 'opensuse' ||
+          this.familyId === 'voidlinux') {
+            this.settings.config.make_efi=false
+        }
+        
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
         }
@@ -1843,6 +1876,15 @@ export default class Ovary {
         fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}${pathName}.sfs`)
       }
 
+      /**
+       * patch per aldos
+       */
+      if (this.familyId === 'aldos') {
+        await exec(`mkdir ${this.settings.iso_work}LiveOS -p`, this.echo)
+        fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}LiveOS/squashfs.img`)
+      }
+
+
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
   }
@@ -1904,14 +1946,14 @@ export default class Ovary {
           const nest = this.settings.config.snapshot_dir.split('/')
           if (dirname !== nest[1]) {
             // We can't remove first level nest
-            cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname} -rf`, this.verbose))
+            cmds.push(await rexec(`rm -rf ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
           }
         } else if (fs.statSync(`/${dirname}`).isFile()) {
           cmds.push(`\n# ${dirname} = file`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+          cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         } else if (fs.statSync(`/${dirname}`).isSymbolicLink()) {
           cmds.push(`\n# ${dirname} = symbolicLink`)
-          cmds.push(await rexec(`rm ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+          cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
         }
       }
     }
