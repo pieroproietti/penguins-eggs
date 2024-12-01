@@ -92,16 +92,15 @@ export default class ExportPkg extends Command {
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/`
       filter = `penguins-eggs*10.?.*-r*.apk`
 
-    } else if (familyId === 'archLinux') {
-
       /**
        * Arch/Manjaro 
        */
-      if (distroId === "ManjaroLinux" || distroId === "BigLinux") {
+    } else if (familyId === 'archLinux') {
 
-        /**
-         * Manjaro
-         */
+      /**
+       * Manjaro
+       */
+      if (distroId === "ManjaroLinux" || distroId === "BigLinux") {
         Utils.warning("manjaro PKGBUILD")
         localPath = `/home/${this.user}/penguins-eggs-pkgbuilds/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
@@ -120,7 +119,7 @@ export default class ExportPkg extends Command {
       /**
        * Debian
        */
-      } else if (familyId === "debian") {
+    } else if (familyId === "debian") {
       Utils.warning("debian deb")
       localPath = `/home/${this.user}/penguins-eggs/perrisbrewery/workdir`
       remotePath = this.Tu.config.remotePathPackages + "/debs"
@@ -145,7 +144,7 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'openmamba') {
       Utils.warning("openmamba rpm packages")
       localPath = `/usr/src/RPM/RPMS/x86_64`
-      
+
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
       filter = `penguins-eggs-10.?.*-?mamba.*.rpm`
 
