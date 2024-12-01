@@ -4,5 +4,5 @@
 - sudo eggs kill
 - sudo eggs dad --default
 - sudo eggs tools clean
-- sudo eggs produce --standard --addons adapt
+- sudo eggs produce --pendrive --addons adapt
 
