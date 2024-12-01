@@ -942,7 +942,7 @@ export default class Ovary {
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     if (this.familyId === 'aldos') {
-      await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+      await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg} --force`, Utils.setEcho(true))
     } else {
       await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
     }
