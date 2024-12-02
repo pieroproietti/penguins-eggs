@@ -453,15 +453,19 @@ export default class Utils {
 
    /**
     * i386-pc,
+    * i386-efi,
     * x86_64-efi, 
     * arm64-efi,
+    * 
+    * ATTEMZIONE: install efibootmgr
     * 
     * Fedora/RHEL have i386-pc
     */
    static uefiFormat(): string {
       let format = ''
       if (process.arch === 'ia32') {
-         format = 'i386-pc'
+         //format = 'i386-pc' // rf
+         format = 'i386-efi' // arch
          if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             format = 'x86_64-efi'
          }
