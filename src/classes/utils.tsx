@@ -461,7 +461,8 @@ export default class Utils {
    static uefiFormat(): string {
       let format = ''
       if (process.arch === 'ia32') {
-         format = 'i386-pc'
+         //format = 'i386-pc'
+         format = 'i386-efi'
          if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             format = 'x86_64-efi'
          }
