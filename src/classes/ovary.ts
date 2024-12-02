@@ -1774,7 +1774,6 @@ export default class Ovary {
 
         /**
          * temporaneamente disabilito uefi
-         */
         if (this.familyId === 'aldos' ||
           this.familyId === 'fedora' ||
           this.familyId === 'openmamba' ||
@@ -1782,6 +1781,7 @@ export default class Ovary {
           this.familyId === 'voidlinux') {
             this.settings.config.make_efi=false
         }
+         */
         
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
