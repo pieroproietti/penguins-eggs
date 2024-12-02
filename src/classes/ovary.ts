@@ -1195,8 +1195,6 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
-    // await exec(`mkdir ${efiWorkDir}efi`, this.echo)
-    // await exec(`mkdir ${efiWorkDir}efi/boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}EFI`, this.echo)
     await exec(`mkdir ${efiWorkDir}EFI/BOOT`, this.echo)
 
@@ -1276,27 +1274,18 @@ export default class Ovary {
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    // await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}efi/boot`, this.echo)
     await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}EFI/BOOT`, this.echo)
 
     // #######################
 
     // Do the boot image "boot/grub/efiboot.img"
-
     await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
-
     await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
-
     await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
 
-    // await exec(`mkdir ${efiWorkDir}img-mnt/efi`, this.echo)
-    // await exec(`mkdir ${efiWorkDir}img-mnt/efi/boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}img-mnt/EFI`, this.echo)
     await exec(`mkdir ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
-
-    // era cp -r
-    //await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/efi/boot`, this.echo)
     await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
 
     // #######################
@@ -1326,7 +1315,6 @@ export default class Ovary {
 
     // Copy efi files to iso
     await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
-    //await exec(`rsync -avx ${efiWorkDir}efi  ${isoDir}/`, this.echo)
     await exec(`rsync -avx ${efiWorkDir}EFI  ${isoDir}/`, this.echo)
 
     // Do the main grub.cfg (which gets loaded last):
@@ -1351,7 +1339,6 @@ export default class Ovary {
 
     let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
     if (!fs.existsSync(grubTemplate)) {
-      // grubTemplate = path.resolve(__dirname, '../../addons/templates/grub.main.cfg')
       grubTemplate = path.resolve(__dirname, '../../addons/eggs/theme/livecd/grub.main.cfg')
     }
 
@@ -1382,7 +1369,7 @@ export default class Ovary {
 
   /**
    * makeIso
-   * cmd: cmd 4 xorirriso
+   * cmd: cmd 4 xorriso
    */
   async makeIso(cmd: string, scriptOnly = false) {
     // echo = { echo: true, ignore: false }
