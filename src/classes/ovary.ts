@@ -1234,7 +1234,8 @@ export default class Ovary {
      * second grub.cfg file in efiWork
      */
     //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
-    let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
+    //let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
+    let cmd = `for i in $(ls /usr/lib/${grubName}/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
     await exec(cmd, this.echo)
     // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
     cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
@@ -1278,7 +1279,7 @@ export default class Ovary {
 
     // #######################
 
-    // Do the boot image "boot/grub/efiboot.img"
+    // Create boot image "boot/grub/efiboot.img"
     await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
     await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
@@ -1303,7 +1304,7 @@ export default class Ovary {
       await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     }
 
-    // doesn't need to be root-owned
+    // Doesn't need to be root-owned
     // chown -R 1000:1000 $(pwd) 2>/dev/null
 
     // Cleanup efi temps
@@ -1313,7 +1314,7 @@ export default class Ovary {
 
     //  popd
 
-    // Copy efi files to iso
+    // Copy efi files to ISO
     await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
     await exec(`rsync -avx ${efiWorkDir}EFI  ${isoDir}/`, this.echo)
 
