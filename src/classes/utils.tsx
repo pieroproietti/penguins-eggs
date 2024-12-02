@@ -478,7 +478,7 @@ export default class Utils {
    static uefiBN() {
       let bn = 'nothing.efi'
       if (process.arch === 'x64') {
-         bn = 'bootx64.efi'
+         bn = 'BOOTX64.EFI'
       } else if (process.arch === 'arm64') {
          bn = 'bootaa64.efi'
       }
