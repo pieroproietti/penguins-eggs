@@ -464,16 +464,17 @@ export default class Utils {
    static uefiFormat(familyId = 'debian'): string {
       let format = ''
 
-      if (familyId === 'debian' || familyId === 'archlinux' || {
-         if(process.arch === 'ia32') {
-         format = 'i386-efi'
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+      if (familyId === 'debian' || familyId === 'archlinux') {
+         if (process.arch === 'ia32') {
+            format = 'i386-efi'
+            if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+               format = 'x86_64-efi'
+            }
+         } else if (process.arch === 'x64') {
             format = 'x86_64-efi'
+         } else if (process.arch === 'arm64') {
+            format = 'arm64-efi'
          }
-      } else if (process.arch === 'x64') {
-         format = 'x86_64-efi'
-      } else if (process.arch === 'arm64') {
-         format = 'arm64-efi'
       } else if (familyId === 'aldos' || familyId === 'fedora' || familyId === 'openmamba') {
          format = 'i386-pc'
       }
