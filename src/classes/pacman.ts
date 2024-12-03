@@ -15,6 +15,7 @@ import shx from 'shelljs'
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+import Diversions from './diversions.js'
 
 import Aldos from './pacman.d/aldos.js'
 import Alpine from './pacman.d/alpine.js'
@@ -24,6 +25,7 @@ import Fedora from './pacman.d/fedora.js'
 import Openmamba from './pacman.d/openmamba.js'
 import Opensuse from './pacman.d/opensuse.js'
 import Voidlinux from './pacman.d/voidlinux.js'
+
 
 import Settings from './settings.js'
 import Utils from './utils.js'
@@ -75,7 +77,7 @@ export default class Pacman {
       } else if (familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
       } else if (familyId === 'archlinux') {
-        if (this.distro().distroId === 'ManjaroLinux' || this.distro().distroId === 'BigLinux') {
+        if (Diversions.isManjaroBased(this.distro().distroId)) {
           await exec(`pacman -Sy --noconfirm calamares`, Utils.setEcho(true))
         } else {
           await Archlinux.calamaresInstall(verbose)

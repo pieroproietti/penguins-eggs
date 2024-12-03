@@ -9,6 +9,7 @@
 import { Command, Flags } from '@oclif/core'
 
 import Distro from '../../classes/distro.js'
+import Diversions from '../../classes/diversions.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
@@ -100,7 +101,7 @@ export default class ExportPkg extends Command {
       /**
        * Manjaro
        */
-      if (distroId === "ManjaroLinux" || distroId === "BigLinux") {
+      if (Diversions.isManjaroBased(distroId)) {
         Utils.warning("manjaro PKGBUILD")
         localPath = `/home/${this.user}/penguins-eggs-pkgbuilds/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"

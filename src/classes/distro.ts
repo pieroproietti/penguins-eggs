@@ -71,9 +71,14 @@ class Distro implements IDistro {
       this.codenameId = 'trixie'
     }
 
-    if (this.distroId.includes('BigLinux') || this.distroId.includes('BigCommunity') ) {
+    if (this.distroId.includes('BigLinux')) {
       this.distroId = "BigLinux"
     }
+    
+    if (this.distroId.includes('BigCommunity')) {
+      this.distroId = "BigCommunity"
+    }
+
 
     /**
      * Alpine, Fedora, openmamba, opensuse, VoidLinux solo distroId.

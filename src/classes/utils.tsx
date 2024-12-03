@@ -19,6 +19,7 @@ import { Netmask } from 'netmask'
 // libraries
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+import Diversions from './diversions.js'
 
 // pjson
 import { createRequire } from 'module';
@@ -233,7 +234,7 @@ export default class Utils {
          separator = '-'
          version = 'linux'
          suffix = '.img'
-         if (distro.distroId === 'ManjaroLinux' || distro.distroId === 'BigLinux') {
+         if (Diversions.isManjaroBased(distro.distroId)) {
             version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          }
       } else if (distro.familyId === 'debian') {
