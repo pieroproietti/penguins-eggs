@@ -13,6 +13,7 @@ import shell from 'shelljs'
 
 import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
+import Diversions from './diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -337,7 +338,7 @@ class Distro implements IDistro {
     /**
      * ManjaroLinux e derivate
      */
-    if (this.distroId === 'ManjaroLinux' || this.distroId === 'BigLinux') {
+    if (Diversions.isManjaroBased(this.distroId) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }

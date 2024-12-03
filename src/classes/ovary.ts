@@ -390,11 +390,11 @@ export default class Ovary {
     if (Pacman.calamaresExists()) {
       /**
        * NON RICORDO...
-       */
       if (this.settings.distro.distroId === 'BigLinux') {
         let file2edit = path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
         await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
       }
+       */
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
       /**
@@ -907,7 +907,7 @@ export default class Ovary {
     let fileConf = 'arch'
     if (Diversions.isManjaroBased(distroId)) {
       fileConf = 'manjarolinux'
-      if (distroId === "BigLinux"|| distroId === "BigCommunity" ) {
+      if (distroId === "BigLinux" || distroId === "BigCommunity") {
         fileConf = 'biglinux'
       }
     }
@@ -1759,10 +1759,10 @@ export default class Ovary {
         } else if (this.familyId === 'debian') {
           await this.initrdDebian()
         } else if (this.familyId === 'aldos' ||
-                  this.familyId === 'fedora' ||
-                  this.familyId === 'openmamba' ||
-                  this.familyId === 'opensuse' ||
-                  this.familyId === 'voidlinux') {
+          this.familyId === 'fedora' ||
+          this.familyId === 'openmamba' ||
+          this.familyId === 'opensuse' ||
+          this.familyId === 'voidlinux') {
           await this.initrdDracut()
         }
 
@@ -1776,7 +1776,7 @@ export default class Ovary {
             this.settings.config.make_efi=false
         }
          */
-        
+
         if (this.settings.config.make_efi) {
           await this.makeEfi(this.theme)
         }
@@ -1877,7 +1877,7 @@ export default class Ovary {
         fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}LiveOS/squashfs.img`)
       }
       */
-      
+
 
       await this.makeIso(mkIsofsCmd, scriptOnly)
     }
