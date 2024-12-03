@@ -71,7 +71,7 @@ class Distro implements IDistro {
       this.codenameId = 'trixie'
     }
 
-    if (this.distroId.includes('BigLinux') || this.distroId.includes('BigComminity') ) {
+    if (this.distroId.includes('BigLinux') || this.distroId.includes('BigCommunity') ) {
       this.distroId = "BigLinux"
     }
 
