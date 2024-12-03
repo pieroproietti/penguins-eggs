@@ -389,12 +389,12 @@ export default class Ovary {
     let installerLink = 'install-system.desktop'
     if (Pacman.calamaresExists()) {
       /**
-       * NON RICORDO...
-      if (this.settings.distro.distroId === 'BigLinux') {
+       * NON RICORDO... ma serve per biglinux e bigcommunity
+       */
+      if (this.settings.distro.distroId === 'BigLinux' || this.settings.distro.distroId === 'BigCommunity') {
         let file2edit = path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
         await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
       }
-       */
       shx.cp(path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
     } else if (Pacman.packageIsInstalled('live-installer')) {
       /**
