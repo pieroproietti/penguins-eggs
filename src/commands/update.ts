@@ -13,8 +13,8 @@ import Distro from '../classes/distro.js'
 import Pacman from '../classes/pacman.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
+import Diversions from '../classes/diversions.js'
 import { exec } from '../lib/utils.js'
-import { execSync } from 'child_process'
 
 import axios from 'axios'
 import https from 'node:https'
@@ -122,9 +122,6 @@ export default class Update extends Command {
       cmd='apt install penguins-eggs'
     } else if (this.distro.familyId === 'archlinux') {
       cmd = 'pacman -S penguins-eggs'
-      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
-
-      }
     } else if (this.distro.familyId === 'alpine') {
       cmd = `apk add penguins-egga`
     }
@@ -152,7 +149,7 @@ export default class Update extends Command {
 
     } else if (this.distro.familyId === 'archlinux') {
       let repo = "aur"
-      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
+      if (Diversions.isManjaroBased(this.distro.distroId)) {
         repo = 'manjaro'
       }
       const filterAur = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
@@ -194,7 +191,7 @@ export default class Update extends Command {
       repo = "AUR"
       filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       cmd = `sudo pacman -U ${filter}`
-      if (this.distro.distroId === "ManjaroLinux" || this.distro.distroId === "BigLinux") {
+      if (Diversions.isManjaroBased(this.distro.distroId)) {
         repo = 'MANJARO'
       }
       url = `${url}/${repo}`

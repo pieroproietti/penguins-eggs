@@ -69,8 +69,8 @@ export default class Diversions {
       kp += `alpinelivelabel=${volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
-      const distroId  = this.distro().distroId
-      if (isMiso(distroId)) {
+      const distroId = this.distro().distroId
+      if (this.isManjaroBased(distroId)) {
         kp += ` misobasedir=manjaro misolabel=${volid}`
         // shx.exec(`mkdir -p ${this.settings.iso_work}.miso`)
       } else {
@@ -99,24 +99,18 @@ export default class Diversions {
     return new Distro()
   }
 
-}
+  /**
+  * isManjaroBased
+  */
+  static isManjaroBased(distro: string): boolean {
+    let found = false
+    if (distro === 'ManjaroLinux' || 
+      distro === `BigLinux` ||
+      distro === `BigCommunity`) {
+      found = true
+    }
 
-
-/**
-* isMiso
-*/
-function isMiso(distro: string): boolean {
-  let found = false
-  if (distro === 'ManjaroLinux' || distro === `BigLinux`) {
-    found = true
+    return found
   }
 
-  return found
-}
-
-/**
- * isArchiso: se non zuppa, pan bagnato
- */
-function isArchiso(distro: string): boolean {
-  return !isMiso(distro)
 }

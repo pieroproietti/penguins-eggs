@@ -388,6 +388,9 @@ export default class Ovary {
      */
     let installerLink = 'install-system.desktop'
     if (Pacman.calamaresExists()) {
+      /**
+       * NON RICORDO...
+       */
       if (this.settings.distro.distroId === 'BigLinux') {
         let file2edit = path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
         await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${file2edit}`)
@@ -902,10 +905,9 @@ export default class Ovary {
 
     const { distroId } = this.settings.distro
     let fileConf = 'arch'
-    if (isMiso(distroId)) {
-      // default manjarolinux
+    if (Diversions.isManjaroBased(distroId)) {
       fileConf = 'manjarolinux'
-      if (distroId === "BigLinux") {
+      if (distroId === "BigLinux"|| distroId === "BigCommunity" ) {
         fileConf = 'biglinux'
       }
     }
@@ -1858,7 +1860,7 @@ export default class Ovary {
         let pathName = `arch/x86_64/airootfs`
         let hashCmd = 'sha512sum'
         let hashExt = '.sha512'
-        if (isMiso(this.settings.distro.distroId)) {
+        if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
           pathName = `manjaro/x86_64/livefs`
           hashCmd = `md5sum`
           hashExt = '.md5'
@@ -2183,23 +2185,4 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   }
 
   return cmd
-}
-
-/**
- * isMiso
- */
-function isMiso(distro: string): boolean {
-  let found = false
-  if (distro === 'ManjaroLinux' || distro === `BigLinux`) {
-    found = true
-  }
-
-  return found
-}
-
-/**
- * isArchiso: se non zuppa, pan bagnato
- */
-function isArchiso(distro: string): boolean {
-  return !isMiso(distro)
 }
