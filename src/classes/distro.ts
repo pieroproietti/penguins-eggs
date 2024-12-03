@@ -338,7 +338,7 @@ class Distro implements IDistro {
     /**
      * ManjaroLinux e derivate
      */
-    if (Diversions.isManjaroBased(this.distroId) {
+    if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
     }
