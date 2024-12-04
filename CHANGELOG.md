@@ -14,6 +14,7 @@ Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.54
 * great news for rpm based distributions: almalinux, fedora, openmamba, opensuse and rocklinux: we are finally able to produce bootable ISO images on UEFI systems;
+* Manjaro-based bigLinux and bigCommunity distributions are now managed separately and properly.
 
 ## penguins-eggs-10.0.53
 * we are adding rpm packages for openmamba and various, with the occasion it became necessary to rewrite the package export function, used by the developer. In addiction I'm trying to bring penguins-eggs to ALDOS, there is something to do yet. 
