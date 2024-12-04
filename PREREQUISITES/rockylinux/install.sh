@@ -43,6 +43,8 @@ dnf -y install \
     dracut-live \
     fuse \
     git \
+    grub2-efi-x64 \
+    grub2-efi-x64-modules \
     grub2-tools-extra \
     jq \
     lsb-release \

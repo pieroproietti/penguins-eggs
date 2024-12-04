@@ -91,9 +91,6 @@ import removeInstallerLink from './modules/remove-installer-link.js'
 import initramfsCfg from './modules/initramfs-cfg.js'
 import initramfs from './modules/initramfs.js'
 import delLiveUser from './modules/del-live-user.js'
-// umount already imported
-
-// to order in same way
 import umount from './modules/umount.js'
 import mkfs from './modules/mkfs.js'
 import hostname from './modules/hostname.js'
@@ -140,7 +137,6 @@ export default class Sequence {
    public delLiveUser = delLiveUser
    public umountFs = umountFs
    public umountVfs = umountVfs
-   // to order in same way
    public umount = umount
    public mkfs = mkfs
    public hostname = hostname
