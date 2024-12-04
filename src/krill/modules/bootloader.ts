@@ -7,6 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import Diversion from '../../classes/diversions.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
@@ -35,21 +36,15 @@ export default async function bootloader(this: Sequence) {
   /**
    * GRUB
    */
-  let grubInstall = 'grub-install'
-  if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
-    grubInstall = 'grub2-install'
-  }
-  let cmd = `chroot ${this.installTarget} ${grubInstall} ${this.partitions.installationDevice} ${this.toNull}`
+  let grubName=Diversion.grubName(this.distro.familyId)
+  let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
   } catch {
     await Utils.pressKeyToExit(cmd)
   }
 
-  cmd = `chroot ${this.installTarget} grub-mkconfig -o /boot/grub/grub.cfg ${this.toNull}`
-  if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
-    cmd = `chroot ${this.installTarget} grub2-mkconfig -o /boot/grub2/grub.cfg ${this.toNull}`
-  }
+  cmd = `chroot ${this.installTarget} ${grubName}-mkconfig -o /boot/${grubName}/grub.cfg ${this.toNull}`
   try {
     await exec(cmd, this.echo)
   } catch {

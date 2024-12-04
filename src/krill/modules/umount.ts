@@ -23,7 +23,7 @@ export default async function umount(this: Sequence, mountPoint = '') {
       await exec('sleep 1', this.echo)
     } catch (error) {
       message += Number(mountPoint) + JSON.stringify(error)
-      await Utils.pressKeyToExit(message)
+      await Utils.pressKeyToExit(message, true)
     }
   }
 }

@@ -43,7 +43,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (this.efi && !fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
     await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
     
-    //await exec(`mount -t ${this.devices.efi.fsType} ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
+    // await exec(`mount -t ${this.devices.efi.fsType} ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
     // utilizzare vfat per evitare errori
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
   }

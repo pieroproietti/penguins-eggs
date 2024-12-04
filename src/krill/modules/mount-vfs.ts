@@ -41,6 +41,5 @@ export async function umountVfs(this: Sequence) {
   if (this.efi) {
     await this.umount(`${this.installTarget}/sys/firmware/efi/efivars`)
   }
-
   await this.umount(`${this.installTarget}/sys`)
 }
