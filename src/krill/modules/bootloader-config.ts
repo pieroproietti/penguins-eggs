@@ -126,6 +126,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.uefiArch()} --allow-unauthenticated ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
+          console.log(cmd)
           console.log(error)
           await Utils.pressKeyToExit(cmd, true)
         }
@@ -134,6 +135,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
+          console.log(cmd)
           console.log(error)
           await Utils.pressKeyToExit(cmd, true)
         }

@@ -21,6 +21,9 @@ dnf install -y \
     dracut \
     fuse \
     git \
+    grub2-efi-x64 \
+    grub2-efi-x64-modules \
+    grub2-tools-extra \
     jq \
     lvm2 \
     nodejs \
