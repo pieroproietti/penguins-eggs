@@ -40,16 +40,16 @@ export default async function bootloader(this: Sequence) {
   let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
-  } catch {
-    await Utils.pressKeyToExit(cmd)
+  } catch (error) {
+    await showError(cmd, error)
   }
 
   cmd = `chroot ${this.installTarget} ${grubName}-mkconfig -o /boot/${grubName}/grub.cfg ${this.toNull}`
   try {
     await exec(cmd, this.echo)
-  } catch {
-    await Utils.pressKeyToExit(cmd)
-  }
+  } catch (error) {
+    await showError(cmd, error)
+}
 
 }
 
@@ -71,7 +71,7 @@ async function renameLoaderEntries(directoryPath: string, machineId: string): Pr
         try {
           await exec(cmd)
         } catch (error) {
-          console.log(`error executing: ${cmd}`)
+          await showError(cmd, error)
         }
       }
     }
@@ -133,4 +133,15 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
       fs.writeFileSync(filePath, content)
     }
   }
+}
+
+/**
+ * 
+ * @param cmd 
+ * @param error 
+ */
+async function showError(cmd: string, error: any) {
+  console.log('error:', error)
+  console.log(cmd)
+  await Utils.pressKeyToExit(cmd, true)
 }
