@@ -462,26 +462,18 @@ export default class Utils {
     * 
     * Fedora/RHEL have i386-pc
     */
-   static uefiFormat(familyId = 'debian'): string {
+   static uefiFormat(): string {
       let format = ''
 
-      if (familyId === 'debian' || familyId === 'archlinux') {
-         if (process.arch === 'ia32') {
-            format = 'i386-efi'
-            if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
-               format = 'x86_64-efi'
-            }
-         } else if (process.arch === 'x64') {
+      if (process.arch === 'ia32') {
+         format = 'i386-efi'
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
             format = 'x86_64-efi'
-         } else if (process.arch === 'arm64') {
-            format = 'arm64-efi'
          }
-         /**
-          * per fedora e derivate
-          * i386-pc
-          */
-      } else if (familyId === 'aldos' || familyId === 'fedora' || familyId === 'openmamba') {
+      } else if (process.arch === 'x64') {
          format = 'x86_64-efi'
+      } else if (process.arch === 'arm64') {
+         format = 'arm64-efi'
       }
       return format
    }
