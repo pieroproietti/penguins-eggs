@@ -476,8 +476,12 @@ export default class Utils {
          } else if (process.arch === 'arm64') {
             format = 'arm64-efi'
          }
+         /**
+          * per fedora e derivate
+          * i386-pc
+          */
       } else if (familyId === 'aldos' || familyId === 'fedora' || familyId === 'openmamba') {
-         format = 'i386-pc'
+         format = 'x86_64-efi'
       }
       return format
    }
