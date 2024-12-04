@@ -20,28 +20,12 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
 
   switch (this.distro.familyId) {
     /**
-     * fedora
+     * aldos
      */
-    case 'fedora': {
-      if (this.efi) {
-        try {
-          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-efi-x64 efibootmgr} ${this.toNull}`
-          await exec(cmd, this.echo)
-        } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
-        }
-      } else {
-        try {
-          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-pc ${this.toNull}`
-          await exec(cmd, this.echo)
-        } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
-        }
-      }
+    case 'aldos': {
       break
     }
+
 
     /**
      * alpine
@@ -52,35 +36,19 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           cmd = `chroot ${this.installTarget} apk add grub grub-efi efibootmgr} ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
-        }
-      } 
-    }
-
-    /**
-     * opensuse
-     */
-    case 'opensuse': {
-      if (this.efi) {
-        try {
-          cmd = `chroot ${this.installTarget} zypper install -y grub2 grub2-i386-pc grub2-x86_64-efi- efibootmgr} ${this.toNull}`
-          await exec(cmd, this.echo)
-        } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
         }
       } else {
         try {
           cmd = `chroot ${this.installTarget} apk add grub grub-bios ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
         }
       }
       break
     }
+
 
     /**
      * archlinux
@@ -91,20 +59,19 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           cmd = `chroot ${this.installTarget} pacman -Sy grub efibootmgr} ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
         }
       } else {
         try {
           cmd = `chroot ${this.installTarget} pacman -Sy grub ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
         }
       }
       break
     }
+
 
     /**
      * debian
@@ -114,8 +81,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
         cmd = `chroot ${this.installTarget} apt-get update -y ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
-        console.log(error)
-        await Utils.pressKeyToExit(cmd, true)
+        await showError(cmd, error)
       }
 
       await exec('sleep 1', this.echo)
@@ -126,21 +92,76 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
           cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.uefiArch()} --allow-unauthenticated ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(cmd)
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
         }
       } else {
         try {
           cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-pc ${this.toNull}`
           await exec(cmd, this.echo)
         } catch (error) {
-          console.log(cmd)
-          console.log(error)
-          await Utils.pressKeyToExit(cmd, true)
+          await showError(cmd, error)
+        }
+      }
+      break
+    }
+
+
+    /**
+     * fedora
+     */
+    case 'fedora': {
+      if (this.efi) {
+        try {
+          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-efi-x64 efibootmgr} ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          await showError(cmd, error)
+        }
+      } else {
+        try {
+          cmd = `chroot ${this.installTarget} dnf install grub2 grub2-pc ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          await showError(cmd, error)
+        }
+      }
+      break
+    }
+
+
+    /**
+     * openmamba
+     */
+    case 'openmamba': {
+      break
+    }
+
+
+    /**
+     * opensuse
+     */
+    case 'opensuse': {
+      if (this.efi) {
+        try {
+          cmd = `chroot ${this.installTarget} zypper install -y grub2 grub2-i386-pc grub2-x86_64-efi- efibootmgr} ${this.toNull}`
+          await exec(cmd, this.echo)
+        } catch (error) {
+          await showError(cmd, error)
         }
       }
       break
     }
   }
+}
+
+
+/**
+ * 
+ * @param cmd 
+ * @param error 
+ */
+async function showError(cmd :string, error: any) {
+  console.log('error:', error)
+  console.log(cmd)
+  await Utils.pressKeyToExit(cmd, true)
 }
