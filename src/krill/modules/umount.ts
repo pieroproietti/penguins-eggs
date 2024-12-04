@@ -22,6 +22,7 @@ export default async function umount(this: Sequence, mountPoint = '') {
       await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
       await exec('sleep 1', this.echo)
     } catch (error) {
+      console.log(`Error unmounting: ${mountPoint}`)
       message += Number(mountPoint) + JSON.stringify(error)
       await Utils.pressKeyToExit(message)
     }
