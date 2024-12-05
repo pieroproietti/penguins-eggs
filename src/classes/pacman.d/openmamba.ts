@@ -23,11 +23,20 @@ export default class Openmamba {
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      await exec('dnf install calamares -y',echo)
+      await exec('dnf install calamares -y', echo)
     } catch {
       Utils.error(`openmamba.calamaresInstall()`)
     }
   }
+
+  /**
+  * 
+  * calamaresPolicies
+  */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+
 
   /**
    *

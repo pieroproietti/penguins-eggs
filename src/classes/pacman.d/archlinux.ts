@@ -42,6 +42,15 @@ export default class Archlinux {
   }
 
   /**
+   * 
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+
+
+  /**
    * Archlinux: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {

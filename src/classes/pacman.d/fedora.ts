@@ -32,6 +32,15 @@ export default class Fedora {
   }
 
   /**
+   * 
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+
+
+  /**
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {

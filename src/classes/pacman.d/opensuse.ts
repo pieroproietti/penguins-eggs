@@ -32,6 +32,16 @@ export default class Opensuse {
     }
   }
 
+
+  /**
+   * 
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+  
+
   /**
    *
    */

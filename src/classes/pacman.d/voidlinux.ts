@@ -28,6 +28,15 @@ export default class Voidlinux {
     }
   }
 
+
+  /**
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+  
+
   /**
    *
    */
