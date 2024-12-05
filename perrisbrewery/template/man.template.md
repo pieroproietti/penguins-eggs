@@ -12,7 +12,11 @@ AlpineLinux
 ```
 $ doas apk add penguins-eggs@testing
 ```
+AlmaLinux/RockyLinux
+```
+$ sudo dnf install ./{{{packageNameVersioned}}}-1rocky9.5..x86_64.rpm
 
+```
 Arch
 ```
 $ sudo pacman -S penguins-eggs
@@ -24,10 +28,19 @@ Debian/Devuan/Ubuntu
 $ sudo apt install penguins-eggs
 $ sudo dpkg -i {{{packageNameVersioned}}}.deb
 ```
+Fedora
+```
+$ sudo dnf install ./{{{packageNameVersioned}}}-1fedora.x86_64.rpm
+```
 
 Manjaro
 ```
 $ sudo pamac install penguins-eggs
+```
+
+OpenMamba
+```
+$ sudo dnf install ./{{{packageNameVersioned}}}-1mamba.x86_64.rpm
 ```
 
 # USAGE
