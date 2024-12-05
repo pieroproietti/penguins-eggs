@@ -105,10 +105,26 @@ export default class Pacman {
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
-    const echo = Utils.setEcho(verbose)
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
-    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
+    const familyId = this.distro().familyId
+    if (familyId === 'aldos') {
+      await Aldos.calamaresPolicies(verbose)
+    } else if (familyId === 'alpine') {
+      await Alpine.calamaresPolicies(verbose)
+    } else if (familyId === 'archlinux') {
+      await Archlinux.calamaresPolicies(verbose)
+    } else if (familyId === 'debian') {
+      await Debian.calamaresPolicies(verbose)
+    } else if (familyId === 'fedora') {
+      await Fedora.calamaresPolicies(verbose)
+    } else if (familyId === 'openmamba') {
+      await Openmamba.calamaresPolicies(verbose)
+    } else if (familyId === 'opensuse') {
+      await Opensuse.calamaresPolicies(verbose)
+    } else if (familyId === 'voidlinux') {
+      await Voidlinux.calamaresPolicies(verbose)
+    }
   }
+
 
   /**
    *

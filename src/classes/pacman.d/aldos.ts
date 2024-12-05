@@ -31,6 +31,15 @@ export default class Aldos {
   }
 
   /**
+   * 
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+
+
+  /**
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {

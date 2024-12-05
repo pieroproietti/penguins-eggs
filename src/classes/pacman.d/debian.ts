@@ -39,6 +39,16 @@ export default class Debian {
   }
 
   /**
+   * Debian: calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    const echo = Utils.setEcho(verbose)
+    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
+  }
+
+
+  /**
    * Debian: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {

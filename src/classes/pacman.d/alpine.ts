@@ -83,6 +83,14 @@ export default class Alpine {
 
 
   /**
+   * 
+   * calamaresPolicies
+   */
+  static async calamaresPolicies(verbose = false) {
+    // nothing
+  }
+
+  /**
    * Alpine: calamaresRemove
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
