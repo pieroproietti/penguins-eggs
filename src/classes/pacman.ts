@@ -93,11 +93,6 @@ export default class Pacman {
       } else if (familyId === 'voidlinux') {
         await Voidlinux.calamaresInstall(verbose)
       }
-
-      // remove others calamares links
-      await exec('rm -f /usr/share/applications/calamares-eggs-debugging.desktop')
-      await exec('rm -f /usr/share/applications/calamares-eggs.desktop')
-      await exec('rm -f /usr/share/applications/calamares.desktop')
     }
   }
 
