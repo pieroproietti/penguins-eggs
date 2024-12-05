@@ -61,7 +61,7 @@ dnf -y install \
     zstd
 
 # install pnpm
-npm i pnpm -g
+npm i pnpm@8 -g
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
