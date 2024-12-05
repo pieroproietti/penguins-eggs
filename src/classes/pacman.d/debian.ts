@@ -36,6 +36,11 @@ export default class Debian {
     } catch {
       Utils.error(`Debian.calamaresInstall() apt-get install --yes ${array2spaced(this.debs4calamares)}`) // + e.error)
     }
+
+    // remove others calamares links
+    await exec('rm -f /usr/share/applications/calamares-eggs-debugging.desktop')
+    await exec('rm -f /usr/share/applications/calamares-eggs.desktop')
+    await exec('rm -f /usr/share/applications/calamares.desktop')
   }
 
   /**
