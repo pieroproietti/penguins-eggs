@@ -30,7 +30,6 @@
         "react": "^18.3.1",
         "shelljs": "^0.8.5",
         "systeminformation": "^5.23.5",
-        "ts-node": "10.9.2",
         "tftp": "^0.1.2"
     },
     "devDependencies": {
@@ -57,6 +56,7 @@
         "perrisbrewery": "^10.0.2",
         "prettier": "^3.4.2",
         "shx": "^0.3.4",
+        "ts-node": "10.9.2",
         "typescript": "^5.5.4"
     },
     "engines": {
