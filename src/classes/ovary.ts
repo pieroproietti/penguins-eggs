@@ -2164,14 +2164,19 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   }
 
   const echo = Utils.setEcho(verbose)
+  const check = await exec(cmd, echo)
 
+  console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
+
+  /**
+   * skip umount errors
   const check = await exec(cmd, echo)
   if (
-    !cmd.startsWith('umount') && // skip umount errors
-    check.code !== 0
+    !cmd.startsWith('umount') && check.code !== 0 
   ) {
     console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
   }
+   */
 
   return cmd
 }
