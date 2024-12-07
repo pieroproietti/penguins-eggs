@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# This script installs penguins-eggs on your system
-# at /usr/lib/penguins-eggs/ and creates a symlink to /usr/bin/eggs
-# it is intended for development purposes only
+# install eggs tarball 
+# and create links
+
+if [ "$(id -u)" -eq 0 ]; then
+    echo "This script must be run as normal user"
+    exit 1
+fi
 
 if command -v sudo >/dev/null 2>&1; then
     SUDO='sudo'
@@ -15,6 +19,8 @@ EGGS_PACKAGE=""
 EGGS_HOME="/opt/penguins-eggs/"
 
 echo "installing penguins-eggs on ${EGGS_HOME}"
+
+# TO DO
 #tar -xf ${EGGS_PACKAGE}
 # mv to EGGS_HOME
 
@@ -22,19 +28,17 @@ echo "installing penguins-eggs on ${EGGS_HOME}"
 $SUDO ln -s ${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.full.cfg ${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.cfg 
 $SUDO ln -s ${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.full.cfg ${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.cfg 
 
-# Creating various links 
-xdg-user-dirs-update --force
+# bash_completion, icons, man
 $SUDO ln -s ${EGGS_HOME}scripts/eggs.bash /usr/share/bash-completion/completions/
 $SUDO ln -s ${EGGS_HOME}assets/eggs.png /usr/share/icons/
-$SUDO ln -s ${EGGS_HOME}manpages/doc/man/eggs.1.gz /usr/share/man/man1man/eggs.1.gz
+$SUDO ln -s ${EGGS_HOME}manpages/doc/man/eggs.1.gz /usr/share/man/man1/eggs.1.gz
 
 # desktop links
+xdg-user-dirs-update --force
 DESKTOP_DIR=$(xdg-user-dir DESKTOP)
 cp ${EGGS_HOME}addons/eggs/adapt/applications/eggs-adapt.desktop "${DESKTOP_DIR}"
 cp ${EGGS_HOME}assets/penguins-eggs.desktop "${DESKTOP_DIR}"
-
 for f in "$DESKTOP_DIR"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done
 
-sudo eggs config -n
-
-
+# basic configuration
+$SUDO eggs config -n
