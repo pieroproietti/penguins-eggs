@@ -22,7 +22,6 @@ fi
 # update
 dnf -y update
 
-
 dnf -y install \
     bash-completion \
     cryptsetup \
