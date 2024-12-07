@@ -1,1 +1,1 @@
-pkg -t node18-linux-x86 .
+pkg -o eggs.bin --public -t latest-linuxstatic-x64 . 
