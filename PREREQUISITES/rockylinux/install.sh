@@ -17,12 +17,8 @@ if [ ! -f /etc/rocky-release ]; then
     fi
 fi
 
-if [ -f ,/nodesource_setup.sh ]; then
-    ./nodesource_setup.sh
-fi
-
 # add epel-release
-dnf install epel-release
+dnf -y install epel-release 
 
 # enable crb
 dnf config-manager --set-enabled crb
