@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# This script installs penguins-eggs on your system
+# at /usr/lib/penguins-eggs/ and creates a symlink to /usr/bin/eggs
+# it is intended for development purposes only
+
+if command -v sudo >/dev/null 2>&1; then
+    SUDO='sudo'
+else
+    SUDO='doas'
+fi
+
+clear
+EGGS_PACKAGE=""
+EGGS_HOME="/opt/penguins-eggs/"
+#echo "installing penguins-eggs on ${EGGS_HOME}"
+#tar -xf ${EGGS_PACKAGE}
+
+# mv to EGGS_HOME
+
+# Creating varius
+xdg-user-dirs-update --force
+$SUDO ln -s ${EGGS_HOME}scripts/eggs.bash /usr/share/bash-completion/completions/
+$SUDO ln -s ${EGGS_HOME}assets/eggs.png /usr/share/icons/
+$SUDO ln -s ${EGGS_HOME}manpages/doc/man/eggs.1.gz /usr/share/man/man1man/eggs.1.gz
+DESKTOP_DIR=$(xdg-user-dir DESKTOP)
+cp ${EGGS_HOME}addons/eggs/adapt/applications/eggs-adapt.desktop "${DESKTOP_DIR}"
+cp ${EGGS_HOME}assets/penguins-eggs.desktop "${DESKTOP_DIR}"
+for f in "$DESKTOP_DIR"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done
+sudo eggs config -n
+
+
