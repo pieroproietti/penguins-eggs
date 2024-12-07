@@ -1,1 +1,0 @@
-pkg -o eggs.bin --public -t latest-linuxstatic-x64 . 
