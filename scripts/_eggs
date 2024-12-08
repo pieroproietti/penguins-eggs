@@ -12,6 +12,7 @@ _eggs_export() {
 _values "completions" \
 "iso[export iso in the destination host]" \
 "pkg[export pkg/iso to the destination host]" \
+"tarballs[export pkg/iso/tarballs to the destination host]" \
 
       ;;
     args)
@@ -28,6 +29,14 @@ _values "completions" \
         "pkg")
           _arguments -S \
 "(-a --all)"{-a,--all}"[export all archs]" \
+"(-c --clean)"{-c,--clean}"[remove old .deb before to copy]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "tarballs")
+          _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old .deb before to copy]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
@@ -326,7 +335,7 @@ _arguments -S \
 "(-P --prefix)"{-P,--prefix}"[prefix]:file:_files" \
 --release"[release: remove penguins-eggs, calamares and dependencies after installation]" \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
-"(-f --standard)"{-f,--standard}"[standard compression: xz -b 1M]" \
+"(-S --standard)"{-S,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
 "(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \

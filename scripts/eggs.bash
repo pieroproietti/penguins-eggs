@@ -19,6 +19,7 @@ cuckoo --help
 dad --clean --default --file --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
+export:tarballs --clean --help --verbose
 install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
 kill --help --isos --nointeractive --verbose
