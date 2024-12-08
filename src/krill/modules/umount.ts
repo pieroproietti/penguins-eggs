@@ -18,11 +18,12 @@ import Sequence from '../sequence.js'
 export default async function umount(this: Sequence, mountPoint = '') {
   let message = 'umount: ' + mountPoint
   if (Utils.isMountpoint(mountPoint)) {
+    let cmd = `umount ${mountPoint} ${this.toNull}`
     try {
-      await exec(`umount ${mountPoint} ${this.toNull}`, this.echo)
+      await exec(cmd, this.echo)
       await exec('sleep 1', this.echo)
     } catch (error) {
-      message += Number(mountPoint) + JSON.stringify(error)
+      message += cmd + JSON.stringify(error)
       await Utils.pressKeyToExit(message, true)
     }
   }
