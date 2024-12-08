@@ -23,6 +23,10 @@ export default async function bootloader(this: Sequence) {
   /**
    * look at: https://systemd.io/BOOT/
    */
+  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
+    await exec(`chroot ${this.installTarget} bootctl install`, this.echo)
+  }
+  
 
   // update boot/loader/entries/
   const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
@@ -36,7 +40,7 @@ export default async function bootloader(this: Sequence) {
   /**
    * GRUB
    */
-  let grubName=Diversion.grubName(this.distro.familyId)
+  let grubName = Diversion.grubName(this.distro.familyId)
   let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
@@ -49,8 +53,7 @@ export default async function bootloader(this: Sequence) {
     await exec(cmd, this.echo)
   } catch (error) {
     await showError(cmd, error)
-}
-
+  }
 }
 
 /**
@@ -107,7 +110,7 @@ async function updateLoaderEntries(directoryPath: string, machineId: string, new
          */
         if (line.includes('resume=UUID=')) {
           const at = line.indexOf('resume=UUID=')
-          const start = line.substring(0, at -1)
+          const start = line.substring(0, at - 1)
           line = start
         }
 

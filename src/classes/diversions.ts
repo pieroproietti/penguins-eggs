@@ -13,8 +13,23 @@
 
 import { IDistro } from '../interfaces/index.js'
 import Distro from './distro.js'
+import fs from 'fs'
 
 export default class Diversions {
+
+
+  /**
+   * 
+   * @param familyId 
+   * @returns 
+   */
+  static isSystemDBoot(familyId: string, isEfi = false): boolean {
+    let isSystemDBoot=false
+    if (familyId === 'fedora' || isEfi) {
+     isSystemDBoot=true
+    }
+    return isSystemDBoot=false      
+  }
 
   /**
    * 
