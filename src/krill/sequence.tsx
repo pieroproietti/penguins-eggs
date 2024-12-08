@@ -659,24 +659,28 @@ export default class Sequence {
 
 
          // umountVfs
-         message = "umount VFS"
+         message = "umount Virtual File System"
          await redraw(<Install message={message} percent={96} spinner={this.spinner} />)
          try {
             await this.umountVfs()
          } catch (error) {
             await this.showProblem(message, error)
          }
+         //await Utils.pressKeyToExit('passed:' + message)
 
-
-         message = "umount"
+         message = "umount File system"
          await redraw(<Install message={message} percent={99} spinner={this.spinner} />)
          try {
             await this.umountFs()
          } catch (error) {
             await this.showProblem(message, error)
          }
+         await sleep(500) // wait 0,5 seconds
 
-         // Finished
+
+         /**
+          * Finished
+          */ 
          let cmd = "reboot"
          if (this.halt) {
             cmd = "poweroff"
@@ -686,13 +690,15 @@ export default class Sequence {
          if (this.unattended && this.nointeractive) {
             message = `System will ${cmd} in 5 seconds...`
          }
+         
          await redraw(<Finished
             installationDevice={this.partitions.installationDevice}
             hostName={this.users.hostname}
             userName={this.users.username}
             message={message} />)
-   
-   
+
+         // await Utils.pressKeyToExit('passed:' + message)
+      
          if (this.unattended && this.nointeractive) {
             await sleep(5000)
          } else {
@@ -701,7 +707,6 @@ export default class Sequence {
          await exec(cmd, { echo: false })
       }
    }
-
 
 
    /**
