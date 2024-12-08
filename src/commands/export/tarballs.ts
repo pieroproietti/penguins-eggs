@@ -91,7 +91,7 @@ export default class ExportTarballs extends Command {
       cmd += `rm -f ${remoteMountpoint}/*\n`
     }
 
-    cmd += `cp ${localPath}${tarName} ${remoteMountpoint}${tarName}\n`
+    cmd += `cp ${localPath}${tarName} ${remoteMountpoint}/${tarName}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
