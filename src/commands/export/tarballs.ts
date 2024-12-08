@@ -12,12 +12,15 @@ import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import os, { version } from 'node:os'
+import fs from 'fs'
+import path from 'path'
 
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json');
 import { execSync } from 'node:child_process'
+import { exists, existsSync } from 'node:fs'
 
 export default class ExportTarballs extends Command {
   static description = 'export pkg/iso/tarballs to the destination host'
@@ -65,26 +68,38 @@ export default class ExportTarballs extends Command {
     const localPath = `/home/${this.user}/penguins-eggs/dist/`
     const remotePath = `${this.Tu.config.remotePathPackages}/tarballs/`
     const filter = `eggs-v10.?.*-*-linux-x64.tar.gz`
-    const newname = `penguins-eggs-tarball-${pjson.version}-1-linux-x64.tar.gz`
-    console.log(newname)
-                    
-    let cmd = `mkdir ${remoteMountpoint}\n`
+    const tarName = `penguins-eggs-tarball-${pjson.version}-1-linux-x64.tar.gz`
+
+    // remove old tarball
+    let cmd =`rm -f ${localPath}${tarName}`
+    await exec(cmd, this.echo)
+
+    // rename new tarball
+    cmd = `mv ${localPath}${filter} ${localPath}${tarName}`
+    await exec(cmd, this.echo)
+
+    // check if new tarball exists
+    if (!fs.existsSync(`${localPath}${tarName}`)) {
+      console.log(`No ${tarName} exists!`)
+      console.log(`Create it using: pnpm tarballs`)
+      process.exit(1)
+    }
+
+    cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
       cmd += `rm -f ${remoteMountpoint}/*\n`
     }
 
-    cmd += `cp ${localPath}${filter} ${remoteMountpoint}/${newname}\n`
+    cmd += `cp ${localPath}${tarName} ${remoteMountpoint}${tarName}\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
-        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filter}`)
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}*`)
       }
     }
     await exec(cmd, this.echo)
-    console.log(cmd)
   }
 }
-
