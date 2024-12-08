@@ -105,14 +105,15 @@
     },
     "repository": "pieroproietti/penguins-eggs",
     "scripts": {
+        "_postpack": "shx rm -f oclif.manifest.json",
+        "_prepack": "oclif manifest && ocl -t linux-x64",
         "build": "shx rm -rf dist && tsc -b",
         "deb": "tsc -p . && oclif manifest && pb deb",
-        "lint": "eslint . --ext .ts",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
+        "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
-        "postpack": "shx rm -f oclif.manifest.json",
         "posttest": "pnpm run lint",
-        "prepack": "oclif manifest && oclif readme",
+        "tarballs": "tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r .",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
         "version": "oclif readme && git add README.md"
     },
