@@ -27,7 +27,12 @@ export default async function bootloader(this: Sequence) {
     // await exec(`chroot dnf install systemd-boot efibootmgr`, this.echo)
     // await exec(`chroot dnf makecache -y`, this.echo)
     // await exec(`chroot dnf install systemd-boot -y`, this.echo)
-    await exec(`chroot ${this.installTarget} bootctl --path=/boot/efi install `, this.echo)
+    await Utils.pressKeyToExit("configuro systemd-boot")
+    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
+    /**
+     * create entries in /boot/efi/loader/entries
+     * cp vmlinuz initrams in /boot/efi
+     */
 
     // update boot/loader/entries/
     const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
