@@ -258,9 +258,9 @@ export default class Sequence {
        */
       if (this.distro.familyId === 'archlinux') {
          if (this.distro.distroId === 'ManjaroLinux') {
-            await exec(`sudo ln -s /run/miso/bootmnt/live/ /live`)
+            await exec(`ln -s /run/miso/bootmnt/live/ /live`)
          } else {
-            await exec(`sudo ln -s /run/archiso/bootmnt/live/ /live`)
+            await exec(`ln -s /run/archiso/bootmnt/live/ /live`)
          }
       }
 

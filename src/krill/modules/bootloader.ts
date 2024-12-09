@@ -19,38 +19,6 @@ import path from 'node:path'
  * @param this
  */
 export default async function bootloader(this: Sequence) {
-
-  /**
-   * SYSTEMD-BOOT
-   */
-  console.log("familyId: ", this.distro.familyId)
-  console.log("isEfi: ", this.efi)
-  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, Utils.setEcho(true))
-    console.log("system-boot configure")
-  } else {
-    console.log("Just grub")
-  }
-  await Utils.pressKeyToExit("configuro systemd-boot")
-
-  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-    // await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
-
-    /**
-     * create entries in /boot/efi/loader/entries
-     * cp vmlinuz initrams in /boot/efi
-     */
-
-    // update boot/loader/entries/
-    const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
-    if (fs.existsSync(pathEntries)) {
-      const uuid = Utils.uuid(this.devices.root.name)
-      const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-      await renameLoaderEntries(pathEntries, machineId)
-      await updateLoaderEntries(pathEntries, machineId, uuid)
-    }
-  }
-
   /**
    * GRUB
    */
@@ -67,6 +35,43 @@ export default async function bootloader(this: Sequence) {
     await exec(cmd, this.echo)
   } catch (error) {
     await showError(cmd, error)
+  }
+
+  /**
+   * create entries in /boot/efi/loader/entries
+   * cp vmlinuz initrams in /boot/efi
+   */
+  // update boot/loader/entries/
+  const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
+  if (fs.existsSync(pathEntries)) {
+    const uuid = Utils.uuid(this.devices.root.name)
+    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
+    await renameLoaderEntries(pathEntries, machineId)
+    await updateLoaderEntries(pathEntries, machineId, uuid)
+  }
+
+  /**
+   * SYSTEMD-BOOT
+   */
+  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
+
+    // bootctl install
+    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
+    
+    let vmlinuz=path.basename(Utils.vmlinuz())
+    let initrdImg=path.basename(Utils.initrdImg())
+    await exec(`cp /boot/${vmlinuz} ${this.installTarget}/boot/efi`, this.echo)
+    await exec(`cp /boot/${initrdImg} ${this.installTarget}/boot/efi`, this.echo)
+
+    // create entries
+    let content =``
+    content += `title   testing entry`
+    content += `linux   /${vmlinuz}`
+    content += `initrd  /${initrdImg}`
+    content += `options root=${this.devices.root.name} rw`
+    await exec(`mkdir ${this.installTarget}/boot/efi/loader/entries/ -p`)
+    fs.writeFileSync(`${this.installTarget}/boot/efi/loader/entries/testing.conf`, content)
+
   }
 }
 
