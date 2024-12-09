@@ -23,12 +23,19 @@ export default async function bootloader(this: Sequence) {
   /**
    * SYSTEMD-BOOT
    */
+  console.log("familyId: ", this.distro.familyId)
+  console.log("isEfi: ", this.efi)
   if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-    // await exec(`chroot dnf install systemd-boot efibootmgr`, this.echo)
-    // await exec(`chroot dnf makecache -y`, this.echo)
-    // await exec(`chroot dnf install systemd-boot -y`, this.echo)
-    await Utils.pressKeyToExit("configuro systemd-boot")
-    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
+    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, Utils.setEcho(true))
+    console.log("system-boot configure")
+  } else {
+    console.log("Just grub")
+  }
+  await Utils.pressKeyToExit("configuro systemd-boot")
+
+  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
+    // await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
+
     /**
      * create entries in /boot/efi/loader/entries
      * cp vmlinuz initrams in /boot/efi
