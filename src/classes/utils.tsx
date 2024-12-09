@@ -141,6 +141,7 @@ export default class Utils {
    static vmlinuz(): string {
       let distro = new Distro()
       let vmlinuz = ''
+
       // find vmlinuz in /proc/cmdline
       const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
       cmdline.forEach(cmd => {
@@ -151,6 +152,7 @@ export default class Utils {
             if (vmlinuz.includes(")")) {
                vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
             }
+
             if (!fs.existsSync(vmlinuz)) {
                if (fs.existsSync(`/boot/${vmlinuz}`)) {
                   vmlinuz = `/boot/${vmlinuz}`
@@ -163,16 +165,6 @@ export default class Utils {
       if (vmlinuz.indexOf('@')) {
          let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
          vmlinuz = vmlinuz.substring(subvolumeEnd)
-      }
-
-      /**
-       * blendOS: BOOT_IMAGE=/vmlinuz-linux
-       *          but =/vmlinuz-linux exists in /boot/
-       */
-      if (vmlinuz === '/vmlinuz-linux' || vmlinuz === '/vmlinuz-linux-zen') {
-         if (fs.existsSync(`/boot${vmlinuz}`)) {
-            vmlinuz = `/boot${vmlinuz}`
-         }
       }
 
       if (process.arch === 'arm64') {
@@ -204,7 +196,7 @@ export default class Utils {
       /**
        * if not exists exit
        */
-      if (!fs.existsSync(vmlinuz)) {
+      if (!fs.existsSync(vmlinuz) && !Utils.isLive()) {
          console.log(vmlinuz + ' not exists!')
          process.exit()
       }
