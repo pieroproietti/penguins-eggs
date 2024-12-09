@@ -23,12 +23,12 @@ export default class Diversions {
    * @param familyId 
    * @returns 
    */
-  static isSystemDBoot(familyId: string, isEfi = false): boolean {
-    let isSystemDBoot=false
+  static isSystemDBoot(familyId: string, isEfi: boolean): boolean {
+    let isSystemDBoot = false
     if (familyId === 'fedora' && isEfi) {
-     isSystemDBoot=true
+      isSystemDBoot = true
     }
-    return isSystemDBoot=false      
+    return isSystemDBoot
   }
 
   /**
@@ -119,7 +119,7 @@ export default class Diversions {
   */
   static isManjaroBased(distro: string): boolean {
     let found = false
-    if (distro === 'ManjaroLinux' || 
+    if (distro === 'ManjaroLinux' ||
       distro === `BigLinux` ||
       distro === `BigCommunity`) {
       found = true
