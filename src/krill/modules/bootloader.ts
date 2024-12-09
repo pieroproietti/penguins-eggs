@@ -65,12 +65,14 @@ export default async function bootloader(this: Sequence) {
 
     // create entries
     let content =``
-    content += `title   testing entry`
-    content += `linux   /${vmlinuz}`
-    content += `initrd  /${initrdImg}`
-    content += `options root=${this.devices.root.name} rw`
+    content += `title   testing entry\n`
+    content += `linux   /${vmlinuz}\n`
+    content += `initrd  /${initrdImg}\n`
+    content += `options root=${this.devices.root.name} rw\n`
     await exec(`mkdir ${this.installTarget}/boot/efi/loader/entries/ -p`)
     fs.writeFileSync(`${this.installTarget}/boot/efi/loader/entries/testing.conf`, content)
+
+    await exec(`chroot ${this.installTarget} bootctl update`, this.echo)
 
   }
 }
