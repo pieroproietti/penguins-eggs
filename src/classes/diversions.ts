@@ -25,7 +25,7 @@ export default class Diversions {
    */
   static isSystemDBoot(familyId: string, isEfi = false): boolean {
     let isSystemDBoot=false
-    if (familyId === 'fedora' || isEfi) {
+    if (familyId === 'fedora' && isEfi) {
      isSystemDBoot=true
     }
     return isSystemDBoot=false      

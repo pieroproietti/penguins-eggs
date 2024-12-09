@@ -24,8 +24,9 @@ export default async function bootloader(this: Sequence) {
    * SYSTEMD-BOOT
    */
   if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-    //await exec(`chroot dnf install systemd-boot efibootmgr`, this.echo)
-    await exec(`chroot dnf install systemd-boot`, this.echo)
+    // await exec(`chroot dnf install systemd-boot efibootmgr`, this.echo)
+    // await exec(`chroot dnf makecache -y`, this.echo)
+    // await exec(`chroot dnf install systemd-boot -y`, this.echo)
     await exec(`chroot ${this.installTarget} bootctl --path=/boot/efi install `, this.echo)
 
     // update boot/loader/entries/
