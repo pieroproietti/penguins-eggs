@@ -21,20 +21,21 @@ import path from 'node:path'
 export default async function bootloader(this: Sequence) {
 
   /**
-   * look at: https://systemd.io/BOOT/
+   * SYSTEMD-BOOT
    */
   if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-    await exec(`chroot ${this.installTarget} bootctl install`, this.echo)
-  }
-  
+    //await exec(`chroot dnf install systemd-boot efibootmgr`, this.echo)
+    await exec(`chroot dnf install systemd-boot`, this.echo)
+    await exec(`chroot ${this.installTarget} bootctl --path=/boot/efi install `, this.echo)
 
-  // update boot/loader/entries/
-  const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
-  if (fs.existsSync(pathEntries)) {
-    const uuid = Utils.uuid(this.devices.root.name)
-    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-    await renameLoaderEntries(pathEntries, machineId)
-    await updateLoaderEntries(pathEntries, machineId, uuid)
+    // update boot/loader/entries/
+    const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
+    if (fs.existsSync(pathEntries)) {
+      const uuid = Utils.uuid(this.devices.root.name)
+      const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
+      await renameLoaderEntries(pathEntries, machineId)
+      await updateLoaderEntries(pathEntries, machineId, uuid)
+    }
   }
 
   /**
