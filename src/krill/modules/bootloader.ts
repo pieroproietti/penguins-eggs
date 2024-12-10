@@ -58,10 +58,12 @@ export default async function bootloader(this: Sequence) {
     // bootctl install
     await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
     
+    /*
     let vmlinuz=path.basename(Utils.vmlinuz())
     let initrdImg=path.basename(Utils.initrdImg())
     await exec(`cp /boot/${vmlinuz} ${this.installTarget}/boot/efi`, this.echo)
     await exec(`cp /boot/${initrdImg} ${this.installTarget}/boot/efi`, this.echo)
+
 
     // create entries
     let content =``
@@ -71,7 +73,7 @@ export default async function bootloader(this: Sequence) {
     content += `options root=${this.devices.root.name} rw\n`
     await exec(`mkdir ${this.installTarget}/boot/efi/loader/entries/ -p`)
     fs.writeFileSync(`${this.installTarget}/boot/efi/loader/entries/testing.conf`, content)
-
+    */
     await exec(`chroot ${this.installTarget} bootctl update`, this.echo)
 
   }
