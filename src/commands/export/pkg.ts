@@ -103,7 +103,7 @@ export default class ExportPkg extends Command {
        */
       if (Diversions.isManjaroBased(distroId)) {
         Utils.warning("manjaro PKGBUILD")
-        localPath = `/home/${this.user}/penguins-eggs-pkgbuilds/manjaro/penguins-eggs`
+        localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
         filter = `penguins-eggs-10.?.*-?-any.pkg.tar.*`
 
@@ -112,7 +112,7 @@ export default class ExportPkg extends Command {
          */
       } else {
         Utils.warning("aur PKGBUILD")
-        localPath = `/home/${this.user}/penguins-eggs-pkgbuilds/aur/penguins-eggs`
+        localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
         filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       }
