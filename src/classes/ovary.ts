@@ -941,13 +941,8 @@ export default class Ovary {
   async initrdDracut() {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
-    if (this.familyId === 'aldos') {
-      await exec(`dracut  --force --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
-    } else {
-      await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
-    }
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
   }
 
   /**

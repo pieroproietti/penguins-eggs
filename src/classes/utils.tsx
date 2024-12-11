@@ -142,7 +142,7 @@ export default class Utils {
       let distro = new Distro()
       let vmlinuz = ''
 
-      // find vmlinuz in /proc/cmdline
+      // find BOOT_IMAGE /proc/cmdline
       const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
       cmdline.forEach(cmd => {
          if (cmd.includes('BOOT_IMAGE')) {
@@ -161,6 +161,22 @@ export default class Utils {
          }
       })
 
+
+      /** 
+       * BOOT_IMAGE not found in /proc/cmdline
+       * sample: initrd=\initramfs-6.11.10-300.fc41.x86_64.img root=/dev/sda3 rw
+       */
+      if (vmlinuz === '') {
+         cmdline.forEach(cmd => {
+            if (cmd.includes('initrd=')) {
+               let initrd = cmd.substring(cmd.indexOf('initramfs-')+10)
+               let version = initrd.substring(0, initrd.indexOf('.img'))
+               vmlinuz = `/boot/efi/vmlinuz-${version}`
+               console.log(vmlinuz)
+            }
+         })
+      }
+
       // btrfs: eg: /@root/boot/vmlinuz
       if (vmlinuz.indexOf('@')) {
          let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
@@ -172,26 +188,6 @@ export default class Utils {
          vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
 
-      /** 
-       * If vmlinuz not found
-       */
-      if (vmlinuz === '') {
-         let version = 'linux'
-         if (distro.familyId === 'debian') {
-            cmdline.forEach(cmd => {
-               if (cmd.includes('initrd.img')) {
-                  version = cmd.substring(cmd.indexOf('initrd.img') + 10)
-               }
-            })
-         } else if (distro.distroId === 'Manjaro') {
-            cmdline.forEach(cmd => {
-               if (cmd.includes('initrd.img')) {
-                  version = cmd.substring(cmd.indexOf('initrd.img') + 10)
-               }
-            })
-         }
-         vmlinuz = '/boot/vmlinuz-' + version
-      }
 
       /**
        * if not exists exit
