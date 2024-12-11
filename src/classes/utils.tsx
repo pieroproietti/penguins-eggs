@@ -172,7 +172,6 @@ export default class Utils {
                let initrd = cmd.substring(cmd.indexOf('initramfs-')+10)
                let version = initrd.substring(0, initrd.indexOf('.img'))
                vmlinuz = `/boot/efi/vmlinuz-${version}`
-               console.log(vmlinuz)
             }
          })
       }
