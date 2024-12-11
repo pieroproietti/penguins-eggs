@@ -13,15 +13,12 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import os, { version } from 'node:os'
 import fs from 'fs'
-import path from 'path'
 
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json');
 import { execSync } from 'node:child_process'
-import { exists, existsSync } from 'node:fs'
-
 export default class ExportTarballs extends Command {
   static description = 'export pkg/iso/tarballs to the destination host'
 

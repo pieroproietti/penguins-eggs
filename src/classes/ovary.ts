@@ -944,7 +944,12 @@ export default class Ovary {
     const conf = path.resolve(__dirname, `../../dracut/dracut.conf`)
     const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
     if (this.familyId === 'aldos') {
-      await exec(`dracut  --force --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
+      // ALDOS isolinux.cfg
+      //root=live:CDLABEL=ALDOS-1-4-19 rootfstype=auto ro liveimg rd.locale.LANG=es_MX.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16 rd.vconsole.keymap=es rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rd_NO_LUKS rd_NO_MD rd_NO_DM noswap quiet splash
+
+      // I need this: we are in ALDOS chrooted
+      // let aldosParam='rootfstype=auto liveimg rd.locale.LANG=es_MX.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16 rd.vconsole.keymap=es rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rd_NO_LUKS rd_NO_MD rd_NO_DM noswap'
+      await exec(`dracut --force liveimg ${this.settings.iso_work}live/${this.settings.initrdImg}`, Utils.setEcho(true))
     } else {
       await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
     }
