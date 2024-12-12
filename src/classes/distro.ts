@@ -137,9 +137,8 @@ class Distro implements IDistro {
       this.familyId = 'opensuse'
       this.distroLike = this.distroId
       /**
-       * in opensuse il codename è n/a
-       * ed p codificato in /etc/os-relase
-       * ID
+       * opensuse have codename=n/a
+       * but it is added to ID on /etc/os-relaese, so:
        */
       this.distroId = getId() // prende id di /etc/os-release
       this.codenameId = 'rolling' // sistemare non 
