@@ -110,7 +110,8 @@
     - oracular # Ubuntu oracular 24.10
     - abuntu # Abuntu
     - devel  # Rhino
-    - wilma  # Linux Mint 22
+    - wilma  # Linuxmint 22
+    - xia # Linuxmint 22.1
 
 - id: 
 #
