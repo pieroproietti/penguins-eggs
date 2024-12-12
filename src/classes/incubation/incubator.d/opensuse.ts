@@ -79,7 +79,7 @@ export class Opensuse {
     await fisherman.buildModule('plymouthcfg')
     //await fisherman.buildModule('mkinitfs')
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.buildCalamaresModule('cleanup', true)
+    // await fisherman.buildCalamaresModule('cleanup', true)
 
     /**
      * cfs: custom final steps
