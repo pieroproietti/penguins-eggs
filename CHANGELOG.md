@@ -13,6 +13,10 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.54
+- tested penguins-eggs-tarballs on almalinux, biglinux, debian. devuan, fedora, linuxmint (no lmde), opensuse, rockylinux;
+- krill: bugfix - during the production of a naked, there was an error on copyng same calamares modules.
+
+## penguins-eggs-10.0.54
 * great news for rpm based distributions: almalinux, fedora, opensuse and rocklinux: we are finally able to produce bootable ISO images on UEFI systems;
 * openmamba, thanks the collaboration from [Silvan Calarco](https://openmamba.org/en/), have it's own rpm package;
 * almalinux, fedora, rocklinux can install penguins-eggs with [penguins-eggs-tarball](https://sourceforge.net/projects/penguins-eggs/files/Packages/TARBALLS/);
