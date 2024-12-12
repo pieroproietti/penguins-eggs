@@ -136,7 +136,13 @@ class Distro implements IDistro {
     } else if (this.distroId === 'openSUSE') {
       this.familyId = 'opensuse'
       this.distroLike = this.distroId
-      this.codenameId = 'rolling' // viene rimosso dal nome
+      /**
+       * in opensuse il codename è n/a
+       * ed p codificato in /etc/os-relase
+       * ID
+       */
+      this.distroId = getId() // prende id di /etc/os-release
+      this.codenameId = 'rolling' // sistemare non 
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // check
 
@@ -369,3 +375,22 @@ class Distro implements IDistro {
 }
 
 export default Distro
+
+
+/**
+ * usa l'ID di /etc/os-release
+ */
+function getId(): string {
+  let id = ''
+
+  const data = fs.readFileSync('/etc/os-release', 'utf8');
+
+  // trova ID
+  const idLine = data.split('\n').find((line) => line.startsWith('ID='));
+
+  // Estrai il valore di ID
+  if (idLine) {
+    id = idLine.split('=')[1].trim().replace(/"/g, '');
+  }
+  return id
+}
