@@ -12,7 +12,7 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.0.54
+## penguins-eggs-10.0.55
 - tested penguins-eggs-tarballs on almalinux, biglinux, debian. devuan, fedora, linuxmint (no lmde), opensuse, rockylinux;
 - krill: bugfix - during the production of a naked, there was an error on copyng same calamares modules.
 
