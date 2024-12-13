@@ -20,10 +20,11 @@ import path from 'node:path'
  */
 export default async function bootloader(this: Sequence) {
   /**
-   * GRUB
+   * GRUB; added --force per fedora et simila
    */
   let grubName = Diversion.grubName(this.distro.familyId)
-  let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${this.toNull}`
+  let grubForce =  Diversion.grubForce(this.distro.familyId)
+  let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
   } catch (error) {
