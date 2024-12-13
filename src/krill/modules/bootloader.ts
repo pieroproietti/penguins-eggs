@@ -42,6 +42,8 @@ export default async function bootloader(this: Sequence) {
    * cp vmlinuz initrams in /boot/efi
    */
   // update boot/loader/entries/
+
+/**  
   const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
   if (fs.existsSync(pathEntries)) {
     const uuid = Utils.uuid(this.devices.root.name)
@@ -49,6 +51,7 @@ export default async function bootloader(this: Sequence) {
     await renameLoaderEntries(pathEntries, machineId)
     await updateLoaderEntries(pathEntries, machineId, uuid)
   }
+*/
 
   /**
    * SYSTEMD-BOOT
