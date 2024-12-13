@@ -23,7 +23,7 @@ export default async function bootloader(this: Sequence) {
    * GRUB; added --force per fedora et simila
    */
   let grubName = Diversion.grubName(this.distro.familyId)
-  let grubForce =  Diversion.grubForce(this.distro.familyId)
+  let grubForce = Diversion.grubForce(this.distro.familyId)
   let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
   try {
     await exec(cmd, this.echo)
@@ -39,12 +39,12 @@ export default async function bootloader(this: Sequence) {
   }
 
   /**
-   * create entries in /boot/efi/loader/entries
-   * cp vmlinuz initrams in /boot/efi
+   * updateEntries
+   * 
+   * Questo non serve per almalinux/rochy, fedora 
+   * in qualche modo le aggiusta da solo...
+   * non ci resta che scoprire come!
    */
-  // update boot/loader/entries/
-
-/**  
   const pathEntries = path.join(this.installTarget, '/boot/loader/entries/')
   if (fs.existsSync(pathEntries)) {
     const uuid = Utils.uuid(this.devices.root.name)
@@ -52,35 +52,7 @@ export default async function bootloader(this: Sequence) {
     await renameLoaderEntries(pathEntries, machineId)
     await updateLoaderEntries(pathEntries, machineId, uuid)
   }
-*/
 
-  /**
-   * SYSTEMD-BOOT
-   */
-  if (false) { //Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
-
-    // bootctl install
-    await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
-    
-    let vmlinuz=path.basename(Utils.vmlinuz())
-    let initrdImg=path.basename(Utils.initrdImg())
-    await exec(`cp /boot/${vmlinuz} ${this.installTarget}/boot/efi`, this.echo)
-    await exec(`cp /boot/${initrdImg} ${this.installTarget}/boot/efi`, this.echo)
-
-
-    // create entries
-    let content =``
-    content += `title   Linux\n`
-    content += `linux   /${vmlinuz}\n`
-    content += `initrd  /${initrdImg}\n`
-    content += `options root=${this.devices.root.name} rw\n`
-    await exec(`mkdir ${this.installTarget}/boot/efi/loader/entries/ -p`)
-    fs.writeFileSync(`${this.installTarget}/boot/efi/loader/entries/linux.conf`, content)
-
-    // bootctl update
-    await exec(`chroot ${this.installTarget} bootctl update`, this.echo)
-
-  }
 }
 
 /**
@@ -175,3 +147,35 @@ async function showError(cmd: string, error: any) {
   console.log(cmd)
   await Utils.pressKeyToExit(cmd, true)
 }
+
+
+
+
+/**
+ * SYSTEMD-BOOT
+
+if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
+
+  // bootctl install
+  await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
+  
+  let vmlinuz=path.basename(Utils.vmlinuz())
+  let initrdImg=path.basename(Utils.initrdImg())
+  await exec(`cp /boot/${vmlinuz} ${this.installTarget}/boot/efi`, this.echo)
+  await exec(`cp /boot/${initrdImg} ${this.installTarget}/boot/efi`, this.echo)
+
+
+  // create entries
+  let content =``
+  content += `title   Linux\n`
+  content += `linux   /${vmlinuz}\n`
+  content += `initrd  /${initrdImg}\n`
+  content += `options root=${this.devices.root.name} rw\n`
+  await exec(`mkdir ${this.installTarget}/boot/efi/loader/entries/ -p`)
+  fs.writeFileSync(`${this.installTarget}/boot/efi/loader/entries/linux.conf`, content)
+
+  // bootctl update
+  await exec(`chroot ${this.installTarget} bootctl update`, this.echo)
+
+}
+*/
