@@ -53,7 +53,7 @@ export default async function bootloader(this: Sequence) {
   /**
    * SYSTEMD-BOOT
    */
-  if (Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
+  if (false) { //Diversion.isSystemDBoot(this.distro.familyId, this.efi)) {
 
     // bootctl install
     await exec(`chroot ${this.installTarget} bootctl --path /boot/efi/ install`, this.echo)
