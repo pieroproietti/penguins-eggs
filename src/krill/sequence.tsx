@@ -49,9 +49,9 @@ import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../components/install.js'
 import Finished from '../components/finished.js'
 
-
 import fs from 'fs'
 import yaml from 'js-yaml'
+import path from 'node:path'
 import shx from 'shelljs'
 
 import { installer } from '../classes/incubation/installer.js'
@@ -448,7 +448,7 @@ export default class Sequence {
                if (this.distro.familyId === 'alpine' ||
                   this.distro.familyId === 'archlinux' ||
                   this.distro.familyId === 'debian') {
-                  
+
                   await this.locale()
                }
             } catch (error) {
@@ -558,7 +558,6 @@ export default class Sequence {
             await this.showProblem(message, error)
          }
 
-
          // bootloader (grub-install)
          message = "bootloader"
          await redraw(<Install message={message} percent={83} spinner={this.spinner} />)
@@ -567,6 +566,7 @@ export default class Sequence {
          } catch (error) {
             await this.showProblem(message, error)
          }
+
 
          // sources-yolk-undo
          if (this.distro.familyId === 'debian') {
@@ -651,6 +651,15 @@ export default class Sequence {
             }
          }
 
+
+         /**
+          * color patch per almalinux/rocky
+          */
+         if (this.distro.familyId === 'fedora') {
+            const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
+            await exec(`cp /${machineId}* ${this.installTarget}`)
+         }
+
          // chroot
          if (chroot) {
             message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
@@ -680,7 +689,7 @@ export default class Sequence {
 
          /**
           * Finished
-          */ 
+          */
          let cmd = "reboot"
          if (this.halt) {
             cmd = "poweroff"
@@ -690,7 +699,7 @@ export default class Sequence {
          if (this.unattended && this.nointeractive) {
             message = `System will ${cmd} in 5 seconds...`
          }
-         
+
          await redraw(<Finished
             installationDevice={this.partitions.installationDevice}
             hostName={this.users.hostname}
@@ -698,7 +707,7 @@ export default class Sequence {
             message={message} />)
 
          // await Utils.pressKeyToExit('passed:' + message)
-      
+
          if (this.unattended && this.nointeractive) {
             await sleep(5000)
          } else {
