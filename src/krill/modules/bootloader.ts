@@ -7,6 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import { up } from 'inquirer/lib/utils/readline.js'
 import Diversion from '../../classes/diversions.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
@@ -33,6 +34,18 @@ export default async function bootloader(this: Sequence) {
   }
 
   /**
+   * rm entries
+   */
+  cmd = `rm /boot/loader/entries/*`
+  await exec(cmd, this.echo)
+
+  /**
+   * create entries
+   */
+  cmd = `kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
+  await exec(cmd, this.echo)
+
+  /**
    * grub-mkconfig
    */
   cmd = `chroot ${this.installTarget} ${grubName}-mkconfig -o /boot/${grubName}/grub.cfg ${this.toNull}`
@@ -52,6 +65,65 @@ export default async function bootloader(this: Sequence) {
     await showError(cmd, error)
   }
 }
+
+/**
+ * 
+ * @param directoryPath 
+ * @param machineId 
+ * @param newUUID 
+ */
+async function updateLoaderEntries(directoryPath: string, machineId: string, newUUID: string): Promise<void> {
+  const files: string[] = fs.readdirSync(directoryPath)
+  if (files.length > 0) {
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file)
+      let source = fs.readFileSync(filePath, 'utf8')
+      let lines = source.split('\n')
+      let content = ''
+      for (let line of lines) {
+        /**
+         * REPLACE root=UUID=
+         */
+        if (line.includes('root=UUID=')) {
+          const at = line.indexOf('root=UUID=')
+          const start = line.substring(0, at + 10)
+          const stop = line.substring(at + 10 + 36)
+          line = start + newUUID + stop
+        }
+
+        /**
+         * REMOVE resume=UUID=
+         */
+        if (line.includes('resume=UUID=')) {
+          const at = line.indexOf('resume=UUID=')
+          const start = line.substring(0, at - 1)
+          line = start
+        }
+
+        /**
+         * REPLACE machineId
+         */
+        // version 0-rescue-
+        if (line.includes('version 0-rescue-')) {
+          line = `version 0-rescue-${machineId}`
+        }
+
+        // linux /boot/vmlinuz-0-rescue-
+        if (line.includes('vmlinuz-0-rescue-')) {
+          line = `vmlinuz-0-rescue-${machineId}`
+        }
+
+        // initrd /boot/initramfs-0-rescue-
+        if (line.includes('initrd /boot/initramfs-0-rescue-')) {
+          line = `initrd /boot/initramfs-0-rescue-${machineId}.img`
+        }
+        content += line + '\n'
+      }
+      fs.writeFileSync(filePath, content)
+    }
+  }
+}
+
 
 /**
  * 
