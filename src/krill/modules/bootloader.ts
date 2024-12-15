@@ -31,31 +31,31 @@ export default async function bootloader(this: Sequence) {
 
 
   /**
-    * grub-mkconfig
-    */
+   * grub-mkconfig
+   */
   cmd = `chroot ${this.installTarget} ${grubName}-mkconfig -o /boot/${grubName}/grub.cfg ${this.toNull}`
   await exec(cmd, this.echo)
 
 
   /**
-   * this is a need for almalinux/rocky mostly
+   * this is a need for almalinux/rocky
    */
-  if (this.distro.familyId === 'fedora') {
+  if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "RockyLinux" ) {
     /**
      * clean grub2 entries
      */
     const entriesPath = `/boot/loader/entries/`
-    cmd = `chroot ${this.installTarget} rm ${entriesPath}*`
-    await exec(cmd, this.echo)
+    // cmd = `chroot ${this.installTarget} rm ${entriesPath}*`
+    // await exec(cmd, this.echo)
 
     /**
      * renew grub2 entries
      */
-    cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
-    await exec(cmd, this.echo)
+    // cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
+    // await exec(cmd, this.echo)
 
     /**
-     * grub2: edit entries
+     * grub2: edit entries and save in /
      */
     const rootUUID = Utils.uuid(this.devices.root.name)
     const resumeUUID = Utils.uuid(this.devices.swap.name)

@@ -653,13 +653,15 @@ export default class Sequence {
 
 
          /**
-          * almalinux/fedora/rocky: colorPatch
-          */
-         if (this.distro.familyId === 'fedora') {
-            message = "almalinux/fedora/rocky" 
+          * this is a need for almalinux/rocky
+           */
+         if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "RockyLinux" ) {
+            message = "Fix loader entries for AlmaLinux/RockyLinux" 
             await redraw(<Install message={message} percent={89} spinner={this.spinner} />)
             const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-            let cmd = `cp ${this.installTarget}/${machineId}* ${this.installTarget}/boot/loader/entries/`
+            let cmd = `rm -f ${this.installTarget}/boot/loader/entries/*`
+            await exec(cmd, this.echo)
+            cmd = `mv ${this.installTarget}/${machineId}* ${this.installTarget}/boot/loader/entries/`
             await exec(cmd, this.echo)
          }
 
