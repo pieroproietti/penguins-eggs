@@ -61,7 +61,7 @@ export default async function bootloader(this: Sequence) {
     const resumeUUID = Utils.uuid(this.devices.swap.name)
     const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
     await renameEntries(entriesPath, machineId)
-    await updateEntries(entriesPath, rootUUID, resumeUUID, this.installTarget )
+    await updateEntries(entriesPath, rootUUID, resumeUUID, machineId, this.installTarget)
   }
 
 }
@@ -71,7 +71,7 @@ export default async function bootloader(this: Sequence) {
  * @param rootUUID 
  * @param resumeUUID 
  */
-async function updateEntries(entriesPath: string, rootUUID: string, resumeUUID: string, installTarget: string ) {
+async function updateEntries(entriesPath: string, rootUUID: string, resumeUUID: string, machineId: string, installTarget: string) {
   const files: string[] = fs.readdirSync(entriesPath)
   if (files.length > 0) {
     for (const file of files) {
@@ -80,38 +80,36 @@ async function updateEntries(entriesPath: string, rootUUID: string, resumeUUID: 
       let lines = source.split('\n')
       let content = ''
       for (let line of lines) {
-
-        /**
-         * REPLACE root=UUID=
-         */
-        if (line.includes('root=UUID=')) {
-          const at = line.indexOf('root=UUID=')
-          const start = line.substring(0, at + 10)
-          const stop = line.substring(at + 10 + 36)
-          line = start + rootUUID + stop
-        }
-
-        /**
-         * REPLACE resume=UUID=
-         */
-        if (line.includes('resume=UUID=')) {
-          const at = line.indexOf('resume=UUID=')
-          const start = line.substring(0, at + 12)
-          const stop = line.substring(at + 12 + 36)
-          line = start + resumeUUID + stop
-        }
+        line = searchAndReplace(line, 'root=UUID=', rootUUID)
+        line = searchAndReplace(line, 'resume=UUID=', resumeUUID)
+        line = searchAndReplace(line, '0-rescue-', machineId)
 
         content += line + '\n'
       }
       fs.writeFileSync(filePath, content, 'utf-8')
-      console.log("")
-      console.log("")
-      console.log(content)
-      console.log("")
-      console.log(`copying to: /${file}`)
       fs.writeFileSync(`${installTarget}/${file}`, content, 'utf-8')
     }
   }
+}
+
+/**
+ * 
+ * @param line 
+ * @param search 
+ * @param replace 
+ * @returns 
+ */
+function searchAndReplace(line: string, search: string, replace: string): string {
+  if (line.includes(search)) {
+    const lenSearch = search.length
+    const lenReplace = replace.length
+
+    const at = line.indexOf(search)
+    const first = line.substring(0, at + lenSearch)
+    const last = line.substring(at + lenSearch + lenReplace)
+    line = first + replace + last
+  }
+  return line
 }
 
 

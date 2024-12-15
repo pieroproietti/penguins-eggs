@@ -653,11 +653,14 @@ export default class Sequence {
 
 
          /**
-          * color patch per almalinux/rocky
+          * almalinux/fedora/rocky: colorPatch
           */
          if (this.distro.familyId === 'fedora') {
+            message = "almalinux/fedora/rocky" 
+            await redraw(<Install message={message} percent={89} spinner={this.spinner} />)
             const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-            await exec(`cp /${machineId}* ${this.installTarget}`)
+            let cmd = `cp ${this.installTarget}/${machineId}* ${this.installTarget}/boot/loader/entries/`
+            await exec(cmd, this.echo)
          }
 
          // chroot
