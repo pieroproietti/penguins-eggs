@@ -70,7 +70,7 @@ export default class Diversions {
    * grubForce
    */
   static grubForce(familyId: string): string {
-    let grubForce = 'grub'
+    let grubForce = ''
     if (familyId === 'aldos' || familyId === 'fedora') {
 
       grubForce = '--force'

@@ -38,22 +38,27 @@ export default async function bootloader(this: Sequence) {
 
 
   /**
-   * this is ONLY for almalinux/rocky
+   * In fedora family, we need to call kernel-install to force entry creation
    */
-  if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "RockyLinux" ) {
-    
+  if (this.distro.familyId === "fedora") {
     /**
      * create grub2 entries
+     * 
      */
     cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
     await exec(cmd, this.echo)
 
     /**
-     * grub2: adapt entries at new system
+     * and not only: on RHEL, almalinux, rocky it take UUID from janitor
      */
-    const rootUUID = Utils.uuid(this.devices.root.name)
-    const resumeUUID = Utils.uuid(this.devices.swap.name)
-    await updateEntries(this.installTarget, rootUUID, resumeUUID)
+    if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "RockyLinux") {
+      /**
+       * grub2: adapt entries at new system
+       */
+      const rootUUID = Utils.uuid(this.devices.root.name)
+      const resumeUUID = Utils.uuid(this.devices.swap.name)
+      await updateEntries(this.installTarget, rootUUID, resumeUUID)
+    }
   }
 }
 
@@ -65,14 +70,13 @@ export default async function bootloader(this: Sequence) {
  * @param resumeUUID 
  */
 async function updateEntries(installTarget: string, rootUUID: string, resumeUUID: string) {
-  const entriesPath = `/boot/loader/entries/`
-  const chrootedEntries = path.join(installTarget, entriesPath)
-  
-  // We read the actual liveEntries
-  const entries: string[] = fs.readdirSync(chrootedEntries)
+
+  const entriesPath = path.join(installTarget, `/boot/loader/entries/`)
+
+  const entries: string[] = fs.readdirSync(entriesPath)
   if (entries.length > 0) {
     for (const entry of entries) {
-      const currentEntry = path.join(chrootedEntries, entry)
+      const currentEntry = path.join(entriesPath, entry)
       let source = fs.readFileSync(currentEntry, 'utf8')
       let lines = source.split('\n')
       let content = ''
@@ -82,10 +86,6 @@ async function updateEntries(installTarget: string, rootUUID: string, resumeUUID
 
         content += line + '\n'
       }
-
-      /**
-       * save on chrooted /boot/loader/entry
-       */
       fs.writeFileSync(`${currentEntry}`, content, 'utf-8')
     }
   }
