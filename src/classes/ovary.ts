@@ -1413,7 +1413,14 @@ export default class Ovary {
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    const fexcludes = ['/boot/efi/EFI', '/etc/fstab', '/etc/mtab', '/etc/udev/rules.d/70-persistent-cd.rules', '/etc/udev/rules.d/70-persistent-net.rules']
+    const fexcludes = [
+      '/boot/efi/EFI', 
+      '/boot/loader/entries/', 
+      '/etc/fstab', 
+      '/etc/mtab', 
+      '/etc/udev/rules.d/70-persistent-cd.rules', 
+      '/etc/udev/rules.d/70-persistent-net.rules',
+    ]
 
     for (const i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])

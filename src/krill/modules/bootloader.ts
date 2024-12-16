@@ -20,12 +20,12 @@ import path from 'node:path'
  * @param this
  */
 export default async function bootloader(this: Sequence) {
+  let grubName = Diversion.grubName(this.distro.familyId)
+  let grubForce = Diversion.grubForce(this.distro.familyId)
 
   /**
    * grub-install: added --force per fedora family
    */
-  let grubName = Diversion.grubName(this.distro.familyId)
-  let grubForce = Diversion.grubForce(this.distro.familyId)
   let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
   await exec(cmd, this.echo)
 
@@ -38,56 +38,55 @@ export default async function bootloader(this: Sequence) {
 
 
   /**
-   * this is a need for almalinux/rocky
+   * this is ONLY for almalinux/rocky
    */
   if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "RockyLinux" ) {
+    
     /**
-     * clean grub2 entries
+     * create grub2 entries
      */
-    const entriesPath = `/boot/loader/entries/`
-    // cmd = `chroot ${this.installTarget} rm ${entriesPath}*`
-    // await exec(cmd, this.echo)
+    cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
+    await exec(cmd, this.echo)
 
     /**
-     * renew grub2 entries
-     */
-    // cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
-    // await exec(cmd, this.echo)
-
-    /**
-     * grub2: edit entries and save in /
+     * grub2: adapt entries at new system
      */
     const rootUUID = Utils.uuid(this.devices.root.name)
     const resumeUUID = Utils.uuid(this.devices.swap.name)
-    const machineId = fs.readFileSync(path.join(this.installTarget, '/etc/machine-id'), 'utf-8').trim()
-    await renameEntries(entriesPath, machineId)
-    await updateEntries(entriesPath, rootUUID, resumeUUID, machineId, this.installTarget)
+    await updateEntries(this.installTarget, rootUUID, resumeUUID)
   }
-
 }
+
 
 /**
  * 
+ * @param installTarget 
  * @param rootUUID 
  * @param resumeUUID 
  */
-async function updateEntries(entriesPath: string, rootUUID: string, resumeUUID: string, machineId: string, installTarget: string) {
-  const files: string[] = fs.readdirSync(entriesPath)
-  if (files.length > 0) {
-    for (const file of files) {
-      const filePath = path.join(entriesPath, file)
-      let source = fs.readFileSync(filePath, 'utf8')
+async function updateEntries(installTarget: string, rootUUID: string, resumeUUID: string) {
+  const entriesPath = `/boot/loader/entries/`
+  const chrootedEntries = path.join(installTarget, entriesPath)
+  
+  // We read the actual liveEntries
+  const entries: string[] = fs.readdirSync(chrootedEntries)
+  if (entries.length > 0) {
+    for (const entry of entries) {
+      const currentEntry = path.join(chrootedEntries, entry)
+      let source = fs.readFileSync(currentEntry, 'utf8')
       let lines = source.split('\n')
       let content = ''
       for (let line of lines) {
         line = searchAndReplace(line, 'root=UUID=', rootUUID)
         line = searchAndReplace(line, 'resume=UUID=', resumeUUID)
-        line = searchAndReplace(line, '0-rescue-', machineId)
 
         content += line + '\n'
       }
-      fs.writeFileSync(filePath, content, 'utf-8')
-      fs.writeFileSync(`${installTarget}/${file}`, content, 'utf-8')
+
+      /**
+       * save on chrooted /boot/loader/entry
+       */
+      fs.writeFileSync(`${currentEntry}`, content, 'utf-8')
     }
   }
 }
@@ -111,25 +110,3 @@ function searchAndReplace(line: string, search: string, replace: string): string
   }
   return line
 }
-
-
-/**
- * 
- * @param machineId 
- */
-async function renameEntries(entriesPath: string, machineId: string) {
-  const files: string[] = fs.readdirSync(entriesPath)
-  if (files.length > 0) {
-    for (const file of files) {
-      if (file.length > 32) {
-        const oldEntry = path.join(entriesPath, file)
-        let current = file.substring(32)
-        current = machineId + current
-        const newEntry = path.join(entriesPath, current)
-        const cmd = `mv ${oldEntry} ${newEntry}`
-        await exec(cmd)
-      }
-    }
-  }
-}
-
