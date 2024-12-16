@@ -276,11 +276,11 @@ export default class Ovary {
     // Create user using useradd
     cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
 
-    // live password don't work with SELINUX
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    // live password 
+    cmds.push(await rexec('echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
-    // root password Don't work with SELINUX
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
+    // root password
+    cmds.push(await rexec(' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' chpasswd', this.verbose))
 
     // Alpine naked don't have /etc/skel
     if (fs.existsSync('/etc/skel')) {
@@ -1413,7 +1413,14 @@ export default class Ovary {
     /**
      * exclude all the accurence of cryptdisks in rc0.d, etc
      */
-    const fexcludes = ['/boot/efi/EFI', '/etc/fstab', '/etc/mtab', '/etc/udev/rules.d/70-persistent-cd.rules', '/etc/udev/rules.d/70-persistent-net.rules']
+    const fexcludes = [
+      '/boot/efi/EFI', 
+      '/boot/loader/entries/', 
+      '/etc/fstab', 
+      '/etc/mtab', 
+      '/etc/udev/rules.d/70-persistent-cd.rules', 
+      '/etc/udev/rules.d/70-persistent-net.rules',
+    ]
 
     for (const i in fexcludes) {
       this.addRemoveExclusion(true, fexcludes[i])
