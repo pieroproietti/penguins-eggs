@@ -12,6 +12,12 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.56
+One more step forward with fedora, opensuse and rpm-based distributions in general:
+
+* `krill`: module bootloader, inserted a `--force` during grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
+* `krill`: module bootloader. on RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I had to recreate from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
+
 ## penguins-eggs-10.0.55
 - tested penguins-eggs-tarballs on almalinux, biglinux, debian. devuan, fedora, linuxmint (no lmde), opensuse, rockylinux;
 - krill: bugfix - during the production of a naked, there was an error on copyng same calamares modules.
