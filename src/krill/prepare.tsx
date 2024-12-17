@@ -305,7 +305,7 @@ export default class Krill {
       oLocation = await this.location(oWelcome.language)
       //let kl = oWelcome.language.substring(oWelcome.language.indexOf('_'),2).toLowerCase()
       oKeyboard = await this.keyboard()
-      oPartitions = await this.partitions(cryped, pve, btrfs)
+      oPartitions = await this.partitions(installationDevice, cryped, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
     }
@@ -444,14 +444,16 @@ export default class Krill {
   /**
   * PARTITIONS
   */
-  async partitions(crypted = false, pve = false, btrfs=false): Promise<IPartitions> {
+  async partitions(installationDevice = "", crypted = false, pve = false, btrfs=false): Promise<IPartitions> {
     // Calamares won't use any devices with iso9660 filesystem on it.
-    const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-    const driveList: string[] = []
-    drives.forEach((element: string) => {
-      driveList.push('/dev/' + element)
-    })
-    let installationDevice = driveList[0] // it was just /dev/sda before
+    if (installationDevice == "") {
+      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+      const driveList: string[] = []
+      drives.forEach((element: string) => {
+        driveList.push('/dev/' + element)
+      })
+      installationDevice = driveList[0] // it was just /dev/sda before
+    }
 
     let installationMode = this.krillConfig.installationMode
     if (installationMode === '' || installationMode === undefined) {
