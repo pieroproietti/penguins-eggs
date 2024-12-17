@@ -130,6 +130,12 @@ async function isRotational(device: string): Promise<boolean> {
   let response: any
   let retVal = false
 
+  // Check if the selected disk is a software raid
+  if (device.startsWith('md')) {
+    // Get the first disk from which the raid is composed
+    device = shx.exec(`cat /proc/mdstat | grep ${device} | cut -f 5 -d " " | cut -f 1 -d "["`).stdout.trim()
+  }
+
   response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: true }).stdout.trim()
   if (response === '1') {
     retVal = true
