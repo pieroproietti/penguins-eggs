@@ -312,6 +312,7 @@ export default class Sequence {
          try {
             let success = await this.mountFs()
             await sleep(500) // diamo il tempo di montare
+            await this.emergencyShell("dovrebbe essere montato...")
          } catch (error) {
             await this.showProblem(message, error)
          }
@@ -331,6 +332,7 @@ export default class Sequence {
          await redraw(<Install message={message} percent={15} spinner={this.spinner} />)
          try {
             await this.unpackfs()
+            await this.emergencyShell("eseguito unpack...")
          } catch (error) {
             await this.showProblem(message, error)
          }

@@ -29,7 +29,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   /**
    * Support for NVMe
    *
-   * /dev/sda1 = /dev/nvme0n1p1
+   * /dev/sda1 = /dev/nvme0n1p1 = /dev/md0
    */
   let p = ''
   if (installDevice.includes('nvme')) {
@@ -90,6 +90,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.name = 'none'
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
+
 
     retVal = true
   } else if (installMode === 'full-encrypted' && !this.efi) {
