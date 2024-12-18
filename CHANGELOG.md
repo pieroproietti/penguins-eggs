@@ -15,9 +15,9 @@ Versions are listed on reverse order, the first is the last one.
 ## penguins-eggs-10.0.56
 One more step forward with fedora, openmamba, opensuse and RHEL distributions in general:
 
-* `krill`: module bootloader, inserted a `--force` during grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
-* `krill`: module bootloader. on RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I had to recreate from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
-* `live`: update kernel parameters for live. Thanks to [Silvan Calarco](https://openmamba.org/en/) and [Hosein Seilany](https://predator-os.ir/).
+* `krill`: module bootloader, inserted a `--force` for fedora family, on grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
+* `krill`: module bootloader. on fedora familly/RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I need to replace from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
+* `live`: updated kernel parameters on the live image. Thanks to [Silvan Calarco](https://openmamba.org/en/) for suggestions and [Hosein Seilany](https://predator-os.ir/) for implementation.
 
 ## penguins-eggs-10.0.55
 - tested penguins-eggs-tarballs on almalinux, biglinux, debian. devuan, fedora, linuxmint (no lmde), opensuse, rockylinux;
