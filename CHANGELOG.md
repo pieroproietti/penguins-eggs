@@ -17,7 +17,8 @@ One more step forward with fedora, openmamba, opensuse and RHEL distributions in
 
 * `krill`: module bootloader, inserted a `--force` for fedora family, on grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
 * `krill`: module bootloader. on fedora familly/RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I need to replace from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
-* `live`: updated kernel parameters on the live image. Thanks to [Silvan Calarco](https://openmamba.org/en/) for suggestions and [Hosein Seilany](https://predator-os.ir/) for implementation.
+* `live`: updated kernel parameters on the live image. Thanks to [Silvan Calarco](https://openmamba.org/en/) for suggestions and [Hosein Seilany](https://predator-os.ir/) for implementation;
+* `archlinux`: we have a new calamares version: `calamares-eggs-3.3.12-1-x86_64.pkg.tar.zst`.
 
 ## penguins-eggs-10.0.55
 - tested penguins-eggs-tarballs on almalinux, biglinux, debian. devuan, fedora, linuxmint (no lmde), opensuse, rockylinux;
