@@ -29,10 +29,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
   /**
    * Support for NVMe
    *
-   * /dev/sda1 = /dev/nvme0n1p1 = /dev/md0
+   * /dev/sda1 = /dev/nvme0n1p1 = /dev/md0p1
    */
   let p = ''
-  if (installDevice.includes('nvme')) {
+  if (installDevice.includes('nvme') || installDevice.startsWith('/dev/md')) {
     p = 'p'
   }
 
