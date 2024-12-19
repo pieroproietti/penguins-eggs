@@ -29,10 +29,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
   /**
    * Support for NVMe
    *
-   * /dev/sda1 = /dev/nvme0n1p1
+   * /dev/sda1 = /dev/nvme0n1p1 = /dev/md0p1
    */
   let p = ''
-  if (installDevice.includes('nvme')) {
+  if (installDevice.includes('nvme') || installDevice.startsWith('/dev/md')) {
     p = 'p'
   }
 
@@ -64,6 +64,29 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // No default
   }
 
+  /**
+   * Quindi, per risolvere questo problema, invece di creare RAID e poi partizionare, è necessario 
+   * prima partizionare i dischi e poi raccogliere alcune partizioni in RAID. 
+   * Anche se questo è discutibile, suggerisco il seguente schema:
+   * 
+   * per l'installazione EFI: un ESP (tipo 1) di 511MiB (offset predefinito 1MiB), 
+   * poi 512MiB per /boot di tipo Linux RAID, poi il resto per il resto di tipo Linux RAID 
+   * (questo è il tipo 29 in fdisk se non sbaglio).
+   * 
+   * per l'installazione legacy: 1 MiB (tipo 4 - biosgrub), 510 MiB di avvio (RAID) e il resto RAID.
+   * 
+   * Quindi, si creano due RAID (/boot e il resto) e si seleziona uno degli ESP come “l'ESP”. 
+   * 
+   * Dopo l'installazione si abilita l'avvio dal secondo disco. Poi si crea LVM sul RAID grande, per contenere
+   * i filesystem; si può creare un volume di swap, un volume FS di root (30 GiB sono sufficienti
+   * per Debian ed è facile da ingrandire al volo; si noti che tutti i dati saranno collocati 
+   * in altri volumi dedicati montati - non è utile memorizzare i dati delle applicazioni nel 
+   * volume di root). 
+   * 
+   * Il resto può essere creato secondo le necessità, durante la vita del sistema.
+   */
+
+
   if (installMode === 'standard' && !this.efi) {
     /**
      * ===========================================================================================
@@ -90,6 +113,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.name = 'none'
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
+
 
     retVal = true
   } else if (installMode === 'full-encrypted' && !this.efi) {
