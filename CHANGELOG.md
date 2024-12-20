@@ -19,6 +19,7 @@ One more step forward with fedora, openmamba, opensuse and RHEL distributions in
 
 * `krill`: module bootloader, inserted a `--force` for fedora family, on grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
 * `krill`: module bootloader. on fedora familly/RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I need to replace from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
+* `krill': fixed the installation issue on disks with a pre-existing Software RAID configuration created by Intel Rapid Storage Device Array (thanks to [Marco Mancino](https://github.com/markoceri);
 * `live`: updated kernel parameters on the live image. Thanks to [Silvan Calarco](https://openmamba.org/en/) for suggestions and [Hosein Seilany](https://predator-os.ir/) for implementation;
 * `archlinux`: we have a new calamares version: `calamares-eggs-3.3.12-1-x86_64.pkg.tar.zst`.
 
