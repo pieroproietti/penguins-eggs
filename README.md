@@ -57,10 +57,14 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 #### Debian 9 stretch, Ubuntu 18.04 bionic
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
-### AlpineLinux, Fedora and openSuSE
-There is no installation package for this distros, but is simple to install penguins-eggs from sources as described [here](https://github.com/pieroproietti/penguins-eggs/tree/master/PREREQUISITES#prerequisites). 
+### Openmanba
+Openmamba is an Italian distribution that uses dnf and is very up-to-date. And the rpm package is available.
 
-Volunteer to package penguins-eggs on these three distributions? Contact me.
+### AlmaLinux, Fedora, penSuSE, RockyLinux
+You can easiòy install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs)
+
+### AlpineLinux
+Given the difficulties encountered in updating my version of Alpine's initramfs, I have been forced to suspend the release of packages for this splendid operating system.
 
 # Introduction
 
@@ -80,7 +84,7 @@ Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible w
 
 The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. 
 
-From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package](https://sourceforge.net/projects/penguins-eggs/files/DEBS/), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster Alpine Linux, Fedora, openSuSE but this distros not have a package yet.
+From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package]https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openSuSE, RockyLinux.
 
 So, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
 
@@ -258,8 +262,8 @@ This let to install, update, remove `penguins-eggs` like a native package.
 #### Debian families
 `penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
-##### Download and install penguins-eggs from sourceforge
- To install Eggs, the simplest method is to download the package `penguins-eggs` from the project's SourceForge page  [package eggs](https://sourceforge.net/projects/penguins-eggs/files/DEBS/) and install it on your system.
+##### Download and install penguins-eggs packages
+ To install Eggs, the simplest method is to download the package `penguins-eggs` from the project's SourceForge page  [package eggs](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs) and install it on your system.
 
 After downloading the appropriate package, based on your system's architecture, you can proceed with the installation. If you are using an amd64 system, run the following command in the terminal:
 
@@ -301,7 +305,7 @@ sudo apt upgrade
 > This command will check for updates for all installed packages, including Eggs, and upgrade them to their latest versions if available.
 
 > [!NOTE]
-> On the other hand, if you have not added the `penguins-eggs-ppa` repository, you can manually upgrade Eggs by downloading the new version from the SourceForge page [here](https://sourceforge.net/projects/penguins-eggs/files/DEBS/). Once you have downloaded the appropriate package for your system architecture, follow these steps:
+> On the other hand, if you have not added the `penguins-eggs-ppa` repository, you can manually upgrade Eggs by downloading the new version from the SourceForge page [here](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs). Once you have downloaded the appropriate package for your system architecture, follow these steps:
 
 1. Install the package using the `gdebi` command (assuming you have `gdebi` installed):
 ```
