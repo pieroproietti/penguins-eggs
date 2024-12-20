@@ -111,7 +111,7 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 # Technology
  `eggs` is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.
 
-Currently, `eggs` supports several Linux distributions, including [AlmaLinux](https://almalinux.org/), [Arch](https://archlinux.org/), [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Manjaro](https://manjaro.org/), [opnmamba](https://openmamba.org/), [openSuSE](https://www.opensuse.org/), [Ubuntu](https://ubuntu.com/) and [derivatives](./conf/derivatives.yaml), [RockyLinux](https://rockylinux.org/).
+Currently, `eggs` supports several Linux distributions, including [AlmaLinux](https://almalinux.org/), [Arch](https://archlinux.org/), [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Manjaro](https://manjaro.org/), [openmamba](https://openmamba.org/), [openSuSE](https://www.opensuse.org/), [Ubuntu](https://ubuntu.com/) and [derivatives](./conf/derivatives.yaml), [RockyLinux](https://rockylinux.org/).
 
 It also caters to different architectures, namely `amd64`, `i386`, and `arm64`.
 
