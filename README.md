@@ -84,7 +84,7 @@ Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible w
 
 The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. 
 
-From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package]https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, RockyLinux too.
+From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, RockyLinux too.
 
 So, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
 
