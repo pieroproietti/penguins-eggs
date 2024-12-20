@@ -58,10 +58,10 @@ Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow t
 Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
 ### Openmanba
-Openmamba is an Italian distribution that uses dnf and is very up-to-date. And the rpm package is available.
+Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
 
-### AlmaLinux, Fedora, penSuSE, RockyLinux
-You can easiòy install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs)
+### AlmaLinux, Fedora, openSuSE, RockyLinux
+You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs).
 
 ### AlpineLinux
 Given the difficulties encountered in updating my version of Alpine's initramfs, I have been forced to suspend the release of packages for this splendid operating system.
@@ -84,7 +84,7 @@ Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible w
 
 The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. 
 
-From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package]https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openSuSE, RockyLinux.
+From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package]https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, RockyLinux too.
 
 So, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
 
@@ -111,7 +111,7 @@ See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe), for
 # Technology
  `eggs` is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.
 
-Currently, `eggs` supports several Linux distributions, including [AlmaLinux](https://almalinux.org/), [Arch](https://archlinux.org/), [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [Manjaro](https://manjaro.org/), [openmamba](https://openmamba.org/), [openSuSE](https://www.opensuse.org/), [Ubuntu](https://ubuntu.com/) and [derivatives](./conf/derivatives.yaml), [RockyLinux](https://rockylinux.org/).
+Currently, `eggs` supports several Linux distributions, including [AlmaLinux](https://almalinux.org/), [Arch](https://archlinux.org/), [Debian](https://www.debian.org/), [Devuan](https://www.devuan.org/), [LinuxMint](https://www.linuxmint.com/), [Manjaro](https://manjaro.org/), [openmamba](https://openmamba.org/), [openSuSE](https://www.opensuse.org/), [Ubuntu](https://ubuntu.com/), [RockyLinux](https://rockylinux.org/) and [derivatives](./conf/derivatives.yaml).
 
 It also caters to different architectures, namely `amd64`, `i386`, and `arm64`.
 
