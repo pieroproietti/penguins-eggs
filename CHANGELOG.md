@@ -15,7 +15,7 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.56
-One more step forward with fedora, openmamba, opensuse and RHEL distributions in general:
+One more step forward with fedora, openmamba, openSuSE and RHEL distributions in general:
 
 * `krill`: module bootloader, inserted a `--force` for fedora family, on grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
 * `krill`: module bootloader. on fedora familly/RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I need to replace from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
