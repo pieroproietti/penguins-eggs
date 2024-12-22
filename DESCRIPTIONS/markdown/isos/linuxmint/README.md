@@ -31,6 +31,8 @@ It's community-driven. Users are encouraged to send feedback to the project so t
 Based on Ubuntu, it provides about 30,000 packages and one of the best software managers.
 It's safe and reliable. Thanks to a conservative approach to software updates, a unique Update Manager and the robustness of its Linux architecture, Linux Mint requires very little maintenance (no regressions, no antivirus, no anti-spyware...etc).
 
+* `elsie` - LMDE5 (based on Debian bullseye)
+* `faye` - LMDE5 (based on Debian bookworm)
 * `vera` - Linuxmint 21.1 cinnamon/mate/xfce4 (based on Ubuntu jammy)
 * `victoria` - Linuxmint 21.2 cinnamon/mate/xfce4 (based on Ubuntu jammy)
 * `wilma` - Linuxmint 22.1 cinnamon/mate/xfce4 (based on Ubuntu noble)
