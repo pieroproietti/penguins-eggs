@@ -12,7 +12,11 @@ penguins-eggs
 
 # Penguins' eggs remastered ISOs
 
-All ISOs are based on Devuan beowulf 3.1
+All ISOs are based on Devuan:
+* chimaera
+* daedalus
+* excalibur
+
 
 # user/password
 * ```live/evolution```

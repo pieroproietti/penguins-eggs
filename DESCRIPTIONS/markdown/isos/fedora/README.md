@@ -23,10 +23,6 @@ penguins-eggs
 
 Fedora doesn't need much introduction, Redhat was the first Linux I managed to install back in 2000, then I switched to Debian and a lot of others.
 
-I always liked it, sometimes hated: redhat licence and rpm, but still a great system.
-
-# Help need
-I'm not too expert on Fedora, and in all the ways we have the follow problems:
-* we don't have an rpm package at the moment, just install from source;
+I always liked it, sometimes hated for rpm and redhat licence, but still a great system.
 
 You can mail me at piero.proietti@gmail.com, or on https://github.com/pieroproietti/penguins-eggs, https://social.treehouse.systems/@artisan.
