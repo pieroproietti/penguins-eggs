@@ -58,21 +58,19 @@ class Distro implements IDistro {
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
     this.usrLibPath = '/usr/lib'
 
-
     /**
-     * lsb_release -cs per codename (version)
-     * lsb_release -is per distribuzione
-     * lsb_release -rs per release
+     * getOsRelease
      */
-    this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
-    this.releaseId = shell.exec(`lsb_release -rs`, { silent: true }).stdout.toString().trim()
-    this.distroId = shell.exec(`lsb_release -is`, { silent: true }).stdout.toString().trim()
+    const osInfo = Utils.getOsRelease()
+    this.codenameId = capitalize(osInfo['VERSION_CODENAME'])
+    this.releaseId = osInfo['VERSION_ID']
+    this.distroId = osInfo['ID']
 
     if (this.distroId === 'Debian' && this.codenameId === 'sid') {
       this.codenameId = 'trixie'
     }
 
-    if (this.distroId.includes('BigLinux')) {
+    if (this.distroId.includes('Biglinux')) {
       this.distroId = "BigLinux"
     }
     
@@ -392,4 +390,13 @@ function getId(): string {
     id = idLine.split('=')[1].trim().replace(/"/g, '');
   }
   return id
+}
+
+/**
+ * 
+ * @param str 
+ * @returns 
+ */
+function capitalize(str: string) : string {
+  return str[0].toUpperCase() + str.slice(1).toLowerCase();
 }

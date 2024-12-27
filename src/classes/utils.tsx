@@ -1075,4 +1075,26 @@ export default class Utils {
       }
       return wardrobe
    }
+
+  /**
+    * 
+    * @returns 
+    */
+  static getOsRelease(): { [key: string]: string } {
+   const osReleasePath = path.join('/etc', 'os-release');
+   const fileContent = fs.readFileSync(osReleasePath, 'utf8');
+   const lines = fileContent.split('\n');
+ 
+   const osInfo: { [key: string]: string } = {};
+ 
+   lines.forEach(line => {
+       const [key, value] = line.split('=');
+       if (key && value) {
+           osInfo[key] = value.replace(/"/g, '');
+       }
+   });
+ 
+   return osInfo;
+ }   
+
 }
