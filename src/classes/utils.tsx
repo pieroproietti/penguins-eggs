@@ -701,7 +701,7 @@ export default class Utils {
          '/live/aufs',  // mx-linux
          '/media/root-rw', // AlpineLinux
          '/run/archiso/airootfs', // Arch
-         '/run/miso/sfs/livefs', // ManjaroLinux
+         '/run/miso/sfs/livefs', // Manjarolinux
          '/run/rootfsbase' // Fedora
       ]
 

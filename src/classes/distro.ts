@@ -71,11 +71,11 @@ class Distro implements IDistro {
     }
 
     if (this.distroId.includes('Biglinux')) {
-      this.distroId = "BigLinux"
+      this.distroId = "Biglinux"
     }
 
-    if (this.distroId.includes('BigCommunity')) {
-      this.distroId = "BigCommunity"
+    if (this.distroId.includes('Bigcommunity')) {
+      this.distroId = "Bigcommunity"
     }
 
 
@@ -334,7 +334,7 @@ class Distro implements IDistro {
     }
 
     /**
-     * ManjaroLinux e derivate
+     * Manjarolinux e derivate
      */
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'

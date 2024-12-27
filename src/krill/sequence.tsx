@@ -257,7 +257,7 @@ export default class Sequence {
        * To let krill to work with Arch we need:
        */
       if (this.distro.familyId === 'archlinux') {
-         if (this.distro.distroId === 'ManjaroLinux') {
+         if (this.distro.distroId === 'Manjarolinux') {
             await exec(`ln -s /run/miso/bootmnt/live/ /live`)
          } else {
             await exec(`ln -s /run/archiso/bootmnt/live/ /live`)

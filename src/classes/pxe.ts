@@ -63,7 +63,7 @@ export default class Pxe {
     await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
     await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    if (this.settings.distro.distroId === 'ManjaroLinux') {
+    if (this.settings.distro.distroId === 'Manjarolinux') {
       await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
     } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
       await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
@@ -303,7 +303,7 @@ export default class Pxe {
        * ARCH LINUX
        */
       let tool = 'archiso'
-      if (distro.distroId === 'ManjaroLinux') {
+      if (distro.distroId === 'Manjarolinux') {
         tool = 'miso'
       }
 
