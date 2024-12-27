@@ -53,9 +53,9 @@ export default async function information(verbose = false): Promise<void> {
      * getOsRelease
      */
     const osInfo = Utils.getOsRelease()
-    const codenameId = osInfo['VERSION_CODENAME']
-    const releaseId = osInfo['VERSION_ID']
-    const  distroId = osInfo['ID']
+    const codenameId = osInfo.VERSION_CODENAME
+    const releaseId = osInfo.VERSION_ID
+    const  distroId = osInfo.ID
 
     const Distro = () => (
         <Box flexDirection='column'>

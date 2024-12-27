@@ -15,6 +15,8 @@ import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
 import Diversions from './diversions.js'
 
+import IOsRelease from '../interfaces/i-os-release.js'
+
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -62,9 +64,9 @@ class Distro implements IDistro {
      * getOsRelease
      */
     const osInfo = Utils.getOsRelease()
-    this.codenameId = capitalize(osInfo['VERSION_CODENAME'])
-    this.releaseId = osInfo['VERSION_ID']
-    this.distroId = osInfo['ID']
+    this.distroId = osInfo.ID
+    this.codenameId = osInfo.VERSION_CODENAME
+    this.releaseId = osInfo.VERSION_ID
 
     if (this.distroId === 'Debian' && this.codenameId === 'sid') {
       this.codenameId = 'trixie'
@@ -73,7 +75,7 @@ class Distro implements IDistro {
     if (this.distroId.includes('Biglinux')) {
       this.distroId = "BigLinux"
     }
-    
+
     if (this.distroId.includes('BigCommunity')) {
       this.distroId = "BigCommunity"
     }
@@ -169,9 +171,9 @@ class Distro implements IDistro {
         this.liveMediumPath = '/run/archiso/bootmnt/'
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
-      /**
-       * Debian jessie
-       */
+        /**
+         * Debian jessie
+         */
       } else if (this.codenameId === 'jessie') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
@@ -392,11 +394,3 @@ function getId(): string {
   return id
 }
 
-/**
- * 
- * @param str 
- * @returns 
- */
-function capitalize(str: string) : string {
-  return str[0].toUpperCase() + str.slice(1).toLowerCase();
-}
