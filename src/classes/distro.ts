@@ -15,8 +15,6 @@ import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
 import Diversions from './diversions.js'
 
-import IOsRelease from '../interfaces/i-os-release.js'
-
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -143,7 +141,7 @@ class Distro implements IDistro {
       /**
        * voidlinux compatible
        */
-    } else if (this.distroId === 'VoidLinux') {
+    } else if (this.distroId === 'Voidlinux') {
       this.familyId = 'voidlinux'
       this.distroLike = this.distroId
       this.codenameId = 'rolling'

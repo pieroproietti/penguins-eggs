@@ -6,8 +6,6 @@
  * license: MIT
  */
 
-import path from 'node:path'
-import shx from 'shelljs'
 import React from 'react'
 import Settings from '../classes/settings.js'
 import Pacman from '../classes/pacman.js'

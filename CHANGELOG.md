@@ -14,6 +14,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.57
+Completely removed for all the distros `lsb_release` package.
+
 ## penguins-eggs-10.0.56
 One more step forward with fedora, openmamba, openSuSE and RHEL distributions in general:
 
