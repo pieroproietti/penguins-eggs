@@ -88,9 +88,9 @@ export default class Utils {
             distroId === 'AlmaLinux' ||
             distroId === 'Alpine' ||
             distroId === 'Fedora' ||
-            distroId === 'RockyLinux'
+            distroId === 'Rocky'
          ) {
-            const releaseId = shx.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
+            const releaseId = Utils.getOsRelease().VERSION_ID
             result = 'egg-of_' + distroId.toLowerCase() + '-' + releaseId.trim() + '-'
          }
       } else {

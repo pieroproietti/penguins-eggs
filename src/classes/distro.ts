@@ -112,7 +112,7 @@ class Distro implements IDistro {
     } else if (this.distroId === 'AlmaLinux' ||
       this.distroId === 'Fedora' ||
       this.distroId === 'NobaraLinux' ||
-      this.distroId === 'RockyLinux') {
+      this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
