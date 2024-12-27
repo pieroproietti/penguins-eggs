@@ -21,8 +21,12 @@ import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
+// interfaces
+import IOsRelease from '../interfaces/i-os-release.js'
+
 // pjson
 import { createRequire } from 'module';
+import { RAW_VALUE } from 'mustache'
 const require = createRequire(import.meta.url);
 const pjson = require('../../package.json');
 
@@ -81,12 +85,12 @@ export default class Utils {
          result = 'egg-of_' + distroId.toLowerCase() + '-'
          if (
             distroId === 'ALDOS' ||
-            distroId === 'AlmaLinux' ||
+            distroId === 'Almalinux' ||
             distroId === 'Alpine' ||
             distroId === 'Fedora' ||
-            distroId === 'RockyLinux'
+            distroId === 'Rocky'
          ) {
-            const releaseId = shx.exec('lsb_release -rs', { silent: true }).stdout.toString().trim()
+            const releaseId = Utils.getOsRelease().VERSION_ID
             result = 'egg-of_' + distroId.toLowerCase() + '-' + releaseId.trim() + '-'
          }
       } else {
@@ -1074,5 +1078,62 @@ export default class Utils {
          wardrobe = `/home/${await Utils.getPrimaryUser()}/.wardrobe`
       }
       return wardrobe
+   }
+
+
+   
+   
+   // Se il metodo fa parte di una classe, usa `static`. Altrimenti, rimuovilo.
+   static getOsRelease(): IOsRelease {
+       const osReleasePath = path.join('/etc', 'os-release');
+
+       // Inizializza l'oggetto con valori predefiniti
+       const osInfo: IOsRelease = {
+           ID: '',
+           VERSION_ID: '',
+           VERSION_CODENAME: 'n/a'
+       };
+   
+       // Verifica se il file esiste
+       if (!fs.existsSync(osReleasePath)) {
+           console.error('/etc/os-release file does not exist.');
+           return osInfo;
+       }
+   
+       // Leggi il contenuto del file
+       let fileContent: string;
+       try {
+           fileContent = fs.readFileSync(osReleasePath, 'utf8');
+       } catch (error) {
+           console.error('Error reading /etc/os-release:', error);
+           return osInfo;
+       }
+   
+       // Analizza ogni linea
+       const lines = fileContent.split('\n');
+       lines.forEach(line => {
+           if (line.startsWith('#') || line.trim() === '') return;
+   
+           const [key, value] = line.split('=')
+           if (key && value) {
+               const trimmedKey = key.trim();
+               const trimmedValue = value.trim().replace(/"/g, '');
+   
+               // Popola solo le chiavi desiderate
+               if (trimmedKey === 'ID') {
+                  osInfo.ID = trimmedValue
+               } else if (trimmedKey === 'VERSION_ID') {
+                  osInfo.VERSION_ID = trimmedValue
+               } else if (trimmedKey === 'VERSION_CODENAME') {
+                  osInfo.VERSION_CODENAME = trimmedValue
+               } 
+           }
+       });
+       
+       // capitalize distroId
+       osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
+       osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
+
+       return osInfo
    }
 }

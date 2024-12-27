@@ -1152,7 +1152,7 @@ export default class Ovary {
      */
     const grubName = Diversions.grubName(this.familyId)
     if (grubName === '') {
-      Utils.error('Something went wrong! Cannot find grub! Run lsb_release -a and check the result')
+      Utils.error('Something went wrong! Cannot find grub.')
       process.exit(1)
     }
 
