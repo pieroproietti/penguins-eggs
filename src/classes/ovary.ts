@@ -389,9 +389,9 @@ export default class Ovary {
     let installerLink = 'install-system.desktop'
     if (Pacman.calamaresExists()) {
       /**
-       * Replace Exec in install-system.desktop per biglinux e bigcommunity
+       * Replace Exec in install-system.desktop per Biglinux e Bigcommunity
        */
-      if (this.settings.distro.distroId === 'BigLinux' || this.settings.distro.distroId === 'BigCommunity') {
+      if (this.settings.distro.distroId === 'Biglinux' || this.settings.distro.distroId === 'Bigcommunity') {
         let installSystemDesktop = path.resolve(__dirname, `../../addons/${theme}/theme/applications/install-system.desktop`)
         await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${installSystemDesktop}`)
       }
@@ -906,9 +906,9 @@ export default class Ovary {
     const { distroId } = this.settings.distro
     let fileConf = 'arch'
     if (Diversions.isManjaroBased(distroId)) {
-      fileConf = 'manjarolinux'
-      if (distroId === "BigLinux" || distroId === "BigCommunity") {
-        fileConf = 'biglinux'
+      fileConf = 'Manjarolinux'
+      if (distroId === "Biglinux" || distroId === "Bigcommunity") {
+        fileConf = 'Biglinux'
       }
     }
 
