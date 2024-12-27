@@ -133,7 +133,7 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-    } else if (this.distroId.includes('Opensuse') {
+    } else if (this.distroId.includes('Opensuse')) {
       this.familyId = 'opensuse'
       this.distroLike = this.distroId
       this.codenameId = 'rolling' // sistemare non 
