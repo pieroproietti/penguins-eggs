@@ -89,9 +89,9 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'ALDOS') {
+    if (this.distroId === 'Aldos') {
       this.familyId = 'aldos'
-      this.distroLike = 'ALDOS'
+      this.distroLike = 'Aldos'
       this.codenameId = 'rolling' // viene rimosso dal nome
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'
@@ -109,9 +109,9 @@ class Distro implements IDistro {
       /**
        * Fedora/RHEL compatible
        */
-    } else if (this.distroId === 'AlmaLinux' ||
+    } else if (this.distroId === 'Almalinux' ||
       this.distroId === 'Fedora' ||
-      this.distroId === 'NobaraLinux' ||
+      this.distroId === 'Nobaralinux' ||
       this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
@@ -123,7 +123,7 @@ class Distro implements IDistro {
       /**
        * openmamba
        */
-    } else if (this.distroId === 'openmamba') {
+    } else if (this.distroId === 'Openmamba') {
       this.familyId = 'openmamba'
       this.distroLike = 'openmamba'
       this.codenameId = 'rolling' // viene rimosso dal nome
@@ -133,7 +133,7 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-    } else if (this.distroId === 'openSUSE') {
+    } else if (this.distroId === 'Opensuse') {
       this.familyId = 'opensuse'
       this.distroLike = this.distroId
       /**

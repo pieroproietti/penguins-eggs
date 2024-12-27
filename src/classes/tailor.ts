@@ -145,7 +145,7 @@ export default class Tailor {
         break
       }
 
-      case 'AlmaLinux':
+      case 'Almalinux':
       case 'Rocky':
       case 'Fedora': {
         tailorList = `${this.costume}/fedora.yml`

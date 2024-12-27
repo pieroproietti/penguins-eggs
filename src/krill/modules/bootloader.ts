@@ -49,9 +49,9 @@ export default async function bootloader(this: Sequence) {
     await exec(cmd, this.echo)
 
     /**
-     * and not only: on RHEL, almalinux, Rocky it take UUID from janitor
+     * and not only: on RHEL, Almalinux, Rocky it take UUID from janitor
      */
-    if (this.distro.distroId === "AlmaLinux" || this.distro.distroId === "Rocky") {
+    if (this.distro.distroId === "Almalinux" || this.distro.distroId === "Rocky") {
       /**
        * grub2: adapt entries at new system
        */

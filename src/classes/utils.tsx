@@ -85,7 +85,7 @@ export default class Utils {
          result = 'egg-of_' + distroId.toLowerCase() + '-'
          if (
             distroId === 'ALDOS' ||
-            distroId === 'AlmaLinux' ||
+            distroId === 'Almalinux' ||
             distroId === 'Alpine' ||
             distroId === 'Fedora' ||
             distroId === 'Rocky'
