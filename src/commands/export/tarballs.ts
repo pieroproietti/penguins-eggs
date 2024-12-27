@@ -88,7 +88,7 @@ export default class ExportTarballs extends Command {
     cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/*\n`
+      cmd += `rm -f ${remoteMountpoint}/penguins-eggs-tarball*\n`
     }
 
     cmd += `cp ${localPath}${tarName} ${remoteMountpoint}/${tarName}\n`
@@ -97,7 +97,7 @@ export default class ExportTarballs extends Command {
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
-        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}*`)
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/penguins-eggs-tarball*`)
       }
     }
     await exec(cmd, this.echo)
