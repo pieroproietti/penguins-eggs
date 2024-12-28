@@ -904,15 +904,15 @@ export default class Ovary {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using mkinitcpio on ISO/live`)
 
     const { distroId } = this.settings.distro
-    let fileConf = 'arch'
+    let dirConf = 'arch'
     if (Diversions.isManjaroBased(distroId)) {
-      fileConf = 'Manjarolinux'
+      dirConf = 'manjaro'
       if (distroId === "Biglinux" || distroId === "Bigcommunity") {
-        fileConf = 'Biglinux'
+        dirConf = 'biglinux'
       }
     }
 
-    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${fileConf}/live.conf`)
+    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${dirConf}/live.conf`)
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, this.echo)
   }
 
