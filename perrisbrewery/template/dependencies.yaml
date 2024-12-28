@@ -15,7 +15,6 @@ common:
   - live-boot-initramfs-tools # eggs
   - live-config-systemd | live-config-sysvinit 
   - live-tools # eggs
-  - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
