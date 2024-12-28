@@ -339,6 +339,7 @@ class Distro implements IDistro {
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
+      this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
     }
 
     /**
