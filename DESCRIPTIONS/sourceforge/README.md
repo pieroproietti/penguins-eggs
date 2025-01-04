@@ -6,8 +6,9 @@ penguins-eggs
 [![www](https://img.shields.io/badge/www-blog-cyan)](https://penguins-eggs.net)
 [![telegram](https://img.shields.io/badge/telegram-group-cyan)](https://t.me/penguins_eggs)
 [![basket](https://img.shields.io/badge/basket-naked-blue)](https://penguins-eggs.net/basket/)
-[![penguins-eggs.net](https://img.shields.io/badge/gdrive-all-blue)](https://penguins-eggs.net/drive)
+[![drive](https://img.shields.io/badge/drive-all-blue)](https://penguins-eggs.net/drive)
+[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 
-# This page is deprecated and will no longer be updated, to download ISOs and packages, please refer to [penguins-eggs.net](https://penguins-eggs.net/drive)
+# This page is maintained as an alternative to [penguins-eggs.net/drive](https://penguins-eggs.net/drive) and [penguins-eggs.net/basketball/](https://penguins-eggs.net/drive).
