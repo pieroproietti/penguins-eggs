@@ -7,7 +7,7 @@ penguins-eggs
 [![telegram](https://img.shields.io/badge/telegram-group-cyan)](https://t.me/penguins_eggs)
 [![basket](https://img.shields.io/badge/basket-packages-blue)](https://penguins-eggs.net/basket/)
 [![drive](https://img.shields.io/badge/drive-isos-blue)](https://penguins-eggs.net/drive)
-[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
+[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/projects/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 
