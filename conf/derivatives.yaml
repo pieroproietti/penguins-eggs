@@ -124,23 +124,12 @@
     - n/a # Arch
 
     # BluestarLinux
-    - BluestarLinux
+    - bluestarlinux
 
     # Garuda
-    - Raptor
-    - Spizaetus
+    - spizaetus
 
     # Manjaro 
-    - Qonos 
-    - Ruah
-    - Raptor
-    - Sikaris
-    - Talos
-    - UltimaThule
-    - Uranos
-    - Vulcan
-    - Wynsdey
-    - Xahea
-    - Yonada
+    - yonada
     
     

@@ -58,26 +58,24 @@ class Distro implements IDistro {
     this.syslinuxPath = path.resolve(__dirname, `../../syslinux`)
     this.usrLibPath = '/usr/lib'
 
-
     /**
-     * lsb_release -cs per codename (version)
-     * lsb_release -is per distribuzione
-     * lsb_release -rs per release
+     * getOsRelease
      */
-    this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
-    this.releaseId = shell.exec(`lsb_release -rs`, { silent: true }).stdout.toString().trim()
-    this.distroId = shell.exec(`lsb_release -is`, { silent: true }).stdout.toString().trim()
+    const osInfo = Utils.getOsRelease()
+    this.distroId = osInfo.ID
+    this.codenameId = osInfo.VERSION_CODENAME
+    this.releaseId = osInfo.VERSION_ID
 
     if (this.distroId === 'Debian' && this.codenameId === 'sid') {
       this.codenameId = 'trixie'
     }
 
-    if (this.distroId.includes('BigLinux')) {
-      this.distroId = "BigLinux"
+    if (this.distroId.includes('Biglinux')) {
+      this.distroId = "Biglinux"
     }
-    
-    if (this.distroId.includes('BigCommunity')) {
-      this.distroId = "BigCommunity"
+
+    if (this.distroId.includes('Bigcommunity')) {
+      this.distroId = "Bigcommunity"
     }
 
 
@@ -89,9 +87,9 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'ALDOS') {
+    if (this.distroId === 'Aldos') {
       this.familyId = 'aldos'
-      this.distroLike = 'ALDOS'
+      this.distroLike = 'Aldos'
       this.codenameId = 'rolling' // viene rimosso dal nome
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'
@@ -109,10 +107,10 @@ class Distro implements IDistro {
       /**
        * Fedora/RHEL compatible
        */
-    } else if (this.distroId === 'AlmaLinux' ||
+    } else if (this.distroId === 'Almalinux' ||
       this.distroId === 'Fedora' ||
-      this.distroId === 'NobaraLinux' ||
-      this.distroId === 'RockyLinux') {
+      this.distroId === 'Nobaralinux' ||
+      this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
@@ -123,7 +121,7 @@ class Distro implements IDistro {
       /**
        * openmamba
        */
-    } else if (this.distroId === 'openmamba') {
+    } else if (this.distroId === 'Openmamba') {
       this.familyId = 'openmamba'
       this.distroLike = 'openmamba'
       this.codenameId = 'rolling' // viene rimosso dal nome
@@ -133,14 +131,9 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-    } else if (this.distroId === 'openSUSE') {
+    } else if (this.distroId.includes('Opensuse')) {
       this.familyId = 'opensuse'
       this.distroLike = this.distroId
-      /**
-       * opensuse have codename=n/a
-       * but it is added to ID on /etc/os-relaese, so:
-       */
-      this.distroId = getId() // prende id di /etc/os-release
       this.codenameId = 'rolling' // sistemare non 
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // check
@@ -148,7 +141,7 @@ class Distro implements IDistro {
       /**
        * voidlinux compatible
        */
-    } else if (this.distroId === 'VoidLinux') {
+    } else if (this.distroId === 'Voidlinux') {
       this.familyId = 'voidlinux'
       this.distroLike = this.distroId
       this.codenameId = 'rolling'
@@ -171,9 +164,9 @@ class Distro implements IDistro {
         this.liveMediumPath = '/run/archiso/bootmnt/'
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
-      /**
-       * Debian jessie
-       */
+        /**
+         * Debian jessie
+         */
       } else if (this.codenameId === 'jessie') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'jessie'
@@ -341,11 +334,12 @@ class Distro implements IDistro {
     }
 
     /**
-     * ManjaroLinux e derivate
+     * Manjarolinux e derivate
      */
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
+      this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
     }
 
     /**
@@ -374,22 +368,3 @@ class Distro implements IDistro {
 }
 
 export default Distro
-
-
-/**
- * usa l'ID di /etc/os-release
- */
-function getId(): string {
-  let id = ''
-
-  const data = fs.readFileSync('/etc/os-release', 'utf8');
-
-  // trova ID
-  const idLine = data.split('\n').find((line) => line.startsWith('ID='));
-
-  // Estrai il valore di ID
-  if (idLine) {
-    id = idLine.split('=')[1].trim().replace(/"/g, '');
-  }
-  return id
-}

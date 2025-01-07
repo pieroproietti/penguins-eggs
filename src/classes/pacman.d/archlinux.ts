@@ -27,8 +27,10 @@ export default class Archlinux {
     const echo = Utils.setEcho(verbose)
     // const cal_eggs = 'calamares-eggs-3.3.9-1-x86_64.pkg.tar.zst' // 01/09/2024
     // const cal_eggs = 'calamares-eggs-3.3.10-1-x86_64.pkg.tar.zst' // 24/10/2024
-    const cal_eggs = 'calamares-eggs-3.3.12-1-x86_64.pkg.tar.zst' // 17/12/2024
-    let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/Packages/aur/${cal_eggs}/download`
+    //let cmd = `wget -O /tmp/${cal_eggs} https://sourceforge.net/projects/penguins-eggs/files/packages/aur/${cal_eggs}/download`
+    
+    const cal_eggs = 'calamares-eggs-3.3.12-2-x86_64.pkg.tar.zst' // 17/12/2024
+    let cmd = `wget -O /tmp/${cal_eggs} https://penguins-eggs.net/basket/packages/aur/${cal_eggs}`// 21/12/2024
     try {
       await exec(cmd, echo)
       cmd = `pacman -U /tmp/${cal_eggs}`

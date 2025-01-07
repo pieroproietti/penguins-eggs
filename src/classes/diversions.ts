@@ -131,9 +131,9 @@ export default class Diversions {
   */
   static isManjaroBased(distro: string): boolean {
     let found = false
-    if (distro === 'ManjaroLinux' ||
-      distro === `BigLinux` ||
-      distro === `BigCommunity`) {
+    if (distro === 'Manjaro' ||
+      distro === `Biglinux` ||
+      distro === `Bigcommunity`) {
       found = true
     }
 

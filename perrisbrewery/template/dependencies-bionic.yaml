@@ -14,7 +14,6 @@ common:
   - live-boot-doc # eggs
   - live-boot-initramfs-tools # eggs
   - live-tools # eggs
-  - lsb-release  # eggs
   - lvm2  # pvdisplay in krill
   - nodejs (>= 16)
   - live-boot # questo va reinstallato

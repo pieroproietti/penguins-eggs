@@ -5,18 +5,23 @@ penguins-eggs
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![www](https://img.shields.io/badge/www-blog-cyan)](https://penguins-eggs.net)
 [![telegram](https://img.shields.io/badge/telegram-group-cyan)](https://t.me/penguins_eggs)
-[![isos](https://img.shields.io/badge/images-ISO-blue)](https://sourceforge.net/projects/penguins-eggs/files/ISOS)
-[![pkg](https://img.shields.io/badge/packages-bin-blue)](https://sourceforge.net/projects/penguins-eggs/files/Packages)
+[![basket](https://img.shields.io/badge/basket-packages-blue)](https://penguins-eggs.net/basket/)
+[![drive](https://img.shields.io/badge/drive-isos-blue)](https://penguins-eggs.net/drive)
+[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.57
+Completely removed for all the distros `lsb_release` package.
+
 ## penguins-eggs-10.0.56
-One more step forward with fedora, openmamba, opensuse and RHEL distributions in general:
+One more step forward with fedora, openmamba, openSuSE and RHEL distributions in general:
 
 * `krill`: module bootloader, inserted a `--force` for fedora family, on grub2 installation because otherwise it refuses to install itself on UEFI unsigned;
 * `krill`: module bootloader. on fedora familly/RHEL derived distros (AlmaLinux and RockyLinux) but not on fedora, I need to replace from code the boot loader entries, since the ones generated during installation carried the UUIDs of the parent system.
+* `krill`: fixed the installation issue on disks with a pre-existing Software RAID configuration created by Intel Rapid Storage Device Array. Thanks to [Marco Mancino](https://github.com/markoceri);
 * `live`: updated kernel parameters on the live image. Thanks to [Silvan Calarco](https://openmamba.org/en/) for suggestions and [Hosein Seilany](https://predator-os.ir/) for implementation;
 * `archlinux`: we have a new calamares version: `calamares-eggs-3.3.12-1-x86_64.pkg.tar.zst`.
 
