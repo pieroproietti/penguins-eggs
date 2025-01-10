@@ -109,7 +109,7 @@ class Distro implements IDistro {
        */
     } else if (this.distroId === 'Almalinux' ||
       this.distroId === 'Fedora' ||
-      this.distroId === 'Nobaralinux' ||
+      this.distroId === 'Nobara' ||
       this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'

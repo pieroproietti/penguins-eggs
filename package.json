@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
-    "version": "10.0.57",
+    "version": "10.0.58",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -53,7 +53,7 @@
         "eslint-config-prettier": "^9.1.0",
         "mocha": "^10.8.1",
         "oclif": "^4.17.0",
-        "perrisbrewery": "^10.0.2",
+        "perrisbrewery": "^10.0.3",
         "prettier": "^3.4.2",
         "shx": "^0.3.4",
         "ts-node": "10.9.2",
