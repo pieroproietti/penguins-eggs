@@ -12,6 +12,7 @@ import shx from 'shelljs'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
+import { SwapChoice, InstallationMode } from '../../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
@@ -40,23 +41,23 @@ export default async function partition(this: Sequence): Promise<boolean> {
   let swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
 
   switch (this.partitions.userSwapChoice) {
-    case 'none': {
+    case SwapChoice.None: {
       swapSize = 256
 
       break
     }
 
-    case 'small': {
+    case SwapChoice.Small: {
       break
     }
 
-    case 'suspend': {
+    case SwapChoice.Suspend: {
       swapSize *= 2
 
       break
     }
 
-    case 'file': {
+    case SwapChoice.File: {
       swapSize = 0
 
       break
@@ -87,7 +88,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
    */
 
 
-  if (installMode === 'standard' && !this.efi) {
+  if (installMode === InstallationMode.Standard && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: working
@@ -116,7 +117,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
 
     retVal = true
-  } else if (installMode === 'full-encrypted' && !this.efi) {
+  } else if (installMode === InstallationMode.FullEncrypted && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: full-encrypt:
@@ -179,7 +180,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.efi.name = 'none'
 
     retVal = true
-  } else if (installMode === 'standard' && this.efi) {
+  } else if (installMode === InstallationMode.Standard && this.efi) {
     /**
      * ===========================================================================================
      * UEFI: working
@@ -210,7 +211,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === 'full-encrypted' && this.efi) {
+  } else if (installMode === InstallationMode.FullEncrypted && this.efi) {
     /**
      * ===========================================================================================
      * UEFI, full-encrypt
@@ -292,7 +293,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === 'lvm2' && !this.efi) {
+  } else if (installMode === InstallationMode.LVM2 && !this.efi) {
     /**
      * ===========================================================================================
      * PROXMOX VE: BIOS and lvm2
@@ -335,7 +336,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.swap.name = '/dev/pve/swap'
 
     retVal = true
-  } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
+  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
     /**
      * ===========================================================================================
      * PROXMOX VE: lvm2 and UEFI

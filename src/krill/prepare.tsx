@@ -114,6 +114,7 @@ import Sequence from './sequence.js'
 
 import { INet } from '../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { SwapChoice, InstallationMode } from '../enum/e-krill.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -254,11 +255,11 @@ export default class Krill {
     }
 
     if (suspend) {
-      oPartitions.userSwapChoice = 'suspend'
+      oPartitions.userSwapChoice = SwapChoice.Suspend
     } else if (small) {
-      oPartitions.userSwapChoice = 'small'
+      oPartitions.userSwapChoice = SwapChoice.Small
     } else if (none) {
-      oPartitions.userSwapChoice = 'none'
+      oPartitions.userSwapChoice = SwapChoice.None
     }
 
     let hostname = this.krillConfig.hostname
@@ -457,15 +458,15 @@ export default class Krill {
 
     let installationMode = this.krillConfig.installationMode
     if (installationMode === '' || installationMode === undefined) {
-      installationMode = 'standard'
+      installationMode = InstallationMode.Standard
     }
     if (crypted) {
-      installationMode = 'full-encrypted'
+      installationMode = InstallationMode.FullEncrypted
     } else if (pve) {
-      installationMode = 'lvm2'
+      installationMode = InstallationMode.LVM2
     }
     let filesystemType = 'ext4'
-    let userSwapChoice = 'small'
+    let userSwapChoice: SwapChoice = SwapChoice.Small
 
     let partitionsElem: JSX.Element
     while (true) {
@@ -474,18 +475,17 @@ export default class Krill {
         break
       } else {
         installationDevice = ''
-        installationMode = 'standard'
+        installationMode = InstallationMode.Standard
         if (crypted) {
-          installationMode = 'full-encrypted'
+          installationMode = InstallationMode.FullEncrypted
         } else if (pve) {
-          installationMode = 'lvm2'
+          installationMode = InstallationMode.LVM2
         }
         if (btrfs) {
           filesystemType = 'btrfs'
         } else {
           filesystemType = 'ext4'
         }
-        userSwapChoice = ''
       }
 
       installationDevice = await selectInstallationDevice()
