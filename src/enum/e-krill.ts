@@ -18,3 +18,9 @@ export enum InstallationMode {
     FullEncrypted = "full-encrypted",
     LVM2 = "lvm2"
 }
+
+export enum LvmPartitionPreset {
+    Proxmox = "proxmox",
+    Ubuntu = "ubuntu",
+    Generic = "generic"
+}

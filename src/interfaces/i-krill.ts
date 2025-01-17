@@ -47,3 +47,13 @@ export interface ICalamaresModule {
   timeout: number
   type: string
 }
+
+export interface ILvmOptions {
+  vgName: string
+  lvRootName: string
+  lvRootFSType: string
+  lvRootSize: string
+  lvDataName: string
+  lvDataFSType: string
+  lvDataMountPoint: string
+}

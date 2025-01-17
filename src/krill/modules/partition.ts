@@ -12,6 +12,7 @@ import shx from 'shelljs'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
+import { IDevices } from '../../interfaces/i-devices.js'
 import { SwapChoice, InstallationMode } from '../../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
@@ -293,7 +294,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === InstallationMode.LVM2 && !this.efi) {
+  } else if (installMode === InstallationMode.LVM2Proxmox && !this.efi) {
     /**
      * ===========================================================================================
      * PROXMOX VE: BIOS and lvm2
@@ -306,18 +307,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-    const partInfo = await lvmPartInfo(installDevice)
-    const lvmPartname = partInfo[0]
-    const lvmSwapSize = partInfo[1]
-    const lvmRootSize = partInfo[2]
-
-    await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-    await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-    await exec('vgchange -an', this.echo)
-    await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-    await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-    await exec('lvcreate -l 100%FREE -ndata pve', this.echo)
-    await exec('vgchange -a y pve', this.echo)
+    this.devices = await createProxmoxLvmPartitions(installDevice, "pve", "root", "ext4", "data", "ext4", this.echo)
 
     this.devices.efi.name = 'none'
 
@@ -325,21 +315,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.root.fsType = 'ext2'
     this.devices.root.mountPoint = '/boot'
 
-    this.devices.root.name = '/dev/pve/root'
-    this.devices.root.fsType = 'ext4'
-    this.devices.root.mountPoint = '/'
-
-    this.devices.data.name = '/dev/pve/data'
-    this.devices.data.fsType = 'ext4'
-    this.devices.data.mountPoint = '/var/lib/vz'
-
-    this.devices.swap.name = '/dev/pve/swap'
-
     retVal = true
-  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
+  } else if ((this.partitions.installationMode === InstallationMode.LVM2Proxmox || this.partitions.installationMode === InstallationMode.LVM2Generic) && this.efi) {
     /**
      * ===========================================================================================
-     * PROXMOX VE: lvm2 and UEFI
+     * lvm2 and UEFI
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
@@ -350,18 +330,15 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
-    const partInfo = await lvmPartInfo(installDevice)
-    const lvmPartname = partInfo[0]
-    const lvmSwapSize = partInfo[1]
-    const lvmRootSize = partInfo[2]
+    if (this.partitions.installationMode === InstallationMode.LVM2Proxmox) {
+      // PROXMOX VE
 
-    await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-    await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-    await exec('vgchange -an', this.echo)
-    await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-    await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-    await exec('lvcreate -l 100%FREE -ndata pve', this.echo)
-    await exec('vgchange -a y pve', this.echo)
+      this.devices = await createProxmoxLvmPartitions(installDevice, "pve", "root", "ext4", "data", "ext4", this.echo)
+    } else if (this.partitions.installationMode === InstallationMode.LVM2Generic) {
+      // Generic LVM
+      
+      this.devices = await createGenericLvmPartitions(installDevice, "vgName", this.partitions.userSwapChoice, swapSize, "lvmName", "ext4", "100%", "lvmData", "ext4", "/mnt/data", this.echo)
+    }
 
     this.devices.efi.name = `${installDevice}${p}1`
     this.devices.efi.fsType = 'F 32 -I'
@@ -370,16 +347,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.name = `${installDevice}${p}2`
     this.devices.boot.fsType = 'ext4'
     this.devices.boot.mountPoint = '/boot'
-
-    this.devices.root.name = '/dev/pve/root'
-    this.devices.root.fsType = 'ext4'
-    this.devices.root.mountPoint = '/'
-
-    this.devices.data.name = '/dev/pve/data'
-    this.devices.data.fsType = 'ext4'
-    this.devices.data.mountPoint = '/var/lib/vz'
-
-    this.devices.swap.name = '/dev/pve/swap'
 
     retVal = true
   }
@@ -392,19 +359,180 @@ export default async function partition(this: Sequence): Promise<boolean> {
  * @param installDevice
  * @returns
  */
-export async function lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
+export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[string, number]> {
   // Partizione LVM
   const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
   const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
   const lvmSize = lvmByteSize / 1024
 
+  return [lvmPartname, lvmSize]
+}
+
+/**
+ * Create lvm partitions for Proxmox virtual environment
+ *
+ * @param installDevice 
+ * @param vgName
+ * @param swapType
+ * @param swapSize
+ * @param lvmRootName
+ * @param lvmRootFSType
+ * @param lvmRootSize
+ * @param lvmDataName
+ * @param lvmDataFSType
+ * @param lvmDataName
+ * @param lvmDataMountPoint
+ * @param echo
+ * @returns
+ */
+export async function createGenericLvmPartitions(
+    installDevice: string,
+    vgName: string = "pve",
+    swapType: string,
+    swapSize: number,
+    lvmRootName: string = "root",
+    lvmRootFSType: string = "ext4",
+    lvmRootSize: string = "20%",
+    lvmDataName: string = "data",
+    lvmDataFSType: string = "ext4",
+    lvmDataMountPoint: string = "/mnt/data",
+    echo: object
+  ): Promise<IDevices> {
+
+  let devices = {} as IDevices
+  let lvmSwapName: string = "swap"
+
+  const partInfo = await lvmPartInfo(installDevice)
+  const lvmPartname = partInfo[0]
+  const lvmSize = partInfo[1]
+
+  let lvmSwapSize = swapSize
+
+  // Swap partition not exists if it is a file
+  if (swapType == SwapChoice.File) {
+    lvmSwapSize = 0
+  }
+
+  let lvmDataSize = String(lvmSize - lvmSwapSize - parseInt(lvmRootSize))
+
+  // Calculate percentual size of LVM if the size is expressed as percentual
+  let lvmRootPercSize: number = 0
+  if (lvmRootSize.includes("%")) {
+    lvmRootPercSize = parseFloat(lvmRootSize)
+    lvmRootSize = String(Math.floor((lvmSize * lvmRootPercSize) / 100))
+  } else {
+    lvmRootPercSize = ((parseFloat(lvmRootSize) / lvmSize) * 100)
+  }
+
+  if (lvmSwapSize + parseInt(lvmRootSize) + parseInt(lvmDataSize) <= lvmSize) {
+    await exec(`pvcreate /dev/${lvmPartname}`, echo)
+    await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
+    await exec('vgchange -an', echo)
+
+    // Create LVM Swap, if exists
+    if (lvmSwapSize > 0) {
+      await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
+    }
+
+    // Create LVM root and data partitions
+    if (parseInt(lvmDataSize) > 0) {
+      // Create LVM root partition
+      await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
+
+      // Create LVM data partition using the remaining disk space
+      await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
+    } else {
+      // Only root partition
+      await exec(`lvcreate -l ${lvmRootPercSize}%FREE -n ${lvmRootName} ${vgName}`, echo)
+    }    
+
+    // Activate VG
+    await exec(`vgchange -a y ${vgName}`, echo)
+
+    devices.root.name = `/dev/${vgName}/${lvmRootName}`
+    devices.root.fsType = lvmRootFSType
+    devices.root.mountPoint = '/'
+
+    if (parseInt(lvmDataSize) > 0) {
+      devices.data.name = `/dev/${vgName}/${lvmDataName}`
+      devices.data.fsType = lvmDataFSType
+      devices.data.mountPoint = lvmDataMountPoint
+    } else {
+      devices.data.name = 'none'
+    }
+
+    if (swapType != SwapChoice.File && lvmSwapSize > 0) {
+      devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
+    } else {
+      devices.swap.name = 'none'
+    }
+  } else {
+    Utils.warning(`Error: size of partitions for swap, root and data exceeds the size of lvm`)
+    process.exit(1)
+  }
+
+  return devices
+}
+
+/**
+ * Create lvm partitions for Proxmox virtual environment
+ *
+ * @param installDevice 
+ * @param vgName
+ * @param lvmSwapName
+ * @param lvmRootName
+ * @param lvmRootFSType
+ * @param lvmDataName
+ * @param lvmDataFSType
+ * @param lvmDataMountPoint
+ * @param echo
+ * 
+ * @returns
+ */
+export async function createProxmoxLvmPartitions(
+    installDevice: string,
+    vgName: string = "pve",
+    lvmRootName: string = "root",
+    lvmRootFSType: string = "ext4",
+    lvmDataName: string = "data",
+    lvmDataFSType: string = "ext4",
+    lvmDataMountPoint: string = "/var/lib/vz",
+    echo: object
+  ): Promise<IDevices> {
+    
+  let devices = {} as IDevices
+  let lvmSwapName: string = "swap"
+
+  const partInfo = await lvmPartInfo(installDevice)
+  const lvmPartname = partInfo[0]
+  const lvmSize = partInfo[1]
+
   // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
-  const lvmSwapSize = 8192
   let lvmRootSize = lvmSize / 8
   if (lvmRootSize < 20_480) {
     lvmRootSize = 20_480
   }
 
+  const lvmSwapSize = 8192
   const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
-  return [lvmPartname, lvmSwapSize, lvmRootSize, lvmDataSize]
+
+  await exec(`pvcreate /dev/${lvmPartname}`, echo)
+  await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
+  await exec('vgchange -an', echo)
+  await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
+  await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
+  await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
+  await exec(`vgchange -a y ${vgName}`, echo)
+
+  devices.root.name = `/dev/${vgName}/${lvmRootName}`
+  devices.root.fsType = lvmRootFSType
+  devices.root.mountPoint = '/'
+
+  devices.data.name = `/dev/${vgName}/${lvmDataName}`
+  devices.data.fsType = lvmDataFSType
+  devices.data.mountPoint = lvmDataMountPoint
+
+  devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
+
+  return devices
 }
