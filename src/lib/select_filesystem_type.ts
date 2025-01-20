@@ -31,7 +31,7 @@ export default async function selectFileSystemType(): Promise<string> {
     {
       choices: choices,
       default: partitions.defaultFileSystemType,
-      message: 'Select file system tyèe',
+      message: 'Select file system type',
       name: 'fileSystemChoices',
       type: 'list'
     }
