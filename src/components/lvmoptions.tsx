@@ -10,49 +10,44 @@ import React, { useState } from 'react'
 
 import Title from './title.js'
 import Steps from './steps.js'
-import {Text, Box, Newline } from 'ink'
+import { Text, Box, Newline } from 'ink'
+import { ILvmOptions } from '../interfaces/i-krill.js'
 
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 type LvmOptionsProps = {
-  preset?: string,
-  vgName?: string,
-  lvRootName?: string,
-  lvRootFSType?: string,
-  lvRootSize?: string,
-  lvDataName?: string,
-  lvDataFSType?: string,
-  lvDataMountPoint?: string
+    lvmPreset?: string,
+    lvmOptions: ILvmOptions
 }
 
 
-export default function LvmOptions({ preset, vgName, lvRootName, lvRootFSType, lvRootSize, lvDataName, lvDataFSType, lvDataMountPoint }: LvmOptionsProps) {
+export default function LvmOptions({ lvmPreset, lvmOptions }: LvmOptionsProps) {
 
-  return (
-    <>
-      <Title />
-      <Box width={75} height={11} borderStyle="round" flexDirection="column">
-
-        <Box width={74} height={8} flexDirection="column">
-          <Box flexDirection="row">
-            <Steps step={6} />
-            <Box flexDirection="column">
-            <Box><Text>LVM Partitions</Text></Box>
-            <Box><Text>Preset: </Text><Text color='green'>{preset}</Text></Box>
-            <Newline />
-            <Box><Text>vgName           : </Text><Text color='green'>{vgName}</Text></Box>
-            <Box><Text>lvRootName       : </Text><Text color='green'>{lvRootName}</Text></Box>
-            <Box><Text>lvRootFSType     : </Text><Text color='green'>{lvRootFSType}</Text></Box>
-            <Box><Text>lvRootSize       : </Text><Text color='green'>{lvRootSize}</Text></Box>
-            <Box><Text>lvDataName       : </Text><Text color='green'>{lvDataName}</Text></Box>
-            <Box><Text>lvDataFSType     : </Text><Text color='green'>{lvDataFSType}</Text></Box>
-            <Box><Text>lvDataMountPoint : </Text><Text color='green'>{lvDataMountPoint}</Text></Box>
+    return (
+        <>
+            <Title />
+            <Box width={75} height={11} borderStyle="round" flexDirection="column">
+            
+                <Box flexDirection="column">
+                    <Box flexDirection="row">
+                        <Steps step={4} />
+                        <Box flexDirection="column"></Box>
+                        <Box flexDirection="column">
+                            <Box><Text>LVM Preset: </Text><Text color='yellow'>{lvmPreset}</Text></Box>
+                            <Newline />
+                            <Box><Text>Volume group name: </Text><Text color='cyan'>{lvmOptions.vgName}</Text></Box>
+                            <Box><Text>Logical volume root name: </Text><Text color='cyan'>{lvmOptions.lvRootName}</Text></Box>
+                            <Box><Text>Logical volume root filesystem: </Text><Text color='cyan'>{lvmOptions.lvRootFSType}</Text></Box>
+                            <Box><Text>Logical volume root size: </Text><Text color='cyan'>{lvmOptions.lvRootSize}</Text></Box>
+                            <Box><Text>Logical volume data name: </Text><Text color='cyan'>{lvmOptions.lvDataName}</Text></Box>
+                            <Box><Text>Logical volume data filesystem: </Text><Text color='cyan'>{lvmOptions.lvDataFSType}</Text></Box>
+                            <Box><Text>Logical volume data mount point: </Text><Text color='cyan'>{lvmOptions.lvDataMountPoint}</Text></Box>
+                        </Box>
+                    </Box>
+                </Box>
             </Box>
-          </Box>
-        </Box>
-      </Box >
-    </>
-  )
+        </>
+    )
 }

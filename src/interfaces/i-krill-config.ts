@@ -6,6 +6,8 @@
  * license: MIT
  */
 
+import { ILvmOptions } from "./i-krill.js"
+
 export interface IKrillConfig {
   address: string
   addressType: string
@@ -19,6 +21,7 @@ export interface IKrillConfig {
   iface: string
   installationDevice: string
   installationMode: string
+  lvmOptions: ILvmOptions
   keyboardLayout: string
   keyboardModel: string
   keyboardOption: string

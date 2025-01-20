@@ -13,17 +13,19 @@ import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding, IPartitions } from '../interfaces/index.js'
+import { InstallationMode } from '../enum/e-krill.js'
 import { render, Text, Box, Newline } from 'ink'
 
 type partitionsProps = {
     installationDevice?: string,
     installationMode?: string,
+    lvmPreset: string,
     filesystemType?: string,
     userSwapChoice?: string
 }
 
 
-export default function Partitions({ installationDevice, installationMode, filesystemType, userSwapChoice }: partitionsProps) {
+export default function Partitions({ installationDevice, installationMode, lvmPreset, filesystemType, userSwapChoice }: partitionsProps) {
     let installer = 'krill'
     let productName = ''
     let version = ''
@@ -74,10 +76,9 @@ export default function Partitions({ installationDevice, installationMode, files
                 <Box flexDirection="column">
                     <Box flexDirection="row">
                         <Steps step={4} />
+                        <Box flexDirection="column"></Box>
                         <Box flexDirection="column">
-                        </Box>
-                        <Box flexDirection="column">
-                        <Box flexDirection="row">
+                            <Box flexDirection="row">
                                 <Text underline={false}>Note: </Text>
                                 <Box flexDirection="column">
                                     <Text backgroundColor="red" color="white">this will erase all data currently present on the</Text>
@@ -88,7 +89,11 @@ export default function Partitions({ installationDevice, installationMode, files
                             <Box><Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text></Box>
                             <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>
                             <Box><Text>Filesystem: </Text><Text color="cyan">{filesystemType}</Text></Box>
-                            <Box><Text>User swap choice: : </Text><Text color="cyan">{userSwapChoice}</Text></Box>
+                            <Box><Text>User swap choice: </Text><Text color="cyan">{userSwapChoice}</Text></Box>
+                        
+                            { installationMode == InstallationMode.LVM2 &&
+                                <Box><Text>LVM Preset: </Text><Text color='yellow'>{lvmPreset}</Text></Box>
+                            }
                         </Box>
                     </Box>
                 </Box>

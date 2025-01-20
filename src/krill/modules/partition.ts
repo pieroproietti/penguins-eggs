@@ -294,10 +294,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === InstallationMode.LVM2Proxmox && !this.efi) {
+  } else if (installMode === InstallationMode.LVM2 && !this.efi) {
     /**
      * ===========================================================================================
-     * PROXMOX VE: BIOS and lvm2
+     * BIOS and lvm2
      * ===========================================================================================
      */
     // Creo partizioni
@@ -307,7 +307,19 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-    this.devices = await createProxmoxLvmPartitions(installDevice, "pve", "root", "ext4", "data", "ext4", this.echo)
+    this.devices = await createLvmPartitions(
+      installDevice,
+      this.partitions.lvmOptions.vgName,
+      this.partitions.userSwapChoice,
+      swapSize,
+      this.partitions.lvmOptions.lvRootName,
+      this.partitions.lvmOptions.lvRootFSType,
+      this.partitions.lvmOptions.lvRootSize,
+      this.partitions.lvmOptions.lvDataName,
+      this.partitions.lvmOptions.lvDataFSType,
+      this.partitions.lvmOptions.lvDataMountPoint,
+      this.echo
+    )
 
     this.devices.efi.name = 'none'
 
@@ -316,7 +328,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.root.mountPoint = '/boot'
 
     retVal = true
-  } else if ((this.partitions.installationMode === InstallationMode.LVM2Proxmox || this.partitions.installationMode === InstallationMode.LVM2Generic) && this.efi) {
+  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
     /**
      * ===========================================================================================
      * lvm2 and UEFI
@@ -329,16 +341,20 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
-
-    if (this.partitions.installationMode === InstallationMode.LVM2Proxmox) {
-      // PROXMOX VE
-
-      this.devices = await createProxmoxLvmPartitions(installDevice, "pve", "root", "ext4", "data", "ext4", this.echo)
-    } else if (this.partitions.installationMode === InstallationMode.LVM2Generic) {
-      // Generic LVM
       
-      this.devices = await createGenericLvmPartitions(installDevice, "vgName", this.partitions.userSwapChoice, swapSize, "lvmName", "ext4", "100%", "lvmData", "ext4", "/mnt/data", this.echo)
-    }
+    this.devices = await createLvmPartitions(
+      installDevice,
+      this.partitions.lvmOptions.vgName,
+      this.partitions.userSwapChoice,
+      swapSize,
+      this.partitions.lvmOptions.lvRootName,
+      this.partitions.lvmOptions.lvRootFSType,
+      this.partitions.lvmOptions.lvRootSize,
+      this.partitions.lvmOptions.lvDataName,
+      this.partitions.lvmOptions.lvDataFSType,
+      this.partitions.lvmOptions.lvDataMountPoint,
+      this.echo
+    )
 
     this.devices.efi.name = `${installDevice}${p}1`
     this.devices.efi.fsType = 'F 32 -I'
@@ -369,7 +385,7 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
 }
 
 /**
- * Create lvm partitions for Proxmox virtual environment
+ * Create lvm partitions
  *
  * @param installDevice 
  * @param vgName
@@ -385,7 +401,7 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
  * @param echo
  * @returns
  */
-export async function createGenericLvmPartitions(
+export async function createLvmPartitions(
     installDevice: string,
     vgName: string = "pve",
     swapType: string,
@@ -398,6 +414,14 @@ export async function createGenericLvmPartitions(
     lvmDataMountPoint: string = "/mnt/data",
     echo: object
   ): Promise<IDevices> {
+
+  if (lvmRootFSType == "") {
+    lvmRootFSType = "ext4"
+  }
+
+  if (lvmDataFSType == "") {
+    lvmDataFSType = "ext4"
+  }
 
   let devices = {} as IDevices
   let lvmSwapName: string = "swap"

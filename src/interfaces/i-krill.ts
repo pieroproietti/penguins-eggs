@@ -26,6 +26,7 @@ export interface IKeyboard {
 export interface IPartitions {
   filesystemType: string
   installationDevice: string
+  lvmOptions: ILvmOptions
   installationMode: string
   userSwapChoice: string
 }

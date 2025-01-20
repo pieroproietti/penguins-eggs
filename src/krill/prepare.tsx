@@ -117,6 +117,7 @@ import Sequence from './sequence.js'
 import { INet } from '../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from '../enum/e-krill.js'
+import { LvmOptionProxmox, LvmOptionUbuntu, LvmOptionGeneric } from '../const/c-krill.js'
 import LvmOptions from '../components/lvmoptions.js';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
@@ -195,7 +196,6 @@ export default class Krill {
     let oLocation = {} as ILocation
     let oKeyboard = {} as IKeyboard
     let oPartitions = {} as IPartitions
-    let oLvmOption = {} as ILvmOptions
     let oUsers = {} as IUsers
     let oNetwork = {} as INet
 
@@ -229,6 +229,11 @@ export default class Krill {
       zone: this.krillConfig.zone
     }
 
+    let lvmOptions = {} as ILvmOptions
+    if (this.krillConfig.lvmOptions) {
+      lvmOptions = this.krillConfig.lvmOptions
+    }
+
     oKeyboard = {
       keyboardModel: this.krillConfig.keyboardModel,
       keyboardLayout: this.krillConfig.keyboardLayout,
@@ -250,6 +255,7 @@ export default class Krill {
     oPartitions = {
       installationDevice: installationDevice,
       installationMode: this.krillConfig.installationMode,
+      lvmOptions: lvmOptions,
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice
     }
@@ -311,15 +317,10 @@ export default class Krill {
       //let kl = oWelcome.language.substring(oWelcome.language.indexOf('_'),2).toLowerCase()
       oKeyboard = await this.keyboard()
       oPartitions = await this.partitions(installationDevice, cryped, pve, btrfs)
-      
-      if (oPartitions.installationMode == InstallationMode.LVM2) {
-        oLvmOption = await this.lvmOptions(oPartitions.installationMode, pve)
-      }
-      
       oUsers = await this.users()
       oNetwork = await this.network()
     }
-    await this.summary(oLocation, oKeyboard, oPartitions, oLvmOption, oUsers)
+    await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
 
 
@@ -469,6 +470,9 @@ export default class Krill {
 
     let knownInstallationModes = Object.values(InstallationMode) as Array<string>
 
+    let lvmOptions = {} as ILvmOptions
+    let lvmPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox
+
     if (!knownInstallationModes.includes(installationMode)) {
       installationMode = InstallationMode.Standard
     }
@@ -476,13 +480,17 @@ export default class Krill {
       installationMode = InstallationMode.FullEncrypted
     } else if (pve) {
       installationMode = InstallationMode.LVM2
+
+      // Set default option to proxmox preset if pve arg is set
+      lvmPartitionPreset = LvmPartitionPreset.Proxmox
+      lvmOptions = new LvmOptionProxmox()
     }
     let filesystemType = 'ext4'
     let userSwapChoice: SwapChoice = SwapChoice.Small
 
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} lvmPreset={lvmPartitionPreset} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
@@ -504,10 +512,17 @@ export default class Krill {
       installationMode = await selectInstallationMode()
       filesystemType = await selectFileSystemType()
       userSwapChoice = await selectUserSwapChoice()
+
+      if (installationMode == InstallationMode.LVM2) {
+        // Yes I know, It is pythonic style, sorry! =)
+        [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset)
+      }
     }
+
     return {
       installationDevice: installationDevice,
       installationMode: installationMode,
+      lvmOptions: lvmOptions,
       filesystemType: filesystemType,
       userSwapChoice: userSwapChoice
     }
@@ -516,65 +531,40 @@ export default class Krill {
   /*
   * LVM Options
   */
-  async lvmOptions(installationMode: InstallationMode, pve = false): Promise<ILvmOptions> {
-    let lvmOpt = {} as ILvmOptions
-    let lvmPartitionPreset = "" as LvmPartitionPreset
+  async lvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox): Promise<[LvmPartitionPreset, ILvmOptions]> {
+    let lvmOptions = {} as ILvmOptions
 
-    if (pve) {
-      lvmPartitionPreset = LvmPartitionPreset.Proxmox
+    let lvmPartitionPreset: LvmPartitionPreset = await selectLvmPreset(initialPartitionPreset)
+
+    switch (lvmPartitionPreset) {
+      case LvmPartitionPreset.Proxmox:
+        lvmOptions = new LvmOptionProxmox()
+        break;
+      case LvmPartitionPreset.Ubuntu:
+        lvmOptions = new LvmOptionUbuntu()
+        break;
+      case LvmPartitionPreset.Generic:
+      default:
+        lvmOptions = new LvmOptionGeneric()
+        break;
     }
 
-    if (installationMode == InstallationMode.LVM2) {
-      lvmPartitionPreset = await selectLvmPreset(lvmPartitionPreset)
-
-      switch (lvmPartitionPreset) {
-        case LvmPartitionPreset.Proxmox:
-          lvmOpt.vgName = "pve"
-          lvmOpt.lvRootName = "root"
-          lvmOpt.lvRootFSType = ""
-          lvmOpt.lvRootSize = "20%"
-          lvmOpt.lvDataName = "data"
-          lvmOpt.lvDataFSType = ""
-          lvmOpt.lvDataMountPoint = "/var/lib/vz"
-          break;
-        case LvmPartitionPreset.Ubuntu:
-          lvmOpt.vgName = "ubuntu-vg"
-          lvmOpt.lvRootName = "ubuntu-vg--ubuntu-lv"
-          lvmOpt.lvRootFSType = ""
-          lvmOpt.lvRootSize = "100%"
-          lvmOpt.lvDataName = ""
-          lvmOpt.lvDataFSType = ""
-          lvmOpt.lvDataMountPoint = ""
-          break;
-        case LvmPartitionPreset.Generic:
-        default:
-          lvmOpt.vgName = "vg1"
-          lvmOpt.lvRootName = "root"
-          lvmOpt.lvRootFSType = 
-          lvmOpt.lvRootSize = "100%"
-          lvmOpt.lvDataName = ""
-          lvmOpt.lvDataFSType = 
-          lvmOpt.lvDataMountPoint = ""
-          break;
+    let lvmOptionsElem: JSX.Element
+    while (true) {
+      lvmOptionsElem = <LvmOptions lvmPreset={lvmPartitionPreset} lvmOptions={lvmOptions} />
+      if (await confirm(lvmOptionsElem, "Confirm LVM Preset Options ?")) {
+        break
       }
-
-      let lvmOptionsElem: JSX.Element
-      while (true) {
-        lvmOptionsElem = <LvmOptions preset={lvmPartitionPreset} vgName={lvmOpt.vgName} lvRootName={lvmOpt.lvRootName} lvRootFSType={lvmOpt.lvRootFSType} lvRootSize={lvmOpt.lvRootSize} lvDataName={lvmOpt.lvDataName} lvDataFSType={lvmOpt.lvDataFSType} lvDataMountPoint={lvmOpt.lvDataMountPoint} />
-        if (await confirm(lvmOptionsElem, "Confirm LVM Preset Options ?")) {
-          break
-        }
-        lvmOpt.vgName = await getLvmVGName(lvmOpt.vgName )
-        lvmOpt.lvRootName = await getLvmLVRootName(lvmOpt.lvRootName )
-        lvmOpt.lvRootFSType = await selectFileSystemType()
-        lvmOpt.lvRootSize = await getLvmLVRootSize(lvmOpt.lvRootSize)
-        lvmOpt.lvDataName = await getLvmLVDataName(lvmOpt.lvDataName)
-        lvmOpt.lvDataFSType = await selectFileSystemType()
-        lvmOpt.lvDataMountPoint = await getLvmLVDataMountPoint(lvmOpt.lvDataMountPoint)
-      }
+      lvmOptions.vgName = await getLvmVGName(lvmOptions.vgName)
+      lvmOptions.lvRootName = await getLvmLVRootName(lvmOptions.lvRootName)
+      lvmOptions.lvRootFSType = await selectFileSystemType()
+      lvmOptions.lvRootSize = await getLvmLVRootSize(lvmOptions.lvRootSize)
+      lvmOptions.lvDataName = await getLvmLVDataName(lvmOptions.lvDataName)
+      lvmOptions.lvDataFSType = await selectFileSystemType()
+      lvmOptions.lvDataMountPoint = await getLvmLVDataMountPoint(lvmOptions.lvDataMountPoint)
     }
 
-    return lvmOpt
+    return [lvmPartitionPreset, lvmOptions]
   }
 
   /**
@@ -689,7 +679,7 @@ export default class Krill {
   /**
    * SUMMARY
    */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, lvpOptions: ILvmOptions, users: IUsers) {
+  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
     let summaryElem: JSX.Element
 
     let message = `Double check the installation disk: ${partitions.installationDevice}\nwill be completely erased!`
