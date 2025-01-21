@@ -454,6 +454,11 @@ export async function createLvmPartitions(
 
   let lvmDataSize = String(lvmSize - lvmSwapSize - parseInt(lvmRootSize))
 
+  // Assuming no data partition if data partion options are not specified
+  if ((lvmDataName == "" || lvmDataName == "none") && lvmDataMountPoint == "") {
+    lvmDataSize = "0"
+  }
+
   // Calculate percentual size of LVM if the size is expressed as percentual
   let lvmRootPercSize: number = 0
   if (lvmRootSize.includes("%")) {
