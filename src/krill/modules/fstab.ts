@@ -12,6 +12,7 @@ import shx from 'shelljs'
 import Pacman from '../../classes/pacman.js'
 import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
+import { SwapChoice } from '../../enum/e-krill.js'
 
 /**
  * fstab()
@@ -94,8 +95,21 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
       text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
     }
 
-    text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-    text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    if (this.partitions.userSwapChoice == SwapChoice.File) {
+      
+      let swapFile = ''
+      if (this.devices.swap.mountPoint.endsWith('/')) {
+        swapFile = `${this.devices.swap.mountPoint}${this.devices.swap.name}`
+      } else {
+        swapFile = `${this.devices.swap.mountPoint}/${this.devices.swap.name}`
+      }
+
+      text += `# ${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    } else {
+      text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    }
   } else if (this.partitions.filesystemType === 'btrfs') {
     const base = '/        btrfs  subvol=/@,defaults 0 0'
     const snapshots = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'

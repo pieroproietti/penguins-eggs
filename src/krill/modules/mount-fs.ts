@@ -11,6 +11,7 @@ import fs from 'node:fs'
 
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
+import { SwapChoice } from '../../enum/e-krill.js'
 
 /**
  * mountFs
@@ -46,6 +47,24 @@ export async function mountFs(this: Sequence): Promise<boolean> {
     // await exec(`mount -t ${this.devices.efi.fsType} ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
     // utilizzare vfat per evitare errori
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
+  }
+
+  // swap: create swap file if swap on file
+  if (this.partitions.userSwapChoice == SwapChoice.File) {
+
+    let swapFile = ''
+    if (this.devices.swap.mountPoint.endsWith('/')) {
+      swapFile = `${this.devices.swap.mountPoint}${this.devices.swap.name}`
+    } else {
+      swapFile = `${this.devices.swap.mountPoint}/${this.devices.swap.name}`
+    }
+
+    swapFile = `${this.installTarget}${swapFile}`
+
+    //exec(`dd if=/dev/zero of=${swapFile} bs=1B count=${this.swapSize} ${this.toNull}`)
+    await exec(`fallocate -l ${this.swapSize} ${swapFile}`)
+    await exec(`chmod 600 ${swapFile} ${this.toNull}`)
+    await exec(`mkswap ${swapFile} ${this.toNull}`)
   }
 
   return true

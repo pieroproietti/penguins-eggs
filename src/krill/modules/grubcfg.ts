@@ -11,6 +11,7 @@ import fs from 'node:fs'
 
 import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
+import { SwapChoice } from '../../enum/e-krill.js'
 
 /**
  * grubcfg
@@ -26,7 +27,9 @@ export default async function grubcfg(this: Sequence) {
   const grubs = fs.readFileSync(file, 'utf8').split('\n')
   for (let i = 0; i < grubs.length; i++) {
     if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-      grubs[i] = this.partitions.installationMode === 'full-encrypted' ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      if (this.partitions.userSwapChoice != SwapChoice.File) {
+        grubs[i] = this.partitions.installationMode === 'full-encrypted' ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      }
     }
 
     content += grubs[i] + '\n'

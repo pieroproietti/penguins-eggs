@@ -39,11 +39,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
   }
 
   const installMode = this.partitions.installationMode
-  let swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
+  this.swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
 
   switch (this.partitions.userSwapChoice) {
     case SwapChoice.None: {
-      swapSize = 256
+      this.swapSize = 256
 
       break
     }
@@ -53,14 +53,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
     }
 
     case SwapChoice.Suspend: {
-      swapSize *= 2
+      this.swapSize *= 2
 
       break
     }
 
     case SwapChoice.File: {
-      swapSize = 0
-
+      // total mem
       break
     }
     // No default
@@ -96,8 +95,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${swapSize + 1}MiB`, this.echo) // dev/sda1 swap
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${this.swapSize + 1}MiB`, this.echo) // dev/sda1 swap
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
     await exec(`parted ${installDevice} set 1 boot on`, this.echo)
     await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
@@ -126,8 +125,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         1MiB        512MiB`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${swapSize + 512}MiB`, this.echo) // sda2
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize + 512}MiB                100%`, this.echo) // sda3
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${this.swapSize + 512}MiB`, this.echo) // sda2
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 512}MiB                100%`, this.echo) // sda3
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -189,8 +188,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32      34s                256MiB`, this.echo) // sda1 EFI
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${swapSize + 256}Mib`, this.echo) // sda2 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize + 256}MiB         100%`, this.echo) // sda3 root
+    await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${this.swapSize + 256}Mib`, this.echo) // sda2 swap
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 256}MiB         100%`, this.echo) // sda3 root
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -221,8 +220,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi fat32               34s               256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext4             256MiB              768MiB`, this.echo) // sda2 boot
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${swapSize + 768}MiB`, this.echo) // sda3 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize + 768}MiB                100%`, this.echo) // sda4 root
+    await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${this.swapSize + 768}MiB`, this.echo) // sda3 swap
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 768}MiB                100%`, this.echo) // sda4 root
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -303,7 +302,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // Creo partizioni
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`, this.echo) // sda2
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ${this.partitions.filesystemType} 512 100%`, this.echo) // sda2
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
@@ -311,7 +310,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
       installDevice,
       this.partitions.lvmOptions.vgName,
       this.partitions.userSwapChoice,
-      swapSize,
+      this.swapSize,
       this.partitions.lvmOptions.lvRootName,
       this.partitions.lvmOptions.lvRootFSType,
       this.partitions.lvmOptions.lvRootSize,
@@ -320,6 +319,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
       this.partitions.lvmOptions.lvDataMountPoint,
       this.echo
     )
+
+    if (this.partitions.userSwapChoice == SwapChoice.File) {
+      this.devices.swap.name = 'swap.img'
+      this.devices.swap.mountPoint = '/'
+    }
 
     this.devices.efi.name = 'none'
 
@@ -337,7 +341,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
-    await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
+    await exec(`parted --script ${installDevice} mkpart lvm ${this.partitions.filesystemType} 768MiB     100%`, this.echo) // sda3 lmv2
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
@@ -346,7 +350,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
       installDevice,
       this.partitions.lvmOptions.vgName,
       this.partitions.userSwapChoice,
-      swapSize,
+      this.swapSize,
       this.partitions.lvmOptions.lvRootName,
       this.partitions.lvmOptions.lvRootFSType,
       this.partitions.lvmOptions.lvRootSize,
@@ -355,6 +359,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
       this.partitions.lvmOptions.lvDataMountPoint,
       this.echo
     )
+
+    if (this.partitions.userSwapChoice == SwapChoice.File) {
+      this.devices.swap.name = 'swap.img'
+      this.devices.swap.mountPoint = '/'
+    }
 
     this.devices.efi.name = `${installDevice}${p}1`
     this.devices.efi.fsType = 'F 32 -I'
@@ -487,8 +496,6 @@ export async function createLvmPartitions(
 
     if (swapType != SwapChoice.File && lvmSwapSize > 0) {
       devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
-    } else {
-      devices.swap.name = 'none'
     }
   } else {
     Utils.warning(`Error: size of partitions for swap, root and data exceeds the size of lvm`)
