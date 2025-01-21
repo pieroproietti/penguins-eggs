@@ -12,7 +12,7 @@ import shx from 'shelljs'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
-import { IDevices } from '../../interfaces/i-devices.js'
+import { IDevices, IDevice } from '../../interfaces/i-devices.js'
 import { SwapChoice, InstallationMode } from '../../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
@@ -328,8 +328,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.efi.name = 'none'
 
     this.devices.boot.name = `${installDevice}${p}1`
-    this.devices.root.fsType = 'ext2'
-    this.devices.root.mountPoint = '/boot'
+    this.devices.boot.fsType = 'ext2'
+    this.devices.boot.mountPoint = '/boot'
 
     retVal = true
   } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
@@ -468,7 +468,7 @@ export async function createLvmPartitions(
     await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
     await exec('vgchange -an', echo)
 
-    // Create LVM Swap, if exists
+    // Create LVM Swap partition, if exists
     if (lvmSwapSize > 0) {
       await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
     }

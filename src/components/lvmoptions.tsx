@@ -29,14 +29,12 @@ export default function LvmOptions({ lvmPreset, lvmOptions }: LvmOptionsProps) {
         <>
             <Title />
             <Box width={75} height={11} borderStyle="round" flexDirection="column">
-            
+
                 <Box flexDirection="column">
                     <Box flexDirection="row">
                         <Steps step={4} />
-                        <Box flexDirection="column"></Box>
                         <Box flexDirection="column">
                             <Box><Text>LVM Preset: </Text><Text color='yellow'>{lvmPreset}</Text></Box>
-                            <Newline />
                             <Box><Text>Volume group name: </Text><Text color='cyan'>{lvmOptions.vgName}</Text></Box>
                             <Box><Text>Logical volume root name: </Text><Text color='cyan'>{lvmOptions.lvRootName}</Text></Box>
                             <Box><Text>Logical volume root filesystem: </Text><Text color='cyan'>{lvmOptions.lvRootFSType}</Text></Box>
