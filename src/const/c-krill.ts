@@ -14,16 +14,16 @@ export class LvmOptionProxmox implements ILvmOptions {
     lvRootFSType: string = ""
     lvRootSize: string = "20%"
     lvDataName: string = "data"
-    lvDataFSType: string = ""
+    lvDataFSType: string = "ext4"
     lvDataMountPoint: string = "/var/lib/vz"
 }
 
 export class LvmOptionUbuntu implements ILvmOptions {
     vgName: string = "ubuntu-vg"
-    lvRootName: string = "ubuntu-vg--ubuntu-lv"
-    lvRootFSType: string = ""
+    lvRootName: string = "ubuntu-lv"
+    lvRootFSType: string = "ext4"
     lvRootSize: string = "100%"
-    lvDataName: string = ""
+    lvDataName: string = "none"
     lvDataFSType: string = ""
     lvDataMountPoint: string = ""
 }
@@ -31,9 +31,9 @@ export class LvmOptionUbuntu implements ILvmOptions {
 export class LvmOptionGeneric implements ILvmOptions {
     vgName: string = "vg1"
     lvRootName: string = "root"
-    lvRootFSType: string = ""
+    lvRootFSType: string = "ext4"
     lvRootSize: string = "100%"
-    lvDataName: string = ""
-    lvDataFSType: string = ""
-    lvDataMountPoint: string = ""
+    lvDataName: string = "data"
+    lvDataFSType: string = "ext4"
+    lvDataMountPoint: string = "/mnt/data"
 }
