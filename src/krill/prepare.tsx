@@ -516,6 +516,9 @@ export default class Krill {
       if (installationMode == InstallationMode.LVM2) {
         // Yes I know, It is pythonic style, sorry! =)
         [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset)
+
+        lvmOptions.lvRootFSType = filesystemType
+        lvmOptions.lvDataFSType = filesystemType
       }
     }
 
