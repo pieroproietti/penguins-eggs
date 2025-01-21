@@ -433,6 +433,12 @@ export async function createLvmPartitions(
   }
 
   let devices = {} as IDevices
+  devices.efi = {} as IDevice
+  devices.boot = {} as IDevice
+  devices.root = {} as IDevice
+  devices.data = {} as IDevice
+  devices.swap = {} as IDevice
+
   let lvmSwapName: string = "swap"
 
   const partInfo = await lvmPartInfo(installDevice)
