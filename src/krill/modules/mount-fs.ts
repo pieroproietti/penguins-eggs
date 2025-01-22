@@ -61,8 +61,8 @@ export async function mountFs(this: Sequence): Promise<boolean> {
 
     swapFile = `${this.installTarget}${swapFile}`
 
-    //exec(`dd if=/dev/zero of=${swapFile} bs=1B count=${this.swapSize} ${this.toNull}`)
-    await exec(`fallocate -l ${this.swapSize} ${swapFile}`)
+    //exec(`dd if=/dev/zero of=${swapFile} bs=1M count=${this.swapSize} ${this.toNull}`)
+    await exec(`fallocate -l ${this.swapSize}M ${swapFile}`)
     await exec(`chmod 600 ${swapFile} ${this.toNull}`)
     await exec(`mkswap ${swapFile} ${this.toNull}`)
   }
