@@ -13,7 +13,7 @@ import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding, IPartitions } from '../interfaces/index.js'
-import { InstallationMode } from '../enum/e-krill.js'
+import { InstallationMode, SwapChoice } from '../enum/e-krill.js'
 import { render, Text, Box, Newline } from 'ink'
 
 type partitionsProps = {
@@ -21,7 +21,7 @@ type partitionsProps = {
     installationMode?: string,
     lvmPreset: string,
     filesystemType?: string,
-    userSwapChoice?: string
+    userSwapChoice?: SwapChoice
 }
 
 

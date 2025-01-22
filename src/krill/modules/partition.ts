@@ -509,6 +509,9 @@ export async function createLvmPartitions(
       devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
     }
   } else {
+    Utils.warning(`lvmRootSize | ${lvmRootSize}`)
+    Utils.warning(`lvmSwapSize | ${lvmSwapSize}`)
+    Utils.warning(`lvmDataSize | ${lvmDataSize}`)
     Utils.warning(`Error: size of partitions for swap, root and data exceeds the size of lvm`)
     process.exit(1)
   }

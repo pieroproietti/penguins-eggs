@@ -22,5 +22,5 @@ export enum InstallationMode {
 export enum LvmPartitionPreset {
     Proxmox = "proxmox",
     Ubuntu = "ubuntu",
-    Generic = "generic"
+    Custom = "custom"
 }

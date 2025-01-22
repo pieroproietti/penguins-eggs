@@ -6,6 +6,8 @@
  * license: MIT
  */
 
+import { SwapChoice } from '../enum/e-krill.js'
+
 export interface IWelcome {
   language: string
 }
@@ -28,7 +30,7 @@ export interface IPartitions {
   installationDevice: string
   lvmOptions: ILvmOptions
   installationMode: string
-  userSwapChoice: string
+  userSwapChoice: SwapChoice
 }
 
 export interface IUsers {

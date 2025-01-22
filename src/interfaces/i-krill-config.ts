@@ -7,6 +7,7 @@
  */
 
 import { ILvmOptions } from "./i-krill.js"
+import { SwapChoice } from '../enum/e-krill.js'
 
 export interface IKrillConfig {
   address: string
@@ -32,6 +33,6 @@ export interface IKrillConfig {
   password: string
   region: string
   rootPassword: string
-  userSwapChoice: string
+  userSwapChoice: SwapChoice
   zone: string
 }

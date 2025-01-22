@@ -71,7 +71,7 @@ import Systemctl from '../classes/systemctl.js'
 import Utils from '../classes/utils.js'
 
 // libraries
-import { exec } from '../lib/utils.js'
+import { exec, compareInstances } from '../lib/utils.js'
 
 
 import Welcome from '../components/welcome.js'
@@ -117,7 +117,7 @@ import Sequence from './sequence.js'
 import { INet } from '../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from '../enum/e-krill.js'
-import { LvmOptionProxmox, LvmOptionUbuntu, LvmOptionGeneric } from '../const/c-krill.js'
+import { LvmOptionProxmox, LvmOptionUbuntu } from '../const/c-krill.js'
 import LvmOptions from '../components/lvmoptions.js';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
@@ -469,9 +469,45 @@ export default class Krill {
     let installationMode = this.krillConfig.installationMode
 
     let knownInstallationModes = Object.values(InstallationMode) as Array<string>
+    let knownSwapChoices = Object.values(SwapChoice) as Array<string>
 
     let lvmOptions = {} as ILvmOptions
-    let lvmPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox
+    let emptyLvmOption = {} as ILvmOptions
+    let lvmPartitionPreset = {} as LvmPartitionPreset
+
+    emptyLvmOption.vgName = ''
+    emptyLvmOption.lvRootName = ''
+    emptyLvmOption.lvRootFSType = ''
+    emptyLvmOption.lvRootSize = ''
+    emptyLvmOption.lvDataName = ''
+    emptyLvmOption.lvRootFSType = ''
+    emptyLvmOption.lvDataMountPoint = ''
+
+    if (!this.krillConfig.lvmOptions) {
+      // if lvm options is missing from the krill configuration file assume it as empty
+      this.krillConfig.lvmOptions = emptyLvmOption
+    }
+
+    lvmOptions = this.krillConfig.lvmOptions
+    
+    if (compareInstances(this.krillConfig.lvmOptions, emptyLvmOption) ||
+        compareInstances(this.krillConfig.lvmOptions, new LvmOptionProxmox())
+      ) {
+
+      // empty lvm options are considered as Proxmox preset
+      lvmPartitionPreset = LvmPartitionPreset.Proxmox
+
+    } else if (compareInstances(this.krillConfig.lvmOptions, new LvmOptionUbuntu())) {
+
+      // Loaded lvm options are Ubuntu preset
+      lvmPartitionPreset = LvmPartitionPreset.Ubuntu
+
+    } else {
+
+      // Loaded lvm options are Ubuntu preset
+      lvmPartitionPreset = LvmPartitionPreset.Custom
+
+    }
 
     if (!knownInstallationModes.includes(installationMode)) {
       installationMode = InstallationMode.Standard
@@ -486,7 +522,13 @@ export default class Krill {
       lvmOptions = new LvmOptionProxmox()
     }
     let filesystemType = 'ext4'
-    let userSwapChoice: SwapChoice = SwapChoice.Small
+
+    let userSwapChoice = {} as SwapChoice
+    if (knownSwapChoices.includes(this.krillConfig.userSwapChoice))
+      userSwapChoice = this.krillConfig.userSwapChoice
+    else {
+      userSwapChoice = SwapChoice.Small
+    }
 
     let partitionsElem: JSX.Element
     while (true) {
@@ -511,11 +553,11 @@ export default class Krill {
       installationDevice = await selectInstallationDevice()
       installationMode = await selectInstallationMode()
       filesystemType = await selectFileSystemType()
-      userSwapChoice = await selectUserSwapChoice()
+      userSwapChoice = await selectUserSwapChoice(userSwapChoice)
 
       if (installationMode == InstallationMode.LVM2) {
         // Yes I know, It is pythonic style, sorry! =)
-        [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset)
+        [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset, lvmOptions)
 
         lvmOptions.lvRootFSType = filesystemType
         lvmOptions.lvDataFSType = filesystemType
@@ -534,9 +576,7 @@ export default class Krill {
   /*
   * LVM Options
   */
-  async lvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox): Promise<[LvmPartitionPreset, ILvmOptions]> {
-    let lvmOptions = {} as ILvmOptions
-
+  async lvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox, lvmOptions: ILvmOptions): Promise<[LvmPartitionPreset, ILvmOptions]> {
     let lvmPartitionPreset: LvmPartitionPreset = await selectLvmPreset(initialPartitionPreset)
 
     switch (lvmPartitionPreset) {
@@ -546,9 +586,8 @@ export default class Krill {
       case LvmPartitionPreset.Ubuntu:
         lvmOptions = new LvmOptionUbuntu()
         break;
-      case LvmPartitionPreset.Generic:
+      case LvmPartitionPreset.Custom:
       default:
-        lvmOptions = new LvmOptionGeneric()
         break;
     }
 

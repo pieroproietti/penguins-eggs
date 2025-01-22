@@ -28,12 +28,12 @@ export class LvmOptionUbuntu implements ILvmOptions {
     lvDataMountPoint: string = ""
 }
 
-export class LvmOptionGeneric implements ILvmOptions {
-    vgName: string = "vg1"
-    lvRootName: string = "root"
-    lvRootFSType: string = "ext4"
-    lvRootSize: string = "100%"
-    lvDataName: string = "data"
-    lvDataFSType: string = "ext4"
-    lvDataMountPoint: string = "/mnt/data"
+export class LvmOptionCustom implements ILvmOptions {
+    vgName: string = ""
+    lvRootName: string = ""
+    lvRootFSType: string = ""
+    lvRootSize: string = ""
+    lvDataName: string = ""
+    lvDataFSType: string = ""
+    lvDataMountPoint: string = ""
 }

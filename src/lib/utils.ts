@@ -74,6 +74,15 @@ export async function exec(command: string, { capture = false, echo = false, ign
 }
 
 /**
+ * Compare two instances in order to determinate if they have save property values
+ * 
+ * @param instance1 T
+ * @param instance2 T
+ * @returns boolean
+ */
+export function compareInstances<T>(instance1: T, instance2: T): boolean { return JSON.stringify(instance1) === JSON.stringify(instance2); } 
+
+/**
   * Il problema è in questa funzione: core/cli-ux/indesx.ts
   * qui riportata solo come esempio
   *
