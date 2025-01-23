@@ -19,6 +19,14 @@ installationDevice: ''
 installationMode: 'standard'
 filesystemType: 'ext4'
 userSwapChoice: 'small'
+lvmOptions:
+  vgName: ''
+  lvRootName: ''
+  lvRootFSType: ''
+  lvRootSize: ''
+  lvDataName: ''
+  lvDataFSType: ''
+  lvDataMountPoint: ''
 
 # users (Here you can put your default user, password, etc)
 name: 'artisan'

@@ -6,6 +6,8 @@
  * license: MIT
  */
 
+import { SwapChoice } from '../enum/e-krill.js'
+
 export interface IWelcome {
   language: string
 }
@@ -26,8 +28,9 @@ export interface IKeyboard {
 export interface IPartitions {
   filesystemType: string
   installationDevice: string
+  lvmOptions: ILvmOptions
   installationMode: string
-  userSwapChoice: string
+  userSwapChoice: SwapChoice
 }
 
 export interface IUsers {
@@ -46,4 +49,14 @@ export interface ICalamaresModule {
   name: string
   timeout: number
   type: string
+}
+
+export interface ILvmOptions {
+  vgName: string
+  lvRootName: string
+  lvRootFSType: string
+  lvRootSize: string
+  lvDataName: string
+  lvDataFSType: string
+  lvDataMountPoint: string
 }

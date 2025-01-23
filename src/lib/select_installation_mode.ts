@@ -7,9 +7,10 @@
  */
 
 import inquirer from 'inquirer'
+import { InstallationMode } from '../enum/e-krill.js'
 
-export default async function selectInstallationMode(): Promise<string> {
-  const modes = ['standard', 'full-encrypted', 'lvm2']
+export default async function selectInstallationMode(): Promise<InstallationMode> {
+  const modes = Object.values(InstallationMode)
 
   const questions: Array<Record<string, any>> = [
     {

@@ -6,6 +6,9 @@
  * license: MIT
  */
 
+import { ILvmOptions } from "./i-krill.js"
+import { SwapChoice } from '../enum/e-krill.js'
+
 export interface IKrillConfig {
   address: string
   addressType: string
@@ -19,6 +22,7 @@ export interface IKrillConfig {
   iface: string
   installationDevice: string
   installationMode: string
+  lvmOptions: ILvmOptions
   keyboardLayout: string
   keyboardModel: string
   keyboardOption: string
@@ -29,6 +33,6 @@ export interface IKrillConfig {
   password: string
   region: string
   rootPassword: string
-  userSwapChoice: string
+  userSwapChoice: SwapChoice
   zone: string
 }

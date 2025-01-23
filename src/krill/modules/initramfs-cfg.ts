@@ -9,6 +9,7 @@
 
 import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
+import { SwapChoice } from '../../enum/e-krill.js'
 
 /**
  *
@@ -19,7 +20,7 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     // userSwapChoices = ['none', 'small', 'suspend', 'file']
     const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
     let text = ''
-    text += this.partitions.userSwapChoice === 'none' || this.partitions.userSwapChoice === 'file' ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+    text += this.partitions.userSwapChoice === SwapChoice.None || this.partitions.userSwapChoice === SwapChoice.File ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
     Utils.write(file, text)
   }
 }

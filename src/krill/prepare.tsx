@@ -71,7 +71,7 @@ import Systemctl from '../classes/systemctl.js'
 import Utils from '../classes/utils.js'
 
 // libraries
-import { exec } from '../lib/utils.js'
+import { exec, compareInstances } from '../lib/utils.js'
 
 
 import Welcome from '../components/welcome.js'
@@ -110,10 +110,15 @@ import getGateway from '../lib/get_gateway.js'
 import getDomain from '../lib/get_domain.js'
 import getDns from '../lib/get_dns.js'
 
+import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getLvmLVDataName, getLvmLVDataMountPoint } from '../lib/lvm_installation_options.js'
+
 import Sequence from './sequence.js'
 
 import { INet } from '../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
+import { SwapChoice, InstallationMode, LvmPartitionPreset } from '../enum/e-krill.js'
+import { LvmOptionProxmox, LvmOptionUbuntu } from '../const/c-krill.js'
+import LvmOptions from '../components/lvmoptions.js';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -224,6 +229,11 @@ export default class Krill {
       zone: this.krillConfig.zone
     }
 
+    let lvmOptions = {} as ILvmOptions
+    if (this.krillConfig.lvmOptions) {
+      lvmOptions = this.krillConfig.lvmOptions
+    }
+
     oKeyboard = {
       keyboardModel: this.krillConfig.keyboardModel,
       keyboardLayout: this.krillConfig.keyboardLayout,
@@ -245,6 +255,7 @@ export default class Krill {
     oPartitions = {
       installationDevice: installationDevice,
       installationMode: this.krillConfig.installationMode,
+      lvmOptions: lvmOptions,
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice
     }
@@ -254,11 +265,11 @@ export default class Krill {
     }
 
     if (suspend) {
-      oPartitions.userSwapChoice = 'suspend'
+      oPartitions.userSwapChoice = SwapChoice.Suspend
     } else if (small) {
-      oPartitions.userSwapChoice = 'small'
+      oPartitions.userSwapChoice = SwapChoice.Small
     } else if (none) {
-      oPartitions.userSwapChoice = 'none'
+      oPartitions.userSwapChoice = SwapChoice.None
     }
 
     let hostname = this.krillConfig.hostname
@@ -456,49 +467,146 @@ export default class Krill {
     }
 
     let installationMode = this.krillConfig.installationMode
-    if (installationMode === '' || installationMode === undefined) {
-      installationMode = 'standard'
+
+    let knownInstallationModes = Object.values(InstallationMode) as Array<string>
+    let knownSwapChoices = Object.values(SwapChoice) as Array<string>
+
+    let lvmOptions = {} as ILvmOptions
+    let emptyLvmOption = {} as ILvmOptions
+    let lvmPartitionPreset = {} as LvmPartitionPreset
+
+    emptyLvmOption.vgName = ''
+    emptyLvmOption.lvRootName = ''
+    emptyLvmOption.lvRootFSType = ''
+    emptyLvmOption.lvRootSize = ''
+    emptyLvmOption.lvDataName = ''
+    emptyLvmOption.lvRootFSType = ''
+    emptyLvmOption.lvDataMountPoint = ''
+
+    if (!this.krillConfig.lvmOptions) {
+      // if lvm options is missing from the krill configuration file assume it as empty
+      this.krillConfig.lvmOptions = emptyLvmOption
+    }
+
+    lvmOptions = this.krillConfig.lvmOptions
+    
+    if (compareInstances(this.krillConfig.lvmOptions, emptyLvmOption) ||
+        compareInstances(this.krillConfig.lvmOptions, new LvmOptionProxmox())
+      ) {
+
+      // empty lvm options are considered as Proxmox preset
+      lvmPartitionPreset = LvmPartitionPreset.Proxmox
+
+    } else if (compareInstances(this.krillConfig.lvmOptions, new LvmOptionUbuntu())) {
+
+      // Loaded lvm options are Ubuntu preset
+      lvmPartitionPreset = LvmPartitionPreset.Ubuntu
+
+    } else {
+
+      // Loaded lvm options are Ubuntu preset
+      lvmPartitionPreset = LvmPartitionPreset.Custom
+
+    }
+
+    if (!knownInstallationModes.includes(installationMode)) {
+      installationMode = InstallationMode.Standard
     }
     if (crypted) {
-      installationMode = 'full-encrypted'
+      installationMode = InstallationMode.FullEncrypted
     } else if (pve) {
-      installationMode = 'lvm2'
+      installationMode = InstallationMode.LVM2
+
+      // Set default option to proxmox preset if pve arg is set
+      lvmPartitionPreset = LvmPartitionPreset.Proxmox
+      lvmOptions = new LvmOptionProxmox()
     }
     let filesystemType = 'ext4'
-    let userSwapChoice = 'small'
+
+    let userSwapChoice = {} as SwapChoice
+    if (knownSwapChoices.includes(this.krillConfig.userSwapChoice))
+      userSwapChoice = this.krillConfig.userSwapChoice
+    else {
+      userSwapChoice = SwapChoice.Small
+    }
 
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} lvmPreset={lvmPartitionPreset} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
         installationDevice = ''
-        installationMode = 'standard'
+        installationMode = InstallationMode.Standard
         if (crypted) {
-          installationMode = 'full-encrypted'
+          installationMode = InstallationMode.FullEncrypted
         } else if (pve) {
-          installationMode = 'lvm2'
+          installationMode = InstallationMode.LVM2
         }
         if (btrfs) {
           filesystemType = 'btrfs'
         } else {
           filesystemType = 'ext4'
         }
-        userSwapChoice = ''
       }
 
       installationDevice = await selectInstallationDevice()
       installationMode = await selectInstallationMode()
       filesystemType = await selectFileSystemType()
-      userSwapChoice = await selectUserSwapChoice()
+      userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+
+      if (installationMode == InstallationMode.LVM2) {
+        // Yes I know, It is pythonic style, sorry! =)
+        [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset, lvmOptions)
+
+        lvmOptions.lvRootFSType = filesystemType
+        lvmOptions.lvDataFSType = filesystemType
+      }
     }
+
     return {
       installationDevice: installationDevice,
       installationMode: installationMode,
+      lvmOptions: lvmOptions,
       filesystemType: filesystemType,
       userSwapChoice: userSwapChoice
     }
+  }
+
+  /*
+  * LVM Options
+  */
+  async lvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox, lvmOptions: ILvmOptions): Promise<[LvmPartitionPreset, ILvmOptions]> {
+    let lvmPartitionPreset: LvmPartitionPreset = await selectLvmPreset(initialPartitionPreset)
+
+    switch (lvmPartitionPreset) {
+      case LvmPartitionPreset.Proxmox:
+        lvmOptions = new LvmOptionProxmox()
+        break;
+      case LvmPartitionPreset.Ubuntu:
+        lvmOptions = new LvmOptionUbuntu()
+        break;
+      case LvmPartitionPreset.Custom:
+      default:
+        break;
+    }
+
+    let lvmOptionsElem: JSX.Element
+    while (true) {
+      lvmOptionsElem = <LvmOptions lvmPreset={lvmPartitionPreset} lvmOptions={lvmOptions} />
+      if (await confirm(lvmOptionsElem, "Confirm LVM Preset Options ?")) {
+        break
+      }
+      lvmOptions.vgName = await getLvmVGName(lvmOptions.vgName)
+      lvmOptions.lvRootName = await getLvmLVRootName(lvmOptions.lvRootName)
+      lvmOptions.lvRootFSType = await selectFileSystemType()
+      lvmOptions.lvRootSize = await getLvmLVRootSize(lvmOptions.lvRootSize)
+      lvmOptions.lvDataName = await getLvmLVDataName(lvmOptions.lvDataName)
+      lvmOptions.lvDataFSType = await selectFileSystemType()
+      lvmOptions.lvDataMountPoint = await getLvmLVDataMountPoint(lvmOptions.lvDataMountPoint)
+    }
+
+    return [lvmPartitionPreset, lvmOptions]
   }
 
   /**
