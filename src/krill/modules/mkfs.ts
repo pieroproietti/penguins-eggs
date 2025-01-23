@@ -9,6 +9,7 @@
 
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
+import { SwapChoice } from '../../enum/e-krill.js'
 import Sequence from '../sequence.js'
 
 /**
@@ -40,8 +41,8 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
       await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
     }
 
-    if (this.devices.swap.name !== 'none') {
-      await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+    if (this.devices.swap.name !== 'none' && this.partitions.userSwapChoice !== SwapChoice.File) {
+        await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
     }
   } else if (this.partitions.filesystemType === 'btrfs') {
     await exec(`mkfs.btrfs -f ${this.devices.root.name} ${this.toNull}`, this.echo)

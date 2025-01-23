@@ -159,6 +159,8 @@ export default class Sequence {
 
    partitions = {} as IPartitions
 
+   swapSize: number = 0
+
    language = ''
 
    region = ''

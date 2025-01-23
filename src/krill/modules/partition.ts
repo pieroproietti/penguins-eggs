@@ -12,6 +12,8 @@ import shx from 'shelljs'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
+import { IDevices, IDevice } from '../../interfaces/i-devices.js'
+import { SwapChoice, InstallationMode } from '../../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
@@ -37,28 +39,27 @@ export default async function partition(this: Sequence): Promise<boolean> {
   }
 
   const installMode = this.partitions.installationMode
-  let swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
+  this.swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
 
   switch (this.partitions.userSwapChoice) {
-    case 'none': {
-      swapSize = 256
+    case SwapChoice.None: {
+      this.swapSize = 256
 
       break
     }
 
-    case 'small': {
+    case SwapChoice.Small: {
       break
     }
 
-    case 'suspend': {
-      swapSize *= 2
+    case SwapChoice.Suspend: {
+      this.swapSize *= 2
 
       break
     }
 
-    case 'file': {
-      swapSize = 0
-
+    case SwapChoice.File: {
+      // total mem
       break
     }
     // No default
@@ -87,15 +88,15 @@ export default async function partition(this: Sequence): Promise<boolean> {
    */
 
 
-  if (installMode === 'standard' && !this.efi) {
+  if (installMode === InstallationMode.Standard && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${swapSize + 1}MiB`, this.echo) // dev/sda1 swap
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${this.swapSize + 1}MiB`, this.echo) // dev/sda1 swap
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
     await exec(`parted ${installDevice} set 1 boot on`, this.echo)
     await exec(`parted ${installDevice} set 1 esp on`, this.echo)
 
@@ -116,7 +117,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
 
     retVal = true
-  } else if (installMode === 'full-encrypted' && !this.efi) {
+  } else if (installMode === InstallationMode.FullEncrypted && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: full-encrypt:
@@ -124,8 +125,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         1MiB        512MiB`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${swapSize + 512}MiB`, this.echo) // sda2
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${swapSize + 512}MiB                100%`, this.echo) // sda3
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${this.swapSize + 512}MiB`, this.echo) // sda2
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 512}MiB                100%`, this.echo) // sda3
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -179,7 +180,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.efi.name = 'none'
 
     retVal = true
-  } else if (installMode === 'standard' && this.efi) {
+  } else if (installMode === InstallationMode.Standard && this.efi) {
     /**
      * ===========================================================================================
      * UEFI: working
@@ -187,8 +188,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32      34s                256MiB`, this.echo) // sda1 EFI
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${swapSize + 256}Mib`, this.echo) // sda2 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize + 256}MiB         100%`, this.echo) // sda3 root
+    await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${this.swapSize + 256}Mib`, this.echo) // sda2 swap
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 256}MiB         100%`, this.echo) // sda3 root
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -210,7 +211,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === 'full-encrypted' && this.efi) {
+  } else if (installMode === InstallationMode.FullEncrypted && this.efi) {
     /**
      * ===========================================================================================
      * UEFI, full-encrypt
@@ -219,8 +220,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi fat32               34s               256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext4             256MiB              768MiB`, this.echo) // sda2 boot
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${swapSize + 768}MiB`, this.echo) // sda3 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${swapSize + 768}MiB                100%`, this.echo) // sda4 root
+    await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${this.swapSize + 768}MiB`, this.echo) // sda3 swap
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 768}MiB                100%`, this.echo) // sda4 root
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -292,75 +293,77 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === 'lvm2' && !this.efi) {
+  } else if (installMode === InstallationMode.LVM2 && !this.efi) {
     /**
      * ===========================================================================================
-     * PROXMOX VE: BIOS and lvm2
+     * BIOS and lvm2
      * ===========================================================================================
      */
     // Creo partizioni
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext2 512 100%`, this.echo) // sda2
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ${this.partitions.filesystemType} 512 100%`, this.echo) // sda2
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-    const partInfo = await lvmPartInfo(installDevice)
-    const lvmPartname = partInfo[0]
-    const lvmSwapSize = partInfo[1]
-    const lvmRootSize = partInfo[2]
+    this.devices = await createLvmPartitions(
+      installDevice,
+      this.partitions.lvmOptions.vgName,
+      this.partitions.userSwapChoice,
+      this.swapSize,
+      this.partitions.lvmOptions.lvRootName,
+      this.partitions.lvmOptions.lvRootFSType,
+      this.partitions.lvmOptions.lvRootSize,
+      this.partitions.lvmOptions.lvDataName,
+      this.partitions.lvmOptions.lvDataFSType,
+      this.partitions.lvmOptions.lvDataMountPoint,
+      this.echo
+    )
 
-    await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-    await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-    await exec('vgchange -an', this.echo)
-    await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-    await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-    await exec('lvcreate -l 100%FREE -ndata pve', this.echo)
-    await exec('vgchange -a y pve', this.echo)
+    if (this.partitions.userSwapChoice == SwapChoice.File) {
+      this.devices.swap.name = 'swap.img'
+      this.devices.swap.mountPoint = '/'
+    }
 
     this.devices.efi.name = 'none'
 
     this.devices.boot.name = `${installDevice}${p}1`
-    this.devices.root.fsType = 'ext2'
-    this.devices.root.mountPoint = '/boot'
-
-    this.devices.root.name = '/dev/pve/root'
-    this.devices.root.fsType = 'ext4'
-    this.devices.root.mountPoint = '/'
-
-    this.devices.data.name = '/dev/pve/data'
-    this.devices.data.fsType = 'ext4'
-    this.devices.data.mountPoint = '/var/lib/vz'
-
-    this.devices.swap.name = '/dev/pve/swap'
+    this.devices.boot.fsType = 'ext2'
+    this.devices.boot.mountPoint = '/boot'
 
     retVal = true
-  } else if (this.partitions.installationMode === 'lvm2' && this.efi) {
+  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
     /**
      * ===========================================================================================
-     * PROXMOX VE: lvm2 and UEFI
+     * lvm2 and UEFI
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi  fat32    34s   256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext2  256MiB   768MiB`, this.echo) // sda2 boot
-    await exec(`parted --script ${installDevice} mkpart lvm  ext4  768MiB     100%`, this.echo) // sda3 lmv2
+    await exec(`parted --script ${installDevice} mkpart lvm ${this.partitions.filesystemType} 768MiB     100%`, this.echo) // sda3 lmv2
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
+      
+    this.devices = await createLvmPartitions(
+      installDevice,
+      this.partitions.lvmOptions.vgName,
+      this.partitions.userSwapChoice,
+      this.swapSize,
+      this.partitions.lvmOptions.lvRootName,
+      this.partitions.lvmOptions.lvRootFSType,
+      this.partitions.lvmOptions.lvRootSize,
+      this.partitions.lvmOptions.lvDataName,
+      this.partitions.lvmOptions.lvDataFSType,
+      this.partitions.lvmOptions.lvDataMountPoint,
+      this.echo
+    )
 
-    const partInfo = await lvmPartInfo(installDevice)
-    const lvmPartname = partInfo[0]
-    const lvmSwapSize = partInfo[1]
-    const lvmRootSize = partInfo[2]
-
-    await exec(`pvcreate /dev/${lvmPartname}`, this.echo)
-    await exec(`vgcreate pve /dev/${lvmPartname}`, this.echo)
-    await exec('vgchange -an', this.echo)
-    await exec(`lvcreate -L ${lvmSwapSize} -nswap pve`, this.echo)
-    await exec(`lvcreate -L ${lvmRootSize} -nroot pve`, this.echo)
-    await exec('lvcreate -l 100%FREE -ndata pve', this.echo)
-    await exec('vgchange -a y pve', this.echo)
+    if (this.partitions.userSwapChoice == SwapChoice.File) {
+      this.devices.swap.name = 'swap.img'
+      this.devices.swap.mountPoint = '/'
+    }
 
     this.devices.efi.name = `${installDevice}${p}1`
     this.devices.efi.fsType = 'F 32 -I'
@@ -369,16 +372,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.name = `${installDevice}${p}2`
     this.devices.boot.fsType = 'ext4'
     this.devices.boot.mountPoint = '/boot'
-
-    this.devices.root.name = '/dev/pve/root'
-    this.devices.root.fsType = 'ext4'
-    this.devices.root.mountPoint = '/'
-
-    this.devices.data.name = '/dev/pve/data'
-    this.devices.data.fsType = 'ext4'
-    this.devices.data.mountPoint = '/var/lib/vz'
-
-    this.devices.swap.name = '/dev/pve/swap'
 
     retVal = true
   }
@@ -391,19 +384,200 @@ export default async function partition(this: Sequence): Promise<boolean> {
  * @param installDevice
  * @returns
  */
-export async function lvmPartInfo(installDevice = '/dev/sda'): Promise<[string, number, number, number]> {
+export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[string, number]> {
   // Partizione LVM
   const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
   const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
   const lvmSize = lvmByteSize / 1024
 
+  return [lvmPartname, lvmSize]
+}
+
+/**
+ * Create lvm partitions
+ *
+ * @param installDevice 
+ * @param vgName
+ * @param swapType
+ * @param swapSize
+ * @param lvmRootName
+ * @param lvmRootFSType
+ * @param lvmRootSize
+ * @param lvmDataName
+ * @param lvmDataFSType
+ * @param lvmDataName
+ * @param lvmDataMountPoint
+ * @param echo
+ * @returns
+ */
+export async function createLvmPartitions(
+    installDevice: string,
+    vgName: string = "pve",
+    swapType: string,
+    swapSize: number,
+    lvmRootName: string = "root",
+    lvmRootFSType: string = "ext4",
+    lvmRootSize: string = "20%",
+    lvmDataName: string = "data",
+    lvmDataFSType: string = "ext4",
+    lvmDataMountPoint: string = "/mnt/data",
+    echo: object
+  ): Promise<IDevices> {
+
+  if (lvmRootFSType == "") {
+    lvmRootFSType = "ext4"
+  }
+
+  if (lvmDataFSType == "") {
+    lvmDataFSType = "ext4"
+  }
+
+  let devices = {} as IDevices
+  devices.efi = {} as IDevice
+  devices.boot = {} as IDevice
+  devices.root = {} as IDevice
+  devices.data = {} as IDevice
+  devices.swap = {} as IDevice
+
+  let lvmSwapName: string = "swap"
+
+  const partInfo = await lvmPartInfo(installDevice)
+  const lvmPartname = partInfo[0]
+  const lvmSize = partInfo[1]
+
+  let lvmSwapSize = swapSize
+
+  // Swap partition not exists if it is a file
+  if (swapType == SwapChoice.File) {
+    lvmSwapSize = 0
+  }
+
+  let lvmDataSize = String(lvmSize - lvmSwapSize - parseInt(lvmRootSize))
+
+  // Assuming no data partition if data partion options are not specified
+  if ((lvmDataName == "" || lvmDataName == "none") && lvmDataMountPoint == "") {
+    lvmDataSize = "0"
+  }
+
+  // Calculate percentual size of LVM if the size is expressed as percentual
+  let lvmRootPercSize: number = 0
+  if (lvmRootSize.includes("%")) {
+    lvmRootPercSize = parseFloat(lvmRootSize)
+    lvmRootSize = String(Math.floor((lvmSize * lvmRootPercSize) / 100))
+  } else {
+    lvmRootPercSize = ((parseFloat(lvmRootSize) / lvmSize) * 100)
+  }
+
+  if (lvmSwapSize + parseInt(lvmRootSize) + parseInt(lvmDataSize) <= lvmSize) {
+    await exec(`pvcreate /dev/${lvmPartname}`, echo)
+    await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
+    await exec('vgchange -an', echo)
+
+    // Create LVM Swap partition, if exists
+    if (lvmSwapSize > 0) {
+      await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
+    }
+
+    // Create LVM root and data partitions
+    if (parseInt(lvmDataSize) > 0) {
+      // Create LVM root partition
+      await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
+
+      // Create LVM data partition using the remaining disk space
+      await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
+    } else {
+      // Only root partition
+      await exec(`lvcreate -l ${lvmRootPercSize}%FREE -n ${lvmRootName} ${vgName}`, echo)
+    }    
+
+    // Activate VG
+    await exec(`vgchange -a y ${vgName}`, echo)
+
+    devices.root.name = `/dev/${vgName}/${lvmRootName}`
+    devices.root.fsType = lvmRootFSType
+    devices.root.mountPoint = '/'
+
+    if (parseInt(lvmDataSize) > 0) {
+      devices.data.name = `/dev/${vgName}/${lvmDataName}`
+      devices.data.fsType = lvmDataFSType
+      devices.data.mountPoint = lvmDataMountPoint
+    } else {
+      devices.data.name = 'none'
+    }
+
+    if (swapType != SwapChoice.File && lvmSwapSize > 0) {
+      devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
+    }
+  } else {
+    Utils.warning(`lvmRootSize | ${lvmRootSize}`)
+    Utils.warning(`lvmSwapSize | ${lvmSwapSize}`)
+    Utils.warning(`lvmDataSize | ${lvmDataSize}`)
+    Utils.warning(`Error: size of partitions for swap, root and data exceeds the size of lvm`)
+    process.exit(1)
+  }
+
+  return devices
+}
+
+/**
+ * Create lvm partitions for Proxmox virtual environment
+ *
+ * @param installDevice 
+ * @param vgName
+ * @param lvmSwapName
+ * @param lvmRootName
+ * @param lvmRootFSType
+ * @param lvmDataName
+ * @param lvmDataFSType
+ * @param lvmDataMountPoint
+ * @param echo
+ * 
+ * @returns
+ */
+export async function createProxmoxLvmPartitions(
+    installDevice: string,
+    vgName: string = "pve",
+    lvmRootName: string = "root",
+    lvmRootFSType: string = "ext4",
+    lvmDataName: string = "data",
+    lvmDataFSType: string = "ext4",
+    lvmDataMountPoint: string = "/var/lib/vz",
+    echo: object
+  ): Promise<IDevices> {
+    
+  let devices = {} as IDevices
+  let lvmSwapName: string = "swap"
+
+  const partInfo = await lvmPartInfo(installDevice)
+  const lvmPartname = partInfo[0]
+  const lvmSize = partInfo[1]
+
   // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
-  const lvmSwapSize = 8192
   let lvmRootSize = lvmSize / 8
   if (lvmRootSize < 20_480) {
     lvmRootSize = 20_480
   }
 
+  const lvmSwapSize = 8192
   const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
-  return [lvmPartname, lvmSwapSize, lvmRootSize, lvmDataSize]
+
+  await exec(`pvcreate /dev/${lvmPartname}`, echo)
+  await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
+  await exec('vgchange -an', echo)
+  await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
+  await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
+  await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
+  await exec(`vgchange -a y ${vgName}`, echo)
+
+  devices.root.name = `/dev/${vgName}/${lvmRootName}`
+  devices.root.fsType = lvmRootFSType
+  devices.root.mountPoint = '/'
+
+  devices.data.name = `/dev/${vgName}/${lvmDataName}`
+  devices.data.fsType = lvmDataFSType
+  devices.data.mountPoint = lvmDataMountPoint
+
+  devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
+
+  return devices
 }
