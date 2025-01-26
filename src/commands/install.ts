@@ -17,8 +17,8 @@ import Krill from '../krill/prepare.js'
 const agent = new https.Agent({
   rejectUnauthorized: false
 })
-import { IKrillConfig } from '../interfaces/i-krill-config.js'
-import { ILvmOptions } from '../interfaces/i-krill.js'
+import { IKrillConfig } from '../krill/interfaces/i-krill-config.js'
+import { ILvmOptions } from '../krill/interfaces/i-krill.js'
 
 /**
  * Class Krill

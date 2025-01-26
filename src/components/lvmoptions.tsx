@@ -11,7 +11,7 @@ import React, { useState } from 'react'
 import Title from './title.js'
 import Steps from './steps.js'
 import { Text, Box, Newline } from 'ink'
-import { ILvmOptions } from '../interfaces/i-krill.js'
+import { ILvmOptions } from '../krill/interfaces/i-krill.js'
 
 // pjson
 import { createRequire } from 'module';

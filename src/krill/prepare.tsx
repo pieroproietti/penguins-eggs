@@ -56,7 +56,7 @@
  * relevant /etc/calamares/ files.
  */
 import os from 'os'
-import { IKrillConfig } from '../interfaces/i-krill-config.js'
+import { IKrillConfig } from './interfaces/i-krill-config.js'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
@@ -115,7 +115,7 @@ import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getL
 import Sequence from './sequence.js'
 
 import { INet } from '../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from './interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './enum/e-krill.js'
 import { LvmOptionProxmox, LvmOptionUbuntu } from './const/c-krill.js'
 import LvmOptions from '../components/lvmoptions.js';
