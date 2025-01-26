@@ -10,4 +10,6 @@ if [ -f "$CHROOT"/etc/issue ]; then
 fi
 
 rm -f $CHROOT/usr/share/applications/install-system.desktop
+
+# remove CLI autologin
 rm -f $CHROOT/etc/systemd/system/getty@.service.d/override.conf # remove cli-autologin
