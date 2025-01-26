@@ -10,7 +10,7 @@ import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
-import { IPartitions } from '../interfaces/index.js'
+import { IPartitions } from '../../interfaces/index.js'
 import { SwapChoice } from '../enum/e-krill.js'
 
 export default async function selectUserSwapChoice(initialSwapChoice: SwapChoice = SwapChoice.Small): Promise<SwapChoice> {

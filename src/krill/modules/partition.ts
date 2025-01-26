@@ -13,7 +13,7 @@ import shx from 'shelljs'
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
 import { IDevices, IDevice } from '../../interfaces/i-devices.js'
-import { SwapChoice, InstallationMode } from '../../enum/e-krill.js'
+import { SwapChoice, InstallationMode } from '../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 

@@ -8,7 +8,7 @@
 
 import inquirer from 'inquirer'
 
-import Locales from '../classes/locales.js'
+import Locales from '../../classes/locales.js'
 
 export default async function selectLanguages(selectedLanguage = ''): Promise<string> {
   const locales = new Locales()

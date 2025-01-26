@@ -12,7 +12,7 @@ import shx from 'shelljs'
 import Pacman from '../../classes/pacman.js'
 import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
-import { SwapChoice } from '../../enum/e-krill.js'
+import { SwapChoice } from '../enum/e-krill.js'
 
 /**
  * fstab()

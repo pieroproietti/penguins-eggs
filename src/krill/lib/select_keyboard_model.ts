@@ -1,5 +1,5 @@
 /**
- * ./src/lib/select_keyboard_layout.ts
+ * ./src/lib/select_keyboard_model.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -8,36 +8,34 @@
 
 import inquirer from 'inquirer'
 
-import Keyboards from '../classes/keyboards.js'
+import Keyboards from '../../classes/keyboards.js'
+import { IXkbLayout, IXkbModel, IXkbOption, IXkbVariant } from '../../interfaces/i-xkb-model.js'
 
 /**
  *
  */
-export default async function selectKeyboardLayout(selected = ''): Promise<string> {
+export default async function selectKeyboardModel(selected = ''): Promise<string> {
   const keyboards = new Keyboards()
-  const layouts = keyboards.getLayouts()
+  const models = keyboards.getModels() as IXkbModel[]
 
   const supported: string[] = []
-  for (const l of layouts) {
-    supported.push(l.code)
+  for (const m of models) {
+    supported.push(m.code)
   }
-
-  // sord keyboard layouts
-  supported.sort()
 
   const questions: Array<Record<string, any>> = [
     {
       choices: supported,
       default: selected,
-      message: 'Select layout: ',
-      name: 'layout',
+      message: 'Select model: ',
+      name: 'model',
       type: 'list'
     }
   ]
 
   return new Promise((resolve) => {
     inquirer.prompt(questions).then((options: any) => {
-      resolve(options.layout)
+      resolve(options.model)
     })
   })
 }

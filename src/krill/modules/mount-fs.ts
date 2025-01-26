@@ -11,7 +11,7 @@ import fs from 'node:fs'
 
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
-import { SwapChoice } from '../../enum/e-krill.js'
+import { SwapChoice } from '../enum/e-krill.js'
 
 /**
  * mountFs
