@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import { ILvmOptions } from '../../interfaces/i-krill.js'
+import { ILvmOptions } from '../interfaces/i-krill.js'
 
 export class LvmOptionProxmox implements ILvmOptions {
     vgName: string = "pve"

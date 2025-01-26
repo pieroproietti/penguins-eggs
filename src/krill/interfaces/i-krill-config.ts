@@ -7,7 +7,7 @@
  */
 
 import { ILvmOptions } from "./i-krill.js"
-import { SwapChoice } from '../krill/enum/e-krill.js'
+import { SwapChoice } from '../enum/e-krill.js'
 
 export interface IKrillConfig {
   address: string

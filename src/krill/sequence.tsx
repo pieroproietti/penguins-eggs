@@ -62,7 +62,7 @@ import Utils from '../classes/utils.js'
 import Xdg from '../classes/xdg.js';
 
 import { IInstaller, IDevices, IDevice } from '../interfaces/index.js'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from './interfaces/i-krill.js'
 import { exec } from '../lib/utils.js'
 
 // import krill modules
