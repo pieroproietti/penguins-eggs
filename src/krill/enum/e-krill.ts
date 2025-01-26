@@ -6,13 +6,6 @@
  * license: MIT
  */
 
-export enum SwapChoice {
-    None = "none",
-    Small = "small",
-    Suspend = "suspend",
-    File = "file"
-}
-
 export enum InstallationMode {
     Standard = "standard",
     FullEncrypted = "full-encrypted",
@@ -23,4 +16,11 @@ export enum LvmPartitionPreset {
     Proxmox = "proxmox",
     Ubuntu = "ubuntu",
     Custom = "custom"
+}
+
+export enum SwapChoice {
+    None = "none",
+    Small = "small",
+    Suspend = "suspend",
+    File = "file"
 }
