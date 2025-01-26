@@ -10,8 +10,8 @@ import inquirer from 'inquirer'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
-import Pacman from '../classes/pacman.js'
-import { IPartitions } from '../interfaces/index.js'
+import Pacman from '../../classes/pacman.js'
+import { IPartitions } from '../../interfaces/index.js'
 
 export default async function selectFileSystemType(): Promise<string> {
   let partitions = {} as IPartitions
