@@ -16,4 +16,5 @@ rm -f $CHROOT/usr/share/applications/install-system.desktop
 rm -f $CHROOT/etc/systemd/system/getty@.service.d/override.conf
 
 # remove 10-installer if exists
-rm  -f $CHROOT/etc/sudoers.d/10-installer
+rm -f $CHROOT/etc/sudoers.d/10-installer
+

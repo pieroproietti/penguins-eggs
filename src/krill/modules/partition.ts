@@ -137,7 +137,9 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
     // SWAP 8G
     // this.redraw(<Install message={`Formatting LUKS ${installDevice}2`} percent={0} />)
-    const crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
+    // const crytoSwap = await exec(`cryptsetup -y -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
+    const crytoSwap = await exec(`cryptsetup --batch-mode -v luksFormat --type luks2 ${installDevice}${p}2`, echoYes)
+    
     if (crytoSwap.code !== 0) {
       Utils.warning(`Error: ${crytoSwap.code} ${crytoSwap.data}`)
       process.exit(1)
