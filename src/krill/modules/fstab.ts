@@ -39,8 +39,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += '#       for resume support.\n'
     text += '#\n'
     text += '# <name>               <device>                         <password> <options>\n'
-    text += `#swap_crypted was ${this.devices.swap.cryptedFrom}\n`
-    text += `swap_crypted UUID=${Utils.uuid(this.devices.swap.cryptedFrom)} none luks,discard\n`
+    // text += `#swap_crypted was ${this.devices.swap.cryptedFrom}\n`
+    // text += `swap_crypted UUID=${Utils.uuid(this.devices.swap.cryptedFrom)} none luks,discard\n`
     text += `#root_crypted was ${this.devices.root.cryptedFrom}\n`
     text += `root_crypted UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,swap\n`
 
@@ -106,6 +106,9 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
 
       text += `# ${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+    } else if (this.partitions.userSwapChoice == SwapChoice.None) {
+      // nada de nada
+      
     } else {
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`

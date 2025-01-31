@@ -125,8 +125,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         1MiB        512MiB`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap 512MiB        ${this.swapSize + 512}MiB`, this.echo) // sda2
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 512}MiB                100%`, this.echo) // sda3
+    await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4         512MiB       100%`, this.echo) // sda3
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -136,54 +135,37 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.mountPoint = '/boot'
 
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = "password4encrypt"
+    const passphrase = "evolution" // to remove!!!
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
 
-    // SWAP 8G
-    const cryptoSwap = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- luksFormat ${installDevice}${p}2`, this.echo)
-    if (cryptoSwap.code !== 0) {
-      Utils.warning(`Error: ${cryptoSwap.code} ${cryptoSwap.data}`)
-      process.exit(1)
-    }
-
-    const cryptoSwapOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}2 swap_crypted`, this.echo)
-    if (cryptoSwapOpen.code !== 0) {
-      Utils.warning(`Error: ${cryptoSwapOpen.code} ${cryptoSwapOpen.data}`)
-      process.exit(1)
-    }
-
-    // Formatto come swap
-    await exec(`mkswap /dev/mapper/swap_crypted`, this.echo)
-    await exec(`swapon /dev/mapper/swap_crypted`, this.echo)
-
-    this.devices.swap.name = '/dev/mapper/swap_crypted'
-    this.devices.swap.cryptedFrom = `${installDevice}${p}2`
-    this.devices.swap.fsType = 'swap'
-    this.devices.swap.mountPoint = 'none'
-
     // ROOT
-    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}3`, this.echo)
+    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --type luks2 --key-file=- -v luksFormat ${installDevice}${p}2`, this.echo)
     if (cryptoRoot.code !== 0) {
       Utils.warning(`Error: ${cryptoRoot.code} ${cryptoRoot.data}`)
       process.exit(1)
     }
 
-    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, this.echo)
+    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- --type luks2 luksOpen ${installDevice}${p}2 root_crypted`, this.echo)
     if (cryptoRootOpen.code !== 0) {
       Utils.warning(`Error: ${cryptoRootOpen.code} ${cryptoRootOpen.data}`)
       process.exit(1)
     }
 
     this.devices.root.name = '/dev/mapper/root_crypted'
-    this.devices.root.cryptedFrom = `${installDevice}${p}3`
+    this.devices.root.cryptedFrom = `${installDevice}${p}2`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
 
     // BOOT/DATA/EFI
+    this.devices.swap.name = 'none'
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
+
+    // file swap
+    // await exec(`mkswap /dev/mapper/swap_crypted`, this.echo)
+    // await exec(`swapon /dev/mapper/swap_crypted`, this.echo)
 
     retVal = true
   } else if (installMode === InstallationMode.Standard && this.efi) {
@@ -255,7 +237,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
 
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = "password4encrypt"
+    const passphrase = "password4encrypt" // to remove!!!
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -267,7 +249,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
       process.exit(1)
     }
 
-    const cryptoSwapOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, echoYes)    
+    const cryptoSwapOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, this.echo)
     if (cryptoSwapOpen.code !== 0) {
       Utils.warning(`Error: ${cryptoSwapOpen.code} ${cryptoSwapOpen.data}`)
       process.exit(1)
@@ -283,13 +265,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.swap.mountPoint = 'none'
 
     // ROOT
-    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}4`, echoYes)    
+    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}4`, this.echo)
     if (cryptoRoot.code !== 0) {
       Utils.warning(`Error: ${cryptoRoot.code} ${cryptoRoot.data}`)
       process.exit(1)
     }
 
-    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, echoYes)    
+    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, this.echo)
     if (cryptoRootOpen.code !== 0) {
       Utils.warning(`Error: ${cryptoRootOpen.code} ${cryptoRootOpen.data}`)
       process.exit(1)
