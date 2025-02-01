@@ -11,7 +11,7 @@ import { ILvmOptions } from '../interfaces/i-krill.js'
 export class LvmOptionProxmox implements ILvmOptions {
     vgName: string = "pve"
     lvRootName: string = "root"
-    lvRootFSType: string = ""
+    lvRootFSType: string = "ext4"
     lvRootSize: string = "20%"
     lvDataName: string = "data"
     lvDataFSType: string = "ext4"

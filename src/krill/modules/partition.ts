@@ -9,6 +9,7 @@
 
 import os from 'node:os'
 import shx from 'shelljs'
+import {getSecurePassword} from '../get-secure-password.js'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
@@ -16,6 +17,7 @@ import { IDevices, IDevice } from '../../interfaces/i-devices.js'
 import { SwapChoice, InstallationMode } from '../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
+
 
 /**
  *
@@ -28,14 +30,16 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
   const installDevice = this.partitions.installationDevice
 
-  /**
-   * Support for NVMe
-   *
-   * /dev/sda1 = /dev/nvme0n1p1 = /dev/md0p1
-   */
-  let p = ''
-  if (installDevice.includes('nvme') || installDevice.startsWith('/dev/md')) {
-    p = 'p'
+
+  let p: string = ""
+  if (detectDeviceType(installDevice) === "standard") {
+    p = ""
+  } else if (detectDeviceType(installDevice) === "mmc") {
+    p = ""
+  } else if (detectDeviceType(installDevice) === "nvme") {
+    p = "p"
+  } else if (detectDeviceType(installDevice) === "raid") {
+    p = "p"
   }
 
   const installMode = this.partitions.installationMode
@@ -97,8 +101,8 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
     await exec(`parted --script --align optimal ${installDevice} mkpart primary linux-swap       1MiB    ${this.swapSize + 1}MiB`, this.echo) // dev/sda1 swap
     await exec(`parted --script --align optimal ${installDevice} mkpart primary ext4 ${this.swapSize + 1}MiB                100%`, this.echo) // dev/sda2 root
-    await exec(`parted ${installDevice} set 1 boot on`, this.echo)
-    await exec(`parted ${installDevice} set 1 esp on`, this.echo)
+    await exec(`parted ${installDevice} set 2 boot on`, this.echo)
+    await exec(`parted ${installDevice} set 2 esp on`, this.echo)
 
     // SWAP
     this.devices.swap.name = `${installDevice}${p}1`
@@ -117,10 +121,10 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
 
     retVal = true
-  } else if (installMode === InstallationMode.FullEncrypted && !this.efi) {
+  } else if (installMode === InstallationMode.Luks && !this.efi) {
     /**
      * ===========================================================================================
-     * BIOS: full-encrypt:
+     * BIOS: full-encrypt: NOT working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
@@ -135,7 +139,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.mountPoint = '/boot'
 
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = "evolution" // to remove!!!
+    const passphrase = await getSecurePassword('Enter LUKS passphrase for root partition:')
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -159,13 +163,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.root.mountPoint = '/'
 
     // BOOT/DATA/EFI
-    this.devices.swap.name = 'none'
+    // this.devices.boot
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
-
-    // file swap
-    // await exec(`mkswap /dev/mapper/swap_crypted`, this.echo)
-    // await exec(`swapon /dev/mapper/swap_crypted`, this.echo)
+    // this.devices.boot
+    this.devices.swap.name = 'none'
 
     retVal = true
   } else if (installMode === InstallationMode.Standard && this.efi) {
@@ -199,7 +201,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === InstallationMode.FullEncrypted && this.efi) {
+  } else if (installMode === InstallationMode.Luks && this.efi) {
     /**
      * ===========================================================================================
      * UEFI, full-encrypt
@@ -237,7 +239,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
 
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = "password4encrypt" // to remove!!!
+    const passphrase = await getSecurePassword('Enter LUKS passphrase for root partition:')
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -258,7 +260,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // Formatto come swap
     await exec(`mkswap /dev/mapper/swap_crypted`, this.echo)
     await exec(`swapon /dev/mapper/swap_crypted`, this.echo)
-   
+
     this.devices.swap.name = '/dev/mapper/swap_crypted'
     this.devices.swap.cryptedFrom = `${installDevice}${p}3`
     this.devices.swap.fsType = 'swap'
@@ -338,7 +340,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
-      
+
     this.devices = await createLvmPartitions(
       installDevice,
       this.partitions.lvmOptions.vgName,
@@ -404,18 +406,18 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
  * @returns
  */
 export async function createLvmPartitions(
-    installDevice: string,
-    vgName: string = "pve",
-    swapType: string,
-    swapSize: number,
-    lvmRootName: string = "root",
-    lvmRootFSType: string = "ext4",
-    lvmRootSize: string = "20%",
-    lvmDataName: string = "data",
-    lvmDataFSType: string = "ext4",
-    lvmDataMountPoint: string = "/mnt/data",
-    echo: object
-  ): Promise<IDevices> {
+  installDevice: string,
+  vgName: string = "pve",
+  swapType: string,
+  swapSize: number,
+  lvmRootName: string = "root",
+  lvmRootFSType: string = "ext4",
+  lvmRootSize: string = "20%",
+  lvmDataName: string = "data",
+  lvmDataFSType: string = "ext4",
+  lvmDataMountPoint: string = "/mnt/data",
+  echo: object
+): Promise<IDevices> {
 
   if (lvmRootFSType == "") {
     lvmRootFSType = "ext4"
@@ -481,7 +483,7 @@ export async function createLvmPartitions(
     } else {
       // Only root partition
       await exec(`lvcreate -l ${lvmRootPercSize}%FREE -n ${lvmRootName} ${vgName}`, echo)
-    }    
+    }
 
     // Activate VG
     await exec(`vgchange -a y ${vgName}`, echo)
@@ -528,16 +530,16 @@ export async function createLvmPartitions(
  * @returns
  */
 export async function createProxmoxLvmPartitions(
-    installDevice: string,
-    vgName: string = "pve",
-    lvmRootName: string = "root",
-    lvmRootFSType: string = "ext4",
-    lvmDataName: string = "data",
-    lvmDataFSType: string = "ext4",
-    lvmDataMountPoint: string = "/var/lib/vz",
-    echo: object
-  ): Promise<IDevices> {
-    
+  installDevice: string,
+  vgName: string = "pve",
+  lvmRootName: string = "root",
+  lvmRootFSType: string = "ext4",
+  lvmDataName: string = "data",
+  lvmDataFSType: string = "ext4",
+  lvmDataMountPoint: string = "/var/lib/vz",
+  echo: object
+): Promise<IDevices> {
+
   let devices = {} as IDevices
   let lvmSwapName: string = "swap"
 
@@ -574,3 +576,12 @@ export async function createProxmoxLvmPartitions(
 
   return devices
 }
+
+// Modificata funzione detectDeviceType per migliore gestione RAID
+function detectDeviceType(device: string): string {
+  if (device.includes('nvme')) return 'nvme';
+  if (device.match(/^\/dev\/md\d+/)) return 'raid'; // Regex migliorata
+  if (device.includes('mmcblk')) return 'mmc';
+  return 'standard';
+}
+
