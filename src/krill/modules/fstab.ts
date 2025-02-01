@@ -39,11 +39,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += '#       for resume support.\n'
     text += '#\n'
     text += '# <name>               <device>                         <password> <options>\n'
-    // text += `#swap_crypted was ${this.devices.swap.cryptedFrom}\n`
-    // text += `swap_crypted UUID=${Utils.uuid(this.devices.swap.cryptedFrom)} none luks,discard\n`
     text += `#root_crypted was ${this.devices.root.cryptedFrom}\n`
     text += `root_crypted UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,swap\n`
-
     Utils.write(crypttab, text)
   }
 
@@ -61,6 +58,9 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   let mountOptsEfi = ''
   let mountOptsSwap = ''
 
+  /**
+   * ext4
+   */
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
       mountOptsRoot = 'defaults,relatime 0 1'
@@ -96,7 +96,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     }
 
     if (this.partitions.userSwapChoice == SwapChoice.File) {
-      
+
       let swapFile = ''
       if (this.devices.swap.mountPoint.endsWith('/')) {
         swapFile = `${this.devices.swap.mountPoint}${this.devices.swap.name}`
@@ -108,11 +108,15 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
       text += `${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     } else if (this.partitions.userSwapChoice == SwapChoice.None) {
       // nada de nada
-      
+
     } else {
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
     }
+
+  /**
+   * brtfs: TUTTO da rivedere!
+   */
   } else if (this.partitions.filesystemType === 'btrfs') {
     const base = '/        btrfs  subvol=/@,defaults 0 0'
     const snapshots = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'

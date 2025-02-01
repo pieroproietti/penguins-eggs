@@ -314,7 +314,6 @@ export default class Krill {
     if (!this.unattended) {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
-      //let kl = oWelcome.language.substring(oWelcome.language.indexOf('_'),2).toLowerCase()
       oKeyboard = await this.keyboard()
       oPartitions = await this.partitions(installationDevice, cryped, pve, btrfs)
       oUsers = await this.users()
@@ -452,6 +451,7 @@ export default class Krill {
     }
   }
 
+  
   /**
   * PARTITIONS
   */
@@ -513,7 +513,7 @@ export default class Krill {
       installationMode = InstallationMode.Standard
     }
     if (crypted) {
-      installationMode = InstallationMode.FullEncrypted
+      installationMode = InstallationMode.Luks
     } else if (pve) {
       installationMode = InstallationMode.LVM2
 
@@ -539,10 +539,11 @@ export default class Krill {
         installationDevice = ''
         installationMode = InstallationMode.Standard
         if (crypted) {
-          installationMode = InstallationMode.FullEncrypted
+          installationMode = InstallationMode.Luks
         } else if (pve) {
           installationMode = InstallationMode.LVM2
         }
+
         if (btrfs) {
           filesystemType = 'btrfs'
         } else {
