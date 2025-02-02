@@ -62,8 +62,8 @@ import React from 'react';
 import { render, RenderOptions } from 'ink'
 import axios from 'axios'
 import shx from 'shelljs'
-
 import fs from 'fs'
+
 import Keyboards from '../classes/keyboards.js'
 import Locales from '../classes/locales.js'
 import Pacman from '../classes/pacman.js'

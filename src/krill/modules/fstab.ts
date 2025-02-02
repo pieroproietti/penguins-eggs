@@ -8,6 +8,7 @@
  */
 
 import shx from 'shelljs'
+import { InstallationMode } from '../enum/e-krill.js'
 
 import Pacman from '../../classes/pacman.js'
 import Utils from '../../classes/utils.js'
@@ -24,7 +25,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   /**
    * crypttab
    */
-  if (this.partitions.installationMode === 'full-encrypted') {
+  if (this.partitions.installationMode === InstallationMode.Luks ) {
     const crypttab = this.installTarget + '/etc/crypttab'
     text += '# /etc/crypttab: mappings for encrypted partitions.\n'
     text += '#\n'
@@ -40,7 +41,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += '#\n'
     text += '# <name>               <device>                         <password> <options>\n'
     text += `#root_crypted was ${this.devices.root.cryptedFrom}\n`
-    text += `root_crypted UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,swap\n`
+    text += `root_crypted UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,discard\n`
     Utils.write(crypttab, text)
   }
 

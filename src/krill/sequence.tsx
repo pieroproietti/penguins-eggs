@@ -290,8 +290,7 @@ export default class Sequence {
 
       let isPartitioned = false
       let message = "Creating partitions"
-      //await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
-      await redraw(<Install message={message} percent={0} />)
+      await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
       try {
          isPartitioned = await this.partition()
       } catch (error) {

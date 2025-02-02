@@ -12,7 +12,7 @@ import fs from 'node:fs'
 import Utils from '../../classes/utils.js'
 import Sequence from '../sequence.js'
 import { SwapChoice } from '../enum/e-krill.js'
-
+import { InstallationMode } from '../enum/e-krill.js'
 /**
  * grubcfg
  * - open /etc/default/grub
@@ -28,7 +28,7 @@ export default async function grubcfg(this: Sequence) {
   for (let i = 0; i < grubs.length; i++) {
     if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
       if (this.partitions.userSwapChoice != SwapChoice.File) {
-        grubs[i] = this.partitions.installationMode === 'full-encrypted' ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+        grubs[i] = this.partitions.installationMode === InstallationMode.Luks ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
       }
     }
 

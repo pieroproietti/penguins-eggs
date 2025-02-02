@@ -25,7 +25,7 @@ I created this hidden and visible structure:
     * ${nest}/.mnt/filestem.squashfs
     * ${nest}/.mnt/iso
     * ${nest}/.mnt/memdiskDir
-* ${nest}/.overlay
+    * ${nest}/.overlay
     * ${nest}/.overlay/lowerdir
     * ${nest}/.overlay/upperdir
     * ${nest}/.overlay/workdir
