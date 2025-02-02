@@ -36,7 +36,7 @@
     "devDependencies": {
         "@oclif/prettier-config": "^0.2.1",
         "@oclif/test": "^4.1.8",
-        "@types/chai": "^4.3.19",
+        "@types/chai": "^5.0.1",
         "@types/debug": "^4.1.12",
         "@types/inquirer": "^9.0.7",
         "@types/js-yaml": "^4.0.9",
