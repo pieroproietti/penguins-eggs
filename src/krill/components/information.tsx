@@ -7,9 +7,9 @@
  */
 
 import React from 'react'
-import Settings from '../classes/settings.js'
-import Pacman from '../classes/pacman.js'
-import Utils from '../classes/utils.js'
+import Settings from '../../classes/settings.js'
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
 import Title from './title.js'
 import { render, Text, Box } from 'ink'
 

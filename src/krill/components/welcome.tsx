@@ -14,13 +14,13 @@ import Steps from './steps.js'
 import yaml from 'js-yaml';
 import fs from 'fs';
 
-import { ISettings, IBranding } from '../interfaces/index.js';
+import { ISettings, IBranding } from '../../interfaces/index.js';
 import { Box, Newline, Text } from 'ink';
 
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
+const pjson = require('../../../package.json');
 
 
 

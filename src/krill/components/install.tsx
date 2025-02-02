@@ -12,7 +12,7 @@ import Spinner from 'ink-spinner'
 import yaml from 'js-yaml'
 import fs from 'fs'
 
-import { ISettings, IBranding } from '../interfaces/index.js'
+import { ISettings, IBranding } from '../../interfaces/index.js'
 
 import { Box, Newline, Text } from 'ink'
 import Title from './title.js'

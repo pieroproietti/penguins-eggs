@@ -29,5 +29,7 @@ export { IPartitions } from './i-partitions.js'
 export { IRemix } from './i-remix.js'
 export { ISettings } from './i-settings.js'
 export { IUser } from './i-user.js'
+export { ILuksPassphrase } from './i-luks-passphrase.js'
+
 
 export { IWorkDir } from './i-workdir.js'

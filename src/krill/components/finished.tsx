@@ -13,7 +13,7 @@ import Steps from './steps.js'
 
 import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../interfaces/index.js'
+import { ISettings, IBranding } from '../../interfaces/index.js'
 
 type FinishedProps = {
   installationDevice?: string,

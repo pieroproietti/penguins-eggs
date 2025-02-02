@@ -12,7 +12,7 @@ import { render, Text, Box, Newline } from 'ink'
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
+const pjson = require('../../../package.json')
 
 type TitleProps = {
    title?: string

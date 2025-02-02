@@ -8,7 +8,7 @@
 
 import { Command, Flags } from '@oclif/core'
 
-import Information from '../components/information.js'
+import Information from '../krill/components/information.js'
 
 /**
  *

@@ -9,7 +9,7 @@
 
 import os from 'node:os'
 import shx from 'shelljs'
-import {getSecurePassword} from '../get-secure-password.js'
+import getLuksPassphrase from '../lib/get_luks-passphrase.js'
 
 import Utils from '../../classes/utils.js'
 import { IPartitions } from '../../interfaces/i-partitions.js'
@@ -18,6 +18,10 @@ import { SwapChoice, InstallationMode } from '../enum/e-krill.js'
 import { exec } from '../../lib/utils.js'
 import Sequence from '../sequence.js'
 
+// React
+import React from 'react';
+import { render, RenderOptions, Box, Text } from 'ink'
+import Install from '../components/install.js'
 
 /**
  *
@@ -138,8 +142,16 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.fsType = 'ext4'
     this.devices.boot.mountPoint = '/boot'
 
+    // disabilito spinner per introduzione passphrase
+    let message = "Creating partitions"
+    await redraw(<Install message={message} percent={0} />)
+    const passphrase = await getLuksPassphrase('3volution', '3volution')
+    await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
+    // sole("========================")
+    // sole("passphrase: " + passphrase)
+    // sole.log("^^^^^^^^^^^^^^^^^^^^")
+
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = await getSecurePassword('Enter LUKS passphrase for root partition:')
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -239,7 +251,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
      */
 
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = await getSecurePassword('Enter LUKS passphrase for root partition:')
+    const passphrase = await getLuksPassphrase('','')
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -585,3 +597,16 @@ function detectDeviceType(device: string): string {
   return 'standard';
 }
 
+
+
+/**
+ *
+ * @param elem
+ */
+async function redraw(elem: JSX.Element) {
+  let opt: RenderOptions = {}
+  opt.patchConsole = false
+  opt.debug = true
+  console.clear()
+  render(elem, opt)
+}
