@@ -46,7 +46,7 @@
         "@types/node": "^22.12.0",
         "@types/node-static": "^0.7.11",
         "@types/react": "^18.3.12",
-        "@types/read": "^0.0.30",
+        "@types/read": "^0.0.32",
         "@types/shelljs": "^0.8.15",
         "chai": "^5.1.2",
         "eslint": "^9.19.0",
