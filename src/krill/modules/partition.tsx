@@ -46,7 +46,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     p = "p"
   }
 
-  const installMode = this.partitions.installationMode
+  const installationMode = this.partitions.installationMode
   this.swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
 
   switch (this.partitions.userSwapChoice) {
@@ -96,7 +96,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
    */
 
 
-  if (installMode === InstallationMode.Standard && !this.efi) {
+  if (installationMode === InstallationMode.Standard && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: working
@@ -125,7 +125,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
 
     retVal = true
-  } else if (installMode === InstallationMode.Luks && !this.efi) {
+  } else if (installationMode === InstallationMode.Luks && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS: full-encrypt: NOT working
@@ -182,7 +182,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.swap.name = 'none'
 
     retVal = true
-  } else if (installMode === InstallationMode.Standard && this.efi) {
+  } else if (installationMode === InstallationMode.Standard && this.efi) {
     /**
      * ===========================================================================================
      * UEFI: working
@@ -213,7 +213,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.efi.name = `none`
 
     retVal = true
-  } else if (installMode === InstallationMode.Luks && this.efi) {
+  } else if (installationMode === InstallationMode.Luks && this.efi) {
     /**
      * ===========================================================================================
      * UEFI, full-encrypt
@@ -250,8 +250,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
      * sometime due scarce memory 2GB, we can have the process killed
      */
 
+    // disabilito spinner per introduzione passphrase
+    let message = "Creating partitions"
+    await redraw(<Install message={message} percent={0} />)
+    const passphrase = await getLuksPassphrase('3volution', '3volution')
+    await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
+
     // Aggiungi parametri di sicurezza espliciti
-    const passphrase = await getLuksPassphrase('','')
     const cipher = "aes-xts-plain64"
     const keySize = "512"
     const hash = "sha512"
@@ -300,7 +305,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.data.name = 'none'
 
     retVal = true
-  } else if (installMode === InstallationMode.LVM2 && !this.efi) {
+  } else if (installationMode === InstallationMode.LVM2 && !this.efi) {
     /**
      * ===========================================================================================
      * BIOS and lvm2

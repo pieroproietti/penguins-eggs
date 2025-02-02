@@ -8,10 +8,10 @@
  */
 
 /**
-* 1. Standard (root + swap)
+* 1. Standard
 * 2. LVM2
-* 3. LUKS (crittografia)
-* 4. LUKS + LVM2 (crittografia e LVM)
+* 3. LUKS
+* 4. LUKS+LVM2
  */
 
 export enum InstallationMode {
