@@ -17,11 +17,11 @@ import fs from 'fs'
 // pjson
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const pjson = require('../../package.json');
+const pjson = require('../../../package.json');
 
 
 
-import { ISettings, IBranding, IUser } from '../interfaces/index.js'
+import { ISettings, IBranding, IUser } from '../../interfaces/index.js'
 
 type UsersProps = {
     username?: string,

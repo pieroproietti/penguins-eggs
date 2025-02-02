@@ -46,8 +46,8 @@ import Settings from '../classes/settings.js'
 
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
-import Install from '../components/install.js'
-import Finished from '../components/finished.js'
+import Install from './components/install.js'
+import Finished from './components/finished.js'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
@@ -97,7 +97,7 @@ import hostname from './modules/hostname.js'
 
 import CFS from '../classes/cfs.js'
 
-import Title from '../components/title.js'
+import Title from './components/title.js'
 import cliCursor from 'cli-cursor'
 import { spawnSync } from 'child_process';
 
@@ -290,7 +290,8 @@ export default class Sequence {
 
       let isPartitioned = false
       let message = "Creating partitions"
-      await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
+      //await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
+      await redraw(<Install message={message} percent={0} />)
       try {
          isPartitioned = await this.partition()
       } catch (error) {

@@ -74,13 +74,13 @@ import Utils from '../classes/utils.js'
 import { exec, compareInstances } from '../lib/utils.js'
 
 
-import Welcome from '../components/welcome.js'
-import Location from '../components/location.js'
-import Partitions from '../components/partitions.js'
-import Keyboard from '../components/keyboard.js'
-import Users from '../components/users.js'
-import Network from '../components/network.js'
-import Summary from '../components/summary.js'
+import Welcome from './components/welcome.js'
+import Location from './components/location.js'
+import Partitions from './components/partitions.js'
+import Keyboard from './components/keyboard.js'
+import Users from './components/users.js'
+import Network from './components/network.js'
+import Summary from './components/summary.js'
 //import Install from '../components/install.js'
 
 import selectLanguages from './lib/select_languages.js'
@@ -118,7 +118,7 @@ import { INet } from '../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from './interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './enum/e-krill.js'
 import { LvmOptionProxmox, LvmOptionUbuntu } from './const/c-krill.js'
-import LvmOptions from '../components/lvmoptions.js';
+import LvmOptions from './components/lvmoptions.js';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
