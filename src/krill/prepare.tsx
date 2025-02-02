@@ -118,7 +118,7 @@ import { INet } from '../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from './interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './enum/e-krill.js'
 import { LvmOptionProxmox, LvmOptionUbuntu } from './const/c-krill.js'
-import LvmOptions from './components/lvmoptions.js';
+import LvmOptions from './components/lvmoptions.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -223,15 +223,11 @@ export default class Krill {
     } catch (error) {
       console.error('error: ' + error)
     }
+
     oLocation = {
       language: this.krillConfig.language,
       region: this.krillConfig.region,
       zone: this.krillConfig.zone
-    }
-
-    let lvmOptions = {} as ILvmOptions
-    if (this.krillConfig.lvmOptions) {
-      lvmOptions = this.krillConfig.lvmOptions
     }
 
     oKeyboard = {
@@ -252,6 +248,10 @@ export default class Krill {
       installationDevice = await selectInstallationDevice()
     }
 
+    let lvmOptions = {} as ILvmOptions
+    if (this.krillConfig.lvmOptions) {
+      lvmOptions = this.krillConfig.lvmOptions
+    }
     oPartitions = {
       installationDevice: installationDevice,
       installationMode: this.krillConfig.installationMode,
