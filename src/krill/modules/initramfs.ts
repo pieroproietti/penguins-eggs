@@ -11,7 +11,7 @@ import path from 'node:path'
 
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
-import Sequence from '../sequence.js'
+import Sequence from '../classes/sequence.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 

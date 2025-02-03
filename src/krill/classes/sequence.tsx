@@ -41,63 +41,63 @@
  */
 
 
-import { IRemix, IDistro, INet } from '../interfaces/index.js'
-import Settings from '../classes/settings.js'
+import { IRemix, IDistro, INet } from '../../interfaces/index.js'
+import Settings from '../../classes/settings.js'
 
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
-import Install from './components/install.js'
-import Finished from './components/finished.js'
+import Install from '../components/install.js'
+import Finished from '../components/finished.js'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'node:path'
 import shx from 'shelljs'
 
-import { installer } from '../classes/incubation/installer.js'
-import CliAutologin from '../classes/cli-autologin.js'
-import Distro from '../classes/distro.js'
-import Pacman from '../classes/pacman.js'
-import Utils from '../classes/utils.js'
-import Xdg from '../classes/xdg.js';
+import { installer } from '../../classes/incubation/installer.js'
+import CliAutologin from '../../classes/cli-autologin.js'
+import Distro from '../../classes/distro.js'
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
+import Xdg from '../../classes/xdg.js';
 
-import { IInstaller, IDevices, IDevice } from '../interfaces/index.js'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from './interfaces/i-krill.js'
-import { exec } from '../lib/utils.js'
+import { IInstaller, IDevices, IDevice } from '../../interfaces/index.js'
+import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { exec } from '../../lib/utils.js'
 
 // import krill modules
-import partition from './modules/partition.js'
-import { mountFs, umountFs } from './modules/mount-fs.js'
-import { mountVfs, umountVfs } from './modules/mount-vfs.js'
-import unpackfs from './modules/unpackfs.js'
-import machineId from './modules/machine-id.js'
-import fstab from './modules/fstab.js'
-import locale from './modules/locale.js'
-import mKeyboard from './modules/m-keyboard.js'
-import localeCfg from './modules/locale-cfg.js'
+import partition from '../modules/partition.js'
+import { mountFs, umountFs } from '../modules/mount-fs.js'
+import { mountVfs, umountVfs } from '../modules/mount-vfs.js'
+import unpackfs from '../modules/unpackfs.js'
+import machineId from '../modules/machine-id.js'
+import fstab from '../modules/fstab.js'
+import locale from '../modules/locale.js'
+import mKeyboard from '../modules/m-keyboard.js'
+import localeCfg from '../modules/locale-cfg.js'
 // users
-import addUser from './modules/add-user.js'
-import changePassword from './modules/change-password.js'
+import addUser from '../modules/add-user.js'
+import changePassword from '../modules/change-password.js'
 // displaymanager: autologin
-import networkCfg from './modules/network-cfg.js'
+import networkCfg from '../modules/network-cfg.js'
 // hwclock:
 // services-systemd:
 // bootloader-config
-import bootloaderConfig from './modules/bootloader-config.js'
-import grubcfg from './modules/grubcfg.js'
-import bootloader from './modules/bootloader.js'
-import packages from './modules/packages.js'
-import removeInstallerLink from './modules/remove-installer-link.js'
-import initramfsCfg from './modules/initramfs-cfg.js'
-import initramfs from './modules/initramfs.js'
-import delLiveUser from './modules/del-live-user.js'
-import umount from './modules/umount.js'
-import mkfs from './modules/mkfs.js'
-import hostname from './modules/hostname.js'
+import bootloaderConfig from '../modules/bootloader-config.js'
+import grubcfg from '../modules/grubcfg.js'
+import bootloader from '../modules/bootloader.js'
+import packages from '../modules/packages.js'
+import removeInstallerLink from '../modules/remove-installer-link.js'
+import initramfsCfg from '../modules/initramfs-cfg.js'
+import initramfs from '../modules/initramfs.js'
+import delLiveUser from '../modules/del-live-user.js'
+import umount from '../modules/umount.js'
+import mkfs from '../modules/mkfs.js'
+import hostname from '../modules/hostname.js'
 
-import CFS from '../classes/cfs.js'
+import CFS from '../../classes/cfs.js'
 
-import Title from './components/title.js'
+import Title from '../components/title.js'
 import cliCursor from 'cli-cursor'
 import { spawnSync } from 'child_process';
 

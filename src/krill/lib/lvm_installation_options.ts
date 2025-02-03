@@ -8,7 +8,7 @@
 
 import inquirer from 'inquirer'
 
-import { LvmPartitionPreset } from '../enum/e-krill.js'
+import { LvmPartitionPreset } from '../classes/krill-enums.js'
 
 export async function selectLvmPreset(initial: LvmPartitionPreset): Promise<LvmPartitionPreset> {
   const modes = Object.values(LvmPartitionPreset)

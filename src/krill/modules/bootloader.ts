@@ -11,7 +11,7 @@ import { up } from 'inquirer/lib/utils/readline.js'
 import Diversion from '../../classes/diversions.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
-import Sequence from '../sequence.js'
+import Sequence from '../classes/sequence.js'
 import fs from 'node:fs'
 import path from 'node:path'
 

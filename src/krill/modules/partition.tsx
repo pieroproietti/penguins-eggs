@@ -12,11 +12,10 @@ import shx from 'shelljs'
 import getLuksPassphrase from '../lib/get_luks-passphrase.js'
 
 import Utils from '../../classes/utils.js'
-import { IPartitions } from '../../interfaces/i-partitions.js'
 import { IDevices, IDevice } from '../../interfaces/i-devices.js'
-import { SwapChoice, InstallationMode } from '../enum/e-krill.js'
+import { SwapChoice, InstallationMode } from '../classes/krill-enums.js'
 import { exec } from '../../lib/utils.js'
-import Sequence from '../sequence.js'
+import Sequence from '../classes/sequence.js'
 
 // React
 import React from 'react';
@@ -99,7 +98,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   if (installationMode === InstallationMode.Standard && !this.efi) {
     /**
      * ===========================================================================================
-     * BIOS: working
+     * BIOS/Stadard: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
@@ -128,7 +127,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   } else if (installationMode === InstallationMode.Luks && !this.efi) {
     /**
      * ===========================================================================================
-     * BIOS: full-encrypt: NOT working
+     * BIOS/Luks: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
@@ -147,9 +146,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await redraw(<Install message={message} percent={0} />)
     const passphrase = await getLuksPassphrase('3volution', '3volution')
     await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
-    // sole("========================")
-    // sole("passphrase: " + passphrase)
-    // sole.log("^^^^^^^^^^^^^^^^^^^^")
 
     // Aggiungi parametri di sicurezza espliciti
     const cipher = "aes-xts-plain64"
@@ -185,7 +181,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   } else if (installationMode === InstallationMode.Standard && this.efi) {
     /**
      * ===========================================================================================
-     * UEFI: working
+     * UEFI/Standard: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
@@ -216,7 +212,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   } else if (installationMode === InstallationMode.Luks && this.efi) {
     /**
      * ===========================================================================================
-     * UEFI, full-encrypt
+     * UEFI/Luks: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
@@ -237,18 +233,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.name = `${installDevice}${p}2` // 'boot'
     this.devices.boot.fsType = 'ext4'
     this.devices.boot.mountPoint = '/boot'
-
-    /**
-     *  cryptsetup return codes are:
-     *
-     * 1 wrong parameters,
-     * 2 no permission (bad passphrase),
-     * 3 out of memory,
-     * 4 wrong device specified,
-     * 5 device already exists or device is busy.
-     *
-     * sometime due scarce memory 2GB, we can have the process killed
-     */
 
     // disabilito spinner per introduzione passphrase
     let message = "Creating partitions"
@@ -308,7 +292,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   } else if (installationMode === InstallationMode.LVM2 && !this.efi) {
     /**
      * ===========================================================================================
-     * BIOS and lvm2
+     * BIOS/Lvm2: 
      * ===========================================================================================
      */
     // Creo partizioni
@@ -347,7 +331,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
     /**
      * ===========================================================================================
-     * lvm2 and UEFI
+     * UEFI/Lmv2:
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
@@ -404,7 +388,6 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
 
   return [lvmPartname, lvmSize]
 }
-
 /**
  * Create lvm partitions
  *
@@ -531,75 +514,17 @@ export async function createLvmPartitions(
   return devices
 }
 
+
 /**
- * Create lvm partitions for Proxmox virtual environment
- *
- * @param installDevice 
- * @param vgName
- * @param lvmSwapName
- * @param lvmRootName
- * @param lvmRootFSType
- * @param lvmDataName
- * @param lvmDataFSType
- * @param lvmDataMountPoint
- * @param echo
  * 
- * @returns
+ * @param device 
+ * @returns 
  */
-export async function createProxmoxLvmPartitions(
-  installDevice: string,
-  vgName: string = "pve",
-  lvmRootName: string = "root",
-  lvmRootFSType: string = "ext4",
-  lvmDataName: string = "data",
-  lvmDataFSType: string = "ext4",
-  lvmDataMountPoint: string = "/var/lib/vz",
-  echo: object
-): Promise<IDevices> {
-
-  let devices = {} as IDevices
-  let lvmSwapName: string = "swap"
-
-  const partInfo = await lvmPartInfo(installDevice)
-  const lvmPartname = partInfo[0]
-  const lvmSize = partInfo[1]
-
-  // La partizione di root viene posta ad 1/4 della partizione LVM, limite max 100 GB
-  let lvmRootSize = lvmSize / 8
-  if (lvmRootSize < 20_480) {
-    lvmRootSize = 20_480
-  }
-
-  const lvmSwapSize = 8192
-  const lvmDataSize = lvmSize - lvmRootSize - lvmSwapSize
-
-  await exec(`pvcreate /dev/${lvmPartname}`, echo)
-  await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
-  await exec('vgchange -an', echo)
-  await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
-  await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
-  await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
-  await exec(`vgchange -a y ${vgName}`, echo)
-
-  devices.root.name = `/dev/${vgName}/${lvmRootName}`
-  devices.root.fsType = lvmRootFSType
-  devices.root.mountPoint = '/'
-
-  devices.data.name = `/dev/${vgName}/${lvmDataName}`
-  devices.data.fsType = lvmDataFSType
-  devices.data.mountPoint = lvmDataMountPoint
-
-  devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
-
-  return devices
-}
-
-// Modificata funzione detectDeviceType per migliore gestione RAID
 function detectDeviceType(device: string): string {
-  if (device.includes('nvme')) return 'nvme';
-  if (device.match(/^\/dev\/md\d+/)) return 'raid'; // Regex migliorata
-  if (device.includes('mmcblk')) return 'mmc';
-  return 'standard';
+  if (device.includes('nvme')) return 'nvme'
+  if (device.match(/^\/dev\/md\d+/)) return 'raid'
+  if (device.includes('mmcblk')) return 'mmc'
+  return 'standard'
 }
 
 

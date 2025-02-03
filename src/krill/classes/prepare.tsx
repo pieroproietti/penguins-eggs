@@ -56,7 +56,7 @@
  * relevant /etc/calamares/ files.
  */
 import os from 'os'
-import { IKrillConfig } from './interfaces/i-krill-config.js'
+import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
 import React from 'react';
 import { render, RenderOptions } from 'ink'
@@ -64,61 +64,61 @@ import axios from 'axios'
 import shx from 'shelljs'
 import fs from 'fs'
 
-import Keyboards from '../classes/keyboards.js'
-import Locales from '../classes/locales.js'
-import Pacman from '../classes/pacman.js'
-import Systemctl from '../classes/systemctl.js'
-import Utils from '../classes/utils.js'
+import Keyboards from '../../classes/keyboards.js'
+import Locales from '../../classes/locales.js'
+import Pacman from '../../classes/pacman.js'
+import Systemctl from '../../classes/systemctl.js'
+import Utils from '../../classes/utils.js'
 
 // libraries
-import { exec, compareInstances } from '../lib/utils.js'
+import { exec, compareInstances } from '../../lib/utils.js'
 
 
-import Welcome from './components/welcome.js'
-import Location from './components/location.js'
-import Partitions from './components/partitions.js'
-import Keyboard from './components/keyboard.js'
-import Users from './components/users.js'
-import Network from './components/network.js'
-import Summary from './components/summary.js'
+import Welcome from '../components/welcome.js'
+import Location from '../components/location.js'
+import Partitions from '../components/partitions.js'
+import Keyboard from '../components/keyboard.js'
+import Users from '../components/users.js'
+import Network from '../components/network.js'
+import Summary from '../components/summary.js'
 //import Install from '../components/install.js'
 
-import selectLanguages from './lib/select_languages.js'
-import selectRegions from './lib/select_regions.js'
-import selectZones from './lib/select_zones.js'
+import selectLanguages from '../lib/select_languages.js'
+import selectRegions from '../lib/select_regions.js'
+import selectZones from '../lib/select_zones.js'
 
-import selectInstallationDevice from './lib/select_installation_device.js'
-import selectInstallationMode from './lib/select_installation_mode.js'
-import selectUserSwapChoice from './lib/select_user_swap_choice.js'
-import selectFileSystemType from './lib/select_filesystem_type.js'
+import selectInstallationDevice from '../lib/select_installation_device.js'
+import selectInstallationMode from '../lib/select_installation_mode.js'
+import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
+import selectFileSystemType from '../lib/select_filesystem_type.js'
 
-import getUsername from './lib/get_username.js'
-import getUserfullname from './lib/get_userfullname.js'
-import getHostname from './lib/get_hostname.js'
-import getPassword from './lib/get_password.js'
+import getUsername from '../lib/get_username.js'
+import getUserfullname from '../lib/get_userfullname.js'
+import getHostname from '../lib/get_hostname.js'
+import getPassword from '../lib/get_password.js'
 
-import selectKeyboardModel from './lib/select_keyboard_model.js'
-import selectKeyboardLayout from './lib/select_keyboard_layout.js'
-import selectKeyboardVariant from './lib/select_keyboard_variant.js'
-import selectKeyboardOption from './lib/select_keyboard_option.js'
+import selectKeyboardModel from '../lib/select_keyboard_model.js'
+import selectKeyboardLayout from '../lib/select_keyboard_layout.js'
+import selectKeyboardVariant from '../lib/select_keyboard_variant.js'
+import selectKeyboardOption from '../lib/select_keyboard_option.js'
 
-import selectInterface from './lib/select_interface.js'
-import selectAddressType from './lib/select_address_type.js'
-import getAddress from './lib/get_address.js'
-import getNetmask from './lib/get_netmask.js'
-import getGateway from './lib/get_gateway.js'
-import getDomain from './lib/get_domain.js'
-import getDns from './lib/get_dns.js'
+import selectInterface from '../lib/select_interface.js'
+import selectAddressType from '../lib/select_address_type.js'
+import getAddress from '../lib/get_address.js'
+import getNetmask from '../lib/get_netmask.js'
+import getGateway from '../lib/get_gateway.js'
+import getDomain from '../lib/get_domain.js'
+import getDns from '../lib/get_dns.js'
 
-import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getLvmLVDataName, getLvmLVDataMountPoint } from './lib/lvm_installation_options.js'
+import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getLvmLVDataName, getLvmLVDataMountPoint } from '../lib/lvm_installation_options.js'
 
 import Sequence from './sequence.js'
 
-import { INet } from '../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from './interfaces/i-krill.js'
-import { SwapChoice, InstallationMode, LvmPartitionPreset } from './enum/e-krill.js'
-import { LvmOptionProxmox, LvmOptionUbuntu } from './const/c-krill.js'
-import LvmOptions from './components/lvmoptions.js'
+import { INet } from '../../interfaces/index.js'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
+import { SwapChoice, InstallationMode, LvmPartitionPreset } from './krill-enums.js'
+import { LvmOptionUbuntu, LvmOptionProxmox } from './lvm-options.js'
+import LvmOptions from '../components/lvm-options.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -137,7 +137,7 @@ export default class Krill {
 
   nointeractive = false
 
-  chroot = false  
+  chroot = false
 
   halt = false
 
@@ -167,18 +167,15 @@ export default class Krill {
    * @param pve 
    * @param verbose 
    */
-  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, btrfs=false, verbose = false) {
-    /**
-     * Check for disk presence
-     */
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, btrfs = false, testing = false, verbose = false) {
+    // Check disk presence
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     if (drives[0] === '') {
       await Utils.pressKeyToExit(`No disk to install the system in this machine.\nkrill installer refuses to continue`)
+      process.exit()
     }
 
-    /**
-     * check for lvm2
-     */
+    // Check Lvm2 presence
     if (await this.pvExist()) {
       await Utils.pressKeyToExit(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
       process.exit()
@@ -188,7 +185,7 @@ export default class Krill {
     * stop udisks2.service
     */
     const systemdCtl = new Systemctl(verbose)
-    if (await systemdCtl.isActive('udisks2.service')) {
+    if (await systemdCtl.isActive('udisks2.service') && !testing) {
       await systemdCtl.stop('udisks2.service')
     }
 
@@ -237,23 +234,13 @@ export default class Krill {
       keyboardOption: this.krillConfig.keyboardOption
     }
 
-    let driveList: string[] = []
-    drives.forEach((element: string) => {
-      driveList.push('/dev/' + element)
-    })
-    // Elimino i dischi zram
-    driveList = driveList.filter(device => !device.includes('zram'));
-    let installationDevice = driveList[0]
-    if (driveList.length > 1) {
-      installationDevice = await selectInstallationDevice()
-    }
-
     let lvmOptions = {} as ILvmOptions
     if (this.krillConfig.lvmOptions) {
       lvmOptions = this.krillConfig.lvmOptions
     }
+
     oPartitions = {
-      installationDevice: installationDevice,
+      installationDevice: this.krillConfig.installationDevice,
       installationMode: this.krillConfig.installationMode,
       lvmOptions: lvmOptions,
       filesystemType: this.krillConfig.filesystemType,
@@ -261,7 +248,7 @@ export default class Krill {
     }
 
     if (btrfs) {
-      oPartitions.filesystemType='btrfs'
+      oPartitions.filesystemType = 'btrfs'
     }
 
     if (suspend) {
@@ -315,7 +302,7 @@ export default class Krill {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
       oKeyboard = await this.keyboard()
-      oPartitions = await this.partitions(installationDevice, cryped, pve, btrfs)
+      oPartitions = await this.partitions(this.krillConfig.installationDevice, cryped, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
     }
@@ -327,7 +314,16 @@ export default class Krill {
      * INSTALL
      */
     const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
-    await sequence.start(domain, this.unattended, this.nointeractive, this.chroot, this.halt, verbose)
+    if (testing) {
+      console.log()
+      Utils.titles("install --testing")
+      console.log("Just testing krill, the process will end!")
+      console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+      console.log()
+      process.exit()
+    } else {
+      await sequence.start(domain, this.unattended, this.nointeractive, this.chroot, this.halt, verbose)
+    }
   }
 
   /**
@@ -339,7 +335,6 @@ export default class Krill {
     if (language === '' || language === undefined) {
       language = await this.locales.getDefault() // 'en_US.UTF-8'
     }
-    
 
     let welcomeElem: JSX.Element
     while (true) {
@@ -451,20 +446,23 @@ export default class Krill {
     }
   }
 
-  
+
   /**
   * PARTITIONS
   */
-  async partitions(installationDevice = "", crypted = false, pve = false, btrfs=false): Promise<IPartitions> {
+  async partitions(installationDevice = "", crypted = false, pve = false, btrfs = false): Promise<IPartitions> {
     // Calamares won't use any devices with iso9660 filesystem on it.
-    if (installationDevice == "") {
+    // installationDevice = ""
+    // if (installationDevice === "") {
       const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-      const driveList: string[] = []
+      let driveList: string[] = []
       drives.forEach((element: string) => {
-        driveList.push('/dev/' + element)
+        if (element.includes('zram')) {
+          driveList.push('/dev/' + element)
+        }
       })
-      installationDevice = driveList[0] // it was just /dev/sda before
-    }
+      installationDevice = driveList[0]
+    // }
 
     let installationMode = this.krillConfig.installationMode
 
@@ -489,10 +487,10 @@ export default class Krill {
     }
 
     lvmOptions = this.krillConfig.lvmOptions
-    
+
     if (compareInstances(this.krillConfig.lvmOptions, emptyLvmOption) ||
-        compareInstances(this.krillConfig.lvmOptions, new LvmOptionProxmox())
-      ) {
+      compareInstances(this.krillConfig.lvmOptions, new LvmOptionProxmox())
+    ) {
 
       // empty lvm options are considered as Proxmox preset
       lvmPartitionPreset = LvmPartitionPreset.Proxmox
@@ -544,7 +542,14 @@ export default class Krill {
           installationMode = InstallationMode.LVM2
         }
 
-        if (btrfs) {
+        // se LVM2 non chiede 
+        if (installationMode == InstallationMode.LVM2) {
+          // Yes I know, It is pythonic style, sorry! =)
+          [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset, lvmOptions)
+
+          lvmOptions.lvRootFSType = filesystemType
+          lvmOptions.lvDataFSType = filesystemType
+        } else if (btrfs) {
           filesystemType = 'btrfs'
         } else {
           filesystemType = 'ext4'
@@ -555,14 +560,6 @@ export default class Krill {
       installationMode = await selectInstallationMode()
       filesystemType = await selectFileSystemType()
       userSwapChoice = await selectUserSwapChoice(userSwapChoice)
-
-      if (installationMode == InstallationMode.LVM2) {
-        // Yes I know, It is pythonic style, sorry! =)
-        [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset, lvmOptions)
-
-        lvmOptions.lvRootFSType = filesystemType
-        lvmOptions.lvDataFSType = filesystemType
-      }
     }
 
     return {
@@ -703,7 +700,7 @@ export default class Krill {
         i.netmask = await getNetmask(i.netmask)
         i.gateway = await getGateway(i.gateway)
         i.domain = await getDomain(i.domain)
-        if (i.domain.at(0)!=='.') {
+        if (i.domain.at(0) !== '.') {
           i.domain = '.' + i.domain
         }
         i.dns = (await getDns(dnsString)).split(';')

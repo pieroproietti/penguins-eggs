@@ -10,9 +10,9 @@
 import fs from 'node:fs'
 
 import Utils from '../../classes/utils.js'
-import Sequence from '../sequence.js'
-import { SwapChoice } from '../enum/e-krill.js'
-import { InstallationMode } from '../enum/e-krill.js'
+import Sequence from '../classes/sequence.js'
+import { SwapChoice } from '../classes/krill-enums.js'
+import { InstallationMode } from '../classes/krill-enums.js'
 /**
  * grubcfg
  * - open /etc/default/grub
