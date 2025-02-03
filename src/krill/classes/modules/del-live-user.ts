@@ -7,9 +7,9 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
-import Sequence from '../classes/sequence.js'
+import Utils from '../../../classes/utils.js'
+import { exec } from '../../../lib/utils.js'
+import Sequence from '../../classes/sequence.js'
 
 /**
  * delUser

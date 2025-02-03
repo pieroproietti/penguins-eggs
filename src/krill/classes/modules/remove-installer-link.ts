@@ -9,7 +9,7 @@
 
 import fs from 'node:fs'
 
-import Sequence from '../classes/sequence.js'
+import Sequence from '../../classes/sequence.js'
 
 /**
  * removeInstallerLink
