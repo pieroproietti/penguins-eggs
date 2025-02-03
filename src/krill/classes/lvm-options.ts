@@ -1,11 +1,3 @@
-/**
- * ./src/constants/c-krill.ts
- * penguins-eggs v.10.0.0 / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
-
 import { ILvmOptions } from '../interfaces/i-krill.js'
 
 export class LvmOptionProxmox implements ILvmOptions {
@@ -28,12 +20,3 @@ export class LvmOptionUbuntu implements ILvmOptions {
     lvDataMountPoint: string = ""
 }
 
-export class LvmOptionCustom implements ILvmOptions {
-    vgName: string = ""
-    lvRootName: string = ""
-    lvRootFSType: string = ""
-    lvRootSize: string = ""
-    lvDataName: string = ""
-    lvDataFSType: string = ""
-    lvDataMountPoint: string = ""
-}

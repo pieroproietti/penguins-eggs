@@ -7,7 +7,7 @@
  */
 
 import inquirer from 'inquirer'
-import { InstallationMode } from '../enum/e-krill.js'
+import { InstallationMode } from '../classes/krill-enums.js'
 
 export default async function selectInstallationMode(): Promise<InstallationMode> {
   const modes = Object.values(InstallationMode)

@@ -13,7 +13,7 @@ import fs from 'node:fs'
 import https from 'node:https'
 
 import Utils from '../classes/utils.js'
-import Krill from '../krill/prepare.js'
+import Krill from '../krill/classes/prepare.js'
 const agent = new https.Agent({
   rejectUnauthorized: false
 })
@@ -44,6 +44,7 @@ export default class Install extends Command {
     random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
     small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
     suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
+    testing: Flags.boolean({char: 't', description: "Just testing krill"}),
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
@@ -95,12 +96,14 @@ export default class Install extends Command {
       crypted = false
     }
 
+    const {testing} = flags
+
     const { verbose } = flags
 
-    if (Utils.isRoot()) {
-      if (Utils.isLive()) {
+    if (Utils.isRoot()|| testing) {
+      if (Utils.isLive()|| testing) {
         const krill = new Krill(unattended, nointeractive, halt, chroot)
-        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, verbose)
+        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, testing, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }

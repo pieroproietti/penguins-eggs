@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import { SwapChoice } from '../enum/e-krill.js'
+import { SwapChoice } from '../classes/krill-enums.js'
 
 export interface IWelcome {
   language: string

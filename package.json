@@ -53,7 +53,7 @@
         "eslint-config-oclif": "^6.0.0",
         "eslint-config-prettier": "^10.0.1",
         "mocha": "^11.1.0",
-        "oclif": "^4.17.21",
+        "oclif": "^4.17.25",
         "perrisbrewery": "^10.0.3",
         "prettier": "^3.4.2",
         "shx": "^0.3.4",

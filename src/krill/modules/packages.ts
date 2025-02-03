@@ -14,7 +14,7 @@ import Pacman from '../../classes/pacman.js'
 import Utils from '../../classes/utils.js'
 import { IPackages } from '../../interfaces/i-packages.js'
 import { exec } from '../../lib/utils.js'
-import Sequence from '../sequence.js'
+import Sequence from '../classes/sequence.js'
 
 /**
  *
