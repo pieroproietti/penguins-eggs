@@ -26,14 +26,15 @@ Questo ci permette di controllare il codice.
 Al momento abbiamo il seguente comportamento:
 
 * Standard: OK
-* Luks: KO
-* Lvm: KO
+* Luks: OK
+* Lvm: ko
+* Luks+Lvm: to do
 
 Partitions
 
-* Esce sempre una select /dev non capisco da dove provenga
-* Selezionando Standard, chiede filesystem e swap, questo sembra OK
+* Esce sempre una select /dev e non capisco da dove provenga
 
+* Selezionando Standard, chiede filesystem e swap, questo sembra OK
 * Lvm, dovrebbe permettere la selezione tra: custom, proxmox o ubuntu
 * Luks, dovrebbe funzionare come standard e funziona.
 * Luks+Lvm da implementare: dovrebbe creare un volume Luks, quindi su esso comportarsi come per Lvm.
