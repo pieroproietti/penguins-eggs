@@ -8,8 +8,8 @@ Allo scopo ho replicato la struttura con:
 * lib
 * modules
 
-
-Tutto inizia da prepare, che alla fine chiama sequence.
++
+Tutto inizia da prepare, che alla fine chiama sequence che è strettamente integrato con la cartella modules.
 
 Questa classe, non a caso è denominata sequence poiche cerca di replacaer la sequenza di calamares impostata in "/etc/calamares/settings.conf" da cui prende anche nomi e spunto. Essa è tuttavia hard-coded all'interno di sequence.ts ed utilizza i modules che ho spostato qua e che ne fanno parte integrale.
 
@@ -28,6 +28,26 @@ Al momento abbiamo il seguente comportamento:
 * Standard: OK
 * Luks: KO
 * Lvm: KO
+
+Partitions
+
+* Esce sempre una select /dev non capisco da dove provenga
+* Selezionando Standard, chiede filesystem e swap, questo sembra OK
+
+* Lvm, dovrebbe permettere la selezione tra: custom, proxmox o ubuntu
+* Luks, dovrebbe funzionare come standard e funziona.
+* Luks+Lvm da implementare: dovrebbe creare un volume Luks, quindi su esso comportarsi come per Lvm.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
