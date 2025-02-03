@@ -451,18 +451,16 @@ export default class Krill {
   * PARTITIONS
   */
   async partitions(installationDevice = "", crypted = false, pve = false, btrfs = false): Promise<IPartitions> {
+    
     // Calamares won't use any devices with iso9660 filesystem on it.
-    // installationDevice = ""
-    // if (installationDevice === "") {
-      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-      let driveList: string[] = []
-      drives.forEach((element: string) => {
-        if (element.includes('zram')) {
-          driveList.push('/dev/' + element)
-        }
-      })
-      installationDevice = driveList[0]
-    // }
+    const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+    let driveList: string[] = []
+    drives.forEach((element: string) => {
+      if (!element.includes('zram')) {
+        driveList.push('/dev/' + element)
+      }
+    })
+    installationDevice = driveList[0]
 
     let installationMode = this.krillConfig.installationMode
 
