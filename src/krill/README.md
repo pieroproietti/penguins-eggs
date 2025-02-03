@@ -25,9 +25,9 @@ Questo ci permette di controllare il codice.
 
 Al momento abbiamo il seguente comportamento:
 
-Standard: OK
-Luks: 
-Lvm:
+* Standard: OK
+* Luks: KO
+* Lvm: KO
 
 
 
