@@ -9,18 +9,18 @@
 
 import os from 'node:os'
 import shx from 'shelljs'
-import getLuksPassphrase from '../lib/get_luks-passphrase.js'
+import getLuksPassphrase from '../../lib/get_luks-passphrase.js'
 
-import Utils from '../../classes/utils.js'
-import { IDevices, IDevice } from '../../interfaces/i-devices.js'
-import { SwapChoice, InstallationMode } from '../classes/krill-enums.js'
-import { exec } from '../../lib/utils.js'
-import Sequence from '../classes/sequence.js'
+import Utils from '../../../classes/utils.js'
+import { IDevices, IDevice } from '../../../interfaces/i-devices.js'
+import { SwapChoice, InstallationMode } from '../../classes/krill-enums.js'
+import { exec } from '../../../lib/utils.js'
+import Sequence from '../../classes/sequence.js'
 
 // React
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
-import Install from '../components/install.js'
+import Install from '../../components/install.js'
 
 /**
  *

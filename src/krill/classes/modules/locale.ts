@@ -8,9 +8,9 @@
  */
 
 import fs from 'node:fs'
-import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
-import Sequence from '../classes/sequence.js'
+import Utils from '../../../classes/utils.js'
+import { exec } from '../../../lib/utils.js'
+import Sequence from '../../classes/sequence.js'
 
 /**
  * locale

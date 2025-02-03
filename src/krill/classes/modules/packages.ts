@@ -10,11 +10,11 @@
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
-import Pacman from '../../classes/pacman.js'
-import Utils from '../../classes/utils.js'
-import { IPackages } from '../../interfaces/i-packages.js'
-import { exec } from '../../lib/utils.js'
-import Sequence from '../classes/sequence.js'
+import Pacman from '../../../classes/pacman.js'
+import Utils from '../../../classes/utils.js'
+import { IPackages } from '../../../interfaces/i-packages.js'
+import { exec } from '../../../lib/utils.js'
+import Sequence from '../../classes/sequence.js'
 
 /**
  *

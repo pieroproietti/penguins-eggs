@@ -406,6 +406,13 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "testing": {
+          "char": "t",
+          "description": "Just testing krill",
+          "name": "testing",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "unattended": {
           "char": "u",
           "description": "Unattended installation",
