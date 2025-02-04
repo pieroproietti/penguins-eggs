@@ -42,7 +42,6 @@ export interface IUsers {
   username: string
 }
 
-// interface solo per hatching
 export interface ICalamaresModule {
   command: string
   interface: string

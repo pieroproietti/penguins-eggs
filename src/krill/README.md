@@ -39,6 +39,7 @@ Partitions
 * Luks, dovrebbe funzionare come standard e funziona.
 * Luks+Lvm da implementare: dovrebbe creare un volume Luks, quindi su esso comportarsi come per Lvm.
 
+OK, sono passato al branch `devel`.
 
 
 
