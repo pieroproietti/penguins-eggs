@@ -18,7 +18,7 @@ export enum InstallationMode {
     Standard = "standard",
     LVM2 = "lvm2",
     Luks = "luks", 
-    // LUKSLVM2 = "lvm2",
+    LuksPlusLvm = "Luks+Lvm2",
 }
 
 export enum LvmPartitionPreset {

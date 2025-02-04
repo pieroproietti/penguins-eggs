@@ -13,11 +13,19 @@ export default async function selectInstallationDevice(): Promise<string> {
   const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
   const raid_drives = shx.exec('lsblk -l | grep raid | cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
   const driveList: string[] = []
+
+  // Add drives
   drives.forEach((element: string) => {
-    driveList.push('/dev/' + element)
+    if (!element.includes('zram') && element !== '') {
+      driveList.push('/dev/' + element)
+    }
   })
+
+  // Add raid_drives
   raid_drives.forEach((element: string) => {
-    driveList.push('/dev/' + element)
+    if (!element.includes('zram') && element !== '') {
+      driveList.push('/dev/' + element)
+    }
   })
 
   const questions: Array<Record<string, any>> = [
