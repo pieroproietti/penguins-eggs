@@ -119,6 +119,7 @@ import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './krill-enums.js'
 import { LvmOptionUbuntu, LvmOptionProxmox } from './lvm-options.js'
 import LvmOptions from '../components/lvm-options.js'
+import Install from '../../commands/install.js';
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -460,7 +461,7 @@ export default class Krill {
         driveList.push('/dev/' + element)
       }
     })
-    installationDevice = driveList[0]
+    installationDevice = driveList[0] // Solo per selezionare il default
 
     let installationMode = this.krillConfig.installationMode
 
@@ -508,6 +509,7 @@ export default class Krill {
     if (!knownInstallationModes.includes(installationMode)) {
       installationMode = InstallationMode.Standard
     }
+
     if (crypted) {
       installationMode = InstallationMode.Luks
     } else if (pve) {
@@ -532,7 +534,7 @@ export default class Krill {
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
-        installationDevice = ''
+        installationDevice = driveList[0] // Solo per selezionare il default
         installationMode = InstallationMode.Standard
         if (crypted) {
           installationMode = InstallationMode.Luks
@@ -540,11 +542,13 @@ export default class Krill {
           installationMode = InstallationMode.LVM2
         }
 
-        // se LVM2 non chiede 
-        if (installationMode == InstallationMode.LVM2) {
+        installationDevice = await selectInstallationDevice()
+        installationMode = await selectInstallationMode()
+  
+        // se LVM2 non chiede fstype, ne' swap
+        if (installationMode === InstallationMode.LVM2) {
           // Yes I know, It is pythonic style, sorry! =)
-          [lvmPartitionPreset, lvmOptions] = await this.lvmOptions(lvmPartitionPreset, lvmOptions)
-
+          [lvmPartitionPreset, lvmOptions] = await this.getLvmOptions(lvmPartitionPreset, lvmOptions)
           lvmOptions.lvRootFSType = filesystemType
           lvmOptions.lvDataFSType = filesystemType
         } else if (btrfs) {
@@ -554,10 +558,14 @@ export default class Krill {
         }
       }
 
-      installationDevice = await selectInstallationDevice()
-      installationMode = await selectInstallationMode()
-      filesystemType = await selectFileSystemType()
-      userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+      if (installationMode !== InstallationMode.LVM2) {
+        filesystemType = await selectFileSystemType()
+        if (installationMode === InstallationMode.Luks) {
+          userSwapChoice = SwapChoice.None
+        } else {
+          userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+        }
+      }
     }
 
     return {
@@ -572,7 +580,7 @@ export default class Krill {
   /*
   * LVM Options
   */
-  async lvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox, lvmOptions: ILvmOptions): Promise<[LvmPartitionPreset, ILvmOptions]> {
+  async getLvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox, lvmOptions: ILvmOptions): Promise<[LvmPartitionPreset, ILvmOptions]> {
     let lvmPartitionPreset: LvmPartitionPreset = await selectLvmPreset(initialPartitionPreset)
 
     switch (lvmPartitionPreset) {
@@ -583,6 +591,7 @@ export default class Krill {
         lvmOptions = new LvmOptionUbuntu()
         break;
       case LvmPartitionPreset.Custom:
+        lvmOptions=  new LvmOptionProxmox()
       default:
         break;
     }
