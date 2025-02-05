@@ -5,6 +5,7 @@
 common:
   - coreutils 
   - cryptsetup 
+  - cryptsetup-initramfs
   - curl # wardrobe
   - dosfstools # eggs
   - dpkg-dev  # yolk

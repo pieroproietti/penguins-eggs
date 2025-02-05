@@ -7,7 +7,6 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import { SwapChoice } from '../../classes/krill-enums.js'
 import Sequence from '../../classes/sequence.js'
@@ -34,6 +33,7 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     }
 
     if (this.devices.root.name !== 'none') {
+      console.log("Formatting " + this.devices.root.name)
       await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
     }
 
