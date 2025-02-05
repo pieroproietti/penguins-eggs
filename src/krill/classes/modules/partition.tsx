@@ -9,6 +9,7 @@
 
 import os from 'node:os'
 import shx from 'shelljs'
+import fs from 'fs'
 import getLuksPassphrase from '../../lib/get_luks-passphrase.js'
 
 import Utils from '../../../classes/utils.js'
@@ -21,6 +22,8 @@ import Sequence from '../../classes/sequence.js'
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../../components/install.js'
+import { scheduler } from 'node:timers/promises'
+import { execute } from '@oclif/core'
 
 /**
  *
@@ -438,11 +441,13 @@ export async function createLvmPartitions(
   const lvmSize: number = partInfo[1]
 
   let lvmSwapName: string = "swap"
-
   let lvmSwapSize: number = swapSize
   if (swapType == SwapChoice.File) {
     lvmSwapSize = 0
   }
+
+  // Create cmd
+  let cmds = "#!/bin/bash\n"
 
   // Calculate root size based on percentage or absolute value
   let lvmRootAbsSize: number;
@@ -452,7 +457,7 @@ export async function createLvmPartitions(
   } else {
     lvmRootAbsSize = parseInt(lvmRootSize);
   }
-  
+
   // Determine data size based on user configuration
   let lvmDataSize: number;
   if ((lvmDataName === "" || lvmDataName === "none") && lvmDataMountPoint === "") {
@@ -471,25 +476,32 @@ export async function createLvmPartitions(
     process.exit(1);
   }
 
-  await exec(`pvcreate /dev/${lvmPartname}`, echo);
-  await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo);
-  await exec('vgchange -an', echo);
+  // Create pv
+  cmds += `pvcreate /dev/${lvmPartname}\n`
+
+  // create vg
+  cmds += `# create vg\n`
+  cmds += `vgcreate ${vgName} /dev/${lvmPartname}\n`
+  cmds += `vgchange -an\n`
 
   // Create swap LV if required
   if (lvmSwapSize > 0) {
-    await exec(`lvcreate -L ${lvmSwapSize}G -n ${lvmSwapName} ${vgName}`, echo);
+    cmds += `# create swap LV\n`
+    cmds += `lvcreate -L ${lvmSwapSize}G -n ${lvmSwapName} ${vgName}\n`
     devices.swap.name = `/dev/${vgName}/${lvmSwapName}`;
   }
 
-  // Create root LV
-  await exec(`lvcreate -L ${lvmRootAbsSize}G -n ${lvmRootName} ${vgName}`, echo);
+  cmds += `# create root LV\n`
+  cmds += `lvcreate -l ${lvmRootSize}FREE -n ${lvmRootName} ${vgName}\n`
+
   devices.root.name = `/dev/${vgName}/${lvmRootName}`;
   devices.root.fsType = lvmRootFSType;
   devices.root.mountPoint = '/';
 
   // Create data LV if required
-  if (lvmDataSize > 0) {
-    await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo);
+  if (lvmDataMountPoint.trim() !== "") {
+    cmds += `# create data\n`
+    cmds += `lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}\n`
     devices.data.name = `/dev/${vgName}/${lvmDataName}`;
     devices.data.fsType = lvmDataFSType;
     devices.data.mountPoint = lvmDataMountPoint;
@@ -498,7 +510,24 @@ export async function createLvmPartitions(
   }
 
   // Activate VG
-  await exec(`vgchange -a y ${vgName}`, echo);
+  cmds += `# activate VG\n`
+  cmds += `vgchange -a y ${vgName}\n`
+
+  const scriptName = "createLvmPartitions"
+  fs.writeFileSync(scriptName, cmds)
+
+  // make script executable
+  await exec(`chmod +x ${scriptName}`)
+
+  cmds = ""
+  cmds = fs.readFileSync(scriptName, 'utf8')
+  console.log(cmds)
+
+  Utils.pressKeyToExit("press a key to execute...")
+
+  // eseguo i comandi
+  cmds = fs.readFileSync(scriptName, 'utf8')
+  await exec(cmds, echo)
 
   return devices;
 }
