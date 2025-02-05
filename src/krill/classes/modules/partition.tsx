@@ -7,6 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import { execSync } from 'child_process';
 import os from 'node:os'
 import shx from 'shelljs'
 import fs from 'fs'
@@ -22,8 +23,6 @@ import Sequence from '../../classes/sequence.js'
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../../components/install.js'
-import { scheduler } from 'node:timers/promises'
-import { execute } from '@oclif/core'
 
 /**
  *
@@ -100,7 +99,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   if (installationMode === InstallationMode.Standard && !this.efi) {
     /**
      * ===========================================================================================
-     * BIOS/Stadard: working
+     * BIOS/Standard: working
      * ===========================================================================================
      */
     await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
@@ -176,12 +175,12 @@ export default async function partition(this: Sequence): Promise<boolean> {
     // this.devices.boot
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
-    // this.devices.boot
+    // this.devices.root
     this.devices.swap.name = 'none'
 
     retVal = true
   } else if (installationMode === InstallationMode.Standard && this.efi) {
-    /**
+     /**
      * ===========================================================================================
      * UEFI/Standard: working
      * ===========================================================================================
@@ -198,10 +197,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.efi.mountPoint = '/boot/efi'
     this.devices.boot.name = 'none'
 
-    this.devices.swap.name = `${installDevice}${p}2`
-    this.devices.swap.fsType = 'swap'
-
-    this.devices.root.name = `${installDevice}${p}3`
+    this.devices.root.name = `${installDevice}${p}23`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
 
@@ -220,8 +216,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
     await exec(`parted --script ${installDevice} mkpart efi fat32               34s               256MiB`, this.echo) // sda1 EFI
     await exec(`parted --script ${installDevice} mkpart boot ext4             256MiB              768MiB`, this.echo) // sda2 boot
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap       768MiB  ${this.swapSize + 768}MiB`, this.echo) // sda3 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 768}MiB                100%`, this.echo) // sda4 root
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${768}MiB                100%`, this.echo) // sda3 root
     await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
@@ -247,43 +242,23 @@ export default async function partition(this: Sequence): Promise<boolean> {
     const keySize = "512"
     const hash = "sha512"
 
-    // SWAP 8G
-    const cryptoSwap = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- luksFormat ${installDevice}${p}3`, this.echo)
-    if (cryptoSwap.code !== 0) {
-      Utils.warning(`Error: ${cryptoSwap.code} ${cryptoSwap.data}`)
-      process.exit(1)
-    }
-
-    const cryptoSwapOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 swap_crypted`, this.echo)
-    if (cryptoSwapOpen.code !== 0) {
-      Utils.warning(`Error: ${cryptoSwapOpen.code} ${cryptoSwapOpen.data}`)
-      process.exit(1)
-    }
-
-    // Formatto come swap
-    await exec(`mkswap /dev/mapper/swap_crypted`, this.echo)
-    await exec(`swapon /dev/mapper/swap_crypted`, this.echo)
-
-    this.devices.swap.name = '/dev/mapper/swap_crypted'
-    this.devices.swap.cryptedFrom = `${installDevice}${p}3`
-    this.devices.swap.fsType = 'swap'
-    this.devices.swap.mountPoint = 'none'
-
     // ROOT
-    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}4`, this.echo)
+    const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}3`, this.echo)
     if (cryptoRoot.code !== 0) {
       Utils.warning(`Error: ${cryptoRoot.code} ${cryptoRoot.data}`)
       process.exit(1)
     }
 
-    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}4 root_crypted`, this.echo)
+    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, this.echo)
     if (cryptoRootOpen.code !== 0) {
       Utils.warning(`Error: ${cryptoRootOpen.code} ${cryptoRootOpen.data}`)
       process.exit(1)
     }
 
+    this.devices.swap.name='none'
+
     this.devices.root.name = '/dev/mapper/root_crypted'
-    this.devices.root.cryptedFrom = `${installDevice}${p}4`
+    this.devices.root.cryptedFrom = `${installDevice}${p}3`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
 
@@ -372,6 +347,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.fsType = 'ext4'
     this.devices.boot.mountPoint = '/boot'
 
+    // BOOT/DATA/EFI
+    // this.devices.boot
+    this.devices.data.name = 'none'
+    // this.devices.efi.name
+    // this.devices.root
+    this.devices.swap.name = 'none'
+
     retVal = true
   }
 
@@ -390,6 +372,18 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
   const lvmSize = lvmByteSize / 1024
 
   return [lvmPartname, lvmSize]
+}
+
+/**
+ * 
+ * @param device 
+ * @returns 
+ */
+function detectDeviceType(device: string): string {
+  if (device.includes('nvme')) return 'nvme'
+  if (device.match(/^\/dev\/md\d+/)) return 'raid'
+  if (device.includes('mmcblk')) return 'mmc'
+  return 'standard'
 }
 
 /**
@@ -446,8 +440,22 @@ export async function createLvmPartitions(
     lvmSwapSize = 0
   }
 
-  // Create cmd
+  // Create removeLvmPartitions
+  let scriptName="removeLvmPartitions"
   let cmds = "#!/bin/bash\n"
+  cmds += `\n`
+  cmds += `# remove previous lvm2\n`
+  cmds += `umount ${installDevice}* 2>/dev/null || true\n`
+  cmds += `lvremove --force $(lvs --noheadings -o lv_path ${installDevice} 2>/dev/null) 2>/dev/null || true\n`
+  cmds += `vgremove --force $(vgs --noheadings -o vg_name ${installDevice} 2>/dev/null) 2>/dev/null || true\n`
+  cmds += `pvremove --force --force ${installDevice}* 2>/dev/null || true\n`
+  cmds += `wipefs -a ${installDevice} 2>/dev/null || true\n`
+  fs.writeFileSync(scriptName, cmds)
+  await exec(`chmod +x ${scriptName}`)
+
+  // Create createLvmPartitions
+  scriptName = "createLvmPartitions"
+  cmds = "#!/bin/bash\n"
 
   // Calculate root size based on percentage or absolute value
   let lvmRootAbsSize: number;
@@ -513,37 +521,13 @@ export async function createLvmPartitions(
   cmds += `# activate VG\n`
   cmds += `vgchange -a y ${vgName}\n`
 
-  const scriptName = "createLvmPartitions"
   fs.writeFileSync(scriptName, cmds)
-
-  // make script executable
   await exec(`chmod +x ${scriptName}`)
 
-  cmds = ""
-  cmds = fs.readFileSync(scriptName, 'utf8')
-  console.log(cmds)
-
-  Utils.pressKeyToExit("press a key to execute...")
-
-  // eseguo i comandi
-  cmds = fs.readFileSync(scriptName, 'utf8')
-  await exec(cmds, echo)
+  await exec(fs.readFileSync(scriptName, 'utf8'), echo)
 
   return devices;
 }
-
-/**
- * 
- * @param device 
- * @returns 
- */
-function detectDeviceType(device: string): string {
-  if (device.includes('nvme')) return 'nvme'
-  if (device.match(/^\/dev\/md\d+/)) return 'raid'
-  if (device.includes('mmcblk')) return 'mmc'
-  return 'standard'
-}
-
 
 
 /**

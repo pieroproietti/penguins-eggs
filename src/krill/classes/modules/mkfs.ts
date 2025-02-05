@@ -33,7 +33,6 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     }
 
     if (this.devices.root.name !== 'none') {
-      console.log("Formatting " + this.devices.root.name)
       await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
     }
 
@@ -41,8 +40,16 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
       await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
     }
 
-    if (this.devices.swap.name !== 'none' && this.partitions.userSwapChoice !== SwapChoice.File) {
-        await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+    if (this.devices.swap.name !== 'none') {
+      await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
+    } else if (this.partitions.userSwapChoice !== SwapChoice.File) {
+      // create swap file
+      // dd if=/dev/zero of=/swapfile bs=1G count=4
+      // chmod 600 /swapfile
+      // mkswap /swapfile
+      // swapon /swapfile
+      // # rendi il file di swap pemanente in fstab
+      // echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     }
   } else if (this.partitions.filesystemType === 'btrfs') {
     await exec(`mkfs.btrfs -f ${this.devices.root.name} ${this.toNull}`, this.echo)
