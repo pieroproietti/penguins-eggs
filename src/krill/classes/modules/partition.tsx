@@ -9,6 +9,7 @@
 
 import os from 'node:os'
 import shx from 'shelljs'
+import fs from 'fs'
 import getLuksPassphrase from '../../lib/get_luks-passphrase.js'
 
 import Utils from '../../../classes/utils.js'
@@ -21,6 +22,8 @@ import Sequence from '../../classes/sequence.js'
 import React from 'react';
 import { render, RenderOptions, Box, Text } from 'ink'
 import Install from '../../components/install.js'
+import { scheduler } from 'node:timers/promises'
+import { execute } from '@oclif/core'
 
 /**
  *
@@ -46,12 +49,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
   }
 
   const installationMode = this.partitions.installationMode
-  this.swapSize = Math.round(os.totalmem() / 1_073_741_824) * 1024
+  this.swapSize = Math.round(os.totalmem() / (1024 * 1024 * 1024)) // In GB
 
   switch (this.partitions.userSwapChoice) {
     case SwapChoice.None: {
-      this.swapSize = 256
-
+      this.swapSize = 0
       break
     }
 
@@ -327,6 +329,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
     this.devices.boot.fsType = 'ext2'
     this.devices.boot.mountPoint = '/boot'
 
+
     retVal = true
   } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
     /**
@@ -388,22 +391,21 @@ export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[
 
   return [lvmPartname, lvmSize]
 }
+
 /**
- * Create lvm partitions
- *
+ * 
  * @param installDevice 
- * @param vgName
- * @param swapType
- * @param swapSize
- * @param lvmRootName
- * @param lvmRootFSType
- * @param lvmRootSize
- * @param lvmDataName
- * @param lvmDataFSType
- * @param lvmDataName
- * @param lvmDataMountPoint
- * @param echo
- * @returns
+ * @param vgName 
+ * @param swapType 
+ * @param swapSize 
+ * @param lvmRootName 
+ * @param lvmRootFSType 
+ * @param lvmRootSize 
+ * @param lvmDataName 
+ * @param lvmDataFSType 
+ * @param lvmDataMountPoint 
+ * @param echo 
+ * @returns 
  */
 export async function createLvmPartitions(
   installDevice: string,
@@ -434,86 +436,101 @@ export async function createLvmPartitions(
   devices.data = {} as IDevice
   devices.swap = {} as IDevice
 
-  let lvmSwapName: string = "swap"
-
   const partInfo = await lvmPartInfo(installDevice)
-  const lvmPartname = partInfo[0]
-  const lvmSize = partInfo[1]
+  const lvmPartname: string = partInfo[0]
+  const lvmSize: number = partInfo[1]
 
-  let lvmSwapSize = swapSize
-
-  // Swap partition not exists if it is a file
+  let lvmSwapName: string = "swap"
+  let lvmSwapSize: number = swapSize
   if (swapType == SwapChoice.File) {
     lvmSwapSize = 0
   }
 
-  let lvmDataSize = String(lvmSize - lvmSwapSize - parseInt(lvmRootSize))
+  // Create cmd
+  let cmds = "#!/bin/bash\n"
 
-  // Assuming no data partition if data partion options are not specified
-  if ((lvmDataName == "" || lvmDataName == "none") && lvmDataMountPoint == "") {
-    lvmDataSize = "0"
-  }
-
-  // Calculate percentual size of LVM if the size is expressed as percentual
-  let lvmRootPercSize: number = 0
+  // Calculate root size based on percentage or absolute value
+  let lvmRootAbsSize: number;
   if (lvmRootSize.includes("%")) {
-    lvmRootPercSize = parseFloat(lvmRootSize)
-    lvmRootSize = String(Math.floor((lvmSize * lvmRootPercSize) / 100))
+    const lvmRootPerc = parseFloat(lvmRootSize.replace('%', ''));
+    lvmRootAbsSize = Math.floor((lvmSize * lvmRootPerc) / 100);
   } else {
-    lvmRootPercSize = ((parseFloat(lvmRootSize) / lvmSize) * 100)
+    lvmRootAbsSize = parseInt(lvmRootSize);
   }
 
-  if (lvmSwapSize + parseInt(lvmRootSize) + parseInt(lvmDataSize) <= lvmSize) {
-    await exec(`pvcreate /dev/${lvmPartname}`, echo)
-    await exec(`vgcreate ${vgName} /dev/${lvmPartname}`, echo)
-    await exec('vgchange -an', echo)
-
-    // Create LVM Swap partition, if exists
-    if (lvmSwapSize > 0) {
-      await exec(`lvcreate -L ${lvmSwapSize} -n ${lvmSwapName} ${vgName}`, echo)
-    }
-
-    // Create LVM root and data partitions
-    if (parseInt(lvmDataSize) > 0) {
-      // Create LVM root partition
-      await exec(`lvcreate -L ${lvmRootSize} -n ${lvmRootName} ${vgName}`, echo)
-
-      // Create LVM data partition using the remaining disk space
-      await exec(`lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}`, echo)
-    } else {
-      // Only root partition
-      await exec(`lvcreate -l ${lvmRootPercSize}%FREE -n ${lvmRootName} ${vgName}`, echo)
-    }
-
-    // Activate VG
-    await exec(`vgchange -a y ${vgName}`, echo)
-
-    devices.root.name = `/dev/${vgName}/${lvmRootName}`
-    devices.root.fsType = lvmRootFSType
-    devices.root.mountPoint = '/'
-
-    if (parseInt(lvmDataSize) > 0) {
-      devices.data.name = `/dev/${vgName}/${lvmDataName}`
-      devices.data.fsType = lvmDataFSType
-      devices.data.mountPoint = lvmDataMountPoint
-    } else {
-      devices.data.name = 'none'
-    }
-
-    if (swapType != SwapChoice.File && lvmSwapSize > 0) {
-      devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
-    }
+  // Determine data size based on user configuration
+  let lvmDataSize: number;
+  if ((lvmDataName === "" || lvmDataName === "none") && lvmDataMountPoint === "") {
+    lvmDataSize = 0;
   } else {
-    Utils.warning(`lvmRootSize | ${lvmRootSize}`)
-    Utils.warning(`lvmSwapSize | ${lvmSwapSize}`)
-    Utils.warning(`lvmDataSize | ${lvmDataSize}`)
-    Utils.warning(`Error: size of partitions for swap, root and data exceeds the size of lvm`)
-    process.exit(1)
+    lvmDataSize = lvmSize - lvmSwapSize - lvmRootAbsSize;
   }
 
-  return devices
+  // Rimuovo da lvmRootSize swap e data
+  lvmRootAbsSize = parseInt(lvmRootSize) - lvmSwapSize - lvmDataSize
+
+  // Validate total sizes do not exceed VG size
+  const totalSize = lvmSwapSize + lvmRootAbsSize + lvmDataSize;
+  if (totalSize > lvmSize) {
+    Utils.warning(`Error: Combined size of swap (${lvmSwapSize}G), root (${lvmRootAbsSize}M), and data (${lvmDataSize}G) exceeds VG size ${lvmSize}G`);
+    process.exit(1);
+  }
+
+  // Create pv
+  cmds += `pvcreate /dev/${lvmPartname}\n`
+
+  // create vg
+  cmds += `# create vg\n`
+  cmds += `vgcreate ${vgName} /dev/${lvmPartname}\n`
+  cmds += `vgchange -an\n`
+
+  // Create swap LV if required
+  if (lvmSwapSize > 0) {
+    cmds += `# create swap LV\n`
+    cmds += `lvcreate -L ${lvmSwapSize}G -n ${lvmSwapName} ${vgName}\n`
+    devices.swap.name = `/dev/${vgName}/${lvmSwapName}`;
+  }
+
+  cmds += `# create root LV\n`
+  cmds += `lvcreate -l ${lvmRootSize}FREE -n ${lvmRootName} ${vgName}\n`
+
+  devices.root.name = `/dev/${vgName}/${lvmRootName}`;
+  devices.root.fsType = lvmRootFSType;
+  devices.root.mountPoint = '/';
+
+  // Create data LV if required
+  if (lvmDataMountPoint.trim() !== "") {
+    cmds += `# create data\n`
+    cmds += `lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}\n`
+    devices.data.name = `/dev/${vgName}/${lvmDataName}`;
+    devices.data.fsType = lvmDataFSType;
+    devices.data.mountPoint = lvmDataMountPoint;
+  } else {
+    devices.data.name = 'none';
+  }
+
+  // Activate VG
+  cmds += `# activate VG\n`
+  cmds += `vgchange -a y ${vgName}\n`
+
+  const scriptName = "createLvmPartitions"
+  fs.writeFileSync(scriptName, cmds)
+
+  // make script executable
+  await exec(`chmod +x ${scriptName}`)
+
+  cmds = ""
+  cmds = fs.readFileSync(scriptName, 'utf8')
+  console.log(cmds)
+
+  Utils.pressKeyToExit("press a key to execute...")
+
+  // eseguo i comandi
+  cmds = fs.readFileSync(scriptName, 'utf8')
+  await exec(cmds, echo)
+
+  return devices;
 }
-
 
 /**
  * 
@@ -540,3 +557,20 @@ async function redraw(elem: JSX.Element) {
   console.clear()
   render(elem, opt)
 }
+
+/** 
+
+[
+  { "boot": ["/dev/sda1", "/boot", "ext2", "512M"]},
+  { "swap": ["/dev/mapper/pve/swap", "/", "swap", "4G"]},
+  { "root": ["/dev/mapper/pve/root", "/", "ext4", "20%"]},
+  { "data": ["/var/lib/vz/", "ext4", "100%"]},
+]
+
+[
+  { "boot": ["/dev/sda1", "/boot", "ext2", "512M"]},
+  { "root": ["/dev/mapper/ubuntu-lg", "/", "ext4", "100%"]},
+}
+
+
+*/

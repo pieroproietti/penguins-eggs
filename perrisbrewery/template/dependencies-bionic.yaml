@@ -4,7 +4,8 @@
 # common dependencies 
 common:
   - coreutils 
-  - cryptsetup 
+  - cryptsetup
+  - cryptsetup-initramfs
   - curl # wardrobe
   - dosfstools # eggs
   - dpkg-dev  # yolk
