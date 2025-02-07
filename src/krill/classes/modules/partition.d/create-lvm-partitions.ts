@@ -1,124 +1,18 @@
 /**
- * ./src/krill/modules/partition.tsx
+ * ./src/krill/modules/partition.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
-
-import os from 'node:os'
 import shx from 'shelljs'
 import fs from 'fs'
 
-import Utils from '../../../classes/utils.js'
-import { IDevices, IDevice } from '../../../interfaces/i-devices.js'
-import { SwapChoice, InstallationMode } from '../krill-enums.js'
-import { exec } from '../../../lib/utils.js'
-import Sequence from '../sequence.js'
-
-// React
-import React from 'react';
-import { render, RenderOptions, Box, Text } from 'ink'
-import Install from '../../components/install.js'
-
-
-/**
- *
- * @param this
- */
-export default async function partition(this: Sequence): Promise<boolean> {
-  const echoYes = Utils.setEcho(true)
-
-  let retVal = false
-
-  const installDevice = this.partitions.installationDevice
-
-
-  let p: string = ""
-  if (detectDeviceType(installDevice) === "standard") {
-    p = ""
-  } else if (detectDeviceType(installDevice) === "mmc") {
-    p = ""
-  } else if (detectDeviceType(installDevice) === "nvme") {
-    p = "p"
-  } else if (detectDeviceType(installDevice) === "raid") {
-    p = "p"
-  }
-
-  const installationMode = this.partitions.installationMode
-  this.swapSize = Math.round(os.totalmem() / (1024 * 1024 * 1024)) // In GB
-
-  switch (this.partitions.userSwapChoice) {
-    case SwapChoice.None: {
-      this.swapSize = 0
-      break
-    }
-
-    case SwapChoice.Small: {
-      break
-    }
-
-    case SwapChoice.Suspend: {
-      this.swapSize *= 2
-
-      break
-    }
-
-    case SwapChoice.File: {
-      // total mem
-      break
-    }
-    // No default
-  }
-  if (installationMode === InstallationMode.Standard && !this.efi) {
-    retVal = await this.partitionBiosStandard(installDevice, p)
-
-  } else if (installationMode === InstallationMode.Luks && !this.efi) {
-    retVal = await this.partitionBiosLuks(installDevice, p)
-
-  } else if (installationMode === InstallationMode.Standard && this.efi) {
-    retVal = await this.partitionUefiStandard(installDevice, p)
-
-  } else if (installationMode === InstallationMode.Luks && this.efi) {
-    retVal = await this.partitionUefiLuks(installDevice, p)
-
-  } else if (installationMode === InstallationMode.LVM2 && !this.efi) {
-    retVal = await this.partitionBiosLvm(installDevice, p)
-
-  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
-    retVal = await this.partitionUefiLvm(installDevice, p)
-
-  }
-
-  return retVal
-}
-
-/**
- *
- * @param installDevice
- * @returns
- */
-export async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[string, number]> {
-  // Partizione LVM
-  const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
-  const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
-  const lvmSize = lvmByteSize / 1024
-
-  return [lvmPartname, lvmSize]
-}
-
-/**
- * 
- * @param device 
- * @returns 
- */
-function detectDeviceType(device: string): string {
-  if (device.includes('nvme')) return 'nvme'
-  if (device.match(/^\/dev\/md\d+/)) return 'raid'
-  if (device.includes('mmcblk')) return 'mmc'
-  return 'standard'
-}
+import Utils from '../../../../classes/utils.js'
+import { IDevices, IDevice } from '../../../../interfaces/i-devices.js'
+import { SwapChoice, InstallationMode } from '../../krill-enums.js'
+import { exec } from '../../../../lib/utils.js'
 
 /**
  * 
@@ -263,32 +157,16 @@ export async function createLvmPartitions(
   return devices;
 }
 
-
 /**
  *
- * @param elem
+ * @param installDevice
+ * @returns
  */
-async function redraw(elem: JSX.Element) {
-  let opt: RenderOptions = {}
-  opt.patchConsole = false
-  opt.debug = true
-  console.clear()
-  render(elem, opt)
+async function lvmPartInfo(installDevice: string = '/dev/sda'): Promise<[string, number]> {
+  // Partizione LVM
+  const lvmPartname = shx.exec(`fdisk ${installDevice} -l | grep LVM | awk '{print $1}' | cut -d "/" -f3`).stdout.trim()
+  const lvmByteSize = Number(shx.exec(`cat /proc/partitions | grep ${lvmPartname}| awk '{print $3}' | grep "[0-9]"`).stdout.trim())
+  const lvmSize = lvmByteSize / 1024
+
+  return [lvmPartname, lvmSize]
 }
-
-/** 
-
-[
-  { "boot": ["/dev/sda1", "/boot", "ext2", "512M"]},
-  { "swap": ["/dev/mapper/pve/swap", "/", "swap", "4G"]},
-  { "root": ["/dev/mapper/pve/root", "/", "ext4", "20%"]},
-  { "data": ["/var/lib/vz/", "ext4", "100%"]},
-]
-
-[
-  { "boot": ["/dev/sda1", "/boot", "ext2", "512M"]},
-  { "root": ["/dev/mapper/ubuntu-lg", "/", "ext4", "100%"]},
-}
-
-
-*/
