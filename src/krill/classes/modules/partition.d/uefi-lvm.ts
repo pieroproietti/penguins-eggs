@@ -9,7 +9,7 @@
 
 import { exec } from '../../../../lib/utils.js'
 import Sequence from '../../sequence.js'
-import { createLvmPartitions } from './create-lvm-partitions.js'
+import createLvmPartitions from './create-lvm-partitions.js'
 import { SwapChoice, InstallationMode } from '../../krill-enums.js'
 
 /**
@@ -33,19 +33,7 @@ export default async function uefiLvm(this: Sequence, installDevice = "", p = ""
     await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
     await exec(`parted --script ${installDevice} set 3 lvm on`, this.echo) // sda3
 
-    this.devices = await createLvmPartitions(
-        installDevice,
-        this.partitions.lvmOptions.vgName,
-        this.partitions.userSwapChoice,
-        this.swapSize,
-        this.partitions.lvmOptions.lvRootName,
-        this.partitions.lvmOptions.lvRootFSType,
-        this.partitions.lvmOptions.lvRootSize,
-        this.partitions.lvmOptions.lvDataName,
-        this.partitions.lvmOptions.lvDataFSType,
-        this.partitions.lvmOptions.lvDataMountPoint,
-        this.echo
-    )
+    this.devices = await this.createLvmPartitions(installDevice)
 
     if (this.partitions.userSwapChoice == SwapChoice.File) {
         this.devices.swap.name = 'swap.img'

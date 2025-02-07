@@ -67,6 +67,7 @@ import { exec } from '../../lib/utils.js'
 
 // import krill modules
 import partition from './modules/partition.js'
+import createLvmPartitions from './modules/partition.d/create-lvm-partitions.js'
 import biosStandard from './modules/partition.d/bios-standard.js'
 import biosLuks from './modules/partition.d/bios-luks.js'
 import uefiStandard from './modules/partition.d/uefi-standard.js'
@@ -114,6 +115,7 @@ import { spawnSync } from 'child_process';
  */
 export default class Sequence {
    public partition = partition
+   public createLvmPartitions = createLvmPartitions
    public partitionBiosStandard = biosStandard
    public partitionUefiStandard = uefiStandard
    public partitionBiosLuks = biosLuks

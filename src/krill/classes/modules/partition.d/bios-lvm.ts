@@ -9,7 +9,7 @@
 
 import { exec } from '../../../../lib/utils.js'
 import Sequence from '../../sequence.js'
-import { createLvmPartitions } from './create-lvm-partitions.js'
+//import createLvmPartitions from './create-lvm-partitions.js'
 import { SwapChoice, InstallationMode } from '../../krill-enums.js'
 
 /**
@@ -20,36 +20,26 @@ import { SwapChoice, InstallationMode } from '../../krill-enums.js'
  * @returns 
  */
 export default async function biosLvm(this: Sequence, installDevice = "", p = ""): Promise<boolean> {
-    // Creo partizioni
-    await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
-    await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
-    await exec(`parted --script --align optimal ${installDevice} mkpart primary ${this.partitions.filesystemType} 512 100%`, this.echo) // sda2
-    await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-    await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
+  // Creo partizioni
+  await exec(`parted --script ${installDevice} mklabel msdos`, this.echo)
+  await exec(`parted --script ${installDevice} mkpart primary ext2 1 512`, this.echo) // sda1
+  await exec(`parted --script --align optimal ${installDevice} mkpart primary ${this.partitions.filesystemType} 512 100%`, this.echo) // sda2
+  await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
+  await exec(`parted --script ${installDevice} set 2 lvm on`, this.echo) // sda2
 
-    this.devices = await createLvmPartitions(
-      installDevice,
-      this.partitions.lvmOptions.vgName,
-      this.partitions.userSwapChoice,
-      this.swapSize,
-      this.partitions.lvmOptions.lvRootName,
-      this.partitions.lvmOptions.lvRootFSType,
-      this.partitions.lvmOptions.lvRootSize,
-      this.partitions.lvmOptions.lvDataName,
-      this.partitions.lvmOptions.lvDataFSType,
-      this.partitions.lvmOptions.lvDataMountPoint,
-      this.echo
-    )
+  
+  this.devices = await this.createLvmPartitions(installDevice)
 
-    if (this.partitions.userSwapChoice == SwapChoice.File) {
-      this.devices.swap.name = 'swap.img'
-      this.devices.swap.mountPoint = '/'
-    }
+  if (this.partitions.userSwapChoice == SwapChoice.File) {
+    this.devices.swap.name = 'swap.img'
+    this.devices.swap.mountPoint = '/'
+  }
 
-    this.devices.efi.name = 'none'
+  this.devices.efi.name = 'none'
 
-    this.devices.boot.name = `${installDevice}${p}1`
-    this.devices.boot.fsType = 'ext2'
-    this.devices.boot.mountPoint = '/boot'
-    return true
+  this.devices.boot.name = `${installDevice}${p}1`
+  this.devices.boot.fsType = 'ext2'
+  this.devices.boot.mountPoint = '/boot'
+  
+  return true
 }

@@ -61,7 +61,7 @@ import { IKrillConfig } from '../interfaces/i-krill-config.js'
 import React from 'react';
 import { render, RenderOptions } from 'ink'
 import axios from 'axios'
-import shx from 'shelljs'
+import shx, { echo } from 'shelljs'
 import fs from 'fs'
 
 import Keyboards from '../../classes/keyboards.js'
@@ -179,6 +179,20 @@ export default class Krill {
     // Check Lvm2 presence
     if (await this.pvExist()) {
       await Utils.pressKeyToExit(`There is a lvm2 volume in the system, remove it manually before installation.\nkrill installer refuses to continue`)
+
+      // Create removeLvmPartitions
+      let vgName='/dev/mapper'+(await exec(`vgs --noheadings -o vgname`)).data.trim()
+      let scriptName = "removeLvmPartitions"
+      let cmds = "#!/bin/bash\n"
+      cmds += `\n`
+      cmds += `# remove previous lvm2\n`
+      cmds += `lvremove --force $(lvs --noheadings -o lv_path ${vgName})\n`
+      cmds += `vgremove --force $(vgs --noheadings -o vg_name ${vgName})\n`
+      cmds += `pvremove --force --force $(pvs)\n`
+      cmds += `wipefs -a $(pvs)\n`
+      fs.writeFileSync(scriptName, cmds)
+      await exec(`chmod +x ${scriptName}`)
+    
       process.exit()
     }
 

@@ -1,11 +1,12 @@
 /**
- * ./src/krill/modules/partition.ts
+ * ./src/krill/modules/partition.d/create-lvm-partitions.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
+
 import shx from 'shelljs'
 import fs from 'fs'
 
@@ -13,50 +14,51 @@ import Utils from '../../../../classes/utils.js'
 import { IDevices, IDevice } from '../../../../interfaces/i-devices.js'
 import { SwapChoice, InstallationMode } from '../../krill-enums.js'
 import { exec } from '../../../../lib/utils.js'
+import Sequence from '../../sequence.js'
 
 /**
  * 
+ * @param this 
  * @param installDevice 
- * @param vgName 
- * @param swapType 
- * @param swapSize 
- * @param lvmRootName 
- * @param lvmRootFSType 
- * @param lvmRootSize 
- * @param lvmDataName 
- * @param lvmDataFSType 
- * @param lvmDataMountPoint 
- * @param echo 
  * @returns 
  */
-export async function createLvmPartitions(
-  installDevice: string,
-  vgName: string = "pve",
-  swapType: string,
-  swapSize: number,
-  lvmRootName: string = "root",
-  lvmRootFSType: string = "ext4",
-  lvmRootSize: string = "20%",
-  lvmDataName: string = "data",
-  lvmDataFSType: string = "ext4",
-  lvmDataMountPoint: string = "/mnt/data",
-  echo: object
-): Promise<IDevices> {
+export default async function createLvmPartitions(this: Sequence, installDevice=""): Promise<IDevices> {
 
-  if (lvmRootFSType == "") {
-    lvmRootFSType = "ext4"
-  }
+  let vgName = this.partitions.lvmOptions.vgName
+  let lvmRootName = this.partitions.lvmOptions.lvRootName
+  let lvmRootFSType = this.partitions.lvmOptions.lvRootFSType
+  let lvmRootSize = this.partitions.lvmOptions.lvRootSize
+  let lvmDataName = this.partitions.lvmOptions.lvDataName
+  let lvmDataFSType = this.partitions.lvmOptions.lvDataFSType
+  let lvmDataMountPoint = this.partitions.lvmOptions.lvDataMountPoint
+  let swapSize = this.swapSize
+  let swapType = this.partitions.userSwapChoice
 
-  if (lvmDataFSType == "") {
-    lvmDataFSType = "ext4"
-  }
+  // Default as proxmox if null
+  // if (vgName === '') vgName = "pve"
+  // if (lvmRootName=== '') lvmRootName = "root"
+  // if (lvmRootFSType === '') lvmRootFSType = "ext4"
+  // if (lvmRootSize === '') lvmRootSize = "20%"
+  // if (lvmDataName === '') lvmDataName = "data"
+  // if (lvmDataFSType === '') lvmDataFSType = "ext4"
+  // if (lvmDataMountPoint === '') lvmDataMountPoint = "/mnt/data"
 
+  // devices are returnes as Sequence.devices
   let devices = {} as IDevices
   devices.efi = {} as IDevice
   devices.boot = {} as IDevice
   devices.root = {} as IDevice
   devices.data = {} as IDevice
   devices.swap = {} as IDevice
+
+
+  if (lvmRootFSType === "") {
+    lvmRootFSType = "ext4"
+  }
+
+  if (lvmDataName === "") {
+    lvmDataName = "ext4"    
+  }
 
   const partInfo = await lvmPartInfo(installDevice)
   const lvmPartname: string = partInfo[0]
@@ -126,24 +128,27 @@ export async function createLvmPartitions(
     cmds += `lvcreate -L ${lvmSwapSize}G -n ${lvmSwapName} ${vgName}\n`
     devices.swap.name = `/dev/${vgName}/${lvmSwapName}`;
   }
+  devices.swap.name = `/dev/${vgName}/${lvmSwapName}`
+  devices.swap.fsType = lvmSwapName
+  devices.swap.mountPoint = ''
 
   cmds += `# create root LV\n`
   cmds += `lvcreate -l ${lvmRootSize}FREE -n ${lvmRootName} ${vgName}\n`
-
-  devices.root.name = `/dev/${vgName}/${lvmRootName}`;
-  devices.root.fsType = lvmRootFSType;
-  devices.root.mountPoint = '/';
 
   // Create data LV if required
   if (lvmDataMountPoint.trim() !== "") {
     cmds += `# create data\n`
     cmds += `lvcreate -l 100%FREE -n ${lvmDataName} ${vgName}\n`
-    devices.data.name = `/dev/${vgName}/${lvmDataName}`;
-    devices.data.fsType = lvmDataFSType;
-    devices.data.mountPoint = lvmDataMountPoint;
+    devices.data.name = `/dev/${vgName}/${lvmDataName}`
+    devices.data.fsType = lvmDataFSType
+    devices.data.mountPoint = lvmDataMountPoint
   } else {
-    devices.data.name = 'none';
+    devices.data.name = 'none'
   }
+
+  devices.root.name = `/dev/${vgName}/${lvmRootName}`
+  devices.root.fsType = lvmRootFSType
+  devices.root.mountPoint = '/'
 
   // Activate VG
   cmds += `# activate VG\n`
@@ -152,9 +157,9 @@ export async function createLvmPartitions(
   fs.writeFileSync(scriptName, cmds)
   await exec(`chmod +x ${scriptName}`)
 
-  await exec(fs.readFileSync(scriptName, 'utf8'), echo)
+  await exec(fs.readFileSync(scriptName, 'utf8'), this.echo)
 
-  return devices;
+  return devices
 }
 
 /**
