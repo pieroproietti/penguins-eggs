@@ -17,11 +17,6 @@ import { SwapChoice, InstallationMode } from '../krill-enums.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
 
-// React
-import React from 'react';
-import { render, RenderOptions, Box, Text } from 'ink'
-import Install from '../../components/install.js'
-
 
 /**
  *
@@ -264,17 +259,6 @@ export async function createLvmPartitions(
 }
 
 
-/**
- *
- * @param elem
- */
-async function redraw(elem: JSX.Element) {
-  let opt: RenderOptions = {}
-  opt.patchConsole = false
-  opt.debug = true
-  console.clear()
-  render(elem, opt)
-}
 
 /** 
 
