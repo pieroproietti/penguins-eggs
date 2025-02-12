@@ -179,23 +179,26 @@ export default class Krill {
     // Check Lvm2 presence
     if (await this.pvExist()) {
       // Create removeLvmPartitions
-      let vgName = (await exec(`vgs --noheadings -o vgname`)).data.trim()
       let scriptName = "removeLvmPartitions"
 
       let cmds = "#!/bin/bash\n"
       cmds+=`# remove LV (Logical Volumes)\n`
-      cmds +=`vgName=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
+      cmds +=`vg=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
       cmds +=`lvs -o lv_name --noheadings | awk '{$1=$1};1' | while read -r lv; do\n`
-      cmds +=` lvremove -y /dev/mapper/$vgName-$lv\n`
+      cmds +=` lvremove -y /dev/mapper/$vg-$lv\n`
       cmds +=`done\n`
       cmds+=`\n`
       cmds+=`# remove VG (Volume groups)\n`
-      cmds += `vgremove --force $(vgs --noheadings -o vg_name ${vgName})\n`
+      cmds += `vgremove --force $(vgs --noheadings -o vg_name $vg)\n`
       cmds+=`\n`
       cmds+=`# remove PV (Phisical Volumes) \n`
       cmds+=`pv=$(pvs --noheading -o pv_name | awk '{$1=$1};1')\n`
       cmds += `pvremove --force --force $pv\n`
+      cmds+=`# wipe PV (Phisical Volumes) \n`
       cmds += `wipefs -a $pv\n`
+      cmds+=`# clean device\n`
+      cmds += `sgdisk --zap-all $pv\n`
+      cmds += `dd if=/dev/zero of=$pv bs=1M count=10\n`
 
       fs.writeFileSync(scriptName, cmds)
       await exec(`chmod +x ${scriptName}`)

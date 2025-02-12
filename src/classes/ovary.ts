@@ -155,7 +155,6 @@ export default class Ovary {
          * Directory
          */
       } else if (statDir.isDirectory()) {
-
         if (dir === 'boot') {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))

@@ -169,22 +169,9 @@ export async function createLvmPartitions(
     lvmSwapSize = 0
   }
 
-  // Create removeLvmPartitions
-  let scriptName = "removeLvmPartitions"
-  let cmds = "#!/bin/bash\n"
-  cmds += `\n`
-  cmds += `# remove previous lvm2\n`
-  cmds += `umount ${installDevice}* 2>/dev/null || true\n`
-  cmds += `lvremove --force $(lvs --noheadings -o lv_path ${installDevice} 2>/dev/null) 2>/dev/null || true\n`
-  cmds += `vgremove --force $(vgs --noheadings -o vg_name ${installDevice} 2>/dev/null) 2>/dev/null || true\n`
-  cmds += `pvremove --force --force ${installDevice}* 2>/dev/null || true\n`
-  cmds += `wipefs -a ${installDevice} 2>/dev/null || true\n`
-  fs.writeFileSync(scriptName, cmds)
-  await exec(`chmod +x ${scriptName}`)
-
   // Create createLvmPartitions
-  scriptName = "createLvmPartitions"
-  cmds = "#!/bin/bash\n"
+  let scriptName = "createLvmPartitions"
+  let cmds = "#!/bin/bash\n"
 
   // Calculate root size based on percentage or absolute value
   let lvmRootAbsSize: number;
