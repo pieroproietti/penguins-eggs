@@ -67,6 +67,14 @@ import { exec } from '../../lib/utils.js'
 
 // import krill modules
 import partition from './modules/partition.js'
+import createLvmPartitions from './modules/partition.d/create-lvm-partitions.js'
+import biosStandard from './modules/partition.d/bios-standard.js'
+import biosLuks from './modules/partition.d/bios-luks.js'
+import uefiStandard from './modules/partition.d/uefi-standard.js'
+import uefiLuks from './modules/partition.d/uefi-luks.js'
+import biosLvm from './modules/partition.d/bios-lvm.js'
+import uefiLvm from './modules/partition.d/uefi-lvm.js'
+
 import { mountFs, umountFs } from './modules/mount-fs.js'
 import { mountVfs, umountVfs } from './modules/mount-vfs.js'
 import unpackfs from './modules/unpackfs.js'
@@ -101,11 +109,20 @@ import Title from '../components/title.js'
 import cliCursor from 'cli-cursor'
 import { spawnSync } from 'child_process';
 
+
 /**
  * hatching: installazione o cova!!!
  */
 export default class Sequence {
    public partition = partition
+   public createLvmPartitions = createLvmPartitions
+   public partitionBiosStandard = biosStandard
+   public partitionUefiStandard = uefiStandard
+   public partitionBiosLuks = biosLuks
+   public partitionUefiLuks = uefiLuks
+   public partitionBiosLvm = biosLvm
+   public partitionUefiLvm = uefiLvm
+
    // mount
    public mountFs = mountFs
    public mountVfs = mountVfs

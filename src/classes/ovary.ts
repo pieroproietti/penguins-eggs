@@ -155,7 +155,6 @@ export default class Ovary {
          * Directory
          */
       } else if (statDir.isDirectory()) {
-
         if (dir === 'boot') {
           cmds.push(`# /boot is copied actually`)
           cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
@@ -1193,7 +1192,7 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
     await exec(`mkdir ${efiWorkDir}EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}EFI/BOOT`, this.echo)
+    await exec(`mkdir ${efiWorkDir}EFI/boot`, this.echo)
 
     /**
      * copy splash to efiWorkDir
@@ -1208,7 +1207,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
-
     await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
     /**
@@ -1224,7 +1222,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
     }
-
     await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     /**
@@ -1239,7 +1236,7 @@ export default class Ovary {
     cmd = `for i in efi_gop efi_uga vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
     await exec(cmd, this.echo)
     await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
-
+ 
     /**
      * andiamo in memdiskDir
      */
@@ -1264,7 +1261,7 @@ export default class Ovary {
     await exec(
       `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
                 -m "${memdiskDir}/memdisk" \
-                -o "${memdiskDir}/${Utils.uefiBN()}" \
+                -o "${memdiskDir}/${Utils.bootArchEfi()}" \
                 -p '(memdisk)/boot/grub' \
                 search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`,
       this.echo
@@ -1273,20 +1270,56 @@ export default class Ovary {
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}EFI/BOOT`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.bootArchEfi()} ${efiWorkDir}EFI/boot`, this.echo)
 
     // #######################
 
-    // Create boot image "boot/grub/efiboot.img"
-    await exec(`dd if=/dev/zero of=${efiWorkDir}boot/grub/efiboot.img bs=1K count=1440`, this.echo)
-    await exec(`/sbin/mkdosfs -F 12 ${efiWorkDir}boot/grub/efiboot.img`, this.echo)
-    await exec(`mkdir ${efiWorkDir}img-mnt`, this.echo)
-    await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
+    /**
+     * Create boot image "boot/grub/efi.img"
+     */ 
+    const efiImg=`${efiWorkDir}boot/grub/efi.img`
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1K count=1440`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
-    await exec(`mkdir ${efiWorkDir}img-mnt/EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
-    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
+    /**
+     * create mntImg
+     */
+    const mntImg = `${efiWorkDir}mnt-img`
+    await exec(`mkdir ${mntImg}`, this.echo)
 
+    /**
+     * mount efi.img on mnt-img
+     */
+    await exec(`mount -o loop ${efiImg} ${mntImg}`, this.echo)
+
+    /**
+     * create structure
+     */
+    await exec(`mkdir ${mntImg}/boot`, this.echo)
+    await exec(`mkdir ${mntImg}/boot/grub`, this.echo)
+    // file: boot/grub/grub.cfg come segue
+    const grubOnImg = `${mntImg}/boot/grub/grub.cfg`
+    let grubOnImgTxt = `search --set=root --file /.disk/info\n`
+    grubOnImgTxt += `set prefix=($root)/boot/grub\n`
+    grubOnImgTxt += `set prefix=($root)/boot/grub\n`
+    grubOnImgTxt += `configfile ($root)/boot/grub/grub.cfg\n`
+    fs.writeFileSync(grubOnImg, grubOnImgTxt)
+    
+    await exec(`mkdir ${mntImg}/EFI`, this.echo)
+    await exec(`mkdir ${mntImg}/EFI/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.bootArchEfi()} ${mntImg}/EFI/boot`, this.echo)
+
+    // to expand and check 
+    // copyng grub[x86/aa64].efi to efi.img
+    const file_grubArchEfi = `/usr/lib/grub/x86_64-efi/monolithic/${Utils.grubArchEfi()}`
+    if (!fs.existsSync(file_grubArchEfi)) {
+      console.log(`error: cannot find ${file_grubArchEfi}`)
+    } else {
+      console.log(`copyng  ${file_grubArchEfi} to ${mntImg}/EFI/boot`)
+      await exec(`cp ${file_grubArchEfi} ${mntImg}/EFI/boot`, this.echo)
+      // Utils.pressKeyToExit()
+    }
+    
     // #######################
 
     // copy modules and font
@@ -1306,15 +1339,23 @@ export default class Ovary {
     // chown -R 1000:1000 $(pwd) 2>/dev/null
 
     // Cleanup efi temps
-    await exec(`umount ${efiWorkDir}img-mnt`, this.echo)
-    await exec(`rmdir ${efiWorkDir}img-mnt`, this.echo)
-    await exec(`rm ${memdiskDir}/img-mnt -rf`, this.echo)
+    await exec(`umount ${mntImg}`, this.echo)
+    await exec(`rm -rf ${mntImg}`, this.echo)
+    await exec(`cp ${efiImg} ${this.settings.iso_work}`)
+
 
     //  popd
 
     // Copy efi files to ISO
     await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
     await exec(`rsync -avx ${efiWorkDir}EFI  ${isoDir}/`, this.echo)
+
+    // to expand and check
+    if (!fs.existsSync(file_grubArchEfi)) {
+      console.log(`error: cannot find ${file_grubArchEfi}`)
+    } else {
+      await exec(`cp ${file_grubArchEfi} ${isoDir}EFI/boot`)
+    }
 
     // Do the main grub.cfg (which gets loaded last):
 
@@ -1362,7 +1403,6 @@ export default class Ovary {
      * loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-
   }
 
   /**
@@ -2054,7 +2094,7 @@ export default class Ovary {
         -boot-load-size 4 \
         -boot-info-table \
         -eltorito-alt-boot \
-        -e boot/grub/efiboot.img \
+        -e boot/grub/efi.img \
         -o ${output} ${this.settings.iso_work}`
 
       return command
@@ -2063,23 +2103,23 @@ export default class Ovary {
     /**
      * xorriso
      */
-    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot"
+    // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efi.img -isohybrid-gpt-basdat -no-emul-boot"
     let uefi_elToritoAltBoot = ''
     let uefi_e = ''
     let uefi_isohybridGptBasdat = ''
     let uefi_noEmulBoot = ''
     if (this.settings.config.make_efi) {
       uefi_elToritoAltBoot = '-eltorito-alt-boot'
-      uefi_e = '-e boot/grub/efiboot.img'
+      uefi_e = '-e boot/grub/efi.img'
       uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
       uefi_noEmulBoot = '-no-emul-boot'
     }
     /**
-     * L'immagine efi è efiboot.img ed è
-     * presente in boot/grub/efiboot.img
+     * L'immagine efi è efi.img ed è
+     * presente in boot/grub/efi.img
      * per cui:
-     * -append_partition 2 0xef efiboot.img
-     * --efi-boot efiboot.img
+     * -append_partition 2 0xef efi.img
+     * --efi-boot efi.img
      * non sono necessari
      */
 
@@ -2179,4 +2219,15 @@ async function rexec(cmd: string, verbose = false): Promise<string> {
   }
 
   return cmd
+}
+
+/**
+ *
+ * @param ms
+ * @returns
+ */
+function sleep(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
