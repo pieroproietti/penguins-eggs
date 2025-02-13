@@ -13,6 +13,11 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.58 (Testing)
+I am working mainly on krill, to add the functionality for encrypted installation and VM2. With the occasion I am also trying to get ISOs created with eggs working with Secure boot enabled on UEFI.
+
+Halfway through!
+
 ## penguins-eggs-10.0.57
 Completely removed for all the distros `lsb_release` package.
 
