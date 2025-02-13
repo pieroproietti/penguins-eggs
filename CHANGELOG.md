@@ -18,6 +18,10 @@ I am working mainly on krill, to add the functionality for encrypted installatio
 
 Halfway through!
 
+The LVM2 installation works, as does the LUKS installation, but I still have some problems on the installed system.
+
+To add the ability to boot with Secure Boot enabled will be a great add, thanks to [karltestano](https://github.com/karltestano) for suggestions [Issue: 456](https://github.com/pieroproietti/penguins-eggs/issues/456).
+
 ## penguins-eggs-10.0.57
 Completely removed for all the distros `lsb_release` package.
 
