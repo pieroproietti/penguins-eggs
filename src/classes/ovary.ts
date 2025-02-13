@@ -1192,7 +1192,7 @@ export default class Ovary {
     await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
     await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
     await exec(`mkdir ${efiWorkDir}EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}EFI/BOOT`, this.echo)
+    await exec(`mkdir ${efiWorkDir}EFI/boot`, this.echo)
 
     /**
      * copy splash to efiWorkDir
@@ -1207,7 +1207,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + splashSrc)
       process.exit()
     }
-
     await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
     /**
@@ -1223,7 +1222,6 @@ export default class Ovary {
       Utils.warning('Cannot find: ' + themeSrc)
       process.exit()
     }
-
     await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     /**
@@ -1238,6 +1236,21 @@ export default class Ovary {
     cmd = `for i in efi_gop efi_uga vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
     await exec(cmd, this.echo)
     await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
+ 
+    // to expand and check
+    const file_grubx64efi = '/usr/lib/grub/x86_64-efi/monolithic/grubx64.efi'
+    if (!fs.existsSync(file_grubx64efi)) {
+      await exec(`cp ${file_grubx64efi} ${efiWorkDir}EFI/boot`)
+    }
+    const file_bootx64efi=`/usr/lib/shim/bootx64.efi`
+    if (!fs.existsSync(file_bootx64efi)) {
+      await exec(`cp ${file_bootx64efi} ${efiWorkDir}EFI/boot`)
+    }
+
+    const file_fbx64efi=`/usr/lib/shim/fbx64.efi`
+    if (!fs.existsSync(file_fbx64efi)) {
+      await exec(`cp ${file_fbx64efi} ${efiWorkDir}EFI/boot`)
+    }
 
     /**
      * andiamo in memdiskDir
@@ -1272,7 +1285,7 @@ export default class Ovary {
     // popd torna in efiWorkDir
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}EFI/BOOT`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}EFI/boot`, this.echo)
 
     // #######################
 
@@ -1283,8 +1296,8 @@ export default class Ovary {
     await exec(`mount -o loop ${efiWorkDir}boot/grub/efiboot.img ${efiWorkDir}img-mnt`, this.echo)
 
     await exec(`mkdir ${efiWorkDir}img-mnt/EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
-    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/EFI/BOOT`, this.echo)
+    await exec(`mkdir ${efiWorkDir}img-mnt/EFI/boot`, this.echo)
+    await exec(`cp ${memdiskDir}/${Utils.uefiBN()} ${efiWorkDir}img-mnt/EFI/boot`, this.echo)
 
     // #######################
 
