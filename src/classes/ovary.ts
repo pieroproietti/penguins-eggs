@@ -1317,6 +1317,7 @@ export default class Ovary {
     } else {
       console.log(`copyng  ${file_grubArchEfi} to ${mntImg}/EFI/boot`)
       await exec(`cp ${file_grubArchEfi} ${mntImg}/EFI/boot`, this.echo)
+      await sleep(3000)
       // Utils.pressKeyToExit()
     }
     
