@@ -1315,12 +1315,20 @@ export default class Ovary {
     if (!fs.existsSync(file_grubArchEfi)) {
       console.log(`error: cannot find ${file_grubArchEfi}`)
     } else {
-      console.log(`copyng  ${file_grubArchEfi} to ${mntImg}/EFI/boot`)
+      Utils.warning(`cp  ${file_grubArchEfi} ${mntImg}/EFI/boot`)
       await exec(`cp ${file_grubArchEfi} ${mntImg}/EFI/boot`, this.echo)
-      await sleep(3000)
-      // Utils.pressKeyToExit()
     }
+
+    // save mntImg content in dummyImg
+    await exec(`cp -r ${mntImg} ${efiWorkDir}/saved_efi.img`, this.echo)
     
+    // umount mntImg
+    await exec(`umount ${mntImg}`, this.echo)
+
+    // cleanup mntImg
+    await exec(`rm -rf ${mntImg}`, this.echo)
+
+
     // #######################
 
     // copy modules and font
@@ -1339,9 +1347,7 @@ export default class Ovary {
     // Doesn't need to be root-owned
     // chown -R 1000:1000 $(pwd) 2>/dev/null
 
-    // Cleanup efi temps
-    await exec(`umount ${mntImg}`, this.echo)
-    await exec(`rm -rf ${mntImg}`, this.echo)
+    // cp efi.img /
     await exec(`cp ${efiImg} ${this.settings.iso_work}`)
 
 
@@ -1360,18 +1366,22 @@ export default class Ovary {
 
     // Do the main grub.cfg (which gets loaded last):
 
-    // grub.theme.cfg
+    /**
+     * Theme
+     */
+
+    // select grubThemeSrc
     let grubThemeSrc = path.resolve(__dirname, `../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
       grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
     }
 
+    // copy theme
     const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(grubThemeSrc)) {
       Utils.warning('Cannot find: ' + grubThemeSrc)
       process.exit()
     }
-
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
     /**
