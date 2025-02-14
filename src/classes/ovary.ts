@@ -2099,6 +2099,7 @@ export default class Ovary {
         -boot-info-table \
         -eltorito-alt-boot \
         -e boot/grub/efi.img \
+        -no-emul-boot \
         -o ${output} ${this.settings.iso_work}`
 
       return command
