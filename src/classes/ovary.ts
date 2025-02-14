@@ -1267,8 +1267,6 @@ export default class Ovary {
       this.echo
     )
 
-    // popd torna in efiWorkDir
-
     // copy the grub image to efi/boot (to go later in the device's root)
     await exec(`cp ${memdiskDir}/${Utils.bootArchEfi()} ${efiWorkDir}EFI/boot`, this.echo)
 
@@ -1297,7 +1295,8 @@ export default class Ovary {
      */
     await exec(`mkdir ${mntImg}/boot`, this.echo)
     await exec(`mkdir ${mntImg}/boot/grub`, this.echo)
-    // file: boot/grub/grub.cfg come segue
+
+    // create file boot/grub/grub.cfg come segue
     const grubOnImg = `${mntImg}/boot/grub/grub.cfg`
     let grubOnImgTxt = `search --set=root --file /.disk/info\n`
     grubOnImgTxt += `set prefix=($root)/boot/grub\n`
@@ -1309,9 +1308,8 @@ export default class Ovary {
     await exec(`mkdir ${mntImg}/EFI/boot`, this.echo)
     await exec(`cp ${memdiskDir}/${Utils.bootArchEfi()} ${mntImg}/EFI/boot`, this.echo)
 
-    // to expand and check 
     // copyng grub[x86/aa64].efi to efi.img
-    const file_grubArchEfi = `/usr/lib/grub/x86_64-efi/monolithic/${Utils.grubArchEfi()}`
+    const file_grubArchEfi = Utils.grubArchEfi()
     if (!fs.existsSync(file_grubArchEfi)) {
       console.log(`error: cannot find ${file_grubArchEfi}`)
     } else {
@@ -1331,7 +1329,9 @@ export default class Ovary {
 
     // #######################
 
-    // copy modules and font
+    /**
+     * copy modules and font
+     */
     await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
 
     // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
@@ -1343,28 +1343,20 @@ export default class Ovary {
     } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
       await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     }
-
-    // Doesn't need to be root-owned
-    // chown -R 1000:1000 $(pwd) 2>/dev/null
-
-    // cp efi.img /
-    await exec(`cp ${efiImg} ${this.settings.iso_work}`)
+    
+    // cp efi.img on iso / ## not need 
+    // await exec(`cp ${efiImg} ${this.settings.iso_work}`)
 
 
     //  popd
 
-    // Copy efi files to ISO
+    // Copy efi files to ISO/boot, ISO/EFI
     await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
     await exec(`rsync -avx ${efiWorkDir}EFI  ${isoDir}/`, this.echo)
-
-    // to expand and check
-    if (!fs.existsSync(file_grubArchEfi)) {
-      console.log(`error: cannot find ${file_grubArchEfi}`)
-    } else {
+    if (fs.existsSync(file_grubArchEfi)) {
       await exec(`cp ${file_grubArchEfi} ${isoDir}EFI/boot`)
     }
 
-    // Do the main grub.cfg (which gets loaded last):
 
     /**
      * Theme
@@ -1385,7 +1377,8 @@ export default class Ovary {
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
 
     /**
-     * prepare grub.cfg from grub.main.cfg
+     * prepare main grub.cfg from grub.main.cfg
+     * (which gets loaded last) 
      */
     let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
     if (!fs.existsSync(grubTemplate)) {
@@ -1411,7 +1404,7 @@ export default class Ovary {
     fs.writeFileSync(grubDest, mustache.render(template, view))
 
     /**
-     * loopback.cfg
+     * creatubg loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
   }

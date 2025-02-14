@@ -490,9 +490,9 @@ export default class Utils {
    static grubArchEfi() {
       let bn = 'nothing.efi'
       if (process.arch === 'x64') {
-         bn = 'grubx64.efi'
+         bn = '/usr/lib/grub/x86_64-efi/monolithic/grubx64.efi'
       } else if (process.arch === 'arm64') {
-         bn = 'grubaa64.efi'
+         bn = '/usr/lib/grub/aa64-efi/monolithic/grubaa64.efi'
       }
       return bn
    }
