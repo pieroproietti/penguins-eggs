@@ -190,7 +190,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     const grubOnImg = `${efiMnt}/boot/grub/grub.cfg`
     let grubOnImgTxt = `search --set=root --file /.disk/info\n`
     grubOnImgTxt += `set prefix=($root)/boot/grub\n`
-    grubOnImgTxt += `set prefix=($root)/boot/grub\n`
     grubOnImgTxt += `configfile ($root)/boot/grub/grub.cfg\n`
     fs.writeFileSync(grubOnImg, grubOnImgTxt)
 
@@ -215,12 +214,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          * copy grubx64.efi.signed as grubx64.efi
          * create README.md
          */
-        await exec(`cp /usr/lib/shim/shimx64.efi.signed ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-        await exec(`cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+        
+        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+        await exec(`cp ${GAE} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
         // README.md in EFI
         let content = `# README\n`
-        content += `shimx64.efi.signed copied as ${bootArchEfi()}\n`
+        content += `${srcShim()} copied as ${bootArchEfi()}\n`
         content += `${GAE} copied as ${nameGAE()}\n`
         fs.writeFileSync(`${efiMnt}/EFI/boot/README.md`, content)
     }
@@ -359,4 +359,8 @@ function srcGAE(): string {
 
 function srcGAES(): string {
     return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
+}
+
+function srcShim(): string {
+    return `/usr/lib/shim/shimx64.efi.signed`
 }
