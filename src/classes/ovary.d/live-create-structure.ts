@@ -38,38 +38,38 @@ export async function liveCreateStructure(this: Ovary) {
     let cmd
     if (!fs.existsSync(this.settings.config.snapshot_dir)) {
         cmd = `mkdir -p ${this.settings.config.snapshot_dir}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.config.snapshot_dir + '/README.md')) {
         cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     // Ovarium
     if (!fs.existsSync(this.settings.work_dir.ovarium)) {
         cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
         cmd = `mkdir -p ${this.settings.work_dir.lowerdir}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.upperdir)) {
         cmd = `mkdir -p ${this.settings.work_dir.upperdir}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.workdir)) {
         cmd = `mkdir -p ${this.settings.work_dir.workdir}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.merged)) {
         cmd = `mkdir -p ${this.settings.work_dir.merged}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     /**
@@ -77,38 +77,40 @@ export async function liveCreateStructure(this: Ovary) {
      */
     if (!fs.existsSync(this.settings.iso_work)) {
         cmd = `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
 
         cmd = `mkdir -p ${this.settings.iso_work}isolinux`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
 
         cmd = `mkdir -p ${this.settings.iso_work}live`
-        this.tryCatch(cmd)
+        tryCatch(cmd, this.verbose)
     }
 
     // ln iso
     cmd = `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso`
-    this.tryCatch(cmd)
+    tryCatch(cmd, this.verbose)
 
     // ln livefs
     cmd = `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
-    this.tryCatch(cmd)
+    tryCatch(cmd, this.verbose)
 }
 
 
-/**
- *
- * @param cmd
- */
-export async function tryCatch(this: Ovary, cmd = '') {
-    if (this.verbose) {
-        console.log('Ovary: tryCatch')
-    }
-
+  /**
+   *
+   * @param cmd
+   */
+  async function tryCatch(cmd = '', verbose=false) {
     try {
-        await exec(cmd, this.echo)
+        let echo = Utils.setEcho(verbose)
+        if (verbose) {
+            console.log(cmd)
+        }
+
+        await exec(cmd, echo)
     } catch (error) {
         console.log(`Error: ${error}`)
         await Utils.pressKeyToExit(cmd)
     }
 }
+

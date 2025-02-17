@@ -9,7 +9,7 @@
 import mustache from 'mustache'
 
 // packages
-import fs, { Dirent } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 
 // classes
@@ -25,11 +25,14 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * makeEFI
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
-    const efiMemdiskDir = this.settings.config.snapshot_mnt + 'efi-memdisc'
-    const efiWorkDir = this.settings.efi_work
-    const efiSaveDir = this.settings.config.snapshot_mnt + 'efi-img.saved'
+    const efiPath = this.settings.config.snapshot_mnt + '/efi/'
+
+    const efiWorkDir = efiPath + 'work/'
+    const efiMemdiskDir = efiPath + 'memdisk/'
+    const efiSaveDir = efiPath + 'saved/'
+    const efiMnt = efiPath + 'mnt/'
+
     const isoDir = this.settings.iso_work
-    const efiMnt = this.settings.config.snapshot_mnt + 'efi-mnt'
 
     /**
      * grub/grub2 MUST to exists
@@ -40,15 +43,18 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         process.exit(1)
     }
 
-    /**
-     * Creo o cancello e creo: efiMemdiskDir
-     */
-    if (fs.existsSync(efiMemdiskDir)) {
-        await exec(`rm ${efiMemdiskDir} -rf`, this.echo)
+    // clean all
+    if (fs.existsSync(efiPath)) {
+        await exec(`rmdir -rf ${efiPath} `)
     }
+    await exec(`mkdir ${efiPath} `)
+    await exec(`mkdir ${efiMemdiskDir} `)
+    await exec(`mkdir ${efiMnt}`)
+    await exec(`mkdir ${efiSaveDir}`)
 
+
+    // create memdisk
     Utils.warning('creating temporary efiMemdiskDir on ' + efiMemdiskDir)
-    await exec(`mkdir ${efiMemdiskDir}`)
     await exec(`mkdir ${efiMemdiskDir}/boot`, this.echo)
     await exec(`mkdir ${efiMemdiskDir}/boot/grub`, this.echo)
 
@@ -73,16 +79,16 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     Utils.warning('creating temporary efiWordDir on ' + efiWorkDir)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}boot`, this.echo)
-    await exec(`mkdir ${efiWorkDir}boot/grub`, this.echo)
-    await exec(`mkdir ${efiWorkDir}boot/grub/${Utils.uefiFormat()}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}EFI/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/EFI`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
 
     /**
      * copy splash to efiWorkDir
      */
-    const splashDest = `${efiWorkDir}boot/grub/splash.png`
+    const splashDest = `${efiWorkDir}/boot/grub/splash.png`
     let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
     if (this.theme.includes('/')) {
         splashSrc = `${theme}/theme/livecd/splash.png`
@@ -97,7 +103,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * copy theme
      */
-    const themeDest = `${efiWorkDir}boot/grub/theme.cfg`
+    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
     let themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
         themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
@@ -120,7 +126,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // not find: ieee1275_fb.mod vbe.mod vga.mod
     cmd = `for i in efi_gop efi_uga vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
     await exec(cmd, this.echo)
-    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
+    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
 
     /**
      * andiamo in efiMemdiskDir
@@ -146,14 +152,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(
         `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
                 -m "${efiMemdiskDir}/memdisk" \
-                -o "${efiMemdiskDir}/${Utils.bootArchEfi()}" \
+                -o "${efiMemdiskDir}/${bootArchEfi()}" \
                 -p '(memdisk)/boot/grub' \
                 search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`,
         this.echo
     )
 
     // copy the grub image to efi/boot (to go later in the device's root)
-    await exec(`cp ${efiMemdiskDir}/${Utils.bootArchEfi()} ${efiWorkDir}EFI/boot`, this.echo)
+    await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiWorkDir}/EFI/boot`, this.echo)
 
     // #######################
 
@@ -161,7 +167,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * Create boot image "boot/grub/efi.img"
      */
     const efiImg = `${efiWorkDir}boot/grub/efi.img`
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1K count=1440`, this.echo)
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=10`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
     /**
@@ -190,27 +196,41 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
-    await exec(`cp ${efiMemdiskDir}/${Utils.bootArchEfi()} ${efiMnt}/EFI/boot`, this.echo)
 
-    // copyng grub[x86/aa64].efi to efi.img
-    const file_grubArchEfi = Utils.grubArchEfi()
-    if (!fs.existsSync(file_grubArchEfi)) {
-        console.log(`error: cannot find ${file_grubArchEfi}`)
-    } else {
-        Utils.warning(`cp  ${file_grubArchEfi} ${efiMnt}/EFI/boot`)
-        await exec(`cp ${file_grubArchEfi} ${efiMnt}/EFI/boot`, this.echo)
+    /**
+     * copyng grub[x86/aa64].efi to efi.img
+     * 
+     * GAE = Grub Arch Efi path+Grub 
+     */
+    let GAE = srcGAES()
+    if (!fs.existsSync(srcGAE())) {
+        GAE = srcGAE()
     }
 
-    // save efiMnt content in dummyImg
+    if (!fs.existsSync(GAE)) {
+        console.log(`error: cannot find ${GAE}`)
+    } else {
+        /**
+         * copy shimx64.efi.signed as bootx64.efi
+         * copy grubx64.efi.signed as grubx64.efi
+         * create README.md
+         */
+        await exec(`cp /usr/lib/shim/shimx64.efi.signed ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+        await exec(`cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+
+        // README.md in EFI
+        let content = `# README\n`
+        content += `shimx64.efi.signed copied as ${bootArchEfi()}\n`
+        content += `${GAE} copied as ${nameGAE()}\n`
+        fs.writeFileSync(`${efiMnt}/EFI/boot/README.md`, content)
+    }
+
+    // save efiMnt content in efiSaveDir
     await exec(`mkdir ${efiMnt} ${efiSaveDir}`, this.echo)
     await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
-
-    // cleanup efiMnt
-    // await exec(`rm -rf ${efiMnt}`, this.echo)
-
 
     // #######################
 
@@ -230,16 +250,21 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     // cp efi.img on iso / ## not need 
-    // await exec(`cp ${efiImg} ${this.settings.iso_work}`)
+    await exec(`cp ${efiImg} ${this.settings.iso_work}`)
 
 
     //  popd
 
     // Copy efi files to ISO/boot, ISO/EFI
-    await exec(`rsync -avx  ${efiWorkDir}boot ${isoDir}/`, this.echo)
-    await exec(`rsync -avx ${efiWorkDir}EFI  ${isoDir}/`, this.echo)
-    if (fs.existsSync(file_grubArchEfi)) {
-        await exec(`cp ${file_grubArchEfi} ${isoDir}EFI/boot`)
+    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
+    await exec(`rsync -avx ${efiWorkDir}/EFI  ${isoDir}/`, this.echo)
+    if (fs.existsSync(GAE)) {
+        // README.md in EFI
+        let content = `# README\n`
+        content += `${srcGAE()} copied as /EFI/boot/${nameGAE()}\n`
+        fs.writeFileSync(`${isoDir}/EFI/boot/README.md`, content)
+        // here grubx64.efi.signed is copied as grubx64.efi
+        await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`)
     }
 
 
@@ -293,4 +318,45 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
     // process.exit()
+}
+
+
+/**
+ * 
+ * @returns 
+ */
+function bootArchEfi(): string {
+    let bn = 'nothing.efi'
+    if (process.arch === 'x64') {
+        bn = 'bootx64.efi'
+    } else if (process.arch === 'arm64') {
+        bn = 'bootaa64.efi'
+    }
+    return bn
+}
+
+/**
+ * 
+ * @returns 
+ */
+function nameGAE(): string {
+    let bn = 'nothing.efi'
+    if (process.arch === 'x64') {
+        bn = 'grubx64.efi'
+    } else if (process.arch === 'arm64') {
+        bn = 'grubaa64.efi'
+    }
+    return bn
+}
+
+function nameGAES(): string {
+    return nameGAE() + '.signed'
+}
+
+function srcGAE(): string {
+    return '/usr/lib/grub/' + Utils.uefiFormat() + '/monolithic/' + nameGAE()
+}
+
+function srcGAES(): string {
+    return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
 }
