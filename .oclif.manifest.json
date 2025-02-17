@@ -922,28 +922,74 @@
         "update.js"
       ]
     },
-    "export:iso": {
+    "wardrobe:get": {
       "aliases": [],
-      "args": {},
-      "description": "export iso in the destination host",
+      "args": {
+        "repo": {
+          "description": "repository to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "get warorobe",
       "examples": [
-        "eggs export iso",
-        "eggs export iso --clean"
+        "eggs wardrobe get",
+        "eggs wardrobe get your-wardrobe"
       ],
       "flags": {
-        "checksum": {
-          "char": "C",
-          "description": "export checksums md5 and sha256",
-          "name": "checksum",
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
           "allowNo": false,
           "type": "boolean"
         },
-        "clean": {
-          "char": "c",
-          "description": "delete old ISOs before to copy",
-          "name": "clean",
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
           "allowNo": false,
           "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:get",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "get.js"
+      ]
+    },
+    "wardrobe:list": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "wardrobe to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "list costumes and accessoires in wardrobe",
+      "examples": [
+        "eggs wardrobe list",
+        "eggs wardrobe list your-wardrobe",
+        "eggs wardrobe list --distro arch"
+      ],
+      "flags": {
+        "distro": {
+          "char": "d",
+          "description": "distro",
+          "name": "distro",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
         },
         "help": {
           "char": "h",
@@ -954,7 +1000,6 @@
         },
         "verbose": {
           "char": "v",
-          "description": "verbose",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
@@ -962,7 +1007,7 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "export:iso",
+      "id": "wardrobe:list",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -972,52 +1017,131 @@
       "relativePath": [
         "dist",
         "commands",
-        "export",
-        "iso.js"
+        "wardrobe",
+        "list.js"
       ]
     },
-    "export:pkg": {
+    "wardrobe:show": {
       "aliases": [],
-      "args": {},
-      "description": "export pkg/iso to the destination host",
+      "args": {
+        "repo": {
+          "description": "costume to show",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "show costumes/accessories in wardrobe",
       "examples": [
-        "eggs export pkg",
-        "eggs export pkg --clean",
-        "eggs export pkg --all"
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
       ],
       "flags": {
-        "all": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "json": {
+          "char": "j",
+          "description": "output JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:show",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "example": [
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+      ],
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "show.js"
+      ]
+    },
+    "wardrobe:wear": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "costume to wear",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "wear costume/accessories from wardrobe",
+      "examples": [
+        "sudo eggs wardrobe wear duck",
+        "sudo eggs wardrobe wear accessories/firmwares",
+        "sudo eggs wardrobe wear wagtail/waydroid"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no_accessories": {
           "char": "a",
-          "description": "export all archs",
-          "name": "all",
+          "description": "not install accessories",
+          "name": "no_accessories",
           "allowNo": false,
           "type": "boolean"
         },
-        "clean": {
-          "char": "c",
-          "description": "remove old .deb before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
+        "no_firmwares": {
+          "char": "f",
+          "description": "not install firmwares",
+          "name": "no_firmwares",
           "allowNo": false,
           "type": "boolean"
         },
         "verbose": {
           "char": "v",
-          "description": "verbose",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "export:pkg",
+      "id": "wardrobe:wear",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1027,55 +1151,8 @@
       "relativePath": [
         "dist",
         "commands",
-        "export",
-        "pkg.js"
-      ]
-    },
-    "export:tarballs": {
-      "aliases": [],
-      "args": {},
-      "description": "export pkg/iso/tarballs to the destination host",
-      "examples": [
-        "eggs export tarballs",
-        "eggs export tarballs --clean"
-      ],
-      "flags": {
-        "clean": {
-          "char": "c",
-          "description": "remove old .deb before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "export:tarballs",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "export",
-        "tarballs.js"
+        "wardrobe",
+        "wear.js"
       ]
     },
     "tools:clean": {
@@ -1319,74 +1396,28 @@
         "yolk.js"
       ]
     },
-    "wardrobe:get": {
+    "export:iso": {
       "aliases": [],
-      "args": {
-        "repo": {
-          "description": "repository to get",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "get warorobe",
+      "args": {},
+      "description": "export iso in the destination host",
       "examples": [
-        "eggs wardrobe get",
-        "eggs wardrobe get your-wardrobe"
+        "eggs export iso",
+        "eggs export iso --clean"
       ],
       "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
+        "checksum": {
+          "char": "C",
+          "description": "export checksums md5 and sha256",
+          "name": "checksum",
           "allowNo": false,
           "type": "boolean"
         },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
+        "clean": {
+          "char": "c",
+          "description": "delete old ISOs before to copy",
+          "name": "clean",
           "allowNo": false,
           "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "wardrobe:get",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "wardrobe",
-        "get.js"
-      ]
-    },
-    "wardrobe:list": {
-      "aliases": [],
-      "args": {
-        "repo": {
-          "description": "wardrobe to get",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "list costumes and accessoires in wardrobe",
-      "examples": [
-        "eggs wardrobe list",
-        "eggs wardrobe list your-wardrobe",
-        "eggs wardrobe list --distro arch"
-      ],
-      "flags": {
-        "distro": {
-          "char": "d",
-          "description": "distro",
-          "name": "distro",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
         },
         "help": {
           "char": "h",
@@ -1397,6 +1428,7 @@
         },
         "verbose": {
           "char": "v",
+          "description": "verbose",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
@@ -1404,7 +1436,7 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "wardrobe:list",
+      "id": "export:iso",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1414,131 +1446,52 @@
       "relativePath": [
         "dist",
         "commands",
-        "wardrobe",
-        "list.js"
+        "export",
+        "iso.js"
       ]
     },
-    "wardrobe:show": {
+    "export:pkg": {
       "aliases": [],
-      "args": {
-        "repo": {
-          "description": "costume to show",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "show costumes/accessories in wardrobe",
+      "args": {},
+      "description": "export pkg/iso to the destination host",
       "examples": [
-        "eggs wardrobe show colibri",
-        "eggs wardrobe show accessories/firmwares",
-        "eggs wardrobe show accessories/"
+        "eggs export pkg",
+        "eggs export pkg --clean",
+        "eggs export pkg --all"
       ],
       "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "json": {
-          "char": "j",
-          "description": "output JSON",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "wardrobe": {
-          "char": "w",
-          "description": "wardrobe",
-          "name": "wardrobe",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "wardrobe:show",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "example": [
-        "eggs wardrobe show colibri",
-        "eggs wardrobe show accessories/firmwares",
-        "eggs wardrobe show accessories/"
-      ],
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "wardrobe",
-        "show.js"
-      ]
-    },
-    "wardrobe:wear": {
-      "aliases": [],
-      "args": {
-        "repo": {
-          "description": "costume to wear",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "wear costume/accessories from wardrobe",
-      "examples": [
-        "sudo eggs wardrobe wear duck",
-        "sudo eggs wardrobe wear accessories/firmwares",
-        "sudo eggs wardrobe wear wagtail/waydroid"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "no_accessories": {
+        "all": {
           "char": "a",
-          "description": "not install accessories",
-          "name": "no_accessories",
+          "description": "export all archs",
+          "name": "all",
           "allowNo": false,
           "type": "boolean"
         },
-        "no_firmwares": {
-          "char": "f",
-          "description": "not install firmwares",
-          "name": "no_firmwares",
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
           "allowNo": false,
           "type": "boolean"
         },
         "verbose": {
           "char": "v",
+          "description": "verbose",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
-        },
-        "wardrobe": {
-          "char": "w",
-          "description": "wardrobe",
-          "name": "wardrobe",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "wardrobe:wear",
+      "id": "export:pkg",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1548,8 +1501,55 @@
       "relativePath": [
         "dist",
         "commands",
-        "wardrobe",
-        "wear.js"
+        "export",
+        "pkg.js"
+      ]
+    },
+    "export:tarballs": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso/tarballs to the destination host",
+      "examples": [
+        "eggs export tarballs",
+        "eggs export tarballs --clean"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:tarballs",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "tarballs.js"
       ]
     }
   },
