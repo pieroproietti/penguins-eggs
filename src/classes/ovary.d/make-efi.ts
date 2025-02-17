@@ -25,12 +25,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * makeEFI
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
-    const efiPath = this.settings.config.snapshot_mnt + '/efi/'
+    const efiPath = path.join(this.settings.config.snapshot_mnt,'/efi/')
 
-    const efiWorkDir = efiPath + 'work/'
-    const efiMemdiskDir = efiPath + 'memdisk/'
-    const efiSaveDir = efiPath + 'saved/'
-    const efiMnt = efiPath + 'mnt/'
+    const efiWorkDir = path.join(efiPath,'/work/')
+    const efiMemdiskDir = path.join(efiPath, '/memdisk/')
+    const efiSaveDir = path.join(efiPath, '/saved/')
+    const efiMnt = path.join(efiPath, '/mnt/')
 
     const isoDir = this.settings.iso_work
 
@@ -154,7 +154,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
                 -m "${efiMemdiskDir}/memdisk" \
                 -o "${efiMemdiskDir}/${bootArchEfi()}" \
                 -p '(memdisk)/boot/grub' \
-                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux`,
+                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux squash4 loopback`,
         this.echo
     )
 
@@ -222,7 +222,11 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         let content = `# README\n`
         content += `${srcShim()} copied as ${bootArchEfi()}\n`
         content += `${GAE} copied as ${nameGAE()}\n`
-        fs.writeFileSync(`${efiMnt}/EFI/boot/README.md`, content)
+        fs.writeFileSync(path.join(efiMnt, `/EFI/boot/README.md`), content)
+
+        // Copia README.md in iso/boot/grub
+        fs.writeFileSync(path.join(isoDir, `/boot/grub/README.md`), content)
+
     }
 
     // save efiMnt content in efiSaveDir
@@ -262,7 +266,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // README.md in EFI
         let content = `# README\n`
         content += `${srcGAE()} copied as /EFI/boot/${nameGAE()}\n`
-        fs.writeFileSync(`${isoDir}/EFI/boot/README.md`, content)
+        fs.writeFileSync(path.join(isoDir, `EFI/boot/README.md`), content)
         // here grubx64.efi.signed is copied as grubx64.efi
         await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`)
     }
@@ -362,5 +366,12 @@ function srcGAES(): string {
 }
 
 function srcShim(): string {
+    const signedShim = '/usr/lib/shim/shimx64.efi.signed';
+    const unsignedShim = '/usr/lib/shim/shimx64.efi';
+    return fs.existsSync(signedShim) ? signedShim : unsignedShim;
+}
+/*
+function srcShim(): string {
     return `/usr/lib/shim/shimx64.efi.signed`
 }
+*/
