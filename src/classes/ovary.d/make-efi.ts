@@ -188,10 +188,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // create file boot/grub/grub.cfg come segue
     const grubOnImg = `${efiMnt}/boot/grub/grub.cfg`
-    let grubOnImgTxt = `search --set=root --file /.disk/info\n`
+    // 
+    // let grubOnImgTxt = `search --set=root --file /.disk/info\n`
+    // let grubOnImgTxt = `search --set=root --label "${this.volid}"\n`
+    let grubOnImgTxt = `search --set=root --file /live/${path.basename(Utils.vmlinuz())}\n`
     grubOnImgTxt += `set prefix=($root)/boot/grub\n`
     grubOnImgTxt += `configfile ($root)/boot/grub/grub.cfg\n`
     fs.writeFileSync(grubOnImg, grubOnImgTxt)
+
 
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
