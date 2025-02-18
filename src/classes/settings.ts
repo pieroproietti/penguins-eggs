@@ -38,7 +38,7 @@ export default class Settings {
 
   distro = {} as IDistro
 
-  efi_work = ''
+  // efi_work = ''
 
   i686 = false
 
@@ -160,7 +160,7 @@ export default class Settings {
     this.work_dir.workdir = this.config.snapshot_dir + '.overlay/workdir'
 
     this.work_dir.merged = this.config.snapshot_mnt + 'filesystem.squashfs'
-    this.efi_work = this.config.snapshot_mnt + 'efi-work/'
+    // this.efi_work = this.config.snapshot_mnt + 'efi-work/'
     this.iso_work = this.config.snapshot_mnt + 'iso/'
 
     // remember: before was hostname, not empty
