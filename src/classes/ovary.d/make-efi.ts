@@ -63,7 +63,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      */
     const grubCfg = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let text = ''
-    text += 'search --file --set=root /.disk/info\n'
+    text += `search --file --set=root /.disk/id/${this.uuid}\n`
     text += 'set prefix=($root)/boot/grub\n'
     text += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
     Utils.write(grubCfg, text)
@@ -116,9 +116,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     /**
-     * second grub.cfg file in efiWork
+     * SECOND grub.cfg file in efiWork
      */
-    //         for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
+    //           for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
     //let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
     let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
     await exec(cmd, this.echo)
@@ -189,9 +189,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // create file boot/grub/grub.cfg come segue
     const grubOnImg = `${efiMnt}/boot/grub/grub.cfg`
     // 
-    // let grubOnImgTxt = `search --set=root --file /.disk/info\n`
-    // let grubOnImgTxt = `search --set=root --label "${this.volid}"\n`
-    let grubOnImgTxt = `search --set=root --file /live/${path.basename(Utils.vmlinuz())}\n`
+    let grubOnImgTxt = `search --file --set=root /.disk/id/${this.uuid}\n`
+    // `search --set=root --file /.disk/info\n`
     grubOnImgTxt += `set prefix=($root)/boot/grub\n`
     grubOnImgTxt += `configfile ($root)/boot/grub/grub.cfg\n`
     fs.writeFileSync(grubOnImg, grubOnImgTxt)

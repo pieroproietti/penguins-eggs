@@ -43,8 +43,10 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
 
     // .disk/info
-    // fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
-    fs.writeFileSync(dotDisk + '/info', this.volid + '\n', 'utf-8')
+    fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
+
+    shx.mkdir('-p', path.join(dotDisk, 'id'))
+    fs.writeFileSync(path.join(dotDisk, '/id', this.uuid), this.uuid, 'utf-8')
 
     // .disk/mksquashfs
     fs.writeFileSync(dotDisk + '/mksquashfs', text + mksquashfs, 'utf-8')
