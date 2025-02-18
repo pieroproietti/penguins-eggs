@@ -469,33 +469,6 @@ export default class Utils {
       return format
    }
 
-   /**
-    * 
-    * @returns 
-    */
-   static bootArchEfi() {
-      let bn = 'nothing.efi'
-      if (process.arch === 'x64') {
-         bn = 'bootx64.efi'
-      } else if (process.arch === 'arm64') {
-         bn = 'bootaa64.efi'
-      }
-      return bn
-   }
-
-   /**
-    * 
-    * @returns 
-    */
-   static grubArchEfi() {
-      let bn = 'nothing.efi'
-      if (process.arch === 'x64') {
-         bn = 'grubx64.efi'
-      } else if (process.arch === 'arm64') {
-         bn = 'grubaa64.efi'
-      }
-      return bn
-   }
 
 
    /**
