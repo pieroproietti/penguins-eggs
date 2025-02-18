@@ -39,8 +39,9 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     }
 
     shx.mkdir('-p', dotDisk)
-    let text = `# Created at: ${Utils.formatDate(new Date())}\n`
-    text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
+    // let text = `# Created at: ${Utils.formatDate(new Date())}\n`
+    // text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`
+    let text = this.volid // We need for boot from ISO
 
     // .disk/info
     fs.writeFileSync(dotDisk + '/info', text, 'utf-8')
