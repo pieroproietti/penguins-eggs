@@ -25,9 +25,9 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * makeEFI
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
-    const efiPath = path.join(this.settings.config.snapshot_mnt,'/efi/')
+    const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
 
-    const efiWorkDir = path.join(efiPath,'/work/')
+    const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiSaveDir = path.join(efiPath, '/saved/')
     const efiMnt = path.join(efiPath, '/mnt/')
@@ -45,28 +45,35 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // clean all
     if (fs.existsSync(efiPath)) {
-        await exec(`rmdir -rf ${efiPath} `)
+        await exec(`rm -rf ${efiPath} `)
     }
     await exec(`mkdir ${efiPath} `)
     await exec(`mkdir ${efiMemdiskDir} `)
-    await exec(`mkdir ${efiMnt}`)
+    if (fs.existsSync(efiMnt)) {
+        await exec(`rm -rf ${efiMnt}`, this.echo)
+    }
+    await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiSaveDir}`)
 
 
     // create memdisk
     Utils.warning('creating temporary efiMemdiskDir on ' + efiMemdiskDir)
-    await exec(`mkdir ${efiMemdiskDir}/boot`, this.echo)
-    await exec(`mkdir ${efiMemdiskDir}/boot/grub`, this.echo)
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
 
     /**
      * for initial grub.cfg in memdisk
      */
-    const grubCfg = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let text = ''
-    text += `search --file --set=root /.disk/id/${this.uuid}\n`
-    text += 'set prefix=($root)/boot/grub\n'
-    text += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
-    Utils.write(grubCfg, text)
+    const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
+    let grubText1 = `# grub.cfg 1 created on ${efiMemdiskDir}\n`
+    grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
+    grubText1 += 'set prefix=($root)/boot/grub\n'
+    grubText1 += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
+    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+    Utils.write(grub1, grubText1)
+
+    // config
 
     // #################################
 
@@ -115,40 +122,49 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
     await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
+
     /**
      * SECOND grub.cfg file in efiWork
      */
-    //           for i in $(ls /usr/lib/grub/x86_64-efi            |grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >>              boot/grub/x86_64-efi/grub.cfg; done
-    //let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
-    let cmd = `for i in $(ls /usr/lib/grub/${Utils.uefiFormat()}|grep part_|grep \.mod|sed 's/.mod//'); do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg; done`
-    await exec(cmd, this.echo)
-    // cmd = `for i in efi_gop efi_uga ieee1275_fb vbe vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
-    // not find: ieee1275_fb.mod vbe.mod vga.mod
-    cmd = `for i in efi_gop efi_uga vga video_bochs video_cirrus jpeg png gfxterm ; do echo "insmod $i" >> ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/grub.cfg ; done`
-    await exec(cmd, this.echo)
-    await exec(`echo "source /boot/grub/grub.cfg" >> ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, this.echo)
+    const g2 = `${efiWorkDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    const scanDir = `/usr/lib/grub/${Utils.uefiFormat()}`
+    const files = fs.readdirSync(scanDir)
+    const partFiles = files.filter(file => file.startsWith('part'))
+    let grubText2 = `# grub.cfg 2 created on ${g2}\n`
+    grubText2 +=`\n`
+    partFiles.forEach(file => {
+        grubText2 += `insmod ${file}\n`
+    })
+
+    const mods=["efi_gop", "efi_uga", "vga", "video_bochs", "video_cirrus", "jpeg png", "gfxterm"]
+    mods.forEach(file => {
+        grubText2 += `insmod ${file}\n`
+    })
+    grubText2 += `source /boot/grub/grub.cfg\n`
+    fs.writeFileSync(g2, grubText2, 'utf-8')
+    // console.log("creato: " + g2)
+
 
     /**
      * andiamo in efiMemdiskDir
      */
+    const currentDir = process.cwd()
+    process.chdir(efiMemdiskDir)
 
     /**
      * make a tarred "memdisk" to embed in the grub image
-     *
      * NOTE: it's CRUCIAL to chdir before tar!!!
      */
-    const currentDir = process.cwd()
-    process.chdir(efiMemdiskDir)
     await exec('tar -cvf memdisk boot', this.echo)
+
+    /**
+     * Torniamo alla directory corrente
+     */
     process.chdir(currentDir)
 
-    // -O, --format=FORMAT
-    // -m --memdisk=FILE embed FILE as a memdisk image
-    // -o, --output=FILE embed FILE as a memdisk image
-    // -p, --prefix=DIR set prefix directory
-    //                               --format=x86_64-efi         --memdisk=memdisk          --output=bootx64.efi           --prefix?DIR set prefix directory
-    //          grub-mkimage         -O "x86_64-efi"             -m "memdisk"               -o "bootx64.efi"               -p '(memdisk)/boot/grub' search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux
-    //                                   arm64-efi
+    /**
+     * creazione BOOTX86.efi on efiMemdiskDir
+     */
     await exec(
         `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
                 -m "${efiMemdiskDir}/memdisk" \
@@ -158,7 +174,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         this.echo
     )
 
-    // copy the grub image to efi/boot (to go later in the device's root)
+    // copy the BOOTX86.efi to EFI/boot (to go later in the device's root)
     await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiWorkDir}/EFI/boot`, this.echo)
 
     // #######################
@@ -171,11 +187,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
     /**
-     * create efiMnt
-     */
-    await exec(`mkdir ${efiMnt}`, this.echo)
-
-    /**
      * mount efi.img on mnt-img
      */
     await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
@@ -186,18 +197,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${efiMnt}/boot`, this.echo)
     await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
 
-    // create file boot/grub/grub.cfg come segue
-    const grubOnImg = `${efiMnt}/boot/grub/grub.cfg`
-    // 
-    let grubOnImgTxt = `search --file --set=root /.disk/id/${this.uuid}\n`
-    // `search --set=root --file /.disk/info\n`
-    grubOnImgTxt += `set prefix=($root)/boot/grub\n`
-    grubOnImgTxt += `configfile ($root)/boot/grub/grub.cfg\n`
-    fs.writeFileSync(grubOnImg, grubOnImgTxt)
-
-
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
+
 
     /**
      * copyng grub[x86/aa64].efi to efi.img
@@ -217,7 +219,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          * copy grubx64.efi.signed as grubx64.efi
          * create README.md
          */
-        
+
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
         await exec(`cp ${GAE} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
@@ -227,13 +229,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         content += `${GAE} copied as ${nameGAE()}\n`
         fs.writeFileSync(path.join(efiMnt, `/EFI/boot/README.md`), content)
 
-        // Copia README.md in iso/boot/grub
+        // Create README.md in iso/boot/grub
         fs.writeFileSync(path.join(isoDir, `/boot/grub/README.md`), content)
-
     }
 
     // save efiMnt content in efiSaveDir
-    await exec(`mkdir ${efiMnt} ${efiSaveDir}`, this.echo)
+    await exec(`mkdir ${efiSaveDir}`, this.echo)
     await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
 
     // umount efiMnt
@@ -262,7 +263,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     //  popd
 
-    // Copy efi files to ISO/boot, ISO/EFI
+    // Copy Workdir files to ISO/boot, ISO/EFI
     await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
     await exec(`rsync -avx ${efiWorkDir}/EFI  ${isoDir}/`, this.echo)
     if (fs.existsSync(GAE)) {
@@ -295,7 +296,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     /**
      * prepare main grub.cfg from grub.main.cfg
-     * (which gets loaded last) 
+     * 
      */
     let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
     if (!fs.existsSync(grubTemplate)) {
@@ -308,7 +309,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
-    const grubDest = `${isoDir}/boot/grub/grub.cfg`
+    const g3 = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
     const view = {
@@ -318,13 +319,24 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         kernel_parameters,
         vmlinuz: `/live${this.settings.vmlinuz}`
     }
-    fs.writeFileSync(grubDest, mustache.render(template, view))
+    let grubText3 = `# grub.cfg 3 created on ${g3}`
+    grubText3 += mustache.render(template, view)
+    fs.writeFileSync(g3, grubText3)
 
     /**
      * create loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-    // process.exit()
+
+    /**
+     * config.cfg
+     */
+    await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
+
+    await exec(`mkdir ${isoDir}/DEBUG`)
+    fs.writeFileSync(`${isoDir}DEBUG/grub1.cfg`, grubText1)
+    fs.writeFileSync(`${isoDir}DEBUG/grub2.cfg`, grubText2)
+    fs.writeFileSync(`${isoDir}DEBUG/grub3.cfg`, grubText3)
 }
 
 
