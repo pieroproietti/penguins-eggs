@@ -114,8 +114,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     grubText2 += `# created on ${g2}\n`
     grubText2 += `\n`
     partFiles.forEach(file => {
-        const module = file.substring(0, file.indexOf('.mod'))
-        if (module.length > 0) {
+        const modIndex = file.indexOf('.mod');
+        if (modIndex > 0) {
+            const module = file.substring(0, modIndex);
             grubText2 += `insmod ${module}\n`
         }
     })
