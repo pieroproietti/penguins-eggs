@@ -27,6 +27,8 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
         await this.settings.loadRemix(this.theme)
         this.volid = Utils.getVolid(this.settings.remix.name)
 
+        this.uuid = Utils.uuidGen()
+
         this.familyId = this.settings.distro.familyId
         this.nest = this.settings.config.snapshot_mnt
 

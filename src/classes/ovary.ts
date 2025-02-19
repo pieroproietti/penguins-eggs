@@ -96,6 +96,8 @@ export default class Ovary {
 
   volid = ''
 
+  uuid = ''
+
   // I put methods on ovary.d
   public fertilization = fertilization
   public produce = produce

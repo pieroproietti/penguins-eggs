@@ -351,6 +351,16 @@ export default class Utils {
    }
 
    /**
+    * 
+    * @param device 
+    * @returns 
+    */
+   static uuidGen(): string {
+      const uuid = shx.exec(`uuidgen`).stdout.trim()
+      return uuid
+   }
+
+   /**
     *
     * @param date
     */
