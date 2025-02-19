@@ -25,6 +25,8 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * makeEFI
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
+    Utils.warning("creating efi configuration...")
+
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
 
     const efiWorkDir = path.join(efiPath, '/work/')
@@ -33,141 +35,107 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     const efiMnt = path.join(efiPath, '/mnt/')
 
     const isoDir = this.settings.iso_work
+    const readmes = `${isoDir}/READMES`
+    let readmeContent = `# README\n`
 
     /**
-     * grub/grub2 MUST to exists
+     * grub/grub2 command MUST to exists
      */
     const grubName = Diversions.grubName(this.familyId)
     if (grubName === '') {
-        Utils.error('Something went wrong! Cannot find grub.')
+        Utils.error('Cannot find command grub/grub2.')
         process.exit(1)
     }
 
-    // clean all
+    /**
+     * GAE = Grub Arch Efi path+Grub 
+     */
+    let GAE = srcGAES()
+    if (!fs.existsSync(srcGAE())) {
+        GAE = srcGAE()
+    }
+
+    if (!fs.existsSync(GAE)) {
+        console.log(`error: cannot find ${GAE}`)
+        process.exit(1)
+    }
+
+    // Create DEBUG
+    await exec(`mkdir ${readmes}`)
+
+
+    // clean all and re-create all
     if (fs.existsSync(efiPath)) {
         await exec(`rm -rf ${efiPath} `)
     }
     await exec(`mkdir ${efiPath} `)
     await exec(`mkdir ${efiMemdiskDir} `)
-    if (fs.existsSync(efiMnt)) {
-        await exec(`rm -rf ${efiMnt}`, this.echo)
-    }
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiSaveDir}`)
-
+    await exec(`mkdir ${efiWorkDir}`, this.echo)
 
     // create memdisk
-    Utils.warning('creating temporary efiMemdiskDir on ' + efiMemdiskDir)
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
     await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
 
     /**
-     * for initial grub.cfg in memdisk
+     * creating grub.cfg 1 in memdisk
      */
+    Utils.warning("creating grub.cfg 1 in memdisk...")
     const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1 created on ${efiMemdiskDir}\n`
     grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
     grubText1 += 'set prefix=($root)/boot/grub\n'
     grubText1 += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
-    grubText1 += `if [ -n "$root" ]; then\n`
-    grubText1 += `  echo "grub1: root filesystem "$root" not found!"\n`
-    grubText1 += `fi\n`
-
     Utils.write(grub1, grubText1)
 
-    // config
 
-    // #################################
 
     /**
-     * start with empty efiWorkDir
+     * grub.cfg 2 file in efiWork/boot/grub/x86_64-efi/grub.cfg
      */
-    if (fs.existsSync(efiWorkDir)) {
-        await exec(`rm ${efiWorkDir} -rf`, this.echo)
-    }
+    Utils.warning("creating grub.cfg 2...")
 
-    Utils.warning('creating temporary efiWordDir on ' + efiWorkDir)
-    await exec(`mkdir ${efiWorkDir}`, this.echo)
+    // creating structure efiWordDir
     await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
     await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
     await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
     await exec(`mkdir ${efiWorkDir}/EFI`, this.echo)
     await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
 
-    /**
-     * copy splash to efiWorkDir
-     */
-    const splashDest = `${efiWorkDir}/boot/grub/splash.png`
-    let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
-    if (this.theme.includes('/')) {
-        splashSrc = `${theme}/theme/livecd/splash.png`
-    }
-
-    if (!fs.existsSync(splashSrc)) {
-        Utils.warning('Cannot find: ' + splashSrc)
-        process.exit()
-    }
-    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
-
-    /**
-     * copy theme
-     */
-    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
-    let themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-    if (this.theme.includes('/')) {
-        themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
-    }
-
-    if (!fs.existsSync(themeSrc)) {
-        Utils.warning('Cannot find: ' + themeSrc)
-        process.exit()
-    }
-    await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
-
-
-    /**
-     * SECOND grub.cfg file in efiWork/boot/grub/x86_64-efi/grub.cfg
-     */
+    // creating grub.cfg 2
     const g2 = `${efiWorkDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
     const scanDir = `/usr/lib/grub/${Utils.uefiFormat()}`
     const files = fs.readdirSync(scanDir)
     const partFiles = files.filter(file => file.startsWith('part'))
     let grubText2 = `# grub.cfg 2 created on ${g2}\n`
-    grubText2 +=`\n`
+    grubText2 += `\n`
     partFiles.forEach(file => {
-        grubText2 += `insmod ${file}\n`
+        const module = file.substring(0, file.indexOf('.mod'))
+        if (module.length > 0) {
+            grubText2 += `insmod ${module}\n`
+        }
     })
 
-    const mods=["efi_gop", "efi_uga", "vga", "video_bochs", "video_cirrus", "jpeg png", "gfxterm"]
+    const mods = ["efi_gop", "efi_uga", "vga", "video_bochs", "video_cirrus", "jpeg png", "gfxterm"]
     mods.forEach(file => {
         grubText2 += `insmod ${file}\n`
     })
     grubText2 += `source /boot/grub/grub.cfg\n`
-    grubText2 += `if [ -n "$root" ]; then\n`
-    grubText2 += `  echo "grub2: root filesystem "$root" not found!"\n`
-    grubText2 += `fi\n`
     fs.writeFileSync(g2, grubText2, 'utf-8')
 
     /**
-     * andiamo in efiMemdiskDir
+     * make a tarred "memdisk" to embed in the grub image
+     * IS CRUCIAL chdir to efiMemdiskDir
      */
     const currentDir = process.cwd()
     process.chdir(efiMemdiskDir)
-
-    /**
-     * make a tarred "memdisk" to embed in the grub image
-     * NOTE: it's CRUCIAL to chdir before tar!!!
-     */
     await exec('tar -cvf memdisk boot', this.echo)
-
-    /**
-     * Torniamo alla directory corrente
-     */
     process.chdir(currentDir)
 
     /**
-     * creazione BOOTX86.efi on efiMemdiskDir
+     * creazione bootx86.efi on efiMemdiskDir
      */
     await exec(
         `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
@@ -178,10 +146,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         this.echo
     )
 
-    // copy the BOOTX86.efi to EFI/boot (to go later in the device's root)
+    // copy created bootx64.efi to EFI/boot (to go later in the device's root)
     await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiWorkDir}/EFI/boot`, this.echo)
-
-    // #######################
 
     /**
      * Create boot image "boot/grub/efi.img"
@@ -190,99 +156,68 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=10`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
-    /**
-     * mount efi.img on mnt-img
-     */
+    // mount efi.img on mnt-img
     await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
 
-    /**
-     * create structure
-     */
+    // create structure inside efiMnt
     await exec(`mkdir ${efiMnt}/boot`, this.echo)
     await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
+    // copyng grubx86.efi to efi.img as bootx84.efi
+    await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+    await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
     /**
-     * copyng grub[x86/aa64].efi to efi.img
-     * 
-     * GAE = Grub Arch Efi path+Grub 
+     * README.md
      */
-    let GAE = srcGAES()
-    if (!fs.existsSync(srcGAE())) {
-        GAE = srcGAE()
-    }
+    readmeContent += `## copyng on ${efiMnt}\n`
+    readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
+    readmeContent += `${GAE} is ${nameGAE()}\n`
 
-    if (!fs.existsSync(GAE)) {
-        console.log(`error: cannot find ${GAE}`)
-    } else {
-        /**
-         * copy shimx64.efi.signed as bootx64.efi
-         * copy grubx64.efi.signed as grubx64.efi
-         * create README.md
-         */
-
-        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-        await exec(`cp ${GAE} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-
-        // README.md in EFI
-        let content = `# README\n`
-        content += `${srcShim()} copied as ${bootArchEfi()}\n`
-        content += `${GAE} copied as ${nameGAE()}\n`
-        fs.writeFileSync(path.join(efiMnt, `/EFI/boot/README.md`), content)
-
-        // Create README.md in iso/boot/grub
-        fs.writeFileSync(path.join(isoDir, `/boot/grub/README.md`), content)
-    }
 
     // save efiMnt content in efiSaveDir
     await exec(`mkdir ${efiSaveDir}`, this.echo)
     await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
 
+    readmeContent += `${efiImg}/* copyed on $(efiSaveDir}\n)`
+
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
 
-    // #######################
-
-    /**
-     * copy modules and font
-     */
-    await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
-
-    // if this doesn't work try another font from the same place (grub's default, unicode.pf2, is much larger)
-    // Either of these will work, and they look the same to me. Unicode seems to work with qemu. -fsr
-    if (fs.existsSync('/usr/share/grub/font.pf2')) {
-        await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-        await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
-        await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    }
-
-    // cp efi.img on iso / ## not need 
-    await exec(`cp ${efiImg} ${this.settings.iso_work}`)
-
-
-    //  popd
-
-    // Copy Workdir files to ISO/boot, ISO/EFI
-    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-    await exec(`rsync -avx ${efiWorkDir}/EFI  ${isoDir}/`, this.echo)
-    if (fs.existsSync(GAE)) {
-        // README.md in EFI
-        let content = `# README\n`
-        content += `${srcGAE()} copied as /EFI/boot/${nameGAE()}\n`
-        fs.writeFileSync(path.join(isoDir, `EFI/boot/README.md`), content)
-        // here grubx64.efi.signed is copied as grubx64.efi
-        await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`)
-    }
 
 
     /**
-     * Theme
+     * creating grub.cfg 3
      */
+    Utils.warning("creating grub.cfg 3...")
+
+    // copy splash to efiWorkDir
+    const splashDest = `${efiWorkDir}/boot/grub/splash.png`
+    let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
+    if (this.theme.includes('/')) {
+        splashSrc = `${theme}/theme/livecd/splash.png`
+    }
+
+    if (!fs.existsSync(splashSrc)) {
+        Utils.warning('Cannot find: ' + splashSrc)
+        process.exit(1)
+    }
+    await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
+
+    // copy theme to efiWorkDir
+    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
+    let themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+    if (this.theme.includes('/')) {
+        themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+    }
+
+    if (!fs.existsSync(themeSrc)) {
+        Utils.warning('Cannot find: ' + themeSrc)
+        process.exit(1)
+    }
+    await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
 
     // select grubThemeSrc
     let grubThemeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
@@ -294,9 +229,31 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(grubThemeSrc)) {
         Utils.warning('Cannot find: ' + grubThemeSrc)
-        process.exit()
+        process.exit(1)
     }
     fs.copyFileSync(grubThemeSrc, grubThemeDest)
+
+
+    // copy modules and fonts on efiWorkDir
+    await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
+
+    // selecting available fonts
+    if (fs.existsSync('/usr/share/grub/font.pf2')) {
+        await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+        await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
+        await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+    }
+
+    // Copy workdir files to ISO/boot, ISO/EFI
+    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
+    await exec(`rsync -avx ${efiWorkDir}/EFI  ${isoDir}/`, this.echo)
+
+    readmeContent += `\n`
+    readmeContent += `Copyng on ${isoDir}\n`
+    readmeContent += `${GAE} is /EFI/boot/${nameGAE()}\n`
+    await exec(`cp ${GAE} ${isoDir}/EFI/boot/${nameGAE()}`)
 
     /**
      * prepare main grub.cfg from grub.main.cfg
@@ -309,7 +266,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     if (!fs.existsSync(grubTemplate)) {
         Utils.warning('Cannot find: ' + grubTemplate)
-        process.exit()
+        process.exit(1)
     }
 
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
@@ -325,9 +282,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
     let grubText3 = `# grub.cfg 3 created on ${g3}`
     grubText3 += mustache.render(template, view)
-    grubText3 += `if [ -n "$root" ]; then\n`
-    grubText3 += `  echo "grub2: root filesystem "$root" not found!"\n`
-    grubText3 += `fi\n`
 
     fs.writeFileSync(g3, grubText3)
 
@@ -341,10 +295,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      */
     await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
 
-    await exec(`mkdir ${isoDir}/DEBUG`)
-    fs.writeFileSync(`${isoDir}DEBUG/grub1.cfg`, grubText1)
-    fs.writeFileSync(`${isoDir}DEBUG/grub2.cfg`, grubText2)
-    fs.writeFileSync(`${isoDir}DEBUG/grub3.cfg`, grubText3)
+    fs.writeFileSync(`${readmes}/grub1.cfg`, grubText1)
+    fs.writeFileSync(`${readmes}/grub2.cfg`, grubText2)
+    fs.writeFileSync(`${readmes}/grub3.cfg`, grubText3)
+    fs.writeFileSync(`${readmes}/README.md`, readmeContent)
 }
 
 
