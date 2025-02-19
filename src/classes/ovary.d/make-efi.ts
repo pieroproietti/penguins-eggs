@@ -108,11 +108,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
 
-    /**
-     * copy shimx64.efi as bootx86.efi on efiWorkDir
-     */
-    await exec(`cp ${srcShim()} ${efiWorkDir}/EFI/boot/${bootArchEfi()}`, this.echo)
-    await exec(`cp ${srcGAES()} ${efiWorkDir}/EFI/boot/${nameGAE()}`, this.echo)
 
     /**
      * Create boot image "boot/grub/efi.img"
@@ -134,19 +129,16 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
     await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
-    /**
-     * README.md
-     */
+    // readme
     readmeContent += `## copyng on ${efiMnt}\n`
     readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
     readmeContent += `${GAE} is ${nameGAE()}\n`
-
 
     // save efiMnt content in efiSaveDir
     await exec(`mkdir ${efiSaveDir}`, this.echo)
     await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
 
-    readmeContent += `${efiImg}/* copyed on $(efiSaveDir}\n`
+    readmeContent += `${efiImg}/* saved on $(efiSaveDir}\n`
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
@@ -171,34 +163,21 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
     await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
-    // copy theme to efiWorkDir
-    const themeDest = `${efiWorkDir}/boot/grub/theme.cfg`
+    // select themeSrc
     let themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
     if (this.theme.includes('/')) {
         themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
     }
 
+    // copy theme
+    const themeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(themeSrc)) {
         Utils.warning('Cannot find: ' + themeSrc)
         process.exit(1)
     }
-    await exec(`cp ${themeSrc} ${themeDest}`, this.echo)
+    fs.copyFileSync(themeSrc, themeDest)
 
-    // select grubThemeSrc
-    let grubThemeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-    if (this.theme.includes('/')) {
-        grubThemeSrc = `${theme}/theme/livecd/grub.theme.cfg`
-    }
-
-    // copy theme
-    const grubThemeDest = `${isoDir}/boot/grub/theme.cfg`
-    if (!fs.existsSync(grubThemeSrc)) {
-        Utils.warning('Cannot find: ' + grubThemeSrc)
-        process.exit(1)
-    }
-    fs.copyFileSync(grubThemeSrc, grubThemeDest)
-
-    // copy modules and fonts on efiWorkDir
+    // copy modules and fonts on efiWorkDir ### I can copy it on isoDir ###
     await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}-signed/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
     readmeContent += `copied /usr/lib/grub/${Utils.uefiFormat()}-signed/* in ${efiWorkDir}boot/grub/${Utils.uefiFormat()}\n`
 
@@ -219,6 +198,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     readmeContent += `Copyng on ${isoDir}\n`
     readmeContent += `${GAE} is /EFI/boot/${nameGAE()}\n`
     await exec(`cp ${GAE} ${isoDir}/EFI/boot/${nameGAE()}`)
+
+    /**
+     * copy shimx64.efi as bootx86.efi on isoDir
+     */
+    await exec(`cp ${srcShim()} ${isoDir}/EFI/boot/${bootArchEfi()}`, this.echo)
+    await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`, this.echo)
+
+
 
     /**
      * prepare main grub.cfg from grub.main.cfg
@@ -281,9 +268,9 @@ function bootArchEfi(): string {
     return bn
 }
 
+
 /**
- * 
- * @returns 
+ * FUNCTIONS
  */
 function nameGAE(): string {
     let bn = 'nothing.efi'
