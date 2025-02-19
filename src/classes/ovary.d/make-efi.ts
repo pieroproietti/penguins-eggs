@@ -70,7 +70,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
     grubText1 += 'set prefix=($root)/boot/grub\n'
     grubText1 += `source $prefix/${Utils.uefiFormat()}/grub.cfg\n`
-    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+    grubText1 += `if [ -n "$root" ]; then\n`
+    grubText1 += `  echo "grub1: root filesystem "$root" not found!"\n`
+    grubText1 += `fi\n`
+
     Utils.write(grub1, grubText1)
 
     // config
@@ -124,7 +127,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
 
     /**
-     * SECOND grub.cfg file in efiWork
+     * SECOND grub.cfg file in efiWork/boot/grub/x86_64-efi/grub.cfg
      */
     const g2 = `${efiWorkDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
     const scanDir = `/usr/lib/grub/${Utils.uefiFormat()}`
@@ -141,9 +144,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         grubText2 += `insmod ${file}\n`
     })
     grubText2 += `source /boot/grub/grub.cfg\n`
+    grubText2 += `if [ -n "$root" ]; then\n`
+    grubText2 += `  echo "grub2: root filesystem "$root" not found!"\n`
+    grubText2 += `fi\n`
     fs.writeFileSync(g2, grubText2, 'utf-8')
-    // console.log("creato: " + g2)
-
 
     /**
      * andiamo in efiMemdiskDir
@@ -321,6 +325,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
     let grubText3 = `# grub.cfg 3 created on ${g3}`
     grubText3 += mustache.render(template, view)
+    grubText3 += `if [ -n "$root" ]; then\n`
+    grubText3 += `  echo "grub2: root filesystem "$root" not found!"\n`
+    grubText3 += `fi\n`
+
     fs.writeFileSync(g3, grubText3)
 
     /**
@@ -385,8 +393,3 @@ function srcShim(): string {
     const unsignedShim = '/usr/lib/shim/shimx64.efi';
     return fs.existsSync(signedShim) ? signedShim : unsignedShim;
 }
-/*
-function srcShim(): string {
-    return `/usr/lib/shim/shimx64.efi.signed`
-}
-*/
