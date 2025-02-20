@@ -113,7 +113,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * Create boot image "boot/grub/efi.img"
      */
     const efiImg = `${efiWorkDir}boot/grub/efi.img`
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=10`, this.echo)
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
     // mount efi.img on mnt-img
