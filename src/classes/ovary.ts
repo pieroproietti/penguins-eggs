@@ -98,32 +98,34 @@ export default class Ovary {
 
   uuid = ''
 
-  // I put methods on ovary.d
+  // I put all methods on ovary.d
   public fertilization = fertilization
   public produce = produce
-  public bindLiveFs = bindLiveFs
-  public bindVfs = bindVfs
-  public editLiveFs = editLiveFs
-  public makeEfi = makeEfi
-  public makeSquashfs = makeSquashfs
-  public addRemoveExclusion = addRemoveExclusion
-  public xorrisoCommand = xorrisoCommand
-  public createXdgAutostart = createXdgAutostart
-  public merged = merged
-  public mergedAndOverlay = mergedAndOverlay
-  public makeIso = makeIso
-  public initrdAlpine = initrdAlpine
-  public initrdArch = initrdArch
-  public initrdDebian = initrdDebian
-  public initrdDracut = initrdDracut
-  public userCreateLive = userCreateLive
-  public syslinux = syslinux
-  public uBindLiveFs = uBindLiveFs
-  public ubindVfs = ubindVfs
-  public usersRemove = usersRemove
-  public makeDotDisk = makeDotDisk
-  public kernelCopy = kernelCopy
-  public liveCreateStructure = liveCreateStructure
-  public finished = finished
+
+  // called only inside Ovary
+  bindLiveFs = bindLiveFs
+  bindVfs = bindVfs
+  editLiveFs = editLiveFs
+  makeEfi = makeEfi
+  makeSquashfs = makeSquashfs
+  addRemoveExclusion = addRemoveExclusion
+  xorrisoCommand = xorrisoCommand
+  createXdgAutostart = createXdgAutostart
+  merged = merged
+  mergedAndOverlay = mergedAndOverlay
+  makeIso = makeIso
+  initrdAlpine = initrdAlpine
+  initrdArch = initrdArch
+  initrdDebian = initrdDebian
+  initrdDracut = initrdDracut
+  userCreateLive = userCreateLive
+  syslinux = syslinux
+  uBindLiveFs = uBindLiveFs
+  ubindVfs = ubindVfs
+  usersRemove = usersRemove
+  makeDotDisk = makeDotDisk
+  kernelCopy = kernelCopy
+  liveCreateStructure = liveCreateStructure
+  finished = finished
 }
 
