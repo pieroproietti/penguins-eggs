@@ -55,49 +55,77 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   }
 
   const fstab = this.installTarget + '/etc/fstab'
-  let mountOptsRoot = ''
-  let mountOptsBoot = ''
-  let mountOptsData = ''
-  let mountOptsEfi = ''
-  let mountOptsSwap = ''
+  /**
+    boot: IDevice
+    data: IDevice
+    efi: IDevice
+    root: IDevice
+    swap: IDevice
+   */
+
+    let mountOptsBoot = ''
+    let mountOptsData = ''
+    let mountOptsEfi = ''
+    let mountOptsRoot = ''
+    let mountOptsSwap = ''
 
   /**
    * ext4
    */
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
-      mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsBoot = 'defaults,relatime 0 1'
       mountOptsData = 'defaults,relatime 0 1'
       mountOptsEfi = 'defaults,relatime 0 2'
+      mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsSwap = 'defaults,relatime 0 2'
     } else {
-      mountOptsRoot = 'defaults,noatime 0 1'
       mountOptsBoot = 'defaults,noatime 0 1'
       mountOptsData = 'defaults,noatime 0 1'
       mountOptsEfi = 'defaults,noatime 0 2'
+      mountOptsRoot = 'defaults,noatime 0 1'
       mountOptsSwap = 'defaults,noatime 0 2'
     }
 
+    /**
+     * root must to be defined!
+     */
     text = ''
     text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `\n`
 
+    /**
+     * boot can be none or defined!
+     */
     if (this.devices.boot.name !== 'none') {
       text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
       text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
+      text += `\n`
     }
 
+    /**
+     * data can be none or defined!
+     */
     if (this.devices.data.name !== 'none') {
       text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
       text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+      text += `\n`
     }
+
 
     if (this.efi) {
+      /**
+       * efi must to be defined
+       */
       text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
       text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `\n`
     }
 
+    /**
+     * swap can be none, file, defined
+     */
     if (this.partitions.userSwapChoice == SwapChoice.File) {
 
       let swapFile = ''
@@ -109,12 +137,14 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
 
       text += `# ${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `\n`
     } else if (this.partitions.userSwapChoice == SwapChoice.None) {
       // nada de nada
 
     } else {
       text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
       text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `\n`
     }
 
   /**
@@ -140,8 +170,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
   }
-  //console.log(text)
-  //Utils.pressKeyToExit()
   Utils.write(fstab, text)
 }
 

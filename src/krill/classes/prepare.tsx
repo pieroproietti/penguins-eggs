@@ -329,6 +329,27 @@ export default class Krill {
       oPartitions = await this.partitions(this.krillConfig.installationDevice, cryped, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
+    } else {
+      /**
+       * this variables ALWAYS need to be initializated
+       */
+
+      // oPartitions.installationDevice
+      if (oPartitions.installationDevice === '') {
+        // No RAID considerated
+        const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+        if (drives.length > 0) {
+          oPartitions.installationDevice = `/dev/` + drives[0]
+        } else {
+          console.log("Unable to fin installation drive")
+          process.exit(1)
+        }
+      }
+
+      // oPartitions.installationMode 
+      if (cryped) {
+        oPartitions.installationMode = InstallationMode.Luks
+      }
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 

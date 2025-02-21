@@ -60,16 +60,13 @@ export default async function biosLuks(this: Sequence, installDevice = "", p = "
         process.exit(1)
     }
 
+    // this.devices.boot.name = DEFINED`
+    this.devices.data.name = 'none'
+    this.devices.efi.name = 'none'
     this.devices.root.name = '/dev/mapper/root_crypted'
     this.devices.root.cryptedFrom = `${installDevice}${p}2`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
-
-    // BOOT/DATA/EFI
-    // this.devices.boot
-    this.devices.data.name = 'none'
-    this.devices.efi.name = 'none'
-    // this.devices.root
     this.devices.swap.name = 'none'
 
     return true
