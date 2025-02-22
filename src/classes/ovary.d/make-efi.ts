@@ -148,15 +148,11 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         /**
          * Arch linux
          */
-        await exec(`mkdir -p ${isoDir}/grub/boot`, this.echo)
-        await exec(`mkdir ${isoDir}/EFI`)
-
-        // path to efi.img
-        const pathRelativeEfi = '../../../efi/efi.img'
-        console.log(`cp ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}/boot/grub`)
-        await exec(`cp ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}/boot/grub`, this.echo)
-        readmeContent = `debian efi.img copied on ${isoDir}/hoot/grub`
-        grubText1 += `using from efi.img from debian\n`
+        const pathRelativeEfi = '../../../efi/*'
+        console.log(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`)
+        await exec(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`, this.echo)
+        readmeContent = `debian efi.img copied on ${isoDir}`
+        grubText1 += `using secure boot from debian\n`
     }
 
 
