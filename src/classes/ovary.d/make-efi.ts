@@ -78,13 +78,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
     await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
 
+    const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
+    let grubText1 = `# grub.cfg 1\n`
     if (this.familyId === `debian`) {
         /**
          * creating grub.cfg 1 in memdisk
          */
         Utils.warning("creating grub.cfg 1 in memdisk")
-        const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-        let grubText1 = `# grub.cfg 1\n`
         grubText1 += `# created on ${efiMemdiskDir}\n`
         grubText1 += `\n`
         grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
@@ -143,6 +143,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // umount efiMnt
         await exec(`umount ${efiMnt}`, this.echo)
     } else {
+        /**
+         * Arch linux
+         */
         await exec(`cp ../../../efi-memdisk/efi.img ${isoDir}/boot/grub`, this.echo)
         readmeContent +=`debian efi.img copied on ${isoDir}/hoot/grub`
         let grubText1 = `copied from debian`
