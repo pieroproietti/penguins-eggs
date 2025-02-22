@@ -150,11 +150,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          */
         await exec(`mkdir -p ${isoDir}/grub/boot`, this.echo)
         await exec(`mkdir ${isoDir}/EFI`)
-        const relative = '../../../efi-memdisk/efi.img'
-        await exec(`cp ${path.resolve(__dirname, relative)} ${isoDir}/boot/grub`, this.echo)
-        readmeContent += `debian efi.img copied on ${isoDir}/hoot/grub`
-        let grubText1 = `using from efi.img from debian`
-        // await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+
+        // path to efi.img
+        const pathRelativeEfi = '../../../efi/efi.img'
+        console.log(`cp ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}/boot/grub`)
+        await exec(`cp ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}/boot/grub`, this.echo)
+        readmeContent = `debian efi.img copied on ${isoDir}/hoot/grub`
+        grubText1 += `using from efi.img from debian\n`
     }
 
 
@@ -191,6 +193,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     fs.copyFileSync(themeSrc, themeDest)
 
     // copy modules and fonts on efiWorkDir ### I can copy it on isoDir ###
+    // here is OK also for Arch
     await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}-signed/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
     readmeContent += `copied /usr/lib/grub/${Utils.uefiFormat()}-signed/* in ${efiWorkDir}boot/grub/${Utils.uefiFormat()}\n`
 
