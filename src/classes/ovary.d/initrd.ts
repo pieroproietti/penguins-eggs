@@ -25,7 +25,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export async function initrdAlpine(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} Alpine on ISO/live`)
-    const sidecar = path.resolve(__dirname, `../../mkinitfs/initramfs-init.in`)
+    const sidecar = path.resolve(__dirname, `../../../mkinitfs/initramfs-init.in`)
     Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
     await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
     let initrdImg = Utils.initrdImg()
@@ -51,8 +51,7 @@ export async function initrdArch(this: Ovary) {
             dirConf = 'biglinux'
         }
     }
-
-    const pathConf = path.resolve(__dirname, `../../mkinitcpio/${dirConf}/live.conf`)
+    const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/live.conf`)
     await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, this.echo)
 }
 
@@ -81,6 +80,6 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
     const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
-    const confdir = path.resolve(__dirname, `../../dracut/dracut.conf.d`)
+    const confdir = path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
 }

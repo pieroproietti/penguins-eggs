@@ -148,9 +148,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         /**
          * Arch linux
          */
-        await exec(`cp ../../../efi-memdisk/efi.img ${isoDir}/boot/grub`, this.echo)
+        await exec(`mkdir -p ${isoDir}/grub/boot`, this.echo)
+        await exec(`mkdir ${isoDir}/EFI`)
+	    const relative= '../../../efi-memdisk/efi.img'
+        await exec(`cp ${path.resolve(__dirname, relative )} ${isoDir}/boot/grub`, this.echo)
         readmeContent +=`debian efi.img copied on ${isoDir}/hoot/grub`
-        let grubText1 = `copied from debian`
+        let grubText1 = `using from efi.img from debian`
         // await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
     }
 
