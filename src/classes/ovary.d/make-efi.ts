@@ -151,6 +151,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`cp ../../../efi-memdisk/efi.img ${isoDir}/boot/grub`, this.echo)
         readmeContent +=`debian efi.img copied on ${isoDir}/hoot/grub`
         let grubText1 = `copied from debian`
+        // await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
     }
 
 
