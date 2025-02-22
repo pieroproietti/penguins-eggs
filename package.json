@@ -71,6 +71,7 @@
         "/conf",
         "/dist",
         "/dracut",
+        "/efi-memdisk",
         "/eui",
         "/ipxe",
         "/manpages",
