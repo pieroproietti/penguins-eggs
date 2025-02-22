@@ -78,70 +78,75 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
     await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
 
-    /**
-     * creating grub.cfg 1 in memdisk
-     */
-    Utils.warning("creating grub.cfg 1 in memdisk")
-    const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let grubText1 = `# grub.cfg 1\n`
-    grubText1 += `# created on ${efiMemdiskDir}\n`
-    grubText1 += `\n`
-    grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
-    grubText1 += 'set prefix=($root)/boot/grub\n'
-    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+    if (this.familyId === `debian`) {
+        /**
+         * creating grub.cfg 1 in memdisk
+         */
+        Utils.warning("creating grub.cfg 1 in memdisk")
+        const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
+        let grubText1 = `# grub.cfg 1\n`
+        grubText1 += `# created on ${efiMemdiskDir}\n`
+        grubText1 += `\n`
+        grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
+        grubText1 += 'set prefix=($root)/boot/grub\n'
+        grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
 
-    Utils.write(grub1, grubText1)
+        Utils.write(grub1, grubText1)
 
-    // creating structure efiWordDir
-    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/EFI`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
+        // creating structure efiWordDir
+        await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
+        await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
+        await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
+        await exec(`mkdir ${efiWorkDir}/EFI`, this.echo)
+        await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
 
-    /**
-     * IS CRUCIAL chdir to efiMemdiskDir
-     */
-    const currentDir = process.cwd()
-    process.chdir(efiMemdiskDir)
-    await exec('tar -cvf memdisk boot', this.echo)
-    process.chdir(currentDir)
+        /**
+         * IS CRUCIAL chdir to efiMemdiskDir
+         */
+        const currentDir = process.cwd()
+        process.chdir(efiMemdiskDir)
+        await exec('tar -cvf memdisk boot', this.echo)
+        process.chdir(currentDir)
 
 
-    /**
-     * Create boot image "boot/grub/efi.img"
-     */
-    const efiImg = `${efiWorkDir}boot/grub/efi.img`
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
-    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
+        /**
+         * Create boot image "boot/grub/efi.img"
+         */
+        const efiImg = `${efiWorkDir}boot/grub/efi.img`
+        await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
+        await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
-    // mount efi.img on mnt-img
-    await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
+        // mount efi.img on mnt-img
+        await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
 
-    // create structure inside efiMnt
-    await exec(`mkdir ${efiMnt}/boot`, this.echo)
-    await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-    await exec(`mkdir ${efiMnt}/EFI`, this.echo)
-    await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
+        // create structure inside efiMnt
+        await exec(`mkdir ${efiMnt}/boot`, this.echo)
+        await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
+        await exec(`mkdir ${efiMnt}/EFI`, this.echo)
+        await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
-    // copyng grubx86.efi to efi.img as bootx84.efi
-    await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-    await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+        // copyng grubx86.efi to efi.img as bootx84.efi
+        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+        await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
-    // readme
-    readmeContent += `## copyng on ${efiMnt}\n`
-    readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
-    readmeContent += `${GAE} is ${nameGAE()}\n`
+        // readme
+        readmeContent += `## copyng on ${efiMnt}\n`
+        readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
+        readmeContent += `${GAE} is ${nameGAE()}\n`
 
-    // save efiMnt content in efiSaveDir
-    await exec(`mkdir ${efiSaveDir}`, this.echo)
-    await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
+        // save efiMnt content in efiSaveDir
+        await exec(`mkdir ${efiSaveDir}`, this.echo)
+        await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
 
-    readmeContent += `${efiImg}/* saved on $(efiSaveDir}\n`
+        readmeContent += `${efiImg}/* saved on $(efiSaveDir}\n`
 
-    // umount efiMnt
-    await exec(`umount ${efiMnt}`, this.echo)
-
+        // umount efiMnt
+        await exec(`umount ${efiMnt}`, this.echo)
+    } else {
+        await exec(`cp ../../../efi-memdisk/efi.img ${isoDir}/boot/grub`, this.echo)
+        readmeContent +=`debian efi.img copied on ${isoDir}/hoot/grub`
+        let grubText1 = `copied from debian`
+    }
 
 
     /**
@@ -231,8 +236,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         vmlinuz: `/live${this.settings.vmlinuz}`
     }
     let grubText2 = `# grub.cfg 3\n`
-    grubText2 +=` # created on ${g2}`
-    grubText2 +=`\n`
+    grubText2 += ` # created on ${g2}`
+    grubText2 += `\n`
     grubText2 += mustache.render(template, view)
 
     fs.writeFileSync(g2, grubText2)
