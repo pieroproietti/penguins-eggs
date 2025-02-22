@@ -150,9 +150,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          */
         await exec(`mkdir -p ${isoDir}/grub/boot`, this.echo)
         await exec(`mkdir ${isoDir}/EFI`)
-	    const relative= '../../../efi-memdisk/efi.img'
-        await exec(`cp ${path.resolve(__dirname, relative )} ${isoDir}/boot/grub`, this.echo)
-        readmeContent +=`debian efi.img copied on ${isoDir}/hoot/grub`
+        const relative = '../../../efi-memdisk/efi.img'
+        await exec(`cp ${path.resolve(__dirname, relative)} ${isoDir}/boot/grub`, this.echo)
+        readmeContent += `debian efi.img copied on ${isoDir}/hoot/grub`
         let grubText1 = `using from efi.img from debian`
         // await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
     }
@@ -210,14 +210,15 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     readmeContent += `\n`
     readmeContent += `Copyng on ${isoDir}\n`
     readmeContent += `${GAE} is /EFI/boot/${nameGAE()}\n`
-    await exec(`cp ${GAE} ${isoDir}/EFI/boot/${nameGAE()}`)
+    if (this.familyId === 'debian') {
+        await exec(`cp ${GAE} ${isoDir}/EFI/boot/${nameGAE()}`)
 
-    /**
-     * copy shimx64.efi as bootx86.efi on isoDir
-     */
-    await exec(`cp ${srcShim()} ${isoDir}/EFI/boot/${bootArchEfi()}`, this.echo)
-    await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`, this.echo)
-
+        /**
+         * copy shimx64.efi as bootx86.efi on isoDir
+         */
+        await exec(`cp ${srcShim()} ${isoDir}/EFI/boot/${bootArchEfi()}`, this.echo)
+        await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`, this.echo)
+    }
 
 
     /**
