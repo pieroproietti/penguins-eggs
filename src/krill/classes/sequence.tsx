@@ -8,36 +8,9 @@
  */
 
 /**
- * Ideally, I want to respect calamares way, remplementing the same (SEMPLIFIED) steps for CLI
- *
- *
- *  - partition:     partitions
- *  - mount:         mountFs, mountVfs
- *  - unpackfs:      unpackfs
- *  - _restore:      eggs syncfrom --rootdir /tmp/calamares-krill-root/
- *  - sources-yolk:  execCalamaresModule('sources-yolk')
- *  - machineid:     machineid
- *  - fstab:         fstab
- *  - locale         locale
- *  - keyboard:      keyboard
- *  
- * - localecfg:     localecfg
- *  - users:         users
- *  - displaymanager: autologin
- *  - networkcfg:    networkcfg
- *  - hwclock:
- *  - services-systemd:
- *  - bootloader-config: bootloader-config-arch / bootloader-config-debian
- *  - grubcfg:       grubcfg
- *  - bootloader:    bootloaded
- *  - packages:      removeInstaller
- *  - plymouthcfg;
- *  - initramfscfg:  initramfscfg
- *  - initramfs:     initramfs
- *  - removeuser:    removeuser
- *  - sources-yolk-undo: execCalamaresModule('sources-yolk-undo')
- *  - bliss clustom modules
- *  - umount:     umountVfs, this.umountFs
+ * Ideally, I want to respect calamares way, 
+ * implementing the same (SEMPLIFIED) sequence
+ *  on a TUI. Note: here sequence is hard coded!
  */
 
 
@@ -51,8 +24,6 @@ import Finished from '../components/finished.js'
 
 import fs from 'fs'
 import yaml from 'js-yaml'
-import path from 'node:path'
-import shx from 'shelljs'
 
 import { installer } from '../../classes/incubation/installer.js'
 import CliAutologin from '../../classes/cli-autologin.js'
@@ -103,7 +74,7 @@ import umount from './modules/umount.js'
 import mkfs from './modules/mkfs.js'
 import hostname from './modules/hostname.js'
 
-import CFS from '../../classes/cfs.js'
+import CFS from './cfs.js'
 
 import Title from '../components/title.js'
 import cliCursor from 'cli-cursor'
@@ -114,49 +85,49 @@ import { spawnSync } from 'child_process';
  * hatching: installazione o cova!!!
  */
 export default class Sequence {
-   public partition = partition
-   public createLvmPartitions = createLvmPartitions
-   public partitionBiosStandard = biosStandard
-   public partitionUefiStandard = uefiStandard
-   public partitionBiosLuks = biosLuks
-   public partitionUefiLuks = uefiLuks
-   public partitionBiosLvm = biosLvm
-   public partitionUefiLvm = uefiLvm
+   partition = partition
+   createLvmPartitions = createLvmPartitions
+   partitionBiosStandard = biosStandard
+   partitionUefiStandard = uefiStandard
+   partitionBiosLuks = biosLuks
+   partitionUefiLuks = uefiLuks
+   partitionBiosLvm = biosLvm
+   partitionUefiLvm = uefiLvm
 
    // mount
-   public mountFs = mountFs
-   public mountVfs = mountVfs
+   mountFs = mountFs
+   mountVfs = mountVfs
    //
-   public unpackfs = unpackfs
-   public machineId = machineId
-   public fstab = fstab
-   public locale = locale
-   public keyboard = mKeyboard
-   public localeCfg = localeCfg
+   unpackfs = unpackfs
+   machineId = machineId
+   fstab = fstab
+   locale = locale
+   keyboard = mKeyboard
+   localeCfg = localeCfg
    // users
-   public addUser = addUser
-   public changePassword = changePassword
+   addUser = addUser
+   changePassword = changePassword
    // displaumanager: autologin
-   public networkCfg = networkCfg
+    networkCfg = networkCfg
    // hwclock:
    // services-systemd:
    // bootloader-config
-   public bootloaderConfig = bootloaderConfig
+   bootloaderConfig = bootloaderConfig
    //
-   public grubcfg = grubcfg
-   public bootloader = bootloader
-   public packages = packages
-   public removeInstallerLink = removeInstallerLink
+   grubcfg = grubcfg
+   bootloader = bootloader
+   packages = packages
+   removeInstallerLink = removeInstallerLink
    // luksbootkeyfile:
    // plymouthcfg;
-   public initramfsCfg = initramfsCfg
-   public initramfs = initramfs
-   public delLiveUser = delLiveUser
-   public umountFs = umountFs
-   public umountVfs = umountVfs
-   public umount = umount
-   public mkfs = mkfs
-   public hostname = hostname
+   initramfsCfg = initramfsCfg
+   initramfs = initramfs
+   delLiveUser = delLiveUser
+   umountFs = umountFs
+   umountVfs = umountVfs
+   umount = umount
+   mkfs = mkfs
+   hostname = hostname
 
    installer = {} as IInstaller
 

@@ -43,7 +43,12 @@ export default async function networkCfg(this: Sequence) {
       content += '    gateway ' + this.network.gateway + '\n'
     }
 
-    Utils.write(file, content)
+    try {
+      fs.writeFileSync(file, content, 'utf8')
+    } catch (e) {
+      console.log("error on write: " + file)
+    }
+
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
   } else if (this.distro.familyId === 'arch') {
@@ -63,7 +68,10 @@ export default async function networkCfg(this: Sequence) {
     for (const element of this.network.dns) {
       content += 'nameserver ' + element + '\n'
     }
-
-    Utils.write(resolvFile, content)
+    try {
+      fs.writeFileSync(resolvFile, content, 'utf8')
+    } catch (e) {
+      console.log("error on write: " + resolvFile)
+    }
   }
 }

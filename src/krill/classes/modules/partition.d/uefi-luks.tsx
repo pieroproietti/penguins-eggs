@@ -67,16 +67,14 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
       process.exit(1)
     }
 
-    this.devices.swap.name = 'none'
-
+    // this.devices.boot.name = DEFINED
+    this.devices.data.name = 'none'
+    // this.devices.efi.name = DEFINED
     this.devices.root.name = '/dev/mapper/root_crypted'
     this.devices.root.cryptedFrom = `${installDevice}${p}3`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
-
-    // BOOT/DATA/EFI
-    this.devices.data.name = 'none'
-
+    this.devices.swap.name = 'none'
     return true
 }
 

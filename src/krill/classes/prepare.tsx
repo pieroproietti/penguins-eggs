@@ -111,15 +111,13 @@ import getDomain from '../lib/get_domain.js'
 import getDns from '../lib/get_dns.js'
 
 import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getLvmLVDataName, getLvmLVDataMountPoint } from '../lib/lvm_installation_options.js'
-
 import Sequence from './sequence.js'
-
 import { INet } from '../../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './krill-enums.js'
 import { LvmOptionUbuntu, LvmOptionProxmox } from './lvm-options.js'
 import LvmOptions from '../components/lvm-options.js'
-import Install from '../../commands/install.js';
+
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -182,21 +180,21 @@ export default class Krill {
       let scriptName = "removeLvmPartitions"
 
       let cmds = "#!/bin/bash\n"
-      cmds+=`# remove LV (Logical Volumes)\n`
-      cmds +=`vg=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
-      cmds +=`lvs -o lv_name --noheadings | awk '{$1=$1};1' | while read -r lv; do\n`
-      cmds +=` lvremove -y /dev/mapper/$vg-$lv\n`
-      cmds +=`done\n`
-      cmds+=`\n`
-      cmds+=`# remove VG (Volume groups)\n`
+      cmds += `# remove LV (Logical Volumes)\n`
+      cmds += `vg=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
+      cmds += `lvs -o lv_name --noheadings | awk '{$1=$1};1' | while read -r lv; do\n`
+      cmds += ` lvremove -y /dev/mapper/$vg-$lv\n`
+      cmds += `done\n`
+      cmds += `\n`
+      cmds += `# remove VG (Volume groups)\n`
       cmds += `vgremove --force $(vgs --noheadings -o vg_name $vg)\n`
-      cmds+=`\n`
-      cmds+=`# remove PV (Phisical Volumes) \n`
-      cmds+=`pv=$(pvs --noheading -o pv_name | awk '{$1=$1};1')\n`
+      cmds += `\n`
+      cmds += `# remove PV (Phisical Volumes) \n`
+      cmds += `pv=$(pvs --noheading -o pv_name | awk '{$1=$1};1')\n`
       cmds += `pvremove --force --force $pv\n`
-      cmds+=`# wipe PV (Phisical Volumes) \n`
+      cmds += `# wipe PV (Phisical Volumes) \n`
       cmds += `wipefs -a $pv\n`
-      cmds+=`# clean device\n`
+      cmds += `# clean device\n`
       cmds += `sgdisk --zap-all $pv\n`
       cmds += `dd if=/dev/zero of=$pv bs=1M count=10\n`
 
@@ -331,6 +329,27 @@ export default class Krill {
       oPartitions = await this.partitions(this.krillConfig.installationDevice, cryped, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
+    } else {
+      /**
+       * this variables ALWAYS need to be initializated
+       */
+
+      // oPartitions.installationDevice
+      if (oPartitions.installationDevice === '') {
+        // No RAID considerated
+        const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+        if (drives.length > 0) {
+          oPartitions.installationDevice = `/dev/` + drives[0]
+        } else {
+          console.log("Unable to fin installation drive")
+          process.exit(1)
+        }
+      }
+
+      // oPartitions.installationMode 
+      if (cryped) {
+        oPartitions.installationMode = InstallationMode.Luks
+      }
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
@@ -477,7 +496,7 @@ export default class Krill {
   * PARTITIONS
   */
   async partitions(installationDevice = "", crypted = false, pve = false, btrfs = false): Promise<IPartitions> {
-    
+
     // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     let driveList: string[] = []
@@ -569,7 +588,7 @@ export default class Krill {
 
         installationDevice = await selectInstallationDevice()
         installationMode = await selectInstallationMode()
-  
+
         // se LVM2 non chiede fstype, ne' swap
         if (installationMode === InstallationMode.LVM2) {
           // Yes I know, It is pythonic style, sorry! =)
@@ -616,7 +635,7 @@ export default class Krill {
         lvmOptions = new LvmOptionUbuntu()
         break;
       case LvmPartitionPreset.Custom:
-        lvmOptions=  new LvmOptionProxmox()
+        lvmOptions = new LvmOptionProxmox()
       default:
         break;
     }

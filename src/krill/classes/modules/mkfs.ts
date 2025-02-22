@@ -43,11 +43,10 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     if (this.devices.swap.name !== 'none') {
       await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
     } else if (this.partitions.userSwapChoice !== SwapChoice.File) {
-      // create swap file
-      // dd if=/dev/zero of=/swapfile bs=1G count=4
-      // chmod 600 /swapfile
-      // mkswap /swapfile
-      // swapon /swapfile
+      await exec(`dd if=/dev/zero of=/swapfile bs=1G count=4`)
+      await exec(`chmod 600 /swapfile`)
+      await exec(`mkswap /swapfile`)
+      await exec(`swapon /swapfile`)
       // # rendi il file di swap pemanente in fstab
       // echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     }

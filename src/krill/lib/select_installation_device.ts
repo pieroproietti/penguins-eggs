@@ -11,18 +11,18 @@ import shx from 'shelljs'
 
 export default async function selectInstallationDevice(): Promise<string> {
   const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-  const raid_drives = shx.exec('lsblk -l | grep raid | cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+  const raid = shx.exec('lsblk -l | grep raid | cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
   const driveList: string[] = []
 
-  // Add drives
+  // Add drives to driveList
   drives.forEach((element: string) => {
     if (!element.includes('zram') && element !== '') {
       driveList.push('/dev/' + element)
     }
   })
 
-  // Add raid_drives
-  raid_drives.forEach((element: string) => {
+  // Add raid to driveList
+  raid.forEach((element: string) => {
     if (!element.includes('zram') && element !== '') {
       driveList.push('/dev/' + element)
     }

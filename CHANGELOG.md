@@ -13,14 +13,12 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.0.58 (Testing)
+## penguins-eggs-10.0.58-6 (Testing)
 I am working mainly on krill, to add the functionality for encrypted installation and VM2. With the occasion I am also trying to get ISOs created with eggs working with Secure boot enabled on UEFI.
 
-Halfway through!
+The LVM2 installation works, as does the LUKS installation, but I still have some problems on the installed system, a delay who at the moment I was not able to find the reasons.
 
-The LVM2 installation works, as does the LUKS installation, but I still have some problems on the installed system.
-
-To add the ability to boot with Secure Boot enabled will be a great add, thanks to [karltestano](https://github.com/karltestano) for suggestions [Issue: 456](https://github.com/pieroproietti/penguins-eggs/issues/456).
+On Debian bookworm was added the ability to boot with Secure Boot enabled, thanks to [karltestano](https://github.com/karltestano) for suggestions [Issue: 456](https://github.com/pieroproietti/penguins-eggs/issues/456). On Ubuntu and Linuxmint we need to copy the original `/boot/grub&/efi.img` from the original ISO, to `/home/eggs/iso/boot/grub/efi.img` and run `sudo /home/eggs/ovarium/mkido` to rebuild the ISO.
 
 ## penguins-eggs-10.0.57
 Completely removed for all the distros `lsb_release` package.
