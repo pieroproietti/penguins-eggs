@@ -75,14 +75,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${efiSaveDir}`)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
-    // create memdisk
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
-
     const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1\n`
     if (this.familyId === `debian`) {
+        // create memdisk
+        await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
+        await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
+        await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
+
         /**
          * creating grub.cfg 1 in memdisk
          */
@@ -150,7 +150,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          */
         const pathRelativeEfi = '../../../efi/*'
         await exec(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`, this.echo)
-        readmeContent = `debian efi.img copied on ${isoDir}`
+        readmeContent = `using secure boot from debian on ${isoDir}`
         grubText1 += `using secure boot from debian\n`
     }
 
