@@ -56,8 +56,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     if (!fs.existsSync(GAE)) {
-        console.log(`error: cannot find ${GAE}`)
         if (this.familyId === 'debian') {
+            console.log(`error: cannot find ${GAE}`)
             process.exit(1)
         }
     }
@@ -149,7 +149,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
          * Arch linux
          */
         const pathRelativeEfi = '../../../efi/*'
-        console.log(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`)
         await exec(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`, this.echo)
         readmeContent = `debian efi.img copied on ${isoDir}`
         grubText1 += `using secure boot from debian\n`
