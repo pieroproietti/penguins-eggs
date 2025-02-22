@@ -57,7 +57,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     if (!fs.existsSync(GAE)) {
         console.log(`error: cannot find ${GAE}`)
-        process.exit(1)
+        if (this.familyId === 'debian') {
+            process.exit(1)
+        }
     }
 
     // Create READMES on ISO
