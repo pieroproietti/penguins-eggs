@@ -903,7 +903,6 @@ export default class Utils {
     */
    static write(file: string, text: string): void {
       text = text.trim() + '\n'
-      text = text.trim() + '\n'
       file = file.trim()
       fs.writeFileSync(file, text)
    }

@@ -100,7 +100,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
 
     /**
-     * make a tarred "memdisk" to embed in the grub image
      * IS CRUCIAL chdir to efiMemdiskDir
      */
     const currentDir = process.cwd()

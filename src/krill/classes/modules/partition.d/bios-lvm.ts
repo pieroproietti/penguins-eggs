@@ -35,11 +35,10 @@ export default async function biosLvm(this: Sequence, installDevice = "", p = ""
     this.devices.swap.mountPoint = '/'
   }
 
-  this.devices.efi.name = 'none'
-
-  this.devices.boot.name = `${installDevice}${p}1`
   this.devices.boot.fsType = 'ext2'
   this.devices.boot.mountPoint = '/boot'
+  this.devices.boot.name = `${installDevice}${p}1`
+  this.devices.efi.name = 'none'
   
   return true
 }

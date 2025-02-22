@@ -25,7 +25,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   /**
    * crypttab
    */
-  if (this.partitions.installationMode === InstallationMode.Luks ) {
+  if (this.partitions.installationMode === InstallationMode.Luks) {
     const crypttab = this.installTarget + '/etc/crypttab'
     text += '# /etc/crypttab: mappings for encrypted partitions.\n'
     text += '#\n'
@@ -55,10 +55,18 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   }
 
   const fstab = this.installTarget + '/etc/fstab'
-  let mountOptsRoot = ''
+  /**
+    boot: IDevice
+    data: IDevice
+    efi: IDevice
+    root: IDevice
+    swap: IDevice
+   */
+
   let mountOptsBoot = ''
   let mountOptsData = ''
   let mountOptsEfi = ''
+  let mountOptsRoot = ''
   let mountOptsSwap = ''
 
   /**
@@ -66,60 +74,94 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
    */
   if (this.partitions.filesystemType === 'ext4') {
     if (await isRotational(installDevice)) {
-      mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsBoot = 'defaults,relatime 0 1'
       mountOptsData = 'defaults,relatime 0 1'
       mountOptsEfi = 'defaults,relatime 0 2'
+      mountOptsRoot = 'defaults,relatime 0 1'
       mountOptsSwap = 'defaults,relatime 0 2'
     } else {
-      mountOptsRoot = 'defaults,noatime 0 1'
       mountOptsBoot = 'defaults,noatime 0 1'
       mountOptsData = 'defaults,noatime 0 1'
       mountOptsEfi = 'defaults,noatime 0 2'
+      mountOptsRoot = 'defaults,noatime 0 1'
       mountOptsSwap = 'defaults,noatime 0 2'
     }
 
-    text = ''
+    /**
+     * root must to be defined!
+     */
+    text += `# root\n`
     text += `# ${this.devices.root.name} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
     text += `UUID=${Utils.uuid(this.devices.root.name)} ${this.devices.root.mountPoint} ${this.devices.root.fsType} ${mountOptsRoot}\n`
+    text += `\n`
 
+    /**
+     * boot can be none or defined!
+     */
     if (this.devices.boot.name !== 'none') {
+      text += `# boot\n`
       text += `# ${this.devices.boot.name} ${this.devices.boot.mountPoint} ${this.devices.boot.fsType} ${mountOptsBoot}\n`
       text += `UUID=${Utils.uuid(this.devices.boot.name)} ${this.devices.boot.mountPoint} ${this.devices.root.fsType} ${mountOptsBoot}\n`
+      text += `\n`
     }
 
+    /**
+     * data can be none or defined!
+     */
     if (this.devices.data.name !== 'none') {
+      text += `# data\n`
       text += `# ${this.devices.data.name} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
       text += `UUID=${Utils.uuid(this.devices.data.name)} ${this.devices.data.mountPoint} ${this.devices.data.fsType} ${mountOptsData}\n`
+      text += `\n`
     }
+
 
     if (this.efi) {
+      /**
+       * efi must to be defined
+       */
+      text += `# efi\n`
       text += `# ${this.devices.efi.name} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
       text += `UUID=${Utils.uuid(this.devices.efi.name)} ${this.devices.efi.mountPoint} vfat ${mountOptsEfi}\n`
+      text += `\n`
     }
 
-    if (this.partitions.userSwapChoice == SwapChoice.File) {
+    /**
+     * swap can be none, file, defined, undefined
+     */
+    if (this.devices.swap.name !== undefined) {
+      if (this.devices.swap.name !== `none`) {
 
-      let swapFile = ''
-      if (this.devices.swap.mountPoint.endsWith('/')) {
-        swapFile = `${this.devices.swap.mountPoint}${this.devices.swap.name}`
+        if (this.partitions.userSwapChoice == SwapChoice.None) {
+          text += `# swap None ${this.partitions.userSwapChoice}\n`
+          text += `# no swap configured\n`
+          text += `\n`
+
+          // file
+        } else if (this.partitions.userSwapChoice == SwapChoice.File) {
+          text += `# swap File ${this.partitions.userSwapChoice}\n`
+          let swapFile = ``
+          text += `# /swapfile none swap sw 0 0\n`
+          text += `/swapfile none swap sw 0 0\n`
+          text += `\n`
+
+          // others 
+        } else {
+          text += `# swap ${this.partitions.userSwapChoice}\n`
+          text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+          text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+          text += `\n`
+        }
       } else {
-        swapFile = `${this.devices.swap.mountPoint}/${this.devices.swap.name}`
+        text += `# swap none\n`
       }
-
-      text += `# ${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-      text += `${swapFile} none ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-    } else if (this.partitions.userSwapChoice == SwapChoice.None) {
-      // nada de nada
-
     } else {
-      text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-      text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `# swap undefined\n`
     }
 
-  /**
-   * brtfs: TUTTO da rivedere!
-   */
+    /**
+     * brtfs: TUTTO da rivedere!
+     */
   } else if (this.partitions.filesystemType === 'btrfs') {
     const base = '/        btrfs  subvol=/@,defaults 0 0'
     const snapshots = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
@@ -140,8 +182,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
     text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
   }
-  //console.log(text)
-  //Utils.pressKeyToExit()
   Utils.write(fstab, text)
 }
 

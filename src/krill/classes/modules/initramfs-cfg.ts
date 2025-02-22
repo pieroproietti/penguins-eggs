@@ -9,6 +9,7 @@
 
 import Utils from '../../../classes/utils.js'
 import Sequence from '../../classes/sequence.js'
+import { exec } from '../../../lib/utils.js'
 import { SwapChoice } from '../../classes/krill-enums.js'
 
 /**
@@ -20,7 +21,17 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     // userSwapChoices = ['none', 'small', 'suspend', 'file']
     const file = this.installTarget + '/etc/initramfs-tools/conf.d/resume'
     let text = ''
-    text += this.partitions.userSwapChoice === SwapChoice.None || this.partitions.userSwapChoice === SwapChoice.File ? '#RESUME=none\n' : 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+    if (SwapChoice.None) {
+      text += `#RESUME=none\n`
+
+    } else if (this.partitions.userSwapChoice === SwapChoice.File) {
+      const swap_uuid= (await exec(`findmnt -no UUID -T /swapfile`)).data.trim()
+      const swap_offset= (await exec(`filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\..*//'`)).data.trim()
+      text += `RESUME=UUID=${swap_uuid}\n`
+      text += `RESUME_OFFSET=${swap_offset}\n`
+    } else {
+      text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
+    }
     Utils.write(file, text)
   }
 }
