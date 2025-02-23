@@ -67,12 +67,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // clean/create all efiPath
     if (fs.existsSync(efiPath)) {
-        await exec(`rm -rf ${efiPath} `)
+        await exec(`rm -rf ${efiPath}`)
     }
-    await exec(`mkdir ${efiPath} `)
-    await exec(`mkdir ${efiMemdiskDir} `)
+    await exec(`mkdir ${efiPath}`, this.echo)
+    await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiMnt}`, this.echo)
-    await exec(`mkdir ${efiSaveDir}`)
+    await exec(`mkdir ${efiSaveDir}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
     const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
@@ -97,7 +97,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // creating structure efiWordDir
         await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
         await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
-        // await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
 
         /**
          * IS CRUCIAL chdir to efiMemdiskDir
@@ -184,11 +183,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
     fs.copyFileSync(themeSrc, themeDest)
 
-    // copy modules and fonts on efiWorkDir ### I can copy it on isoDir ###
-    // here is OK also for Arch
-    // await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}-signed/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
-    // readmeContent += `copied /usr/lib/grub/${Utils.uefiFormat()}-signed/* in ${efiWorkDir}boot/grub/${Utils.uefiFormat()}\n`
-
     // selecting available fonts
     if (fs.existsSync('/usr/share/grub/font.pf2')) {
         await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
@@ -229,7 +223,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         kernel_parameters,
         vmlinuz: `/live${this.settings.vmlinuz}`
     }
-    let grubText2 = `# grub.cfg 3\n`
+    let grubText2 = `# grub.cfg 2\n`
     grubText2 += ` # created on ${g2}`
     grubText2 += `\n`
     grubText2 += mustache.render(template, view)
