@@ -91,7 +91,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
         grubText1 += 'set prefix=($root)/boot/grub\n'
         grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-
+        
         Utils.write(grub1, grubText1)
 
         // creating structure efiWordDir
@@ -123,15 +123,16 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
-        // copyng grubx86.efi to efi.img as bootx84.efi
-        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-        await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-
-        // shim.cfg
+        /* shim.cfg su ISO/etc
         exec(`mkdir ${efiMnt}/etc`, this.echo)
         let f =`${efiMnt}/etc/shim.cfg`
         let fc =`BOOT_IMAGE=noverify\n`
-        fs.writeFileSync(f, fc, `utf8`)
+        fs.writeFileSync(f, fc, "utf8")
+        */
+
+        // copyng grubx86.efi to efi.img as bootx84.efi
+        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+        await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
         
         // readme
         readmeContent += `## copyng on ${efiMnt}\n`
@@ -289,19 +290,11 @@ function srcGAE(): string {
 }
 
 function srcGAES(): string {
-    const pathRelativeEfi = `../../../efi/grubx64.efi.signed`
-    const retVal = `${path.resolve(__dirname, pathRelativeEfi)}`
-    return retVal
-    
-    // return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
+    return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
 }
 
 function srcShim(): string {
-    const pathRelativeEfi = `../../../efi/shimx64.efi.signed`
-    const retVal = `${path.resolve(__dirname, pathRelativeEfi)}`
-    return retVal
-
-    // const signedShim = '/usr/lib/shim/shimx64.efi.signed';
-    // const unsignedShim = '/usr/lib/shim/shimx64.efi';
-    // return fs.existsSync(signedShim) ? signedShim : unsignedShim;
+    const signedShim = '/usr/lib/shim/shimx64.efi.signed';
+    const unsignedShim = '/usr/lib/shim/shimx64.efi';
+    return fs.existsSync(signedShim) ? signedShim : unsignedShim;
 }
