@@ -81,7 +81,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // create memdisk
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
-        await exec(`mkdir ${path.join(efiMemdiskDir, "/EFI")}`, this.echo)
 
         /**
          * creating grub.cfg 1 in memdisk
@@ -99,8 +98,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
         await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
         await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
-        await exec(`mkdir ${efiWorkDir}/EFI`, this.echo)
-        await exec(`mkdir ${efiWorkDir}/EFI/boot`, this.echo)
 
         /**
          * IS CRUCIAL chdir to efiMemdiskDir
@@ -201,23 +198,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
     }
 
-    // Copy workdir files to ISO/boot, ISO/EFI
+    // Copy workdir files to ISO/boot
     await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-    await exec(`rsync -avx ${efiWorkDir}/EFI  ${isoDir}/`, this.echo)
 
     readmeContent += `\n`
     readmeContent += `Copyng on ${isoDir}\n`
     readmeContent += `${GAE} is /EFI/boot/${nameGAE()}\n`
-    if (this.familyId === 'debian') {
-        await exec(`cp ${GAE} ${isoDir}/EFI/boot/${nameGAE()}`)
-
-        /**
-         * copy shimx64.efi as bootx86.efi on isoDir
-         */
-        await exec(`cp ${srcShim()} ${isoDir}/EFI/boot/${bootArchEfi()}`, this.echo)
-        await exec(`cp ${srcGAES()} ${isoDir}/EFI/boot/${nameGAE()}`, this.echo)
-    }
-
 
     /**
      * prepare main grub.cfg from grub.main.cfg
