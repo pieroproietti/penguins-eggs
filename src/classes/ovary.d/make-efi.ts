@@ -97,7 +97,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // creating structure efiWordDir
         await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
         await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
-        await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
+        // await exec(`mkdir ${efiWorkDir}/boot/grub/${Utils.uefiFormat()}`, this.echo)
 
         /**
          * IS CRUCIAL chdir to efiMemdiskDir
@@ -186,8 +186,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // copy modules and fonts on efiWorkDir ### I can copy it on isoDir ###
     // here is OK also for Arch
-    await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}-signed/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
-    readmeContent += `copied /usr/lib/grub/${Utils.uefiFormat()}-signed/* in ${efiWorkDir}boot/grub/${Utils.uefiFormat()}\n`
+    // await exec(`cp -r /usr/lib/grub/${Utils.uefiFormat()}-signed/* ${efiWorkDir}boot/grub/${Utils.uefiFormat()}/`, this.echo)
+    // readmeContent += `copied /usr/lib/grub/${Utils.uefiFormat()}-signed/* in ${efiWorkDir}boot/grub/${Utils.uefiFormat()}\n`
 
     // selecting available fonts
     if (fs.existsSync('/usr/share/grub/font.pf2')) {
