@@ -127,6 +127,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
+        // shim.cfg
+        exec(`mkdir ${efiMnt}/etc`, this.echo)
+        let f =`${efiMnt}/etc/shim.cfg`
+        let fc =`BOOT_IMAGE=noverify\n`
+        fs.writeFileSync(f, fc, `utf8`)
+        
         // readme
         readmeContent += `## copyng on ${efiMnt}\n`
         readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
@@ -283,11 +289,19 @@ function srcGAE(): string {
 }
 
 function srcGAES(): string {
-    return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
+    const pathRelativeEfi = `../../../efi/grubx64.efi.signed`
+    const retVal = `${path.resolve(__dirname, pathRelativeEfi)}`
+    return retVal
+    
+    // return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
 }
 
 function srcShim(): string {
-    const signedShim = '/usr/lib/shim/shimx64.efi.signed';
-    const unsignedShim = '/usr/lib/shim/shimx64.efi';
-    return fs.existsSync(signedShim) ? signedShim : unsignedShim;
+    const pathRelativeEfi = `../../../efi/shimx64.efi.signed`
+    const retVal = `${path.resolve(__dirname, pathRelativeEfi)}`
+    return retVal
+
+    // const signedShim = '/usr/lib/shim/shimx64.efi.signed';
+    // const unsignedShim = '/usr/lib/shim/shimx64.efi';
+    // return fs.existsSync(signedShim) ? signedShim : unsignedShim;
 }
