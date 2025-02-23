@@ -123,6 +123,22 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
+        // creating grub.cfg 2
+        const g = `${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+        const scanDir = `/usr/lib/grub/${Utils.uefiFormat()}`
+        const files = fs.readdirSync(scanDir)
+        const partFiles = files.filter(file => file.startsWith('part'))
+        let grubText = `# grub.cfg\n`
+        grubText += `# created on ${g}\n`
+        grubText += `\n`
+        partFiles.forEach(file => {
+            const module = file.substring(0, file.indexOf('.mod'))
+            if (module.length > 0) {
+                grubText += `insmod ${module}\n`
+            }
+        })
+        fs.writeFileSync(g, grubText, 'utf8')
+
         /* shim.cfg su ISO/etc
         exec(`mkdir ${efiMnt}/etc`, this.echo)
         let f =`${efiMnt}/etc/shim.cfg`
