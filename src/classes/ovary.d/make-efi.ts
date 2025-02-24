@@ -31,7 +31,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
-    const efiSaveDir = path.join(efiPath, '/saved/')
     const efiMnt = path.join(efiPath, '/mnt/')
 
     const isoDir = this.settings.iso_work
@@ -72,10 +71,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${efiPath}`, this.echo)
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiMnt}`, this.echo)
-    await exec(`mkdir ${efiSaveDir}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
-    const grub1 = `${path.join(efiMemdiskDir, "/boot/grub/grub.cfg")}`
+    const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1\n`
     if (this.familyId === `debian`) {
         // create memdisk
@@ -89,9 +87,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
         grubText1 += 'set prefix=($root)/boot/grub\n'
         grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-        console.log(grubText1)
+        
         Utils.write(grub1, grubText1)
-        console.log(`saved on ${grub1}`)
+
+        /**
+         * creating structure efiWordDir
+         */
+        await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
+        await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
 
         /**
          * create tarred efiMemdiskDir
@@ -115,9 +118,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
-        // copyng shimx64.efi.signed to efi.img/EFI/boot as bootx84.efi
+        // copyng grubx86.efi to efi.img as bootx84.efi
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-        // copyng grubx64.signed to efi.img/EFI/boot
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
         
         // readme
@@ -126,15 +128,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         readmeContent += `${GAE} is ${nameGAE()}\n`
 
 
-        // save efiMnt content in efiSaveDir
-        await exec(`mkdir ${efiSaveDir}`, this.echo)
-        await exec(`cp -r ${efiMnt}/* ${efiSaveDir}`, this.echo)
-
-        readmeContent += `${efiImg}/* saved on $(efiSaveDir}\n`
-
         // umount efiMnt
         await exec(`umount ${efiMnt}`, this.echo)
-
     } else {
         /**
          * Arch linux
@@ -189,7 +184,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // Copy workdir files to ISO/boot
     await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-    await exec(`rsync -avx  ${efiWorkDir}/EFI ${isoDir}/`, this.echo)
 
     readmeContent += `\n`
     readmeContent += `Copyng on ${isoDir}\n`
@@ -239,9 +233,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     fs.writeFileSync(`${readmes}/grub1.cfg`, grubText1)
     fs.writeFileSync(`${readmes}/grub2.cfg`, grubText2)
     fs.writeFileSync(`${readmes}/README.md`, readmeContent)
-
-    process.exit()
-
 }
 
 
