@@ -6,28 +6,6 @@
  * license: MIT
  */
 
-/*
-File mancanti nella ISO attuale:
-- .disk/id/5cf9beb3-43c9-46c6-908f-493905fe14ff
-- boot/grub/x86_64-efi/gcdx64.efi.signed
-- boot/grub/x86_64-efi/grubnetx64.efi.signed
-- boot/grub/x86_64-efi/grubx64.efi.signed
-- boot/grub/x86_64-efi/version
-
-Nuovi file nella ISO attuale:
-- boot/grub/x86_64-efi/grub.cfg
-- .disk/id/2db9c237-2191-40f1-b951-b77e8f03341a
-
-File con contenuto diverso:
-- boot/grub/grub.cfg
-- READMES/grub2.cfg
-- live/filesystem.squashfs
-- READMES/README.md
-- live/initrd.img-6.8.0-53-generic
-- .disk/info
-- READMES/grub1.cfg
-
-*/
 import mustache from 'mustache'
 
 // packages
@@ -61,7 +39,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     let readmeContent = `# README\n`
 
     /**
-     * grub/grub2 command MUST to exists
+     * check: grub/grub2 command MUST to exists
      */
     const grubName = Diversions.grubName(this.familyId)
     if (grubName === '') {
@@ -87,7 +65,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // Create READMES on ISO
     await exec(`mkdir ${readmes}`)
 
-    // clean/create all efiPath
+    // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
         await exec(`rm -rf ${efiPath}`)
     }
@@ -104,9 +82,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
 
-        /**
-         * creating grub.cfg 1 in memdisk
-         */
+        // create grub.cfg 1 in memdisk
         Utils.warning("creating grub.cfg 1 in memdisk")
         grubText1 += `# created on ${efiMemdiskDir}\n`
         grubText1 += `\n`
@@ -116,17 +92,24 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         
         Utils.write(grub1, grubText1)
 
-        // creating structure efiWordDir
+        /**
+         * creating structure efiWordDir
+         */
         await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
         await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
 
         /**
-         * IS CRUCIAL chdir to efiMemdiskDir
+         * create tarred efiMemdiskDir
          */
+
+        // IS CRUCIAL chdir to efiMemdiskDir
+        /*
         const currentDir = process.cwd()
         process.chdir(efiMemdiskDir)
         await exec('tar -cvf memdisk boot', this.echo)
         process.chdir(currentDir)
+        */
+        await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
 
 
         /**
