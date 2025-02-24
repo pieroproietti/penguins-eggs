@@ -84,8 +84,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         Utils.warning("creating grub.cfg 1 in memdisk")
         grubText1 += `# created on ${efiMemdiskDir}\n`
         grubText1 += `\n`
-        grubText1 += `search --set=root --file /.disk/info`
-        // grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
+        // grubText1 += `search --set=root --file /.disk/info`
+        grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
         grubText1 += 'set prefix=($root)/boot/grub\n'
         grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
         
