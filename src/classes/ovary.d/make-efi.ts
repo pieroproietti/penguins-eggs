@@ -101,14 +101,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         /**
          * create tarred efiMemdiskDir
          */
-
-        // IS CRUCIAL chdir to efiMemdiskDir
-        /*
-        const currentDir = process.cwd()
-        process.chdir(efiMemdiskDir)
-        await exec('tar -cvf memdisk boot', this.echo)
-        process.chdir(currentDir)
-        */
         await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
 
 
