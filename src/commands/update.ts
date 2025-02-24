@@ -183,16 +183,16 @@ export default class Update extends Command {
     let url = 'https://sourceforge.net/projects/penguins-eggs/files/Packages'
     let filter = `penguins-eggs`
     if (this.distro.familyId === "debian") {
-      repo = "DEBS"
+      repo = "debs"
       url = `${url}/${repo}/${Utils.uefiArch()}`
       filter = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
       cmd = `sudo dpkg -i ${filter}`
     } else if (this.distro.familyId === 'archlinux') {
-      repo = "AUR"
+      repo = "aur"
       filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       cmd = `sudo pacman -U ${filter}`
       if (Diversions.isManjaroBased(this.distro.distroId)) {
-        repo = 'MANJARO'
+        repo = 'manjaro'
       }
       url = `${url}/${repo}`
     }
