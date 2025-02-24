@@ -99,8 +99,11 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         /**
          * create tarred efiMemdiskDir
          */
-        await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
-
+        //await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
+        const currentDir = process.cwd()
+        process.chdir(efiMemdiskDir)
+        await exec('tar -cvf memdisk boot', this.echo)
+        process.chdir(currentDir)
 
         /**
          * Create boot image "boot/grub/efi.img"
@@ -118,6 +121,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
+        // copyng grub.cfg
+        await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
         // copyng grubx86.efi to efi.img as bootx84.efi
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
