@@ -81,10 +81,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
 
         // create grub.cfg 1 in memdisk
-        Utils.warning("creating grub.cfg 1 in memdisk")
+        Utils.warning("creating grub.cfg in (efi.img)")
         grubText1 += `# created on ${efiMemdiskDir}\n`
         grubText1 += `\n`
-        // grubText1 += `search --set=root --file /.disk/info`
         grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
         grubText1 += 'set prefix=($root)/boot/grub\n'
         grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
@@ -122,6 +121,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
 
+        /**
+         * we need: (efi.img)/boot/grub/grub.cfg
+         *          (efi.img)/EFI/boot/bootx84.efi
+         *          (efi.img)/EFI/boot/grubx84.efi
+         */
+
         // copy grub.cfg to (efi.img)/boot/grub
         await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
 
@@ -133,8 +138,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
         
         // readme
-        readmeContent += `## copyng on ${efiMnt}\n`
-        readmeContent += `${srcShim()} is  ${bootArchEfi()}\n`
+        readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
+        readmeContent += `${grub1} copied to /boot/grub`
+        readmeContent += `${srcShim()} copied is  ${bootArchEfi()}\n`
         readmeContent += `${GAE} is ${nameGAE()}\n`
 
 
