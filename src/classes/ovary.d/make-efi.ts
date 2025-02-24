@@ -6,6 +6,28 @@
  * license: MIT
  */
 
+/*
+File mancanti nella ISO attuale:
+- .disk/id/5cf9beb3-43c9-46c6-908f-493905fe14ff
+- boot/grub/x86_64-efi/gcdx64.efi.signed
+- boot/grub/x86_64-efi/grubnetx64.efi.signed
+- boot/grub/x86_64-efi/grubx64.efi.signed
+- boot/grub/x86_64-efi/version
+
+Nuovi file nella ISO attuale:
+- boot/grub/x86_64-efi/grub.cfg
+- .disk/id/2db9c237-2191-40f1-b951-b77e8f03341a
+
+File con contenuto diverso:
+- boot/grub/grub.cfg
+- READMES/grub2.cfg
+- live/filesystem.squashfs
+- READMES/README.md
+- live/initrd.img-6.8.0-53-generic
+- .disk/info
+- READMES/grub1.cfg
+
+*/
 import mustache from 'mustache'
 
 // packages
@@ -122,29 +144,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI`, this.echo)
         await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
-
-        // creating grub.cfg 2
-        const g = `${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
-        const scanDir = `/usr/lib/grub/${Utils.uefiFormat()}`
-        const files = fs.readdirSync(scanDir)
-        const partFiles = files.filter(file => file.startsWith('part'))
-        let grubText = `# grub.cfg\n`
-        grubText += `# created on ${g}\n`
-        grubText += `\n`
-        partFiles.forEach(file => {
-            const module = file.substring(0, file.indexOf('.mod'))
-            if (module.length > 0) {
-                grubText += `insmod ${module}\n`
-            }
-        })
-        fs.writeFileSync(g, grubText, 'utf8')
-
-        /* shim.cfg su ISO/etc
-        exec(`mkdir ${efiMnt}/etc`, this.echo)
-        let f =`${efiMnt}/etc/shim.cfg`
-        let fc =`BOOT_IMAGE=noverify\n`
-        fs.writeFileSync(f, fc, "utf8")
-        */
 
         // copyng grubx86.efi to efi.img as bootx84.efi
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
