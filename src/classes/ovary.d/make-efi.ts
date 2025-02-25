@@ -81,13 +81,15 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
 
         // create grub.cfg 1 in memdisk
-        Utils.warning("creating grub.cfg in (efi.img)")
+        Utils.warning("creating grub.cfg (1) in (efi.img)")
         grubText1 += `# created on ${efiMemdiskDir}\n`
         grubText1 += `\n`
         grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
         grubText1 += 'set prefix=($root)/boot/grub\n'
-        grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-        
+        // grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+        grubText1 += `source $prefix/($grub_cpu)-efi/grub.cfg\n`
+
+
         Utils.write(grub1, grubText1)
 
         /**
@@ -140,9 +142,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         // readme
         readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
         readmeContent += `${grub1} copied to /boot/grub`
-        readmeContent += `${srcShim()} copied is  ${bootArchEfi()}\n`
-        readmeContent += `${GAE} is ${nameGAE()}\n`
-
+        readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
+        readmeContent += `${GAE} copied as ${nameGAE()}\n`
 
         // umount efiMnt
         await exec(`umount ${efiMnt}`, this.echo)
@@ -160,7 +161,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * creating grub.cfg 2
      */
-    Utils.warning("creating grub.cfg 2 (iso)/boot/grub")
+    Utils.warning("creating grub.cfg (2) on (iso)/boot/grub")
 
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
@@ -240,6 +241,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * create loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
+
+    // create (iso)/boot/grub/x86_64-efi/grub.cfg
+    fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n') 
 
     /**
      * config.cfg
