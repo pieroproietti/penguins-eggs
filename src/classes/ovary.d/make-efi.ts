@@ -75,91 +75,89 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1\n`
-    if (this.familyId === `debian`) {
-        // create memdisk
-        await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
-        await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
-
-        // create grub.cfg 1 in memdisk
-        Utils.warning("creating grub.cfg (1) in (efi.img)")
-        grubText1 += `# created on ${efiMemdiskDir}\n`
-        grubText1 += `\n`
-        grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
-        grubText1 += 'set prefix=($root)/boot/grub\n'
-        // grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-        grubText1 += `source $prefix/($grub_cpu)-efi/grub.cfg\n`
-
-
-        Utils.write(grub1, grubText1)
-
-        /**
-         * creating structure efiWordDir
-         */
-        await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
-        await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
-
-        /**
-         * create tarred efiMemdiskDir
-         */
-        //await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
-        const currentDir = process.cwd()
-        process.chdir(efiMemdiskDir)
-        await exec('tar -cvf memdisk boot', this.echo)
-        process.chdir(currentDir)
-
-        /**
-         * Create boot image "boot/grub/efi.img"
-         */
-        const efiImg = `${efiWorkDir}boot/grub/efi.img`
-        await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
-        await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
-
-        // mount efi.img on mnt-img
-        await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
-
-        // create structure inside efiMnt
-        await exec(`mkdir ${efiMnt}/boot`, this.echo)
-        await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-        await exec(`mkdir ${efiMnt}/EFI`, this.echo)
-        await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
-
-        /**
-         * we need: (efi.img)/boot/grub/grub.cfg
-         *          (efi.img)/EFI/boot/bootx84.efi
-         *          (efi.img)/EFI/boot/grubx84.efi
-         */
-
-        // copy grub.cfg to (efi.img)/boot/grub
-        await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
-
-        // copy shimx64.efi.signed to (efi.img)/EFI/boot as bootx84.efi
-        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-
-        // copy grubx64.efi.signed to (efi.img)/EFI/boot as grubx64.efi
-        await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-
-        
-        // readme
-        readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
-        readmeContent += `${grub1} copied to /boot/grub`
-        readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
-        readmeContent += `${GAE} copied as ${nameGAE()}\n`
-
-        // umount efiMnt
-        await exec(`umount ${efiMnt}`, this.echo)
-    } else {
-        /**
-         * Arch linux
-         */
-        const pathRelativeEfi = '../../../efi/*'
-        await exec(`cp -r ${path.resolve(__dirname, pathRelativeEfi)} ${isoDir}`, this.echo)
-        readmeContent = `using secure boot from debian on ${isoDir}`
-        grubText1 += `using secure boot from debian\n`
-    }
 
 
     /**
-     * creating grub.cfg 2
+     * create efi.img
+     */
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
+
+    // create grub.cfg 1 in memdisk
+    Utils.warning("creating grub.cfg (1) in (efi.img)")
+    grubText1 += `# created on ${efiMemdiskDir}\n`
+    grubText1 += `\n`
+    grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
+    grubText1 += 'set prefix=($root)/boot/grub\n'
+    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+    // grubText1 += `source $prefix/($grub_cpu)-efi/grub.cfg\n`
+
+
+    Utils.write(grub1, grubText1)
+
+    /**
+     * creating structure efiWordDir
+     */
+    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
+    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
+
+    /**
+     * create tarred efiMemdiskDir
+     */
+    //await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
+    const currentDir = process.cwd()
+    process.chdir(efiMemdiskDir)
+    await exec('tar -cvf memdisk boot', this.echo)
+    process.chdir(currentDir)
+
+    /**
+     * Create boot image "boot/grub/efi.img"
+     */
+    const efiImg = `${efiWorkDir}boot/grub/efi.img`
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
+
+    // mount efi.img on mnt-img
+    await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
+
+    // create structure inside efiMnt
+    await exec(`mkdir ${efiMnt}/boot`, this.echo)
+    await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
+    await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo);
+    await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo);
+
+    await exec(`mkdir ${efiMnt}/EFI`, this.echo)
+    await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
+    /**
+     * we need: (efi.img)/boot/grub/grub.cfg
+     *          (efi.img)/EFI/boot/bootx84.efi
+     *          (efi.img)/EFI/boot/grubx84.efi
+     */
+
+    // copy grub.cfg to (efi.img)/boot/grub
+    await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
+
+    // copy shimx64.efi.signed to (efi.img)/EFI/boot as bootx84.efi
+    await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+
+    // copy grubx64.efi.signed to (efi.img)/EFI/boot as grubx64.efi
+    await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+
+
+    // readme
+    readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
+    readmeContent += `${grub1} copied to /boot/grub`
+    readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
+    readmeContent += `${GAE} copied as ${nameGAE()}\n`
+
+    // umount efiMnt
+    await exec(`umount ${efiMnt}`, this.echo)
+
+    
+
+
+    /**
+     * creating grub.cfg (2) on (iso)/boot/grub
      */
     Utils.warning("creating grub.cfg (2) on (iso)/boot/grub")
 
@@ -237,13 +235,23 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     fs.writeFileSync(g2, grubText2)
 
+
+
+
+
+    /*
+     * create EFI on iso no need on bookworm and Ubuntu
+    await exec(`mkdir ${isoDir}/EFI`, this.echo)
+    await exec(`cp ${efiWorkDir}boot/grub/font.pf2 ${isoDir}/EFI`,this.echo)
+    */
+
     /**
      * create loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
 
     // create (iso)/boot/grub/x86_64-efi/grub.cfg
-    fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n') 
+    fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n')
 
     /**
      * config.cfg
@@ -286,6 +294,7 @@ function nameGAE(): string {
 
 function nameGAES(): string {
     return nameGAE() + '.signed'
+
 }
 
 function srcGAE(): string {
@@ -293,11 +302,17 @@ function srcGAE(): string {
 }
 
 function srcGAES(): string {
-    return '/usr/lib/grub/' + Utils.uefiFormat() + '-signed/' + nameGAES()
+    const signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
+    if (!fs.existsSync(signedGrub)) {
+        Utils.error(`Cannot find signed GRUB EFI file: ${signedGrub}`);
+        process.exit(1);
+    }
+    return signedGrub
 }
 
 function srcShim(): string {
     const signedShim = '/usr/lib/shim/shimx64.efi.signed';
     const unsignedShim = '/usr/lib/shim/shimx64.efi';
+
     return fs.existsSync(signedShim) ? signedShim : unsignedShim;
 }
