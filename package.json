@@ -71,7 +71,6 @@
         "/conf",
         "/dist",
         "/dracut",
-        "/efi",
         "/eui",
         "/ipxe",
         "/manpages",
