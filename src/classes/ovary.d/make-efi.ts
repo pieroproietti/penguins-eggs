@@ -90,7 +90,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
     grubText1 += 'set prefix=($root)/boot/grub\n'
     grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-    // grubText1 += `source $prefix/($grub_cpu)-efi/grub.cfg\n`
 
 
     Utils.write(grub1, grubText1)
@@ -98,8 +97,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * creating structure efiWordDir
      */
-    await exec(`mkdir ${efiWorkDir}/boot`, this.echo)
-    await exec(`mkdir ${efiWorkDir}/boot/grub`, this.echo)
+    await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo)
+    await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
 
     /**
      * create tarred efiMemdiskDir
@@ -148,15 +147,16 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // copy grub.cfg to (efi.img)/boot/grub
     await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
 
-    if (this.familyId === `debian`) {
+    if (this.settings.distro.codenameLikeId === 'bootworm') {
         // copy shimx64.efi.signed to (efi.img)/EFI/boot as bootx84.efi
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
 
         // copy grubx64.efi.signed to (efi.img)/EFI/boot as grubx64.efi
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-    } else {
-        // Arch
-        await exec(`cp ${efiWorkDir}/EFI/boot ${efiMnt}/EFI/boot/`, this.echo)
+    }
+
+    if (!fs.existsSync(`${efiMnt}/EFI/boot/${nameGAE()}`)) {
+        await exec(`cp -r ${efiWorkDir}/EFI/boot/* ${efiMnt}/EFI/boot/`, this.echo)
     }
 
 
@@ -318,10 +318,9 @@ function srcGAE(): string {
 }
 
 function srcGAES(): string {
-    const signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
+    let signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
     if (!fs.existsSync(signedGrub)) {
-        Utils.error(`Cannot find signed GRUB EFI file: ${signedGrub}`);
-        process.exit(1);
+        Utils.warning(`cannot find ${signedGrub}}`)
     }
     return signedGrub
 }
