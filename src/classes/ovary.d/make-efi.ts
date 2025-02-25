@@ -109,16 +109,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
 
-    // bootx64.efi
-    await exec(
-        `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
-                -m "${efiMemdiskDir}/memdisk" \
-                -o "${efiMemdiskDir}/${bootArchEfi()}" \
-                -p '(memdisk)/boot/grub' \
-                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux squash4 loopback`,
-        this.echo
-    )
-    await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiWorkDir}/EFI/boot`, this.echo)
 
     /**
      * Create boot image "boot/grub/efi.img"
@@ -147,16 +137,20 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // copy grub.cfg to (efi.img)/boot/grub
     await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
 
-    if (this.settings.distro.codenameLikeId === 'bootworm') {
-        // copy shimx64.efi.signed to (efi.img)/EFI/boot as bootx84.efi
+    if (this.settings.distro.codenameLikeId === 'bookworm') {
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-
-        // copy grubx64.efi.signed to (efi.img)/EFI/boot as grubx64.efi
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-    }
-
-    if (!fs.existsSync(`${efiMnt}/EFI/boot/${nameGAE()}`)) {
-        await exec(`cp -r ${efiWorkDir}/EFI/boot/* ${efiMnt}/EFI/boot/`, this.echo)
+    } else {
+        // we need to build bootx64.efi
+        await exec(
+            `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
+                -m "${efiMemdiskDir}/memdisk" \
+                -o "${efiMemdiskDir}/${bootArchEfi()}" \
+                -p '(memdisk)/boot/grub' \
+                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux squash4 loopback`,
+            this.echo
+        )
+        await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiMnt}/EFI/boot/`, this.echo)
     }
 
 
