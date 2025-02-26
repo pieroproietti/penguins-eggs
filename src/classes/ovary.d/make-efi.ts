@@ -103,13 +103,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * create tarred efiMemdiskDir
      */
-    await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
-    /*
     const currentDir = process.cwd()
     process.chdir(efiMemdiskDir)
     await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
-    */
 
     /**
      * Create boot image "boot/grub/efi.img"
