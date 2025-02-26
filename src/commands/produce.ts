@@ -8,7 +8,6 @@
 
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
-import { Static } from 'ink'
 import fs, { link } from 'node:fs'
 import path from 'node:path'
 
@@ -16,8 +15,6 @@ import Compressors from '../classes/compressors.js'
 import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
-import { IInstall } from '../interfaces/index.js'
-import Pacman from '../classes/pacman.js'
 import Config from './config.js'
 
 // _dirname
