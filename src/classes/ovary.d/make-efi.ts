@@ -84,7 +84,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
 
     // create grub.cfg 1 in memdisk
-    Utils.warning("creating grub.cfg (1) in (efi.img)")
+    Utils.warning("creating grub.cfg (1) in (efi.img)/boot/grub")
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
     grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
@@ -103,12 +103,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * create tarred efiMemdiskDir
      */
-    //await exec(`tar -cvf ${efiMemdiskDir}/memdisk ${efiMemdiskDir}/boot`, this.echo)
     const currentDir = process.cwd()
     process.chdir(efiMemdiskDir)
     await exec('tar -cvf memdisk boot', this.echo)
     process.chdir(currentDir)
-
 
     /**
      * Create boot image "boot/grub/efi.img"
@@ -128,20 +126,32 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
+ 
     /**
-     * we need: (efi.img)/boot/grub/grub.cfg
-     *          (efi.img)/EFI/boot/bootx84.efi
-     *          (efi.img)/EFI/boot/grubx84.efi
+     * copy grub.cfg to (efi.img)/boot/grub
      */
-
-    // copy grub.cfg to (efi.img)/boot/grub
     await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
-
+    // readme
+    readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
+    readmeContent += `${grub1} copied to /boot/grub`
     if (this.settings.distro.codenameLikeId === 'bookworm') {
+
+        /**
+         * (efi.img)/EFI/boot/bootx84.efi (shimx64.efi)
+         * (efi.img)/EFI/boot/grubx84.efi 
+         */
+        Utils.warning(`copy ${srcShim()} to ${efiMnt}/EFI/boot/${bootArchEfi()}`)
+        Utils.warning(`copy ${srcGAES()} to ${efiMnt}/EFI/boot/${nameGAE()}`)
         await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-    } else {
-        // we need to build bootx64.efi
+        readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
+        readmeContent += `${GAE} copied as ${nameGAE()}\n`
+        } else {
+
+        /**
+         * we need to build bootx64.efi
+         */
+        Utils.warning(`create ${bootArchEfi()} not signed and copy as ${bootArchEfi()}`)
         await exec(
             `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
                 -m "${efiMemdiskDir}/memdisk" \
@@ -151,14 +161,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
             this.echo
         )
         await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiMnt}/EFI/boot/`, this.echo)
-    }
-
-
-    // readme
-    readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
-    readmeContent += `${grub1} copied to /boot/grub`
-    readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
-    readmeContent += `${GAE} copied as ${nameGAE()}\n`
+        readmeContent += `created grubx64.efi not signed and copied as  ${bootArchEfi()}\n`
+        }
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
@@ -211,8 +215,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
 
     readmeContent += `\n`
-    readmeContent += `Copyng on ${isoDir}\n`
-    readmeContent += `${GAE} is /EFI/boot/${nameGAE()}\n`
+    readmeContent += `## Copyng on ${isoDir}\n`
+    readmeContent += `rsync -avx ${efiWorkDir}/boot (iso)/boot\n`
 
     /**
      * prepare main grub.cfg from grub.main.cfg
@@ -246,21 +250,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     fs.writeFileSync(g2, grubText2)
 
 
-
-
-
-    /*
-     * create EFI on iso no need on bookworm and Ubuntu
-    await exec(`mkdir ${isoDir}/EFI`, this.echo)
-    await exec(`cp ${efiWorkDir}boot/grub/font.pf2 ${isoDir}/EFI`,this.echo)
-    */
-
     /**
      * create loopback.cfg
      */
     fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
 
-    // create (iso)/boot/grub/x86_64-efi/grub.cfg
+    /**
+     * create (iso)/boot/grub/x86_64-efi/grub.cfg
+     */
     fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n')
 
     /**

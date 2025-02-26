@@ -12,4 +12,4 @@
 # continues as normal.
 ---
 # Username in the target system to be removed.
-username: node
+username: {{username}}
