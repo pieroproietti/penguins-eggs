@@ -126,7 +126,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
- 
+
     /**
      * copy grub.cfg to (efi.img)/boot/grub
      */
@@ -146,7 +146,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
         readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
         readmeContent += `${GAE} copied as ${nameGAE()}\n`
-        } else {
+    } else {
 
         /**
          * we need to build bootx64.efi
@@ -161,8 +161,14 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
             this.echo
         )
         await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiMnt}/EFI/boot/`, this.echo)
+
+        // Creare EFI
         readmeContent += `created grubx64.efi not signed and copied as  ${bootArchEfi()}\n`
-        }
+    }
+
+    // replicate EFI on ISO
+    await exec(`cp -r ${efiMnt}/EFI ${isoDir}/EFI`, this.echo)
+
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
