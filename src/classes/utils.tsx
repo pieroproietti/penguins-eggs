@@ -983,7 +983,7 @@ export default class Utils {
                name: 'confirm',
                message: msg,
                choices: ['No', 'Yes', 'Abort'],
-               default: 'No'
+               default: 'Yes'
             }
          ]
 
