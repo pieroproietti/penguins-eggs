@@ -27,7 +27,7 @@ Al momento abbiamo il seguente comportamento:
 
 * Standard: OK
 * Luks: OK
-* Lvm: ko
+* Lvm: OK
 * Luks+Lvm: to do
 
 Partitions
