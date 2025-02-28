@@ -66,7 +66,6 @@ import fs from 'fs'
 
 import Keyboards from '../../classes/keyboards.js'
 import Locales from '../../classes/locales.js'
-import Pacman from '../../classes/pacman.js'
 import Systemctl from '../../classes/systemctl.js'
 import Utils from '../../classes/utils.js'
 
@@ -87,8 +86,9 @@ import selectLanguages from '../lib/select_languages.js'
 import selectRegions from '../lib/select_regions.js'
 import selectZones from '../lib/select_zones.js'
 
-import selectInstallationDevice from '../lib/select_installation_device.js'
 import selectInstallationMode from '../lib/select_installation_mode.js'
+import selectInstallationDevice from '../lib/select_installation_device.js'
+import selectInstallationPartition from '../lib/select_installation_partition.js'
 import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
 import selectFileSystemType from '../lib/select_filesystem_type.js'
 
@@ -230,6 +230,20 @@ export default class Krill {
 
     this.krillConfig = krillConfig
 
+    /**
+     * test configuration presence
+     */
+    let configRoot = '/etc/penguins-eggs.d/krill/'
+    if (fs.existsSync('/etc/calamares/settings.conf')) {
+      configRoot = '/etc/calamares/'
+    }
+    if (!fs.existsSync(configRoot + 'settings.conf')) {
+      console.log(`Cannot find configuration file ${configRoot}settings.conf`)  
+      console.log(`please run:\n\t sudo eggs calamares`)
+      process.exit(1)
+    }
+
+
     oWelcome = { language: this.krillConfig.language }
     // Try to auto-configure timezone by internet
     const url = `https://geoip.kde.org/v1/calamares`
@@ -341,7 +355,7 @@ export default class Krill {
         if (drives.length > 0) {
           oPartitions.installationDevice = `/dev/` + drives[0]
         } else {
-          console.log("Unable to fin installation drive")
+          console.log("Unable to find installation drive")
           process.exit(1)
         }
       }
@@ -586,8 +600,12 @@ export default class Krill {
           installationMode = InstallationMode.LVM2
         }
 
-        installationDevice = await selectInstallationDevice()
         installationMode = await selectInstallationMode()
+        if (installationMode === InstallationMode.Partition) {
+          let installationPartition = await selectInstallationPartition()
+        } else {
+          installationDevice = await selectInstallationDevice()
+        }
 
         // se LVM2 non chiede fstype, ne' swap
         if (installationMode === InstallationMode.LVM2) {

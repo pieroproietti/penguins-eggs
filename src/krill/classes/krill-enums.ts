@@ -11,14 +11,13 @@
 * 1. Standard
 * 2. LVM2
 * 3. LUKS
-* 4. LUKS+LVM2
  */
 
 export enum InstallationMode {
     Standard = "standard",
     LVM2 = "lvm2",
-    Luks = "luks", 
-    LuksPlusLvm = "Luks+Lvm2",
+    Luks = "luks",
+    Partition = "partition",
 }
 
 export enum LvmPartitionPreset {

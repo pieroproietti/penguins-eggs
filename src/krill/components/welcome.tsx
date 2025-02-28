@@ -35,7 +35,7 @@ export default function Welcome({ language = '' }: WelcomeProps) {
   let version = 'unknown'
   if (fs.existsSync('/etc/calamares/settings.conf')) {
     configRoot = '/etc/calamares/'
-   }
+  }
 
   const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
   const branding = settings.branding
