@@ -7,7 +7,6 @@
  */
 
 import { Command, Flags, flush } from '@oclif/core'
-import axios, { AxiosResponse } from 'axios'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
