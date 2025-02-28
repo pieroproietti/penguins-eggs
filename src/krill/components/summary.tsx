@@ -21,23 +21,14 @@ type SummaryProps = {
   language?: string,
   region?: string,
   zone?: string,
-  // dateNumbers: string,
-  // from keyboard
   keyboardModel?: string,
   keyboardLayout?: string,
-  //keyboardVariant: string,
-  //keyboardOptions: string,
   installationDevice?: string,
   filesystemType?: string,
-  // filesystemType: string,
-  // userSwapChoice: string,
   username?: string,
-  // fullname: string,
   password?: string,
   rootPassword?: string,
   hostname?: string,
-  // autologin: boolean,
-  // sameUserPassword: boolean,
 
   message?: string
 }

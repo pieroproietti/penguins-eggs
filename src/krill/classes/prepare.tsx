@@ -80,7 +80,7 @@ import Keyboard from '../components/keyboard.js'
 import Users from '../components/users.js'
 import Network from '../components/network.js'
 import Summary from '../components/summary.js'
-//import Install from '../components/install.js'
+// import Install from '../components/install.js'
 
 import selectLanguages from '../lib/select_languages.js'
 import selectRegions from '../lib/select_regions.js'
@@ -88,7 +88,6 @@ import selectZones from '../lib/select_zones.js'
 
 import selectInstallationMode from '../lib/select_installation_mode.js'
 import selectInstallationDevice from '../lib/select_installation_device.js'
-import selectInstallationPartition from '../lib/select_installation_partition.js'
 import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
 import selectFileSystemType from '../lib/select_filesystem_type.js'
 
@@ -601,11 +600,7 @@ export default class Krill {
         }
 
         installationMode = await selectInstallationMode()
-        if (installationMode === InstallationMode.Partition) {
-          let installationPartition = await selectInstallationPartition()
-        } else {
-          installationDevice = await selectInstallationDevice()
-        }
+        installationDevice = await selectInstallationDevice()
 
         // se LVM2 non chiede fstype, ne' swap
         if (installationMode === InstallationMode.LVM2) {
