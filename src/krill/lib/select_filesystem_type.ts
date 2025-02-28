@@ -43,11 +43,3 @@ export default async function selectFileSystemType(): Promise<string> {
     })
   })
 }
-
-/*
-"efiSystemPartition":"/boot/efi","userSwapChoices":        │
-│Users       ["none","small","suspend","file"],"drawNestedPartiti        │
-│Summary     ons":false,"alwaysShowPartitionLabels":true,"initial        │
-│Install     PartitioningChoice":"none","initialSwapChoice":"smal        │
-│Finish      l","defaultFileSystemType":"ext4"}
-*/
