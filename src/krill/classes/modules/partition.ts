@@ -12,9 +12,7 @@ import shx from 'shelljs'
 import fs from 'fs'
 
 import Utils from '../../../classes/utils.js'
-import { IDevices, IDevice } from '../../../interfaces/i-devices.js'
 import { SwapChoice, InstallationMode } from '../krill-enums.js'
-import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 
