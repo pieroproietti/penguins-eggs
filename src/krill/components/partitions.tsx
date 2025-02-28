@@ -103,3 +103,5 @@ export default function Partitions({ installationDevice, installationMode, lvmPr
 }
 
 
+
+
