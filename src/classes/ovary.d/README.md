@@ -35,8 +35,7 @@ kernel firmato dalla distro stessa.
 Per qualche ragione, modifica su modifica anche questo non mi sta funzionando, ma
 ha funzionato con la versione precedente.
 
-In Arch abbiamo lo stesso problema, e credo che la soluzione di Arch sia quella giusta:
-disabilitare Secure Boot durante l'installazione e riabiilitarlo dopo.
+In Arch abbiamo lo stesso problema, e credo che la soluzione di Arch sia quella giusta: disabilitare Secure Boot durante l'installazione e riabilitarlo dopo.
 
 
 

@@ -16,6 +16,7 @@ import path from 'path'
 
 // interfaces
 import { IAddons, IExcludes } from '../../interfaces/index.js'
+
 // libraries
 import { exec } from '../../lib/utils.js'
 import Bleach from './../bleach.js'
@@ -140,12 +141,7 @@ export async function produce(this: Ovary, clone = false, cryptedclone = false, 
         /**
          * exclude.list
          */
-        if (
-            !excludes.static /**
-         * create exclude.list if not exists
-         */ &&
-            !fs.existsSync('/etc/penguins-eggs/exclude.list')
-        ) {
+        if (!excludes.static  && !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
             const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
             const excludeListTemplate = excludeListTemplateDir + 'master.list'
             if (!fs.existsSync(excludeListTemplate)) {
