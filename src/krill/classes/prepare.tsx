@@ -231,15 +231,15 @@ export default class Krill {
     this.krillConfig = krillConfig
 
     /**
-     * test configuration presence
+     * test calamares/krill configuration presence
      */
     let configRoot = '/etc/penguins-eggs.d/krill/'
     if (fs.existsSync('/etc/calamares/settings.conf')) {
       configRoot = '/etc/calamares/'
     }
     if (!fs.existsSync(configRoot + 'settings.conf')) {
-      console.log(`Cannot find configuration file ${configRoot}settings.conf`)  
-      console.log(`please run:\n\t sudo eggs calamares`)
+      console.log(`Cannot find calamares/krill configuration file, please create it running:`)  
+      console.log(`sudo eggs calamares`)
       process.exit(1)
     }
 
