@@ -356,7 +356,7 @@ export default class Utils {
     * @returns 
     */
    static uuidGen(): string {
-      const uuid = shx.exec(`uuidgen`).stdout.trim()
+      const uuid = shx.exec(`uuidgen`, { silent: true }).stdout.trim()
       return uuid
    }
 
