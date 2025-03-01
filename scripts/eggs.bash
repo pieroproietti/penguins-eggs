@@ -20,8 +20,8 @@ dad --clean --default --file --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose
-install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
-krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --unattended --verbose
+install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --testing --unattended --verbose
+krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --testing --unattended --verbose
 kill --help --isos --nointeractive --verbose
 love --help --verbose
 mom --help
@@ -39,8 +39,8 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
