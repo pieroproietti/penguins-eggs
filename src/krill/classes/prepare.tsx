@@ -599,8 +599,8 @@ export default class Krill {
           installationMode = InstallationMode.LVM2
         }
 
-        installationMode = await selectInstallationMode()
         installationDevice = await selectInstallationDevice()
+        installationMode = await selectInstallationMode()
 
         // se LVM2 non chiede fstype, ne' swap
         if (installationMode === InstallationMode.LVM2) {

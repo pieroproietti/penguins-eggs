@@ -14,9 +14,10 @@
  */
 
 export enum InstallationMode {
-    Standard = "standard",
+    Replace = "Replace partition",
+    Standard = "Erase disk",
     LVM2 = "lvm2",
-    Luks = "luks",
+    Luks = "Encrypted",
 }
 
 export enum LvmPartitionPreset {
