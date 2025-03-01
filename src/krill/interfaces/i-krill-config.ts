@@ -21,6 +21,7 @@ export interface IKrillConfig {
   hostname: string
   iface: string
   installationDevice: string
+  replacedPartition: string
   installationMode: string
   lvmOptions: ILvmOptions
   keyboardLayout: string

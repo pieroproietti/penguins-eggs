@@ -21,11 +21,12 @@ type partitionsProps = {
     installationMode?: string,
     lvmPreset: string,
     filesystemType?: string,
-    userSwapChoice?: SwapChoice
+    userSwapChoice?: SwapChoice,
+    replacedPartition?: string,
 }
 
 
-export default function Partitions({ installationDevice, installationMode, lvmPreset, filesystemType, userSwapChoice }: partitionsProps) {
+export default function Partitions({ installationDevice, installationMode, lvmPreset, filesystemType, userSwapChoice, replacedPartition }: partitionsProps) {
     let installer = 'krill'
     let productName = ''
     let version = ''
@@ -68,6 +69,15 @@ export default function Partitions({ installationDevice, installationMode, lvmPr
         partitions.initialSwapChoice = 'small'
     }
 
+    let message = ''
+    if (installationMode === InstallationMode.Replace) {
+        message = `replaced partition: ${replacedPartition}`
+    } else {
+        message = `installation device: ${installationDevice}`
+    }
+
+
+
     return (
         <>
             <Title />
@@ -78,22 +88,26 @@ export default function Partitions({ installationDevice, installationMode, lvmPr
                         <Steps step={4} />
                         <Box flexDirection="column"></Box>
                         <Box flexDirection="column">
-                            <Box flexDirection="row">
-                                <Text underline={false}>Note: </Text>
-                                <Box flexDirection="column">
-                                    <Text backgroundColor="red" color="white">this will erase all data currently present on the</Text>
-                                    <Text backgroundColor="red" color="white">installation device: {installationDevice}</Text>
-                                </Box>
+                            <Box>
+                                <Text>BIOS: </Text><Text color="cyan">{bios} </Text>
+                                <Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text>
                             </Box>
-                            <Box><Text>BIOS: </Text><Text color="cyan">{bios}</Text></Box>
                             <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>
-                            <Box><Text>Installation device: </Text><Text color="cyan">{installationDevice}</Text></Box>
                             <Box><Text>Filesystem: </Text><Text color="cyan">{filesystemType}</Text></Box>
                             <Box><Text>User swap choice: </Text><Text color="cyan">{userSwapChoice}</Text></Box>
 
                             {installationMode == InstallationMode.LVM2 &&
                                 <Box><Text>LVM Preset: </Text><Text color='yellow'>{lvmPreset}</Text></Box>
                             }
+
+                            <Newline />
+                            <Box flexDirection="row">
+                                <Text underline={false}>(*) </Text>
+                                <Box flexDirection="column">
+                                    <Text backgroundColor="red" color="white">this will erase all data currently present on the</Text>
+                                    <Text backgroundColor="red" color="white">{message}</Text>
+                                </Box>
+                            </Box>
                         </Box>
                     </Box>
                 </Box>

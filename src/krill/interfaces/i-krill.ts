@@ -31,6 +31,7 @@ export interface IPartitions {
   lvmOptions: ILvmOptions
   installationMode: string
   userSwapChoice: SwapChoice
+  replacedPartition: string
 }
 
 export interface IUsers {

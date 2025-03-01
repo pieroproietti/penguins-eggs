@@ -1,5 +1,5 @@
 /**
- * ./src/lib/select_installation_partition.ts
+ * ./src/lib/select_replaced_partition.ts
  * penguins-eggs v.10.0.0 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -9,7 +9,7 @@
 import inquirer from 'inquirer'
 import shx from 'shelljs'
 
-export default async function selectInstallationPartition(): Promise<string> {
+export default async function selectReplacedPartition(): Promise<string> {
   const partitions = shx.exec('lsblk -l -o NAME,TYPE | grep part | cut -d" " -f1', { silent: true }).stdout.trim().split('\n');
 
   let partitionsList: string[] = [];
