@@ -8,7 +8,7 @@
  */
 
 import { exec } from '../../../lib/utils.js'
-import { SwapChoice } from '../../classes/krill-enums.js'
+import { InstallationMode, SwapChoice } from '../../classes/krill-enums.js'
 import Sequence from '../../classes/sequence.js'
 
 /**
@@ -18,6 +18,12 @@ import Sequence from '../../classes/sequence.js'
  */
 export default async function mkfs(this: Sequence): Promise<boolean> {
   const result = true
+
+  if (this.partitions.installationMode === InstallationMode.Replace) {
+    await exec(`mke2fs -Ft ${this.partitions.filesystemType} ${this.partitions.installationMode} ${this.toNull}`, this.echo)    
+    return result
+  }
+
 
   if (this.partitions.filesystemType === 'ext4') {
     if (this.efi) {
