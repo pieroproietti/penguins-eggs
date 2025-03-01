@@ -26,6 +26,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   let retVal = false
 
   const installDevice = this.partitions.installationDevice
+  const replacedPartition = this.partitions.replacedPartition
 
 
   let p: string = ""
@@ -64,7 +65,11 @@ export default async function partition(this: Sequence): Promise<boolean> {
     }
     // No default
   }
-  if (installationMode === InstallationMode.Standard && !this.efi) {
+
+  if (installationMode === InstallationMode.Replace) {
+    retVal = true
+
+  } else if (installationMode === InstallationMode.Standard && !this.efi) {
     retVal = await this.partitionBiosStandard(installDevice, p)
 
   } else if (installationMode === InstallationMode.Luks && !this.efi) {

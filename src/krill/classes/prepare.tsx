@@ -374,11 +374,12 @@ export default class Krill {
      */
     const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
 
-    // replacedPartition
+    /**
     if (oPartitions.installationMode === InstallationMode.Replace) {
       console.log('Mode Replace partition is not yet supported!')
       process.exit(1)
     }
+    */
 
     if (testing) {
       console.log()
