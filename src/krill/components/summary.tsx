@@ -29,7 +29,6 @@ type SummaryProps = {
   password?: string,
   rootPassword?: string,
   hostname?: string,
-
   message?: string
 }
 

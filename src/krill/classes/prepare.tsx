@@ -116,6 +116,7 @@ import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from
 import { SwapChoice, InstallationMode, LvmPartitionPreset } from './krill-enums.js'
 import { LvmOptionUbuntu, LvmOptionProxmox } from './lvm-options.js'
 import LvmOptions from '../components/lvm-options.js'
+import selectReplacedPartition from '../lib/select_replaced_partition.js';
 
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
@@ -237,7 +238,7 @@ export default class Krill {
       configRoot = '/etc/calamares/'
     }
     if (!fs.existsSync(configRoot + 'settings.conf')) {
-      console.log(`Cannot find calamares/krill configuration file, please create it running:`)  
+      console.log(`Cannot find calamares/krill configuration file, please create it running:`)
       console.log(`sudo eggs calamares`)
       process.exit(1)
     }
@@ -281,7 +282,8 @@ export default class Krill {
       installationMode: this.krillConfig.installationMode,
       lvmOptions: lvmOptions,
       filesystemType: this.krillConfig.filesystemType,
-      userSwapChoice: this.krillConfig.userSwapChoice
+      userSwapChoice: this.krillConfig.userSwapChoice,
+      replacedPartition: this.krillConfig.replacedPartition
     }
 
     if (btrfs) {
@@ -520,6 +522,8 @@ export default class Krill {
     })
     installationDevice = driveList[0] // Solo per selezionare il default
 
+    let replacedPartition = this.krillConfig.replacedPartition
+
     let installationMode = this.krillConfig.installationMode
 
     let knownInstallationModes = Object.values(InstallationMode) as Array<string>
@@ -587,7 +591,7 @@ export default class Krill {
 
     let partitionsElem: JSX.Element
     while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} lvmPreset={lvmPartitionPreset} filesystemType={filesystemType} userSwapChoice={userSwapChoice} />
+      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} lvmPreset={lvmPartitionPreset} filesystemType={filesystemType} userSwapChoice={userSwapChoice} replacedPartition={replacedPartition} />
       if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
         break
       } else {
@@ -602,25 +606,25 @@ export default class Krill {
         installationDevice = await selectInstallationDevice()
         installationMode = await selectInstallationMode()
 
-        // se LVM2 non chiede fstype, ne' swap
-        if (installationMode === InstallationMode.LVM2) {
-          // Yes I know, It is pythonic style, sorry! =)
+        if (installationMode === InstallationMode.Replace) {
+          replacedPartition = await selectReplacedPartition()
+          filesystemType = await selectFileSystemType()
+          userSwapChoice = SwapChoice.File
+
+        } else if (installationMode === InstallationMode.Standard) {
+          replacedPartition = ""
+          filesystemType = await selectFileSystemType()
+          userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+
+        } else if (installationMode === InstallationMode.LVM2) {
           [lvmPartitionPreset, lvmOptions] = await this.getLvmOptions(lvmPartitionPreset, lvmOptions)
           lvmOptions.lvRootFSType = filesystemType
           lvmOptions.lvDataFSType = filesystemType
-        } else if (btrfs) {
-          filesystemType = 'btrfs'
-        } else {
-          filesystemType = 'ext4'
-        }
-      }
+          replacedPartition = ""
 
-      if (installationMode !== InstallationMode.LVM2) {
-        filesystemType = await selectFileSystemType()
-        if (installationMode === InstallationMode.Luks) {
-          userSwapChoice = SwapChoice.None
-        } else {
-          userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+        } else if (installationMode === InstallationMode.Luks) {
+          replacedPartition = ""
+          userSwapChoice = SwapChoice.File
         }
       }
     }
@@ -630,7 +634,8 @@ export default class Krill {
       installationMode: installationMode,
       lvmOptions: lvmOptions,
       filesystemType: filesystemType,
-      userSwapChoice: userSwapChoice
+      userSwapChoice: userSwapChoice,
+      replacedPartition: replacedPartition
     }
   }
 
@@ -787,6 +792,11 @@ export default class Krill {
     let summaryElem: JSX.Element
 
     let message = `Double check the installation disk: ${partitions.installationDevice}\nwill be completely erased!`
+    if (partitions.installationMode === InstallationMode.Replace) {
+      message = `Double check: partition ${partitions.installationDevice}\nwill be completely erased!`
+    } 
+
+
     if (this.unattended && this.nointeractive) {
       message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
     }
