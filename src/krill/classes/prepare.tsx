@@ -230,12 +230,6 @@ export default class Krill {
 
     this.krillConfig = krillConfig
 
-    // replacedPartition
-    if (this.krillConfig.replacedPartition !== "") {
-      console.log('replacedPartition is not yet supported!')
-      process.exit(1)
-    }
-
     /**
      * test calamares/krill configuration presence
      */
@@ -375,17 +369,23 @@ export default class Krill {
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
 
-
     /**
      * INSTALL
      */
     const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
+
+    // replacedPartition
+    if (oPartitions.installationMode === InstallationMode.Replace) {
+      console.log('Mode Replace partition is not yet supported!')
+      process.exit(1)
+    }
+
     if (testing) {
       console.log()
       Utils.titles("install --testing")
       console.log("Just testing krill, the process will end!")
       console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-      console.log()
+      console.log(oPartitions)
       process.exit()
     } else {
       await sequence.start(domain, this.unattended, this.nointeractive, this.chroot, this.halt, verbose)
@@ -797,11 +797,12 @@ export default class Krill {
   async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
     let summaryElem: JSX.Element
 
-    let message = `Double check the installation disk: ${partitions.installationDevice}\nwill be completely erased!`
+    let message = `Double check: data on disk: ${partitions.installationDevice} will be completely erased!`
+    let erase = `Disk ${partitions.installationDevice} will be formatted as: ${partitions.filesystemType}`
     if (partitions.installationMode === InstallationMode.Replace) {
-      message = `Double check: partition ${partitions.installationDevice}\nwill be completely erased!`
+      message = `Double check: data on partition ${partitions.replacedPartition} will be completely erased!`
+      erase = `Partition ${partitions.replacedPartition} will be formatted as: ${partitions.filesystemType}`
     } 
-
 
     if (this.unattended && this.nointeractive) {
       message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
@@ -809,7 +810,7 @@ export default class Krill {
 
 
     while (true) {
-      summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} />
+      summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message}  erase={erase} />
       if (this.unattended && this.nointeractive) {
         redraw(summaryElem)
         await sleep(5000)
