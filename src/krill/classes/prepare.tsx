@@ -230,6 +230,12 @@ export default class Krill {
 
     this.krillConfig = krillConfig
 
+    // replacedPartition
+    if (this.krillConfig.replacedPartition !== "") {
+      console.log('replacedPartition is not yet supported!')
+      process.exit(1)
+    }
+
     /**
      * test calamares/krill configuration presence
      */
