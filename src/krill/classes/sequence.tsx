@@ -276,6 +276,7 @@ export default class Sequence {
       // start
       await this.settings.load()
 
+      
       let isPartitioned = false
       let message = "Creating partitions"
       await redraw(<Install message={message} percent={0} spinner={this.spinner} />)

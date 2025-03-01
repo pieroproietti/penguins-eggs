@@ -29,10 +29,11 @@ type SummaryProps = {
   password?: string,
   rootPassword?: string,
   hostname?: string,
-  message?: string
+  message?: string,
+  erase?: string,
 }
 
-export default function Summary({ username='', password='', rootPassword='', hostname='', region='', zone='', language='', keyboardModel='', keyboardLayout='', installationDevice='', filesystemType, message=''}: SummaryProps) {
+export default function Summary({ username='', password='', rootPassword='', hostname='', region='', zone='', language='', keyboardModel='', keyboardLayout='', installationDevice='', filesystemType, message='', erase=''}: SummaryProps) {
 
   let productName = 'unknown'
   let version = 'x.x.x'
@@ -77,10 +78,7 @@ export default function Summary({ username='', password='', rootPassword='', hos
                 <Text>layout </Text>
                 <Text color="green">{keyboardLayout}</Text>
               </Box>
-              <Box>
-                <Text bold={true}>Erase disk </Text>
-                <Text>{installationDevice} formatting: {filesystemType}</Text>
-              </Box>
+              <Box><Text>{erase}</Text></Box>
               <Box><Text color="white"backgroundColor="red">{message}</Text></Box>
             </Box>
           </Box>
