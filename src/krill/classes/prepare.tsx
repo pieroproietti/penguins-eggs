@@ -361,10 +361,15 @@ export default class Krill {
         }
       }
 
+      /**
+       * Defaults
+       */
+
       // oPartitions.installationMode 
       if (cryped) {
         oPartitions.installationMode = InstallationMode.Luks
       }
+
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
 
@@ -374,12 +379,6 @@ export default class Krill {
      */
     const sequence = new Sequence(oLocation, oKeyboard, oPartitions, oUsers, oNetwork)
 
-    /**
-    if (oPartitions.installationMode === InstallationMode.Replace) {
-      console.log('Mode Replace partition is not yet supported!')
-      process.exit(1)
-    }
-    */
 
     if (testing) {
       console.log()
