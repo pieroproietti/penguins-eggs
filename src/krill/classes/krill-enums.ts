@@ -14,8 +14,8 @@
  */
 
 export enum InstallationMode {
-    Replace = "Replace partition",
     Standard = "Erase disk",
+    Replace = "Replace partition",
     LVM2 = "lvm2",
     Luks = "Encrypted",
 }

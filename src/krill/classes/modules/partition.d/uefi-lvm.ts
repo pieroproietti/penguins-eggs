@@ -36,7 +36,7 @@ export default async function uefiLvm(this: Sequence, installDevice = "", p = ""
     this.devices = await this.createLvmPartitions(installDevice)
 
     if (this.partitions.userSwapChoice == SwapChoice.File) {
-        this.devices.swap.name = 'swap.img'
+        this.devices.swap.name = '/swapfile'
         this.devices.swap.mountPoint = '/'
     }
 

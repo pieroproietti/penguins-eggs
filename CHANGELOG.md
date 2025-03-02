@@ -13,6 +13,15 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.0.59-2
+* Introduced experimental system installation as replace partion, not erasyng full disk. The partition must to exists before install. 
+
+As far as know this methond work only on BIOS, on UEFI I don't know the way to concile the new system with the others ones already present. 
+
+Use it with `hight caution` and report your experiences, bug, advises, help. 
+
+Thanks.
+
 ## penguins-eggs-10.0.59
 * I’ve been focusing primarily on krill, adding support for encrypted installations and LVM2. 
 * the LVM2 and LUKS installations are functioning well, but I’m still troubleshooting a delay on the installed system. So far, I haven’t identified the cause of this issue;

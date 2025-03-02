@@ -11,7 +11,8 @@ import fs from 'node:fs'
 
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
-import { SwapChoice } from '../../classes/krill-enums.js'
+import { InstallationMode, SwapChoice } from '../../classes/krill-enums.js'
+import Utils from '../../../classes/utils.js'
 
 /**
  * mountFs
@@ -20,7 +21,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (!fs.existsSync(this.installTarget)) {
     await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
   }
-
+  
   // root Alpine vuole -t per il mount
   await exec(`mount -t ${this.devices.root.fsType} ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
   await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
@@ -49,22 +50,11 @@ export async function mountFs(this: Sequence): Promise<boolean> {
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
   }
 
-  // swap: create swap file if swap on file
-  if (this.partitions.userSwapChoice == SwapChoice.File) {
-
-    let swapFile = ''
-    if (this.devices.swap.mountPoint.endsWith('/')) {
-      swapFile = `${this.devices.swap.mountPoint}${this.devices.swap.name}`
-    } else {
-      swapFile = `${this.devices.swap.mountPoint}/${this.devices.swap.name}`
-    }
-
-    swapFile = `${this.installTarget}${swapFile}`
-
-    //exec(`dd if=/dev/zero of=${swapFile} bs=1M count=${this.swapSize} ${this.toNull}`)
-    await exec(`fallocate -l ${this.swapSize}M ${swapFile}`)
-    await exec(`chmod 600 ${swapFile} ${this.toNull}`)
-    await exec(`mkswap ${swapFile} ${this.toNull}`)
+  // create swap file 
+  if (this.partitions.userSwapChoice === SwapChoice.File) {
+    await exec(`fallocate -l 8G ${this.installTarget}/swapfile`)
+    await exec(`chmod 600 ${this.devices.root.mountPoint}/swapfile`, this.echo)
+    await exec(`mkswap ${this.devices.root.mountPoint}/swapfile`, this.echo)
   }
 
   return true
