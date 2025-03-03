@@ -8,7 +8,7 @@
  */
 
 import { exec } from '../../../lib/utils.js'
-import { InstallationMode, SwapChoice } from '../../classes/krill-enums.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../../classes/sequence.js'
 import Utils from '../../../classes/utils.js'
 

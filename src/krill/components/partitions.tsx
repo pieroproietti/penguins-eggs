@@ -13,7 +13,7 @@ import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding, IPartitions } from '../../interfaces/index.js'
-import { InstallationMode, SwapChoice } from '../classes/krill-enums.js'
+import { InstallationMode, SwapChoice } from '../classes/krill_enums.js'
 import { render, Text, Box, Newline } from 'ink'
 
 type partitionsProps = {

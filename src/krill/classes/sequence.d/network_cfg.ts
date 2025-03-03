@@ -13,7 +13,7 @@ import Pacman from '../../../classes/pacman.js'
 import Systemctl from '../../../classes/systemctl.js'
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
-import Sequence from '../../classes/sequence.js'
+import Sequence from '../sequence.js'
 
 /**
  * networkcfg

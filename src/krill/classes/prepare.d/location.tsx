@@ -11,7 +11,7 @@ import React from 'react'
 import {confirm} from './confirm.js'
 
 import Location from '../../components/location.js'
-import { ILocation } from '../../interfaces/i-krill.js'
+import { ILocation } from '../../interfaces/i_krill.js'
 import Prepare from '../prepare.js'
 import Utils from '../../../classes/utils.js'
 import selectRegions from '../../lib/select_regions.js'

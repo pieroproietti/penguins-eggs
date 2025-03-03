@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import { SwapChoice } from '../classes/krill-enums.js'
+import { SwapChoice } from '../classes/krill_enums.js'
 
 export interface IKrillConfig {
   address: string

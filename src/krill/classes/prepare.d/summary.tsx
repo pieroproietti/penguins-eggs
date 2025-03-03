@@ -13,12 +13,12 @@ import { render, RenderOptions } from 'ink'
 import {confirm} from './confirm.js'
 
 import Summary from '../../components/summary.js'
-import { IKeyboard } from '../../interfaces/i-krill.js'
+import { IKeyboard } from '../../interfaces/i_krill.js'
 import Prepare from '../prepare.js'
 
-import { ILocation, IPartitions, IUsers} from '../../interfaces/i-krill.js'
+import { ILocation, IPartitions, IUsers} from '../../interfaces/i_krill.js'
 
-import { InstallationMode } from '../krill-enums.js'
+import { InstallationMode } from '../krill_enums.js'
 
 /**
  * SUMMARY

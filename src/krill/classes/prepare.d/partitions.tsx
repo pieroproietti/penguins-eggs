@@ -11,8 +11,8 @@ import React from 'react'
 import {confirm} from './confirm.js'
 
 import Partitions from '../../components/partitions.js'
-import { IPartitions } from '../../interfaces/i-krill.js'
-import { SwapChoice, InstallationMode } from '../krill-enums.js'
+import { IPartitions } from '../../interfaces/i_krill.js'
+import { SwapChoice, InstallationMode } from '../krill_enums.js'
 import Prepare from '../prepare.js'
 import selectFileSystemType from '../../lib/select_filesystem_type.js'
 import selectInstallationDevice from '../../lib/select_installation_device.js'
@@ -74,8 +74,6 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
             installationMode = InstallationMode.Standard
             if (crypted) {
                 installationMode = InstallationMode.Luks
-            } else if (pve) {
-                installationMode = InstallationMode.LVM2
             }
 
             installationDevice = await selectInstallationDevice()
@@ -90,10 +88,6 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
                 replacedPartition = ""
                 filesystemType = await selectFileSystemType()
                 userSwapChoice = await selectUserSwapChoice(userSwapChoice)
-
-            } else if (installationMode === InstallationMode.LVM2) {
-                console.log('to reimplement')
-
 
             } else if (installationMode === InstallationMode.Luks) {
                 replacedPartition = ""

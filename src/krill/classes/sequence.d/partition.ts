@@ -10,7 +10,7 @@
 import os from 'node:os'
 
 import Utils from '../../../classes/utils.js'
-import { SwapChoice, InstallationMode } from '../krill-enums.js'
+import { SwapChoice, InstallationMode } from '../krill_enums.js'
 import Sequence from '../sequence.js'
 
 
@@ -78,12 +78,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
   } else if (installationMode === InstallationMode.Luks && this.efi) {
     retVal = await this.partitionUefiLuks(installDevice, p)
-
-  } else if (installationMode === InstallationMode.LVM2 && !this.efi) {
-    // retVal = await this.partitionBiosLvm(installDevice, p)
-
-  } else if (this.partitions.installationMode === InstallationMode.LVM2 && this.efi) {
-    // cretVal = await this.partitionUefiLvm(installDevice, p)
 
   }
 

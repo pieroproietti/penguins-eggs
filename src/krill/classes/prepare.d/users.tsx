@@ -10,7 +10,7 @@ import React from 'react'
 import { confirm} from './confirm.js'
 
 import Users from '../../components/users.js'
-import { IUsers } from '../../interfaces/i-krill.js'
+import { IUsers } from '../../interfaces/i_krill.js'
 import Prepare from '../prepare.js'
 import getUsername from '../../lib/get_username.js'
 import getUserfullname from '../../lib/get_userfullname.js'

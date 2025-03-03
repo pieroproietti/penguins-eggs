@@ -8,9 +8,9 @@
  */
 
 import Utils from '../../../classes/utils.js'
-import Sequence from '../../classes/sequence.js'
+import Sequence from '../sequence.js'
 import { exec } from '../../../lib/utils.js'
-import { SwapChoice } from '../../classes/krill-enums.js'
+import { SwapChoice } from '../krill_enums.js'
 
 /**
  *

@@ -10,7 +10,7 @@
 import { exec } from '../../../../lib/utils.js'
 import Sequence from '../../sequence.js'
 import Utils from '../../../../classes/utils.js'
-import getLuksPassphrase from '../../../lib/get_luks-passphrase.js'
+import getLuksPassphrase from '../../../lib/get_luks_passphrase.js'
 
 // React
 import React from 'react';

@@ -10,7 +10,7 @@
 import fs from 'node:fs'
 import shx from 'shelljs'
 
-import Sequence from '../../classes/sequence.js'
+import Sequence from '../sequence.js'
 
 /* localeCfg
  * Enable the configured locales (those set by the user on the

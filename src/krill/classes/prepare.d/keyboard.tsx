@@ -11,7 +11,7 @@ import React from 'react'
 import {confirm} from './confirm.js'
 
 import Keyboard from '../../components/keyboard.js'
-import { IKeyboard } from '../../interfaces/i-krill.js'
+import { IKeyboard } from '../../interfaces/i_krill.js'
 import Prepare from '../prepare.js'
 import Utils from '../../../classes/utils.js'
 import selectKeyboardOption from '../../lib/select_keyboard_option.js'

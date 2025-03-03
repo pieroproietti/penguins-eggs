@@ -8,7 +8,7 @@
  */
 
 import os from 'os'
-import { IKrillConfig } from '../interfaces/i-krill-config.js'
+import { IKrillConfig } from '../interfaces/i_krill_config.js'
 
 import axios from 'axios'
 import shx, { echo } from 'shelljs'
@@ -32,8 +32,8 @@ import { summary } from './prepare.d/summary.js'
 
 import Sequence from './sequence.js'
 import { INet } from '../../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
-import { SwapChoice, InstallationMode } from './krill-enums.js'
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i_krill.js'
+import { SwapChoice, InstallationMode } from './krill_enums.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 

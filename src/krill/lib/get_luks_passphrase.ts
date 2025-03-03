@@ -9,6 +9,9 @@
 import inquirer from 'inquirer'
 
 export default async function getLuksPassphrase(passphrase = '', confirm = ''): Promise<string> {
+  // console.log(`default passphrase= "3volution"`)
+  // console.log(`Passphrase must contain at least one letter and one number`)
+
   const requireLetterAndNumber = (value: string) => {
     if (!(/\w/.test(value) && /\d/.test(value))) {
       return 'Passphrase must contain at least one letter and one number.'
@@ -19,7 +22,7 @@ export default async function getLuksPassphrase(passphrase = '', confirm = ''): 
   const questions = [
     {
       default: passphrase,
-      message: `Choose a passphrase to encrypt device: `,
+      message: `default passphrase= "3volution"\nChoose a passphrase to encrypt device: `,
       name: 'passphrase',
       type: 'password',
       validate: requireLetterAndNumber
