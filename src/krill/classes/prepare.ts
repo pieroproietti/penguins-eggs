@@ -7,54 +7,6 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-/** OEM Installation (https://github.com/calamares/calamares/issues/871)
- *
- * Thanks to Adriaan De Groot (calamares author)
- *
- * There are two phases involved here, both of which could confusingly be called "OEM mode".
- * To be clear, the goal of the two phases is to end up with Linux (some distro) installed
- * on a piece of hardware which is passed to a customer's hands. On first boot, the
- * hardware is (re)configured with user input.
- *
- * Phase 1, OEM preparation
- * is about creating the image that will be used on first boot; so that is a normal partition,
- * create a standard user (e.g. "live") with autologin, populate a default desktop with a big
- * icon "first run this" or set up autostart of the configurator.
- * It is roughly a standard installation, with a little more configuration of the desktop
- * of the live user.
- *
- *   - welcome    - no need
- *   - locale     - en_US.UTF-8
- *   - keyboard   - us
- *   - partition  - ext4
- *   - users      - live/evolution root/evolution
- *   - network    - dhcp
- *   - summary    - no need
- *
- * Phase 2, "OEM user"
- * Set User Information on first Boot, from the "live" user, a new user for actual login --
- * along with whatever other configurations are wanted for the distro for the actual user.
- *
- *   - welcome
- *   - locale
- *   - keyboard
- *   - partition  - no need
- *   - users
- *   - network
- *   - summary
- *
- * Phase one should allow an empty password for the live user, and it would be useful to read
- * configuration from a file instead of having to go through the UI. It should install a
- * phase-2-configured Calamares into the target system
- * (either through a package, or as part of the image).
- *
- * Phase two is possible with the "dont-chroot" flag and (again) careful configuration.
- * Typically you drop the partition module (that was done in phase 1) and keep the users
- * module, add in a delete-calamares script (note to downstreams: that kind of module
- * should be upstreamed), add some user configuration (e.g. Plasma LNF if you're a
- * KDE-shipping-distro). To get all that you just need Calamares installed and the
- * relevant /etc/calamares/ files.
- */
 import os from 'os'
 import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
@@ -68,7 +20,7 @@ import Systemctl from '../../classes/systemctl.js'
 import Utils from '../../classes/utils.js'
 
 // libraries
-import { exec, compareInstances } from '../../lib/utils.js'
+import { exec } from '../../lib/utils.js'
 
 import { welcome } from './prepare.d/welcome.js'
 import { location } from './prepare.d/location.js'
@@ -135,6 +87,8 @@ export default class Krill {
    * @param none 
    * @param cryped 
    * @param pve 
+   * @param btrfs 
+   * @param testing 
    * @param verbose 
    */
   async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, btrfs = false, testing = false, verbose = false) {
@@ -395,4 +349,3 @@ function netmask2CIDR(mask: string) {
       '1'
     );
 }
-
