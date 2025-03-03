@@ -13,14 +13,12 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.0.59-2
-* Introduced experimental system installation as replace partion, not erasyng full disk. The partition must to exists before install. 
+## penguins-eggs-10.0.60
+* introduced a new installation mode by replacing a single partition.
+* removed the LVM2 installation mode completely. 
+* At this point we have 3 partition modes: Erase disk, Erase disk/Encrypted and Replace partition.
 
-As far as know this methond work only on BIOS, on UEFI I don't know the way to concile the new system with the others ones already present. 
-
-Use it with `hight caution` and report your experiences, bug, advises, help. 
-
-Thanks.
+I hope to reintroduce Erase disk/LVM2 mode in the future.
 
 ## penguins-eggs-10.0.59
 * I’ve been focusing primarily on krill, adding support for encrypted installations and LVM2. 

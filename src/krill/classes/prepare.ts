@@ -85,13 +85,14 @@ export default class Krill {
    * @param suspend 
    * @param small 
    * @param none 
-   * @param cryped 
+   * @param crypted 
    * @param pve 
    * @param btrfs 
    * @param testing 
    * @param verbose 
    */
-  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, cryped = false, pve = false, btrfs = false, testing = false, verbose = false) {
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, crypted = false, pve = false, btrfs = false, testing = false, verbose = false) {
+
     // Check disk presence
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
     if (drives[0] === '') {
@@ -197,17 +198,13 @@ export default class Krill {
       keyboardOption: this.krillConfig.keyboardOption
     }
 
-    
+
     oPartitions = {
       installationDevice: this.krillConfig.installationDevice,
       installationMode: this.krillConfig.installationMode,
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice,
       replacedPartition: this.krillConfig.replacedPartition
-    }
-
-    if (btrfs) {
-      oPartitions.filesystemType = 'btrfs'
     }
 
     if (suspend) {
@@ -255,13 +252,57 @@ export default class Krill {
     }
 
     /**
+     * Defaults
+     */
+    /**
+     * random = false, 
+     * domain = '', 
+     * pve = false
+     * */
+
+    if (ip) {
+      oUsers.hostname = 'ip-' + Utils.address().replaceAll('.', '-')
+    }
+
+
+    // Luks
+    if (crypted) {
+      oPartitions.installationMode = InstallationMode.Luks
+    }
+
+    // fs
+    if (btrfs) {
+      oPartitions.filesystemType = 'btrfs'
+    }
+
+
+    // swap
+    if (none) {
+      oPartitions.userSwapChoice = SwapChoice.None
+    }
+
+    if (small) {
+      oPartitions.userSwapChoice = SwapChoice.Small
+    }
+
+    if (suspend) {
+      oPartitions.userSwapChoice = SwapChoice.Suspend
+    }
+
+
+    if (pve) {
+      oPartitions.installationMode = InstallationMode.Luks
+    }
+
+
+    /**
      * interactive
      */
     if (!this.unattended) {
       oWelcome = await this.welcome()
       oLocation = await this.location(oWelcome.language)
       oKeyboard = await this.keyboard()
-      oPartitions = await this.partitions(this.krillConfig.installationDevice, cryped, pve, btrfs)
+      oPartitions = await this.partitions(this.krillConfig.installationDevice, crypted, pve, btrfs)
       oUsers = await this.users()
       oNetwork = await this.network()
     } else {
@@ -281,14 +322,6 @@ export default class Krill {
         }
       }
 
-      /**
-       * Defaults
-       */
-
-      // oPartitions.installationMode 
-      if (cryped) {
-        oPartitions.installationMode = InstallationMode.Luks
-      }
 
     }
     await this.summary(oLocation, oKeyboard, oPartitions, oUsers)
