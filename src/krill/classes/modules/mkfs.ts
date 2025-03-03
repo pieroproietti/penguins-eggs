@@ -36,10 +36,13 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
 
 
   if (this.partitions.filesystemType === 'ext4') {
+
+    // efi
     if (this.efi) {
       await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
     }
 
+    // boot
     if (this.devices.boot.name !== 'none') {
       if (this.devices.boot.fsType === undefined) {
         this.devices.boot.fsType = 'ext2'
@@ -48,16 +51,21 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
       await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
     }
 
+    // root 
     if (this.devices.root.name !== 'none') {
       await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
     }
 
+    // data
     if (this.devices.data.name !== 'none') {
       await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
 
-    } else if (this.partitions.userSwapChoice === SwapChoice.File) {
-      // swafile created in mount-fs
-
+    } 
+    
+    // swap
+    if (this.partitions.userSwapChoice === SwapChoice.File) {
+      // we'll create it on mount-fs
+      
     } else if (this.devices.swap.name !== 'none') {
       await exec(`mkswap ${this.devices.swap.name} ${this.toNull}`, this.echo)
     } 

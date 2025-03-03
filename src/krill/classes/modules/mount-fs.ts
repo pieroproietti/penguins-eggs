@@ -22,7 +22,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
     await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
   }
   
-  // root Alpine vuole -t per il mount
+  // root
   await exec(`mount -t ${this.devices.root.fsType} ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
   await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
   await exec(`rm -rf ${this.installTarget}/lost+found ${this.toNull}`, this.echo)
@@ -45,12 +45,11 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (this.efi && !fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
     await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
     
-    // await exec(`mount -t ${this.devices.efi.fsType} ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
     // utilizzare vfat per evitare errori
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
   }
 
-  // create swap file 
+  // swap file if we need
   if (this.partitions.userSwapChoice === SwapChoice.File) {
     await exec(`fallocate -l 8G ${this.installTarget}/swapfile`)
     await exec(`chmod 600 ${this.devices.root.mountPoint}/swapfile`, this.echo)
