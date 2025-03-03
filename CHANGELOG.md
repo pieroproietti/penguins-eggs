@@ -14,11 +14,11 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.0.60
-* introduced a new installation mode by replacing a single partition.
-* removed the LVM2 installation mode completely. 
-* At this point we have 3 partition modes: Erase disk, Erase disk/Encrypted and Replace partition.
+* introduced a new installation mode replacing a single partition;
+* completely removed the LVM2 installation mode;
+* At this point we have 3 installation modes: Erase disk, Erase disk/Encrypted and Replace partition.
 
-I hope to reintroduce Erase disk/LVM2 mode in the future.
+I hope to reintroduce an Erase disk/LVM2 mode in the future.
 
 ## penguins-eggs-10.0.59
 * I’ve been focusing primarily on krill, adding support for encrypted installations and LVM2. 
