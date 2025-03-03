@@ -58,8 +58,6 @@
 import os from 'os'
 import { IKrillConfig } from '../interfaces/i-krill-config.js'
 
-import React from 'react';
-import { render, RenderOptions } from 'ink'
 import axios from 'axios'
 import shx, { echo } from 'shelljs'
 import fs from 'fs'
@@ -72,52 +70,18 @@ import Utils from '../../classes/utils.js'
 // libraries
 import { exec, compareInstances } from '../../lib/utils.js'
 
+import { welcome } from './prepare.d/welcome.js'
+import { location } from './prepare.d/location.js'
+import { keyboard } from './prepare.d/keyboard.js'
+import { partitions } from './prepare.d/partitions.js'
+import { users } from './prepare.d/users.js'
+import { network } from './prepare.d/network.js'
+import { summary } from './prepare.d/summary.js'
 
-import Welcome from '../components/welcome.js'
-import Location from '../components/location.js'
-import Partitions from '../components/partitions.js'
-import Keyboard from '../components/keyboard.js'
-import Users from '../components/users.js'
-import Network from '../components/network.js'
-import Summary from '../components/summary.js'
-// import Install from '../components/install.js'
-
-import selectLanguages from '../lib/select_languages.js'
-import selectRegions from '../lib/select_regions.js'
-import selectZones from '../lib/select_zones.js'
-
-import selectInstallationMode from '../lib/select_installation_mode.js'
-import selectInstallationDevice from '../lib/select_installation_device.js'
-import selectUserSwapChoice from '../lib/select_user_swap_choice.js'
-import selectFileSystemType from '../lib/select_filesystem_type.js'
-
-import getUsername from '../lib/get_username.js'
-import getUserfullname from '../lib/get_userfullname.js'
-import getHostname from '../lib/get_hostname.js'
-import getPassword from '../lib/get_password.js'
-
-import selectKeyboardModel from '../lib/select_keyboard_model.js'
-import selectKeyboardLayout from '../lib/select_keyboard_layout.js'
-import selectKeyboardVariant from '../lib/select_keyboard_variant.js'
-import selectKeyboardOption from '../lib/select_keyboard_option.js'
-
-import selectInterface from '../lib/select_interface.js'
-import selectAddressType from '../lib/select_address_type.js'
-import getAddress from '../lib/get_address.js'
-import getNetmask from '../lib/get_netmask.js'
-import getGateway from '../lib/get_gateway.js'
-import getDomain from '../lib/get_domain.js'
-import getDns from '../lib/get_dns.js'
-
-import { selectLvmPreset, getLvmVGName, getLvmLVRootName, getLvmLVRootSize, getLvmLVDataName, getLvmLVDataMountPoint } from '../lib/lvm_installation_options.js'
 import Sequence from './sequence.js'
 import { INet } from '../../interfaces/index.js'
-import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers, ILvmOptions } from '../interfaces/i-krill.js'
-import { SwapChoice, InstallationMode, LvmPartitionPreset } from './krill-enums.js'
-import { LvmOptionUbuntu, LvmOptionProxmox } from './lvm-options.js'
-import LvmOptions from '../components/lvm-options.js'
-import selectReplacedPartition from '../lib/select_replaced_partition.js';
-
+import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i-krill.js'
+import { SwapChoice, InstallationMode } from './krill-enums.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -125,6 +89,13 @@ const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
  *
  */
 export default class Krill {
+  welcome = welcome
+  location = location
+  keyboard = keyboard
+  partitions = partitions
+  users = users
+  network = network
+  summary = summary
 
   krillConfig = {} as IKrillConfig
 
@@ -272,15 +243,10 @@ export default class Krill {
       keyboardOption: this.krillConfig.keyboardOption
     }
 
-    let lvmOptions = {} as ILvmOptions
-    if (this.krillConfig.lvmOptions) {
-      lvmOptions = this.krillConfig.lvmOptions
-    }
-
+    
     oPartitions = {
       installationDevice: this.krillConfig.installationDevice,
       installationMode: this.krillConfig.installationMode,
-      lvmOptions: lvmOptions,
       filesystemType: this.krillConfig.filesystemType,
       userSwapChoice: this.krillConfig.userSwapChoice,
       replacedPartition: this.krillConfig.replacedPartition
@@ -392,440 +358,11 @@ export default class Krill {
     }
   }
 
-  /**
-   * WELCOME
-   */
-  async welcome(): Promise<IWelcome> {
 
-    let language = this.krillConfig.language
-    if (language === '' || language === undefined) {
-      language = await this.locales.getDefault() // 'en_US.UTF-8'
-    }
 
-    let welcomeElem: JSX.Element
-    while (true) {
-      welcomeElem = <Welcome language={language} />
-      if (await confirm(welcomeElem, "Confirm Welcome datas?")) {
-        break
-      }
-      language = await selectLanguages(language)
-    }
-    return { language: language }
-  }
 
-  /**
-   * LOCATION
-   */
-  async location(language: string): Promise<ILocation> {
-    let region = this.krillConfig.region
-    if (region === '' || region === undefined) {
-      let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
-    }
-    let zone = this.krillConfig.zone
-    if (zone === '' || zone === undefined) {
-      zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
-    }
 
-    // Try to auto-configure timezone by internet
-    const url = `https://geoip.kde.org/v1/calamares`
-    try {
-      const response = await axios.get(url)
-      if (response.statusText === 'OK') {
-        const data = JSON.stringify(response.data)
-        const obj = JSON.parse(data)
-        region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
-        zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
-      }
-    } catch (error) {
-      console.error('error: ' + error)
-    }
 
-    let locationElem: JSX.Element
-    while (true) {
-      locationElem = <Location language={language} region={region} zone={zone} />
-      if (await confirm(locationElem, "Confirm location datas?")) {
-        break
-      }
-      region = await selectRegions(region)
-      zone = await selectZones(region)
-    }
-
-    return {
-      language: language,
-      region: region,
-      zone: zone
-    }
-  }
-
-  /**
-  * KEYBOARD
-  */
-  async keyboard(): Promise<IKeyboard> {
-    let keyboardModel = this.krillConfig.keyboardModel
-    if (keyboardModel === '' || keyboardModel === undefined) {
-      keyboardModel = await this.keyboards.getModel()
-    }
-
-    let keyboardLayout = this.krillConfig.keyboardLayout
-    if (keyboardLayout === '' || keyboardLayout === undefined) {
-      keyboardLayout = await this.keyboards.getLayout()
-    }
-
-    let keyboardVariant = this.krillConfig.keyboardVariant
-    if (keyboardVariant === '' || keyboardVariant === undefined) {
-      keyboardVariant = await this.keyboards.getVariant()
-    }
-
-    let keyboardOption = this.krillConfig.keyboardOption
-    if (keyboardOption === '' || keyboardOption === undefined) {
-      keyboardOption = await this.keyboards.getOption()
-    }
-
-
-    let keyboardElem: JSX.Element
-    while (true) {
-      keyboardElem = <Keyboard keyboardModel={keyboardModel} keyboardLayout={keyboardLayout} keyboardVariant={keyboardVariant} keyboardOptions={keyboardOption} />
-      if (await confirm(keyboardElem, "Confirm Keyboard datas?")) {
-        break
-      } else {
-        keyboardModel = 'pc105'
-        keyboardModel = await selectKeyboardModel(keyboardModel)
-
-        keyboardLayout = 'us'
-        keyboardLayout = await selectKeyboardLayout(keyboardLayout)
-
-        keyboardVariant = ''
-        keyboardVariant = await selectKeyboardVariant(keyboardLayout)
-
-        keyboardOption = ''
-        keyboardOption = await selectKeyboardOption(keyboardOption)
-        if (keyboardModel === '') {
-          keyboardModel = 'pc105'
-        }
-      }
-    }
-    return {
-      keyboardModel: keyboardModel,
-      keyboardLayout: keyboardLayout,
-      keyboardVariant: keyboardVariant,
-      keyboardOption: keyboardOption
-    }
-  }
-
-
-  /**
-  * PARTITIONS
-  */
-  async partitions(installationDevice = "", crypted = false, pve = false, btrfs = false): Promise<IPartitions> {
-
-    // Calamares won't use any devices with iso9660 filesystem on it.
-    const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-    let driveList: string[] = []
-    drives.forEach((element: string) => {
-      if (!element.includes('zram')) {
-        driveList.push('/dev/' + element)
-      }
-    })
-    installationDevice = driveList[0] // Solo per selezionare il default
-
-    let replacedPartition = this.krillConfig.replacedPartition
-
-    let installationMode = this.krillConfig.installationMode
-
-    let knownInstallationModes = Object.values(InstallationMode) as Array<string>
-    let knownSwapChoices = Object.values(SwapChoice) as Array<string>
-
-    let lvmOptions = {} as ILvmOptions
-    let emptyLvmOption = {} as ILvmOptions
-    let lvmPartitionPreset = {} as LvmPartitionPreset
-
-    emptyLvmOption.vgName = ''
-    emptyLvmOption.lvRootName = ''
-    emptyLvmOption.lvRootFSType = ''
-    emptyLvmOption.lvRootSize = ''
-    emptyLvmOption.lvDataName = ''
-    emptyLvmOption.lvRootFSType = ''
-    emptyLvmOption.lvDataMountPoint = ''
-
-    if (!this.krillConfig.lvmOptions) {
-      // if lvm options is missing from the krill configuration file assume it as empty
-      this.krillConfig.lvmOptions = emptyLvmOption
-    }
-
-    lvmOptions = this.krillConfig.lvmOptions
-
-    if (compareInstances(this.krillConfig.lvmOptions, emptyLvmOption) ||
-      compareInstances(this.krillConfig.lvmOptions, new LvmOptionProxmox())
-    ) {
-
-      // empty lvm options are considered as Proxmox preset
-      lvmPartitionPreset = LvmPartitionPreset.Proxmox
-
-    } else if (compareInstances(this.krillConfig.lvmOptions, new LvmOptionUbuntu())) {
-
-      // Loaded lvm options are Ubuntu preset
-      lvmPartitionPreset = LvmPartitionPreset.Ubuntu
-
-    } else {
-
-      // Loaded lvm options are Ubuntu preset
-      lvmPartitionPreset = LvmPartitionPreset.Custom
-
-    }
-
-    if (!knownInstallationModes.includes(installationMode)) {
-      installationMode = InstallationMode.Standard
-    }
-
-    if (crypted) {
-      installationMode = InstallationMode.Luks
-    } else if (pve) {
-      installationMode = InstallationMode.LVM2
-
-      // Set default option to proxmox preset if pve arg is set
-      lvmPartitionPreset = LvmPartitionPreset.Proxmox
-      lvmOptions = new LvmOptionProxmox()
-    }
-    let filesystemType = 'ext4'
-
-    let userSwapChoice = {} as SwapChoice
-    if (knownSwapChoices.includes(this.krillConfig.userSwapChoice))
-      userSwapChoice = this.krillConfig.userSwapChoice
-    else {
-      userSwapChoice = SwapChoice.Small
-    }
-
-    let partitionsElem: JSX.Element
-    while (true) {
-      partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} lvmPreset={lvmPartitionPreset} filesystemType={filesystemType} userSwapChoice={userSwapChoice} replacedPartition={replacedPartition} />
-      if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
-        break
-      } else {
-        installationDevice = driveList[0] // Solo per selezionare il default
-        installationMode = InstallationMode.Standard
-        if (crypted) {
-          installationMode = InstallationMode.Luks
-        } else if (pve) {
-          installationMode = InstallationMode.LVM2
-        }
-
-        installationDevice = await selectInstallationDevice()
-        installationMode = await selectInstallationMode()
-
-        if (installationMode === InstallationMode.Replace) {
-          replacedPartition = await selectReplacedPartition()
-          filesystemType = await selectFileSystemType()
-          userSwapChoice = SwapChoice.File
-
-        } else if (installationMode === InstallationMode.Standard) {
-          replacedPartition = ""
-          filesystemType = await selectFileSystemType()
-          userSwapChoice = await selectUserSwapChoice(userSwapChoice)
-
-        } else if (installationMode === InstallationMode.LVM2) {
-          [lvmPartitionPreset, lvmOptions] = await this.getLvmOptions(lvmPartitionPreset, lvmOptions)
-          lvmOptions.lvRootFSType = filesystemType
-          lvmOptions.lvDataFSType = filesystemType
-          replacedPartition = ""
-
-        } else if (installationMode === InstallationMode.Luks) {
-          replacedPartition = ""
-          userSwapChoice = SwapChoice.File
-        }
-      }
-    }
-
-    return {
-      installationDevice: installationDevice,
-      installationMode: installationMode,
-      lvmOptions: lvmOptions,
-      filesystemType: filesystemType,
-      userSwapChoice: userSwapChoice,
-      replacedPartition: replacedPartition
-    }
-  }
-
-  /*
-  * LVM Options
-  */
-  async getLvmOptions(initialPartitionPreset: LvmPartitionPreset = LvmPartitionPreset.Proxmox, lvmOptions: ILvmOptions): Promise<[LvmPartitionPreset, ILvmOptions]> {
-    let lvmPartitionPreset: LvmPartitionPreset = await selectLvmPreset(initialPartitionPreset)
-
-    switch (lvmPartitionPreset) {
-      case LvmPartitionPreset.Proxmox:
-        lvmOptions = new LvmOptionProxmox()
-        break;
-      case LvmPartitionPreset.Ubuntu:
-        lvmOptions = new LvmOptionUbuntu()
-        break;
-      case LvmPartitionPreset.Custom:
-        lvmOptions = new LvmOptionProxmox()
-      default:
-        break;
-    }
-
-    let lvmOptionsElem: JSX.Element
-    while (true) {
-      lvmOptionsElem = <LvmOptions lvmPreset={lvmPartitionPreset} lvmOptions={lvmOptions} />
-      if (await confirm(lvmOptionsElem, "Confirm LVM Preset Options ?")) {
-        break
-      }
-      lvmOptions.vgName = await getLvmVGName(lvmOptions.vgName)
-      lvmOptions.lvRootName = await getLvmLVRootName(lvmOptions.lvRootName)
-      lvmOptions.lvRootFSType = await selectFileSystemType()
-      lvmOptions.lvRootSize = await getLvmLVRootSize(lvmOptions.lvRootSize)
-      lvmOptions.lvDataName = await getLvmLVDataName(lvmOptions.lvDataName)
-      lvmOptions.lvDataFSType = await selectFileSystemType()
-      lvmOptions.lvDataMountPoint = await getLvmLVDataMountPoint(lvmOptions.lvDataMountPoint)
-    }
-
-    return [lvmPartitionPreset, lvmOptions]
-  }
-
-  /**
-   * USERS
-   */
-  async users(): Promise<IUsers> {
-
-    let username = this.krillConfig.name
-    if (username === '' || username === undefined) {
-      username = 'artisan'
-    }
-
-    let fullname = this.krillConfig.fullname
-    if (fullname === '' || fullname === undefined) {
-      fullname = username
-    }
-
-    let password = this.krillConfig.password
-    if (password === '' || password === undefined) {
-      password = 'evolution'
-    }
-
-    let rootPassword = this.krillConfig.rootPassword
-    if (rootPassword === '' || rootPassword === undefined) {
-      rootPassword = 'evolution'
-    }
-
-    let hostname = this.krillConfig.hostname
-    if (hostname === '' || hostname === undefined) {
-      hostname = shx.exec('cat /etc/hostname').trim()
-    }
-
-    let autologin = true
-
-    let sameUserPassword = true
-
-    let usersElem: JSX.Element
-    while (true) {
-      usersElem = <Users username={username} fullname={fullname} hostname={hostname} password={password} rootPassword={rootPassword} autologin={autologin} sameUserPassword={sameUserPassword} />
-      if (await confirm(usersElem, "Confirm Users datas?")) {
-        break
-      }
-      username = await getUsername(username)
-      fullname = await getUserfullname(fullname)
-      password = await getPassword(username, password)
-      rootPassword = await getPassword('root', password)
-      hostname = await getHostname(hostname)
-    }
-
-    return {
-      username: username,
-      fullname: fullname,
-      password: password,
-      rootPassword: rootPassword,
-      autologin: autologin,
-      hostname: hostname
-    }
-  }
-
-  /**
-   * Network
-   */
-  async network(): Promise<INet> {
-    const i = {} as INet
-
-    const ifaces: string[] = fs.readdirSync('/sys/class/net/')
-    i.iface = await Utils.iface()
-    i.addressType = 'dhcp'
-    i.address = Utils.address()
-    i.netmask = Utils.netmask()
-    i.gateway = Utils.gateway()
-    i.dns = Utils.getDns()
-    i.domain = Utils.getDomain()
-    let dnsString = ''
-    for (let c = 0; c < i.dns.length; c++) {
-      dnsString += i.dns[c].trim()
-      if (c < i.dns.length - 1) {
-        dnsString += '; '
-      }
-    }
-
-    let networkElem: JSX.Element
-    while (true) {
-      networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} domain={i.domain} dns={dnsString} />
-      if (await confirm(networkElem, "Confirm Network datas?")) {
-        break
-      }
-
-      i.iface = await selectInterface(i.iface, ifaces)
-      i.addressType = await selectAddressType()
-      if (i.addressType === 'static') {
-        i.address = await getAddress(i.address)
-        i.netmask = await getNetmask(i.netmask)
-        i.gateway = await getGateway(i.gateway)
-        i.domain = await getDomain(i.domain)
-        if (i.domain.at(0) !== '.') {
-          i.domain = '.' + i.domain
-        }
-        i.dns = (await getDns(dnsString)).split(';')
-        dnsString = ''
-        for (let c = 0; c < i.dns.length; c++) {
-          dnsString += i.dns[c].trim()
-          if (c < i.dns.length - 1) {
-            dnsString += '; '
-          }
-        }
-      }
-    }
-    return i
-  }
-
-  /**
-   * SUMMARY
-   */
-  async summary(location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
-    let summaryElem: JSX.Element
-
-    let message = `Double check: data on disk: ${partitions.installationDevice} will be completely erased!`
-    let erase = `Disk ${partitions.installationDevice} will be formatted as: ${partitions.filesystemType}`
-    if (partitions.installationMode === InstallationMode.Replace) {
-      message = `Double check: data on partition ${partitions.replacedPartition} will be completely erased!`
-      erase = `Partition ${partitions.replacedPartition} will be formatted as: ${partitions.filesystemType}`
-    } 
-
-    if (this.unattended && this.nointeractive) {
-      message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
-    }
-
-
-    while (true) {
-      summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message}  erase={erase} />
-      if (this.unattended && this.nointeractive) {
-        redraw(summaryElem)
-        await sleep(5000)
-        break
-      } else if (this.unattended && !this.nointeractive) {
-        if (await confirm(summaryElem, "Read the Summary, confirm or abort")) {
-          break
-        } else {
-          process.exit(0)
-        }
-      } else if (await confirm(summaryElem, "Confirm Summary datas?")) {
-        break
-      }
-    }
-  }
 
   /**
    * return true if pv exist
@@ -840,35 +377,6 @@ export default class Krill {
   }
 }
 
-/**
- * confirm
- * @returns
- */
-async function confirm(elem: JSX.Element, msg = "Confirm") {
-  redraw(elem)
-
-  const result = JSON.parse(await Utils.customConfirmAbort(msg))
-  let retval = false
-  if (result.confirm === 'Yes') {
-    retval = true
-  } else if (result.confirm === 'Abort') {
-    process.exit()
-  }
-  return retval
-}
-
-/**
- * Occorre farglierlo rigenerare a forza
- * anche quando NON cambiano i dati
- * forceUpdate
- */
-function redraw(elem: JSX.Element) {
-  let opt: RenderOptions = {}
-  opt.patchConsole = true
-  opt.debug = false
-  console.clear()
-  render(elem, opt)
-}
 
 /**
  *
@@ -888,13 +396,3 @@ function netmask2CIDR(mask: string) {
     );
 }
 
-/**
- *
- * @param ms
- * @returns
- */
-function sleep(ms = 0) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}

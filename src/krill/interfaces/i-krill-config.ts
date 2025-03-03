@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-import { ILvmOptions } from "./i-krill.js"
 import { SwapChoice } from '../classes/krill-enums.js'
 
 export interface IKrillConfig {
@@ -23,7 +22,6 @@ export interface IKrillConfig {
   installationDevice: string
   replacedPartition: string
   installationMode: string
-  lvmOptions: ILvmOptions
   keyboardLayout: string
   keyboardModel: string
   keyboardOption: string

@@ -20,12 +20,6 @@ export enum InstallationMode {
     Luks = "Encrypted",
 }
 
-export enum LvmPartitionPreset {
-    Custom = "custom",
-    Proxmox = "proxmox",
-    Ubuntu = "ubuntu",
-}
-
 export enum SwapChoice {
     None = "none",
     Small = "small",

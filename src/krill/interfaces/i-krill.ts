@@ -28,7 +28,6 @@ export interface IKeyboard {
 export interface IPartitions {
   filesystemType: string
   installationDevice: string
-  lvmOptions: ILvmOptions
   installationMode: string
   userSwapChoice: SwapChoice
   replacedPartition: string
@@ -51,12 +50,3 @@ export interface ICalamaresModule {
   type: string
 }
 
-export interface ILvmOptions {
-  vgName: string
-  lvRootName: string
-  lvRootFSType: string
-  lvRootSize: string
-  lvDataName: string
-  lvDataFSType: string
-  lvDataMountPoint: string
-}

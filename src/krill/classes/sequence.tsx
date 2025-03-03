@@ -37,42 +37,40 @@ import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../
 import { exec } from '../../lib/utils.js'
 
 // import krill modules
-import partition from './modules/partition.js'
-import createLvmPartitions from './modules/partition.d/create-lvm-partitions.js'
-import biosStandard from './modules/partition.d/bios-standard.js'
-import biosLuks from './modules/partition.d/bios-luks.js'
-import uefiStandard from './modules/partition.d/uefi-standard.js'
-import uefiLuks from './modules/partition.d/uefi-luks.js'
-import biosLvm from './modules/partition.d/bios-lvm.js'
-import uefiLvm from './modules/partition.d/uefi-lvm.js'
+import partition from './sequence.d/partition.js'
+// import createLvmPartitions from './sequence.d/partition.d/create-lvm-partitions.js'
+import biosStandard from './sequence.d/partition.d/bios-standard.js'
+import biosLuks from './sequence.d/partition.d/bios-luks.js'
+import uefiStandard from './sequence.d/partition.d/uefi-standard.js'
+import uefiLuks from './sequence.d/partition.d/uefi-luks.js'
 
-import { mountFs, umountFs } from './modules/mount-fs.js'
-import { mountVfs, umountVfs } from './modules/mount-vfs.js'
-import unpackfs from './modules/unpackfs.js'
-import machineId from './modules/machine-id.js'
-import fstab from './modules/fstab.js'
-import locale from './modules/locale.js'
-import mKeyboard from './modules/m-keyboard.js'
-import localeCfg from './modules/locale-cfg.js'
+import { mountFs, umountFs } from './sequence.d/mount-fs.js'
+import { mountVfs, umountVfs } from './sequence.d/mount-vfs.js'
+import unpackfs from './sequence.d/unpackfs.js'
+import machineId from './sequence.d/machine-id.js'
+import fstab from './sequence.d/fstab.js'
+import locale from './sequence.d/locale.js'
+import mKeyboard from './sequence.d/m-keyboard.js'
+import localeCfg from './sequence.d/locale-cfg.js'
 // users
-import addUser from './modules/add-user.js'
-import changePassword from './modules/change-password.js'
+import addUser from './sequence.d/add-user.js'
+import changePassword from './sequence.d/change-password.js'
 // displaymanager: autologin
-import networkCfg from './modules/network-cfg.js'
+import networkCfg from './sequence.d/network-cfg.js'
 // hwclock:
 // services-systemd:
 // bootloader-config
-import bootloaderConfig from './modules/bootloader-config.js'
-import grubcfg from './modules/grubcfg.js'
-import bootloader from './modules/bootloader.js'
-import packages from './modules/packages.js'
-import removeInstallerLink from './modules/remove-installer-link.js'
-import initramfsCfg from './modules/initramfs-cfg.js'
-import initramfs from './modules/initramfs.js'
-import delLiveUser from './modules/del-live-user.js'
-import umount from './modules/umount.js'
-import mkfs from './modules/mkfs.js'
-import hostname from './modules/hostname.js'
+import bootloaderConfig from './sequence.d/bootloader-config.js'
+import grubcfg from './sequence.d/grubcfg.js'
+import bootloader from './sequence.d/bootloader.js'
+import packages from './sequence.d/packages.js'
+import removeInstallerLink from './sequence.d/remove-installer-link.js'
+import initramfsCfg from './sequence.d/initramfs-cfg.js'
+import initramfs from './sequence.d/initramfs.js'
+import delLiveUser from './sequence.d/del-live-user.js'
+import umount from './sequence.d/umount.js'
+import mkfs from './sequence.d/mkfs.js'
+import hostname from './sequence.d/hostname.js'
 
 import CFS from './cfs.js'
 
@@ -86,14 +84,12 @@ import { spawnSync } from 'child_process';
  */
 export default class Sequence {
    partition = partition
-   createLvmPartitions = createLvmPartitions
+   // createLvmPartitions = createLvmPartitions
    partitionBiosStandard = biosStandard
    partitionUefiStandard = uefiStandard
    partitionBiosLuks = biosLuks
    partitionUefiLuks = uefiLuks
-   partitionBiosLvm = biosLvm
-   partitionUefiLvm = uefiLvm
-
+   
    // mount
    mountFs = mountFs
    mountVfs = mountVfs

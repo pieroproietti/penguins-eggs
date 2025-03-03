@@ -17,7 +17,7 @@ const agent = new https.Agent({
   rejectUnauthorized: false
 })
 import { IKrillConfig } from '../krill/interfaces/i-krill-config.js'
-import { ILvmOptions } from '../krill/interfaces/i-krill.js'
+// import { ILvmOptions } from '../krill/interfaces/i-krill.js'
 
 /**
  * Class Krill
@@ -60,7 +60,6 @@ export default class Install extends Command {
 
     // krillConfig
     let krillConfig = {} as IKrillConfig
-    krillConfig.lvmOptions = {} as ILvmOptions
     
     const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
     krillConfig = yaml.load(content) as IKrillConfig
