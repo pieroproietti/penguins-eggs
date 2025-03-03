@@ -13,20 +13,19 @@ import Steps from './steps.js'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { ISettings, IBranding, IPartitions } from '../../interfaces/index.js'
-import { InstallationMode, SwapChoice } from '../classes/krill-enums.js'
+import { InstallationMode, SwapChoice } from '../classes/krill_enums.js'
 import { render, Text, Box, Newline } from 'ink'
 
 type partitionsProps = {
     installationDevice?: string,
     installationMode?: string,
-    lvmPreset: string,
     filesystemType?: string,
     userSwapChoice?: SwapChoice,
     replacedPartition?: string,
 }
 
 
-export default function Partitions({ installationDevice, installationMode, lvmPreset, filesystemType, userSwapChoice, replacedPartition }: partitionsProps) {
+export default function Partitions({ installationDevice, installationMode, filesystemType, userSwapChoice, replacedPartition }: partitionsProps) {
     let installer = 'krill'
     let productName = ''
     let version = ''
@@ -95,10 +94,6 @@ export default function Partitions({ installationDevice, installationMode, lvmPr
                             <Box><Text>Installation mode: </Text><Text color="cyan">{installationMode}</Text></Box>
                             <Box><Text>Filesystem: </Text><Text color="cyan">{filesystemType}</Text></Box>
                             <Box><Text>User swap choice: </Text><Text color="cyan">{userSwapChoice}</Text></Box>
-
-                            {installationMode == InstallationMode.LVM2 &&
-                                <Box><Text>LVM Preset: </Text><Text color='yellow'>{lvmPreset}</Text></Box>
-                            }
 
                             <Newline />
                             <Box flexDirection="row">

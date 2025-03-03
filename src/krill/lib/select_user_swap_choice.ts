@@ -11,7 +11,7 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 
 import { IPartitions } from '../../interfaces/index.js'
-import { SwapChoice } from '../classes/krill-enums.js'
+import { SwapChoice } from '../classes/krill_enums.js'
 
 export default async function selectUserSwapChoice(initialSwapChoice: SwapChoice = SwapChoice.Small): Promise<SwapChoice> {
   let partitions = {} as IPartitions
