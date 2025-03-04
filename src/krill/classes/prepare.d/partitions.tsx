@@ -48,7 +48,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
 
 
     if (!knownInstallationModes.includes(installationMode)) {
-        installationMode = InstallationMode.Standard
+        installationMode = InstallationMode.EraseDisk
     }
 
     if (crypted) {
@@ -71,7 +71,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
             break
         } else {
             installationDevice = driveList[0] // Solo per selezionare il default
-            installationMode = InstallationMode.Standard
+            installationMode = InstallationMode.EraseDisk
             if (crypted) {
                 installationMode = InstallationMode.Luks
             }
@@ -84,7 +84,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
                 filesystemType = await selectFileSystemType()
                 userSwapChoice = SwapChoice.File
 
-            } else if (installationMode === InstallationMode.Standard) {
+            } else if (installationMode === InstallationMode.EraseDisk) {
                 replacedPartition = ""
                 filesystemType = await selectFileSystemType()
                 userSwapChoice = await selectUserSwapChoice(userSwapChoice)

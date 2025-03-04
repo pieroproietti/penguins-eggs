@@ -10,7 +10,7 @@
  * 
  */
 export enum InstallationMode {
-    Standard = "Erase disk",
+    EraseDisk = "Erase disk",
     Luks = "Erase disk/Encrypted",
     Replace = "Replace partition",
 }
@@ -23,4 +23,19 @@ export enum SwapChoice {
     Small = "small",
     Suspend = "suspend",
     File = "file",
+}
+
+export enum Bios {
+    Legacy = "legacy",
+    EFI = "efi"
+}
+
+export enum FsType {
+    ext2 = "ext2",
+    ext3 = "ext3",
+    ext4 = "ext4",
+    btrfs = "btrfs",
+    xfs = "xfs",
+    zfs = "zfs",
+    ntfs = "ntfs",
 }

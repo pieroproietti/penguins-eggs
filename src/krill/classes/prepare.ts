@@ -33,7 +33,7 @@ import { summary } from './prepare.d/summary.js'
 import Sequence from './sequence.js'
 import { INet } from '../../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i_krill.js'
-import { SwapChoice, InstallationMode } from './krill_enums.js'
+import { SwapChoice, InstallationMode, FsType } from './krill_enums.js'
 
 const config_file = '/etc/penguins-eggs.d/krill.yaml' as string
 
@@ -254,27 +254,26 @@ export default class Krill {
     /**
      * Defaults
      */
+
     /**
      * random = false, 
      * domain = '', 
      * pve = false
      * */
 
-    if (ip) {
-      oUsers.hostname = 'ip-' + Utils.address().replaceAll('.', '-')
-    }
-
-
-    // Luks
-    if (crypted) {
-      oPartitions.installationMode = InstallationMode.Luks
+    if (this.unattended) {
+      oPartitions.installationMode = InstallationMode.EraseDisk
     }
 
     // fs
     if (btrfs) {
-      oPartitions.filesystemType = 'btrfs'
+      oPartitions.filesystemType = FsType.btrfs
     }
 
+    // LUKS
+    if (crypted) {
+      oPartitions.installationMode = InstallationMode.Luks
+    }
 
     // swap
     if (none) {
@@ -294,6 +293,9 @@ export default class Krill {
       oPartitions.installationMode = InstallationMode.Luks
     }
 
+    if (ip) {
+      oUsers.hostname = 'ip-' + Utils.address().replaceAll('.', '-')
+    }
 
     /**
      * interactive
