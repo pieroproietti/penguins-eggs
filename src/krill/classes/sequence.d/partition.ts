@@ -67,13 +67,13 @@ export default async function partition(this: Sequence): Promise<boolean> {
   if (installationMode === InstallationMode.Replace) {
     retVal = true
 
-  } else if (installationMode === InstallationMode.Standard && !this.efi) {
+  } else if (installationMode === InstallationMode.EraseDisk && !this.efi) {
     retVal = await this.partitionBiosStandard(installDevice, p)
 
   } else if (installationMode === InstallationMode.Luks && !this.efi) {
     retVal = await this.partitionBiosLuks(installDevice, p)
 
-  } else if (installationMode === InstallationMode.Standard && this.efi) {
+  } else if (installationMode === InstallationMode.EraseDisk && this.efi) {
     retVal = await this.partitionUefiStandard(installDevice, p)
 
   } else if (installationMode === InstallationMode.Luks && this.efi) {
