@@ -80,12 +80,14 @@ export default class Utils {
     * @param codenameId
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
-      let result = 'eggs-of_' + distroId.toLowerCase() 
+      let result = `eggs-of_${distroId.toLowerCase()}-`
       if (codenameId === 'rolling' || codenameId === '') {
-         const releaseId = Utils.getOsRelease().VERSION_ID
-         result += '-' + releaseId.trim() + '-'
+         const releaseId = Utils.getOsRelease().VERSION_ID.trim()
+         if (releaseId !== '') {
+            result += `${releaseId}-`
+         } 
       } else {
-         result += '-' + codenameId.toLowerCase() + '-'
+         result += `${codenameId.toLowerCase()}-`
       }
       result = result.replace(`/`, '-')
       return result
