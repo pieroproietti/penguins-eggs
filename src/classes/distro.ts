@@ -41,7 +41,7 @@ class Distro implements IDistro {
    * Costruttore
    */
   constructor() {
-    let found = false
+
     // Tutti i default sono per Debian
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
@@ -107,11 +107,7 @@ class Distro implements IDistro {
       /**
        * Fedora/RHEL compatible
        */
-    } else if (this.distroId === 'Almalinux' ||
-      this.distroId === 'Fedora' ||
-      this.distroId === 'Nobara' ||
-      this.distroId === 'Rocky') {
-
+    } else if (this.distroId === 'Fedora') {
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
       this.codenameId = 'rolling' // viene rimosso dal nome
@@ -147,6 +143,7 @@ class Distro implements IDistro {
       this.codenameId = 'rolling'
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // we must discover
+
     } else {
 
       /**
@@ -273,6 +270,7 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'devel') {
         this.distroLike = 'Ubuntu'
         this.codenameLikeId = 'devel'
+
       } else {
         /**
          * we must to check derivatives
@@ -285,13 +283,17 @@ class Distro implements IDistro {
         }
 
         /**
-         * patch per Roy VERIFICARE
+         * derivatives
+         */
+        let found = false
+
+        /**
+         * derivatives: families archlinux, debian
          */
         let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
         if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
           file = '/etc/penguins-eggs.d/derivatives.yaml'
         }
-
         const content = fs.readFileSync(file, 'utf8')
         const distros = yaml.load(content) as IDistros[]
         for (const distro of distros) {
@@ -302,10 +304,34 @@ class Distro implements IDistro {
                 this.distroLike = distro.distroLike
                 this.codenameLikeId = distro.id
                 this.familyId = distro.family
+                found = true
               }
             }
           }
         }
+
+        /**
+         * derivatives: family fedora
+         */
+        if (!found) {
+          let file = path.resolve(__dirname, '../../conf/derivatives_fedora.yaml')
+          if (fs.existsSync('/etc/penguins-eggs.d/derivatives_fedora.yaml')) {
+            file = '/etc/penguins-eggs.d/derivatives_fedora.yaml'
+          }
+
+          const content = fs.readFileSync(file, 'utf8')
+          const elem = yaml.load(content) as string[]
+          if (elem.includes(this.distroId)) {
+
+            this.familyId = 'fedora'
+            this.distroLike = 'Fedora'
+            this.codenameId = 'rolling'
+            this.codenameLikeId = this.familyId
+            this.liveMediumPath = '/run/initramfs/live/'
+            found = true
+          }
+        }
+
         if (!found) {
           console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
           console.log('')
