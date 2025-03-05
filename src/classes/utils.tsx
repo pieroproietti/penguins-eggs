@@ -80,14 +80,12 @@ export default class Utils {
     * @param codenameId
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
-      let result = ''
+      let result = 'eggs-of_' + distroId.toLowerCase() 
       if (codenameId === 'rolling' || codenameId === '') {
-         if (codenameId === '') {
-            const releaseId = Utils.getOsRelease().VERSION_ID
-            result = 'egg-of_' + distroId.toLowerCase() + '-' + releaseId.trim() + '-'
-         }
+         const releaseId = Utils.getOsRelease().VERSION_ID
+         result += '-' + releaseId.trim() + '-'
       } else {
-         result = 'egg-of_' + distroId.toLowerCase() + '-' + codenameId.toLowerCase() + '-'
+         result += '-' + codenameId.toLowerCase() + '-'
       }
       result = result.replace(`/`, '-')
       return result
@@ -166,7 +164,7 @@ export default class Utils {
       if (vmlinuz === '') {
          cmdline.forEach(cmd => {
             if (cmd.includes('initrd=')) {
-               let initrd = cmd.substring(cmd.indexOf('initramfs-')+10)
+               let initrd = cmd.substring(cmd.indexOf('initramfs-') + 10)
                let version = initrd.substring(0, initrd.indexOf('.img'))
                vmlinuz = `/boot/efi/vmlinuz-${version}`
             }
@@ -1071,59 +1069,59 @@ export default class Utils {
    }
 
 
-   
-   
+
+
    // Se il metodo fa parte di una classe, usa `static`. Altrimenti, rimuovilo.
    static getOsRelease(): IOsRelease {
-       const osReleasePath = path.join('/etc', 'os-release');
+      const osReleasePath = path.join('/etc', 'os-release');
 
-       // Inizializza l'oggetto con valori predefiniti
-       const osInfo: IOsRelease = {
-           ID: '',
-           VERSION_ID: '',
-           VERSION_CODENAME: 'n/a'
-       };
-   
-       // Verifica se il file esiste
-       if (!fs.existsSync(osReleasePath)) {
-           console.error('/etc/os-release file does not exist.');
-           return osInfo;
-       }
-   
-       // Leggi il contenuto del file
-       let fileContent: string;
-       try {
-           fileContent = fs.readFileSync(osReleasePath, 'utf8');
-       } catch (error) {
-           console.error('Error reading /etc/os-release:', error);
-           return osInfo;
-       }
-   
-       // Analizza ogni linea
-       const lines = fileContent.split('\n');
-       lines.forEach(line => {
-           if (line.startsWith('#') || line.trim() === '') return;
-   
-           const [key, value] = line.split('=')
-           if (key && value) {
-               const trimmedKey = key.trim();
-               const trimmedValue = value.trim().replace(/"/g, '');
-   
-               // Popola solo le chiavi desiderate
-               if (trimmedKey === 'ID') {
-                  osInfo.ID = trimmedValue
-               } else if (trimmedKey === 'VERSION_ID') {
-                  osInfo.VERSION_ID = trimmedValue
-               } else if (trimmedKey === 'VERSION_CODENAME') {
-                  osInfo.VERSION_CODENAME = trimmedValue
-               } 
-           }
-       });
-       
-       // capitalize distroId
-       osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
-       osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
+      // Inizializza l'oggetto con valori predefiniti
+      const osInfo: IOsRelease = {
+         ID: '',
+         VERSION_ID: '',
+         VERSION_CODENAME: 'n/a'
+      };
 
-       return osInfo
+      // Verifica se il file esiste
+      if (!fs.existsSync(osReleasePath)) {
+         console.error('/etc/os-release file does not exist.');
+         return osInfo;
+      }
+
+      // Leggi il contenuto del file
+      let fileContent: string;
+      try {
+         fileContent = fs.readFileSync(osReleasePath, 'utf8');
+      } catch (error) {
+         console.error('Error reading /etc/os-release:', error);
+         return osInfo;
+      }
+
+      // Analizza ogni linea
+      const lines = fileContent.split('\n');
+      lines.forEach(line => {
+         if (line.startsWith('#') || line.trim() === '') return;
+
+         const [key, value] = line.split('=')
+         if (key && value) {
+            const trimmedKey = key.trim();
+            const trimmedValue = value.trim().replace(/"/g, '');
+
+            // Popola solo le chiavi desiderate
+            if (trimmedKey === 'ID') {
+               osInfo.ID = trimmedValue
+            } else if (trimmedKey === 'VERSION_ID') {
+               osInfo.VERSION_ID = trimmedValue
+            } else if (trimmedKey === 'VERSION_CODENAME') {
+               osInfo.VERSION_CODENAME = trimmedValue
+            }
+         }
+      });
+
+      // capitalize distroId
+      osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
+      osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
+
+      return osInfo
    }
 }
