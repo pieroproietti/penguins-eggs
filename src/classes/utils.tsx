@@ -82,14 +82,7 @@ export default class Utils {
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = ''
       if (codenameId === 'rolling' || codenameId === '') {
-         result = 'egg-of_' + distroId.toLowerCase() + '-'
-         if (
-            distroId === 'ALDOS' ||
-            distroId === 'Almalinux' ||
-            distroId === 'Alpine' ||
-            distroId === 'Fedora' ||
-            distroId === 'Rocky'
-         ) {
+         if (codenameId === '') {
             const releaseId = Utils.getOsRelease().VERSION_ID
             result = 'egg-of_' + distroId.toLowerCase() + '-' + releaseId.trim() + '-'
          }
