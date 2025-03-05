@@ -256,6 +256,7 @@ export default class Pacman {
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
 
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
+    shx.cp(path.resolve(__dirname, '../../conf/derivatives_fedora.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/love.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
