@@ -688,6 +688,7 @@ export default class Utils {
       let retVal = false
       const paths = [
          '/lib/live/mount', // debian-live
+         '/run/live/rootfs/filesystem.squashfs', // debian trixie
          '/lib/live/mount/rootfs/filesystem.squashfs', // ubuntu bionic
          '/live/aufs',  // mx-linux
          '/media/root-rw', // AlpineLinux
