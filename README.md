@@ -33,6 +33,21 @@ penguins-eggs
   * [FAQ](https://penguins-eggs.net/docs/faq)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
+# penguins-eggs
+**penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
+
+It’s often used to create customized live ISO images or backups of a Linux system, allowing users to replicate or share their setup easily. Think of it as a way to "hatch" a new system from an existing one—hence the funny name.
+
+Here’s a breakdown of what it’s used for:
+
+* System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
+
+* Creating Custom Live ISOs: It lets you generate a bootable live ISO from your system. You can share this ISO with others or use it to boot your setup on different hardware. It’s like creating your own personalized Linux distro without starting from scratch.
+
+* Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), penguins-eggs simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.
+
+Lightweight and Distro-Agnostic: It works across various Debian, Ubuntu, Arch, Fedora and other derivatives, so you’re not locked into one ecosystem. It’s also designed to be fairly minimal and dependency-light.
+
 # Installation
 
 ## penguins-eggs-10.0.x installation
