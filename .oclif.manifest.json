@@ -532,6 +532,37 @@
         "love.js"
       ]
     },
+    "maker": {
+      "aliases": [],
+      "args": {},
+      "description": "eggs maker",
+      "examples": [
+        "sudo eggs maker"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "maker",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "maker.js"
+      ]
+    },
     "mom": {
       "aliases": [],
       "args": {},
