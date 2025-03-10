@@ -73,6 +73,7 @@
         "/dracut",
         "/eui",
         "/ipxe",
+        "/maker",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",

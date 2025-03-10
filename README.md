@@ -40,13 +40,14 @@ It’s often used to create customized live ISO images or backups of a Linux sys
 
 Here’s a breakdown of what it’s used for:
 
-* System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
-
-* Creating Custom Live ISOs: It lets you generate a bootable live ISO from your system. You can share this ISO with others or use it to boot your setup on different hardware. It’s like creating your own personalized Linux distro without starting from scratch.
 
 * Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), penguins-eggs simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.
 
-Lightweight and Distro-Agnostic: It works across various Debian, Ubuntu, Arch, Fedora and other derivatives, so you’re not locked into one ecosystem. It’s also designed to be fairly minimal and dependency-light.
+* Creating Custom Live ISOs: It lets you generate a bootable live ISO from your system. You can share this ISO with others or use it to boot your setup on different hardware. It’s like creating your own personalized Linux distro without starting from scratch.
+
+* System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
+
+Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, OpenMamba, Fedora, Almalinux, Rocky, OpenSuSE and other derivatives, so you’re not locked into one ecosystem.
 
 # Installation
 
