@@ -535,9 +535,9 @@
     "maker": {
       "aliases": [],
       "args": {},
-      "description": "eggs maker",
+      "description": "eggs maker: a GUI for penguin-eggs",
       "examples": [
-        "sudo eggs maker"
+        "eggs maker"
       ],
       "flags": {
         "help": {

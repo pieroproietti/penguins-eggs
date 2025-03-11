@@ -13,6 +13,7 @@ penguins-eggs
 # Index
 <!-- toc -->
 * [Index](#index)
+* [penguins-eggs](#penguins-eggs)
 * [Installation](#installation)
 * [Introduction](#introduction)
 * [Technology](#technology)
@@ -474,6 +475,7 @@ sudo eggs produce --max
 * [`eggs kill`](#eggs-kill)
 * [`eggs krill`](#eggs-krill)
 * [`eggs love`](#eggs-love)
+* [`eggs maker`](#eggs-maker)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
 * [`eggs status`](#eggs-status)
@@ -893,6 +895,26 @@ EXAMPLES
 ```
 
 _See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.60/src/commands/love.ts)_
+
+## `eggs maker`
+
+eggs maker: a GUI for penguin-eggs
+
+```
+USAGE
+  $ eggs maker [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  eggs maker: a GUI for penguin-eggs
+
+EXAMPLES
+  $ eggs maker
+```
+
+_See code: [src/commands/maker.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.0.60/src/commands/maker.ts)_
 
 ## `eggs mom`
 
