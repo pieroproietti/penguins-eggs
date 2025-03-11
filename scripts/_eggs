@@ -194,14 +194,15 @@ _eggs() {
 "krill[krill: the CLI system installer - the egg became a penguin!]" \
 "kill[kill the eggs/free the nest]" \
 "love[the simplest way to get an egg!]" \
+"maker[eggs maker]" \
 "mom[ask help from mommy - TUI helper]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
-"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
+"help[Display help for eggs.]" \
 "version[]" \
 
     ;;
@@ -316,6 +317,11 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
+maker)
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 mom)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
@@ -373,14 +379,14 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 autocomplete)
 _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 version)

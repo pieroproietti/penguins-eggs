@@ -15,7 +15,6 @@ import { exec } from '../lib/utils.js'
 
 export default class Maker extends Command {
   static description = 'eggs maker'
-
   static examples = ['sudo eggs maker']
 
   static flags = {
@@ -26,8 +25,7 @@ export default class Maker extends Command {
     const { args, flags } = await this.parse(Maker)
 
     Utils.titles(this.id + ' ' + this.argv)
-    const maker = path.join(__dirname, '../../maker/eggsmaker.bin')
-
-    await exec(maker)
+    // const maker = path.join(__dirname, '../../maker/eggsmaker.bin')
+    await exec('/usr/bin/eggsmaker')
   }
 }

@@ -24,6 +24,7 @@ install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive -
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --testing --unattended --verbose
 kill --help --isos --nointeractive --verbose
 love --help --verbose
+maker --help
 mom --help
 produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
@@ -39,8 +40,8 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version --json --verbose
 "
 
