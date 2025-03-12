@@ -25,6 +25,6 @@ export default class Maker extends Command {
     const { args, flags } = await this.parse(Maker)
 
     Utils.titles(this.id + ' ' + this.argv)
-    await exec('/usr/bin/eggsmaker')
+    await exec('/usr/bin/_eggsmaker')
   }
 }
