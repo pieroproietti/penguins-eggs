@@ -7,9 +7,7 @@
  */
 
 import { Command, Flags } from '@oclif/core'
-import path from 'path'
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
-
+import fs from 'fs'
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 
@@ -23,8 +21,13 @@ export default class Maker extends Command {
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Maker)
+    const eggsmaker='/usr/bin/_eggsmaker'
 
     Utils.titles(this.id + ' ' + this.argv)
-    await exec('/usr/bin/_eggsmaker')
+    if (fs.existsSync(eggsmaker)) {
+      await exec(eggsmaker)
+    } else {
+      console.log("eggsmaker not found")
+    }
   }
 }
