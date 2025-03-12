@@ -100,7 +100,7 @@ export async function userCreateLive(this: Ovary) {
      * educaandos and others themes
      * users.yml
      */
-    let usersConf = path.resolve(__dirname, `../../addons/${this.theme}/theme/calamares/users.yml`)
+    let usersConf = path.resolve(__dirname, `../../../addons/${this.theme}/theme/calamares/modules/users.yml`)
     if (this.theme.includes('/')) {
         usersConf = `${this.theme}/theme/calamares/modules/users.yml`
     }
