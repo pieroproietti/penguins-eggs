@@ -7,6 +7,7 @@ common:
   - cryptsetup 
   - cryptsetup-initramfs
   - curl # wardrobe
+  - dbus-bin | uuidgen-runtime # uuid-runtime per devuan
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
@@ -22,7 +23,6 @@ common:
   - rsync
   - squashfs-tools
   - sshfs # eggs
-  - uuidgen-runtime
   - xorriso | genisoimage
 
 # dependencies arch specific
