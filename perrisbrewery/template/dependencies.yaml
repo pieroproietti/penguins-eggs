@@ -22,6 +22,7 @@ common:
   - rsync
   - squashfs-tools
   - sshfs # eggs
+  - uuidgen-runtime
   - xorriso | genisoimage
 
 # dependencies arch specific
