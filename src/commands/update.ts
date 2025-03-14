@@ -139,7 +139,7 @@ export default class Update extends Command {
     Utils.warning('import from lan')
 
     if (this.distro.familyId === "debian") {
-      const filterDeb = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
+      const filterDeb = `penguins-eggs_10.?.*-*_${Utils.uefiArch()}.deb`
       const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filterDeb} /tmp`
       await exec(cmd, { capture: true, echo: true })
 
