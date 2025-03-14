@@ -128,7 +128,7 @@ export default class ExportPkg extends Command {
       if (this.all) {
         arch = '*'
       }
-      filter = `penguins-eggs_10.?.*-?_${arch}.deb`
+      filter = `penguins-eggs_10.?.*-*_${arch}.deb`
 
       /**
        * fedora
