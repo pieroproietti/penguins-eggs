@@ -129,6 +129,7 @@ export default class ExportPkg extends Command {
         arch = '*'
       }
       filter = `penguins-eggs_10.?.*-*_${arch}.deb`
+      // filter = `penguins-eggs_10.?.*-[0-9]_${arch}.deb`
 
       /**
        * fedora
@@ -138,6 +139,7 @@ export default class ExportPkg extends Command {
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/fedora"
       filter = `penguins-eggs-10.?.*-?fedora.*.rpm`
+      
 
       /**
        * openmamba
