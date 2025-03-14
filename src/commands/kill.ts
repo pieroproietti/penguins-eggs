@@ -10,7 +10,7 @@ import { Command, Flags } from '@oclif/core'
 
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import killMeSoftly from '../krill/lib/kill_me_softly.js'
+import killMeSoftly from '../lib/kill_me_softly.js'
 
 /**
  *

@@ -8,8 +8,8 @@
 
 import fs from 'node:fs'
 
-import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
+import Utils from '../classes/utils.js'
+import { exec } from './utils.js'
 
 /**
  *
