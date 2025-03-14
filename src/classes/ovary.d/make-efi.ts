@@ -134,8 +134,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // readme
     readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
     readmeContent += `${grub1} copied to /boot/grub`
-    if (this.settings.distro.codenameLikeId === 'bookworm') {
-
+    if (this.settings.distro.codenameLikeId === 'bookworm' ||
+        this.settings.distro.codenameLikeId === 'daedalus') {
         /**
          * (efi.img)/EFI/boot/bootx84.efi (shimx64.efi)
          * (efi.img)/EFI/boot/grubx84.efi 
