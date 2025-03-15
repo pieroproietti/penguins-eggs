@@ -1,0 +1,18 @@
+name: ci
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: run ci
+        run: |
+          ./1.ci.caller.sh
+      
