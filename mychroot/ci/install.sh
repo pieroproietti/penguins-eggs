@@ -24,11 +24,9 @@ apt install sudo -y
 apt install git -y
 apt install linux-image-amd64 -y
 
-mkdir ~/git/
-cd ~/git/
-git clone https://github.com/pieroproietti/get-eggs
-cd get-eggs
-./get-eggs.sh
+cd /ci/
+ls -al
+apt install -y ./*.deb
 eggs --version
 eggs produce -n -v
 
