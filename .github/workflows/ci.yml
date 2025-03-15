@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Check Out Repo 
         uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
       - name: run ci
         run: |
           ./1.ci.caller.sh
