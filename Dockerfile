@@ -8,13 +8,9 @@ ARG GITHUB_REPOSITORY
 ARG GITHUB_REF_NAME
 ARG GITHUB_RUN_NUMBER
 
-##USER root
-## ENV USER=root
-RUN apt-get install sudo
-RUN useradd -ms /bin/bash artisan
-RUN adduser artisan sudo
-USER artisan
-WORKDIR /home/artisan
+USER root
+ENV USER=root
+WORKDIR /root
 
 ADD mychroot/ /
 
