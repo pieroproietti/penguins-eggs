@@ -185,7 +185,7 @@ export default class Utils {
       }
       
       /**
-       * if not exists exit for docker
+       * if not exists for docker
        */
       if (!fs.existsSync(vmlinuz)) {
          const vmlinuz_ls = shx.exec('ls /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
