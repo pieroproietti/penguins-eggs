@@ -28,11 +28,14 @@ dpkg -S /usr/share/applications
 apt install python3 -y
 ls -al /usr/share/applications
 
+
 cd /ci/
 ls -al
 apt install -y ./*.deb
 
 eggs --version
+eggs dad -d
+eggs status
 eggs produce -n -v
 
 date
