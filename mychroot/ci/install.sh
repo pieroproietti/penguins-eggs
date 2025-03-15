@@ -24,7 +24,9 @@ apt install sudo -y
 apt install git -y
 apt install linux-image-amd64 -y
 # init /usr/share/applications
-apt install bash-config -y
+dpkg -S /usr/share/applications
+apt install python3 -y
+ls -al /usr/share/applications
 
 cd /ci/
 ls -al
