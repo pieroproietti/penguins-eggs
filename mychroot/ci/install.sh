@@ -27,6 +27,7 @@ apt install linux-image-amd64 -y
 cd /ci/
 ls -al
 apt install -y ./*.deb
+
 eggs --version
 eggs produce -n -v
 
