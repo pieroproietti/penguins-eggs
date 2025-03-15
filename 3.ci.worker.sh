@@ -15,15 +15,6 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman build \
---no-cache \
---pull=always \
---build-arg GITHUB_REF_NAME=$GITHUB_REF_NAME \
---build-arg GITHUB_REPOSITORY=$GITHUB_REPOSITORY \
---build-arg GITHUB_RUN_NUMBER=$GITHUB_RUN_NUMBER \
---tag ${GITHUB_REF_NAME}-${GITHUB_RUN_NUMBER} \
---tag ${GITHUB_REF_NAME}-latest .
-
-podman images
+podman run --privileged --pull=always -v $PWD/mychroot/ci:/ci debian:12.9 /ci/install.sh $GITHUB_REPOSITORY $GITHUB_REF_NAME $GITHUB_RUN_NUMBER
 df -h
 date
