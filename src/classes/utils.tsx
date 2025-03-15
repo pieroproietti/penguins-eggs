@@ -338,8 +338,9 @@ export default class Utils {
       }
 
       if (primaryUser === '') {
-         console.error('Cannot determine the primary user.');
-         process.exit(1);
+         primaryUser = 'root'
+         // console.error('Cannot determine the primary user.');
+         // process.exit(1);
       }
       return primaryUser;
    }
