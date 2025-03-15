@@ -342,7 +342,7 @@ export default class Utils {
          // console.error('Cannot determine the primary user.');
          // process.exit(1);
       }
-      return primaryUser;
+      return primaryUser
    }
 
    /**
