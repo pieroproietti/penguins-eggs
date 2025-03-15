@@ -6,7 +6,10 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
+pnpm install
+pnpm deb
 
+cd $CMD_PATH
 which podman 
 podman --version
 df -h
