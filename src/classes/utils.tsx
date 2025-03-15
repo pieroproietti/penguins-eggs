@@ -183,7 +183,17 @@ export default class Utils {
          const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
          vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
-
+      
+      /**
+       * if not exists exit for docker
+       */
+      if (!fs.existsSync(vmlinuz)) {
+         const vmlinuz_ls = shx.exec('ls /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
+         if (fs.existsSync(vmlinuz_ls)) {
+			vmlinuz = vmlinuz_ls
+         }
+      }
+		
 
       /**
        * if not exists exit
