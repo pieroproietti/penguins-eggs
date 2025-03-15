@@ -337,8 +337,9 @@ export default class Utils {
          primaryUser = process.env.USER || '';
       }
 
+      // Trying ci
       if (primaryUser === '') {
-         primaryUser = 'root'
+         primaryUser = 'artisan'
          // console.error('Cannot determine the primary user.');
          // process.exit(1);
       }
