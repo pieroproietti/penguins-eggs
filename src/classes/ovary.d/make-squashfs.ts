@@ -49,11 +49,14 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
     if (this.familyId === 'debian') {
         const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
         let files: string[]
+        // escludo per ci
         for (const i in rcd) {
-            files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
-            for (const n in files) {
-                if (files[n].includes('cryptdisks')) {
-                    this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+            if (fs.existsSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)) {
+                files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
+                for (const n in files) {
+                    if (files[n].includes('cryptdisks')) {
+                        this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+                    }
                 }
             }
         }
