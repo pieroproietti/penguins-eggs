@@ -23,6 +23,8 @@ apt upgrade -y
 apt install sudo -y
 apt install git -y
 apt install linux-image-amd64 -y
+# init /usr/share/applications
+apt install bash-config -y
 
 cd /ci/
 ls -al
