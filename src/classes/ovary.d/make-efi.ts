@@ -121,8 +121,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // create structure inside efiMnt
     await exec(`mkdir ${efiMnt}/boot`, this.echo)
     await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-    await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo);
-    await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo);
+    await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo)
+    await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo)
 
     await exec(`mkdir ${efiMnt}/EFI`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
@@ -162,13 +162,15 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         )
         await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiMnt}/EFI/boot/`, this.echo)
 
+        // Rolf patch: copiare i file mod da /usr/lib/grub/x86_64-efi a ${isoDir}/boot/grub/x86_64-efi
+        await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${isoDir}/boot/grub/x86_64-efi/`, this.echo)
+
         // Creare EFI
         readmeContent += `created grubx64.efi not signed and copied as  ${bootArchEfi()}\n`
     }
 
     // replicate EFI on ISO
     await exec(`cp -r ${efiMnt}/EFI ${isoDir}/EFI`, this.echo)
-
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
