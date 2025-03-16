@@ -185,10 +185,10 @@ export default class Utils {
       }
       
       /**
-       * if not exists for container
+       * if not exists for container when multiple kernels and initrds exist, use the latest
        */
       if (!fs.existsSync(vmlinuz)) {
-         const vmlinuz_ls = shx.exec('ls /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
+         const vmlinuz_ls = shx.exec('ls -t /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
          if (fs.existsSync(vmlinuz_ls)) {
 			      vmlinuz = vmlinuz_ls
          }
