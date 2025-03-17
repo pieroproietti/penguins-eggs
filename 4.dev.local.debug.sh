@@ -11,8 +11,7 @@ echo $PROJECT_NAME
 cd $CMD_PATH
 npm install -g pnpm@latest-10
 pnpm install
-pnpm deb # -all 
-
+pnpm deb --release 13
 mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 
 cd $CMD_PATH

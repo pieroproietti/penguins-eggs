@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 apt update
-apt install dialog nano
+apt install bash-completion dialog nano -y
 /ci/install.sh
 
 
