@@ -15,6 +15,10 @@ pwd
 whoami
 
 ####################################################################################################################################
+# 2 hostname
+echo naked\n > /etc/hostname
+
+####################################################################################################################################
 # 3 ppa install penguins-eggs
 
 cd $CMD_PATH
@@ -23,12 +27,11 @@ apt upgrade -y
 apt install sudo -y
 apt install git -y
 apt install linux-image-6.1.0-30-amd64 -y
-
-# for init problem Debian
-apt install systemd-sysv
+apt install systemd-sysv -y
 
 # init /usr/share/applications
 dpkg -S /usr/share/applications
+
 apt install python3 -y
 ls -al /usr/share/applications
 
@@ -38,14 +41,15 @@ apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
 
-
 cd /ci/
 ls -al
 apt install -y ./*.deb
 
 eggs --version
 eggs dad -d
-eggs status
 eggs produce --pendrive -n
+
+# remove debs
+rm /ci/penguins-eggs-10*.deb
 
 date
