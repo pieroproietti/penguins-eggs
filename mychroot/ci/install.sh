@@ -28,15 +28,23 @@ ff02::2    ip6-allrouters
 127.0.1.1   $(hostname)" > /etc/hosts
 
 ####################################################################################################################################
-# 3 ppa install penguins-eggs
+# penguins-eggs mininal requisites for debian bookworm
 
 cd $CMD_PATH
 apt update -y
 apt upgrade -y
-apt install sudo -y
-apt install git -y
+
+# must to install
+apt install \
+    bash-completion \
+    dialog \
+    git \
+    nano \
+    sudo \
+    systemd-sysv -y
+
+# We must install the same version of the host
 apt install linux-image-6.1.0-30-amd64 -y
-apt install systemd-sysv -y
 
 # init /usr/share/applications
 dpkg -S /usr/share/applications
@@ -54,11 +62,10 @@ cd /ci/
 ls -al
 apt install -y ./*.deb
 
-eggs --version
 eggs dad -d
-eggs produce --pendrive -n
+eggs produce --pendrive -n # --verbose
 
-# remove debs
-rm /ci/penguins-eggs_10*.deb
+# clean debs on /ci
+rm /ci/*.deb
 
 date
