@@ -31,7 +31,6 @@ ls -al /usr/share/applications
 # fix linuxefi.mod
 apt-file update
 apt-file search linuxefi.mod
-apt install grub2 -y
 apt install grub-efi-amd64-bin -y
 
 
