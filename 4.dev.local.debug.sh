@@ -22,7 +22,7 @@ podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:3
 # in docker run
 # cd /ci/
 # ls -al
-# ./install.sh
+# ./debian-12.9-install.sh
 # #do something
 
 # #end it
