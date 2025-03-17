@@ -39,9 +39,15 @@ apt install \
     bash-completion \
     dialog \
     git \
+    man \
+    man-db \
+    manpages \
     nano \
     sudo \
     systemd-sysv -y
+
+# enable bash_completion
+source /etc/bash_completion
 
 # We must install the same version of the host
 apt install linux-image-6.1.0-30-amd64 -y
