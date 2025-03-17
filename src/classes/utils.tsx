@@ -93,13 +93,29 @@ export default class Utils {
       return result
    }
 
+
+   /**
+    * podman
+    * @returns 
+    */
+   static isContainer(): boolean {
+      try {
+          return fs.existsSync("/.dockerenv") || fs.existsSync("/run/.containerenv");
+      } catch (e) {
+          return false;
+      }
+   }
+
+
    /**
     *  isSystemd
     */
    static isSystemd(): boolean {
-      const isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
-
-      return isSystemd
+         if (this.isContainer()) {
+             return true // da sistemare
+         } else {
+             return fs.readFileSync("/proc/1/comm", "utf8").includes('systemd');
+         }
    }
 
    /**
