@@ -34,17 +34,26 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# must to install
+# packages to be added for a minimum standard installation
 apt install \
     bash-completion \
     dialog \
+    dnsutils \
     git \
+    iproute2 \
+    less \
+    locales \
     man \
     man-db \
     manpages \
     nano \
+    net-tools \
+    procps \
     sudo \
-    systemd-sysv -y
+    systemd-sysv \
+    tzdata \
+    vim -y
+
 
 # We must install the same version of the host
 apt install linux-image-6.1.0-30-amd64 -y
@@ -60,16 +69,17 @@ apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
-# enable bash_completion
-source /etc/bash_completion
-
 # starting with eggs
 cd /ci/
 ls -al
 apt install -y ./*.deb
 
+# enable bash_completion
+source /etc/bash_completion
+
 eggs dad -d
 eggs produce --pendrive -n # --verbose
+
 
 # clean debs on /ci
 rm /ci/*.deb
