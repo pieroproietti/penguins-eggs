@@ -28,6 +28,12 @@ dpkg -S /usr/share/applications
 apt install python3 -y
 ls -al /usr/share/applications
 
+# fix linuxefi.mod
+apt-file update
+apt-file search linuxefi.mod
+apt install grub-efi-amd64-bin -y
+
+
 
 cd /ci/
 ls -al
