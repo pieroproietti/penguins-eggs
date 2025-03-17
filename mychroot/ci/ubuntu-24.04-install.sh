@@ -76,7 +76,7 @@ ls -al
 apt install -y ./*.deb
 
 eggs dad -d
-eggs produce --pendrive -n # --verbose
+eggs produce --pendrive -n --verbose
 
 # clean debs on /ci
 rm /ci/*.deb
