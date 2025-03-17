@@ -15,7 +15,7 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
+podman run --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
 # in docker run
 # cd /ci/
 # ls -al
