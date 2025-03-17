@@ -18,9 +18,14 @@ whoami
 # 2 hostname
 echo -e "$(hostname)\n" > /etc/hostname
 
+# 2.1 hosts
+echo -e "\
+127.0.0.1  localhost
+::1        localhost ip6-localhost ip6-loopback
+ff02::1    ip6-allnodes
+ff02::2    ip6-allrouters
 # This host address
-127.0.1.1   $(hostname)
-
+127.0.1.1   $(hostname)" > /etc/hosts
 
 ####################################################################################################################################
 # 3 ppa install penguins-eggs
