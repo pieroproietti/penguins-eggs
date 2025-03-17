@@ -19,7 +19,7 @@ which podman
 podman --version
 df -h
 podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
-# in docker run
+# # when you are in the container, just run as the flowwing:
 # cd /ci/
 # ls -al
 # ./debian-12.9-install.sh
