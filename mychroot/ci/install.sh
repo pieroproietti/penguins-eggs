@@ -41,6 +41,7 @@ apt install \
     dnsutils \
     git \
     iproute2 \
+    iputils-ping \
     less \
     locales \
     man \
@@ -74,14 +75,13 @@ cd /ci/
 ls -al
 apt install -y ./*.deb
 
-# enable bash_completion
-source /etc/bash_completion
-
 eggs dad -d
 eggs produce --pendrive -n # --verbose
-
 
 # clean debs on /ci
 rm /ci/*.deb
 
 date
+
+echo "# enable bash_completion, running:"
+echo "source /etc/bash_completion"
