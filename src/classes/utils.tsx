@@ -98,6 +98,7 @@ export default class Utils {
     */
    static isSystemd(): boolean {
       const isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
+
       return isSystemd
    }
 
