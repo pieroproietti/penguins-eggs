@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
 set -x
+
+# remove previous images
+podman rmi $(podman images --quiet) -f
+
 export CMD_PATH=$(cd `dirname $0`; pwd)
-export PROJECT_NAME="${CMD_PATH##*/}"
+export PROJECT_NAME="${CMD_PATH##*/}" 
 echo $PROJECT_NAME
 cd $CMD_PATH
 npm install -g pnpm@latest-10
@@ -15,7 +19,7 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
+podman run --hostname naked --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
 # in docker run
 # cd /ci/
 # ls -al

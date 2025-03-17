@@ -23,6 +23,10 @@ apt upgrade -y
 apt install sudo -y
 apt install git -y
 apt install linux-image-6.1.0-30-amd64 -y
+
+# for init problem Debian
+apt install systemd-sysv
+
 # init /usr/share/applications
 dpkg -S /usr/share/applications
 apt install python3 -y

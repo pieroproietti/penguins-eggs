@@ -2,4 +2,6 @@
 
 apt update
 apt install dialog nano
+/ci/install.sh
+
 
