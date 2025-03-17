@@ -50,6 +50,6 @@ eggs dad -d
 eggs produce --pendrive -n
 
 # remove debs
-rm /ci/penguins-eggs-10*.deb
+rm /ci/penguins-eggs_10*.deb
 
 date
