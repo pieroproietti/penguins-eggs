@@ -22,7 +22,7 @@ apt update -y
 apt upgrade -y
 apt install sudo -y
 apt install git -y
-apt install linux-image-amd64 -y
+apt install linux-image-6.1.0-30-amd64 -y
 # init /usr/share/applications
 dpkg -S /usr/share/applications
 apt install python3 -y
@@ -42,6 +42,6 @@ apt install -y ./*.deb
 eggs --version
 eggs dad -d
 eggs status
-eggs produce -n -v
+eggs produce --pendrive -n
 
 date
