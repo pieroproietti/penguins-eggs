@@ -46,9 +46,6 @@ apt install \
     sudo \
     systemd-sysv -y
 
-# enable bash_completion
-source /etc/bash_completion
-
 # We must install the same version of the host
 apt install linux-image-6.1.0-30-amd64 -y
 
@@ -63,7 +60,10 @@ apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
+# enable bash_completion
+source /etc/bash_completion
 
+# starting with eggs
 cd /ci/
 ls -al
 apt install -y ./*.deb
