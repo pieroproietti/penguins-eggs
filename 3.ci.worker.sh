@@ -26,8 +26,8 @@ ls -al /etc/
 ## it failed now
 ## Unrecognised xattr prefix system.posix_acl_default
 ## see more or dowload the actions log
-
-sudo apt install -y ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb
+cd $CMD_PATH
+sudo apt install -y ./mychroot/ci/penguins-eggs_*_amd64.deb
 
 sudo eggs dad -d
 sudo eggs produce --clone -n --verbose
