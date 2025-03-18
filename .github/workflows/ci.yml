@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: ci
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
       - name: Check Out Repo 
