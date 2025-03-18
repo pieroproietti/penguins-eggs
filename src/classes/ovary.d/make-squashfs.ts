@@ -35,7 +35,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
         '/boot/loader/entries/',
         '/etc/fstab',
         '/var/lib/containers/',
-        '/var/lib/docker/'
+        '/var/lib/docker/',
         '/etc/mtab',
         '/etc/udev/rules.d/70-persistent-cd.rules',
         '/etc/udev/rules.d/70-persistent-net.rules',
