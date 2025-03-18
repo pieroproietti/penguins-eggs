@@ -8,8 +8,11 @@ cd $CMD_PATH
 npm install -g pnpm@latest-10
 pnpm install
 pnpm deb # -all 
-
 mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
+
+##########################
+# pnpm tarballs 
+# mv ./dist/eggs*.tar.gz ./mychroot/ci/
 
 cd $CMD_PATH
 which podman 
