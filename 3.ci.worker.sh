@@ -13,8 +13,12 @@ mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 ## TODO 0
 ##  check the server of ci
 ## the server of ci is ubuntu 24.04
+## the ci server is an azure vm on azure 
+
 sudo cat /etc/issue
 ls -al /etc/
+
+
 #################################################################################################################
 ## TODO 1
 ## TEST 1
