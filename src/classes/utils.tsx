@@ -85,7 +85,7 @@ export default class Utils {
          const releaseId = Utils.getOsRelease().VERSION_ID.trim()
          if (releaseId !== '') {
             result += `${releaseId}-`
-         } 
+         }
       } else {
          result += `${codenameId.toLowerCase()}-`
       }
@@ -96,13 +96,12 @@ export default class Utils {
 
    /**
     * podman
-    * @returns 
     */
    static isContainer(): boolean {
       try {
-          return fs.existsSync("/.dockerenv") || fs.existsSync("/run/.containerenv");
+         return fs.existsSync("/.dockerenv") || fs.existsSync("/run/.containerenv");
       } catch (e) {
-          return false;
+         return false;
       }
    }
 
@@ -111,11 +110,11 @@ export default class Utils {
     *  isSystemd
     */
    static isSystemd(): boolean {
-         if (this.isContainer()) {
-             return true // da sistemare
-         } else {
-             return fs.readFileSync("/proc/1/comm", "utf8").includes('systemd');
-         }
+      if (this.isContainer()) {
+         return true // to fix: for now return true
+      } else {
+         return fs.readFileSync("/proc/1/comm", "utf8").includes('systemd');
+      }
    }
 
    /**
@@ -200,17 +199,17 @@ export default class Utils {
          const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
          vmlinuz = `/boot/vmlinuz-${kernelVersion}`
       }
-      
+
       /**
        * if not exists for container when multiple kernels and initrds exist, use the latest
        */
       if (!fs.existsSync(vmlinuz)) {
          const vmlinuz_ls = shx.exec('ls -t /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
          if (fs.existsSync(vmlinuz_ls)) {
-			      vmlinuz = vmlinuz_ls
+            vmlinuz = vmlinuz_ls
          }
       }
-		
+
 
       /**
        * if not exists exit
