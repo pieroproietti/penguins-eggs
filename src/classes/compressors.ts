@@ -99,7 +99,7 @@ export default class Compressors {
   private async check(compressor: string): Promise<boolean> {
     let result = false
 
-    const { stderr } = shx.exec('strace -e trace=open,read,write,close mksquashfs -xattrs -info ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, { silent: true })
+    const { stderr } = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -ef ' + this.dest, { silent: true })
     if (stderr === '') {
       result = true
     }
