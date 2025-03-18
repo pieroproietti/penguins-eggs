@@ -100,7 +100,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
      * [-ef exclude.list]
      * [-e list of exclude dirs/files]
      */
-    let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+    let cmd = `strace -e trace=open,read,write,close mksquashfs -xattrs -info  ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
     cmd = cmd.replaceAll(/\s\s+/g, ' ')
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
