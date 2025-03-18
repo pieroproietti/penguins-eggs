@@ -29,7 +29,7 @@ ls -al /etc/
 ## see more or dowload the actions log
 cd $CMD_PATH
 sudo apt install -y ./mychroot/ci/penguins-eggs_*_amd64.deb
-
+mksquashfs -ersion
 sudo eggs dad -d
 sudo eggs produce --clone -n --verbose
 
