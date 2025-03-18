@@ -36,42 +36,25 @@ apt upgrade -y
 
 # packages to be added for a minimum standard installation
 apt install \
-    bash-completion \
-    dialog \
-    dnsutils \
-    git \
-    iproute2 \
-    iputils-ping \
-    less \
-    locales \
-    man \
-    man-db \
-    manpages \
-    nano \
-    net-tools \
-    procps \
-    sudo \
-    systemd-sysv \
-    tzdata \
-    vim -y
-
-# packages in naked but not in minimal
-apt install \
     apt-listchanges \
     apt-utils \
+    bash-completion \
     cron \
     cron-daemon-common \
     debconf-i18n \
     debian-faq \
+    dialog \
     dictionaries-common \
     discover \
     discover-data \
     distro-info-data \
+    dnsutils \
     doc-debian \
     eject \
     emacsen-common \
     fdisk \
     file \
+    git \
     grub-efi-amd64 \
     iamerican \
     ibritish \
@@ -80,12 +63,15 @@ apt install \
     inetutils-telnet \
     init \
     installation-report \
+    iproute2 \
+    iputils-ping \
     isc-dhcp-client \
     isc-dhcp-common \
     iso-codes \
     ispell \
     iucode-tool \
     laptop-detect \
+    less \
     libdiscover2 \
     liblockfile-bin \
     libmagic-mgc \
@@ -100,16 +86,23 @@ apt install \
     libtext-wrapi18n-perl \
     liburing2 \
     libusb-1.0-0 \
+    locales \
     logrotate \
     lsb-release \
     lsof \
     mailcap \
+    man \
+    man-db \
+    manpages \
     mime-support \
+    nano \
     ncurses-term \
+    net-tools \
     netcat-traditional \
     nftables \
     pci.ids \
     pciutils \
+    procps \
     python-apt-common \
     python3-apt \
     python3-certifi \
@@ -131,13 +124,17 @@ apt install \
     qemu-guest-agent \
     reportbug \
     sensible-utils \
+    sudo \
+    systemd-sysv \
     task-english \
     tasksel \
     tasksel-data \
     traceroute \
+    tzdata \
     ucf \
     usbutils \
     util-linux-locales \
+    vim \
     vim-tiny \
     wamerican \
     wget \
