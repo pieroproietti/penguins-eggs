@@ -55,7 +55,7 @@ apt install \
     tzdata \
     vim -y
 
-# differences from naked debian bookworm
+# packages in naked but not in minimal
 apt install \
     apt-listchanges \
     apt-utils \
