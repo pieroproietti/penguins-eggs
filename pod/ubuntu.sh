@@ -12,7 +12,8 @@ cd $CMD_PATH
 sudo npm install -g pnpm@latest-10
 pnpm install
 pnpm deb --release 13
-mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
+# here we are in /pod, so...
+mv ../perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 
 cd $CMD_PATH
 which podman 
