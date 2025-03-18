@@ -97,7 +97,7 @@ export default class Syncto extends Command {
     await exec(`mkdir -p /tmp/dummyfs/etc/lightdm`, this.echo) // lightdm
     await exec(`cp -a /etc/lightdm/lightdm.conf /tmp/dummyfs/etc/lightdm/`, this.echo) // lightdm
 
-    let mkPrivateSquashfs = `mksquashfs -no-xattrs  \
+    let mkPrivateSquashfs = `mksquashfs \
                               /tmp/dummyfs/etc \
                               /home \
                               /tmp/${this.privateSquashfs} \
