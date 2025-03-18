@@ -75,9 +75,18 @@ export async function bindLiveFs(this: Ovary) {
              * Directory
              */
         } else if (statDir.isDirectory()) {
+
+            /**
+             * boot and etc will be copied
+             */
             if (dir === 'boot') {
                 cmds.push(`# /boot is copied actually`)
                 cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+            }
+
+            if (dir === 'etc') {
+                cmds.push(`# /etc is copied actually`)
+                cmds.push(await rexec(`cp -r /etc ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
             }
 
             if (dir !== 'boot' && dir !== 'lost+found') {

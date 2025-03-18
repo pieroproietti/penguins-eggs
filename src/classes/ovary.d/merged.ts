@@ -39,6 +39,7 @@ export function merged(this: Ovary, dir: string): boolean {
         const noMergeDirs = [
             'boot', // will be copied now
             'cdrom',
+            'etc', // copied
             'dev',
             'media',
             'mnt',
@@ -89,7 +90,8 @@ export function mergedAndOverlay(this: Ovary, dir: string): boolean {
      */
 
     // aggiunto bin per autologin su Alpine
-    const mountDirs = ['etc', 'usr', 'var']
+    // const mountDirs = ['etc', 'usr', 'var']
+    const mountDirs = ['usr', 'var']
     let mountDir = ''
     let overlay = false
     for (mountDir of mountDirs) {
