@@ -36,7 +36,7 @@ sudo eggs produce --clone -n --verbose
 ######################################################################################################################
 ## TODO 2
 ## TEST 2
-## using contaner image ubuntu ubuntu:24.04 pn ci hosted server ubuntu-24.04 
+## using contaner image ubuntu ubuntu:24.04 on ci hosted server ubuntu-24.04 
 ## install same kernal with the host of the ci server
 ## it failed now
 cd $CMD_PATH
