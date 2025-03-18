@@ -12,7 +12,7 @@ mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 #################################################################################################################
 ## TODO 0
 ##  check the server of ci
-## the server of ci is ubuntu 22.04
+## the server of ci is ubuntu 24.04
 sudo cat /etc/issue
 ls -al /etc/
 #################################################################################################################
