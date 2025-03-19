@@ -2,7 +2,7 @@
 
 https://penguins-eggs.net/drive
 
-autotest eggs in all the os using container
+autotest eggs in ubuntu-22.04
 
 ## TODO 
 
