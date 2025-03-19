@@ -42,24 +42,5 @@ mksquashfs -version
 sudo eggs dad -d
 sudo eggs produce --clone -n --verbose
 
-
-######################################################################################################################
-# pnpm tarballs 
-# mv ./dist/eggs*.tar.gz ./mychroot/ci/
-
-######################################################################################################################
-## TODO 2
-## TEST 2
-## using contaner image ubuntu ubuntu:24.04 on ci hosted server ubuntu-24.04 
-## install same kernal with the host of the ci server
-## it failed now
-cd $CMD_PATH
-which podman 
-podman --version
-df -h
-podman pull ubuntu:24.04
-podman pull ubuntu:24.04
-podman pull ubuntu:24.04
-podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev ubuntu:24.04 /ci/ubuntu-24.04-install.sh
 df -h
 date

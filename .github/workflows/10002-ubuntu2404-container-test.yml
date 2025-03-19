@@ -1,4 +1,4 @@
-name: ci
+name: 10002-ubuntu2404-container-test.yml
 
 on:
   push:
@@ -18,5 +18,5 @@ jobs:
           node-version: 18.x
       - name: run ci
         run: |
-          ./1.ci.caller.sh
+          ./10002-ubuntu2404-container-test.yml
       
