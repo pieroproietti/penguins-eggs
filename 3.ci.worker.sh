@@ -18,7 +18,7 @@ mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 
 sudo cat /etc/issue
 ls -al /etc/
-# fix podman pull error
+# fix podman pull error : Get "https://registry-1.docker.io/v2/": dial tcp: lookup registry-1.docker.io on 127.0.0.53:53: read udp 127.0.0.1:53545->127.0.0.53:53: read: connection refused
 sudo cat /etc/resolv.conf
 sudo apt purge resolvconf -y
 sudo rm /etc/resolv.conf
