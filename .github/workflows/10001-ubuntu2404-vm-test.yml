@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: ci
+    name: 10001-ubuntu2404-vm-test
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-      - name: run ci
+      - name: run 10001-ubuntu2404-vm-test
         run: |
           ./10001-ubuntu2404-vm-test.sh
       
