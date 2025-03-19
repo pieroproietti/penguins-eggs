@@ -18,6 +18,7 @@ mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 
 sudo cat /etc/issue
 ls -al /etc/
+sudo cat /etc/resolv.conf
 
 
 #################################################################################################################
