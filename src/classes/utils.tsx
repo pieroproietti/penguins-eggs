@@ -93,57 +93,63 @@ export default class Utils {
       return result
    }
 
-
    /**
-    * podman
+    * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
       try {
-         return fs.existsSync("/.dockerenv") || fs.existsSync("/run/.containerenv");
-      } catch (e) {
+         const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf8');
+         return cgroup.includes('docker') || cgroup.includes('lxc');
+      } catch (error) {
+         return false; // Cannot read cgroup, likely not a container
+      }
+   }
+
+   /**
+    * Check if the system uses Systemd
+    */
+   static isSystemd(): boolean {
+      try {
+         // Method 1: Check if systemctl exists
+         execSync('command -v systemctl', { stdio: 'ignore' });
+
+         // Method 2: Try listing Systemd units
+         execSync('systemctl list-units', { stdio: 'ignore' });
+
+         return true;
+      } catch (error) {
          return false;
       }
    }
 
-
    /**
-    *  isSystemd
-    */
-   static isSystemd(): boolean {
-      if (this.isContainer()) {
-         return true // to fix: for now return true
-      } else {
-         return fs.readFileSync("/proc/1/comm", "utf8").includes('systemd');
-      }
-   }
-
-   /**
-    * isSysvinit
+    * Check if the system uses SysVinit
     */
    static isSysvinit(): boolean {
-      let isSysvinit = false
-      if (!this.isOpenRc()) {
-         isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      try {
+         // Method 1: Check if service command exists
+         execSync('command -v service', { stdio: 'ignore' });
+
+         // Method 2: Check if /etc/init.d exists
+         return fs.existsSync('/etc/init.d');
+      } catch (error) {
+         return false;
       }
-      return isSysvinit
    }
 
    /**
-    *  isOpenRc
+    * Check if the system uses OpenRC
     */
    static isOpenRc(): boolean {
-      let isOpenRc = false
-
       try {
-         execSync('command -v openrc')
-         isOpenRc = true
+         execSync('command -v openrc', { stdio: 'ignore' });
+         return true;
       } catch (error) {
-         isOpenRc = false
+         return false;
       }
-
-      return isOpenRc
    }
 
+   
    /**
     * ricava path per vmlinuz
     * Normalmente cerca BOOT_IMAGE
