@@ -1,4 +1,4 @@
-name: 10005-alpine3-container-test
+name: 10006-archlinux-container-test
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
 
 jobs:
   build:
-    name: 10005-alpine3-container-test
-    runs-on: ubuntu-24.04
+    name: 10003-archlinux-container-test
+    runs-on: archlinux
     timeout-minutes: 7200
     steps:
       - name: Check Out Repo 
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-      - name: run 10005-alpine3-container-test.sh
+      - name: run 10003-archlinux-container-test.sh
         run: |
-          ./10005-alpine3-container-test.sh
+          ./10003-archlinux-container-test.sh
       

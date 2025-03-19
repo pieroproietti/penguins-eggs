@@ -1,4 +1,4 @@
-name: 10004-almalinux9-container-test
+name: 10003-debian12-container-test
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
 
 jobs:
   build:
-    name: 10004-almalinux9-container-test
-    runs-on: ubuntu-24.04
+    name: 10001-debian12-container-test
+    runs-on: debian:12
     timeout-minutes: 7200
     steps:
       - name: Check Out Repo 
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-      - name: run 10004-almalinux9-container-test.sh
+      - name: run 10001-debian12-container-test.sh
         run: |
-          ./10004-almalinux9-container-test.sh
+          ./10001-debian12-container-test.sh
       
