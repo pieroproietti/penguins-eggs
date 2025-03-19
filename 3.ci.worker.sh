@@ -18,8 +18,16 @@ mv ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 
 sudo cat /etc/issue
 ls -al /etc/
+# fix podman pull error
 sudo cat /etc/resolv.conf
-
+sudo apt purge resolvconf -y
+sudo rm /etc/resolv.conf
+sudo touch /etc/resolv.conf
+echo "nameserver 8.8.8.8" | sudo tee -a /etc/resolv.conf
+echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
+echo "nameserver 127.0.0.53" | sudo tee -a /etc/resolv.conf
+echo "options edns0 trust-ad" | sudo tee -a /etc/resolv.conf
+sudo cat /etc/resolv.conf
 
 #################################################################################################################
 ## TODO 1
