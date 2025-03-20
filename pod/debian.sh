@@ -11,9 +11,9 @@ echo $PROJECT_NAME
 cd $CMD_PATH
 sudo npm install -g pnpm@latest-10
 pnpm install
-pnpm deb --release 14
+pnpm tarballs
 # here we are in /pod, so...
-mv ../perrisbrewery/workdir/penguins-eggs_*_amd64.deb ../mychroot/ci/
+mv ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
 
 cd $CMD_PATH
 which podman 
