@@ -142,7 +142,7 @@ apt install \
 
 
 # We must install the same version of the host
-apt install linux-image-$(uname -r) -y
+apt install linux-image-6.1.0-30-amd64 -y
 
 # init /usr/share/applications
 dpkg -S /usr/share/applications
@@ -159,8 +159,9 @@ apt install grub-efi-amd64-bin -y
 cd /ci/
 ls -al
 apt install -y ./*.deb
-eggs love
-
+eggs dad -d
+egge tools clean
+eggs produce --pendrive
 
 # clean debs on /ci
 rm /ci/*.deb

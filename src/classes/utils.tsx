@@ -158,75 +158,82 @@ export default class Utils {
     * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
     */
    static vmlinuz(): string {
-      let distro = new Distro()
-      let vmlinuz = ''
+      let vmlinuz = '';
 
-      // find BOOT_IMAGE /proc/cmdline
-      const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
-      cmdline.forEach(cmd => {
-         if (cmd.includes('BOOT_IMAGE')) {
-            vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
+      try {
+         // Read kernel command line parameters
+         if (fs.existsSync('/proc/cmdline')) {
+            const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(' ');
 
-            // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
-            if (vmlinuz.includes(")")) {
-               vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
+            // Look for BOOT_IMAGE
+            for (const cmd of cmdline) {
+               if (cmd.startsWith('BOOT_IMAGE=')) {
+                  vmlinuz = cmd.split('=')[1];
+
+                  // Fedora-style BOOT_IMAGE=(hd0,gpt2)/vmlinuz-xxx fix
+                  if (vmlinuz.includes(')')) {
+                     vmlinuz = vmlinuz.substring(vmlinuz.indexOf(')') + 1);
+                  }
+
+                  if (!fs.existsSync(vmlinuz)) {
+                     if (fs.existsSync(`/boot/${vmlinuz}`)) {
+                        vmlinuz = `/boot/${vmlinuz}`;
+                     }
+                  }
+                  break;
+               }
             }
 
-            if (!fs.existsSync(vmlinuz)) {
-               if (fs.existsSync(`/boot/${vmlinuz}`)) {
-                  vmlinuz = `/boot/${vmlinuz}`
+            // If BOOT_IMAGE was not found, try reconstructing from initrd
+            if (!vmlinuz) {
+               for (const cmd of cmdline) {
+                  if (cmd.startsWith('initrd=')) {
+                     const initrdMatch = cmd.match(/initramfs[-_](.+?)\.img/);
+                     if (initrdMatch) {
+                        const version = initrdMatch[1];
+                        vmlinuz = `/boot/vmlinuz-${version}`;
+                        break;
+                     }
+                  }
                }
             }
          }
-      })
-
-
-      /** 
-       * BOOT_IMAGE not found in /proc/cmdline
-       * sample: initrd=\initramfs-6.11.10-300.fc41.x86_64.img root=/dev/sda3 rw
-       */
-      if (vmlinuz === '') {
-         cmdline.forEach(cmd => {
-            if (cmd.includes('initrd=')) {
-               let initrd = cmd.substring(cmd.indexOf('initramfs-') + 10)
-               let version = initrd.substring(0, initrd.indexOf('.img'))
-               vmlinuz = `/boot/efi/vmlinuz-${version}`
-            }
-         })
+      } catch (error) {
+         console.error('Error reading /proc/cmdline:', error);
       }
 
-      // btrfs: eg: /@root/boot/vmlinuz
-      if (vmlinuz.indexOf('@')) {
-         let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
-         vmlinuz = vmlinuz.substring(subvolumeEnd)
+      // Handle Btrfs subvolumes (e.g., /@root/boot/vmlinuz)
+      if (vmlinuz.includes('@')) {
+         const subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'));
+         vmlinuz = vmlinuz.substring(subvolumeEnd);
       }
 
+      // ARM64 architecture handling
       if (process.arch === 'arm64') {
-         const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim();
-         vmlinuz = `/boot/vmlinuz-${kernelVersion}`
-      }
-
-      /**
-       * if not exists for container when multiple kernels and initrds exist, use the latest
-       */
-      if (!fs.existsSync(vmlinuz)) {
-         const vmlinuz_ls = shx.exec('ls -t /boot/vmlinuz* | head -n 1', { silent: true }).stdout.trim();
-         if (fs.existsSync(vmlinuz_ls)) {
-            vmlinuz = vmlinuz_ls
+         try {
+            const kernelVersion = execSync('uname -r', { encoding: 'utf8' }).trim();
+            vmlinuz = `/boot/vmlinuz-${kernelVersion}`;
+         } catch (error) {
+            console.error('Error detecting kernel version:', error);
          }
       }
 
-
-      /**
-       * if not exists exit
-       */
-      if (!fs.existsSync(vmlinuz) && !Utils.isLive()) {
-         console.log(vmlinuz + ' not exists!')
-         process.exit()
+      // If the file doesn't exist, find the latest available kernel (for containers/missing entries)
+      if (!fs.existsSync(vmlinuz)) {
+         try {
+            const latestKernel = execSync('ls -t /boot/vmlinuz-* | head -n 1', { encoding: 'utf8', stdio: 'pipe' }).trim();
+            if (fs.existsSync(latestKernel)) {
+               vmlinuz = latestKernel;
+            }
+         } catch (error) {
+            console.error('Error finding latest vmlinuz:', error)
+            process.exit()
+         }
       }
 
-      return vmlinuz
+      return vmlinuz;
    }
+
 
    /**
     * ricava path per initrdImg
