@@ -19,7 +19,7 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
+podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev -v /var/local/yolk:/var/local/yolk debian:12.9 bash
 # # when you are in the container, just run as the following:
 # cd /ci/
 # ls -al
