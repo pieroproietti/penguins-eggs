@@ -22,10 +22,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  *
  * Ci sono tre tipologie:
  *
- * - normal solo la creazione della directory, nessun mount
- * - merged creazione della directory e mount ro
- * - mergedAndOverlay creazione directory, overlay e mount rw
- * - copied: creazione directory e copia
+ * - copied
+ * - mergedAndOverlay
+ * - merged
+ * - just create
  */
 
 export function copied(this: Ovary, dir: string): boolean {
@@ -54,18 +54,29 @@ export function copied(this: Ovary, dir: string): boolean {
     return copied
 }
 
-
-export function merged(this: Ovary, dir: string): boolean {
-    if (this.verbose) {
-        console.log('Ovary: merged')
+/**
+ * 
+ */
+export function mergedAndOverlay(this: Ovary, dir: string): boolean {
+    const moDirs = ['usr', 'var']
+    let mergedOverlay = false
+    for (const moDir of moDirs) {
+        if (moDir === dir) {
+            mergedOverlay = true
+        }
     }
+    return mergedOverlay
+}
 
+/**
+ * merged
+ */
+export function merged(this: Ovary, dir: string): boolean {
     let merged = true
-
     if (dir === 'home') {
         merged = this.clone
     } else {
-        const noMergeDirs = [
+        const justMks = [
             'cdrom',
             'dev',
             'media',
@@ -76,35 +87,15 @@ export function merged(this: Ovary, dir: string): boolean {
             'sys',
             'tmp'
         ]
+        // deepiin
+        justMks.push('data', 'recovery')
 
-        // deepin
-        noMergeDirs.push('data', 'recovery')
-
-        for (const noMergeDir of noMergeDirs) {
-            if (dir === noMergeDir) {
+        for (const justMk of justMks) {
+            if (dir === justMk) {
                 merged = false
             }
         }
     }
 
     return merged
-}
-
-
-/**
- * Restituisce true per le direcory da montare con overlay
- *
- * @param dir
- */
-export function mergedAndOverlay(this: Ovary, dir: string): boolean {
-    const mountDirs = ['usr', 'var']
-    let mountDir = ''
-    let overlay = false
-    for (mountDir of mountDirs) {
-        if (mountDir === dir) {
-            overlay = true
-        }
-    }
-
-    return overlay
 }
