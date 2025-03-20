@@ -89,7 +89,7 @@ export async function bindLiveFs(this: Ovary) {
                 cmds.push(await rexec(`cp -r /etc ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
             }
 
-            if (dir !== 'boot' && dir !== 'lost+found') {
+            if (dir!=='ci' && dir!=='etc' && dir !== 'boot' && dir !== 'lost+found') {
                 cmd = `# /${dir} is a directory`
                 if (this.mergedAndOverlay(dir)) {
                     /**
@@ -113,7 +113,7 @@ export async function bindLiveFs(this: Ovary) {
                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
                 } else {
                     /**
-                     * normal solo la creazione della directory, nessun mount
+                     * solo la creazione della directory, nessun mount
                      */
                     cmds.push(`${cmd} need to be present, no mount`, titleLine)
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
