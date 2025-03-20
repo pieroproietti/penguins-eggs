@@ -12,6 +12,7 @@ import path from 'node:path'
 
 // classes
 import Ovary from '../ovary.js'
+import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -26,6 +27,26 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * - mergedAndOverlay creazione directory, overlay e mount rw
  * - copied: creazione directory e copia
  */
+
+export function copied(this: Ovary, dir: string): boolean {
+    let  copiedDirs= [
+        'boot',
+        'etc',
+    ]
+    let copied = false
+    if (Utils.isContainer()) {
+        copied = true
+    } else {
+        for (const copiedDir of copiedDirs) {
+            if (dir === copiedDir) {
+                copied = true
+            }
+        }
+    }
+    return copied
+}
+
+
 export function merged(this: Ovary, dir: string): boolean {
     if (this.verbose) {
         console.log('Ovary: merged')
@@ -37,9 +58,7 @@ export function merged(this: Ovary, dir: string): boolean {
         merged = this.clone
     } else {
         const noMergeDirs = [
-            'boot', // will be copied now
             'cdrom',
-            'etc', // copied
             'dev',
             'media',
             'mnt',
@@ -63,34 +82,13 @@ export function merged(this: Ovary, dir: string): boolean {
     return merged
 }
 
+
 /**
  * Restituisce true per le direcory da montare con overlay
- *
- * Ci sono tre tipologie:
- *
- * - normal solo la creazione della directory, nessun mount
- * - merged creazione della directory e mount ro
- * - mergedAndOverlay creazione directory, overlay e mount rw
  *
  * @param dir
  */
 export function mergedAndOverlay(this: Ovary, dir: string): boolean {
-    if (this.verbose) {
-        console.log('Ovary: mergedAndOverlay')
-    }
-
-    /**
-     * Debian: usrmerged
-     * bin -> usr/bin
-     * lib -> usr/lib
-     * lib64 -> usr/lib64
-     * sbin -> usr/sbin
-     * 
-     * 'bin' rimossa da overlay
-     */
-
-    // aggiunto bin per autologin su Alpine
-    // const mountDirs = ['etc', 'usr', 'var']
     const mountDirs = ['usr', 'var']
     let mountDir = ''
     let overlay = false

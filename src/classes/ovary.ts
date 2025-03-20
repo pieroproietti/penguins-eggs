@@ -42,7 +42,7 @@ import { makeSquashfs, addRemoveExclusion } from './ovary.d/make-squashfs.js'
 import { makeEfi } from './ovary.d/make-efi.js'
 import { xorrisoCommand } from './ovary.d/xorriso-commend.js'
 import { createXdgAutostart } from './ovary.d/create-xdg-autostart.js'
-import { merged, mergedAndOverlay } from './ovary.d/merged.js'
+import { copied, merged, mergedAndOverlay } from './ovary.d/merged.js'
 import { makeIso } from './ovary.d/make-iso.js'
 import { initrdAlpine, initrdArch, initrdDebian, initrdDracut } from './ovary.d/initrd.js'
 import { userCreateLive } from './ovary.d/user-create-live.js'
@@ -111,6 +111,7 @@ export default class Ovary {
   addRemoveExclusion = addRemoveExclusion
   xorrisoCommand = xorrisoCommand
   createXdgAutostart = createXdgAutostart
+  copied = copied
   merged = merged
   mergedAndOverlay = mergedAndOverlay
   makeIso = makeIso
