@@ -159,9 +159,8 @@ apt install grub-efi-amd64-bin -y
 cd /ci/
 ls -al
 apt install -y ./*.deb
+eggs love
 
-eggs dad -d
-eggs produce --pendrive -n # --verbose
 
 # clean debs on /ci
 rm /ci/*.deb
