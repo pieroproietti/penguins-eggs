@@ -76,22 +76,16 @@ export async function bindLiveFs(this: Ovary) {
              */
         } else if (statDir.isDirectory()) {
 
-            /**
-             * boot and etc will be copied
-             */
-            if (dir === 'boot') {
-                cmds.push(`# /boot is copied actually`)
-                cmds.push(await rexec(`cp -r /boot ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
-            }
+            cmd = `# /${dir} is a directory`
+            if (dir !== 'ci' && dir !== 'lost+found') {
+                if (this.copied(dir)) {
+                    /**
+                     * copied: la directory viene compiata
+                     */
+                    cmds.push(`# /${dir} is copied`)
+                    cmds.push(await rexec(`cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
 
-            if (dir === 'etc') {
-                cmds.push(`# /etc is copied actually`)
-                cmds.push(await rexec(`cp -r /etc ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
-            }
-
-            if (dir!=='ci' && dir!=='etc' && dir !== 'boot' && dir !== 'lost+found') {
-                cmd = `# /${dir} is a directory`
-                if (this.mergedAndOverlay(dir)) {
+                } else if (this.mergedAndOverlay(dir)) {
                     /**
                      * mergedAndOverlay creazione directory, overlay e mount rw
                      */
