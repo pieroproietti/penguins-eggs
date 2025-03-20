@@ -109,6 +109,7 @@ export default class Utils {
     * Check if the system uses Systemd
     */
    static isSystemd(): boolean {
+      return true; // color-patch
       try {
          // Method 1: Check if systemctl exists
          execSync('command -v systemctl', { stdio: 'ignore' });

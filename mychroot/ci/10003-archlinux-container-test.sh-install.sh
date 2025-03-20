@@ -53,7 +53,7 @@ ls -al
 pacman -U *.deb
 
 eggs dad -d
-eggs tools clean
+eggs tools clean -n
 eggs produce --pendrive -n # --verbose
 
 # clean debs on /ci
