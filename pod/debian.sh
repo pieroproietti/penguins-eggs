@@ -12,14 +12,30 @@ cd $CMD_PATH
 sudo npm install -g pnpm@latest-10
 pnpm install
 pnpm tarballs
-# here we are in /pod, so...
 mv ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
+
+# se debian monta /var/local/yolk
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "debian" ]]; then
+        podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev -v /var/local/yolk:/var/local/yolk debian:12.9 bash
+    elif [[ "$ID" == "ubuntu" ]]; then
+        podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
+    elif [[ "$ID" == "arch" ]]; then
+        podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
+    else
+        echo "Sistema diverso: $ID"
+    fi
+fi
+
 
 cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev -v /var/local/yolk:/var/local/yolk debian:12.9 bash
+
+# se l'host non è debian
+
 # # when you are in the container, just run as the following:
 # cd /ci/
 # ls -al
