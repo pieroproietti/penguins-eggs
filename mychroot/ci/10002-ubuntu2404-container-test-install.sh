@@ -446,6 +446,7 @@ ls -al
 apt install -y ./*.deb
 
 eggs dad -d
+eggs tools clean
 eggs produce --pendrive -n --verbose
 
 # clean debs on /ci

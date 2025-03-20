@@ -5,7 +5,7 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
-export DEBIAN_FRONTEND=noninteractive
+#export DEBIAN_FRONTEND=noninteractive
 
 ####################################################################################################################################
 # 1 check
@@ -53,6 +53,7 @@ ls -al
 pacman -U *.deb
 
 eggs dad -d
+eggs tools clean
 eggs produce --pendrive -n # --verbose
 
 # clean debs on /ci
