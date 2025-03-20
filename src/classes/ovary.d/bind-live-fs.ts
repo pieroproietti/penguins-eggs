@@ -109,7 +109,7 @@ export async function bindLiveFs(this: Ovary) {
                     /**
                      * solo la creazione della directory, nessun mount
                      */
-                    cmds.push(`${cmd} need to be present, no mount`, titleLine)
+                    cmds.push(`${cmd} just created`, titleLine)
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
                 }
             }

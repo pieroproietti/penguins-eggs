@@ -97,11 +97,10 @@ export default class Utils {
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
-      try {
-         const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf8');
-         return cgroup.includes('docker') || cgroup.includes('lxc');
-      } catch (error) {
-         return false; // Cannot read cgroup, likely not a container
+      if (fs.existsSync('/ci)')) {
+         return true
+      } else {
+         return false
       }
    }
 
@@ -150,7 +149,7 @@ export default class Utils {
       }
    }
 
-   
+
    /**
     * ricava path per vmlinuz
     * Normalmente cerca BOOT_IMAGE

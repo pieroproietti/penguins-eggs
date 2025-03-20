@@ -18,7 +18,17 @@ mv ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        lpodman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev -v /var/local/yolk:/var/local/yolk debian:12.9 bash
+        lpodman run --hostname minimal \
+                    --privileged \
+                    --cap-add all \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always 
+                    -it \
+                    -v $PWD/mychroot/ci:/ci \
+                    -v /dev:/dev \
+                    -v /var/local/yolk:/var/local/yolk \
+                    debian:12.9 \
+                    bash
     elif [[ "$ID" == "ubuntu" ]]; then
         podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
     elif [[ "$ID" == "arch" ]]; then
