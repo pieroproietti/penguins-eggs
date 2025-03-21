@@ -38,10 +38,8 @@ pacman -Syu --noconfirm
 # We must install the same version of the host
 pacman -S  --noconfirm linux
 
-# init /usr/share/applications
-# dpkg -S /usr/share/applications
-
-pacman -S --noconfirm python3
+# packages minimal
+source ./minimal/archlinux-packages.sh
 
 # packages to be added tarballs
 source ./minimal/archlinux-tarballs-requirements.sh
