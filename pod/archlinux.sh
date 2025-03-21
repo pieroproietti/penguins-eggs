@@ -25,12 +25,20 @@ if [ -f /etc/os-release ]; then
                     -it \
                     -v $PWD/mychroot/ci:/ci \
                     -v /dev:/dev \
-                    -v /var/local/yolk:/var/local/yolk \
-                    debian:12.9 \
+                    archlinux:latest \
                     bash
-    elif [[ "$ID" == "ubuntu" ]]; then
-        podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
     elif [[ "$ID" == "arch" ]]; then
+        podman run --hostname minimal \
+                --privileged \
+                --cap-add all \
+                --ulimit nofile=32000:32000 \
+                --pull=always \
+                -it \
+                -v $PWD/mychroot/ci:/ci \
+                -v /dev:/dev \
+                archlinux:latest \
+                bash
+    elif [[ "$ID" == "ubuntu" ]]; then
         podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
     else
         echo "Sistema diverso: $ID"

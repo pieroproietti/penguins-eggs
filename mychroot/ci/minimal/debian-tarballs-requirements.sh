@@ -6,10 +6,13 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-# check if we are on debian
-if [ ! -f /etc/os-release ]; then
-    echo "This script is only for Debian"
-    exit
+# check if we are on arch
+if [ -f /etc/os-release ]; then
+	source /etc/os-release
+    if [[ "$ID" != "debian" ]]; then
+    	echo "This script is only for Debina"
+    	exit
+	fi
 fi
 
 # install prerequisites
