@@ -15,6 +15,10 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
+clear
+echo "penguins-eggs-tarballs-requisites"
+sleep 3
+
 # install prerequisites
 apt-get install -y \
     coreutils \
