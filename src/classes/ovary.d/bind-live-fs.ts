@@ -37,8 +37,7 @@ export async function bindLiveFs(this: Ovary) {
      */
     const dirs = fs.readdirSync('/')
     const startLine = '#############################################################'
-    const titleLine = '# ---------------------------------------------------------'
-    const endLine = '# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n'
+    const endLine = '#\n'
 
     let lnkDest = ''
     let cmd = ''
@@ -50,19 +49,12 @@ export async function bindLiveFs(this: Ovary) {
         cmds.push(startLine)
         let statDir = fs.lstatSync(`/${dir}`)
 
-        /**
-         * Link
-         */
         if (statDir.isSymbolicLink()) {
-
+            /**
+             * Link
+             */
+            cmds.push(`# /${dir} is a symbolic link to /${lnkDest}`)
             lnkDest = fs.readlinkSync(`/${dir}`)
-            cmds.push(
-                `# /${dir} is a symbolic link to /${lnkDest} in the system`,
-                '# we need just to recreate it',
-                `# ln -s ${this.settings.work_dir.merged}/${lnkDest} ${this.settings.work_dir.merged}/${lnkDest}`,
-                "# but we don't know if the destination exist, and I'm too lazy today. So, for now: ",
-                titleLine
-            )
             if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
                 cmds.push('# SymbolicLink exist... skip')
             } else if (fs.existsSync(lnkDest)) {
@@ -71,25 +63,18 @@ export async function bindLiveFs(this: Ovary) {
                 cmds.push(await rexec(`cp -r /${dir} ${this.settings.work_dir.merged}`, this.verbose))
             }
 
+        } else if (statDir.isDirectory()) {
             /**
              * Directory
              */
-        } else if (statDir.isDirectory()) {
-
-            cmd = `# /${dir} is a directory`
+            cmds.push(`# /${dir} is a directory`)
             if (dir !== 'ci' && dir !== 'lost+found') {
                 if (this.copied(dir)) {
-                    /**
-                     * copied: la directory viene compiata
-                     */
                     cmds.push(`# /${dir} is copied`)
                     cmds.push(await rexec(`cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
 
                 } else if (this.mergedAndOverlay(dir)) {
-                    /**
-                     * mergedAndOverlay creazione directory, overlay e mount rw
-                     */
-                    cmds.push(`${cmd} need to be present, and rw`, titleLine, '# create mountpoint lower')
+                    cmds.push(`# /${dir} mergedAndOverlay (rw)\n`, '# create mountpoint lower')
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.lowerdir}/${dir}`), `# first: mount /${dir} rw in ${this.settings.work_dir.lowerdir}/${dir}`)
                     cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), '# now remount it ro')
                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.lowerdir}/${dir}`, this.verbose), `\n# second: create mountpoint upper, work and ${this.settings.work_dir.merged} and mount ${dir}`)
@@ -98,18 +83,12 @@ export async function bindLiveFs(this: Ovary) {
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `\n# thirth: mount /${dir} rw in ${this.settings.work_dir.merged}`)
                     cmds.push(await rexec(`mount -t overlay overlay -o lowerdir=${this.settings.work_dir.lowerdir}/${dir},upperdir=${this.settings.work_dir.upperdir}/${dir},workdir=${this.settings.work_dir.workdir}/${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
                 } else if (this.merged(dir)) {
-                    /*
-                     * merged creazione della directory e mount ro
-                     */
-                    cmds.push(`${cmd} need to be present, mount ro`, titleLine)
+                    cmds.push(`# /${dir} merged (ro)`)
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose))
                     cmds.push(await rexec(`mount --bind --make-slave /${dir} ${this.settings.work_dir.merged}/${dir}`, this.verbose))
                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
                 } else {
-                    /**
-                     * solo la creazione della directory, nessun mount
-                     */
-                    cmds.push(`${cmd} just created`, titleLine)
+                    cmds.push(`# /${dir} just created`)
                     cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
                 }
             }
@@ -119,7 +98,7 @@ export async function bindLiveFs(this: Ovary) {
            */
         } else if (statDir.isFile()) {
 
-            cmds.push(`# /${dir} is just a file`, titleLine)
+            cmds.push(`# /${dir} is just a file`)
             if (fs.existsSync(`${this.settings.work_dir.merged}/${dir}`)) {
                 cmds.push('# file exist... skip')
             } else {
@@ -146,6 +125,9 @@ export async function uBindLiveFs(this: Ovary) {
         console.log('Ovary: uBindLiveFs')
     }
 
+    const startLine = '#############################################################'
+    const endLine = '#\n'
+
     const cmds: string[] = []
     cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
@@ -156,7 +138,7 @@ export async function uBindLiveFs(this: Ovary) {
 
         for (const dir of bindDirs) {
             const dirname = dir.name
-            cmds.push('#############################################################')
+            cmds.push(startLine)
             if (fs.statSync(`/${dirname}`).isDirectory()) {
                 cmds.push(`\n# directory: ${dirname}`)
                 if (this.mergedAndOverlay(dirname)) {

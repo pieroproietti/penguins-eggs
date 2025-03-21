@@ -9,20 +9,27 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}" 
 echo $PROJECT_NAME
 cd $CMD_PATH
-sudo npm install -g pnpm@latest-10
-pnpm install
-pnpm tarballs
-mv ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
+
+# compile
+if [ "tarballs" == "$1" ]; then
+    sudo npm install -g pnpm@latest-10
+    pnpm install
+    pnpm tarballs
+fi
+cp ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
+
+sudo /home/eggs -rf
+sudo mkdir /home/eggs
 
 # se debian monta /var/local/yolk
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        lpodman run --hostname minimal \
+        podman run --hostname minimal \
                     --privileged \
                     --cap-add all \
                     --ulimit nofile=32000:32000 \
-                    --pull=always 
+                    --pull=always \
                     -it \
                     -v $PWD/mychroot/ci:/ci \
                     -v /dev:/dev \
