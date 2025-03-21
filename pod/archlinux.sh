@@ -10,41 +10,21 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-# copy tarballs
-cp ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
+# replace tarballs
+TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
+rm ../mychroot/ci/$TARBALLS
+cp ../dist/$TARBALLS ../mychroot/ci/
 
-# se debian monta /var/local/yolk
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    if [[ "$ID" == "debian" ]]; then
-        podman run --hostname minimal \
-                    --privileged \
-                    --cap-add all \
-                    --ulimit nofile=32000:32000 \
-                    --pull=always \
-                    -it \
-                    -v $PWD/mychroot/ci:/ci \
-                    -v /dev:/dev \
-                    archlinux:latest \
-                    bash
-    elif [[ "$ID" == "arch" ]]; then
-        podman run --hostname minimal \
-                --privileged \
-                --cap-add all \
-                --ulimit nofile=32000:32000 \
-                --pull=always \
-                -it \
-                -v $PWD/mychroot/ci:/ci \
-                -v /dev:/dev \
-                archlinux:latest \
-                bash
-    elif [[ "$ID" == "ubuntu" ]]; then
-        podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev debian:12.9 bash
-    else
-        echo "Sistema diverso: $ID"
-    fi
-fi
-
+podman run --name container_arch \
+            --hostname minimal \
+            --privileged \
+            --ulimit nofile=32000:32000 \
+            --pull=always \
+            -it \
+            -v $PWD/mychroot/ci:/ci \
+            -v /dev:/dev \
+            archlinux \
+            bash
 
 cd $CMD_PATH
 which podman 
