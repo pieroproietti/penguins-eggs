@@ -15,6 +15,11 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
+clear
+echo "packages to be added for a minimal standard installation"
+sleep 3
+
+# packages to be added for a minimal standard installation
 pacman -Syu --needed --noconfirm \
 autoconf \
 automake \

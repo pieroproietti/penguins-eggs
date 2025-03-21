@@ -61,8 +61,6 @@ ls -al
 # install tarball
 EGGS_HOME="/opt/penguins-eggs/"
 EGGS_PACKAGE=eggs-v10.0.60-*-linux-x64.tar.gz
-DISTRO=debian
-
 
 # Rimozione di /opt/penguins-eggs se esiste
 if [ -d "$EGGS_HOME" ]; then

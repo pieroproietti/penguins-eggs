@@ -9,24 +9,52 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}" 
 echo $PROJECT_NAME
 cd $CMD_PATH
-sudo npm install -g pnpm@latest-10
-pnpm install
-pnpm deb --release 14
-# here we are in /pod, so...
-mv ../perrisbrewery/workdir/penguins-eggs_*_amd64.deb ../mychroot/ci/
+
+# replace tarballs
+TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
+rm ../mychroot/ci/$TARBALLS
+cp ../dist/$TARBALLS ../mychroot/ci/
+
+# se ubuntu monta /var/local/yolk
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "debian" ]]; then
+        podman run --hostname minimal \
+                    --privileged \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always \
+                    -it \
+                    -v $PWD/mychroot/ci:/ci \
+                    -v /dev:/dev \
+                    ubuntu:24.04 \
+                    bash
+    elif [[ "$ID" == "ubuntu" ]]; then
+        podman run --hostname minimal \
+                    --privileged \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always \
+                    -it \
+                    -v $PWD/mychroot/ci:/ci \
+                    -v /dev:/dev \
+                    -v /var/local/yolk:/var/local/yolk \
+                    ubuntu:24.04 \
+                    bash
+    elif [[ "$ID" == "arch" ]]; then
+        podman run --hostname minimal \
+                    --privileged \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always \
+                    -it \
+                    -v $PWD/mychroot/ci:/ci \
+                    -v /dev:/dev \
+                    ubuntu:24.04 \
+                    bash
+    else
+        echo "Sistema diverso: $ID"
+    fi
+fi
 
 cd $CMD_PATH
 which podman 
 podman --version
-df -h
-podman run --hostname minimal --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -it -v $PWD/mychroot/ci:/ci -v /dev:/dev ubuntu:24.04 bash
-# # when you are in the container, just run as the following:
-# cd /ci/
-# ls -al
-# ./ubuntu-24.04-install.sh
-# #do something
 
-# #end it
-# exit
-df -h
-date
