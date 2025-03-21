@@ -89,7 +89,7 @@ export async function bindLiveFs(this: Ovary) {
                     cmds.push(await rexec(`mount -o remount,bind,ro ${this.settings.work_dir.merged}/${dir}`, this.verbose))
                 } else {
                     cmds.push(`# /${dir} just created`)
-                    cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose), `# mount -o bind /${dir} ${this.settings.work_dir.merged}/${dir}`)
+                    cmds.push(await makeIfNotExist(`${this.settings.work_dir.merged}/${dir}`, this.verbose))
                 }
             }
 
