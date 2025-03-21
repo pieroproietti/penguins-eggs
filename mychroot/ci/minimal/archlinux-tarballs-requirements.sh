@@ -16,35 +16,34 @@ if [ -f /etc/os-release ]; then
 fi
 
 pacman -Syu --noconfirm --needed \
-		arch-install-scripts \
-		bash-completion \
-		dosfstools \
-		erofs-utils \
-		findutils \
-		git \
-		grub \
-		jq \
-		libarchive \
-		libisoburn \
-		lvm2 \
-		mkinitcpio-archiso \
-		mkinitcpio-nfs-utils \
-		mtools \
-		nano \
-		nbd \
-		pacman-contrib \
-		parted \
-		procps-ng \
-		pv \
-		python \
-		rsync \
-		squashfs-tools \
-		sshfs \
-		syslinux \
-		wget \
-		xdg-utils \
-        xdg-user-dirs \
-		xorriso
+	arch-install-scripts \
+	cryptsetup \
+	dosfstools \
+	efibootmgr \
+	erofs-utils \
+	findutils \
+	git \
+	grub \
+	jq \
+	libarchive \
+	libisoburn \
+	lvm2 \
+	mkinitcpio-archiso \
+	mkinitcpio-nfs-utils \
+	mtools \
+	nbd \
+	nodejs \
+	pacman-contrib \
+	parted \
+	procps-ng \
+	pv \
+	python \
+	rsync \
+	squashfs-tools \
+	sshfs \
+	wget \
+	xorriso \
+	xdg-utils
 
     # mkdir /usr/share/icons
     mkdir -p /usr/share/icons
