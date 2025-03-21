@@ -18,3 +18,4 @@ perrisbrewery/workdir/*
 tmp
 mkinitcpio/*.img
 mychroot/ci/penguins-eggs_*
+mychroot/ci/eggs-*

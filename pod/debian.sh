@@ -10,8 +10,10 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-# copy tarballs
-cp ../dist/eggs-v10.0.60-*-linux-x64.tar.gz ../mychroot/ci/
+# replace tarballs
+TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
+rm ../mychroot/ci/$TARBALLS
+cp ../dist/$TARBALLS ../mychroot/ci/
 
 # se debian monta /var/local/yolk
 if [ -f /etc/os-release ]; then
@@ -19,7 +21,6 @@ if [ -f /etc/os-release ]; then
     if [[ "$ID" == "debian" ]]; then
         podman run --hostname minimal \
                     --privileged \
-                    --cap-add all \
                     --ulimit nofile=32000:32000 \
                     --pull=always \
                     -it \
