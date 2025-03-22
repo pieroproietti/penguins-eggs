@@ -36,7 +36,7 @@ apt upgrade -y
 
 
 # We must install the same version of the host
-apt install linux-image-6.1.0-30-amd64 -y
+apt install linux-image-amd64 -y
 
 # init /usr/share/applications
 dpkg -S /usr/share/applications
