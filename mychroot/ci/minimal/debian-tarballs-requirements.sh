@@ -9,9 +9,9 @@ fi
 # check if we are on Debian/Devuan/Ubuntu
 if [ -f /etc/os-release ]; then
 	source /etc/os-release
-    if [[ "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
-    	echo "This script is only for Debian based systems"
-    	exit
+  if [[ "$ID" != "debian" && "$ID_LIKE" != *"debian"* ]]; then
+   	echo "This script is only for Debian/Devuan/Ubuntu based systems"
+   	exit
 	fi
 fi
 

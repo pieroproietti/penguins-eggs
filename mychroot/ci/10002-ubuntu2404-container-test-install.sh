@@ -35,7 +35,7 @@ apt update -y
 apt upgrade -y
 
 # We must install the same version of the host
-apt install linux-image-amd64 -y
+apt install linux-image-generic -y
 
 # packages to be added for a minimum standard installation
 source ./minimal/ubuntu-packages.sh
