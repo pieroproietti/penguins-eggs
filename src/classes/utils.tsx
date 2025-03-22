@@ -97,57 +97,51 @@ export default class Utils {
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
-      return true
-      if (fs.existsSync('/ci)')) {
-         return true
-      } else {
-         return false
+      let isContainer = false
+      let pathToCheck='/ci/README.md'
+      if (fs.existsSync(pathToCheck)) {
+         isContainer = true
       }
+      return isContainer
    }
 
    /**
     * Check if the system uses Systemd
     */
    static isSystemd(): boolean {
-      return true; // color-patch
-      try {
-         // Method 1: Check if systemctl exists
-         execSync('command -v systemctl', { stdio: 'ignore' });
-
-         // Method 2: Try listing Systemd units
-         execSync('systemctl list-units', { stdio: 'ignore' });
-
-         return true;
-      } catch (error) {
-         return false;
+      let isSystemd = true
+      if (!this.isContainer()) {
+         isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
       }
+      return isSystemd
    }
+
 
    /**
     * Check if the system uses SysVinit
     */
    static isSysvinit(): boolean {
-      try {
-         // Method 1: Check if service command exists
-         execSync('command -v service', { stdio: 'ignore' });
-
-         // Method 2: Check if /etc/init.d exists
-         return fs.existsSync('/etc/init.d');
-      } catch (error) {
-         return false;
+      let isSysvinit = false
+      if (!this.isContainer()) {
+         isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
       }
+      return isSysvinit
    }
 
    /**
     * Check if the system uses OpenRC
     */
    static isOpenRc(): boolean {
-      try {
-         execSync('command -v openrc', { stdio: 'ignore' });
-         return true;
-      } catch (error) {
-         return false;
+      let isOpenRc = false
+      if (!this.isContainer()) {
+         try {
+            execSync('command -v openrc')
+            isOpenRc = true
+         } catch (error) {
+            isOpenRc = false
+         }
       }
+      return isOpenRc
    }
 
 
