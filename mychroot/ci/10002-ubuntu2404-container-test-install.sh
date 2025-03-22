@@ -34,17 +34,15 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
+# We must install the same version of the host
+apt install linux-image-amd64 -y
+
 # packages to be added for a minimum standard installation
 source ./minimal/ubuntu-packages.sh
 
-# We must install the same version of the host
-apt install linux-image-$(uname -r) -y
+# packages to be added tarballs
+source ./minimal/debian-tarballs-requirements.sh
 
-# init /usr/share/applications
-dpkg -S /usr/share/applications
-
-apt install python3 -y
-ls -al /usr/share/applications
 
 # fix linuxefi.mod
 apt-file update

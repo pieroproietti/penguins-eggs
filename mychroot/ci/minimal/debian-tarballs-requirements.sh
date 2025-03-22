@@ -6,20 +6,15 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-# check if we are on arch
+# check if we are on Debian/Devuan/Ubuntu
 if [ -f /etc/os-release ]; then
 	source /etc/os-release
-    if [[ "$ID" != "debian" ]]; then
-    	echo "This script is only for Debina"
+    if [[ "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
+    	echo "This script is only for Debian based systems"
     	exit
 	fi
 fi
 
-clear
-echo "penguins-eggs-tarballs-requisites"
-sleep 3
-
-# install prerequisites
 apt-get install -y \
     coreutils \
     cryptsetup \
