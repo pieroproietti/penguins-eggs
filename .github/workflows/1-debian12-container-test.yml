@@ -1,4 +1,4 @@
-name: 10001-debian12-container-test
+name: 1-debian12-container-test
 
 on:
   push:
