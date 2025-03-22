@@ -88,6 +88,15 @@ export default async function information(verbose = false): Promise<void> {
         <Text color="cyan">calamares</Text>
     )
 
+    const Host = () => (
+        <Text color="cyan">host</Text>
+    )
+
+    const Container = () => (
+        <Text color="cyan">container</Text>
+    )
+
+
     let initType = ''
     if (Utils.isSystemd()) {
         initType = 'systemd'
@@ -99,10 +108,11 @@ export default async function information(verbose = false): Promise<void> {
 
     const Checks = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
-            <Box marginRight={2}><Text>configurations: {configurations ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>conf: {configurations ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
-            <Box marginRight={2}><Text>init system: <Text color="cyan">{initType}</Text></Text></Box>
+            <Box marginRight={2}><Text>install: {installer ? <GUI /> : <CLI />}</Text></Box>
+            <Box marginRight={2}><Text>type: {Utils.isContainer() ? <Container /> : <Host />}</Text></Box>
+            <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
         </Box>
     )
 
