@@ -1,4 +1,4 @@
-name: 10003-debian12-container-test
+name: 10001-debian12-container-test
 
 on:
   push:
@@ -12,10 +12,6 @@ jobs:
     steps:
       - name: Check Out Repo 
         uses: actions/checkout@v4
-      - name: Use Node.js 18
-        uses: actions/setup-node@v2
-        with:
-          node-version: 18.x
       - name: run 10001-debian12-container-test.sh
         run: |
           ./10001-debian12-container-test.sh
