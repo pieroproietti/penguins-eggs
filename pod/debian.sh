@@ -20,6 +20,7 @@ if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
         podman run --hostname minimal \
+                    --rm \
                     --privileged \
                     --ulimit nofile=32000:32000 \
                     --pull=always \
@@ -31,6 +32,7 @@ if [ -f /etc/os-release ]; then
                     bash
     elif [[ "$ID" == "ubuntu" ]]; then
         podman run --hostname minimal \
+                    --rm \
                     --privileged \
                     --ulimit nofile=32000:32000 \
                     --pull=always \
@@ -41,6 +43,7 @@ if [ -f /etc/os-release ]; then
                     bash
     elif [[ "$ID" == "arch" ]]; then
         podman run --hostname minimal \
+                    --rm \
                     --privileged \
                     --ulimit nofile=32000:32000 \
                     --pull=always \
