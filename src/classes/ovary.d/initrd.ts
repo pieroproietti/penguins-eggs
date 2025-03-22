@@ -73,8 +73,9 @@ export async function initrdDebian(this: Ovary, verbose = false) {
         isCrypted = true
         await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
-
-    await exec(`mkinitramfs -o ${this.settings.iso_work}/live/initrd.img-$(uname -r) ${this.toNull}`, this.echo)
+    let initrdImg = path.basename(Utils.initrdImg())
+    console.log(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg}`)
+    await exec(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${this.toNull}`, this.echo)
     if (isCrypted) {
         await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
