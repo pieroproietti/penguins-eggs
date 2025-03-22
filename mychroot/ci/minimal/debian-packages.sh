@@ -7,10 +7,6 @@ echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
 
-clear
-echo "packages to be added for a minimal standard installation"
-sleep 3
-
 # packages to be added for a minimal standard installation
 apt install \
     apt-listchanges \

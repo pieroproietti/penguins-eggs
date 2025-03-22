@@ -5,7 +5,7 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
-
+export DEBIAN_FRONTEND=noninteractive
 
 ####################################################################################################################################
 # 1 check
@@ -31,22 +31,32 @@ ff02::2    ip6-allrouters
 # penguins-eggs mininal requisites for debian bookworm
 
 cd $CMD_PATH
-pacman -Syu --noconfirm
-
-# packages to be added for a minimum standard installation
+apt update -y
+apt upgrade -y
 
 # We must install the same version of the host
-pacman -S  --noconfirm linux
+apt install linux-image-generic -y
 
-# packages minimal
-source ./minimal/archlinux-packages.sh
+# packages to be added for a minimum standard installation
+source ./minimal/ubuntu-packages.sh
 
 # packages to be added tarballs
-source ./minimal/archlinux-tarballs-requirements.sh
+source ./minimal/debian-tarballs-requirements.sh
+
+echo "source /etc/bash_completion" >> /etc/bash.bashrc
+
+# fix linuxefi.mod
+apt-file update
+apt-file search linuxefi.mod
+apt install grub-efi-amd64-bin -y
+
+# fix /etc/inittab
+systemctl set-default multi-user.target
+
 
 # starting with eggs
 cd /ci/
-
+ls -al
 # install tarball
 EGGS_HOME="/opt/penguins-eggs/"
 EGGS_PACKAGE=eggs-v10.0.60-*-linux-x64.tar.gz
@@ -100,14 +110,13 @@ ln -sf "${EGGS_HOME}bin/eggs" /usr/bin/eggs
 
 # eggs was installed!
 
-eggs dad -d
-eggs tools clean -n
-eggs produce --pendrive -n # --verbose
 
-# clean tarballs on /ci
+eggs dad -d
+egge tools clean -n
+eggs produce --pendrive -n
+
+# clean debs on /ci
 rm /ci/$EGGS_PACKAGE
 
-date
-
-echo "# enable bash_completion, running:"
-echo "source /etc/bash_completion"
+# bash_completion
+source ~/.bashrc
