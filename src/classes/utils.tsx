@@ -97,6 +97,7 @@ export default class Utils {
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
+      return true
       if (fs.existsSync('/ci)')) {
          return true
       } else {

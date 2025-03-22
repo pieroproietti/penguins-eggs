@@ -52,8 +52,13 @@ export async function initrdArch(this: Ovary) {
         }
     }
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/live.conf`)
-    console.log(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`)
-    await exec(`mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`, this.echo)
+    let cmd = `mkinitcpio -c ${pathConf} -g ${this.settings.iso_work}live/${initrdImg}`
+    if (Utils.isContainer()) {
+        const kernelRelese = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
+        cmd += ` -k ${kernelRelese}`
+    }
+    console.log(cmd)
+    await exec(cmd, this.echo)
 }
 
 /**
