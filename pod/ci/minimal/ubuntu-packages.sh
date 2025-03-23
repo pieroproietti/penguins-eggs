@@ -9,6 +9,6 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt install -y \
     bash-completion \
-    mandb \
+    man \
     ubuntu-minimal
 
