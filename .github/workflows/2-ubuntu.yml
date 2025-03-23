@@ -9,6 +9,6 @@ jobs:
     timeout-minutes: 7200
     steps:
       - name: run iso creation
-        run: ./2-ubuntu-test.sh
+        run: /ci/2-ubuntu-test.sh
   
         
