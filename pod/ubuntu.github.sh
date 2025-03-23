@@ -19,14 +19,10 @@ podman run --hostname minimal \
             --privileged \
             --ulimit nofile=32000:32000 \
             --pull=always \
-            -it \
             -v $PWD/mychroot/ci:/ci \
             -v /dev:/dev \
-            ubuntu:latest \
-            bash
-
-# creazione iso
-# 2-ubuntu-test.sh
+            ubuntu:minimal \
+            /ci/2-ubuntu-test.sh
 
 cd $CMD_PATH
 which podman 
