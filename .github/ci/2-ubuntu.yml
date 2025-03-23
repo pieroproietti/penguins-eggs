@@ -19,5 +19,5 @@ jobs:
           npm i pnpm -g
           pnpm i
           pnpm tarballs
-      - name: run iso creation
-        run: pod/ubuntu.sh
+      - name: ISO creation
+        run: ./pod/ubuntu.sh
