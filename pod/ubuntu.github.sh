@@ -2,18 +2,11 @@
 
 set -x
 
-# remove previous images
-podman rmi $(podman images --quiet) -f
-
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}" 
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-# replace tarballs
-TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
-rm ../mychroot/ci/$TARBALLS
-cp ../dist/$TARBALLS ../mychroot/ci/
 
 podman run --hostname minimal \
             --privileged \
@@ -21,10 +14,16 @@ podman run --hostname minimal \
             --pull=always \
             -v $PWD/mychroot/ci:/ci \
             -v /dev:/dev \
-            ubuntu:minimal \
-            /ci/2-ubuntu-test.sh
+            ubuntu:latest \
+            bash            
 
 cd $CMD_PATH
+
+# build tarballs
+npm install -g pnpm
+pnpm i
+pnpm tarballs
+/ci/2-ubuntu-test.github.sh
 which podman 
 podman --version
 
