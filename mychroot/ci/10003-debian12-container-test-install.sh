@@ -34,115 +34,9 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# packages to be added for a minimum standard installation
-apt install \
-    apt-listchanges \
-    apt-utils \
-    bash-completion \
-    cron \
-    cron-daemon-common \
-    debconf-i18n \
-    debian-faq \
-    dialog \
-    dictionaries-common \
-    discover \
-    discover-data \
-    distro-info-data \
-    dnsutils \
-    doc-debian \
-    eject \
-    emacsen-common \
-    fdisk \
-    file \
-    git \
-    grub-efi-amd64 \
-    iamerican \
-    ibritish \
-    ienglish-common \
-    ifupdown \
-    inetutils-telnet \
-    init \
-    installation-report \
-    iproute2 \
-    iputils-ping \
-    isc-dhcp-client \
-    isc-dhcp-common \
-    iso-codes \
-    ispell \
-    iucode-tool \
-    laptop-detect \
-    less \
-    libdiscover2 \
-    liblockfile-bin \
-    libmagic-mgc \
-    libmagic1 \
-    libnewt0.52 \
-    libnftables1 \
-    libnftnl11 \
-    libpci3 \
-    libslang2 \
-    libtext-charwidth-perl \
-    libtext-iconv-perl \
-    libtext-wrapi18n-perl \
-    liburing2 \
-    libusb-1.0-0 \
-    locales \
-    logrotate \
-    lsb-release \
-    lsof \
-    mailcap \
-    man \
-    man-db \
-    manpages \
-    mime-support \
-    nano \
-    ncurses-term \
-    net-tools \
-    netcat-traditional \
-    nftables \
-    pci.ids \
-    pciutils \
-    procps \
-    python-apt-common \
-    python3-apt \
-    python3-certifi \
-    python3-chardet \
-    python3-charset-normalizer \
-    python3-debconf \
-    python3-debian \
-    python3-debianbts \
-    python3-httplib2 \
-    python3-idna \
-    python3-pkg-resources \
-    python3-pycurl \
-    python3-pyparsing \
-    python3-pysimplesoap \
-    python3-reportbug \
-    python3-requests \
-    python3-six \
-    python3-urllib3 \
-    qemu-guest-agent \
-    reportbug \
-    sensible-utils \
-    sudo \
-    systemd-sysv \
-    task-english \
-    tasksel \
-    tasksel-data \
-    traceroute \
-    tzdata \
-    ucf \
-    usbutils \
-    util-linux-locales \
-    vim \
-    vim-tiny \
-    wamerican \
-    wget \
-    whiptail -y
-
 
 # We must install the same version of the host
-apt install linux-image-$(uname -r) -y
+apt install linux-image-amd64 -y
 
 # init /usr/share/applications
 dpkg -S /usr/share/applications
@@ -155,18 +49,77 @@ apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
+# packages to be added for a minimum standard installation
+source ./minimal/debian-packages.sh
+
+# packages to be added tarballs
+source ./minimal/debian-tarballs-requirements.sh
+
+echo "source /etc/bash_completion" >> /etc/bash.bashrc
+
 # starting with eggs
 cd /ci/
 ls -al
-apt install -y ./*.deb
+# install tarball
+EGGS_HOME="/opt/penguins-eggs/"
+EGGS_PACKAGE=eggs-v10.0.60-*-linux-x64.tar.gz
+
+# Rimozione di /opt/penguins-eggs se esiste
+if [ -d "$EGGS_HOME" ]; then
+    rm -rf "$EGGS_HOME"
+fi
+
+# extract package
+tar -xf $EGGS_PACKAGE
+if [ $? -ne 0 ]; then
+    echo "Error: not possible extract $EGGS_PACKAGE."
+    exit 1
+fi
+
+mv eggs penguins-eggs
+$SUDO mv penguins-eggs /opt/
+
+# create link themes  grub/isolinux
+ln -sf "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.full.cfg" "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.cfg"
+ln -sf "${EGGS_HOME}addons/eggs/theme/livecd/grub.main.full.cfg" "${EGGS_HOME}addons/eggs/theme/livecd/grub.main.cfg"
+
+# Bash completions
+if [ -d "/usr/share/bash-completion/completions/" ]; then
+    rm -f /usr/share/bash-completion/completions/eggs.bash
+    ln -sf "${EGGS_HOME}scripts/eggs.bash" /usr/share/bash-completion/completions/eggs.bash
+fi
+
+# Zsh completions
+if [ -d "/usr/share/zsh/functions/Completion/Zsh/" ]; then
+    rm -f /usr/share/zsh/functions/Completion/Zsh/_eggs
+    ln -sf "${EGGS_HOME}scripts/_eggs" /usr/share/zsh/functions/Completion/Zsh/
+fi
+
+# Icons
+if [ -d "/usr/share/icons/" ]; then
+    rm -f /usr/share/icons/eggs.png
+    ln -sf "${EGGS_HOME}assets/eggs.png" /usr/share/icons/eggs.png
+fi
+
+# Manual
+if [ -d "/usr/share/man/man1" ]; then
+    rm -f /usr/share/man/man1/eggs.1.gz
+    ln -sf "${EGGS_HOME}manpages/doc/man/eggs.1.gz" /usr/share/man/man1/eggs.1.gz
+fi
+
+# Link binary
+rm -f /usr/bin/eggs
+ln -sf "${EGGS_HOME}bin/eggs" /usr/bin/eggs
+
+# eggs was installed!
+
 
 eggs dad -d
-eggs produce --pendrive -n # --verbose
+egge tools clean -n
+eggs produce --pendrive -n
 
 # clean debs on /ci
-rm /ci/*.deb
+rm /ci/$EGGS_PACKAGE
 
-date
-
-echo "# enable bash_completion, running:"
-echo "source /etc/bash_completion"
+# bash_completion
+source ~/.bashrc

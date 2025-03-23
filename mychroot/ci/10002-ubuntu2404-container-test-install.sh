@@ -13,6 +13,7 @@ cd $CMD_PATH
 env
 pwd
 whoami
+ls
 
 ####################################################################################################################################
 # 2 hostname
@@ -34,54 +35,99 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# packages to be added for a minimum standard installation
-apt install \
-    bash-completion \
-    dialog \
-    dnsutils \
-    git \
-    iproute2 \
-    iputils-ping \
-    less \
-    locales \
-    man \
-    man-db \
-    manpages \
-    nano \
-    net-tools \
-    procps \
-    sudo \
-    systemd-sysv \
-    tzdata \
-    vim -y
-
-
 # We must install the same version of the host
-apt install linux-image-$(uname -r) -y
+apt install linux-image-generic -y
 
-# init /usr/share/applications
-dpkg -S /usr/share/applications
+# packages to be added for a minimum standard installation
+source ./minimal/ubuntu-packages.sh
 
-apt install python3 -y
-ls -al /usr/share/applications
+# packages to be added tarballs
+source ./minimal/debian-tarballs-requirements.sh
+
+# nodejs, npm
+apt install nodejs npm -y
 
 # fix linuxefi.mod
 apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
+# fix /etc/inittab
+systemctl set-default multi-user.target
+
+
 # starting with eggs
 cd /ci/
 ls -al
-apt install -y ./*.deb
+
+if ls ./eggs-v10.0.60-*-linux-x64.tar.gz 1> /dev/null 2>&1; then
+    echo "penguins-eggs tarballs already present."
+else
+    echo "building penguins-eggs tarballs..."
+    source ./build-penguins-eggs-tarballs.sh
+fi
+
+# install tarball
+EGGS_HOME="/opt/penguins-eggs/"
+EGGS_PACKAGE=eggs-v10.0.60-*-linux-x64.tar.gz
+
+# Rimozione di /opt/penguins-eggs se esiste
+if [ -d "$EGGS_HOME" ]; then
+    rm -rf "$EGGS_HOME"
+fi
+
+# extract package
+tar -xf $EGGS_PACKAGE
+if [ $? -ne 0 ]; then
+    echo "Error: not possible extract $EGGS_PACKAGE."
+    exit 1
+fi
+
+mv eggs penguins-eggs
+$SUDO mv penguins-eggs /opt/
+
+# create link themes  grub/isolinux
+ln -sf "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.full.cfg" "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.cfg"
+ln -sf "${EGGS_HOME}addons/eggs/theme/livecd/grub.main.full.cfg" "${EGGS_HOME}addons/eggs/theme/livecd/grub.main.cfg"
+
+# Bash completions
+if [ -d "/usr/share/bash-completion/completions/" ]; then
+    rm -f /usr/share/bash-completion/completions/eggs.bash
+    ln -sf "${EGGS_HOME}scripts/eggs.bash" /usr/share/bash-completion/completions/eggs.bash
+fi
+
+# Zsh completions
+if [ -d "/usr/share/zsh/functions/Completion/Zsh/" ]; then
+    rm -f /usr/share/zsh/functions/Completion/Zsh/_eggs
+    ln -sf "${EGGS_HOME}scripts/_eggs" /usr/share/zsh/functions/Completion/Zsh/
+fi
+
+# Icons
+if [ -d "/usr/share/icons/" ]; then
+    rm -f /usr/share/icons/eggs.png
+    ln -sf "${EGGS_HOME}assets/eggs.png" /usr/share/icons/eggs.png
+fi
+
+# Manual
+if [ -d "/usr/share/man/man1" ]; then
+    rm -f /usr/share/man/man1/eggs.1.gz
+    ln -sf "${EGGS_HOME}manpages/doc/man/eggs.1.gz" /usr/share/man/man1/eggs.1.gz
+fi
+
+# Link binary
+rm -f /usr/bin/eggs
+ln -sf "${EGGS_HOME}bin/eggs" /usr/bin/eggs
+
+# eggs was installed!
+
 
 eggs dad -d
-eggs produce --pendrive -n --verbose
+egge tools clean -n
+eggs produce --pendrive -n
 
 # clean debs on /ci
-rm /ci/*.deb
+rm /ci/$EGGS_PACKAGE
 
-date
-
-echo "# enable bash_completion, running:"
-echo "source /etc/bash_completion"
+# bash_completion
+echo "source /etc/bash_completion" >> /etc/bash.bashrc
+echo "source /etc/bash_completion" >> ~/.bashrc
