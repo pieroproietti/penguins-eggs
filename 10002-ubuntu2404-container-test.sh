@@ -40,9 +40,6 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman pull ubuntu:24.04
-podman pull ubuntu:24.04
-podman pull ubuntu:24.04
 podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev ubuntu:24.04 /ci/10002-ubuntu2404-container-test-install.sh
 df -h
 date
