@@ -8,6 +8,7 @@ export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
 
 apt install -y \
-bash-completion \
-mandb \
-ubuntu-minimal
+    bash-completion \
+    mandb \
+    ubuntu-minimal
+
