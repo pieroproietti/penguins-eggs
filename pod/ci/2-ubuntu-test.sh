@@ -43,7 +43,8 @@ source ./minimal/ubuntu-packages.sh
 # packages to be added tarballs
 source ./minimal/debian-tarballs-requirements.sh
 
-echo "source /etc/bash_completion" >> /etc/bash.bashrc
+# nodejs, npm
+apt install nodejs npm -y
 
 # fix linuxefi.mod
 apt-file update
@@ -57,6 +58,14 @@ systemctl set-default multi-user.target
 # starting with eggs
 cd /ci/
 ls -al
+
+if ls ./eggs-v10.0.60-*-linux-x64.tar.gz 1> /dev/null 2>&1; then
+    echo "penguins-eggs tarballs already present."
+else
+    echo "building penguins-eggs tarballs..."
+    source ./build-penguins-eggs-tarballs.sh
+fi
+
 # install tarball
 EGGS_HOME="/opt/penguins-eggs/"
 EGGS_PACKAGE=eggs-v10.0.60-*-linux-x64.tar.gz
@@ -119,4 +128,5 @@ eggs produce --pendrive -n
 rm /ci/$EGGS_PACKAGE
 
 # bash_completion
-source ~/.bashrc
+echo "source /etc/bash_completion" >> /etc/bash.bashrc
+echo "source /etc/bash_completion" >> ~/.bashrc

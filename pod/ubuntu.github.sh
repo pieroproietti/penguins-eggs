@@ -11,7 +11,7 @@ podman run --hostname minimal \
             --privileged \
             --ulimit nofile=32000:32000 \
             --pull=always \
-            -v $PWD/mychroot/ci:/ci \
+            -v $PWD/ci:/ci \
             -v /dev:/dev \
             ubuntu:latest \
             bash            

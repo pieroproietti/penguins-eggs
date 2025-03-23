@@ -17,5 +17,5 @@ perrisbrewery/workdir/*
 !perrisbrewery/workdir/.gitkeep
 tmp
 mkinitcpio/*.img
-mychroot/ci/penguins-eggs_*
-mychroot/ci/eggs-*
+pod/ci/eggs-*
+pod/ci/.pnpm*
