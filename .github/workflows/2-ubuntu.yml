@@ -20,4 +20,4 @@ jobs:
           pnpm i
           pnpm tarballs
       - name: run iso creation
-        run: ./pod/ubuntu.sh
+        run: ./pod/ubuntu.github.sh
