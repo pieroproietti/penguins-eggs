@@ -1,0 +1,18 @@
+name: 2-ubuntu
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 2-ubuntu-container
+    runs-on: ubuntu-latest
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: ubuntu run
+        run: |
+          ./2-ubuntu.sh
+      
