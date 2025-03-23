@@ -21,5 +21,5 @@ jobs:
       - name: build tarballs
         run: pnpm -i|pnpm tarballs
       - name: run eggs
-          ./2-ubuntu.sh
+          ./pod/2-ubuntu.sh
       
