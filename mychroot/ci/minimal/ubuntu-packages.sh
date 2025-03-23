@@ -7,4 +7,7 @@ echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
 
-apt install -y ubuntu-minimal
+apt install -y \
+bash-completion \
+mandb \
+ubuntu-minimal
