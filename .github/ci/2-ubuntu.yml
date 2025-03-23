@@ -1,0 +1,23 @@
+name: 2-ubuntu
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    name: 2-ubuntu-container
+    runs-on: ubuntu-latest
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Ho specificato una versione di Node.js dato che matrix non è definito
+      - name: build tarballs
+        run: |
+          npm i pnpm -g
+          pnpm i
+          pnpm tarballs
+      - name: run iso creation
+        run: pod/ubuntu.sh
