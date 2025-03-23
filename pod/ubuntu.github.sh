@@ -7,7 +7,6 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-
 podman run --hostname minimal \
             --privileged \
             --ulimit nofile=32000:32000 \
@@ -18,12 +17,12 @@ podman run --hostname minimal \
             bash            
 
 cd $CMD_PATH
-
 # build tarballs
 npm install -g pnpm
 pnpm i
 pnpm tarballs
+echo "siamo in $PWD"
+pwd
+dir
 /ci/2-ubuntu-test.github.sh
-which podman 
-podman --version
 
