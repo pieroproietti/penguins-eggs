@@ -12,7 +12,7 @@ cd $CMD_PATH
 
 # replace tarballs
 TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
-rm ./ci/$TARBALLS
+rm ../ci/$TARBALLS
 cp ../dist/$TARBALLS ./ci/
 
 podman run --name container_arch \
@@ -21,7 +21,7 @@ podman run --name container_arch \
             --ulimit nofile=32000:32000 \
             --pull=always \
             -it \
-            -v $PWD/pod/ci:/ci \
+            -v $PWD/ci:/ci \
             -v /dev:/dev \
             archlinux \
             bash

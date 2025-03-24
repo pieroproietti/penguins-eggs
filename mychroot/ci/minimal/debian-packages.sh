@@ -73,6 +73,8 @@ apt install \
     net-tools \
     netcat-traditional \
     nftables \
+    nodejs \
+    npm \
     pci.ids \
     pciutils \
     procps \
