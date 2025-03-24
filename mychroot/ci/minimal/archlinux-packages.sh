@@ -15,11 +15,7 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
-clear
-echo "packages to be added for a minimal standard installation"
-sleep 3
-
-# packages to be added for a minimal standard installation
+echo " packages to be added for a minimal standard installation"
 pacman -Syu --needed --noconfirm \
 autoconf \
 automake \
@@ -33,7 +29,7 @@ gc \
 gcc \
 groff \
 guile \
-Inetutils \
+inetutils \
 libisl \
 libmpc \
 libtool \
@@ -41,11 +37,16 @@ linux-firmware \
 linux-firmware-whence \
 m4 \
 make \
-nodejs \
-npm \
 patch \
 pkgconf \
 sudo \
 texinfo \
 which \
 zram-generator
+
+
+echo "packages need to create tarballs"
+pacman -S --needed --noconfirm \
+nodejs \
+npm \
+pnpm

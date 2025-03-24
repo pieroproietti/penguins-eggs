@@ -6,7 +6,6 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
 
-
 ####################################################################################################################################
 # 1 check
 cd $CMD_PATH
@@ -119,4 +118,5 @@ eggs produce --pendrive -n # --verbose
 rm /ci/$EGGS_PACKAGE
 
 # bash_completion
-source ~/.bashrc
+echo "source /etc/bash_completion"
+
