@@ -5,6 +5,11 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
+###############################################################################################################
+# check overlay
+grep overlay /proc/filesystems
+
+###############################################################################################################
 npm install -g pnpm@latest-10
 pnpm install
 pnpm deb # -all 
@@ -31,8 +36,7 @@ echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
 echo "nameserver 127.0.0.53" | sudo tee -a /etc/resolv.conf
 echo "options edns0 trust-ad" | sudo tee -a /etc/resolv.conf
 sudo cat /etc/resolv.conf
-# check overlay
-grep overlay /proc/filesystems
+
 
 #################################################################################################################
 ## TODO 1
