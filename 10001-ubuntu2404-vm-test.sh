@@ -31,6 +31,8 @@ echo "nameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf
 echo "nameserver 127.0.0.53" | sudo tee -a /etc/resolv.conf
 echo "options edns0 trust-ad" | sudo tee -a /etc/resolv.conf
 sudo cat /etc/resolv.conf
+# check overlay
+grep overlay /proc/filesystems
 
 #################################################################################################################
 ## TODO 1
