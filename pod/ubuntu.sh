@@ -18,35 +18,35 @@ cp ../dist/$TARBALLS ./ci/
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "ubuntu" ]]; then
-        if [ ! -d "/var/local/yolk" ]; then
-            sudo mkdir -p "/var/local/yolk"
+        DEST="/var/local/yolk"
+        if [ ! -d $DEST ]; then
+            sudo mkdir -p $DEST
+            YOLK="-v $DEST:$DEST"
         fi
-        podman run --hostname minimal \
-                    --privileged \
-                    --ulimit nofile=32000:32000 \
-                    --pull=always \
-                    -it \
-                    -v $PWD/ci:/ci \
-                    -v /dev:/dev \
-                    -v /var/local/yolk:/var/local/yolk \
-                    ubuntu:latest \
-                    bash
-    else
-        podman run --hostname minimal \
-                    --privileged \
-                    --ulimit nofile=32000:32000 \
-                    --pull=always \
-                    -it \
-                    -v $PWD/ci:/ci \
-                    -v /dev:/dev \
-                    ubuntu:latest \
-                    bash
     fi
+
+
+    sudo podman run \
+            --hostname minimal \
+            --privileged \
+            --ulimit nofile=32000:32000 \
+            --pull=always \
+            --userns=host \
+            -it \
+            -v $PWD/ci:/ci \
+            -v /dev:/dev \
+            $YOLK \
+            ubuntu \
+            bash
+
 fi
+
+# interactive session
+
+# This will be executed at end
 cd $CMD_PATH
 which podman 
 podman --version
-df -a
+df -h
 date
-# interactive commands 
 
