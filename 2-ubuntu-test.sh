@@ -1,1 +1,0 @@
-pod/ci/2-ubuntu-test.sh
