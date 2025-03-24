@@ -2,23 +2,17 @@
 
 Here we have scripts to build on local system, using podman container.
 
-* debian.sh
-° arch.sh
-* ubuntu.sh
+* `debian.sh`
+° `archlinux.sh`
+* `ubuntu.sh`
 
-Due the actual limitations, debian must tp run on a system Debian bootkworm, and arch to Arch. 
+To create a debian ISO, run `pod/debian.sh`, then within the container run `/ci/run`. Live ISO will be created on `/home/eggs/.mnt`.
 
-# build eggs tarballs
-Here we use a tarballs version of eggs to but free from the different package managers. To build, just:
+# Prerequisites
+You must to be on a Debian or Ubuntu system, and have `podman` installed.
 
-`pnpm tarballs`
+# Plan
+I want to refine this method in the hope that it will be useful by using it as a github action.
 
-# running the container
-`./pod/debian.sh`
-
-Container is build, eggs is installed inside. Run:
-`cd ci`
-`1001-debian...` or `1003-arch...` in accord of the image.
-
-
+# Resulting ISOs
 Materials and relative installable live ISOs can be found [here](https://drive.google.com/drive/folders/15jAwpk-k27dSuqD4iUZkjADgh9-tRI-4?dmr=1&ec=wgc-drive-globalnav-goto)
