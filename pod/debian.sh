@@ -15,16 +15,34 @@ TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
 rm ../ci/$TARBALLS
 cp ../dist/$TARBALLS ../ci/
 
-podman run --hostname minimal \
-            --privileged \
-            --ulimit nofile=32000:32000 \
-            --pull=always \
-            -it \
-            -v $PWD/ci:/ci \
-            -v /dev:/dev \
-            -v /var/local/yolk:/var/local/yolk \
-            debian:12.9 \
-            bash
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "debian" ]]; then
+        if [ ! -d "/var/local/yolk" ]; then
+            sudo mkdir -p "/var/local/yolk"
+        fi
+        podman run --hostname minimal \
+                    --privileged \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always \
+                    -it \
+                    -v $PWD/ci:/ci \
+                    -v /dev:/dev \
+                    -v /var/local/yolk:/var/local/yolk \
+                    debian:12.9 \
+                    bash
+    else
+        podman run --hostname minimal \
+                    --privileged \
+                    --ulimit nofile=32000:32000 \
+                    --pull=always \
+                    -it \
+                    -v $PWD/ci:/ci \
+                    -v /dev:/dev \
+                    debian:12.9 \
+                    bash
+    fi
+fi
 
 cd $CMD_PATH
 which podman 
