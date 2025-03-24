@@ -15,10 +15,7 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
-clear
-echo "penguins-eggs-tarballs-requisites"
-sleep 3
-
+echo "# install penguins-eggs-tarballs-requisites"
 pacman -Syu --noconfirm --needed \
 	arch-install-scripts \
 	cryptsetup \
