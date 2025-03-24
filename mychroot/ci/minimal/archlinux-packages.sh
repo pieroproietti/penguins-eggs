@@ -24,6 +24,7 @@ pacman -Syu --needed --noconfirm \
 autoconf \
 automake \
 base-devel \
+bash-completion \
 bison \
 debugedit \
 fakeroot \
@@ -32,6 +33,7 @@ gc \
 gcc \
 groff \
 guile \
+Inetutils \
 libisl \
 libmpc \
 libtool \
@@ -39,6 +41,8 @@ linux-firmware \
 linux-firmware-whence \
 m4 \
 make \
+nodejs \
+npm \
 patch \
 pkgconf \
 sudo \

@@ -117,10 +117,13 @@ fi
 # Link binary
 rm -f /usr/bin/eggs
 ln -sf "${EGGS_HOME}bin/eggs" /usr/bin/eggs
-
 # eggs was installed!
 
+# sudo
+chown root:root /usr/bin/sudo
+chmod 4755 /usr/bin/sudo
 
+# using eggs
 eggs dad -d
 egge tools clean -n
 eggs produce --pendrive -n
