@@ -5,12 +5,21 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
+###############################################################################################################
+# check overlay on ci server
+grep overlay /proc/filesystems
+sudo modprobe overlay
+pwd
+env
+whoami
+
+###############################################################################################################
 npm install -g pnpm@latest-10
 pnpm install
 pnpm deb # -all 
 pnpm tarballs
-rsync -az ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
-rsync -az ./dist/eggs-v*-linux-x64.tar.gz ./mychroot/ci/
+rsync -a ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
+rsync -a ./dist/eggs-v*-linux-x64.tar.gz ./mychroot/ci/
 ls -al ./mychroot/ci/
 #################################################################################################################
 ## TODO 0
