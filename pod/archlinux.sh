@@ -15,7 +15,7 @@ TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
 rm ../ci/$TARBALLS
 cp ../dist/$TARBALLS ./ci/
 
-podman run --name container_arch \
+sudo podman run --name container_arch \
             --hostname minimal \
             --privileged \
             --ulimit nofile=32000:32000 \

@@ -21,17 +21,22 @@ if [ -f /etc/os-release ]; then
         if [ ! -d "/var/local/yolk" ]; then
             sudo mkdir -p "/var/local/yolk"
         fi
-        podman run --hostname minimal \
-                    --privileged \
-                    --ulimit nofile=32000:32000 \
-                    --pull=always \
-                    -it \
-                    -v $PWD/ci:/ci \
-                    -v /dev:/dev \
-                    -v /var/local/yolk:/var/local/yolk \
-                    debian:12.9 \
-                    bash
+
+        # 
+        sudo podman run --hostname minimal \
+                --privileged \
+                --ulimit nofile=32000:32000 \
+                --pull=always \
+                --userns=host \
+                -it \
+                -v $PWD/ci:/ci \
+                -v /dev:/dev \
+                -v /var/local/yolk:/var/local/yolk \
+                debian:12.9 \
+                bash
+
     else
+
         podman run --hostname minimal \
                     --privileged \
                     --ulimit nofile=32000:32000 \
