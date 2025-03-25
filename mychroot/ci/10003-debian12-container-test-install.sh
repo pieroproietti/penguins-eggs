@@ -35,7 +35,7 @@ apt update -y
 apt upgrade -y
 
 
-# We must install kernel
+# We install latest kernel
 apt install linux-image-amd64 -y
 
 # init /usr/share/applications

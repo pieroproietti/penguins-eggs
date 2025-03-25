@@ -33,9 +33,7 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 pacman -Syu --noconfirm
 
-# packages to be added for a minimum standard installation
-
-# We must install kernel
+# We install latest kernel
 pacman -S  --noconfirm linux
 
 # packages minimal
