@@ -12,3 +12,16 @@ At this point the container that builds the image is started in accord, and as a
 So, we have two level of containers using CI, the base ubuntu-22.04 created from action and using nodejs18, to build tarballs. The second, using the distro we intend to build, receive tarballs from the first - or from local, when I'm using podman - install penguins-eggs and create ISO.
 
 I was a little confused by this mechanism, now it will be better.
+
+```
+podman run \
+    --hostname minimal \
+     --privileged \
+     --cap-add all \
+     --ulimit nofile=32000:32000 \
+     --pull=always \
+     -v $PWD/mychroot/ci:/ci \
+     -v /dev:/dev ubuntu:24.04 \
+     /ci/10002-ubuntu2404-container-test-install.sh
+```
+
