@@ -35,7 +35,7 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# We must install kernel
+# We install latest kernel
 apt install linux-image-generic -y
 
 # packages to be added for a minimum standard installation
