@@ -1,0 +1,1 @@
+mychroot/ci/10006-archlinux-container-test-install.sh

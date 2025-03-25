@@ -1,0 +1,1 @@
+mychroot/ci/10003-debian12-container-test-install.sh
