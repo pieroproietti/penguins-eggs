@@ -65,5 +65,5 @@ ls -al
 source ./penguins-eggs-tarballs-install.sh
 
 eggs dad -d
-egge tools clean -n
+eggs tools clean -n
 eggs produce --pendrive -n
