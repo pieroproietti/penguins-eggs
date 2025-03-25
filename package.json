@@ -54,7 +54,7 @@
         "eslint-config-prettier": "^10.0.2",
         "mocha": "^11.1.0",
         "oclif": "^4.17.41",
-        "perrisbrewery": "^10.0.5",
+        "perrisbrewery": "^10.0.6",
         "prettier": "^3.5.3",
         "shx": "^0.3.4",
         "ts-node": "10.9.2",
@@ -115,7 +115,7 @@
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
         "posttest": "pnpm run lint",
-        "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r .",
+        "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r . && pb tarballs",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
         "version": "oclif readme && git add README.md"
     },

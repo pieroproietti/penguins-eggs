@@ -16,7 +16,7 @@ whoami
 ###############################################################################################################
 npm install -g pnpm@latest-10
 pnpm install
-pnpm deb # -all 
+# pnpm deb # -all 
 pnpm tarballs
 rsync -a ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
 rsync -a ./dist/eggs-v*-linux-x64.tar.gz ./mychroot/ci/
