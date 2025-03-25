@@ -35,7 +35,7 @@ pacman -Syu --noconfirm
 
 # packages to be added for a minimum standard installation
 
-# We must install the same version of the host
+# We must install kernel
 pacman -S  --noconfirm linux
 
 # packages minimal

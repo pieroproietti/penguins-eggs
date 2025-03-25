@@ -35,7 +35,7 @@ apt update -y
 apt upgrade -y
 
 
-# We must install the same version of the host
+# We must install kernel
 apt install linux-image-amd64 -y
 
 # init /usr/share/applications
