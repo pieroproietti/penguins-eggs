@@ -10,10 +10,7 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-# replace tarballs
-TARBALLS="eggs-v10.0.60-*-linux-x64.tar.gz "
-rm ./ci/$TARBALLS
-cp ../dist/$TARBALLS ./ci/
+source ci/penguins-eggs-tarballs-replace.sh
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
