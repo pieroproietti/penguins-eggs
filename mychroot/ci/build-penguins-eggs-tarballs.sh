@@ -13,6 +13,6 @@ git clone https://github.com/pieroproietti/penguins-eggs /tmp/penguins-eggs
 cd /tmp/penguins-eggs
 npm install pnpm -g
 pnpm install
-pnpm tarballs
-cp /tmp/penguins-eggs/dist/eggs-v10.0.60-*-linux-x64.tar.gz /ci
+pnpm tarballs -r15
+cp /tmp/penguins-eggs/dist/penguins-eggs_10.0.60-15-linux-x64.tar.gz /ci
 cd $CMD_PATH
