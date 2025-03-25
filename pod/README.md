@@ -27,3 +27,35 @@ I don't know why, but on the ISOs resulting it's impossible to log as root using
 
 I tried using podman with user root, but the same. 
 
+
+This is the way you use
+```
+podman run \
+    --hostname minimal \
+     --privileged \
+     --cap-add all \
+     --ulimit nofile=32000:32000 \
+     --pull=always \
+     -v $PWD/mychroot/ci:/ci \
+     -v /dev:/dev ubuntu:24.04 \
+     /ci/10002-ubuntu2404-container-test-install.sh
+```
+
+
+This is mine, from local:
+
+```
+sudo podman run \
+            --hostname minimal \
+            --privileged \
+            --ulimit nofile=32000:32000 \
+            --pull=always \
+            --userns=host \
+            --rm \
+            -it \
+            -v $PWD/ci:/ci \
+            -v /dev:/dev \
+            $YOLK \
+            debian \
+            bash
+```
