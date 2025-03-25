@@ -45,6 +45,9 @@ podman run \
 This is mine, from local:
 
 ```
+# yolk is just a little local repo for Debian/Ubuntu only
+
+YOLK="-v /var/local/yolk:/var/local/yolk"
 sudo podman run \
             --hostname minimal \
             --privileged \
