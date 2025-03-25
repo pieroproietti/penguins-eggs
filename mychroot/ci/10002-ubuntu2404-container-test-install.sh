@@ -69,7 +69,3 @@ eggs produce --pendrive -n
 
 # clean debs on /ci
 rm /ci/$EGGS_PACKAGE
-
-# bash_completion
-echo "source /etc/bash_completion" >> /etc/bash.bashrc
-echo "source /etc/bash_completion" >> ~/.bashrc
