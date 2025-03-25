@@ -22,6 +22,7 @@ sudo podman run \
         --pull=always \
         --userns=host \
         -it \
+        --rm \        
         -v $PWD/ci:/ci \
         -v /dev:/dev \
         archlinux \
