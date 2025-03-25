@@ -45,6 +45,10 @@ source ./minimal/archlinux-packages.sh
 source ./minimal/archlinux-tarballs-requirements.sh
 
 echo "source /etc/bash_completion" >> /etc/bash.bashrc
+
+# shasum fix
+ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
+
 # starting with eggs
 cd /ci/
 ls -al
