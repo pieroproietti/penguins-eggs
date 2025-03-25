@@ -1,0 +1,1 @@
+mychroot/ci/10002-ubuntu2404-container-test-install.sh

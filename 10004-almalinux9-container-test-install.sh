@@ -1,0 +1,1 @@
+mychroot/ci/10004-almalinux9-container-test-install.sh
