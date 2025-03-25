@@ -24,22 +24,23 @@ if [ -f /etc/os-release ]; then
             YOLK="-v $DEST:$DEST"
         fi
     fi
-
-
-    sudo podman run \
-            --hostname minimal \
-            --privileged \
-            --ulimit nofile=32000:32000 \
-            --pull=always \
-            --userns=host \
-            -it \
-            -v $PWD/ci:/ci \
-            -v /dev:/dev \
-            $YOLK \
-            ubuntu \
-            bash
-
 fi
+
+sudo podman run \
+        --hostname minimal \
+        --privileged \
+        --ulimit nofile=32000:32000 \
+        --pull=always \
+        --userns=host \
+        -it \
+        --rm \
+        -v $PWD/ci:/ci \
+        -v /dev:/dev \
+        $YOLK \
+        ubuntu \
+        bash
+
+
 
 # interactive session
 

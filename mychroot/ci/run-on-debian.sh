@@ -52,10 +52,14 @@ apt install grub-efi-amd64-bin -y
 # packages to be added for a minimum standard installation
 source ./minimal/debian-packages.sh
 
+
 # packages to be added tarballs
 source ./minimal/debian-tarballs-requirements.sh
 
-# starting with eggs
-cd /ci/
-ls -al
+# installing ggs
+source ./penguins-eggs-tarballs-install.sh
 
+# using eggs
+eggs dad -d
+egge tools clean -n
+eggs produce --pendrive -n

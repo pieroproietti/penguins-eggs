@@ -25,20 +25,21 @@ if [ -f /etc/os-release ]; then
             YOLK="-v $DEST:$DEST"
         fi
     fi
+fi
 
-    sudo podman run \
+sudo podman run \
             --hostname minimal \
             --privileged \
             --ulimit nofile=32000:32000 \
             --pull=always \
             --userns=host \
+            --rm \
             -it \
             -v $PWD/ci:/ci \
             -v /dev:/dev \
             $YOLK \
             debian \
             bash
-fi
 
 # interactive session
 

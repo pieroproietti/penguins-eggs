@@ -47,19 +47,10 @@ source ./minimal/archlinux-tarballs-requirements.sh
 ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 
 
-# starting with eggs
-cd /ci/
+# installing ggs
+source ./penguins-eggs-tarballs-install.sh
 
-if ls ./eggs-v10.0.60-*-linux-x64.tar.gz 1> /dev/null 2>&1; then
-    echo "penguins-eggs tarballs already present."
-else
-    echo "building penguins-eggs tarballs..."
-    source ./build-penguins-eggs-tarballs.sh
-fi
-
-# install eggs from tarballs
-source ./minimal/install-eggs-from-tarballs
-
-# bash_completion
-echo "source /etc/bash_completion"
-
+# using eggs
+eggs dad -d
+egge tools clean -n
+eggs produce --pendrive -n
