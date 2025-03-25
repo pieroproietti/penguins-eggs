@@ -96,7 +96,6 @@ export default async function information(verbose = false): Promise<void> {
         <Text color="cyan">container</Text>
     )
 
-
     let initType = ''
     if (Utils.isSystemd()) {
         initType = 'systemd'
@@ -106,13 +105,13 @@ export default async function information(verbose = false): Promise<void> {
         initType = 'sysvinit'
     } 
 
-    const Checks = () => (
+    const RunningOn = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
-            <Box marginRight={2}><Text>conf: {configurations ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>configuration: {configurations ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>install: {installer ? <GUI /> : <CLI />}</Text></Box>
-            <Box marginRight={2}><Text>type: {Utils.isContainer() ? <Container /> : <Host />}</Text></Box>
+            <Box marginRight={2}><Text>running on: {Utils.isContainer() ? <Container /> : <Host />}</Text></Box>
             <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
+            <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
         </Box>
     )
 
@@ -149,7 +148,7 @@ export default async function information(verbose = false): Promise<void> {
             </Box>
             <Box>
                 <Distro />
-                <Checks />
+                <RunningOn />
             </Box>
             <Presentation />
         </>
