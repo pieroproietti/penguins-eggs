@@ -17,7 +17,7 @@ whoami
 npm install -g pnpm@latest-10
 pnpm install
 pnpm tarballs --release 15
-rsync -a ./dist/penguins-eggs_10.0.60-*-linux-x64.tar.gz.gz ./mychroot/ci/
+rsync -a ./dist/penguins-eggs_10.0.60-*-linux-x64.tar.gz ./mychroot/ci/
 ls -al ./mychroot/ci/
 #################################################################################################################
 ## TODO 0
