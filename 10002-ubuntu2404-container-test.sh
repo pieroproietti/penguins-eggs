@@ -43,9 +43,7 @@ sudo cat /etc/resolv.conf
 ######################################################################################################################
 ## TODO 2
 ## TEST 2
-## using contaner image ubuntu ubuntu:24.04 on ci hosted server ubuntu-24.04 
-## install same kernal with the host of the ci server
-## it failed now
+
 cd $CMD_PATH
 which podman 
 podman --version
