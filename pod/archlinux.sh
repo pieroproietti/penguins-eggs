@@ -22,7 +22,7 @@ podman run \
     -it \
     -v /dev:/dev \
     -v ../mychroot/ci:/ci \
-    archilinux \
+    archlinux \
     bash
 
 # interactive session
