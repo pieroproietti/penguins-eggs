@@ -62,3 +62,5 @@ source ./penguins-eggs-tarballs-install.sh
 eggs dad -d
 eggs tools clean -n
 eggs produce --pendrive -n
+echo "TIPS use: eggs export iso -c"
+
