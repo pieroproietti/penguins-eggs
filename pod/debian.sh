@@ -2,16 +2,12 @@
 
 set -x
 
-# remove previous images
-podman rmi $(podman images --quiet) -f
-
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}" 
 echo $PROJECT_NAME
 cd $CMD_PATH
 
 source ci/penguins-eggs-tarballs-replace.sh
-
 
 # define YOLK if Debian
 if [ -f /etc/os-release ]; then
@@ -20,24 +16,24 @@ if [ -f /etc/os-release ]; then
         DEST="/var/local/yolk"
         if [ ! -d $DEST ]; then
             sudo mkdir -p $DEST
-            YOLK="-v $DEST:$DEST"
         fi
+        YOLK="-v $DEST:$DEST"
     fi
 fi
 
-sudo podman run \
-            --hostname minimal \
-            --privileged \
-            --ulimit nofile=32000:32000 \
-            --pull=always \
-            --userns=host \
-            --rm \
-            -it \
-            -v $PWD/ci:/ci \
-            -v /dev:/dev \
-            $YOLK \
-            debian \
-            bash
+podman run \
+    --hostname minimal \
+    --privileged \
+    --cap-add all \
+    --ulimit nofile=32000:32000 \
+    --pull=always \
+    --rm \
+    -it \
+    -v /dev:/dev \
+    -v ../mychroot/ci:/ci \
+    $YOLK \
+    debian \
+    bash
 
 # interactive session
 
