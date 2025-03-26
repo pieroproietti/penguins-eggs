@@ -473,7 +473,8 @@ export default class Tailor {
     const distro = new Distro()
     let cmd =""
     if (distro.familyId === "debian") {
-      cmd=`apt-cache --no-generate pkgnames`
+      // cmd=`apt-cache --no-generate pkgnames`
+      cmd=`apt-cache pkgnames`
     } else if (distro.familyId === "archlinux") {
       cmd=`pacman -S --list | awk '{print $2}'`
     } else if (distro.familyId === "alpine") {
