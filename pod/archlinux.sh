@@ -3,7 +3,7 @@
 set -x
 
 # remove previous images
-podman rmi $(podman images --quiet) -f
+#podman rmi $(podman images --quiet) -f
 
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}" 
@@ -12,18 +12,18 @@ cd $CMD_PATH
 
 source ci/penguins-eggs-tarballs-replace.sh
 
-sudo podman run \
-        --hostname minimal \
-        --privileged \
-        --ulimit nofile=32000:32000 \
-        --pull=always \
-        --userns=host \
-        -it \
-        --rm \
-        -v $PWD/ci:/ci \
-        -v /dev:/dev \
-        archlinux \
-        bash
+podman run \
+    --hostname minimal \
+    --privileged \
+    --cap-add all \
+    --ulimit nofile=32000:32000 \
+    --pull=always \
+    --rm \
+    -it \
+    -v /dev:/dev \
+    -v ../mychroot/ci:/ci \
+    archilinux \
+    bash
 
 # interactive session
 

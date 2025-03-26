@@ -29,26 +29,16 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 
 export function copied(this: Ovary, dir: string): boolean {
+    let copied = false
+
     let copiedDirs = [
         'boot',
         'etc',
     ]
-    let copied = false
 
-    /**
-     * On containers we copy all
-     */
-    if (Utils.isContainer()) {
-        if (this.merged(dir)) {
+    for (const copiedDir of copiedDirs) {
+        if (dir === copiedDir) {
             copied = true
-        } else if (this.mergedAndOverlay(dir)) {
-            copied = true
-        }
-    } else {
-        for (const copiedDir of copiedDirs) {
-            if (dir === copiedDir) {
-                copied = true
-            }
         }
     }
     return copied
