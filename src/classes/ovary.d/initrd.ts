@@ -77,8 +77,6 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     }
     let initrdImg = path.basename(Utils.initrdImg())
     let kernelRelease = initrdImg.substring(initrdImg.indexOf('-') + 1)
-    // remove suffix .img
-    kernelRelease = kernelRelease.replace('.img','')
     console.log(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${kernelRelease}`)
     await exec(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${kernelRelease} ${this.toNull}`, this.echo)
     if (isCrypted) {
@@ -93,7 +91,9 @@ export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
     const confdir = path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     let initrdImg = path.basename(Utils.initrdImg())
-    let version=initrdImg.substring(initrdImg.indexOf('-') + 1)
-    console.log(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${version}`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${version}`, this.echo)
+    let kernelRelease=initrdImg.substring(initrdImg.indexOf('-') + 1)
+    // remove suffix .img
+    kernelRelease = kernelRelease.replace('.img','')
+    console.log(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${kernelRelease}`)
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${kernelRelease}`, this.echo)
 }
