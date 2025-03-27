@@ -13,6 +13,8 @@ if [ -f /etc/os-release ]; then
         source /ci/run-on-archlinux.sh
     elif [[ "$ID" == "debian" ]]; then
         source /ci/run-on-debian.sh
+    elif [[ "$ID" == "devuan" ]]; then
+        source /ci/run-on-devuan.sh
     elif [[ "$ID" == "ubuntu" ]]; then
         source /ci/run-on-ubuntu.sh
     else
