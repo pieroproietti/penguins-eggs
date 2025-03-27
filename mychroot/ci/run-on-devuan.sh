@@ -49,8 +49,11 @@ apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
+# sysvinit
+apt install sysvinit -y
+
 # packages to be added for a minimum standard installation
-#source ./minimal/debian-packages.sh
+source ./minimal/debian-packages.sh
 
 # packages to be added tarballs
 source ./minimal/debian-tarballs-requirements.sh
