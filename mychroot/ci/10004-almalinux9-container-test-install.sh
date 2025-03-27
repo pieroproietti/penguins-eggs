@@ -33,6 +33,8 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 dnf -y update 
 
+# install shasum
+dnf install -y perl-Digest-SHA
 
 # We must install the same version of the host
  dnf -y install kernel
