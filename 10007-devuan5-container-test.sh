@@ -50,10 +50,6 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-<<<<<<< HEAD
 podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev devuan/devuan:daedalus /ci/10007-devuan5-container-test-install.sh
-=======
-podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev devuan:daedalus /ci/10007-devuan5-container-test-install.sh
->>>>>>> 052530d6ef8aac883788fd0b5df0103af41dbca3
 df -h
 date
