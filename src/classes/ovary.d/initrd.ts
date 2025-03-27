@@ -77,6 +77,8 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     }
     let initrdImg = path.basename(Utils.initrdImg())
     let version=initrdImg.substring(initrdImg.indexOf('-') + 1)
+    // remove suffix .img
+    version = version.replace('.img','')
     console.log(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${version}`)
     await exec(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${version} ${this.toNull}`, this.echo)
     if (isCrypted) {
