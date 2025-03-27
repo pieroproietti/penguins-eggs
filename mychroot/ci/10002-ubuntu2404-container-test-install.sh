@@ -67,5 +67,3 @@ eggs dad -d
 eggs tools clean -n
 eggs produce --pendrive -n
 
-# clean debs on /ci
-rm /ci/$EGGS_PACKAGE
