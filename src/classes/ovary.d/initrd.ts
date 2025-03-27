@@ -85,11 +85,13 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 }
 
 /*
-* initrdDracut) Fedora/Openmamba/Opensuse/Voidlinux
+* initrdDracut) Almalinux/Fedora/Openmamba/Opensuse/Rocky/Voidlinux
 */
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using dracut on ISO/live`)
-    const kernelVersion = shx.exec('uname -r', { silent: true }).stdout.trim()
     const confdir = path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}`, this.echo)
+    let initrdImg = path.basename(Utils.initrdImg())
+    let version=initrdImg.substring(initrdImg.indexOf('-') + 1)
+    console.log(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${version}`)
+    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${this.settings.initrdImg}  ${version}`, this.echo)
 }
