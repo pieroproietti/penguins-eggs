@@ -9,12 +9,14 @@ clear
 # install tarball
 PENGUINS_EGGS_INSTALL_DIR="/opt/penguins-eggs/"
 PENGUINS_EGGS_TARBALLS=penguins-eggs_10.0.60-*-linux-x64.tar.gz
-if ls dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
+if ls ./dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
     echo "penguins-eggs tarballs already present."
 else
-    echo "you must create it before: pnpm tarballs --release 15"
-    exit
+    echo "building penguins-eggs tarballs..."
+    source ./penguins-eggs-tarballs-build.sh
 fi
+
+
 
 # Rimozione di /opt/penguins-eggs se esiste
 if [ -d "$PENGUINS_EGGS_INSTALL_DIR" ]; then
@@ -22,14 +24,14 @@ if [ -d "$PENGUINS_EGGS_INSTALL_DIR" ]; then
 fi
 
 # extract package
-tar -xf dist/$PENGUINS_EGGS_TARBALLS
+tar -xf ./dist/$PENGUINS_EGGS_TARBALLS
 if [ $? -ne 0 ]; then
     echo "Error: not possible extract dist/$PENGUINS_EGGS_TARBALLS."
     exit 1
 fi
 
 mv eggs penguins-eggs
-$SUDO mv penguins-eggs /opt/
+mv penguins-eggs /opt/
 
 # create link themes  grub/isolinux
 ln -sf "${PENGUINS_EGGS_INSTALL_DIR}addons/eggs/theme/livecd/isolinux.main.full.cfg" "${PENGUINS_EGGS_INSTALL_DIR}addons/eggs/theme/livecd/isolinux.main.cfg"
