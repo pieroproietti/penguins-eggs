@@ -87,9 +87,9 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'Aldos') {
-      this.familyId = 'aldos'
-      this.distroLike = 'Aldos'
+    if (this.distroId === 'Aldus') {
+      this.familyId = 'aldus'
+      this.distroLike = this.distroId
       this.codenameId = 'rolling' // viene rimosso dal nome
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'
@@ -322,7 +322,6 @@ class Distro implements IDistro {
           const content = fs.readFileSync(file, 'utf8')
           const elem = yaml.load(content) as string[]
           if (elem.includes(this.distroId)) {
-
             this.familyId = 'fedora'
             this.distroLike = 'Fedora'
             this.codenameId = 'rolling'
@@ -330,6 +329,7 @@ class Distro implements IDistro {
             this.liveMediumPath = '/run/initramfs/live/'
             found = true
           }
+
         }
 
         if (!found) {

@@ -7,7 +7,9 @@ echo $PROJECT_NAME
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [[ "$ID" == "arch" ]]; then
+    if [[ "$ID" == "almalinux" ]]; then
+        source /ci/run-on-almalinux.sh
+    elif [[ "$ID" == "arch" ]]; then
         source /ci/run-on-archlinux.sh
     elif [[ "$ID" == "debian" ]]; then
         source /ci/run-on-debian.sh
