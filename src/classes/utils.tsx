@@ -98,7 +98,7 @@ export default class Utils {
     */
    static isContainer(): boolean {
       let isContainer = false
-      let pathToCheck='/ci/README.md'
+      let pathToCheck = '/ci/README.md'
       if (fs.existsSync(pathToCheck)) {
          isContainer = true
       }
@@ -109,9 +109,14 @@ export default class Utils {
     * Check if the system uses Systemd
     */
    static isSystemd(): boolean {
-      let isSystemd = true
+      let isSystemd = false
       if (!this.isContainer()) {
          isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
+      } else {
+         let distro = new Distro()
+         if (distro.distroId === "Devuan") {
+            isSystemd = false
+         }
       }
       return isSystemd
    }
@@ -124,6 +129,11 @@ export default class Utils {
       let isSysvinit = false
       if (!this.isContainer()) {
          isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      } else {
+         let distro = new Distro()
+         if (distro.distroId === "Devuan") {
+            isSysvinit = true
+         }
       }
       return isSysvinit
    }

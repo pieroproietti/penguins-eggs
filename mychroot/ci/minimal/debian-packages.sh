@@ -7,6 +7,20 @@ echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
 
+# check if we are on Debian/Devuan/Ubuntu
+if [ -f /etc/os-release ]; then
+	source /etc/os-release
+  if [[ "$ID" != "debian" && "$ID_LIKE" != *"debian"* ]]; then
+   	echo "This script is only for Debian/Devuan/Ubuntu based systems"
+   	exit
+	fi
+fi
+
+SYSVINIT_EMULATION="systemd-sysv"
+if [[ "$ID" == "devuan" ]]; then
+  SYSVINIT_EMULATION="sysvinit"
+fi
+
 # packages to be added for a minimal standard installation
 apt install \
     apt-listchanges \
@@ -100,7 +114,7 @@ apt install \
     reportbug \
     sensible-utils \
     sudo \
-    systemd-sysv \
+    $SYSVINIT_EMULATION \
     task-english \
     tasksel \
     tasksel-data \

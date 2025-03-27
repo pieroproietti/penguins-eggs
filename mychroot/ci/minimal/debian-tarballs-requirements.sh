@@ -15,6 +15,11 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
+LIVE_CONFIG_INIT_SYSTEM="live-config-systemd"
+if [[ "$ID" == "devuan" ]]; then
+  LIVE_CONFIG_INIT_SYSTEM="live-config-sysvinit"
+fi
+
 apt-get install -y \
     coreutils \
     cryptsetup \
@@ -27,7 +32,7 @@ apt-get install -y \
     live-boot \
     live-boot-doc \
     live-boot-initramfs-tools \
-    live-config-systemd \
+    $LIVE_CONFIG_INIT_SYSTEM \
     live-tools \
     lvm2 \
     parted \
