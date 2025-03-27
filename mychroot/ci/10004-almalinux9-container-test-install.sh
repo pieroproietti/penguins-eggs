@@ -35,8 +35,12 @@ dnf -y update
 # install shasum
 dnf install -y perl-Digest-SHA
 
-# We must install the same version of the host
- dnf -y install kernel
+# force install kernel on the Almalinux container
+mkdir /boot
+dnf -y install kernel 
+kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+dracut --force --kver $kernel_version
 
 # packages to be added for a minimum standard installation
 #source ./minimal/almalinux-packages.sh
