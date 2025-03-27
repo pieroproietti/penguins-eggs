@@ -107,7 +107,22 @@ class Distro implements IDistro {
       /**
        * Fedora/RHEL compatible
        */
-    } else if (this.distroId === 'Fedora') {
+    //} else if (this.distroId === 'Fedora') {
+    }  else if (this.distroId === 'Almalinux' ||
+        this.distroId === 'Fedora' ||
+        this.distroId === 'Nobara' ||
+        this.distroId === 'Rocky') {
+
+          /**
+         * Almalinux temp notes:
+         * install nodejs 18
+         * curl -fsSL https://rpm.nodesource.com/setup_18.x -o nodesource_setup.sh
+         * sudo bash nodesource_setup.sh
+         * 
+         * install shasum
+         * sudo dnf install -y perl-Digest-SHA
+         */
+
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
       this.codenameId = 'rolling' // viene rimosso dal nome
