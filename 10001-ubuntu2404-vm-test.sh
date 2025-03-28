@@ -16,10 +16,8 @@ whoami
 ###############################################################################################################
 npm install -g pnpm@latest-10
 pnpm install
-pnpm deb # -all 
-# pnpm tarballs
-rsync -a ./perrisbrewery/workdir/penguins-eggs_*_amd64.deb ./mychroot/ci/
-rsync -a ./dist/eggs-v*-linux-x64.tar.gz ./mychroot/ci/
+pnpm tarballs --release 15
+rsync -a ./dist/penguins-eggs_10.0.60-*-linux-x64.tar.gz ./mychroot/ci/
 ls -al ./mychroot/ci/
 #################################################################################################################
 ## TODO 0
@@ -50,7 +48,14 @@ sudo cat /etc/resolv.conf
 ## Unrecognised xattr prefix system.posix_acl_default
 ## see more or dowload the actions log
 cd $CMD_PATH
-sudo apt install -y ./mychroot/ci/penguins-eggs_*_amd64.deb
+
+# install penguins-eggs from tarballs no needing here, but...
+# packages to be added tarballs
+source ./mychroot/minimal/debian-tarballs-requirements.sh
+
+# installing ggs
+source ./mychroot/penguins-eggs-tarballs-install.sh
+
 mksquashfs -version
 sudo eggs dad -d
 sudo eggs produce --clone -n --verbose
