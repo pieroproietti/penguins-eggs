@@ -50,6 +50,6 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev almalinux:9 /ci/10004-almalinux9-container-test-install.sh
+podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev almalinux:9 /ci/run-on-almalinux.sh
 df -h
 date
