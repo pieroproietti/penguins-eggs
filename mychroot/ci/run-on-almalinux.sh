@@ -59,3 +59,5 @@ echo "TIPS use: eggs export iso -c"
 
 # save iso to the host server
 mv /home/eggs/.mnt/*.iso /ci/iso/
+ls -al /ci/iso/
+
