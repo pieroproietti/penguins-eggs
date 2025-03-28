@@ -20,4 +20,6 @@ podman run \
         /ci/run-on-opensuse.sh
         
 df -h
+ls -al $PWD/mychroot/ci/iso/
+# upload $PWD/mychroot/ci/iso/ to server or github
 date
