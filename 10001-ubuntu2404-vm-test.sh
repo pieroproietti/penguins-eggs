@@ -51,10 +51,12 @@ cd $CMD_PATH
 
 # install penguins-eggs from tarballs no needing here, but...
 # packages to be added tarballs
-sudo ./mychroot/ci/minimal/debian-tarballs-requirements.sh
+ls /
+sudo ln -s ./mychroot/ci /ci
+sudo /ci/minimal/debian-tarballs-requirements.sh
 
 # installing ggs
-sudo ./mychroot/ci/penguins-eggs-tarballs-install.sh
+sudo /ci/penguins-eggs-tarballs-install.sh
 
 mksquashfs -version
 sudo eggs dad -d
