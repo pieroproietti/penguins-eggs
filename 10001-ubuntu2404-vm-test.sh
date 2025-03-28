@@ -39,20 +39,11 @@ echo "nameserver 127.0.0.53" | sudo tee -a /etc/resolv.conf
 echo "options edns0 trust-ad" | sudo tee -a /etc/resolv.conf
 sudo cat /etc/resolv.conf
 
-
 #################################################################################################################
-## TODO 1
-## TEST 1
-## using eggs to remaster ubuntu server ubuntu-24.04
-## it failed now
-## Unrecognised xattr prefix system.posix_acl_default
-## see more or dowload the actions log
+# Every CI start from here...
+#################################################################################################################
+
 cd $CMD_PATH
-
-#################################################################################################################
-# Questo è l'inizio di ogni CI
-#################################################################################################################
-
 
 # install penguins-eggs from tarballs no needing here really, but...
 cd ./mychroot/ci
