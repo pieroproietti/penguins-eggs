@@ -49,7 +49,12 @@ sudo cat /etc/resolv.conf
 ## see more or dowload the actions log
 cd $CMD_PATH
 
-# install penguins-eggs from tarballs no needing here, but...
+#################################################################################################################
+# Questo è l'inizio di ogni CI
+#################################################################################################################
+
+
+# install penguins-eggs from tarballs no needing here really, but...
 cd ./mychroot/ci
 
 # packages to be added tarballs
@@ -57,10 +62,8 @@ sudo ./minimal/debian-tarballs-requirements.sh
 
 # installing ggs
 sudo ./penguins-eggs-tarballs-install.sh
-
-mksquashfs -version
 sudo eggs dad -d
-sudo eggs produce --clone -n --verbose
+sudo eggs produce --pendrive -n --verbose
 
 df -h
 date
