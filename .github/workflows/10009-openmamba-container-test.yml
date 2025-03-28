@@ -1,4 +1,4 @@
-name: 10007-devuan5-container-test
+name: 10009-openmamba-container-test
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 10007-devuan5-container-test
+    name: 10009-openmamba-container-test
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -16,9 +16,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-      - name: run 10007-devuan5-container-test.sh
+      - name: run 10009-openmamba-container-test.sh
         run: |
-          ./10007-devuan5-container-test.sh
+          ./10009-openmamba-container-test.sh
       - name: upload iso
         uses: actions/upload-artifact@v4
         with:

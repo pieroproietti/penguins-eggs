@@ -16,8 +16,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        archlinux:latest \
-        /ci/run-on-archlinux.sh
-
+        opensuse/tumbleweed:latest \
+        /ci/run-on-opensuse.sh
+        
 df -h
 date
