@@ -31,7 +31,37 @@ ff02::2    ip6-allrouters
 # penguins-eggs mininal requisites for debian bookworm
 
 cd $CMD_PATH
+apt update -y
+apt upgrade -y
 
-####################################################################################################################################
-# run-on-devuan
-source ./run-on-devuan.sh
+
+# We install latest kernel
+apt install linux-image-amd64 -y
+
+# init /usr/share/applications
+dpkg -S /usr/share/applications
+
+apt install python3 -y
+ls -al /usr/share/applications
+
+# fix linuxefi.mod
+apt-file update
+apt-file search linuxefi.mod
+apt install grub-efi-amd64-bin -y
+
+# packages to be added for a minimum standard installation
+source ./minimal/debian-packages.sh
+
+# packages to be added tarballs
+source ./minimal/debian-tarballs-requirements.sh
+
+# starting with eggs
+cd /ci/
+ls -al
+
+# installing eggs
+source ./penguins-eggs-tarballs-install.sh
+
+eggs dad -d
+eggs tools clean -n
+eggs produce --pendrive -n
