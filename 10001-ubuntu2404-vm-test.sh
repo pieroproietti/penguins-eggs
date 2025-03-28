@@ -50,13 +50,13 @@ sudo cat /etc/resolv.conf
 cd $CMD_PATH
 
 # install penguins-eggs from tarballs no needing here, but...
+cd ./mychroot/ci
+
 # packages to be added tarballs
-ls /
-sudo ln -s ./mychroot/ci /ci
-sudo /ci/minimal/debian-tarballs-requirements.sh
+sudo ./minimal/debian-tarballs-requirements.sh
 
 # installing ggs
-sudo /ci/penguins-eggs-tarballs-install.sh
+sudo ./penguins-eggs-tarballs-install.sh
 
 mksquashfs -version
 sudo eggs dad -d
