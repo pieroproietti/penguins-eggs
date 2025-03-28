@@ -50,6 +50,6 @@ cd $CMD_PATH
 which podman 
 podman --version
 df -h
-podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev archlinux:latest /ci/10006-archlinux-container-test-install.sh
+podman run --hostname minimal-ci --privileged --cap-add all --ulimit nofile=32000:32000 --pull=always -v $PWD/mychroot/ci:/ci -v /dev:/dev archlinux:latest /ci/run-on-archlinux.sh
 df -h
 date
