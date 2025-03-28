@@ -8,8 +8,8 @@ which podman
 podman --version
 df -h
 
-podman run 
-        --hostname minimal 
+podman run \
+        --hostname minimal \
         --privileged \
         --cap-add all \
         --ulimit nofile=32000:32000 \
@@ -18,6 +18,6 @@ podman run
         -v /dev:/dev \
         archlinux:latest \
         /ci/run-on-archlinux.sh
-        
+
 df -h
 date
