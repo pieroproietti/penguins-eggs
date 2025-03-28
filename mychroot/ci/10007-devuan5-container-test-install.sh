@@ -16,4 +16,4 @@ env
 pwd
 whoami
 
-source ./ci/run-on-devuan.sh
+source ./run-on-devuan.sh
