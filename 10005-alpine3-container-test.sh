@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -x
-source ./10000-ubuntu-container-base.sh
+source ./10000-ubuntu-ci-server.sh
 
 cd $CMD_PATH
 which podman 
