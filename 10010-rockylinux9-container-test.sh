@@ -16,8 +16,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        archlinux:latest \
-        /ci/run-on-archlinux.sh
-
+        rockylinux:9 \
+        /ci/run-on-rockylinux.sh
+        
 df -h
 date

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -x
-source ./10000-ubuntu-container-base.sh
+source ./10000-ubuntu-ci-server.sh
 
 cd $CMD_PATH
 which podman 
@@ -10,7 +10,7 @@ df -h
 
 podman run \
         --hostname minimal \
-        --privileged    
+        --privileged  \
         --cap-add all \
         --ulimit nofile=32000:32000 \
         --pull=always \
@@ -20,4 +20,6 @@ podman run \
         /ci/run-on-ubuntu.sh
 
 df -h
+ls -al $PWD/mychroot/ci/iso/
+# upload $PWD/mychroot/ci/iso/ to server or github
 date

@@ -16,8 +16,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        archlinux:latest \
-        /ci/run-on-archlinux.sh
-
+        openmamba/openmamba:latest \
+        /ci/run-on-openmamba.sh
+        
 df -h
 date
