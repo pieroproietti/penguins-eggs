@@ -19,4 +19,9 @@ jobs:
       - name: run 10001-ubuntu2404-vm-test.sh
         run: |
           ./10001-ubuntu2404-vm-test.sh
+      - name: export tarballs
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-tarballs
+          path: /ci/penguins-eggs_10*-linux-x64.tar.gz
       
