@@ -19,3 +19,5 @@ tmp
 mkinitcpio/*.img
 pod/ci/eggs-*
 pod/ci/.pnpm*
+mychroot/ci/iso/*.iso
+

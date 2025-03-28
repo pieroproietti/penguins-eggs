@@ -19,4 +19,9 @@ jobs:
       - name: run 10008-opensuse-tumbleweed-container-test.sh
         run: |
           ./10008-opensuse-tumbleweed-container-test.sh
+      - name: upload iso
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload iso
+          path: ./mychroot/ci/iso/*.iso
       
