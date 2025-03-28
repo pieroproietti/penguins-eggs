@@ -1,0 +1,22 @@
+name: 10003-debian12-container-test
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 10003-debian12-container-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: run 10008-debian12-container-test.sh
+        run: |
+          ./10008-debian12-container-test.sh
+      
