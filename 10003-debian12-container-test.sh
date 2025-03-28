@@ -39,13 +39,10 @@ echo "nameserver 127.0.0.53" | sudo tee -a /etc/resolv.conf
 echo "options edns0 trust-ad" | sudo tee -a /etc/resolv.conf
 sudo cat /etc/resolv.conf
 
+#################################################################################################################
+# Every CI start from here...
+#################################################################################################################
 
-######################################################################################################################
-## TODO 2
-## TEST 2
-## using contaner image ubuntu ubuntu:24.04 on ci hosted server ubuntu-24.04 
-## install same kernal with the host of the ci server
-## it failed now
 cd $CMD_PATH
 which podman 
 podman --version
