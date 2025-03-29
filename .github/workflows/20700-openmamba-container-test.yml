@@ -10,7 +10,7 @@
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
 
-name: 20007-openmamba
+name: 20700-openmamba
 
 on:
   # auto test and just run ,don't commnet it,ignore them
@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    name: 20007 Openmamba build system
+    name: 20700-openmamba-build
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -31,12 +31,12 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./20007-openmamba-container-test.sh
-      - name: ISO export
+          ./20700-openmamba-container-test.sh
+      - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_openmamba-minimal_amd64_latest
-          path: ./mychroot/ci/iso/egg-of*.iso
+          name: 20700-openmamba-upload
+          path: ./mychroot/ci/iso/*.iso
           retention-days: 1
           if-no-files-found: warn
           compression-level: 0

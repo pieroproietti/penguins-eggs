@@ -9,7 +9,7 @@
 ### 7. if you want to change this file, add a new pull request and @gnuhub don't merge it
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
-name: 20011-manjarolinux
+name: 21100-manjarolinux
 
 on:
   # push:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   build:
-    name: 20011 manjarolinux build system
+    name: 21100-manjarolinux-build
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -29,12 +29,12 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./20011-manjarolinux-container-test.sh
-      - name: ISO export
+          ./21100-manjarolinux-container-test.sh
+      - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_manjarolinux-minimal_amd64_latest
-          path: ./mychroot/ci/iso/egg-of*.iso
+          name: 21100-manjarolinux-upload
+          path: ./mychroot/ci/iso/*.iso
           retention-days: 1
           if-no-files-found: warn
           compression-level: 0

@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    name: 20402 debian11 build system
+    name: 20402-debian11-build
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -31,11 +31,11 @@ jobs:
       - name: ISO build
         run: |
           ./20402-debian11-container-test.sh
-      - name: ISO export
+      - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_debian11-minimal_amd64_latest
-          path: ./mychroot/ci/iso/egg-of*.iso
+          name: 20402-debian11-upload
+          path: ./mychroot/ci/iso/*.iso
           retention-days: 1
           if-no-files-found: warn
           compression-level: 0
