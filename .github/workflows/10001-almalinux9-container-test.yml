@@ -22,7 +22,7 @@ jobs:
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: ISO upload
+          name: egg-of_almalinux-9.5-naked_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn
