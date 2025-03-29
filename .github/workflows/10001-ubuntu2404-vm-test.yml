@@ -24,5 +24,5 @@ jobs:
         with:
           name: my-tarballs
           path: ./mychroot/ci/penguins-eggs_10.0.*-linux-x64.tar.gz
-
+          retention-days: 1
       

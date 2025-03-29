@@ -10,19 +10,21 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # check if we are on rocky or almalinux
-if [ ! -f /etc/rocky-release ]; then
-    if [ ! -f /etc/almalinux-release ]; then
-        echo "This script is intended for rockylinux or almalinux!"
-        exit 1
+if [ ! -f /etc/almalinux-release ]; then
+    if [ ! -f /etc/fedora-release ]; then
+        if [ ! -f /etc/rocky-release ]; then
+            echo "This script is intended for almalinux, rocky or fedora!"
+            exit 1
+        fi
     fi
 fi
 
 # Create /opt if not exists
 if [ ! -d "/usr/share/applications" ]; then
-    mkdir //usr/share/applications -p
+    mkdir /usr/share/applications -p
 fi
-
 
 # packages to be added for a minimal standard installation
 dnf install -y \
-  sudo
+    nano \
+    sudo

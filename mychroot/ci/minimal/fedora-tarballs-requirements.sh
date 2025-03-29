@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script installs prerequisites for penguins-eggs
-# on almalinux/rocky, it is intended for development purposes 
+# on fedora linux, it is intended for development purposes 
 
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then
@@ -9,35 +9,25 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# check if we are on rocky or almalinux
-if [ ! -f /etc/almalinux-release ]; then
-    if [ ! -f /etc/rocky-release ]; then
-        echo "This script is intended for almalinux or rocky!"
-        exit 1
+# check if we are on fedora or NobaraLinux
+if [ ! -f /etc/fedora-release ]; then
+    if [ ! -f /etc/nobara-release ]; then
+        if [ ! -f /etc/openmamba-release ]; then
+            echo "This script is intended for fedora, nobara or openmamba!"
+            exit 1
+        fi
     fi
 fi
-
-
-
-# add epel-release
-dnf -y install epel-release 
-
-# enable crb
-dnf config-manager --set-enabled crb
 
 # update
 dnf -y update
 
-# enable crb
-dnf config-manager --set-enabled crb
-
-
-# remove curl for conflicts
-dnf --allowerasing -y install \
+dnf -y --no-best install \
     bash-completion \
     cryptsetup \
     curl \
     device-mapper \
+    dmraid \
     dosfstools \
     dracut \
     dracut-live \
@@ -45,18 +35,18 @@ dnf --allowerasing -y install \
     fuse \
     git \
     grub2-efi-x64 \
-    grub2-efi-modules \
     grub2-efi-x64-modules \
     grub2-tools-extra \
     jq \
     lvm2 \
     nvme-cli \
+    overlayfs-tools \
     parted \
     rsync \
     shim \
     squashfs-tools \
+    systemd-boot \
     sshfs \
-    tar \
     wget \
     xdg-user-dirs \
     xorriso \

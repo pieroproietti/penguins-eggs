@@ -24,4 +24,5 @@ jobs:
         with:
           name: upload iso
           path: ./mychroot/ci/iso/*.iso
+          retention-days: 1
       
