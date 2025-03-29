@@ -42,11 +42,10 @@ cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
 dracut --force --kver $kernel_version
 
 # packages to be added for a minimum standard installation
-#source ./minimal/almalinux-packages.sh
-
+source ./minimal/almalinux-packages.sh
 
 # packages to be added tarballs
-source ./minimal/almalinux-tarballs-requirements.sh
+source ./minimal/fedora-tarballs-requirements.sh
 
 # installing ggs
 source ./penguins-eggs-tarballs-install.sh

@@ -19,4 +19,4 @@ jobs:
       - name: run 10002-ubuntu2404-container-test.sh
         run: |
           ./10002-ubuntu2404-container-test.sh
-      
+          retention-days: 1      
