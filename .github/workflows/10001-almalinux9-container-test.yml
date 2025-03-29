@@ -18,7 +18,7 @@ jobs:
           node-version: 18.x
       - name: Almalinux build ISO
         run: |
-          ./10001-almalinux9-container-test
+          ./10001-almalinux9-container-test.sh
       - name: export tarballs
         uses: actions/upload-artifact@v4
         with:
