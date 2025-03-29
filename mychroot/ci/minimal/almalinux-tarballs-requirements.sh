@@ -33,9 +33,10 @@ dnf config-manager --set-enabled crb
 
 
 # remove curl for conflicts
-dnf -y install \
+dnf --allowerasing -y install \
     bash-completion \
     cryptsetup \
+    curl \
     device-mapper \
     dosfstools \
     dracut \
