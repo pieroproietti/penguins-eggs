@@ -1,7 +1,7 @@
 name: 20006-fedora41
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:
