@@ -17,7 +17,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         debian:12.9 \
-        /ci/run-on-debian.sh
+        /ci/run-build-package-debs.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/
