@@ -52,7 +52,6 @@ apt install grub-efi-amd64-bin -y
 # packages to be added for a minimum standard installation
 source ./minimal/debian-packages.sh
 
-
 # packages to be added tarballs
 source ./minimal/debian-tarballs-requirements.sh
 
@@ -66,5 +65,5 @@ eggs produce --pendrive -n
 echo "TIPS use: eggs export iso -c"
 
 # save iso to the host server
-#mv /home/eggs/.mnt/*.iso /ci/iso/
-#ls -al /ci/iso/
+mv /home/eggs/.mnt/*.iso /ci/iso/
+ls -al /ci/iso/
