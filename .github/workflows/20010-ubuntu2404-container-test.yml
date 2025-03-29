@@ -1,7 +1,7 @@
 name: 20010-ubuntu2404
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:

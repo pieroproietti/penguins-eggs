@@ -1,7 +1,7 @@
 name: 20003-archlinux
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:

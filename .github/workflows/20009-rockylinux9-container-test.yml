@@ -1,7 +1,7 @@
 name: 20009-rockylinux
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:
