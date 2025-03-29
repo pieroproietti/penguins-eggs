@@ -1,0 +1,32 @@
+name: 10006-fedora41
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 10006 Fedora build system
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: Setup nodejs 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: ISO build
+        run: |
+          ./10006-fedora41-container-test.sh
+      - name: ISO export
+        uses: actions/upload-artifact@v4
+        with:
+          name: ISO upload
+          path: ./mychroot/ci/iso/egg-of*.iso
+          retention-days: 1
+          if-no-files-found: warn
+          compression-level: 0
+          overwrite: true
+          include-hidden-files: false          
+      
