@@ -1,7 +1,7 @@
 name: 20007-openmamba
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:
