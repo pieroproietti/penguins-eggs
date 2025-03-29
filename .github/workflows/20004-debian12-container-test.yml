@@ -1,4 +1,4 @@
-name: 10005-devuan5
+name: 20004-debian12
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 10005 Devuan 5 build system
+    name: 20004 Debian12 build system
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -18,11 +18,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./10005-devuan5-container-test.sh
+          ./20004-debian12-container-test.sh
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_devuan-daedalus-minimal_amd64_latest
+          name: egg-of_debian-bookworm-minimal_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn

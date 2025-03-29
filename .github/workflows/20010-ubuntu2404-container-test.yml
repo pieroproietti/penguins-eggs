@@ -1,4 +1,4 @@
-name: 10007-openmamba
+name: 20010-ubuntu2404
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 10007 Openmamba build system
+    name: 20010 Ubuntu 24.04 build system
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -18,11 +18,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./10007-openmamba-container-test.sh
+          ./20010-ubuntu2404-container-test.sh
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_openmamba-minimal_amd64_latest
+          name: egg-of_ubuntu-noble-minimal_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn
