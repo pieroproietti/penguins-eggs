@@ -1,4 +1,4 @@
-name: 10006-fedora41
+name: 20007-openmamba
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 10006 Fedora build system
+    name: 20007 Openmamba build system
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -18,11 +18,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./10006-fedora41-container-test.sh
+          ./20007-openmamba-container-test.sh
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_fedora-41-minimal_amd64_latest
+          name: egg-of_openmamba-minimal_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn
