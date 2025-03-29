@@ -22,7 +22,7 @@ jobs:
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_opensuse-tumbleweed-naked_amd64_latest
+          name: egg-of_opensuse-tumbleweed-minimal_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn
