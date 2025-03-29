@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Almalinux build system
+    name: 10001 Almalinux build system
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -27,6 +27,6 @@ jobs:
           retention-days: 1
           if-no-files-found: warn
           compression-level: 0
-          overwrite: false
+          overwrite: true
           include-hidden-files: false          
       
