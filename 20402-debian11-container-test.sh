@@ -16,7 +16,7 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        debian:12.9 \
+        debian:11 \
         /ci/run-on-debian.sh
 
 df -h
