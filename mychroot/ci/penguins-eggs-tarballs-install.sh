@@ -15,6 +15,11 @@ else
     source ./penguins-eggs-tarballs-build.sh
 fi
 
+# Create /opt if not exists
+if [ ! -d "/opt" ]; then
+    mkdir /opt
+fi
+
 # Rimozione di /opt/penguins-eggs se esiste
 if [ -d "$PENGUINS_EGGS_INSTALL_DIR" ]; then
     rm -rf "$PENGUINS_EGGS_INSTALL_DIR"

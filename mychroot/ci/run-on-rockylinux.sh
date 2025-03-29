@@ -42,7 +42,7 @@ cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
 dracut --force --kver $kernel_version
 
 # packages to be added for a minimum standard installation
-#source ./minimal/almalinux-packages.sh
+source ./minimal/almalinux-packages.sh
 
 
 # packages to be added tarballs
@@ -58,6 +58,6 @@ eggs produce --pendrive -n
 echo "TIPS use: eggs export iso -c"
 
 # save iso to the host server
-mv /home/eggs/.mnt/*.iso /ci/iso/
-ls -al /ci/iso/
+# mv /home/eggs/.mnt/*.iso /ci/iso/
+# ls -al /ci/iso/
 
