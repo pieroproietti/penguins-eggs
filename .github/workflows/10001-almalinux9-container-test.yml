@@ -23,6 +23,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ISO upload
-          path: ./mychroot/iso/egg-of*.iso
+          path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
+          if-no-files-found: warn
+          compression-level: 0
+          overwrite: false
+          include-hidden-files: false          
       
