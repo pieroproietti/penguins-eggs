@@ -1,7 +1,7 @@
 name: 20004-debian12
 
 on:
-  push:
+  # push:
   workflow_dispatch:
 
 jobs:
