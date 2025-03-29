@@ -16,8 +16,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        fedora:41 \
-        /ci/run-on-fedora.sh
+        ghcr.io/ultramarine-linux/ultramarine-minimal:x86_64-latest \
+        /ci/run-on-ultramarine.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
