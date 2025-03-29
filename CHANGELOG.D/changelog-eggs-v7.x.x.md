@@ -262,7 +262,7 @@ improvment: added in eggs fuctions who was before in penguins-tools. Don't get w
 Here we are:
 * export:deb export debian packages (only for developers)
 * export:docs export documentation (only developers)
-* export:ISO uploading iso image created via scp in accord with configuration in /etc/penguins-eggs.d/tools.yaml
+* export:iso exporting iso image created via scp in accord with configuration in /etc/penguins-eggs.d/tools.yaml
 
 improvment. Introducing a tools command to reach the following commands, part of them was present before, other addedd:
 * tools:clean like previous eggs clean
