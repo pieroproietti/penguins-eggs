@@ -1,4 +1,4 @@
-name: 20100-almalinux9
+name: 20102-almalinux9
 
 on:
   # push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: 20100 Almalinux build system
+    name: 20102 almalinux8 build system
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -18,11 +18,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./20100-almalinux9-container-test.sh
+          ./20102-almalinux8-container-test.sh
       - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: egg-of_almalinux-9.5-minimal_amd64_latest
+          name: egg-of_almalinux8-minimal_amd64_latest
           path: ./mychroot/ci/iso/egg-of*.iso
           retention-days: 1
           if-no-files-found: warn
