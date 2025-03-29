@@ -16,13 +16,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
-      - name: Almalinux build ISO
+      - name: ISO build
         run: |
           ./10001-almalinux9-container-test.sh
-      - name: export tarballs
+      - name: ISO export
         uses: actions/upload-artifact@v4
         with:
-          name: Export ISO
-          path: ./mychroot/ci/egg-of*.iso
+          name: ISO upload
+          path: ./mychroot/iso/egg-of*.iso
           retention-days: 1
       
