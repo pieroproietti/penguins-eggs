@@ -30,6 +30,7 @@ podman run \
     --rm \
     -it \
     -v /dev:/dev \
+    -v ../local-dev:/local-dev \
     -v ../mychroot/ci:/ci \
     $YOLK \
     ubuntu \
