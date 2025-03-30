@@ -27,7 +27,7 @@ podman run
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         alpine:3 \
-        /ci/run-on-alpine.sh
+        /ci/30002.run-on-alpine.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

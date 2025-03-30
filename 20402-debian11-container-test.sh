@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         debian:11 \
-        /ci/run-on-debian.sh
+        /ci/30004.run-on-debian.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

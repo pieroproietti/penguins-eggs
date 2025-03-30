@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         ubuntu:24.04 \
-        /ci/run-on-ubuntu.sh
+        /ci/30013.run-on-ubuntu.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

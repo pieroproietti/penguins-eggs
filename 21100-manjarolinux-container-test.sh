@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         manjarolinux/base:latest \
-        /ci/run-on-manjarolinux.sh
+        /ci/30008.run-on-manjarolinux.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

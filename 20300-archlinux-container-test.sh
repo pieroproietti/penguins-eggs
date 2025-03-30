@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         archlinux:latest \
-        /ci/run-on-archlinux.sh
+        /ci/30003.run-on-archlinux.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

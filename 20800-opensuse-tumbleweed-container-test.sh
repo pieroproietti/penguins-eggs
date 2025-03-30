@@ -28,7 +28,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         opensuse/tumbleweed:latest \
-        /ci/run-on-opensuse.sh
+        /ci/30010.run-on-opensuse.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

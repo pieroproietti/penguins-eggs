@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         nycticoracs/pop_os:latest \
-        /ci/run-on-popos.sh
+        /ci/30011.run-on-popos.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

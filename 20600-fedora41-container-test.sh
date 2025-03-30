@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         fedora:41 \
-        /ci/run-on-fedora.sh
+        /ci/30006.run-on-fedora.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

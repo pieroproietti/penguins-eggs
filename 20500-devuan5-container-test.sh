@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         devuan/devuan:daedalus \
-        /ci/run-on-devuan.sh
+        /ci/30005.run-on-devuan.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

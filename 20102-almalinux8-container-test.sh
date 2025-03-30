@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         almalinux:8 \
-        /ci/run-on-almalinux.sh
+        /ci/30001.run-on-almalinux.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

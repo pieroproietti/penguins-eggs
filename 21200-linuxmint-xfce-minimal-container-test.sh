@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         dockerscripts/linuxmint:xfce-minimal \
-        /ci/run-on-linuxmint.sh
+        /ci/30007.run-on-linuxmint.sh
 
 df -h
 ls -al $PWD/mychroot/ci/iso/

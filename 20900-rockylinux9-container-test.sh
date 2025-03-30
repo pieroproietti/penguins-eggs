@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         rockylinux:9 \
-        /ci/run-on-rockylinux.sh
+        /ci/30012.run-on-rockylinux.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

@@ -27,7 +27,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         openmamba/openmamba:latest \
-        /ci/run-on-openmamba.sh
+        /ci/30009.run-on-openmamba.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
