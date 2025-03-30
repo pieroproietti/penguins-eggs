@@ -18,7 +18,7 @@ which podman
 podman --version
 df -h
 
-podman run 
+podman run \
         --hostname minimal \
         --privileged \
         --cap-add all \
