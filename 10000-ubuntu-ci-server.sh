@@ -27,7 +27,7 @@ whoami
 # don't delete them agiin
 npm install -g pnpm@latest-10
 pnpm install
-pnpm deb -all --release=$GITHUB_RUN_NUMBER
+pnpm deb -all -r $GITHUB_RUN_NUMBER
 pnpm tarballs --release $GITHUB_RUN_NUMBER
 rsync -a ./perrisbrewery/workdir/*.deb ./mychroot/ci/
 rsync -a ./dist/*.tar.gz ./mychroot/ci/
