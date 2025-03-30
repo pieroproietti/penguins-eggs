@@ -17,7 +17,7 @@ on:
     branches:
       - 'master'
   workflow_dispatch:
-  
+
 jobs:
   build:
     name: 20600-fedora41-build
