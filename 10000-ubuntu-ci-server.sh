@@ -25,6 +25,8 @@ whoami
 # don't delete debs or tarballs, they are both needs for tests[ vm (deb) and container(tarball) ]
 # multiple arch (podman --platform linux/386 linux/amd64 )
 # don't delete them agiin
+npm install -g pnpm@latest-10
+pnpm install
 pnpm deb -all --release $GITHUB_RUN_NUMBER
 pnpm tarballs --release $GITHUB_RUN_NUMBER
 rsync -a ./perrisbrewery/workdir/*.deb ./mychroot/ci/
