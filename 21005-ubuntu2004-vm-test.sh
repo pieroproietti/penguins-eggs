@@ -14,22 +14,10 @@ set -x
 source ./10000-ubuntu-ci-server.sh
 
 cd $CMD_PATH
-which podman 
-podman --version
-df -h
+sudo apt install -y ./mychroot/ci/penguins-eggs_*_amd64.deb
+mksquashfs -version
+sudo eggs dad -d
+sudo eggs produce --clone -n --verbose
 
-podman run \
-        --hostname minimal \
-        --privileged \
-        --cap-add all \
-        --ulimit nofile=32000:32000 \
-        --pull=always \
-        -v $PWD/mychroot/ci:/ci \
-        -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
-        
 df -h
-ls -al $PWD/mychroot/ci/iso/
-# upload $PWD/mychroot/ci/iso/ to server or github
 date

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 ## WARNING WHEN CHANGING CI FILES
 
 ### 1. don't change ci files if you are not sure
@@ -10,26 +9,27 @@
 ### 7. if you want to change this file, add a new pull request and @gnuhub don't merge it
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
-set -x
-source ./10000-ubuntu-ci-server.sh
+name: 21003-ubuntu2404-vm-test
 
-cd $CMD_PATH
-which podman 
-podman --version
-df -h
+on:
+  # auto test master and just run ,don't commnet it,ignore them
+  push:
+    branches:
+      - 'master'
+  workflow_dispatch:
 
-podman run \
-        --hostname minimal \
-        --privileged \
-        --cap-add all \
-        --ulimit nofile=32000:32000 \
-        --pull=always \
-        -v $PWD/mychroot/ci:/ci \
-        -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
-        
-df -h
-ls -al $PWD/mychroot/ci/iso/
-# upload $PWD/mychroot/ci/iso/ to server or github
-date
+jobs:
+  build:
+    name: 21003-ubuntu2404-vm-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7200
+    steps:
+      - name: Check Out Repo 
+        uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+      - name: run 21003-ubuntu2404-vm-test.sh
+        run: |
+          ./21003-ubuntu2404-vm-test.sh

@@ -20,15 +20,15 @@ df -h
 
 podman run \
         --hostname minimal \
-        --privileged \
+        --privileged  \
         --cap-add all \
         --ulimit nofile=32000:32000 \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
-        
+        nycticoracs/pop_os:latest \
+        /ci/30011.run-on-popos.sh
+
 df -h
 ls -al $PWD/mychroot/ci/iso/
 # upload $PWD/mychroot/ci/iso/ to server or github

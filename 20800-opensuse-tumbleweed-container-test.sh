@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 ## WARNING WHEN CHANGING CI FILES
+## WARNING WHEN CHANGING CI FILES
 
 ### 1. don't change ci files if you are not sure
 ### 2. don't change ci files if it is not necessary
@@ -26,8 +27,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
+        opensuse/tumbleweed:latest \
+        /ci/30010.run-on-opensuse.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
