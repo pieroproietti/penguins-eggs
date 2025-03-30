@@ -22,10 +22,13 @@ env
 whoami
 
 ###############################################################################################################
-npm install -g pnpm@latest-10
-pnpm install
-pnpm tarballs --release 15
-rsync -a ./dist/penguins-eggs_10.0.60-*-linux-x64.tar.gz ./mychroot/ci/
+# don't delete debs or tarballs, they are both needs for tests[ vm (deb) and container(tarball) ]
+# multiple arch (podman --platform linux/386 linux/amd64 )
+# don't delete them agiin
+pnpm deb -all --release $GITHUB_RUN_NUMBER
+pnpm tarballs --release $GITHUB_RUN_NUMBER
+rsync -a ./perrisbrewery/workdir/*.deb ./mychroot/ci/
+rsync -a ./dist/*.tar.gz ./mychroot/ci/
 ls -al ./mychroot/ci/
 #################################################################################################################
 ## TODO 0
