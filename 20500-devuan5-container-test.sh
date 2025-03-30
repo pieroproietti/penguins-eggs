@@ -26,8 +26,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
+        devuan/devuan:daedalus \
+        /ci/30005.run-on-devuan.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

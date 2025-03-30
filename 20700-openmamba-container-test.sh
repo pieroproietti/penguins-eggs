@@ -26,8 +26,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
+        openmamba/openmamba:latest \
+        /ci/30009.run-on-openmamba.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/

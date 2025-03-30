@@ -9,7 +9,7 @@
 ### 7. if you want to change this file, add a new pull request and @gnuhub don't merge it
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
-name: 21001-ubuntu2204
+name: 20200-alpine3
 
 on:
   # auto test master and just run ,don't commnet it,ignore them
@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    name: 21001-ubuntu2204-build
+    name: 20200-alpine3-build
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -32,11 +32,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./21001-ubuntu2204-container-test.sh
+          ./20200-alpine3-container-test.sh
       - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
-          name:  21001-ubuntu2204-upload
+          name: 20200-alpine3-upload
           path: ./mychroot/ci/iso/*.iso
           retention-days: 1
           if-no-files-found: warn

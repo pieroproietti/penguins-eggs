@@ -26,8 +26,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        almalinux:10-kitten \
-        /ci/30001.run-on-almalinux.sh
+        fedora:41 \
+        /ci/30006.run-on-fedora.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
