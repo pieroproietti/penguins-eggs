@@ -19,7 +19,7 @@ if [ -f /etc/os-release ]; then
         source /ci/*run-on-fedora.sh
     elif [[ "$ID" == "rocky" ]]; then
         source /ci/run-on-rockylinux.sh
-    elif [[ "$ID" =*= "ubuntu" ]]; then
+    elif [[ "$ID" == "ubuntu" ]]; then
         source /ci/*run-on-ubuntu.sh
     else
         echo "distro not supported"
