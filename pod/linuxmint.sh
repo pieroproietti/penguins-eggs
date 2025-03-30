@@ -9,9 +9,20 @@ cd $CMD_PATH
 
 source ci/penguins-eggs-tarballs-replace.sh
 
+# define YOLK if ubuntu
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "ubuntu" ]]; then
+        DEST="/var/local/yolk"
+        if [ ! -d $DEST ]; then
+            sudo mkdir -p $DEST
+        fi
+        YOLK="-v $DEST:$DEST"
+    fi
+fi
 
 podman run \
-    --hostname minimal \
+    --hostname xfce \
     --privileged \
     --cap-add all \
     --ulimit nofile=32000:32000 \
@@ -19,9 +30,9 @@ podman run \
     --rm \
     -it \
     -v /dev:/dev \
-    -v ../local-dev:/local-dev \
     -v ../mychroot/ci:/ci \
-    openmamba/openmamba:latest \
+    $YOLK \
+    dockerscripts/linuxmint:xfce-minimal \
     bash
 
 # interactive session
@@ -32,4 +43,3 @@ which podman
 podman --version
 df -h
 date
-

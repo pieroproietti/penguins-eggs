@@ -12,7 +12,7 @@ source ci/penguins-eggs-tarballs-replace.sh
 # define YOLK if Debian
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [[ "$ID" == "devuan" ]]; then
+    if [[ "$ID" == "debian" ]]; then
         DEST="/var/local/yolk"
         if [ ! -d $DEST ]; then
             sudo mkdir -p $DEST
@@ -30,10 +30,9 @@ podman run \
     --rm \
     -it \
     -v /dev:/dev \
-    -v ../local-dev:/local-dev \
     -v ../mychroot/ci:/ci \
     $YOLK \
-    devuan/devuan:daedalus \
+    debian \
     bash
 
 # interactive session

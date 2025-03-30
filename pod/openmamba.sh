@@ -9,17 +9,6 @@ cd $CMD_PATH
 
 source ci/penguins-eggs-tarballs-replace.sh
 
-# define YOLK if Debian
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    if [[ "$ID" == "debian" ]]; then
-        DEST="/var/local/yolk"
-        if [ ! -d $DEST ]; then
-            sudo mkdir -p $DEST
-        fi
-        YOLK="-v $DEST:$DEST"
-    fi
-fi
 
 podman run \
     --hostname minimal \
@@ -30,10 +19,8 @@ podman run \
     --rm \
     -it \
     -v /dev:/dev \
-    -v ../local-dev:/local-dev \
     -v ../mychroot/ci:/ci \
-    $YOLK \
-    debian \
+    openmamba/openmamba:latest \
     bash
 
 # interactive session
