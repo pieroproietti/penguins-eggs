@@ -32,7 +32,7 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./20900-rockyl20900-container-test.sh
+          ./20900-rockylinux9-container-test.sh
       - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
