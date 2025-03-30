@@ -12,9 +12,12 @@
 name: 20102-almalinux8
 
 on:
-  # auto test and just run ,don't commnet it,ignore them
+  # auto test master and just run ,don't commnet it,ignore them
   push:
+    branches:
+      - 'master'
   workflow_dispatch:
+  
 jobs:
   build:
     name: 20102-almalinux8-build

@@ -12,7 +12,10 @@
 name: 21200-linuxmint-xfce-minimal
 
 on:
-  # push:
+  # auto test master and just run ,don't commnet it,ignore them
+  push:
+    branches:
+      - 'master'
   workflow_dispatch:
 
 jobs:

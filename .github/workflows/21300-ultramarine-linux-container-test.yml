@@ -12,7 +12,10 @@
 name: 21300-ultramarine-linux
 
 on:
-  # push:
+  # auto test master and just run ,don't commnet it,ignore them
+  push:
+    branches:
+      - 'master'
   workflow_dispatch:
 
 jobs:
