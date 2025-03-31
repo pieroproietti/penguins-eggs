@@ -12,8 +12,11 @@
 name: 21004-ubuntu2204-vm-test
 
 on:
-  # auto test master and just run ,don't commnet it,ignore them
   push:
+    paths-ignore:
+      - '*.md'
+      - '*.txt'
+      - '.github/**'
     branches:
       - 'master'
   workflow_dispatch:

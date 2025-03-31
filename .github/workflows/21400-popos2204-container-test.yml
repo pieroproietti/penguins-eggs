@@ -12,8 +12,11 @@
 name: 21400-popos2204
 
 on:
-  # auto test master and just run ,don't commnet it,ignore them
   push:
+    paths-ignore:
+      - '*.md'
+      - '*.txt'
+      - '.github/**'
     branches:
       - 'master'
   workflow_dispatch:
