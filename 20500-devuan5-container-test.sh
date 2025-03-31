@@ -11,8 +11,14 @@
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
 set -x
-source ./10000-ubuntu-ci-server.sh
+#source ./10000-ubuntu-ci-server.sh
 
+set -x
+export CMD_PATH=$(cd `dirname $0`; pwd)
+export PROJECT_NAME="${CMD_PATH##*/}"
+echo $PROJECT_NAME
+cd $CMD_PATH
+###############
 cd $CMD_PATH
 which podman 
 podman --version
@@ -26,8 +32,8 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        devuan/devuan:daedalus \
-        /ci/30005.run-on-devuan.sh
+        docker.io/devuan/devuan:daedalus \
+        /ci/ovrelay.test.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
