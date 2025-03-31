@@ -43,7 +43,7 @@ export default class Love extends Command {
     // No sudo!
     if (process.getuid && process.getuid() === 0) {
       Utils.warning(`You must be kind in love, please don't use sudo!`)
-      process.exit(0)
+      // process.exit(0)
     }
       
     let loveConf='/etc/penguins-eggs.d/love.yaml'

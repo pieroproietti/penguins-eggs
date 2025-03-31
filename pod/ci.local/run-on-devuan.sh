@@ -61,14 +61,5 @@ source ./minimal/debian-tarballs-requirements.sh
 # installing ggs
 source ./penguins-eggs-tarballs-install.sh
 
-# using eggs
-eggs dad -d
-eggs tools clean -n
-eggs produce --pendrive --verbose -n
-if [ $1==local ]; then
-    echo "TIPS use: eggs export iso -c"
-else
-    mv /home/eggs/.mnt/*.iso /ci/iso/
-    ls -al /ci/iso/
-fi
-
+# execute eggs
+source ./penguins-eggs-execute.sh $1
