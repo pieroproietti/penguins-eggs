@@ -17,8 +17,8 @@ perrisbrewery/workdir/*
 !perrisbrewery/workdir/.gitkeep
 tmp
 mkinitcpio/*.img
-pod/ci.local/*.tar.gz
-pod/ci.local/.pnpm*
+pods/ci.local/*.tar.gz
+pods/ci.local/.pnpm*
 mychroot/ci/iso/*.tar.gz
 mychroot/ci/iso/*.iso
 

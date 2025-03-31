@@ -5,6 +5,7 @@ export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
+export DEBIAN_FRONTEND=noninteractive
 
 ####################################################################################################################################
 # 1 check
@@ -30,24 +31,34 @@ ff02::2    ip6-allrouters
 # penguins-eggs mininal requisites for debian bookworm
 
 cd $CMD_PATH
-pacman -Syu --noconfirm
+apt update -y
+apt upgrade -y
 
-# packages to be added for a minimum standard installation
 
 # We must install the same version of the host
-pacman -S  --noconfirm linux
+apt install linux-image-amd64 -y
 
-# packages minimal
-source ./minimal/archlinux-packages.sh
+# init /usr/share/applications
+dpkg -S /usr/share/applications
+
+apt install python3 -y
+ls -al /usr/share/applications
+
+# fix linuxefi.mod
+apt-file update
+apt-file search linuxefi.mod
+apt install grub-efi-amd64-bin -y
+
+# packages to be added for a minimum standard installation
+source ./minimal/debian-packages.sh
 
 # packages to be added tarballs
-source ./minimal/archlinux-tarballs-requirements.sh
+source ./minimal/debian-tarballs-requirements.sh
 
-# shasum fix
-ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
-
-# installing ggs
+# installing eggs
 source ./penguins-eggs-tarballs-install.sh
+
+
 
 # execute eggs
 source ./penguins-eggs-execute.sh $1
