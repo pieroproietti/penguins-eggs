@@ -12,11 +12,10 @@ if ls $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
     echo "penguins-eggs tarballs present"
 else
     echo "penguins-eggs tarballs building"
-    pnpm tarballs --relese 15
+    pnpm tarballs --release 15
 fi
-# copu in ci.local
+# copy tarballs in ci.local
 cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
-
 
 podman run \
     --hostname minimal \
@@ -30,4 +29,4 @@ podman run \
     -v ./ci.local:/ci \
     $YOLK \
     $IMAGE \
-    bash
+    sh -c "/ci/run; exec bash"

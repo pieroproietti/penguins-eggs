@@ -17,5 +17,5 @@ if [ -f /etc/os-release ]; then
     fi
 fi
 
-IMAGE=ubuntu
+IMAGE="ubuntu:24.04"
 source podman.command.sh

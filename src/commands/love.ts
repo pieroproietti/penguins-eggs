@@ -13,6 +13,7 @@ import path from 'node:path'
 
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
+
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -40,10 +41,13 @@ export default class Love extends Command {
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    // No sudo!
+    let sudoCmd = ''
     if (process.getuid && process.getuid() === 0) {
-      Utils.warning(`You must be kind in love, please don't use sudo!`)
-      // process.exit(0)
+      sudoCmd = ''
+    } else if (fs.existsSync('/usr/bin/sudo')) {
+      sudoCmd = 'sudo'
+    } else if (fs.existsSync('/usr/bin/doas')) {
+      sudoCmd = 'doas'
     }
       
     let loveConf='/etc/penguins-eggs.d/love.yaml'
@@ -55,7 +59,7 @@ export default class Love extends Command {
     console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
-      console.log(`- ${cmd}`)
+      console.log(`- ${sudoCmd} ${cmd}`)
     }
 
     console.log()

@@ -1,8 +1,8 @@
 # Penguins' eggs
 # love.yaml
 ---
-- sudo eggs kill
-- sudo eggs dad --default
-- sudo eggs tools clean
-- sudo eggs produce --pendrive --addons adapt
+- eggs kill
+- eggs dad --default
+- eggs tools clean
+- eggs produce --pendrive --addons adapt
 

@@ -16,7 +16,7 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
-SYSVINIT_EMULATION="systemd-sysv"
+SYSVINIT_EMULATION="systemd systemd-sysv"
 if [[ "$ID" == "devuan" ]]; then
   SYSVINIT_EMULATION="sysvinit"
 fi
