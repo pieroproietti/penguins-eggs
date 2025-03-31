@@ -72,8 +72,13 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
         this.addRemoveExclusion(true, `root/.*`)
     }
 
+    const result = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim();
+    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }).code === 0 && result !== 'Europe/Rome') {
+        this.addRemoveExclusion(true, '/etc/localtime');
+    }
+
     if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
-        // this.addRemoveExclusion(true, '/etc/localtime')
+        this.addRemoveExclusion(true, '/etc/localtime')
     }
 
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
@@ -124,7 +129,11 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
  */
 export function addRemoveExclusion(this: Ovary, add: boolean, exclusion: string): void {
     if (this.verbose) {
-        console.log('Ovary: addRemoveExclusion')
+        if (add) {
+            console.log(`add exclusion: ${exclusion}`)
+        } else {
+            console.log(`remove exclusion: ${exclusion}`)
+        }
     }
 
     if (exclusion.startsWith('/')) {
