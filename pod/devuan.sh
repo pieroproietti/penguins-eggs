@@ -30,7 +30,7 @@ podman run \
     --rm \
     -it \
     -v /dev:/dev \
-    -v ../mychroot/ci:/ci \
+    -v ./ci.local:/ci \
     $YOLK \
     devuan/devuan:daedalus \
     bash
