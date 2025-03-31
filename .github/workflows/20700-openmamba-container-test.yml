@@ -18,6 +18,7 @@ on:
       - '*.md'
       - '*.txt'
       - '.github/**'
+      - 'pods/**'
     branches:
       - 'master'
   workflow_dispatch:
