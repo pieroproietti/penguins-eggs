@@ -15,7 +15,7 @@ if you want to test on local just mount ci and local-dev like this,dont put dev 
 podman run \
     --hostname minimal \
      --privileged \
-     --cap-add all \
+     --cap-add=CAP_SYS_ADMIN \
      --ulimit nofile=32000:32000 \
      --pull=always \
      -v $PWD/mychroot/ci:/ci \
@@ -59,7 +59,7 @@ So, we have two level of containers using CI, the base ubuntu-22.04 created from
 podman run \
     --hostname minimal \
      --privileged \
-     --cap-add all \
+     --cap-add=CAP_SYS_ADMIN \
      --ulimit nofile=32000:32000 \
      --pull=always \
      -v $PWD/mychroot/ci:/ci \

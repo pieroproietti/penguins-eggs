@@ -22,7 +22,7 @@ podman run \
         --platform linux/amd64 \
         --hostname minimal \
         --privileged \
-        --cap-add all \
+        --cap-add=CAP_SYS_ADMIN \
         --ulimit nofile=32000:32000 \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
@@ -34,7 +34,7 @@ podman run \
         --platform linux/386 \
         --hostname minimal \
         --privileged \
-        --cap-add all \
+        --cap-add=CAP_SYS_ADMIN \
         --ulimit nofile=32000:32000 \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
@@ -46,7 +46,7 @@ podman run \
         --platform linux/arm64/v8 \
         --hostname minimal \
         --privileged \
-        --cap-add all \
+        --cap-add=CAP_SYS_ADMIN \
         --ulimit nofile=32000:32000 \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \

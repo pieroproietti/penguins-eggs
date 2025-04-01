@@ -20,7 +20,7 @@ cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
 podman run \
     --hostname minimal \
     --privileged \
-    --cap-add all \
+    --cap-add=CAP_SYS_ADMIN \
     --ulimit nofile=32000:32000 \
     --pull=always \
     --rm \

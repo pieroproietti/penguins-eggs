@@ -21,7 +21,7 @@ df -h
 podman run \
         --hostname minimal \
         --privileged \
-        --cap-add all \
+        --cap-add=CAP_SYS_ADMIN \
         --ulimit nofile=32000:32000 \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
