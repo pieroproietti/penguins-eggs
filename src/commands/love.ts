@@ -27,17 +27,25 @@ export default class Love extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' })
+    verbose: Flags.boolean({ char: 'v' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
   }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Love)
 
     let verbose = false
-    let cmdVerbose = ''
+    let flagVerbose = ''
     if (flags.verbose) {
       verbose = true
-      cmdVerbose = '--verbose'
+      flagVerbose = '--verbose'
+    }
+
+    let nointeractive = false
+    let flagNointeractive = ''
+    if (flags.nointeractive) {
+      nointeractive = true
+      flagNointeractive = '--nointeractive'
     }
 
     const echo = Utils.setEcho(verbose)
@@ -61,13 +69,13 @@ export default class Love extends Command {
     console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
-      console.log(`- ${cmdSudo} ${cmd} ${cmdVerbose}`)
+      console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
     }
 
     console.log()
-    if (await Utils.customConfirm()) {
+    if (nointeractive || await Utils.customConfirm()) {
       for (const cmd of cmds) {
-        await exec(`${cmdSudo} ${cmd} ${cmdVerbose}`)
+        await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
       }
     } else {
       console.log('Aborted!')

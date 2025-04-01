@@ -26,6 +26,7 @@ podman run \
     --cap-add=CAP_SYS_ADMIN \
     --ulimit nofile=32000:32000 \
     --pull=always \
+    --rm \
     -it \
     -v /dev:/dev \
     -v ./ci.local:/ci \
@@ -33,11 +34,3 @@ podman run \
     $IMAGE \
     /ci/run
 
-# restart
-podman start current 
-
-# connect
-podman exec \
-    -it \
-    current \
-    bash

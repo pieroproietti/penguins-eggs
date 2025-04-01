@@ -57,5 +57,15 @@ source ./penguins-eggs-tarballs-install.sh
 # test mount -t overlay / install kernel
 source ./kernel-overlay-install.sh
 
+# Abilita bash-completion per root
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+fi
+
 # execute eggs
-source ./penguins-eggs-execute.sh $1
+#source ./penguins-eggs-execute.sh $1
+echo "TIPS use: eggs love -nv"
+
+# Avvia una shell interattiva
+exec bash --login
+
