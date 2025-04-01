@@ -25,9 +25,9 @@ podman run \
         --pull=always \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
-        docker.io/devuan/devuan:daedalus \
-        /ci/overlay-test.sh
-        
+        docker.io/artixlinux/artixlinux:base-s6 \
+        /ci/30003.run-on-archlinux.sh
+
 df -h
 ls -al $PWD/mychroot/ci/iso/
 # upload $PWD/mychroot/ci/iso/ to server or github

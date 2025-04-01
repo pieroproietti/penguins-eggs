@@ -58,6 +58,9 @@ source ./minimal/debian-tarballs-requirements.sh
 # installing eggs
 source ./penguins-eggs-tarballs-install.sh
 
+# test mount -t overlay
+source ./overlay-test.sh
+
 
 
 # execute eggs
