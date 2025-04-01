@@ -1,82 +1,82 @@
-# CI
+# **CI Guidelines and Workflow Explanation**  
 
+## **Core Principles of CI**  
 
-## do one thing and do it batter (minimal tests)
+1. **Minimal CI Test Environment**  
+   - Install only the minimal dependencies required for CI, avoiding unnecessary packages.  
+   - Build only the minimal ISO without unnecessary installations.  
+   - CI is designed to **test issues in `penguins-eggs`**, not for building or publishing ISO images.  
+   - Increase the variety of tests to detect potential bugs in `penguins-eggs`.  
 
+2. **CI Directory Structure and Usage**  
+   - **Keep CI files strictly for CI tasks**; do not mix them with local development files.  
+   - If testing locally, place files in `pod->local-dev`, **not** in `mychroot/ci/`.  
+   - **`mychroot/ci/` is exclusively for CI purposes—no non-CI files should be placed there.**  
+   - **For local testing, mount `ci` and `local-dev` instead of modifying CI files directly.**  
 
-1. ci minimal tests [don't add packages not needed for ci]
-1. only build the minial iso,[don't install packages not needed for ci]
-1. ci tests is for testign the issues of eggs,not for building or publishing iso
-1. more and more different tests for fingding the bugs of eggs
-
-
-only for ci don't make the ci and local-dev together
-
-if you want use it in local ,put files in pod->local-dev not in mychroot/ci/
-
-remove files from ci  move the local-dev files to local-dev
-mychroot/ci is only for ci,don't put other files in ci
-
-if you want to test on local just mount ci and local-dev like this,dont put dev file in ci
-
-```
-
-```
+Example: Running a local test with Podman by mounting `ci` and `local-dev`:  
+```sh
 podman run \
     --hostname minimal \
-     --privileged \
-     --cap-add=CAP_SYS_ADMIN \
-     --ulimit nofile=32000:32000 \
-     --pull=always \
-     -v $PWD/mychroot/ci:/ci \
-     -v $PWD/local-dev:/local-dev \
-     -v /dev:/dev ubuntu:24.04 \
-     bash
-
-### in container you can see them
-
-# ls -al /ci/
-# ls -al /local-dev/
-
+    --privileged \
+    --cap-add=CAP_SYS_ADMIN \
+    --ulimit nofile=32000:32000 \
+    --pull=always \
+    -v $PWD/mychroot/ci:/ci \
+    -v $PWD/local-dev:/local-dev \
+    -v /dev:/dev ubuntu:24.04 \
+    bash
+```
+Inside the container, verify the mounts:  
+```sh
+ls -al /ci/
+ls -al /local-dev/
 ```
 
+---
 
+## **Warnings When Modifying CI Files**  
 
-## WARNING WHEN CHANGING CI FILES
+1. **Do not modify CI files unless absolutely necessary.**  
+2. **Do not disable any CI tests**—all tests must remain active.  
+3. **Do not change the current ISO build workflow.**  
+4. **CI test scripts follow a fixed numbering system.** To add new tests, use a new range (e.g., `30000-40000`, `50000`), and do not modify existing numbered files.  
+5. **If using `penguins-wardrobe` for builds, add new CI tests instead of modifying existing files or workflows.**  
+6. **All CI file modifications must be submitted in a new Pull Request and reviewed by @gnuhub—do not merge directly.**  
+7. **For experimental changes, create a new branch instead of modifying `master`.**  
 
-1. don't change ci files if you are not sure
-2. don't change ci files if it is not necessary
-3. don't disable any one of ci tests
-4. don't change the current workflow of build iso
-5. don't change the number of ci files, just add new files with a new number range such as 30000- 40000 50000
-6. if you want to use penguins-wardroe to build,add new ci tests and don't change the current ci files and workflows
-7. if you want to change this file, add a new pull request and @gnuhub don't merge it
-8. if you just test changes ,don't change it on master,checkout -b a new branch
+---
 
+## **How the CI Workflow Functions**  
 
-I am beginning to understand the logic of your CI.
+### **1. CI Workflow Overview**  
 
-The scripts `1000*` in the root of the project are called by the actions. The acrions use `uses: actions/setup-node@v2` and, using node18 eggs tarballs is created.
+- CI is triggered by scripts numbered `1000*` located in the project root.  
+- Actions use `actions/setup-node@v2` with `Node.js 18` to build tarballs.  
+- The generated `penguins-eggs` tarball is named:  
+  ```
+  penguins-eggs_10.0.60-*-linux-x64.tar.gz
+  ```
+- The tarball is then copied to `/mychroot/ci/`.  
+- A second container starts the ISO build process, receiving the tarballs and running:  
+  ```
+  /ci/10006-archlinux-container-test-install.sh
+  ```
+- This results in a two-layered container CI process:  
+  1. The **base container** (Ubuntu 22.04) runs on GitHub Actions, builds the `Node.js` tarballs.  
+  2. The **target container** (specific distro being tested) receives the tarballs, installs `penguins-eggs`, and creates the ISO.  
 
-When the tarballs - actually named `penguins-eggs_10.0.60-*-linux-x64.tar.gz` - has been created, it is copied to /`mychroot/ci`.
-
-At this point the container that builds the image is started in accord, and as a paramater receove the command: 
-`/ci/10006-archlinux-container-test-install.sh`.
-
-So, we have two level of containers using CI, the base ubuntu-22.04 created from action and using nodejs18, to build tarballs. The second, using the distro we intend to build, receive tarballs from the first - or from local, when I'm using podman - install penguins-eggs and create ISO.
-
-```
+Example of running the second-level container manually:  
+```sh
 podman run \
     --hostname minimal \
-     --privileged \
-     --cap-add=CAP_SYS_ADMIN \
-     --ulimit nofile=32000:32000 \
-     --pull=always \
-     -v $PWD/mychroot/ci:/ci \
-     -v /dev:/dev ubuntu:24.04 \
-     /ci/10002-ubuntu2404-container-test-install.sh
+    --privileged \
+    --cap-add=CAP_SYS_ADMIN \
+    --ulimit nofile=32000:32000 \
+    --pull=always \
+    -v $PWD/mychroot/ci:/ci \
+    -v /dev:/dev ubuntu:24.04 \
+    /ci/10002-ubuntu2404-container-test-install.sh
 ```
 
-I was a little confused by this mechanism, now it will be better.
-
-
+Now that this process is clear, it should be easier to work with.
