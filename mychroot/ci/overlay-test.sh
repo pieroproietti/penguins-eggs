@@ -9,6 +9,41 @@ grep overlay /proc/filesystems
 modprobe overlay
 cd $CMD_PATH
 
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "almalinux" ]]; then
+        echo "install the package of capsh"
+
+    elif [[ "$ID" == "arch" ]]; then
+        echo "install the package of capsh"
+        
+    elif [[ "$ID" == "debian" ]]; then
+        echo "install the package of capsh"
+        apt install -y libcap2-bin
+        
+    elif [[ "$ID" == "devuan" ]]; then
+        echo "install the package of capsh"
+        apt install -y libcap2-bin
+        
+    elif [[ "$ID" == "fedora" ]]; then
+        echo "install the package of capsh"
+        
+    elif [[ "$ID" == "rocky" ]]; then
+        echo "install the package of capsh"
+        
+    elif [[ "$ID" == "ubuntu" ]]; then
+        echo "install the package of capsh"
+        apt install -y libcap2-bin
+        
+    else
+        echo "distro not supported"
+        exit 1
+    fi
+fi
+
+
+capsh --print
+
 mkdir -p $CMD_PATH/lower $CMD_PATH/upper $CMD_PATH/work $CMD_PATH/merged
 
 # Add test files
