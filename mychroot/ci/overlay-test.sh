@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -x
-export CMD_PATH=$PWD
+export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
@@ -39,7 +39,7 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "ubuntu" ]]; then
         echo "install the package of capsh"
         apt update -y
-        
+        apt install linux-image-amd64 -y
         apt install -y kmod
         apt install -y libcap2-bin
         
