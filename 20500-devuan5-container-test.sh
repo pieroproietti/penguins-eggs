@@ -11,14 +11,8 @@
 ### 8. if you just test changes ,don't change it on master,checkout -b a new branch
 
 set -x
-#source ./10000-ubuntu-ci-server.sh
+source ./10000-ubuntu-ci-server.sh
 
-set -x
-export CMD_PATH=$(cd `dirname $0`; pwd)
-export PROJECT_NAME="${CMD_PATH##*/}"
-echo $PROJECT_NAME
-cd $CMD_PATH
-###############
 cd $CMD_PATH
 which podman 
 podman --version
