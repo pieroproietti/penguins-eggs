@@ -58,12 +58,12 @@ ls -al /pods/
   penguins-eggs_*.tar.gz
   ```
 - The tarball is then copied to `/mychroot/ci/`.  
-- A second container starts the ISO build process, receiving the tarballs and running:  
+- A container starts the ISO build process, receiving the tarballs and running:  
   ```
   /ci/10006-archlinux-container-test-install.sh
   ```
 - This results in a two-layered container CI process:  
-  1. The **ci host server** (Ubuntu 24.04) runs on GitHub Actions, builds the `Node.js` tarballs.  
+  1. The **ci host server** (Ubuntu 24.04) runs on GitHub Actions, builds the `Node.js` tarballs.  the ci server are the same as a vps or a vm or a linux desktop,not a container.
   2. The **target container** (specific distro being tested) receives the tarballs, installs `penguins-eggs`, and creates the ISO.  
 
 Example of running the second-level container manually:  
