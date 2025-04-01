@@ -6,8 +6,8 @@
 
 1. ci minimal tests [don't add packages not needed for ci]
 1. only build the minial iso,[don't install packages not needed for ci]
-
-
+1. ci tests is for testign the issues of eggs,not for building or publishing iso
+1. more and more different tests for fingding the bugs of eggs
 
 
 only for ci don't make the ci and local-dev together
