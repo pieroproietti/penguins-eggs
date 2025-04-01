@@ -19,12 +19,14 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "debian" ]]; then
         echo "install the package of capsh"
         apt update -y
+        apt install linux-image-amd64 -y
         apt install -y kmod
         apt install -y libcap2-bin
         
     elif [[ "$ID" == "devuan" ]]; then
         echo "install the package of capsh"
         apt update -y
+        apt install linux-image-amd64 -y
         apt install -y kmod
         apt install -y libcap2-bin
         
@@ -37,6 +39,7 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "ubuntu" ]]; then
         echo "install the package of capsh"
         apt update -y
+        
         apt install -y kmod
         apt install -y libcap2-bin
         
