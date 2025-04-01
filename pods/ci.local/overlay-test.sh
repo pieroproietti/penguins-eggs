@@ -15,6 +15,9 @@ if [ -f /etc/os-release ]; then
 
     elif [[ "$ID" == "arch" ]]; then
         echo "install the package of capsh"
+        pacman -S --needed --noconfirm libcap
+        pacman -S --needed --noconfirm linux
+        pacman -S --needed --noconfirmkmod
         
     elif [[ "$ID" == "debian" ]]; then
         echo "install the package of capsh"
