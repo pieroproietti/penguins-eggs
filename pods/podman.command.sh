@@ -17,8 +17,6 @@ fi
 # copy tarballs in ci.local
 cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
 
-# --rm
-# sh -c "/ci/run; exec bash"
 podman run \
     --name current \
     --hostname minimal \
@@ -28,7 +26,6 @@ podman run \
     --pull=always \
     --rm \
     -it \
-    -v /dev:/dev \
     -v ./ci.local:/ci \
     $YOLK \
     $IMAGE \
