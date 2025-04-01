@@ -18,7 +18,7 @@ on:
       - '.github/**'
       - 'pods/**'
     branches:
-      - 'ci-20250401'
+      - 'master'
   workflow_dispatch:
   
 jobs:
