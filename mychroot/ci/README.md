@@ -51,11 +51,11 @@ ls -al /pods/
 
 ### **1. CI Workflow Overview**  
 
-- CI is triggered by scripts numbered `1000*` located in the project root.  
+- CI is triggered by scripts numbered `*.test.sh` located in the project root.  
 - Actions use `actions/setup-node@v2` with `Node.js 18` to build tarballs.  
 - The generated `penguins-eggs` tarball is named:  
   ```
-  penguins-eggs_10.0.60-*-linux-x64.tar.gz
+  penguins-eggs_*.tar.gz
   ```
 - The tarball is then copied to `/mychroot/ci/`.  
 - A second container starts the ISO build process, receiving the tarballs and running:  
