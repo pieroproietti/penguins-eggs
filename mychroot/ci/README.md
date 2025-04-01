@@ -10,11 +10,11 @@
 
 2. **CI Directory Structure and Usage**  
    - **Keep CI files strictly for CI tasks**; do not mix them with local development files.  
-   - If testing locally, place files in `pod->local-dev`, **not** in `mychroot/ci/`.  
+   - If testing locally, place files in `pods`, **not** in `mychroot/ci/`.  
    - **`mychroot/ci/` is exclusively for CI purposes—no non-CI files should be placed there.**  
    - **For local testing, mount `ci` and `local-dev` instead of modifying CI files directly.**  
 
-Example: Running a local test with Podman by mounting `ci` and `local-dev`:  
+Example: Running a local test with Podman by mounting `ci` and `pods`:  
 ```sh
 podman run \
     --hostname minimal \
@@ -23,14 +23,14 @@ podman run \
     --ulimit nofile=32000:32000 \
     --pull=always \
     -v $PWD/mychroot/ci:/ci \
-    -v $PWD/local-dev:/local-dev \
+    -v $PWD/pods:/pods \
     -v /dev:/dev ubuntu:24.04 \
     bash
 ```
 Inside the container, verify the mounts:  
 ```sh
 ls -al /ci/
-ls -al /local-dev/
+ls -al /pods/
 ```
 
 ---
