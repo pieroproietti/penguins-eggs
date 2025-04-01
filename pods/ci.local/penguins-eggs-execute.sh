@@ -8,8 +8,8 @@ export NEEDRESTART_MODE=a
 
 # using eggs
 if [ $1==local ]; then
-    #mount -t devpts devpts /dev/pts
-    echo "TIPS use: eggs love"
+    echo "TIPS use: eggs love -nv"
+    exec bash --login
 else
     eggs dad -d
     eggs tools clean -n

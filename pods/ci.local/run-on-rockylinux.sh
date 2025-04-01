@@ -33,17 +33,8 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 dnf -y update 
 
-
-# force install kernel on the Almalinux container
-mkdir /boot
-dnf -y install kernel 
-kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
-cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
-dracut --force --kver $kernel_version
-
 # packages to be added for a minimum standard installation
 source ./minimal/almalinux-packages.sh
-
 
 # packages to be added tarballs
 source ./minimal/almalinux-tarballs-requirements.sh
@@ -52,7 +43,7 @@ source ./minimal/almalinux-tarballs-requirements.sh
 source ./penguins-eggs-tarballs-install.sh
 
 # test mount -t overlay
-source ./overlay-test.sh
+source ./kernel-overlay-install.sh
 
 # execute eggs
 source ./penguins-eggs-execute.sh $1

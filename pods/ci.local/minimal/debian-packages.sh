@@ -16,10 +16,13 @@ if [ -f /etc/os-release ]; then
 	fi
 fi
 
-SYSVINIT_EMULATION="systemd systemd-sysv"
-if [[ "$ID" == "devuan" ]]; then
-  SYSVINIT_EMULATION="sysvinit"
-fi
+# init installation moved inside debian.sh/devuan.sh/ubuntu.sh
+
+#SYSVINIT_EMULATION="systemd systemd-sysv"
+#if [[ "$ID" == "devuan" ]]; then
+#  SYSVINIT_EMULATION="sysvinit"
+#fi
+
 
 # packages to be added for a minimal standard installation
 apt install \
@@ -112,7 +115,6 @@ apt install \
     reportbug \
     sensible-utils \
     sudo \
-    $SYSVINIT_EMULATION \
     task-english \
     tasksel \
     tasksel-data \
@@ -126,4 +128,3 @@ apt install \
     wamerican \
     wget \
     whiptail -y
-

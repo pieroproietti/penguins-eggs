@@ -23,7 +23,7 @@ export:tarballs --clean --help --verbose
 install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --testing --unattended --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --small --suspend --testing --unattended --verbose
 kill --help --isos --nointeractive --verbose
-love --help --verbose
+love --help --verbose --nointeractive
 maker --help
 mom --help
 produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk

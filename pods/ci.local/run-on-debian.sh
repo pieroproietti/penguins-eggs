@@ -34,10 +34,6 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-
-# We must install the same version of the host
-apt install linux-image-amd64 -y
-
 # init /usr/share/applications
 dpkg -S /usr/share/applications
 
@@ -49,19 +45,17 @@ apt-file update
 apt-file search linuxefi.mod
 apt install grub-efi-amd64-bin -y
 
-# packages to be added for a minimum standard installation
-source ./minimal/debian-packages.sh
-
 # packages to be added tarballs
 source ./minimal/debian-tarballs-requirements.sh
+
+# packages to be added for a minimum standard installation
+source ./minimal/debian-packages.sh
 
 # installing eggs
 source ./penguins-eggs-tarballs-install.sh
 
-# test mount -t overlay
-source ./overlay-test.sh
-
-
+# test mount -t overlay / install kernel
+source ./kernel-overlay-install.sh
 
 # execute eggs
 source ./penguins-eggs-execute.sh $1

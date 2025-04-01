@@ -35,9 +35,6 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# We must install the same version of the host
-apt install linux-image-generic -y
-
 # packages to be added for a minimum standard installation
 source ./minimal/ubuntu-packages.sh
 
@@ -59,16 +56,7 @@ systemctl set-default multi-user.target
 source ./penguins-eggs-tarballs-install.sh
 
 # test mount -t overlay
-source ./overlay-test.sh
+source ./kernel-overlay-install.sh
 
-# using eggs
-eggs dad -d
-eggs tools clean -n
-eggs produce --pendrive --verbose -n
-if [ $1==local ]; then
-    echo "TIPS use: eggs export iso -c"
-else
-    mv /home/eggs/.mnt/*.iso /ci/iso/
-    ls -al /ci/iso/
-fi
-
+# execute eggs
+source ./penguins-eggs-execute.sh $1
