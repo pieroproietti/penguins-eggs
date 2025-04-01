@@ -63,7 +63,7 @@ ls -al /pods/
   /ci/10006-archlinux-container-test-install.sh
   ```
 - This results in a two-layered container CI process:  
-  1. The **base container** (Ubuntu 22.04) runs on GitHub Actions, builds the `Node.js` tarballs.  
+  1. The **ci host server** (Ubuntu 24.04) runs on GitHub Actions, builds the `Node.js` tarballs.  
   2. The **target container** (specific distro being tested) receives the tarballs, installs `penguins-eggs`, and creates the ISO.  
 
 Example of running the second-level container manually:  
