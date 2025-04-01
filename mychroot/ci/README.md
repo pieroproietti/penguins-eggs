@@ -1,5 +1,15 @@
 # CI
 
+
+## do one thing and do it batter (minimal tests)
+
+
+1. ci minimal tests [don't add packages not needed for ci]
+1. only build the minial iso,[don't install packages not needed for ci]
+
+
+
+
 only for ci don't make the ci and local-dev together
 
 if you want use it in local ,put files in pod->local-dev not in mychroot/ci/
