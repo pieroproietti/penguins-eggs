@@ -26,7 +26,7 @@ podman run \
         -v $PWD/mychroot/ci:/ci \
         -v /dev:/dev \
         docker.io/devuan/devuan:daedalus \
-        /ci/overlay.test.sh
+        /ci/overlay-test.sh
         
 df -h
 ls -al $PWD/mychroot/ci/iso/
