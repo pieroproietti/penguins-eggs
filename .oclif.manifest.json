@@ -273,6 +273,13 @@
           "multiple": false,
           "type": "option"
         },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "help": {
           "char": "h",
           "description": "Show CLI help.",
