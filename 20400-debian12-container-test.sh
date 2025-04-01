@@ -58,7 +58,7 @@ podman run \
 
 
 
-sduo dmesg | tail -500
+sudo dmesg | tail -500
 
 df -h
 ls -al $PWD/mychroot/ci/iso/
