@@ -32,17 +32,29 @@ podman run \
         debian:12 \
         /ci/30004.run-on-debian.sh
 
-# podman run \
-#         --platform linux/386 \
-#         --hostname minimal \
-#         --privileged \
-#         --cap-add=CAP_SYS_ADMIN \
-#         --ulimit nofile=32000:32000 \
-#         --pull=always \
-#         -v $PWD/mychroot/ci:/ci \
-#         -v /dev:/dev \
-#         debian:12 \
-#         /ci/30004.run-on-debian.sh
+podman run \
+        --platform linux/386 \
+        --hostname minimal \
+        --privileged \
+        --cap-add=CAP_SYS_ADMIN \
+        --ulimit nofile=32000:32000 \
+        --pull=always \
+        -v $PWD/mychroot/ci:/ci \
+        -v /dev:/dev \
+        debian:12 \
+        /ci/30004.run-on-debian.sh
+
+podman run \
+        --platform linux/arm64/v8 \
+        --hostname minimal \
+        --privileged \
+        --cap-add=CAP_SYS_ADMIN \
+        --ulimit nofile=32000:32000 \
+        --pull=always \
+        -v $PWD/mychroot/ci:/ci \
+        -v /dev:/dev \
+        debian:12 \
+        /ci/30004.run-on-debian.sh
 
 # podman run \
 #         --platform linux/arm64/v8 \
