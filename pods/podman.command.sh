@@ -17,16 +17,27 @@ fi
 # copy tarballs in ci.local
 cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
 
+# --rm
+# sh -c "/ci/run; exec bash"
 podman run \
+    --name current \
     --hostname minimal \
     --privileged \
     --cap-add=CAP_SYS_ADMIN \
     --ulimit nofile=32000:32000 \
     --pull=always \
-    --rm \
     -it \
     -v /dev:/dev \
     -v ./ci.local:/ci \
     $YOLK \
     $IMAGE \
-    sh -c "/ci/run; exec bash"
+    /ci/run
+
+# restart
+podman start current 
+
+# connect
+podman exec \
+    -it \
+    current \
+    bash
