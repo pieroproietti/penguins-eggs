@@ -34,9 +34,6 @@ pacman -Syu --noconfirm
 
 # packages to be added for a minimum standard installation
 
-# We must install the same version of the host
-pacman -S  --noconfirm linux
-
 # packages minimal
 source ./minimal/archlinux-packages.sh
 
@@ -50,7 +47,7 @@ ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 source ./penguins-eggs-tarballs-install.sh
 
 # test mount -t overlay
-source ./overlay-test.sh
+source ./kernel-overlay-install.sh
 
 # execute eggs
 source ./penguins-eggs-execute.sh $1
