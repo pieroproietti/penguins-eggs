@@ -8,7 +8,8 @@
 ### 6. **All CI file modifications must be submitted in a new Pull Request and reviewed by @gnuhub—do not merge directly.**  
 ### 7. **For experimental changes, create a new branch instead of modifying `master`.**  
 
-name: 20500-devuan5
+
+name: 20301-archlinux-openrc
 
 on:
   push:
@@ -23,7 +24,7 @@ on:
 
 jobs:
   build:
-    name: 20500-devuan5-build
+    name: 20301-archlinux-openrc-build
     runs-on: ubuntu-24.04
     timeout-minutes: 7200
     steps:
@@ -35,11 +36,11 @@ jobs:
           node-version: 18.x
       - name: ISO build
         run: |
-          ./20500-devuan5-container-test.sh
+          ./20301-archlinux-openrc-container-test.sh
       - name: ISO upload
         uses: actions/upload-artifact@v4
         with:
-          name: 20500-devuan5-upload
+          name: 20301-archlinux-openrc-upload
           path: ./mychroot/ci/iso/*.iso
           retention-days: 1
           if-no-files-found: warn

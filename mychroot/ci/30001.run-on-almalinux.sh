@@ -51,6 +51,9 @@ source ./minimal/almalinux-tarballs-requirements.sh
 # installing ggs
 source ./penguins-eggs-tarballs-install.sh
 
+# test mount -t overlay
+source ./overlay-test.sh
+
 # using eggs
 eggs dad -d
 eggs tools clean -n

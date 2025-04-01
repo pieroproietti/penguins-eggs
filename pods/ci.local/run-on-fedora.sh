@@ -50,5 +50,8 @@ source ./minimal/fedora-tarballs-requirements.sh
 # installing ggs
 source ./penguins-eggs-tarballs-install.sh
 
+# test mount -t overlay
+source ./overlay-test.sh
+
 # execute eggs
 source ./penguins-eggs-execute.sh $1
