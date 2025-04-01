@@ -23,8 +23,8 @@ export default class Dad extends Command {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'reset to default values' }),
     file: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),    
     help: Flags.help({ char: 'h' }),
-
     verbose: Flags.boolean({ char: 'v' })
   }
 
