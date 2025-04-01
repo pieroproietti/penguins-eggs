@@ -5,8 +5,7 @@ export CMD_PATH=$PWD
 export PROJECT_NAME="${CMD_PATH##*/}"
 export NEEDRESTART_MODE=a
 export DEBIAN_FRONTEND=noninteractive
-grep overlay /proc/filesystems
-modprobe overlay
+
 cd $CMD_PATH
 
 if [ -f /etc/os-release ]; then
@@ -19,10 +18,14 @@ if [ -f /etc/os-release ]; then
         
     elif [[ "$ID" == "debian" ]]; then
         echo "install the package of capsh"
+        apt upadet -y
+        apt install -y kmod
         apt install -y libcap2-bin
         
     elif [[ "$ID" == "devuan" ]]; then
         echo "install the package of capsh"
+        apt upadet -y
+        apt install -y kmod
         apt install -y libcap2-bin
         
     elif [[ "$ID" == "fedora" ]]; then
@@ -33,6 +36,8 @@ if [ -f /etc/os-release ]; then
         
     elif [[ "$ID" == "ubuntu" ]]; then
         echo "install the package of capsh"
+        apt upadet -y
+        apt install -y kmod
         apt install -y libcap2-bin
         
     else
@@ -41,6 +46,8 @@ if [ -f /etc/os-release ]; then
     fi
 fi
 
+grep overlay /proc/filesystems
+modprobe overlay
 
 capsh --print
 
