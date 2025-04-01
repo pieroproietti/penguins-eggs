@@ -65,6 +65,11 @@ mount -t overlay overlay -o lowerdir=$CMD_PATH/lower,upperdir=$CMD_PATH/upper,wo
 ls $CMD_PATH/merged
 cat $CMD_PATH/merged/test.txt
 
+df -T $CMD_PATH/lower   
+df -T $CMD_PATH/upper
+df -T $CMD_PATH/work
+df -T $CMD_PATH/merged
+
 umount $CMD_PATH/merged
 
 rm -rf $CMD_PATH/lower 
