@@ -49,5 +49,9 @@ source ./penguins-eggs-tarballs-install.sh
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
+# this distro only
+echo $(hostname) > /etc/hostname
+
 # execute eggs
 source ./penguins-eggs-execute.sh $1
+
