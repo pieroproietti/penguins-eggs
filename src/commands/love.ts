@@ -34,20 +34,22 @@ export default class Love extends Command {
     const { args, flags } = await this.parse(Love)
 
     let verbose = false
+    let cmdVerbose = ''
     if (flags.verbose) {
       verbose = true
+      cmdVerbose = '--verbose'
     }
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let sudoCmd = ''
+    let cmdSudo = ''
     if (process.getuid && process.getuid() === 0) {
-      sudoCmd = ''
+      cmdSudo = ''
     } else if (fs.existsSync('/usr/bin/sudo')) {
-      sudoCmd = 'sudo'
+      cmdSudo = 'sudo'
     } else if (fs.existsSync('/usr/bin/doas')) {
-      sudoCmd = 'doas'
+      cmdSudo = 'doas'
     }
       
     let loveConf='/etc/penguins-eggs.d/love.yaml'
@@ -59,13 +61,13 @@ export default class Love extends Command {
     console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
-      console.log(`- ${sudoCmd} ${cmd}`)
+      console.log(`- ${cmdSudo} ${cmd} ${cmdVerbose}`)
     }
 
     console.log()
     if (await Utils.customConfirm()) {
       for (const cmd of cmds) {
-        await exec(cmd)
+        await exec(`${cmdSudo} ${cmd} ${cmdVerbose}`)
       }
     } else {
       console.log('Aborted!')
