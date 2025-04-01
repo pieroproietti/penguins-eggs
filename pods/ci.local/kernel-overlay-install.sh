@@ -12,9 +12,17 @@ if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "almalinux" ]]; then
         echo "install the package of capsh"
+        mkdir /boot
+        dnf -y install kernel 
+        kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+        cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+        dracut --force --kver $kernel_version
 
     elif [[ "$ID" == "arch" ]]; then
         echo "install the package of capsh"
+        pacman -S --needed --noconfirm linux linux-headers
+        pacman -S --needed --noconfirm libcap
+        pacman -S --needed --noconfirmkmod
         
     elif [[ "$ID" == "debian" ]]; then
         echo "install the package of capsh"
@@ -32,14 +40,31 @@ if [ -f /etc/os-release ]; then
         
     elif [[ "$ID" == "fedora" ]]; then
         echo "install the package of capsh"
-        
+        mkdir /boot
+        dnf -y install kernel 
+        kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+        cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+        dracut --force --kver $kernel_version
+
+    elif [[ "$ID" == "opensuse" ]]; then
+        mkdir /boot
+        dnf -y install kernel 
+        kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+        cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+        dracut --force --kver $kernel_version
+
     elif [[ "$ID" == "rocky" ]]; then
         echo "install the package of capsh"
+        mkdir /boot
+        dnf -y install kernel 
+        kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+        cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+        dracut --force --kver $kernel_version
+
         
     elif [[ "$ID" == "ubuntu" ]]; then
         echo "install the package of capsh"
-        apt update -y
-        apt install linux-image-amd64 -y
+        apt install linux-image-generic -y
         apt install -y kmod
         apt install -y libcap2-bin
         

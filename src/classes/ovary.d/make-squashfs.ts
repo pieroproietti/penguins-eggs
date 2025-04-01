@@ -77,9 +77,11 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
         this.addRemoveExclusion(true, '/etc/localtime');
     }
 
+    /*
     if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }) && shx.exec('cat /etc/timezone', { silent: true }) !== 'Europe/Rome') {
         this.addRemoveExclusion(true, '/etc/localtime')
     }
+    */
 
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
 

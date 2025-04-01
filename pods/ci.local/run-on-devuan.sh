@@ -34,10 +34,6 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-
-# Installing last kernel
-apt install linux-image-amd64 -y
-
 # init /usr/share/applications
 dpkg -S /usr/share/applications
 
@@ -61,8 +57,8 @@ source ./minimal/debian-tarballs-requirements.sh
 # installing ggs
 source ./penguins-eggs-tarballs-install.sh
 
-# test mount -t overlay
-source ./overlay-test.sh
+# test mount -t overlay / install kernel
+source ./kernel-overlay-install.sh
 
 # execute eggs
 source ./penguins-eggs-execute.sh $1

@@ -27,27 +27,37 @@ export default class Love extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' })
+    verbose: Flags.boolean({ char: 'v' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
   }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Love)
 
     let verbose = false
+    let flagVerbose = ''
     if (flags.verbose) {
       verbose = true
+      flagVerbose = '--verbose'
+    }
+
+    let nointeractive = false
+    let flagNointeractive = ''
+    if (flags.nointeractive) {
+      nointeractive = true
+      flagNointeractive = '--nointeractive'
     }
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let sudoCmd = ''
+    let cmdSudo = ''
     if (process.getuid && process.getuid() === 0) {
-      sudoCmd = ''
+      cmdSudo = ''
     } else if (fs.existsSync('/usr/bin/sudo')) {
-      sudoCmd = 'sudo'
+      cmdSudo = 'sudo'
     } else if (fs.existsSync('/usr/bin/doas')) {
-      sudoCmd = 'doas'
+      cmdSudo = 'doas'
     }
       
     let loveConf='/etc/penguins-eggs.d/love.yaml'
@@ -59,13 +69,13 @@ export default class Love extends Command {
     console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
-      console.log(`- ${sudoCmd} ${cmd}`)
+      console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
     }
 
     console.log()
-    if (await Utils.customConfirm()) {
+    if (nointeractive || await Utils.customConfirm()) {
       for (const cmd of cmds) {
-        await exec(cmd)
+        await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
       }
     } else {
       console.log('Aborted!')

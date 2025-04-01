@@ -194,7 +194,7 @@ _eggs() {
 "krill[krill: the CLI system installer - the egg became a penguin!]" \
 "kill[kill the eggs/free the nest]" \
 "love[the simplest way to get an egg!]" \
-"maker[eggs maker]" \
+"maker[eggs maker: a GUI for penguin-eggs]" \
 "mom[ask help from mommy - TUI helper]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
@@ -315,6 +315,7 @@ love)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 maker)
