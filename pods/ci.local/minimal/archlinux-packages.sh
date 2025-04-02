@@ -23,6 +23,7 @@ base-devel \
 bash-completion \
 bison \
 debugedit \
+dialog \
 fakeroot \
 flex \
 gc \
@@ -37,16 +38,13 @@ linux-firmware \
 linux-firmware-whence \
 m4 \
 make \
+man-db \
+nano \
+openssh \
 patch \
 pkgconf \
+syslinux \
 sudo \
 texinfo \
 which \
 zram-generator
-
-
-echo "packages need to create tarballs"
-pacman -S --needed --noconfirm \
-nodejs \
-npm \
-pnpm

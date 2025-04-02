@@ -38,7 +38,6 @@ export default class CliAutologin {
    * @param chroot
    */
   async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
-
     if (Utils.isSystemd()) {
       /**
        * systemd
@@ -48,8 +47,7 @@ export default class CliAutologin {
       const dirOverride = path.dirname(fileOverride)
       if (fs.existsSync(dirOverride)) {
         shx.exec(`rm ${dirOverride} -rf`)
-      }
-
+      } 
       shx.exec(`mkdir ${dirOverride}`)
       let content = ''
       content += '[Service]' + '\n'
@@ -59,6 +57,7 @@ export default class CliAutologin {
       shx.exec(`chmod +x ${fileOverride}`)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
+
     } else if (Utils.isOpenRc()) {
       /**
        * openrc 
@@ -83,6 +82,7 @@ export default class CliAutologin {
       execSync(`chmod +x ${autologin}`)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
+
     } else if (Utils.isSysvinit()) {
       /**
        * sysvinit

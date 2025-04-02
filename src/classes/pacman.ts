@@ -193,7 +193,7 @@ export default class Pacman {
     config.make_isohybrid = true
     config.compression = 'xz'
     config.ssh_pass = false
-    config.timezone = 'Europe/Rome'
+    config.timezone = 'America/New_York'
     config.pmount_fixed = false
 
     if (!this.calamaresExists()) {
