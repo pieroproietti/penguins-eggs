@@ -43,6 +43,7 @@ nano \
 openssh \
 patch \
 pkgconf \
+syslinux \
 sudo \
 texinfo \
 which \

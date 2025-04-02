@@ -51,7 +51,7 @@ source ./kernel-overlay-install.sh
 
 # this distro only
 ln -s /usr/share/zoneinfo/Europe/Rome /etc/localtime
-echo $(hostname) > /etc/hostname
+echo -e "$(hostname)\n" > /etc/hostname
 sed -i '/^VERSION_ID=/d' /etc/os-release
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 
