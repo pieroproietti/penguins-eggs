@@ -12,7 +12,7 @@ if ls $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
     echo "penguins-eggs tarballs present"
 else
     echo "penguins-eggs tarballs building"
-    pnpm tarballs --release 15
+    pnpm tarballs --release $(./release)
 fi
 # copy tarballs in ci.local
 cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
