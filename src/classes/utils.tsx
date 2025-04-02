@@ -113,6 +113,7 @@ export default class Utils {
       if (!this.isContainer()) {
          isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
       } else {
+         isSystemd = true
          let distro = new Distro()
          if (distro.distroId === "Devuan") {
             isSystemd = false
