@@ -46,7 +46,7 @@ compression: xz
 ssh_pass: false
 
 # timezone
-timezone: Europe/Rome
+timezone: America/New_York
 
 # it's still used?
 pmount_fixed: false

@@ -72,14 +72,6 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
         this.addRemoveExclusion(true, `root/.*`)
     }
 
-    /**
-     * timezone solo su Debian
-    const result = shx.exec('cat /etc/timezone', { silent: true }).stdout.trim()
-    if (shx.exec('/usr/bin/test -L /etc/localtime', { silent: true }).code === 0 && result !== 'Europe/Rome') {
-        this.addRemoveExclusion(true, '/etc/localtime');
-    }
-    */
-    
     this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
 
     if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {

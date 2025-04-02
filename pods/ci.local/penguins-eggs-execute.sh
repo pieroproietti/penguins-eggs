@@ -6,6 +6,12 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 export NEEDRESTART_MODE=a
 
+# localtime
+ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
+
+# Some containers don't have hostname command at begine
+echo -e "$(hostname)\n" > /etc/hostname
+
 # using eggs
 if [ $1==local ]; then
     echo "TIPS use: eggs love -nv"

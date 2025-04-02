@@ -49,10 +49,11 @@ source ./penguins-eggs-tarballs-install.sh
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
-# this distro only
-ln -s /usr/share/zoneinfo/Europe/Rome /etc/localtime
-echo -e "$(hostname)\n" > /etc/hostname
+# THIS DISTRO ONLY
+# remove VERSION_ID as standard in arch systems
 sed -i '/^VERSION_ID=/d' /etc/os-release
+
+# enable group wheel
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 
 # execute eggs
