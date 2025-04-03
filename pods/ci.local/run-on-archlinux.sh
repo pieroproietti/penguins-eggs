@@ -44,7 +44,7 @@ source ./minimal/archlinux-tarballs-requirements.sh
 ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 
 # installing eggs
-source ./penguins-eggs-tarballs-install.sh
+source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh

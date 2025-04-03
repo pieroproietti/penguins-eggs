@@ -22,4 +22,6 @@ if [ -f /etc/os-release ]; then
 fi
 
 IMAGE="devuan/devuan:daedalus"
-source podman.command.sh
+source podman.command.sh devuan
+
+

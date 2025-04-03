@@ -40,7 +40,7 @@ source ./minimal/almalinux-packages.sh
 source ./minimal/almalinux-tarballs-requirements.sh
 
 # installing ggs
-source ./penguins-eggs-tarballs-install.sh
+source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh

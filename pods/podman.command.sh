@@ -1,21 +1,55 @@
 #!/usr/bin/env bash
 
 set -x
-# remove previous images
+
+function tarballs {
+    if ls $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
+        echo "penguins-eggs TARBALLS present"
+    else
+        pnpm tarballs
+    fi
+    cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
+}
+
+
+function debs {
+    if ls $CMD_PATH/../perrisbrewery/workdir/$PENGUINS_EGGS_DEB 1> /dev/null 2>&1; then
+        echo "penguins-eggs DEB present"
+    else 
+        pnpm deb
+    fi
+    cp $CMD_PATH/../perrisbrewery/workdir/$PENGUINS_EGGS_DEB  $CMD_PATH/./ci.local/
+}
+
+
+##
+#
+# main
 podman rmi $(podman images --quiet) -f
 
+* Remove DEBS and tarballs in ci.local
+PENGUINS_EGGS_DEB="penguins-eggs_10.0.60-*_amd64.deb"
+rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_DEB
 PENGUINS_EGGS_TARBALLS=penguins-eggs_10.0.60-*-linux-x64.tar.gz
-rm $CMD_PATH/./ci.local/$PENGUINS_EGGS_TARBALLS
+rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_TARBALLS
 
-# Check presence of $PENGUINS_EGGS_TARBALLS in dist
-if ls $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
-    echo "penguins-eggs tarballs present"
-else
-    echo "penguins-eggs tarballs building"
-    pnpm tarballs
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "debian" ]]; then
+        if [ $1=="debian" ]; then
+            debs
+        elif [ $1=="devuan" ]; then
+            debs
+        elif [ $1=="ubuntu" ]; then
+            debs
+        else
+            tarballs
+        fi
+    else
+        tarballs
+    fi
 fi
-# copy tarballs in ci.local
-cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
+
 
 podman run \
     --name current \

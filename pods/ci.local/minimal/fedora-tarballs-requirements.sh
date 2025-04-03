@@ -24,6 +24,7 @@ dnf -y update
 
 dnf -y --no-best install \
     bash-completion \
+    console-setup \
     cryptsetup \
     curl \
     device-mapper \
