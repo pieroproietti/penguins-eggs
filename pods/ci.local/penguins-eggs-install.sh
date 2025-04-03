@@ -78,11 +78,15 @@ function debsInstall {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        debsInstall
-    elif [[ "$ID" == "devuan" ]]; then
-        debsInstall
-    elif [[ "$ID" == "ubuntu" ]]; then
-        debsInstall
+        if [ $1 == "debian" ]; then
+            debsInstall
+        elif [ $1 == "devuan" ]; then
+            debsInstall
+        elif [ $1 == "ubuntu" ]; then
+            debsInstall
+        else 
+            tarballsInstall
+        fi
     else
         tarballsInstall
     fi

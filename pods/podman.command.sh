@@ -36,11 +36,11 @@ rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_TARBALLS
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        if [ $1=="debian" ]; then
+        if [[ $1 == "debian" ]]; then
             debs
-        elif [ $1=="devuan" ]; then
+        elif [[ $1 == "devuan" ]]; then
             debs
-        elif [ $1=="ubuntu" ]; then
+        elif [[ $1 == "ubuntu" ]]; then
             debs
         else
             tarballs
@@ -49,6 +49,7 @@ if [ -f /etc/os-release ]; then
         tarballs
     fi
 fi
+echo "distro: $1"
 
 
 podman run \
