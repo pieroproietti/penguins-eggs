@@ -60,6 +60,8 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "arch" ]]; then
         if [[ $1 == "arch" ]]; then
             arch_package
+        else 
+            tarballs
         fi
     else
         tarballs
