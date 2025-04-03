@@ -55,7 +55,7 @@ source ./minimal/debian-packages.sh
 source ./minimal/debian-tarballs-requirements.sh
 
 # installing ggs
-source ./penguins-eggs-tarballs-install.sh
+source ./penguins-eggs-install.sh
 
 # test mount -t overlay / install kernel
 source ./kernel-overlay-install.sh

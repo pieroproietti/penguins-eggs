@@ -18,5 +18,5 @@ if [ -f /etc/os-release ]; then
 fi
 
 IMAGE="debian:12"
-source podman.command.sh
+source podman.command.sh debian
 

@@ -53,10 +53,10 @@ apt install grub-efi-amd64-bin -y
 systemctl set-default multi-user.target
 
 # installing ggs
-source ./penguins-eggs-tarballs-install.sh
+source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
 # execute eggs
-source ./penguins-eggs-execute.sh $1
+source ./penguins-eggs-execute.sh devuan
