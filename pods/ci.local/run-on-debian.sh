@@ -52,7 +52,7 @@ source ./minimal/debian-tarballs-requirements.sh
 source ./minimal/debian-packages.sh
 
 # installing eggs
-source ./penguins-eggs-install.sh
+source ./penguins-eggs-install.sh debian
 
 # test mount -t overlay / install kernel
 source ./kernel-overlay-install.sh

@@ -5,7 +5,24 @@ set -x
 ##
 #
 #
-function tarballsInstall {
+function arch_install {
+    PENGUINS_EGGS_ARCH="penguins-eggs-10.0.60-*-any.pkg.tar.zst "    
+    pacman -U /ci/$PENGUINS_EGGS_ARCH --noconfirm
+}
+
+##
+#
+#
+function debs_install {
+    PENGUINS_EGGS_DEB="/ci/penguins-eggs_10.0.60-*_amd64.deb"
+    dpkg -i $PENGUINS_EGGS_DEB
+    apt install -fy
+}
+
+##
+#
+#
+function tarballs_install {
     PENGUINS_EGGS_INSTALL_DIR="/opt/penguins-eggs/"
     PENGUINS_EGGS_TARBALLS="/ci/penguins-eggs_10.0.60-*-linux-x64.tar.gz"
 
@@ -22,8 +39,7 @@ function tarballsInstall {
     # extract package
     tar -xf $PENGUINS_EGGS_TARBALLS
     if [ $? -ne 0 ]; then
-        echo "Error: not possible extract $PENGUINS_EGGS_TARBALLS."
-        exit 1
+        echo "Error: $PENGUINS_EGGS_TARBALLS not found or error on extract!"
     fi
 
     mv eggs penguins-eggs
@@ -62,14 +78,6 @@ function tarballsInstall {
     ln -sf "${PENGUINS_EGGS_INSTALL_DIR}bin/eggs" /usr/bin/eggs
 }
 
-##
-#
-#
-function debsInstall {
-    PENGUINS_EGGS_DEB="/ci/penguins-eggs_10.0.60-*_amd64.deb"
-    dpkg -i $PENGUINS_EGGS_DEB
-    apt install -fy
-}
 
 
 ##
@@ -78,12 +86,14 @@ function debsInstall {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        debsInstall
+        debs_install
     elif [[ "$ID" == "devuan" ]]; then
-        debsInstall
+        debs_install
     elif [[ "$ID" == "ubuntu" ]]; then
-        debsInstall
+        debs_install
+    elif [[ "$ID" == "arch" ]]; then
+        arch_install
     else
-        tarballsInstall
+        tarballs_install
     fi
 fi
