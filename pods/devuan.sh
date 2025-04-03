@@ -7,8 +7,6 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
-source ci/penguins-eggs-tarballs-replace.sh
-
 # define YOLK if host is Debian
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -22,4 +20,6 @@ if [ -f /etc/os-release ]; then
 fi
 
 IMAGE="devuan/devuan:daedalus"
-source podman.command.sh
+source podman.command.sh devuan
+
+
