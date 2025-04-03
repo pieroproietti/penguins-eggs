@@ -6,4 +6,4 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 cd $CMD_PATH
 
 IMAGE="archlinux:latest"
-source podman.command.sh
+source podman.command.sh arch

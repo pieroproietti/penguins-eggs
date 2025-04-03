@@ -36,6 +36,7 @@ libmpc \
 libtool \
 linux-firmware \
 linux-firmware-whence \
+kdb \
 m4 \
 make \
 man-db \

@@ -13,15 +13,33 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.1.0
+There are many changes to eggs in this update, but most of them are let's say: “underground,” you won't realize it!
+
+Thanks to the help of [gnuhub](https://github.com/gnuhub), I have discovered or rediscovered containers and the possibility of using these as a basis for building live images of various distributions.
+
+This allows, in theory-but also in practice-to build an Arch image on a Debian system, create an Ubuntu from an Arch installation, and so on.
+
+In fact, using podman we can create complete and installable Debian, Devuan and Ubuntu systems from containers running on a host of any possible distribution.
+
+The problem is that after so much work, I had a doubt about its actual usefulness. 
+
+Yes, it is all very interesting, but substantially impossible to test seriously: considering six distributions, each of which can act as both host and container, to test everything we would have as many as 36 tests to run. 
+
+I have not included Openmamba and Opensuse in the count. Adding them brings us to 8 possible combinations and, therefore to 64 tests for each modification. Practically impossible to develop.
+
+Let us turn to the new features introduced on the "surface":
+* `eggs love` now accepts the `--verbose` and `nointeractive` flags, convenient if you are in a hurry, for debugging and using eggs in a script;
+* numerous bugs fixed.
+
+For more information, see the [blog](https://penguins-eggs.net/blog/containers)
+
 ## penguins-eggs-10.0.61
 Thanks to [Jorge Luis Endres](mailto://jlecomputer04@gmail.com) we have a new GUI for eggs, Jorge has succeeded in what I have not succeeded in myself, which is to create a usable GUI. 
 
 Although still to be perfected and without a public repositor - but will be created soon - I believe the inclusion of this GUI will be good for eggs users.
 
 To use it, simply run: `eggs maker`
-
-> Note: Unfortunately eggsmake don't run on Debian bookworm.
-
 
 ## penguins-eggs-10.0.60
 * introduced a new installation mode replacing a single partition;
