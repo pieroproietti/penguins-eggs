@@ -98,6 +98,8 @@ export default class Ovary {
 
   uuid = ''
 
+  kernel = ''
+
   // I put all methods on ovary.d
   public fertilization = fertilization
   public produce = produce

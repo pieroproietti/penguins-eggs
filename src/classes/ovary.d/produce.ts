@@ -46,13 +46,15 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param unsecure
  * @param verbose
  */
-export async function produce(this: Ovary, clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+export async function produce(this: Ovary, kernel='', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
         this.toNull = ' > /dev/null 2>&1'
     }
 
+    this.kernel = kernel
+    
     this.clone = clone
 
     this.cryptedclone = cryptedclone
