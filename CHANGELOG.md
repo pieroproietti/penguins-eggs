@@ -35,11 +35,13 @@ Let us turn to the new features introduced on the "surface":
 For more information, see the [blog](https://penguins-eggs.net/blog/containers)
 
 ## penguins-eggs-10.0.61
-Thanks to [Jorge Luis Endres](mailto://jlecomputer04@gmail.com) we have a new GUI for eggs, Jorge has succeeded in what I have not succeeded in myself, which is to create a usable GUI. 
+Thanks to [Jorge Luis Endres](mailto://jlecomputer04@gmail.com) we have a new GUI for eggs: [eggsmaker](https://github.com/pieroproietti/eggsmaker). 
 
-Although still to be perfected and without a public repositor - but will be created soon - I believe the inclusion of this GUI will be good for eggs users.
+Jorge has succeeded in what I have not succeeded in myself, which is to create a usable GUI.
 
-To use it, simply run: `eggs maker`
+Although still to be perfected, I believe the inclusion of this GUI will be good for eggs users.
+
+To use it - on your Debian/Devuan/Ubuntu system - enable `penguins-eggs-ppa` and install it with `apt install eggsmker`.
 
 ## penguins-eggs-10.0.60
 * introduced a new installation mode replacing a single partition;
