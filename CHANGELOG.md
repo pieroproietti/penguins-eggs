@@ -35,7 +35,7 @@ Let us turn to the new features introduced on the "surface":
 For more information, see the [blog](https://penguins-eggs.net/blog/containers)
 
 ## penguins-eggs-10.0.61
-Thanks to [Jorge Luis Endres](mailto://jlecomputer04@gmail.com) we have a new GUI for eggs: [eggsmaker](https://github.com/pieroproietti/eggsmaker). 
+Thanks to [Jorge Luis Endres](mailto://jlecomputer04@gmail.com) we have a new GUI for eggs: [eggsmaker](https://github.com/jlendres/eggsmaker).
 
 Jorge has succeeded in what I have not succeeded in myself, which is to create a usable GUI.
 

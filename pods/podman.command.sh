@@ -3,7 +3,6 @@
 set -x
 
 function arch_package {
-    echo "ARCH_PACKAGE"
     if ls $CMD_PATH/../../penguins-packs/aur/penguins-eggs/$PENGUINS_EGGS_ARCH 1> /dev/null 2>&1; then
         echo "penguins-eggs ARCH present"
     fi
