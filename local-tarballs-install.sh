@@ -8,7 +8,7 @@ clear
 
 # install tarball
 PENGUINS_EGGS_INSTALL_DIR="/opt/penguins-eggs/"
-PENGUINS_EGGS_TARBALLS=penguins-eggs_10.0.60-*-linux-x64.tar.gz
+PENGUINS_EGGS_TARBALLS=penguins-eggs_10.1.*-*-linux-x64.tar.gz
 if ls ./dist/$PENGUINS_EGGS_TARBALLS 1> /dev/null 2>&1; then
     echo "penguins-eggs tarballs already present."
 else

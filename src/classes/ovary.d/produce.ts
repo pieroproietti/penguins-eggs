@@ -68,88 +68,35 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
      */
     if (this.kernel === '') {
         if (this.familyId === 'alpine') {
-            // await this.initrdAlpine()
+            // to do
         } else if (this.familyId === 'archlinux') {
             this.kernel = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
             this.kernel = this.kernel.replace('.arch', '-arch')
 
         } else { // debian, fedora, openmamba, opensuse, voidlinux
-
             let vmlinuz = path.basename(Utils.vmlinuz())
             this.kernel = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
         }
     }
 
     /**
-     * define vmlinuz
+     * define this.vmlinuz
      */
-    this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
+    if (this.familyId !== "archlinux") {
+        this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
+    } else {
+        this.vmlinuz = `/boot/vmlinuz-linux`
+    }
 
     /**
-     * define initrd
+     * define this.initrd
      */
-    let separator= ''
-    let version= ''
-    let suffix = ''
-    if (this.familyId === 'alpine') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = 'lts'
-    } else if (this.familyId === 'archlinux') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = 'linux'
-        suffix = '.img'
-        /*
-        if (Diversions.isManjaroBased(this.distro.distroId)) {
-            version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-        }
-        */
-    } else if (this.familyId === 'debian') {
-        this.initrd = 'initrd.img'
-        separator = "-"
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-    } else if (this.familyId === 'fedora') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-        suffix = '.img'
-    } else if (this.familyId === 'openmamba') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-    } else if (this.familyId === 'aldos') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-    } else if (this.familyId === 'opensuse') {
-        this.initrd = 'initrd'
-        separator = '-'
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-
-    } else if (this.familyId === 'voidlinux') {
-        this.initrd = 'initramfs'
-        separator = '-'
-        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
-        suffix = '.img'
-    }
-
-    /*
-    // manjaro eredita da arch
-    if (distro.distroId === 'Manjaro') {
-        version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-    }
-    */
+    this.initrd = Utils.initrdImg(this.kernel)
 
 
-    this.initrd = `/boot/${this.initrd}${separator}${version}${suffix}`
-    if (!fs.existsSync(this.initrd)) {
-        process.exit(1)
-    }
-    console.log(`kernel: ${this.kernel}`)
-    console.log(`vmlinuz: ${this.vmlinuz}`)
-    console.log(`initrd: ${this.initrd}`)
-
+    /**
+     * yolk
+     */
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
         const yolk = new Repo()
         if (!yolk.exists()) {
@@ -173,7 +120,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     } else {
         await this.liveCreateStructure()
 
-        // Carica calamares sono se le icone sono accettate
+        // Carica calamares solo se le icone sono accettate
         if (
             !noicons && // se VOGLIO le icone
             !nointeractive &&
@@ -193,33 +140,16 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
              * cryptedclone
              */
             console.log("eggs will SAVE users and users' data ENCRYPTED")
-            /*
-            const users = await this.usersFill()
-            for (const user of users) {
-              if (user.saveIt) {
-                let utype = 'user   '
-                if (Number.parseInt(user.uid) < 1000) {
-                  utype = 'service'
-                }
-                //console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
-                if (user.login !== 'root') {
-                  this.addRemoveExclusion(true, user.home)
-                }
-              }
-            }
-            */
+
         } else if (this.clone) {
             /**
              * clone
-             *
-             * users tend to set user_opt as
-             * real user when create a clone,
-             * this is WRONG here we correct
              */
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
             this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data UNCRYPTED on the live")
+
         } else {
             /**
              * normal
