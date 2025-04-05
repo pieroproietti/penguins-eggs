@@ -31,21 +31,22 @@ gcc \
 groff \
 guile \
 inetutils \
+kdb \
 libisl \
 libmpc \
 libtool \
 linux-firmware \
 linux-firmware-whence \
-kdb \
 m4 \
 make \
 man-db \
 nano \
+networkmanager \
 openssh \
 patch \
 pkgconf \
-syslinux \
 sudo \
+syslinux \
 texinfo \
 which \
 zram-generator

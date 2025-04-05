@@ -57,8 +57,8 @@ sed -i '/^VERSION_ID=/d' /etc/os-release
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 
 # systemd
-systemctl set-default multi-user.target
-systemctl enable getty@tty1.service
+#systemctl set-default multi-user.target
+#systemctl enable getty@tty1.service
 
 # execute eggs
 source ./penguins-eggs-execute.sh
