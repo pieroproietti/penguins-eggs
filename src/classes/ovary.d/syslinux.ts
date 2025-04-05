@@ -71,14 +71,14 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
         process.exit()
     }
 
-    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid)
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
         fullname: this.settings.remix.fullname.toUpperCase(),
-        initrdImg: `/live${this.settings.initrdImg}`,
-        kernel: Utils.kernelVersion(),
+        initrdImg: `/live/${path.basename(this.initrd)}`,
+        kernel: this.kernel,
         kernel_parameters,
-        vmlinuz: `/live${this.settings.vmlinuz}`
+        vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
     fs.writeFileSync(isolinuxDest, mustache.render(template, view))
 

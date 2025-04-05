@@ -76,6 +76,8 @@ export default class Ovary {
 
   familyId = ''
 
+  distroId = ''
+
   genisoimage = false
 
   incubator = {} as Incubator
@@ -97,6 +99,12 @@ export default class Ovary {
   volid = ''
 
   uuid = ''
+
+  kernel = ''
+
+  initrd = ''
+
+  vmlinuz = ''
 
   // I put all methods on ovary.d
   public fertilization = fertilization

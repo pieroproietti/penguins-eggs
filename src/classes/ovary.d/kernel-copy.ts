@@ -26,20 +26,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
    * kernelCopy
    */
 export async function kernelCopy(this: Ovary) {
-    Utils.warning(`copying ${path.basename(this.settings.kernel_image)} on ISO/live`)
-
-    let lackVmlinuzImage = false
-    if (fs.existsSync(this.settings.kernel_image)) {
-        await exec(`cp ${this.settings.kernel_image} ${this.settings.iso_work}live/`, this.echo)
-    } else {
-        Utils.error(`Cannot find ${this.settings.kernel_image}`)
-        lackVmlinuzImage = true
-    }
-
-    if (lackVmlinuzImage) {
-        Utils.warning('Try to edit /etc/penguins-eggs.d/eggs.yaml and check for')
-        Utils.warning(`vmlinuz: ${this.settings.kernel_image}`)
-        process.exit(1)
-    }
+    Utils.warning(`copying ${path.basename(this.vmlinuz)} on ISO/live`)
+    await exec(`cp ${this.vmlinuz} ${this.settings.iso_work}live/`, this.echo)    
 }
 

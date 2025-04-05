@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 cd $CMD_PATH
 
-if [ -f /etc/os-release ]; then
+if [[ -f /etc/os-release ]]; then
     . /etc/os-release
     if [[ "$ID" == "almalinux" ]]; then
         echo "install the package of capsh"
@@ -45,6 +45,12 @@ if [ -f /etc/os-release ]; then
         kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
         cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
         dracut --force --kver $kernel_version
+
+    elif [[ "$ID" == "manjaro" ]]; then
+        echo "install the package of capsh"
+        pacman -S --needed --noconfirm linux linux-headers
+        pacman -S --needed --noconfirm libcap
+        pacman -S --needed --noconfirmkmod
 
     elif [[ "$ID" == "opensuse" ]]; then
         mkdir /boot

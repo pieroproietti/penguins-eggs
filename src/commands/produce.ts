@@ -44,6 +44,7 @@ export default class Produce extends Command {
     cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
+    kernel: Flags.string({ char: 'k', description: 'kernel version' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
     noicon: Flags.boolean({ char: 'N', description: 'no icon eggs on desktop' }),
@@ -174,6 +175,22 @@ export default class Produce extends Command {
       // if clone or cryptedclone unsecure = true
       const unsecure = flags.unsecure || clone || cryptedclone
 
+      let { kernel } = flags
+      if (kernel === undefined ) {
+        kernel=''
+      }
+      if (kernel !=='') {
+        if (!fs.existsSync(`/usr/lib/modules/${kernel}`)) {
+          let kernels = fs.readdirSync(`/usr/lib/modules/`)
+          console.log("modules available:")
+          for (const k of kernels)         {
+            console.log(`- ${k}`)
+          }
+          console.log(`\nNo available modules for kernel version "${kernel}" in /usr/lib/modules/`)
+          process.exit(1)
+        }
+      }
+
       /**
        * theme: if not defined will use eggs
        */
@@ -225,7 +242,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
+        await ovary.produce(kernel, clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
