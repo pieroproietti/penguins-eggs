@@ -153,9 +153,19 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
     if (Utils.isSystemd()) {
         const systemdctl = new Systemctl(this.verbose)
 
+        /*
+        await exec(`chroot ${this.settings.work_dir} systemctl enable getty@tty1.service`)
+        await exec(`chroot ${this.settings.work_dir} systemd-networkd.service`)
+        await exec(`chroot ${this.settings.work_dir} systemd-resolved.service`)
+        await exec(`chroot ${this.settings.work_dir} ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf`)
+        */
+        await systemdctl.enable('getty@tty1.service', this.settings.work_dir.merged, true)
+        await systemdctl.enable('systemd-networkd.service', this.settings.work_dir.merged, true)
+        await systemdctl.enable('systemd-resolved.service', this.settings.work_dir.merged, true)
+        await exec(`chroot ${this.settings.work_dir} ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf`)
+
         /**
          * systemd-systemd-resolved
-         */
         let resolvContent = ''
         if (await systemdctl.isActive('systemd-resolved.service')) {
             await systemdctl.stop('systemd-resolved.service')
@@ -167,6 +177,7 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
         if (await systemdctl.isEnabled('systemd-networkd.service')) {
             await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
         }
+        */
 
         if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
             await systemdctl.disable('remote-cryptsetup.target', this.settings.work_dir.merged, true)
@@ -189,7 +200,7 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
         }
 
         /**
-         * All systemd distros rm
+         * All systemd distros
          */
         await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, this.echo)
         await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, this.echo)

@@ -45,5 +45,9 @@ source ./penguins-eggs-install.sh
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
+# systemd
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
+
 # execute eggs
 source ./penguins-eggs-execute.sh
