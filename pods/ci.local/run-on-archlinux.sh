@@ -57,5 +57,5 @@ sed -i '/^VERSION_ID=/d' /etc/os-release
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 
 # execute eggs
-source ./penguins-eggs-execute.sh $1
+source ./penguins-eggs-execute.sh
 

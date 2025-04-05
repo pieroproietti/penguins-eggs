@@ -47,4 +47,4 @@ source ./penguins-eggs-tarballs-install.sh
 source ./kernel-overlay-install.sh
 
 # execute eggs
-source ./penguins-eggs-execute.sh $1
+source ./penguins-eggs-execute.sh

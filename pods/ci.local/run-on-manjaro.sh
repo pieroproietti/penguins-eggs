@@ -57,5 +57,4 @@ source ./kernel-overlay-install.sh
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 
 # execute eggs
-source ./penguins-eggs-execute.sh $1
-
+source ./penguins-eggs-execute.sh
