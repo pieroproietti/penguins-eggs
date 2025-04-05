@@ -9,17 +9,14 @@ export NEEDRESTART_MODE=a
 # localtime
 ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 
-# Some containers don't have hostname command at begine
+# Some containers don't have hostname command
 echo -e "$(hostname)\n" > /etc/hostname
 
-# using eggs
-if [ $1==local ]; then
+eggs love -vn
+
+if [ "$GITHUB_ACTIONS" = "true" ]; then
+    ls -al /ci/iso/
+else
     echo "TIPS use: eggs love -nv"
     exec bash --login
-else
-    eggs dad -d
-    eggs tools clean -n
-    eggs produce --pendrive --verbose -n
-    mv /home/eggs/.mnt/*.iso /ci/iso/
-    ls -al /ci/iso/
 fi

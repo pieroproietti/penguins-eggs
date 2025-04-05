@@ -13,7 +13,6 @@ cd $CMD_PATH
 env
 pwd
 whoami
-
 ####################################################################################################################################
 # 2 hostname
 echo -e "$(hostname)\n" > /etc/hostname
@@ -58,4 +57,4 @@ source ./penguins-eggs-install.sh debian
 source ./kernel-overlay-install.sh
 
 # execute eggs
-source ./penguins-eggs-execute.sh $1
+source ./penguins-eggs-execute.sh
