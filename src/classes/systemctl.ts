@@ -31,7 +31,7 @@ export default class SistemdCtl {
   /**
    *
    */
-  async enable(service: string) {
+  async enable(service: string, chroot = '/', report = false) {
     await exec(`systemctl enable ${service}`, this.echo)
   }
 

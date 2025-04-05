@@ -217,11 +217,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             await this.incubator.config(release)
 
             await this.syslinux(this.theme)
-            //await this.isolinux(this.theme)
+
             await this.kernelCopy()
 
             /**
-             * differents initfs for different families
+             * differents initrd for different families
              */
             if (this.familyId === 'alpine') {
                 await this.initrdAlpine()
@@ -229,8 +229,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
                 await this.initrdArch()
             } else if (this.familyId === 'debian') {
                 await this.initrdDebian()
-            } else if (this.familyId === 'aldos' ||
-                this.familyId === 'fedora' ||
+            } else if (this.familyId === 'fedora' ||
                 this.familyId === 'openmamba' ||
                 this.familyId === 'opensuse' ||
                 this.familyId === 'voidlinux') {
@@ -329,14 +328,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
             fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}${pathName}.sfs`)
         }
-
-        /**
-         * patch per aldos
-        if (this.familyId === 'aldos') {
-          await exec(`mkdir ${this.settings.iso_work}LiveOS -p`, this.echo)
-          fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}LiveOS/squashfs.img`)
-        }
-        */
 
         await this.makeIso(mkIsofsCmd, scriptOnly)
     }
