@@ -67,7 +67,7 @@ export async function initrdArch(this: Ovary) {
  * initrdDebian
  */
 export async function initrdDebian(this: Ovary, verbose = false) {
-    Utils.warning(`creating ${path.basename(this.settings.initrdImg)} using mkinitramfs on ISO/live`)
+    Utils.warning(`creating ${this.initrd}} using mkinitramfs on ISO/live`)
 
     let isCrypted = false
 
@@ -75,14 +75,9 @@ export async function initrdDebian(this: Ovary, verbose = false) {
         isCrypted = true
         await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
-    let initrdImg = path.basename(Utils.initrdImg())
-    let kernelRelease = initrdImg.substring(initrdImg.indexOf('-') + 1)
-    
-    if (this.kernel!='') {
-        kernelRelease=this.kernel
-    } 
-    console.log(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${kernelRelease}`)
-    await exec(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${kernelRelease} ${this.toNull}`, this.echo)
+    let initrdImg = path.basename(this.initrd)
+    console.log(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel}`)
+    await exec(`mkinitramfs -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel} ${this.toNull}`, this.echo)
     if (isCrypted) {
         await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }

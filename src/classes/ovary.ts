@@ -100,6 +100,10 @@ export default class Ovary {
 
   kernel = ''
 
+  initrd = ''
+
+  vmlinuz = ''
+
   // I put all methods on ovary.d
   public fertilization = fertilization
   public produce = produce

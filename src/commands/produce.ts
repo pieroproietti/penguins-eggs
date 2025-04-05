@@ -176,7 +176,10 @@ export default class Produce extends Command {
       const unsecure = flags.unsecure || clone || cryptedclone
 
       let { kernel } = flags
-      if (kernel !=='' ) {
+      if (kernel === undefined ) {
+        kernel=''
+      }
+      if (kernel !=='') {
         if (!fs.existsSync(`/usr/lib/modules/${kernel}`)) {
           let kernels = fs.readdirSync(`/usr/lib/modules/`)
           console.log("modules available:")

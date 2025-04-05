@@ -46,7 +46,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param unsecure
  * @param verbose
  */
-export async function produce(this: Ovary, kernel='', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -54,7 +54,7 @@ export async function produce(this: Ovary, kernel='', clone = false, cryptedclon
     }
 
     this.kernel = kernel
-    
+
     this.clone = clone
 
     this.cryptedclone = cryptedclone
@@ -62,6 +62,93 @@ export async function produce(this: Ovary, kernel='', clone = false, cryptedclon
     const luksName = 'luks-volume'
 
     const luksFile = `/tmp/${luksName}`
+
+    /**
+     * define kernel
+     */
+    if (this.kernel === '') {
+        if (this.familyId === 'alpine') {
+            // await this.initrdAlpine()
+        } else if (this.familyId === 'archlinux') {
+            this.kernel = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
+            this.kernel = this.kernel.replace('.arch', '-arch')
+
+        } else { // debian, fedora, openmamba, opensuse, voidlinux
+
+            let vmlinuz = path.basename(Utils.vmlinuz())
+            this.kernel = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+        }
+    }
+
+    /**
+     * define vmlinuz
+     */
+    this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
+
+    /**
+     * define initrd
+     */
+    let separator= ''
+    let version= ''
+    let suffix = ''
+    if (this.familyId === 'alpine') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = 'lts'
+    } else if (this.familyId === 'archlinux') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = 'linux'
+        suffix = '.img'
+        /*
+        if (Diversions.isManjaroBased(this.distro.distroId)) {
+            version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+        }
+        */
+    } else if (this.familyId === 'debian') {
+        this.initrd = 'initrd.img'
+        separator = "-"
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+    } else if (this.familyId === 'fedora') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+        suffix = '.img'
+    } else if (this.familyId === 'openmamba') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+    } else if (this.familyId === 'aldos') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+    } else if (this.familyId === 'opensuse') {
+        this.initrd = 'initrd'
+        separator = '-'
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+
+    } else if (this.familyId === 'voidlinux') {
+        this.initrd = 'initramfs'
+        separator = '-'
+        version = this.vmlinuz.substring(this.vmlinuz.indexOf('-') + 1)
+        suffix = '.img'
+    }
+
+    /*
+    // manjaro eredita da arch
+    if (distro.distroId === 'Manjaro') {
+        version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+    }
+    */
+
+
+    this.initrd = `/boot/${this.initrd}${separator}${version}${suffix}`
+    if (!fs.existsSync(this.initrd)) {
+        process.exit(1)
+    }
+    console.log(`kernel: ${this.kernel}`)
+    console.log(`vmlinuz: ${this.vmlinuz}`)
+    console.log(`initrd: ${this.initrd}`)
 
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
         const yolk = new Repo()
@@ -143,7 +230,7 @@ export async function produce(this: Ovary, kernel='', clone = false, cryptedclon
         /**
          * exclude.list
          */
-        if (!excludes.static  && !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
+        if (!excludes.static && !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
             const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
             const excludeListTemplate = excludeListTemplateDir + 'master.list'
             if (!fs.existsSync(excludeListTemplate)) {

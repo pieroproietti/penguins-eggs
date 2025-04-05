@@ -245,10 +245,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     const view = {
         fullname: this.settings.remix.fullname.toUpperCase(),
-        initrdImg: `/live${this.settings.initrdImg}`,
-        kernel: Utils.kernelVersion(),
+        initrdImg: `/live/${path.basename(this.initrd)}`,
+        kernel: this.kernel,
         kernel_parameters,
-        vmlinuz: `/live${this.settings.vmlinuz}`
+        vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
     let grubText2 = `# grub.cfg 2\n`
     grubText2 += ` # created on ${g2}`
