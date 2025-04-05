@@ -3,7 +3,6 @@
 set -x
 
 function arch_package {
-    echo "ARCH_PACKAGE"
     if ls $CMD_PATH/../../penguins-packs/aur/penguins-eggs/$PENGUINS_EGGS_ARCH 1> /dev/null 2>&1; then
         echo "penguins-eggs ARCH present"
     fi
@@ -15,6 +14,7 @@ function tarballs {
         echo "penguins-eggs TARBALLS present"
     else
         pnpm tarballs
+
     fi
     cp $CMD_PATH/../dist/$PENGUINS_EGGS_TARBALLS $CMD_PATH/./ci.local/
 }
@@ -33,16 +33,16 @@ function debs {
 ##
 #
 # main
-podman rmi $(podman images --quiet) -f
+#podman rmi $(podman images --quiet) -f
 
 * Remove ARCH, DEBS and tarballs in ci.local
-PENGUINS_EGGS_ARCH="penguins-eggs-10.0.60-*-any.pkg.tar.zst "
+PENGUINS_EGGS_ARCH="penguins-eggs-10.1.*-*-any.pkg.tar.zst "
 rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_ARCH
 
-PENGUINS_EGGS_DEB="penguins-eggs_10.0.60-*_amd64.deb"
+PENGUINS_EGGS_DEB="penguins-eggs_10.1.*-*_amd64.deb"
 rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_DEB
 
-PENGUINS_EGGS_TARBALLS=penguins-eggs_10.0.60-*-linux-x64.tar.gz
+PENGUINS_EGGS_TARBALLS=penguins-eggs_10.1.*-*-linux-x64.tar.gz
 rm -f $CMD_PATH/./ci.local/$PENGUINS_EGGS_TARBALLS
 
 if [ -f /etc/os-release ]; then

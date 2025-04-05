@@ -46,12 +46,14 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param unsecure
  * @param verbose
  */
-export async function produce(this: Ovary, clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
         this.toNull = ' > /dev/null 2>&1'
     }
+
+    this.kernel = kernel
 
     this.clone = clone
 
@@ -61,6 +63,40 @@ export async function produce(this: Ovary, clone = false, cryptedclone = false, 
 
     const luksFile = `/tmp/${luksName}`
 
+    /**
+     * define kernel
+     */
+    if (this.kernel === '') {
+        if (this.familyId === 'alpine') {
+            // to do
+        } else if (this.familyId === 'archlinux') {
+            this.kernel = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
+            this.kernel = this.kernel.replace('.arch', '-arch')
+
+        } else { // debian, fedora, openmamba, opensuse, voidlinux
+            let vmlinuz = path.basename(Utils.vmlinuz())
+            this.kernel = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+        }
+    }
+
+    /**
+     * define this.vmlinuz
+     */
+    if (this.familyId !== "archlinux") {
+        this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
+    } else {
+        this.vmlinuz = `/boot/vmlinuz-linux`
+    }
+
+    /**
+     * define this.initrd
+     */
+    this.initrd = Utils.initrdImg(this.kernel)
+
+
+    /**
+     * yolk
+     */
     if (this.familyId === 'debian' && Utils.uefiArch() === 'amd64') {
         const yolk = new Repo()
         if (!yolk.exists()) {
@@ -84,7 +120,7 @@ export async function produce(this: Ovary, clone = false, cryptedclone = false, 
     } else {
         await this.liveCreateStructure()
 
-        // Carica calamares sono se le icone sono accettate
+        // Carica calamares solo se le icone sono accettate
         if (
             !noicons && // se VOGLIO le icone
             !nointeractive &&
@@ -104,33 +140,16 @@ export async function produce(this: Ovary, clone = false, cryptedclone = false, 
              * cryptedclone
              */
             console.log("eggs will SAVE users and users' data ENCRYPTED")
-            /*
-            const users = await this.usersFill()
-            for (const user of users) {
-              if (user.saveIt) {
-                let utype = 'user   '
-                if (Number.parseInt(user.uid) < 1000) {
-                  utype = 'service'
-                }
-                //console.log(`- ${utype}: ${user.login.padEnd(16)} \thome: ${user.home}`)
-                if (user.login !== 'root') {
-                  this.addRemoveExclusion(true, user.home)
-                }
-              }
-            }
-            */
+
         } else if (this.clone) {
             /**
              * clone
-             *
-             * users tend to set user_opt as
-             * real user when create a clone,
-             * this is WRONG here we correct
              */
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
             this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data UNCRYPTED on the live")
+
         } else {
             /**
              * normal
@@ -141,7 +160,7 @@ export async function produce(this: Ovary, clone = false, cryptedclone = false, 
         /**
          * exclude.list
          */
-        if (!excludes.static  && !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
+        if (!excludes.static && !fs.existsSync('/etc/penguins-eggs/exclude.list')) {
             const excludeListTemplateDir = '/etc/penguins-eggs.d/exclude.list.d/'
             const excludeListTemplate = excludeListTemplateDir + 'master.list'
             if (!fs.existsSync(excludeListTemplate)) {

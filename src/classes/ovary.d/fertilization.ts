@@ -14,6 +14,7 @@ import path from 'node:path'
 import Ovary from '../ovary.js'
 import Settings from '../settings.js'
 import Utils from '../utils.js'
+import Distro from '../distro.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -21,6 +22,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @returns {boolean} success
  */
 export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_basename = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
+
+    // familyId, distroId from Distro
+    const distro = new Distro()
+    this.familyId = distro.familyId
+    this.distroId = distro.familyId
+
     this.settings = new Settings()
 
     if (await this.settings.load()) {
@@ -29,7 +36,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
 
         this.uuid = Utils.uuidGen()
 
-        this.familyId = this.settings.distro.familyId
+        //this.familyId = this.settings.distro.familyId
         this.nest = this.settings.config.snapshot_mnt
 
         if (snapshot_prefix !== '') {

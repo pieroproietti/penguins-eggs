@@ -17,6 +17,8 @@ if [ -f /etc/os-release ]; then
         source /ci/*run-on-devuan.sh local
     elif [[ "$ID" == "fedora" ]]; then
         source /ci/*run-on-fedora.sh local
+    elif [[ "$ID" == "manjaro" ]]; then
+        source /ci/*run-on-manjaro.sh local
     elif [[ "$ID" == "rocky" ]]; then
         source /ci/run-on-rockylinux.sh local
     elif [[ "$ID" == "ubuntu" ]]; then

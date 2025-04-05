@@ -165,76 +165,21 @@ export default class Utils {
     */
    static vmlinuz(): string {
       let vmlinuz = '';
+      const kernels = fs.readdirSync('/usr/lib/modules')
+      kernels.sort()
 
-      try {
-         // Read kernel command line parameters
-         if (fs.existsSync('/proc/cmdline')) {
-            const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(' ');
-
-            // Look for BOOT_IMAGE
-            for (const cmd of cmdline) {
-               if (cmd.startsWith('BOOT_IMAGE=')) {
-                  vmlinuz = cmd.split('=')[1];
-
-                  // Fedora-style BOOT_IMAGE=(hd0,gpt2)/vmlinuz-xxx fix
-                  if (vmlinuz.includes(')')) {
-                     vmlinuz = vmlinuz.substring(vmlinuz.indexOf(')') + 1);
-                  }
-
-                  if (!fs.existsSync(vmlinuz)) {
-                     if (fs.existsSync(`/boot/${vmlinuz}`)) {
-                        vmlinuz = `/boot/${vmlinuz}`;
-                     }
-                  }
-                  break;
-               }
-            }
-
-            // If BOOT_IMAGE was not found, try reconstructing from initrd
-            if (!vmlinuz) {
-               for (const cmd of cmdline) {
-                  if (cmd.startsWith('initrd=')) {
-                     const initrdMatch = cmd.match(/initramfs[-_](.+?)\.img/);
-                     if (initrdMatch) {
-                        const version = initrdMatch[1];
-                        vmlinuz = `/boot/vmlinuz-${version}`;
-                        break;
-                     }
-                  }
-               }
-            }
-         }
-      } catch (error) {
-         console.error('Error reading /proc/cmdline:', error);
+      const distro = new Distro()
+      if (distro.familyId === "archlinux") {
+         vmlinuz = `/boot/vmlinuz-linux`
+      } else {
+         vmlinuz = `/boot/vmlinuz-${kernels[kernels.length - 1]}`
       }
 
-      // Handle Btrfs subvolumes (e.g., /@root/boot/vmlinuz)
-      if (vmlinuz.includes('@')) {
-         const subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'));
-         vmlinuz = vmlinuz.substring(subvolumeEnd);
-      }
 
-      // ARM64 architecture handling
-      if (process.arch === 'arm64') {
-         try {
-            const kernelVersion = execSync('uname -r', { encoding: 'utf8' }).trim();
-            vmlinuz = `/boot/vmlinuz-${kernelVersion}`;
-         } catch (error) {
-            console.error('Error detecting kernel version:', error);
-         }
-      }
-
-      // If the file doesn't exist, find the latest available kernel (for containers/missing entries)
+      // If vmlinuz doesn't exist exit
       if (!fs.existsSync(vmlinuz)) {
-         try {
-            const latestKernel = execSync('ls -t /boot/vmlinuz-* | head -n 1', { encoding: 'utf8', stdio: 'pipe' }).trim();
-            if (fs.existsSync(latestKernel)) {
-               vmlinuz = latestKernel;
-            }
-         } catch (error) {
-            console.error('Error finding latest vmlinuz:', error)
-            process.exit()
-         }
+         console.log(`file ${vmlinuz} does not exist!`)
+         process.exit()
       }
 
       return vmlinuz;
@@ -244,8 +189,18 @@ export default class Utils {
    /**
     * ricava path per initrdImg
     */
-   static initrdImg(): string {
-      const vmlinuz = Utils.vmlinuz()
+   static initrdImg(kernel=''): string {
+      let vmlinuz = ''
+      if (kernel === '') {
+         vmlinuz = Utils.vmlinuz()
+      } else {
+         let distro = new Distro()
+         if (distro.familyId !== "archlinux") {
+            vmlinuz = `/boot/vmlinuz-${kernel}`
+         } else {
+            vmlinuz = `/boot/vmlinuz-linux`
+         }
+     }
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
 
       let initrd = ''
