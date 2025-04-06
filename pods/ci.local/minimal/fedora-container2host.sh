@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script installs prerequisites for penguins-eggs
-# on fedora linux, it is intended for development purposes 
+# This script build a fedora system from container
 
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then
@@ -22,6 +21,7 @@ fi
 # update
 dnf -y update
 
+# eggs requirements
 dnf -y --no-best install \
     bash-completion \
     console-setup \
@@ -46,6 +46,7 @@ dnf -y --no-best install \
     rsync \
     shim \
     squashfs-tools \
+    systemd \
     systemd-boot \
     sshfs \
     wget \
@@ -58,3 +59,26 @@ mkdir -p /usr/share/icons
 
 # disable selinux
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+# minimal 
+dnf -y --no-best install \
+    nano \
+    NetworkManager \
+    passwd \
+    sudo \
+    util-linux \
+    e2fsprogs \
+    shadow-utils \
+    hostname \
+    iproute \
+    iputils \
+    procps-ng
+
+
+# systemd configure/enable
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
+systemctl enable systemd-networkd.service
+systemctl enable NetworkManager.service
+systemctl enable NetworkManager-dispatcher.service
+
