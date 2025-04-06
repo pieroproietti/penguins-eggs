@@ -39,6 +39,8 @@ source ./minimal/archlinux-packages.sh
 
 # packages to be added tarballs
 source ./minimal/archlinux-tarballs-requirements.sh
+echo "install archlinux-tarballs-requirements finished"
+sleep 5
 
 # shasum fix
 ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
@@ -55,10 +57,6 @@ sed -i '/^VERSION_ID=/d' /etc/os-release
 
 # enable group wheel
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
-
-# systemd
-systemctl set-default multi-user.target
-systemctl enable getty@tty1.service
 
 # execute eggs
 source ./penguins-eggs-execute.sh

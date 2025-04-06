@@ -42,7 +42,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
     ]
 
     for (const i in fexcludes) {
-        this.addRemoveExclusion(true, fexcludes[i])
+        this.addExclusion(fexcludes[i])
     }
 
     /**
@@ -57,7 +57,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
                 files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
                 for (const n in files) {
                     if (files[n].includes('cryptdisks')) {
-                        this.addRemoveExclusion(true, `/etc/${rcd[i]}${files[n]}`)
+                        this.addExclusion(`/etc/${rcd[i]}${files[n]}`)
                     }
                 }
             }
@@ -68,11 +68,11 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
      * secure
      */
     if (!unsecure) {
-        this.addRemoveExclusion(true, `root/*`)
-        this.addRemoveExclusion(true, `root/.*`)
+        this.addExclusion(`root/*`)
+        this.addExclusion(`root/.*`)
     }
 
-    this.addRemoveExclusion(true, this.settings.config.snapshot_dir /* .absolutePath() */)
+    this.addExclusion(this.settings.config.snapshot_dir /* .absolutePath() */)
 
     if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
         fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
@@ -118,25 +118,14 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
  * @param add {boolean} true = add, false remove
  * @param exclusion {string} path to add/remove
  */
-export function addRemoveExclusion(this: Ovary, add: boolean, exclusion: string): void {
+export function addExclusion(this: Ovary, exclusion: string): void {
     if (this.verbose) {
-        if (add) {
-            console.log(`add exclusion: ${exclusion}`)
-        } else {
-            console.log(`remove exclusion: ${exclusion}`)
-        }
+        console.log(`add exclusion: ${exclusion}`)
     }
 
     if (exclusion.startsWith('/')) {
         exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
     }
+    this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
 
-    if (add) {
-        this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
-    } else {
-        this.settings.session_excludes.replace(` '${exclusion}'`, '')
-        if (this.settings.session_excludes === '-e') {
-            this.settings.session_excludes = ''
-        }
-    }
 }

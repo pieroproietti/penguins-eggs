@@ -31,21 +31,32 @@ gcc \
 groff \
 guile \
 inetutils \
+kdb \
 libisl \
 libmpc \
 libtool \
 linux-firmware \
 linux-firmware-whence \
-kdb \
 m4 \
 make \
 man-db \
 nano \
+networkmanager \
 openssh \
 patch \
 pkgconf \
-syslinux \
 sudo \
+syslinux \
 texinfo \
 which \
-zram-generator
+zram-generator \
+zstd
+
+
+# systemd minimal configure/enable
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
+systemctl enable systemd-networkd.service
+systemctl enable NetworkManager.service
+systemctl enable NetworkManager-dispatcher.service
+

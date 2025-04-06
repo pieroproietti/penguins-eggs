@@ -25,6 +25,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
  * editLiveFs
+ * - Mark if is_clone or is_clone_crypted
  * - Truncate logs, remove archived log
  * - Allow all fixed drives to be mounted with pmount
  * - Enable or disable password login trhough ssh for users (not root)
@@ -154,29 +155,11 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
         const systemdctl = new Systemctl(this.verbose)
 
         /*
-        await exec(`chroot ${this.settings.work_dir} systemctl enable getty@tty1.service`)
-        await exec(`chroot ${this.settings.work_dir} systemd-networkd.service`)
-        await exec(`chroot ${this.settings.work_dir} systemd-resolved.service`)
-        await exec(`chroot ${this.settings.work_dir} ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf`)
-        */
-        await systemdctl.enable('getty@tty1.service', this.settings.work_dir.merged, true)
-        await systemdctl.enable('systemd-networkd.service', this.settings.work_dir.merged, true)
-        await systemdctl.enable('systemd-resolved.service', this.settings.work_dir.merged, true)
-        await exec(`chroot ${this.settings.work_dir} ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf`)
-
-        /**
-         * systemd-systemd-resolved
-        let resolvContent = ''
-        if (await systemdctl.isActive('systemd-resolved.service')) {
-            await systemdctl.stop('systemd-resolved.service')
-            resolvContent = 'nameserver 127.0.0.53\noptions edns0 trust-ad\nsearch .\n'
-        }
-
-        fs.writeFileSync(resolvFile, resolvContent)
-
-        if (await systemdctl.isEnabled('systemd-networkd.service')) {
-            await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
-        }
+        * Arch: /ci/minimal/arch-minimal.sh:
+        * systemctl set-default multi-user.target
+        * systemctl enable getty@tty1.service
+        * systemctl enable systemd-networkd.service
+        * systemctl enable 'systemd-resolved.service        
         */
 
         if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
