@@ -155,31 +155,11 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
         const systemdctl = new Systemctl(this.verbose)
 
         /*
-        * systemd-resolved solo per Arch minima
+        * Arch: /ci/minimal/arch-minimal.sh:
         * systemctl set-default multi-user.target
         * systemctl enable getty@tty1.service
         * systemctl enable systemd-networkd.service
         * systemctl enable 'systemd-resolved.service        
-        */
-        if (Utils.isContainer()) {
-            await exec(`systemctl set-default multi-user.target`)
-            await systemdctl.enable('getty@tty1.service', this.settings.work_dir.merged, true)
-            await systemdctl.enable('systemd-networkd.service', this.settings.work_dir.merged, true)
-            await systemdctl.enable('NetworkManager.service', this.settings.work_dir.merged, true)
-        }
-
-        /**
-         * systemd-systemd-resolved
-        let resolvContent = ''
-        if (await systemdctl.isActive('systemd-resolved.service')) {
-            await systemdctl.stop('systemd-resolved.service')
-            resolvContent = 'nameserver 127.0.0.53\noptions edns0 trust-ad\nsearch .\n'
-        }
-        fs.writeFileSync(resolvFile, resolvContent)
-
-        if (await systemdctl.isEnabled('systemd-networkd.service')) {
-            await systemdctl.disable('systemd-networkd.service', this.settings.work_dir.merged, true)
-        }
         */
 
         if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
