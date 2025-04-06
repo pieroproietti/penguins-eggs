@@ -38,7 +38,7 @@ import { produce } from './ovary.d/produce.js'
 import { bindLiveFs, uBindLiveFs } from './ovary.d/bind-live-fs.js'
 import { bindVfs, ubindVfs } from './ovary.d/bind-vfs.js'
 import { editLiveFs } from './ovary.d/edit-live-fs.js'
-import { makeSquashfs, addRemoveExclusion } from './ovary.d/make-squashfs.js'
+import { makeSquashfs, addExclusion } from './ovary.d/make-squashfs.js'
 import { makeEfi } from './ovary.d/make-efi.js'
 import { xorrisoCommand } from './ovary.d/xorriso-commend.js'
 import { createXdgAutostart } from './ovary.d/create-xdg-autostart.js'
@@ -116,7 +116,7 @@ export default class Ovary {
   editLiveFs = editLiveFs
   makeEfi = makeEfi
   makeSquashfs = makeSquashfs
-  addRemoveExclusion = addRemoveExclusion
+  addExclusion = addExclusion
   xorrisoCommand = xorrisoCommand
   createXdgAutostart = createXdgAutostart
   copied = copied
