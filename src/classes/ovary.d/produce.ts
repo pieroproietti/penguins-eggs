@@ -82,11 +82,18 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     /**
      * define this.vmlinuz
      */
+    this.vmlinuz = Utils.vmlinuz()
+    /*
     if (this.familyId !== "archlinux") {
         this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
     } else {
+
         this.vmlinuz = `/boot/vmlinuz-linux`
+        if (Diversions.isManjaroBased(this.distroId)) {
+            this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
+        }
     }
+    */
 
     /**
      * define this.initrd

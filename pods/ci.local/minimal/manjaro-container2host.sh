@@ -14,8 +14,20 @@ if [[ ! -f /etc/arch-release ]]; then
 	echo "This script is only for Manjaro Linux"
 	exit
 fi
-# efibootmgr
 
+# echo "base: system e init"
+# echo "package manager"
+# echo "login e console"
+# echo "networking"
+# echo "filesystem and disk support"
+# echo "drivers and hw support"
+# echo "tools"
+# echo "optional tools debug/live ISO"
+# echo "systemd configure/enable"
+# echo "generate /etc/default/grub"
+
+
+# echo "eggs requirements"
 pacman -Syu --noconfirm --needed \
 	arch-install-scripts \
 	bash-completion \

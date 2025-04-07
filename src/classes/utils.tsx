@@ -163,16 +163,56 @@ export default class Utils {
     * se non è presente, come nel caso di Franco, cerca initrd e ricostruisce vmlinuz
     * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
     */
-   static vmlinuz(): string {
-      let vmlinuz = '';
-      const kernels = fs.readdirSync('/usr/lib/modules')
-      kernels.sort()
+   static vmlinuz(kernel = ''): string {
+      let vmlinuz = ''
 
-      const distro = new Distro()
-      if (distro.familyId === "archlinux") {
-         vmlinuz = `/boot/vmlinuz-linux`
+
+      if (kernel === '') {
+         /**
+          * kernel da /usr/lib/modules
+          */
+         const kernels = fs.readdirSync('/usr/lib/modules')
+         kernels.sort()
+
+         const distro = new Distro()
+         if (distro.familyId === "archlinux") {
+            vmlinuz = `/boot/vmlinuz-linux`
+
+            // manjaro: vmlinux-${major}.${minor}-arch
+            if (Diversions.isManjaroBased(distro.distroId)) {
+               const modulesDir = fs.readdirSync('/usr/lib/modules/')
+               modulesDir.sort()
+               let max = modulesDir[modulesDir.length - 1]
+               const match = max.match(/^(\d+)\.(\d+)\./); // Cattura major.minor
+               if (match) {
+                  const major = match[1]
+                  const minor = match[2]
+                  vmlinuz = `/boot/vmlinuz-${major}.${minor}-x86_64`
+               }
+            }
+         } else {
+            vmlinuz = `/boot/vmlinuz-${kernels[kernels.length - 1]}`
+         }
+
       } else {
-         vmlinuz = `/boot/vmlinuz-${kernels[kernels.length - 1]}`
+         /**
+          * kernel definito
+          */
+         const distro = new Distro()
+         if (distro.familyId === "archlinux") {
+            vmlinuz = `/boot/vmlinuz-linux`
+            if (Diversions.isManjaroBased(distro.distroId)) {
+               const match = kernel.match(/^(\d+)\.(\d+)\./) // cattura minor e major
+               if (match) {
+                  const major = match[1]
+                  const minor = match[2]
+                  vmlinuz = `/boot/vmlinuz-${major}.${minor}-x86_64`
+               }
+            }
+         } else {
+            vmlinuz = `/boot/vmlinuz-${kernel}`
+         }
+
       }
 
 
@@ -189,18 +229,8 @@ export default class Utils {
    /**
     * ricava path per initrdImg
     */
-   static initrdImg(kernel=''): string {
-      let vmlinuz = ''
-      if (kernel === '') {
-         vmlinuz = Utils.vmlinuz()
-      } else {
-         let distro = new Distro()
-         if (distro.familyId !== "archlinux") {
-            vmlinuz = `/boot/vmlinuz-${kernel}`
-         } else {
-            vmlinuz = `/boot/vmlinuz-linux`
-         }
-     }
+   static initrdImg(kernel = ''): string {
+      let vmlinuz = Utils.vmlinuz(kernel)
       const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
 
       let initrd = ''
@@ -213,6 +243,7 @@ export default class Utils {
          initrd = 'initramfs'
          separator = '-'
          version = 'lts'
+
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
          separator = '-'
@@ -221,23 +252,28 @@ export default class Utils {
          if (Diversions.isManjaroBased(distro.distroId)) {
             version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          }
+
       } else if (distro.familyId === 'debian') {
          initrd = 'initrd.img'
          separator = "-"
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+
       } else if (distro.familyId === 'fedora') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          suffix = '.img'
+
       } else if (distro.familyId === 'openmamba') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+
       } else if (distro.familyId === 'aldos') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+
       } else if (distro.familyId === 'opensuse') {
          initrd = 'initrd'
          separator = '-'
@@ -249,12 +285,6 @@ export default class Utils {
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          suffix = '.img'
       }
-
-      // manjaro eredita da arch
-      if (distro.distroId === 'Manjaro') {
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-      }
-
 
       initrd = path + initrd + separator + version + suffix
       return initrd
