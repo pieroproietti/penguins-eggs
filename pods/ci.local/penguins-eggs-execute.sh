@@ -17,6 +17,6 @@ eggs love -vn
 if [ "$GITHUB_ACTIONS" = "true" ]; then
     ls -al /ci/iso/
 else
-    echo "TIPS use: eggs love -nv"
+    echo "TIPS use: eggs export iso -c"
     exec bash --login
 fi

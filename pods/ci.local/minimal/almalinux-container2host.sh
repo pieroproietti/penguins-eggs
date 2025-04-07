@@ -8,18 +8,29 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# check if we are on fedora or NobaraLinux
-if [ ! -f /etc/fedora-release ]; then
-    if [ ! -f /etc/nobara-release ]; then
-        if [ ! -f /etc/openmamba-release ]; then
-            echo "This script is intended for fedora, nobara or openmamba!"
-            exit 1
-        fi
+# check if we are on rocky or almalinux
+if [ ! -f /etc/almalinux-release ]; then
+    if [ ! -f /etc/rocky-release ]; then
+        echo "This script is intended for almalinux or rocky!"
+        exit 1
     fi
 fi
 
 # update
 dnf -y update
+
+# add epel-release
+dnf -y install epel-release 
+
+# enable crb
+dnf config-manager --set-enabled crb
+
+# update
+dnf -y update
+
+# enable crb
+dnf config-manager --set-enabled crb
+
 
 echo "base: system e init"
 dnf -y --nobest install \
@@ -103,27 +114,16 @@ systemctl enable NetworkManager.service
 systemctl enable NetworkManager-dispatcher.service
 
 echo "generate /etc/default/grub"
-cat > /etc/default/grub <<EOF
-GRUB_TIMEOUT=5
-GRUB_DISTRIBUTOR="Fedora"
-GRUB_DEFAULT=saved
-GRUB_DISABLE_SUBMENU=true
-GRUB_TERMINAL_OUTPUT="console"
-GRUB_CMDLINE_LINUX="rd.lvm=0 rd.md=0 rd.dm=0 quiet"
-GRUB_DISABLE_RECOVERY="true"
-EOF
 
 echo "disable selinux"
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 echo "eggs requirements"
-dnf -y --nobest install \
+dnf -y --nobest --allowerasing install \
     bash-completion \
-    console-setup \
     cryptsetup \
     curl \
     device-mapper \
-    dmraid \
     dosfstools \
     dracut \
     dracut-live \
@@ -131,19 +131,18 @@ dnf -y --nobest install \
     fuse \
     git \
     grub2-efi-x64 \
+    grub2-efi-modules \
     grub2-efi-x64-modules \
     grub2-tools-extra \
     jq \
     lvm2 \
     nvme-cli \
-    overlayfs-tools \
     parted \
     rsync \
     shim \
     squashfs-tools \
-    systemd \
-    systemd-boot \
     sshfs \
+    tar \
     wget \
     xdg-user-dirs \
     xorriso \

@@ -34,10 +34,7 @@ cd $CMD_PATH
 dnf -y update 
 
 # packages to be added for a minimum standard installation
-source ./minimal/almalinux-packages.sh
-
-# packages to be added tarballs
-source ./minimal/almalinux-tarballs-requirements.sh
+source ./minimal/almalinux-container2host.sh
 
 # installing ggs
 source ./penguins-eggs-install.sh
