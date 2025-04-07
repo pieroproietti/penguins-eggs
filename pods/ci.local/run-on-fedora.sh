@@ -34,10 +34,7 @@ cd $CMD_PATH
 dnf -y update 
 
 # packages to be added for a minimum standard installation
-source ./minimal/almalinux-packages.sh
-
-# packages to be added tarballs
-source ./minimal/fedora-tarballs-requirements.sh
+source ./minimal/fedora-container2host.sh
 
 # installing ggs
 source ./penguins-eggs-install.sh
