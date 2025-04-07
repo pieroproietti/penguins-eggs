@@ -21,8 +21,7 @@ fi
 # update
 dnf -y update
 
-# Base: Sistema e init
-echo "system base and init"
+echo "base: system e init"
 dnf -y --no-best install \
     systemd \
     dracut \
@@ -31,14 +30,12 @@ dnf -y --no-best install \
     passwd \
     sudo
 
-# Gestione pacchetti
 echo "package manager"
 dnf -y --no-best install \
     dnf \
     dnf-plugins-core
 
-# Login e console
-echo "login/console"
+echo "login e console"
 dnf -y --no-best install \
     util-linux \
     e2fsprogs \
@@ -48,7 +45,6 @@ dnf -y --no-best install \
     iputils \
     procps-ng
 
-# Networking
 echo "networking"
 dnf -y --no-best install \
     NetworkManager \
@@ -56,8 +52,7 @@ dnf -y --no-best install \
     nss-altfiles \
     openssh-server
 
-# File system e supporto dischi
-echo "filesyste and disk support"
+echo "filesystem and disk support"
 dnf -y --no-best install \
     btrfs-progs \
     xfsprogs \
@@ -67,15 +62,13 @@ dnf -y --no-best install \
     mdadm \
     cryptsetup 
 
-# Driver e supporto hardware
-echo "driver and hw support"
+echo "drivers and hw support"
 dnf -y --no-best install \
     linux-firmware \
     efibootmgr \
     grub2-efi \
     shim 
 
-# Strumenti vari utili
 echo "tools"
 dnf -y --no-best install \
     bash-completion \
@@ -92,7 +85,6 @@ dnf -y --no-best install \
     gzip \
     xz
 
-# optional but usefuil for debud debug / live ISO
 echo "optional tools debug/live ISO"
 dnf -y --no-best install \
     strace \
@@ -103,7 +95,27 @@ dnf -y --no-best install \
     wget \
     bind-utils
 
-# eggs
+echo "systemd configure/enable"
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
+systemctl enable systemd-networkd.service
+systemctl enable NetworkManager.service
+systemctl enable NetworkManager-dispatcher.service
+
+echo "generate /etc/default/grub"
+cat > /etc/default/grub <<EOF
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="Fedora"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL_OUTPUT="console"
+GRUB_CMDLINE_LINUX="rd.lvm=0 rd.md=0 rd.dm=0 quiet"
+GRUB_DISABLE_RECOVERY="true"
+EOF
+
+echo "disable selinux"
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
 echo "eggs requirements"
 dnf -y --no-best install \
     bash-completion \
@@ -139,25 +151,3 @@ dnf -y --no-best install \
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
-
-# systemd configure/enable
-echo "systemd configure/enable"
-systemctl set-default multi-user.target
-systemctl enable getty@tty1.service
-systemctl enable systemd-networkd.service
-systemctl enable NetworkManager.service
-systemctl enable NetworkManager-dispatcher.service
-
-# /etc/default/grub
-cat > /etc/default/grub <<EOF
-GRUB_TIMEOUT=5
-GRUB_DISTRIBUTOR="Fedora"
-GRUB_DEFAULT=saved
-GRUB_DISABLE_SUBMENU=true
-GRUB_TERMINAL_OUTPUT="console"
-GRUB_CMDLINE_LINUX="rd.lvm=0 rd.md=0 rd.dm=0 quiet"
-GRUB_DISABLE_RECOVERY="true"
-EOF
-
-# disable selinux
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
