@@ -32,33 +32,30 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 pacman -Syu --noconfirm
 
-# packages to be added for a minimum standard installation
-
 # packages minimal
-source ./minimal/manjaro-packages.sh
+source ./minimal/manjaro-container2host.sh
 
-# packages to be added tarballs
-#source ./minimal/manjaro-tarballs-requirements.sh
 
-# shasum fix
-ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
-
-# installing eggs
+# installing ggs
 source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
-# THIS DISTRO ONLY
-# remove VERSION_ID as standard in arch systems
-# sed -i '/^VERSION_ID=/d' /etc/os-release
-
-# enable group wheel
-sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
-
 # systemd
 systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
+
+# shasum fix
+ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
+
+# THIS DISTRO ONLY
+# START
+############################################################
+# enable group wheel
+sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
+############################################################
+# END
 
 # execute eggs
 source ./penguins-eggs-execute.sh

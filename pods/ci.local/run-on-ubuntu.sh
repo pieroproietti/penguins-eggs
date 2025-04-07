@@ -36,27 +36,17 @@ apt update -y
 apt upgrade -y
 
 # packages to be added for a minimum standard installation
-source ./minimal/ubuntu-packages.sh
-
-# packages to be added tarballs
-source ./minimal/debian-tarballs-requirements.sh
-
-# nodejs, npm
-apt install nodejs npm -y
-
-# fix linuxefi.mod
-apt-file update
-apt-file search linuxefi.mod
-apt install grub-efi-amd64-bin -y
-
-# fix /etc/inittab
-systemctl set-default multi-user.target
+source ./minimal/debian-container2host.sh
 
 # installing ggs
 source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# systemd
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
 
 # execute eggs
 source ./penguins-eggs-execute.sh

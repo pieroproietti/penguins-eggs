@@ -33,28 +33,18 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
-# init /usr/share/applications
-dpkg -S /usr/share/applications
-
-apt install python3 -y
-ls -al /usr/share/applications
-
-# fix linuxefi.mod
-apt-file update
-apt-file search linuxefi.mod
-apt install grub-efi-amd64-bin -y
-
-# packages to be added tarballs
-source ./minimal/debian-tarballs-requirements.sh
-
 # packages to be added for a minimum standard installation
-source ./minimal/debian-packages.sh
+source ./minimal/debian-container2host.sh
 
-# installing eggs
-source ./penguins-eggs-install.sh debian
+# installing ggs
+source ./penguins-eggs-install.sh
 
-# test mount -t overlay / install kernel
+# test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# systemd
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
 
 # execute eggs
 source ./penguins-eggs-execute.sh

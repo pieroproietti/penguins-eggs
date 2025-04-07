@@ -50,11 +50,7 @@ systemctl enable getty@tty1.service
 ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 
 # THIS DISTRO ONLY
-
-# remove VERSION_ID as standard in arch systems
-sed -i '/^VERSION_ID=/d' /etc/os-release
-
-# THIS DISTRO ONLY start
+# START
 ############################################################
 # remove VERSION_ID as standard in arch systems
 sed -i '/^VERSION_ID=/d' /etc/os-release
@@ -62,7 +58,7 @@ sed -i '/^VERSION_ID=/d' /etc/os-release
 # enable group wheel
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
 ############################################################
-# THIS DISTRO ONLY end
+# END
 
 # execute eggs
 source ./penguins-eggs-execute.sh
