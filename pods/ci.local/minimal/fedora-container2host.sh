@@ -21,7 +21,90 @@ fi
 # update
 dnf -y update
 
-# eggs requirements
+# Base: Sistema e init
+echo "system base and init"
+dnf -y --no-best install \
+    systemd \
+    dracut \
+    kernel \
+    grub2 \
+    passwd \
+    sudo
+
+# Gestione pacchetti
+echo "package manager"
+dnf -y --no-best install \
+    dnf \
+    dnf-plugins-core
+
+# Login e console
+echo "login/console"
+dnf -y --no-best install \
+    util-linux \
+    e2fsprogs \
+    shadow-utils \
+    hostname \
+    iproute \
+    iputils \
+    procps-ng
+
+# Networking
+echo "networking"
+dnf -y --no-best install \
+    NetworkManager \
+    dhclient \
+    nss-altfiles \
+    openssh-server
+
+# File system e supporto dischi
+echo "filesyste and disk support"
+dnf -y --no-best install \
+    btrfs-progs \
+    xfsprogs \
+    dosfstools \
+    ntfs-3g \
+    lvm2 \
+    mdadm \
+    cryptsetup 
+
+# Driver e supporto hardware
+echo "driver and hw support"
+dnf -y --no-best install \
+    linux-firmware \
+    efibootmgr \
+    grub2-efi \
+    shim 
+
+# Strumenti vari utili
+echo "tools"
+dnf -y --no-best install \
+    bash-completion \
+    vim \
+    nano \
+    less \
+    rsyslog \
+    coreutils \
+    findutils \
+    grep \
+    sed \
+    awk \
+    tar \
+    gzip \
+    xz
+
+# optional but usefuil for debud debug / live ISO
+echo "optional tools debug/live ISO"
+dnf -y --no-best install \
+    strace \
+    lsof \
+    htop \
+    mc \
+    curl \
+    wget \
+    bind-utils
+
+# eggs
+echo "eggs requirements"
 dnf -y --no-best install \
     bash-completion \
     console-setup \
@@ -57,28 +140,24 @@ dnf -y --no-best install \
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
 
-# disable selinux
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-
-# minimal 
-dnf -y --no-best install \
-    nano \
-    NetworkManager \
-    passwd \
-    sudo \
-    util-linux \
-    e2fsprogs \
-    shadow-utils \
-    hostname \
-    iproute \
-    iputils \
-    procps-ng
-
-
 # systemd configure/enable
+echo "systemd configure/enable"
 systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
 systemctl enable systemd-networkd.service
 systemctl enable NetworkManager.service
 systemctl enable NetworkManager-dispatcher.service
 
+# /etc/default/grub
+cat > /etc/default/grub <<EOF
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="Fedora"
+GRUB_DEFAULT=saved
+GRUB_DISABLE_SUBMENU=true
+GRUB_TERMINAL_OUTPUT="console"
+GRUB_CMDLINE_LINUX="rd.lvm=0 rd.md=0 rd.dm=0 quiet"
+GRUB_DISABLE_RECOVERY="true"
+EOF
+
+# disable selinux
+sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
