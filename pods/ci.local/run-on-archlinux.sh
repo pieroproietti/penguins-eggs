@@ -32,32 +32,37 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 pacman -Syu --noconfirm
 
+
 # packages to be added for a minimum standard installation
+source ./minimal/archlinux-container2host.sh
 
-# packages minimal
-source ./minimal/archlinux-packages.sh
-
-# packages to be added tarballs
-source ./minimal/archlinux-tarballs-requirements.sh
-echo "install archlinux-tarballs-requirements finished"
-sleep 5
-
-# shasum fix
-ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
-
-# installing eggs
+# installing ggs
 source ./penguins-eggs-install.sh
 
 # test mount -t overlay
 source ./kernel-overlay-install.sh
 
+# systemd
+systemctl set-default multi-user.target
+systemctl enable getty@tty1.service
+
+# shasum fix
+ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
+
 # THIS DISTRO ONLY
+
+# remove VERSION_ID as standard in arch systems
+sed -i '/^VERSION_ID=/d' /etc/os-release
+
+# THIS DISTRO ONLY start
+############################################################
 # remove VERSION_ID as standard in arch systems
 sed -i '/^VERSION_ID=/d' /etc/os-release
 
 # enable group wheel
 sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
+############################################################
+# THIS DISTRO ONLY end
 
 # execute eggs
 source ./penguins-eggs-execute.sh
-
