@@ -18,8 +18,23 @@ if [ ! -f /etc/fedora-release ]; then
     fi
 fi
 
+
+
 # update
 dnf -y update
+
+# echo "base: system e init"
+# echo "package manager"
+# echo "login e console"
+# echo "networking"
+# echo "filesystem and disk support"
+# echo "drivers and hw support"
+# echo "tools"
+# echo "optional tools debug/live ISO"
+# echo "systemd configure/enable"
+# echo "generate /etc/default/grub"
+# echo "eggs requirements"
+
 
 echo "base: system e init"
 dnf -y --nobest install \
