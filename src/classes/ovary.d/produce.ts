@@ -71,7 +71,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             // to do
         } else if (this.familyId === 'archlinux') {
             this.kernel = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
+            this.kernel = this.kernel.replace(/[\r\n]+/g, '')
             this.kernel = this.kernel.replace('.arch', '-arch')
+            if (Diversions.isManjaroBased(this.distroId)) {
+                this.kernel += '-MANJARO'
+            }
 
         } else { // debian, fedora, openmamba, opensuse, voidlinux
             let vmlinuz = path.basename(Utils.vmlinuz())
@@ -82,11 +86,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     /**
      * define this.vmlinuz
      */
-    if (this.familyId !== "archlinux") {
-        this.vmlinuz = `/boot/vmlinuz-${this.kernel}`
-    } else {
-        this.vmlinuz = `/boot/vmlinuz-linux`
-    }
+    this.vmlinuz = Utils.vmlinuz()
 
     /**
      * define this.initrd

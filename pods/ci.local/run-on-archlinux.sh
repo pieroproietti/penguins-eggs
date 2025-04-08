@@ -55,8 +55,8 @@ ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 # remove VERSION_ID as standard in arch systems
 sed -i '/^VERSION_ID=/d' /etc/os-release
 
-# enable group wheel
-sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
+# enable sudo for wheel group
+sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 ############################################################
 # END
 

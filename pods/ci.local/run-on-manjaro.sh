@@ -36,7 +36,7 @@ pacman -Syu --noconfirm
 source ./minimal/manjaro-container2host.sh
 
 
-# installing ggs
+# installing eggs
 source ./penguins-eggs-install.sh
 
 # test mount -t overlay
@@ -52,8 +52,8 @@ ln -s /usr/bin/core_perl/shasum /usr/bin/shasum
 # THIS DISTRO ONLY
 # START
 ############################################################
-# enable group wheel
-sed -i 's/^# \(%wheel ALL=(ALL:ALL) ALL\)/\1/' /etc/sudoers
+# enable sudo for wheel group
+sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 ############################################################
 # END
 

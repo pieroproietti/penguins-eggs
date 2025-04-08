@@ -117,8 +117,5 @@ pacman -Syu --noconfirm --needed \
 	xorriso \
 	xdg-utils
 
-    # mkdir /usr/share/icons
-    mkdir -p /usr/share/icons
-
-	# enable sudo for wheel group
-	sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
+# mkdir /usr/share/icons
+mkdir -p /usr/share/icons
