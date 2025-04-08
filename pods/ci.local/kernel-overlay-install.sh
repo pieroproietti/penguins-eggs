@@ -59,6 +59,11 @@ if [[ -f /etc/os-release ]]; then
         cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
         dracut --force --kver $kernel_version
 
+    elif [[ "$ID" == "opensuse-tumbleweed" ]]; then
+        echo "install the package of capsh"
+        zypper install -y kernel
+        zypper install -y libcap-progs
+
     elif [[ "$ID" == "rocky" ]]; then
         echo "install the package of capsh"
         mkdir /boot
