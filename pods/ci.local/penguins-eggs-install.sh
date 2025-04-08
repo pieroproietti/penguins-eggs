@@ -87,7 +87,7 @@ function tarballs_install {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        debs_install
+        tarballs_install
     elif [[ "$ID" == "devuan" ]]; then
         debs_install
     elif [[ "$ID" == "ubuntu" ]]; then

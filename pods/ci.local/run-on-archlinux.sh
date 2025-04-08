@@ -36,11 +36,11 @@ pacman -Syu --noconfirm
 # packages to be added for a minimum standard installation
 source ./minimal/archlinux-container2host.sh
 
-# installing ggs
-source ./penguins-eggs-install.sh
-
 # test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# installing ggs
+source ./penguins-eggs-install.sh
 
 # systemd
 systemctl set-default multi-user.target
