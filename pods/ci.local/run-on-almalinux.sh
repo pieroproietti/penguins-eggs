@@ -36,11 +36,11 @@ dnf -y update
 # packages to be added for a minimum standard installation
 source ./minimal/almalinux-container2host.sh
 
-# installing ggs
-source ./penguins-eggs-install.sh
-
 # test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# installing eggs
+source ./penguins-eggs-install.sh
 
 # systemd
 systemctl set-default multi-user.target

@@ -36,11 +36,11 @@ pacman -Syu --noconfirm
 source ./minimal/manjaro-container2host.sh
 
 
-# installing eggs
-source ./penguins-eggs-install.sh
-
 # test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# installing eggs
+source ./penguins-eggs-install.sh
 
 # systemd
 systemctl set-default multi-user.target

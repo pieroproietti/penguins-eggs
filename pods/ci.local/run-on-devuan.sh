@@ -38,11 +38,11 @@ apt upgrade -y
 # packages to be added for a minimum standard installation
 source ./minimal/debian-container2host.sh
 
-# installing ggs
-source ./penguins-eggs-install.sh
-
 # test mount -t overlay
 source ./kernel-overlay-install.sh
+
+# installing ggs
+source ./penguins-eggs-install.sh
 
 # execute eggs
 source ./penguins-eggs-execute.sh
