@@ -47,9 +47,8 @@ echo "login e console"
 zypper install -y \
     util-linux \
     e2fsprogs \
-    shadow-utils \
-    iputils \
-    procps-ng
+    iproute2 \
+    iputils 
 
 echo "networking"
 zypper install -y \
@@ -99,23 +98,15 @@ zypper install -y \
     wget \
     bind-utils
 
+zypper install -y \
+    multipath-tools 
+
 echo "systemd configure/enable"
 systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
 systemctl enable systemd-networkd.service
 systemctl enable NetworkManager.service
 systemctl enable NetworkManager-dispatcher.service
-
-echo "generate /etc/default/grub"
-cat > /etc/default/grub <<EOF
-GRUB_TIMEOUT=5
-GRUB_DISTRIBUTOR="Fedora"
-GRUB_DEFAULT=saved
-GRUB_DISABLE_SUBMENU=true
-GRUB_TERMINAL_OUTPUT="console"
-GRUB_CMDLINE_LINUX="rd.lvm=0 rd.md=0 rd.dm=0 quiet"
-GRUB_DISABLE_RECOVERY="true"
-EOF
 
 echo "disable selinux"
 sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
@@ -143,9 +134,10 @@ zypper install -y \
     xdg-user-dirs \
     xorriso
 
+
+
 # Enable uinput
 echo "uinput" | tee /etc/modules-load.d/uinput.conf
-
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons

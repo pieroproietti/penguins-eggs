@@ -49,7 +49,7 @@ systemctl enable getty@tty1.service
 # THIS DISTRO ONLY
 # START
 ############################################################
-# remove VERSION_ID as standard in opensuse
+# remove VERSION_ID as normal in opensuse
 sed -i '/^VERSION_ID=/d' /etc/os-release
 ############################################################
 # END
