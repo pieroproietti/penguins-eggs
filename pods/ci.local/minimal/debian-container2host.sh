@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+# This script build a debian system from container
+
 set -x
+
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
@@ -36,6 +39,7 @@ apt install -y \
   cron \
   cron-daemon-common \
   locales \
+  linux-image-amd64 \
   logrotate \
   procps \
   tzdata \
