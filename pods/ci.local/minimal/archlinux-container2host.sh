@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script build an arch system from container
+
+set -x
+
 # check if we are root
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"

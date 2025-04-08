@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+set -e
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 export NEEDRESTART_MODE=a

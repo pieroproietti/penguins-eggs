@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# This script build a fedora system from container
+# This script build an almalinux system from container
+
+set -x
 
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then

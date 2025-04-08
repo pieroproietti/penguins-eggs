@@ -2,7 +2,7 @@
 
 # This script build a opensuse-tumbleweed system from container
 
-set -e
+set -x
 
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then

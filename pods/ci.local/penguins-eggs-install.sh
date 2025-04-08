@@ -15,8 +15,9 @@ function arch_install {
 #
 function debs_install {
     PENGUINS_EGGS_DEB="/ci/penguins-eggs_10.1.*-*_amd64.deb"
-    dpkg -i $PENGUINS_EGGS_DEB
-    apt install -fy
+    #apt install -y nodejs
+    apt install -y $PENGUINS_EGGS_DEB
+    #apt install -fy
 }
 
 ##
