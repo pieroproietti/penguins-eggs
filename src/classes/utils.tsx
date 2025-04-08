@@ -250,6 +250,7 @@ export default class Utils {
          version = 'linux'
          suffix = '.img'
          if (Diversions.isManjaroBased(distro.distroId)) {
+            // solo vmlinux-
             version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
          }
 
@@ -265,11 +266,6 @@ export default class Utils {
          suffix = '.img'
 
       } else if (distro.familyId === 'openmamba') {
-         initrd = 'initramfs'
-         separator = '-'
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-
-      } else if (distro.familyId === 'aldos') {
          initrd = 'initramfs'
          separator = '-'
          version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
