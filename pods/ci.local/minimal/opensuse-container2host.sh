@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# This script build a fedora system from container
+# This script build a opensuse-tumbleweed system from container
+
+set -e
 
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then
@@ -17,7 +19,7 @@ if [ -f /etc/os-release ]; then
 fi
 
 # update
-zypper -y update
+zypper update -y
 
 # echo "base: system e init"
 # echo "package manager"
@@ -104,12 +106,12 @@ zypper install -y \
 echo "systemd configure/enable"
 systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
-systemctl enable systemd-networkd.service
+#systemctl enable systemd-networkd.service
 systemctl enable NetworkManager.service
 systemctl enable NetworkManager-dispatcher.service
 
-echo "disable selinux"
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+#echo "disable selinux"
+#sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 echo "eggs requirements"
 zypper install -y \
@@ -133,8 +135,6 @@ zypper install -y \
     wget \
     xdg-user-dirs \
     xorriso
-
-
 
 # Enable uinput
 echo "uinput" | tee /etc/modules-load.d/uinput.conf

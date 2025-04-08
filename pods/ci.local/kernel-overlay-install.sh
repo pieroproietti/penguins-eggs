@@ -54,7 +54,7 @@ if [[ -f /etc/os-release ]]; then
 
     elif [[ "$ID" == "opensuse" ]]; then
         mkdir /boot
-        dnf -y install kernel 
+        zypper install --force kernel-default kernel-default-devel
         kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
         cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
         dracut --force --kver $kernel_version
