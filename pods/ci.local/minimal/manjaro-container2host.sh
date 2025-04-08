@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# This script installs prerequisites for penguins-eggs
-# on manjaro/biglinux, it is intended for development purposes 
+# This script build a majaro system from container
+
+set -x
 
 # check if the script is running as root
 if [ "$EUID" -ne 0 ]; then

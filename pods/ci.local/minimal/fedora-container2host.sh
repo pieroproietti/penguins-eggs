@@ -2,6 +2,8 @@
 
 # This script build a fedora system from container
 
+set -x
+
 # check if we are root
 if [ "$(id -u)" -ne 0 ]; then
     echo "This script must be run as root"

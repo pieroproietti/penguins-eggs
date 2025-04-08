@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script build an almalinux system from container
+# This script build a opensuse-tumbleweed system from container
 
 set -x
 
@@ -10,28 +10,16 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# check if we are on rocky or almalinux
-if [ ! -f /etc/almalinux-release ]; then
-    if [ ! -f /etc/rocky-release ]; then
-        echo "This script is intended for almalinux or rocky!"
-        exit 1
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    if [[ "$ID" != "opensuse-tumbleweed" ]]; then
+   	  echo "This script is only for opensuse-tumbleweed based systems"
+   	  exit
     fi
 fi
 
 # update
-dnf -y update
-
-# add epel-release
-dnf -y install epel-release 
-
-# enable crb
-dnf config-manager --set-enabled crb
-
-# update
-dnf -y update
-
-# enable crb
-dnf config-manager --set-enabled crb
+zypper update -y
 
 # echo "base: system e init"
 # echo "package manager"
@@ -45,39 +33,33 @@ dnf config-manager --set-enabled crb
 # echo "generate /etc/default/grub"
 # echo "eggs requirements"
 
+
 echo "base: system e init"
-dnf -y --nobest install \
+zypper install -y \
     systemd \
     dracut \
-    kernel \
     grub2 \
-    passwd \
     sudo
 
 echo "package manager"
-dnf -y --nobest install \
-    dnf \
-    dnf-plugins-core
+zypper install -y \
+    zypper
 
 echo "login e console"
-dnf -y --nobest install \
+zypper install -y \
     util-linux \
     e2fsprogs \
-    shadow-utils \
-    hostname \
-    iproute \
-    iputils \
-    procps-ng
+    iproute2 \
+    iputils 
 
 echo "networking"
-dnf -y --nobest install \
+zypper install -y \
     NetworkManager \
-    dhclient \
-    nss-altfiles \
-    openssh-server
+    hostname \
+    openssh
 
 echo "filesystem and disk support"
-dnf -y --nobest install \
+zypper install -y \
     btrfs-progs \
     xfsprogs \
     dosfstools \
@@ -87,14 +69,12 @@ dnf -y --nobest install \
     cryptsetup 
 
 echo "drivers and hw support"
-dnf -y --nobest install \
-    linux-firmware \
+zypper install -y \
     efibootmgr \
-    grub2-efi \
     shim 
 
 echo "tools"
-dnf -y --nobest install \
+zypper install -y \
     bash-completion \
     vim \
     nano \
@@ -110,56 +90,54 @@ dnf -y --nobest install \
     xz
 
 echo "optional tools debug/live ISO"
-dnf -y --nobest install \
+zypper install -y \
     strace \
     lsof \
     htop \
+    hostname \
     mc \
     curl \
     wget \
     bind-utils
 
+zypper install -y \
+    multipath-tools 
+
 echo "systemd configure/enable"
 systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
-systemctl enable systemd-networkd.service
+#systemctl enable systemd-networkd.service
 systemctl enable NetworkManager.service
 systemctl enable NetworkManager-dispatcher.service
 
-echo "generate /etc/default/grub"
-
-echo "disable selinux"
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+#echo "disable selinux"
+#sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 echo "eggs requirements"
-dnf -y --nobest --allowerasing install \
+zypper install -y \
     bash-completion \
     cryptsetup \
     curl \
-    device-mapper \
     dosfstools \
     dracut \
-    dracut-live \
-    efibootmgr \
+    dracut-tools \
     fuse \
     git \
-    grub2-efi-x64 \
-    grub2-efi-modules \
-    grub2-efi-x64-modules \
-    grub2-tools-extra \
     jq \
+    lsb-release \
     lvm2 \
-    nvme-cli \
+    nodejs \
+    npm \
     parted \
     rsync \
-    shim \
-    squashfs-tools \
+    squashfs \
     sshfs \
-    tar \
     wget \
     xdg-user-dirs \
-    xorriso \
-    zstd
+    xorriso
+
+# Enable uinput
+echo "uinput" | tee /etc/modules-load.d/uinput.conf
 
 # mkdir /usr/share/icons
 mkdir -p /usr/share/icons
