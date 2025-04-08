@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -x
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 export NEEDRESTART_MODE=a
@@ -57,7 +57,7 @@ if [[ -f /etc/os-release ]]; then
         zypper install --force kernel-default kernel-default-devel
         kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
         cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
-        dracut --force --kver $kernel_version
+        #dracut --force --kver $kernel_version
 
     elif [[ "$ID" == "opensuse-tumbleweed" ]]; then
         echo "install the package of capsh"
