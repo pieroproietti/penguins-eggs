@@ -7,7 +7,13 @@ set -x
 #
 function arch_install {
     PENGUINS_EGGS_ARCH="penguins-eggs-10.1.*-any.pkg.tar.zst "    
-    pacman -U ./ci/$PENGUINS_EGGS_ARCH --noconfirm
+
+    if ls $PENGUINS_EGGS_ARCH 1> /dev/null 2>&1; then
+        pacman -U ./ci/$PENGUINS_EGGS_ARCH --noconfirm
+    else
+        tarballs_install
+    fi
+    
 }
 
 ##
@@ -15,7 +21,12 @@ function arch_install {
 #
 function debs_install {
     PENGUINS_EGGS_DEB="./ci/penguins-eggs_10.1.*-*_amd64.deb"
-    apt install -y $PENGUINS_EGGS_DEB
+
+    if ls $PENGUINS_EGGS_DEB 1> /dev/null 2>&1; then
+        apt install -y $PENGUINS_EGGS_DEB
+    else
+        tarballs_install
+    fi
 }
 
 ##
@@ -85,14 +96,13 @@ function tarballs_install {
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        tarballs_install
+        debs_install
     elif [[ "$ID" == "devuan" ]]; then
         debs_install
     elif [[ "$ID" == "ubuntu" ]]; then
         debs_install
     elif [[ "$ID" == "arch" ]]; then
-        # arch_istall
-        tarballs_install
+        arch_istall
     else
         tarballs_install
     fi
