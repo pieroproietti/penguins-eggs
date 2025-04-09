@@ -18,10 +18,10 @@ perrisbrewery/workdir/*
 tmp
 mkinitcpio/*.img
 
-pods/ci.local/*.deb
-pods/ci.local/*.tar.gz
-pods/ci.local/*.pkg.tar.zst
-pods/ci.local/.pnpm*
+pods/ci/*.deb
+pods/ci/*.tar.gz
+pods/ci/*.pkg.tar.zst
+pods/ci/.pnpm*
 
 mychroot/ci/iso/*.tar.gz
 mychroot/ci/iso/*.iso
