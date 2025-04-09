@@ -48,7 +48,7 @@ function tarballs_install {
         fi
 
         # extract package
-        tar -xf $PENGUINS_EGGS_TARBALLS -C pippo
+        tar -xf $PENGUINS_EGGS_TARBALLS 
         if [ $? -ne 0 ]; then
             echo "Error: $PENGUINS_EGGS_TARBALLS not found or error on extract!"
         fi
