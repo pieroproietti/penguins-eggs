@@ -77,6 +77,8 @@
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
+        "/perrisbrewery",
+        "/pods",
         "/scripts",
         "/syslinux"
     ],
