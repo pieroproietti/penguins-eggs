@@ -16,7 +16,7 @@ analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help
-dad --clean --default --file --help --verbose
+dad --clean --default --file --nointeractive --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose
@@ -26,7 +26,8 @@ kill --help --isos --nointeractive --verbose
 love --help --verbose --nointeractive
 maker --help
 mom --help
-produce --addons --basename --clone --cryptedclone --excludes --help --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+pods --help
+produce --addons --basename --clone --cryptedclone --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --excludes --file --help --verbose
@@ -41,8 +42,8 @@ wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
 autocomplete --refresh-cache
-help --nested-commands
 version --json --verbose
+help --nested-commands
 "
 
   function __trim_colon_commands()

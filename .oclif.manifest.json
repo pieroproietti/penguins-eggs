@@ -608,6 +608,45 @@
         "mom.js"
       ]
     },
+    "pods": {
+      "aliases": [],
+      "args": {
+        "distro": {
+          "description": "distro to build",
+          "name": "distro",
+          "required": false
+        }
+      },
+      "description": "eggs pods: build ISOs from containers",
+      "examples": [
+        "eggs pods archlinux",
+        "eggs pods debian",
+        "eggs pods ubuntu"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "pods",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "pods.js"
+      ]
+    },
     "produce": {
       "aliases": [],
       "args": {},

@@ -196,14 +196,15 @@ _eggs() {
 "love[the simplest way to get an egg!]" \
 "maker[eggs maker: a GUI for penguin-eggs]" \
 "mom[ask help from mommy - TUI helper]" \
+"pods[eggs pods: build ISOs from containers]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
-"help[Display help for eggs.]" \
 "version[]" \
+"help[Display help for eggs.]" \
 
     ;;
     args)
@@ -259,6 +260,7 @@ _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old configuration before to create]" \
 "(-d --default)"{-d,--default}"[reset to default values]" \
 "(-f --file)"{-f,--file}"[use a file configuration custom]:file:_files" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
@@ -328,6 +330,11 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
+pods)
+_arguments -S \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
@@ -336,6 +343,7 @@ _arguments -S \
 "(-C --cryptedclone)"{-C,--cryptedclone}"[crypted clone]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-k --kernel)"{-k,--kernel}"[kernel version]:file:_files" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
 "(-N --noicon)"{-N,--noicon}"[no icon eggs on desktop]" \
@@ -385,15 +393,15 @@ _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac
