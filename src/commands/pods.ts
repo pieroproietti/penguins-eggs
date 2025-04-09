@@ -35,7 +35,8 @@ export default class Pods extends Command {
    * 
    */
   async run(): Promise<void> {
-
+    Utils.titles(this.id + ' ' + this.argv)
+    
     const { args, flags } = await this.parse(Pods)
 
     let distro='debian'
