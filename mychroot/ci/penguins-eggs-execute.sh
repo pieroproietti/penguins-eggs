@@ -14,10 +14,10 @@ echo -e "$(hostname)\n" > /etc/hostname
 
 eggs love -vn
 
-if [[ "$GITHUB_ACTIONS" = "true" ]]; then
+#if [[ "$GITHUB_ACTIONS" = "true" ]]; then
     mv /home/eggs/.mnt/*.iso /ci/iso/
     ls -al /ci/iso/
-else
-    echo "TIPS use: eggs export iso -c"
-    exec bash --login
-fi
+#else
+#    echo "TIPS use: eggs export iso -c"
+#    exec bash --login
+#fi
