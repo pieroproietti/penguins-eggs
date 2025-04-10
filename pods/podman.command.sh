@@ -21,12 +21,12 @@ function tarballs {
 
 
 function debs {
-    if ls $CMD_PATH/../perrisbrewery/workdir/$PENGUINS_EGGS_DEB 1> /dev/null 2>&1; then
+    if ls $CMD_PATH/../dist/$PENGUINS_EGGS_DEB 1> /dev/null 2>&1; then
         echo "penguins-eggs DEB present"
     else 
         pnpm deb
     fi
-    cp $CMD_PATH/../perrisbrewery/workdir/$PENGUINS_EGGS_DEB  $CMD_PATH/./ci/
+    cp $CMD_PATH/../dist/$PENGUINS_EGGS_DEB  $CMD_PATH/./ci/
 }
 
 
