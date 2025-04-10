@@ -23,5 +23,7 @@ pods/ci/*.tar.gz
 pods/ci/*.pkg.tar.zst
 pods/ci/.pnpm*
 
+mychroot/ci/*.tar.gz
+mychroot/ci/*.pkg.tar.zst
 mychroot/ci/iso/*.tar.gz
 mychroot/ci/iso/*.iso
