@@ -18,12 +18,14 @@ perrisbrewery/workdir/*
 tmp
 mkinitcpio/*.img
 
+# pods
 pods/ci/*.deb
-pods/ci/*.tar.gz
 pods/ci/*.pkg.tar.zst
-pods/ci/.pnpm*
+pods/ci/*.tar.gz
 
-mychroot/ci/*.tar.gz
+# mychroot
+mychroot/ci/*.deb
 mychroot/ci/*.pkg.tar.zst
-mychroot/ci/iso/*.tar.gz
-mychroot/ci/iso/*.iso
+mychroot/ci/*.tar.gz
+mychroot/ci/iso/*
+
