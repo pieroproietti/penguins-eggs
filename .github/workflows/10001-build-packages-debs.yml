@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18.x
+      - name: build packages debs
+        run: |
+          ./10001-run-build-packages-debs.sh
       - name: debs export
         uses: actions/upload-artifact@v4
         with:
