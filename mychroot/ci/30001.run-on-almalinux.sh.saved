@@ -33,18 +33,34 @@ ff02::2    ip6-allrouters
 cd $CMD_PATH
 dnf -y update 
 
+
+# force install kernel on the Almalinux container
+mkdir /boot
+dnf -y install kernel 
+kernel_version=$(rpm -q kernel --qf "%{VERSION}-%{RELEASE}.%{ARCH}\n" | tail -n 1)
+cp /usr/lib/modules/$kernel_version/vmlinuz /boot/vmlinuz-$kernel_version
+dracut --force --kver $kernel_version
+
 # packages to be added for a minimum standard installation
-source ./minimal/almalinux-container2host.sh
+#source ./minimal/almalinux-packages.sh
+
+
+# packages to be added tarballs
+source ./minimal/almalinux-tarballs-requirements.sh
+
+# installing ggs
+source ./penguins-eggs-tarballs-install.sh
 
 # test mount -t overlay
-source ./kernel-overlay-install.sh
+source ./overlay-test.sh
 
-# installing eggs
-source ./penguins-eggs-install.sh
+# using eggs
+eggs dad -d
+eggs tools clean -n
+eggs produce --pendrive -n
+echo "TIPS use: eggs export iso -c"
 
-# systemd
-systemctl set-default multi-user.target
-systemctl enable getty@tty1.service
+# save iso to the host server
+mv /home/eggs/.mnt/*.iso /ci/iso/
+ls -al /ci/iso/
 
-# execute eggs
-source ./penguins-eggs-execute.sh

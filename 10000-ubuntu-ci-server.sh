@@ -29,9 +29,11 @@ whoami
 # Ensure these files are preserved for future tests.
 npm install -g pnpm@latest-10
 pnpm install
-pnpm deb -a -r $GITHUB_RUN_NUMBER
-pnpm tarballs --release $GITHUB_RUN_NUMBER
-rsync -a ./perrisbrewery/workdir/*.deb ./mychroot/ci/
+pnpm deb -a
+rsync -a ./dist/*.deb ./mychroot/ci/
+
+# tarballs
+pnpm tarballs
 rsync -a ./dist/*.tar.gz ./mychroot/ci/
 ls -al ./mychroot/ci/
 

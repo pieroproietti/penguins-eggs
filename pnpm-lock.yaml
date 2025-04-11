@@ -139,8 +139,8 @@ importers:
         specifier: ^4.17.43
         version: 4.17.43(@types/node@22.14.0)
       perrisbrewery:
-        specifier: ^10.1.1
-        version: 10.1.1
+        specifier: ^10.1.2
+        version: 10.1.2
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -2858,8 +2858,8 @@ packages:
     resolution: {integrity: sha512-vE7JKRyES09KiunauX7nd2Q9/L7lhok4smP9RZTDeD4MVs72Dp2qNFVz39Nz5a0FVEW0BJR6C0DYrq6unoziZA==}
     engines: {node: '>= 14.16'}
 
-  perrisbrewery@10.1.1:
-    resolution: {integrity: sha512-h3PlS+8d5eooeSNdKjcDB44P7yeQGcmFUB24u7I3IZqD9fQe2qCeh9rYsKfHHACtoyZsnRZqQHlmvwtEIE4VHg==}
+  perrisbrewery@10.1.2:
+    resolution: {integrity: sha512-VjvItVsABuzjF5dGY6eYxp9ixDZNG29KR9Rga+p+DzaQruPi99QzpctZUw7UmM400q+v2tP0asQCnVyRrWW+oA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5721,7 +5721,7 @@ snapshots:
       eslint-config-xo: 0.46.0(eslint@9.24.0)(typescript@5.8.3)
       eslint-config-xo-space: 0.35.0(eslint@9.24.0)
       eslint-import-resolver-typescript: 3.10.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint@9.24.0))(eslint@9.24.0)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0)(eslint@9.24.0)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint@9.24.0))(eslint@9.24.0))(eslint@9.24.0)
       eslint-plugin-jsdoc: 50.6.9(eslint@9.24.0)
       eslint-plugin-mocha: 10.5.0(eslint@9.24.0)
       eslint-plugin-n: 17.17.0(eslint@9.24.0)
@@ -5778,7 +5778,7 @@ snapshots:
       tinyglobby: 0.2.12
       unrs-resolver: 1.4.1
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0)(eslint@9.24.0)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint@9.24.0))(eslint@9.24.0))(eslint@9.24.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5806,7 +5806,7 @@ snapshots:
       eslint-utils: 2.1.0
       regexpp: 3.2.0
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0)(eslint@9.24.0):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.0(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.29.1(eslint@9.24.0)(typescript@5.8.3))(eslint@9.24.0))(eslint@9.24.0))(eslint@9.24.0):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -7111,7 +7111,7 @@ snapshots:
 
   pathval@2.0.0: {}
 
-  perrisbrewery@10.1.1:
+  perrisbrewery@10.1.2:
     dependencies:
       '@oclif/core': 4.2.10
       '@oclif/plugin-autocomplete': 3.2.27
