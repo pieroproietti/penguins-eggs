@@ -18,6 +18,7 @@ if [ -f /etc/os-release ]; then
     fi
 fi
 
+FAMILY_ID="debian"
 IMAGE="ubuntu:24.04"
 source podman.command.sh ubuntu
  

@@ -107,5 +107,6 @@ if [ -f /etc/os-release ]; then
         arch_install
     else
         tarballs_install
+        #debs_install
     fi
 fi

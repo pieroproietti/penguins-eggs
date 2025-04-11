@@ -17,6 +17,7 @@ if [ -f /etc/os-release ]; then
     fi
 fi
 
+FAMILY_ID="debian"
 IMAGE="debian:12"
 source podman.command.sh debian
 

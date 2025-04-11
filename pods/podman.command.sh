@@ -48,17 +48,13 @@ rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_TARBALLS
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     if [[ "$ID" == "debian" ]]; then
-        if [[ $1 == "debian" ]]; then
-            debs
-        elif [[ $1 == "devuan" ]]; then
-            debs
-        elif [[ $1 == "ubuntu" ]]; then
+        if [[ $FAMILY_ID == "debian" ]]; then
             debs
         else
             tarballs
         fi
     elif [[ "$ID" == "arch" ]]; then
-        if [[ $1 == "arch" ]]; then
+        if [[ $FAMILY_ID == "arch" ]]; then
             arch_package
         else 
             tarballs
@@ -67,11 +63,12 @@ if [ -f /etc/os-release ]; then
         tarballs
     fi
 fi
-echo "distro: $1"
 
+echo "FAMILY_ID: $FAMILY_ID"
 
 podman run \
     --name current \
+    --env FAMILY_ID="$FAMILY_ID" \
     --hostname minimal \
     --privileged \
     --cap-add=CAP_SYS_ADMIN \
