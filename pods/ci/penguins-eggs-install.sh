@@ -106,7 +106,10 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "arch" ]]; then
         arch_install
     else
-        tarballs_install
-        #debs_install
+        if [[ "$FAMILY_ID" == "debian" ]]; then
+            debs_install
+        else 
+            tarballs_install
+        fi
     fi
 fi

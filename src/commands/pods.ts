@@ -39,12 +39,28 @@ export default class Pods extends Command {
     
     const { args, flags } = await this.parse(Pods)
 
+    if (process.getuid && process.getuid() === 0) {
+      Utils.warning('You must use eggs pods without sudo')
+      process.exit(0)
+    }
+
+    // Create pods if not exists
+    const userHome=`/home/${await Utils.getPrimaryUser()}/`
+    if (!fs.existsSync(`${userHome}/pods`)) {
+      console.log(`creating pods folder in ${userHome}`)
+      const source = Utils.rootPenguin() + '/pods'
+      await exec(`cp -r ${source} ${userHome}`)
+    }
+
     let distro='debian'
     if (this.argv['0'] !== undefined) {
         distro = this.argv['0']
     }
 
-    const pathPods = path.resolve(__dirname, `../../pods`)
+    let pathPods = path.resolve(__dirname, `../../pods`)
+    if (Utils.rootPenguin() === '/usr/lib/penguins-eggs') {
+      pathPods = path.resolve(`${userHome}/pods`)
+    }
     let cmd =`${pathPods}/${distro}.sh`
 
     if (fs.existsSync(cmd)) {
