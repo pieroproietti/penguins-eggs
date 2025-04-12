@@ -12,6 +12,7 @@ import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 import path from 'node:path'
 
+
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -36,7 +37,7 @@ export default class Pods extends Command {
    */
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
-    
+
     const { args, flags } = await this.parse(Pods)
 
     if (process.getuid && process.getuid() === 0) {
@@ -44,29 +45,38 @@ export default class Pods extends Command {
       process.exit(0)
     }
 
-    // Create pods if not exists
-    const userHome=`/home/${await Utils.getPrimaryUser()}/`
-    if (!fs.existsSync(`${userHome}/pods`)) {
-      console.log(`creating pods folder in ${userHome}`)
-      const source = Utils.rootPenguin() + '/pods'
-      await exec(`cp -r ${source} ${userHome}`)
-    }
-
-    let distro='debian'
-    if (this.argv['0'] !== undefined) {
-        distro = this.argv['0']
+    const userHome = `/home/${await Utils.getPrimaryUser()}/`
+    if (!Utils.isSources()) {
+      // Create pods in home, if not exists
+      if (!fs.existsSync(`${userHome}/pods`)) {
+        if (await Utils.customConfirm()) {
+          console.log(`Creating pods folder in ${userHome}`)
+          await exec(`cp -r ${Utils.rootPenguin()}/pods ${userHome}`)
+        } else {
+          process.exit(0)
+        }
+      }
     }
 
     let pathPods = path.resolve(__dirname, `../../pods`)
     if (Utils.rootPenguin() === '/usr/lib/penguins-eggs') {
       pathPods = path.resolve(`${userHome}/pods`)
     }
-    let cmd =`${pathPods}/${distro}.sh`
 
+    let distro = 'debian'
+    if (this.argv['0'] !== undefined) {
+      distro = this.argv['0']
+    }
+
+    let cmd = `${pathPods}/${distro}.sh`
     if (fs.existsSync(cmd)) {
-        await exec(cmd)
+      console.log(`We are building a egg from a ${distro} container`)
+      if (! await Utils.customConfirm()) {
+        process.exit(0)
+      }
+      await exec(cmd)
     } else {
-        console.log(`script: ${cmd} not exists`)
+      console.log(`No script: ${cmd} fpr ${distro} container`)
     }
   }
 }

@@ -43,9 +43,9 @@ PENGUINS_EGGS_ARCH="penguins-eggs-10.1.*-*-any.pkg.tar.zst "
 PENGUINS_EGGS_DEB="penguins-eggs_10.1.*-*_amd64.deb"
 PENGUINS_EGGS_TARBALLS=penguins-eggs_10.1.*-*-linux-x64.tar.gz
 
-# rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_ARCH
-# rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_DEB
-# rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_TARBALLS
+rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_ARCH
+rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_DEB
+rm -f $CMD_PATH/./ci/$PENGUINS_EGGS_TARBALLS
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
