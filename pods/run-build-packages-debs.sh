@@ -34,7 +34,12 @@ cd $CMD_PATH
 apt update -y
 apt upgrade -y
 
+# packages to be added for a minimum standard installation
+source ./minimal/debian-container2host.sh
 
-# save iso to the host server
-mv /home/eggs/.mnt/*.iso /ci/iso/
-ls -al /ci/iso/
+git clone https://github.com/penguins-eggs
+cd penguins-eggs
+pnpm i 
+pnpm deb -a
+apt install .dist/penguing-eggs*.deb 
+eggs export deb -a

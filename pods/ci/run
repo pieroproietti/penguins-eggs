@@ -4,6 +4,7 @@ set -x
 export CMD_PATH=$(cd `dirname $0`; pwd)
 export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
+echo "FAMILY_ID $FAMILY_ID"
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -26,7 +27,8 @@ if [ -f /etc/os-release ]; then
     elif [[ "$ID" == "ubuntu" ]]; then
         source /ci/*run-on-ubuntu.sh
     else
-        echo "distro not supported"
-        exit 1
+        if [[ "$FAMILY_ID" == "debian" ]]; then
+            source /ci/*run-on-debian.sh
+        fi
     fi
 fi
