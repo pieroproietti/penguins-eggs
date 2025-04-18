@@ -48,7 +48,7 @@ export default class Update extends Command {
     if (Utils.isRoot()) {
       if (Utils.isSources()) {
         Utils.warning(`You are on penguins-eggs v. ${Utils.getPackageVersion()} from sources`)
-      } else if (Utils.isDebPackage()) {
+      } else if (Utils.isPackage()) {
         Utils.warning(`You are on eggs-${Utils.getPackageVersion()} installed as package`)
       }
 

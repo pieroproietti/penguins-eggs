@@ -43,7 +43,8 @@ source ./kernel-overlay-install.sh
 source ./penguins-eggs-install.sh
 
 # systemd
-systemctl set-default multi-user.target
+systemctl set-default graphical.target
+#systemctl set-default multi-user.target
 systemctl enable getty@tty1.service
 
 # execute eggs

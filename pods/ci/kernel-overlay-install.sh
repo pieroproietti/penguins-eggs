@@ -80,8 +80,12 @@ if [[ -f /etc/os-release ]]; then
         apt install -y libcap2-bin
         
     else
-        echo "distro not supported"
-        exit 1
+        # DEFAULT Debian
+        echo "install the package of capsh"
+        apt update -y
+        apt install linux-image-amd64 -y
+        apt install -y kmod
+        apt install -y libcap2-bin
     fi
 fi
 

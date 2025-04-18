@@ -7,5 +7,6 @@ export PROJECT_NAME="${CMD_PATH##*/}"
 echo $PROJECT_NAME
 cd $CMD_PATH
 
+FAMILY_ID="fedora"
 IMAGE="rockylinux:9"
 source podman.command.sh

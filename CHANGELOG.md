@@ -13,6 +13,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs-10.1.1
+I added a new command: `eggs pods` to create containers with `podman` and, from these create minimal live ISO images. To use it, just give the command: `eggs pods [almalinux/ archlinux/ debian/ devuan /fedora /opensuse /ubuntu]`.
+
 ## penguins-eggs-10.1.0
 There are many changes to eggs in this update, but most of them are let's say: “underground,” you won't realize it!
 
