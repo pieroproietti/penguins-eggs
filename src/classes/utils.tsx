@@ -639,7 +639,7 @@ export default class Utils {
     * Controlla se è un pacchetto deb
     * /usr/lib/penguins-eggs/bin/node
     */
-   static isDebPackage(): boolean {
+   static isPackage(): boolean {
       let ret = false
       //if (process.execPath !== '/usr/bin/node') {
       if (process.execPath === '/usr/lib/penguins-eggs/bin/node') {
@@ -664,7 +664,7 @@ export default class Utils {
     * Controlla se è un pacchetto npm
     */
    static isNpmPackage(): boolean {
-      return !(this.isDebPackage() || this.isSources())
+      return !(this.isPackage() || this.isSources())
    }
 
    /**

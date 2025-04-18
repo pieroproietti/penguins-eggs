@@ -11,6 +11,7 @@ import fs from 'fs'
 import Utils from '../classes/utils.js'
 import { exec } from '../lib/utils.js'
 import path from 'node:path'
+import { execSync } from 'node:child_process'
 
 
 // _dirname
@@ -32,6 +33,7 @@ export default class Pods extends Command {
     help: Flags.help({ char: 'h' })
   }
 
+
   /**
    * 
    */
@@ -40,28 +42,37 @@ export default class Pods extends Command {
 
     const { args, flags } = await this.parse(Pods)
 
+    if (!isPodmanInstalledSync()) {
+      console.log('You need to install podmand to use this command')
+      process.exit(0)
+    }
+
     if (process.getuid && process.getuid() === 0) {
       Utils.warning('You must use eggs pods without sudo')
       process.exit(0)
     }
 
+
+
+
+    // mode
+    let pathPods = path.resolve(__dirname, `../../pods`)
     const userHome = `/home/${await Utils.getPrimaryUser()}/`
-    if (!Utils.isSources()) {
-      // Create pods in home, if not exists
+    if (Utils.isSources()) {
+      console.log("Using eggs pods from sources.\nThe pods directory of the source will be used ")
+    } else {
+      console.log("Using eggs pods from package.")
       if (!fs.existsSync(`${userHome}/pods`)) {
+        console.log(`The pods directory will be created in the user home ${userHome}, do you want to continue?`)
         if (await Utils.customConfirm()) {
-          console.log(`Creating pods folder in ${userHome}`)
+          console.log(`Creating a pods folder under ${userHome}`)
           await exec(`cp -r ${Utils.rootPenguin()}/pods ${userHome}`)
-        } else {
-          process.exit(0)
         }
       }
-    }
-
-    let pathPods = path.resolve(__dirname, `../../pods`)
-    if (Utils.rootPenguin() === '/usr/lib/penguins-eggs') {
       pathPods = path.resolve(`${userHome}/pods`)
     }
+
+    console.log(`Using ${pathPods}`)
 
     let distro = 'debian'
     if (this.argv['0'] !== undefined) {
@@ -79,4 +90,19 @@ export default class Pods extends Command {
       console.log(`No script: ${cmd} fpr ${distro} container`)
     }
   }
+}
+
+/**
+ * 
+ * @returns 
+ */
+function isPodmanInstalledSync(): boolean {
+  let podmanInstalled=false
+  try {
+    execSync('podman --version', { stdio: 'ignore' })
+    podmanInstalled=true
+  } catch (error) {
+    console.error('Podman does not appear to be installed or is not in the PATH.');
+  }
+  return podmanInstalled
 }
