@@ -52,9 +52,6 @@ export default class Pods extends Command {
       process.exit(0)
     }
 
-
-
-
     // mode
     let pathPods = path.resolve(__dirname, `../../pods`)
     const userHome = `/home/${await Utils.getPrimaryUser()}/`
@@ -102,7 +99,7 @@ function isPodmanInstalledSync(): boolean {
     execSync('podman --version', { stdio: 'ignore' })
     podmanInstalled=true
   } catch (error) {
-    console.error('Podman does not appear to be installed or is not in the PATH.');
+    console.error('Podman does not appear to be installed or is not in the PATH.\n');
   }
   return podmanInstalled
 }
