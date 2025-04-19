@@ -13,6 +13,7 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import os, { version } from 'node:os'
 import fs from 'fs'
+import { globSync } from 'glob'
 import path from 'path'
 
 // pjson
@@ -67,37 +68,29 @@ export default class ExportTarballs extends Command {
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     const localPath = `/home/${this.user}/penguins-eggs/dist/`
     const remotePath = `${this.Tu.config.remotePathPackages}/tarballs/`
-    const filter = `eggs-v10.?.*-*-linux-x64.tar.gz`
-    const tarName = `penguins-eggs-tarball-${pjson.version}-1-linux-x64.tar.gz`
+    const tarNamePattern = `penguins-eggs_${pjson.version}-*-linux-x64.tar.gz`
 
-    // remove old tarball
-    let cmd =`rm -f ${localPath}${tarName}`
-    await exec(cmd, this.echo)
-
-    // rename new tarball
-    cmd = `mv ${localPath}${filter} ${localPath}${tarName}`
-    await exec(cmd, this.echo)
-
-    // check if new tarball exists
-    if (!fs.existsSync(`${localPath}${tarName}`)) {
-      console.log(`No ${tarName} exists!`)
+    const searchPattern = path.join(localPath, tarNamePattern);
+    const matchingFiles = globSync(searchPattern);
+    if (matchingFiles.length === 0) {
+      console.log(`No ${searchPattern} exists!`)
       console.log(`Create it using: pnpm tarballs`)
       process.exit(1)
     }
 
-    cmd = `mkdir ${remoteMountpoint}\n`
+    let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/penguins-eggs-tarball*\n`
+      cmd += `rm -f ${remoteMountpoint}/${tarNamePattern}\n`
     }
 
-    cmd += `cp ${localPath}${tarName} ${remoteMountpoint}/${tarName}\n`
+    cmd += `cp ${localPath}${tarNamePattern} ${remoteMountpoint}/\n`
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
-        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/penguins-eggs-tarball*`)
+        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/${tarNamePattern}`)
       }
     }
     await exec(cmd, this.echo)
