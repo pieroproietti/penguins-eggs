@@ -122,7 +122,7 @@ export default class ExportPkg extends Command {
        */
     } else if (familyId === "debian") {
       Utils.warning("debian deb")
-      localPath = `/home/${this.user}/penguins-eggs/perrisbrewery/workdir`
+      localPath = `/home/${this.user}/penguins-eggs/dist`
       remotePath = this.Tu.config.remotePathPackages + "/debs"
       let arch = Utils.uefiArch()
       if (this.all) {
