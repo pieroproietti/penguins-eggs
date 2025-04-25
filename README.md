@@ -20,7 +20,7 @@
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [penGUI](#pengui)
+* [GUI](#gui)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
@@ -474,8 +474,8 @@ sudo eggs produce --max
 * [`eggs kill`](#eggs-kill)
 * [`eggs krill`](#eggs-krill)
 * [`eggs love`](#eggs-love)
-* [`eggs maker`](#eggs-maker)
 * [`eggs mom`](#eggs-mom)
+* [`eggs pods [DISTRO]`](#eggs-pods-distro)
 * [`eggs produce`](#eggs-produce)
 * [`eggs status`](#eggs-status)
 * [`eggs syncfrom`](#eggs-syncfrom)
@@ -563,7 +563,7 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.26/src/commands/autocomplete/index.ts)_
+_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.27/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -897,26 +897,6 @@ EXAMPLES
 
 _See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.1.0/src/commands/love.ts)_
 
-## `eggs maker`
-
-eggs maker: a GUI for penguin-eggs
-
-```
-USAGE
-  $ eggs maker [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  eggs maker: a GUI for penguin-eggs
-
-EXAMPLES
-  $ eggs maker
-```
-
-_See code: [src/commands/maker.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.1.0/src/commands/maker.ts)_
-
 ## `eggs mom`
 
 ask help from mommy - TUI helper
@@ -937,14 +917,42 @@ EXAMPLES
 
 _See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.1.0/src/commands/mom.ts)_
 
+## `eggs pods [DISTRO]`
+
+eggs pods: build ISOs from containers
+
+```
+USAGE
+  $ eggs pods [DISTRO] [-h]
+
+ARGUMENTS
+  DISTRO  distro to build
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  eggs pods: build ISOs from containers
+
+EXAMPLES
+  $ eggs pods archlinux
+
+  $ eggs pods debian
+
+  $ eggs pods ubuntu
+```
+
+_See code: [src/commands/pods.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.1.0/src/commands/pods.ts)_
+
 ## `eggs produce`
 
 produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-C] [--excludes <value>...] [-h] [--links
-    <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S] [--theme <value>] [-u] [-v] [-y]
+  $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-C] [--excludes <value>...] [-h] [-k
+    <value>] [--links <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S] [--theme <value>] [-u] [-v]
+    [-y]
 
 FLAGS
   -C, --cryptedclone         crypted clone
@@ -953,6 +961,7 @@ FLAGS
   -S, --standard             standard compression: xz -b 1M
   -c, --clone                clone
   -h, --help                 Show CLI help.
+  -k, --kernel=<value>       kernel version
   -m, --max                  max compression: xz -Xbcj ...
   -n, --nointeractive        no user interaction
   -p, --pendrive             optimized for pendrive: zstd -b 1M -Xcompression-level 15
@@ -1347,12 +1356,25 @@ EXAMPLES
 _See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v10.1.0/src/commands/wardrobe/wear.ts)_
 <!-- commandsstop -->
 
-# penGUI
+# GUI
+There are two GUIs for penguins-eggs at the moment: eggsmaker and penGUI.
+
+## eggsmaker
+### A project by [Jorge Luis Endres](https://github.com/jlendres/eggsmaker).
+
+![eggsmaker](https://github.com/jlendres/eggsmaker/raw/main/images/eggsmaker-running.png)
+
+eggsmaker is a graphical interface for penguins-eggs.
+
+Written by my friend Jorge Luis Endres, it is essential and functional. It doesn’t cover all the possibilities of penguins-eggs, but in the end, a GUI should be simple and intuitive.
+
+I like it, I hope you like it too, and I thank Jorge for his daring.
+
+## penGUI
 ![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
-## penGUI take cure of eggs!
+### penGUI take cure of eggs!
 
  The development of a GUI for `eggs` with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to `penguins-eggs`. If you have any specific questions or need further information about the penGUI project, feel free to ask!
-
 
 ## That's all, Folks!
 
