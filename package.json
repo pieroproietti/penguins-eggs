@@ -14,7 +14,7 @@
         "@oclif/plugin-help": "^6.2.27",
         "@oclif/plugin-version": "^2.2.27",
         "ansis": "^3.17.0",
-        "axios": "^1.8.4",
+        "axios": "^1.9.0",
         "chalk": "^5.4.0",
         "cli-cursor": "^5.0.0",
         "debug": "^4.4.0",
