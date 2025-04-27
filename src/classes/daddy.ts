@@ -54,7 +54,8 @@ export default class Daddy {
     }
 
     return new Promise((resolve) => {
-      const questions: Array<Record<string, any>> = [
+      
+      const questions: any = [
         {
           default: c.snapshot_prefix,
           message: 'LiveCD iso prefix: ',

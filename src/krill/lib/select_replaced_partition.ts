@@ -19,7 +19,7 @@ export default async function selectReplacedPartition(): Promise<string> {
     partitionsList.push("/dev/" + element)
   })
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     // nvme0n1p1, nvme0n1p2, nvme0n1p3
     {
       choices: partitionsList,

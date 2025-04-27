@@ -9,7 +9,7 @@
 import inquirer from 'inquirer'
 
 export default async function selectInterface(iface = 'eth0', ifaces: string[]): Promise<string> {
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: ifaces,
       default: iface,

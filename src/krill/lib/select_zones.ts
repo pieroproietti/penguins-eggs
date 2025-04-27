@@ -535,7 +535,7 @@ export default async function selectRegions(region = ''): Promise<string> {
     // No default
   }
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: zone,
       message: 'Please select the city or region corresponding to your time zone: ',

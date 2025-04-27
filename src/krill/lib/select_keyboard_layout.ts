@@ -25,7 +25,7 @@ export default async function selectKeyboardLayout(selected = ''): Promise<strin
   // sord keyboard layouts
   supported.sort()
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: supported,
       default: selected,

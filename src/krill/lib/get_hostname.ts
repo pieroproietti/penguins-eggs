@@ -10,7 +10,7 @@ import inquirer from 'inquirer'
 
 export default async function getHostname(initial: string): Promise<string> {
   return new Promise((resolve) => {
-    const questions: Array<Record<string, any>> = [
+    const questions: any = [
       {
         default: initial,
         message: 'Choose a name for this computer? ',

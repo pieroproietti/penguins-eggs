@@ -976,7 +976,7 @@ export default class Utils {
     */
    static async customConfirmCompanion(msg = 'Select yes to continue... '): Promise<any> {
       return new Promise(function (resolve) {
-         const questions: Array<Record<string, any>> = [
+         const questions: any = [
             {
                type: 'list',
                name: 'confirm',
@@ -998,7 +998,7 @@ export default class Utils {
     */
    static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
       return new Promise(function (resolve) {
-         const questions: Array<Record<string, any>> = [
+         const questions: any = [
             {
                type: 'list',
                name: 'confirm',

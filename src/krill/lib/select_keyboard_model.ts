@@ -23,7 +23,7 @@ export default async function selectKeyboardModel(selected = ''): Promise<string
     supported.push(m.code)
   }
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: supported,
       default: selected,

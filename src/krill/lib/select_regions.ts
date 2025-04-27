@@ -9,7 +9,7 @@
 import inquirer from 'inquirer'
 
 export default async function selectRegions(selected = ''): Promise<string> {
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: ['Atlantic', 'Africa', 'America', 'Antarctica', 'Artic', 'Australia', 'Europe', 'India', 'Europe', 'Pacific'],
       default: selected,

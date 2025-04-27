@@ -12,7 +12,7 @@ import { InstallationMode } from '../classes/krill_enums.js'
 export default async function selectInstallationMode(): Promise<InstallationMode> {
   const modes = Object.values(InstallationMode)
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: modes,
       message: 'Select the installation mode: ',

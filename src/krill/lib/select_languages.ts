@@ -15,7 +15,7 @@ export default async function selectLanguages(selectedLanguage = ''): Promise<st
   const supported = await locales.getSupported()
   const selected = selectedLanguage
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: supported,
       default: selected,

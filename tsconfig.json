@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
     "module": "Node16",
+    "moduleResolution": "node16",
     "outDir": "dist",
+    "resolveJsonModule": true,
     "rootDir": "src",
     "strict": true,
     "target": "es2022",
-    "moduleResolution": "node16",
-    "jsx": "react",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
   },
   "include": ["./src/**/*"],
   "ts-node": {

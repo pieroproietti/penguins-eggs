@@ -22,7 +22,7 @@ export default async function selectKeyboardVariant(keyboardLayout = ''): Promis
     supported.push(v.code)
   }
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: supported,
       default: '',
