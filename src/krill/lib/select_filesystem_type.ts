@@ -27,7 +27,7 @@ export default async function selectFileSystemType(): Promise<string> {
   }
   partitions.defaultFileSystemType = 'ext4'
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: choices,
       default: partitions.defaultFileSystemType,

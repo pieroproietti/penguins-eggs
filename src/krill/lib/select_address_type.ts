@@ -9,7 +9,7 @@
 import inquirer from 'inquirer'
 
 export default async function selectAddressType(): Promise<string> {
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: ['dhcp', 'static'],
       default: 'dhcp',

@@ -16,7 +16,7 @@ export default async function getPassword(user = 'root', initial: string): Promi
   }
 
   return new Promise((resolve) => {
-    const questions: Array<Record<string, any>> = [
+    const questions: any = [
       {
         default: initial,
         message: `Choose a password for ${user}: `,
