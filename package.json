@@ -51,7 +51,7 @@
         "@types/shelljs": "^0.8.15",
         "chai": "^5.2.0",
         "eslint": "^9.25.1",
-        "eslint-config-oclif": "^6.0.46",
+        "eslint-config-oclif": "^6.0.50",
         "eslint-config-prettier": "^10.0.2",
         "glob": "^11.0.2",
         "mocha": "^11.1.0",
