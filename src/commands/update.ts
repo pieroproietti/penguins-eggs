@@ -97,7 +97,7 @@ export default class Update extends Command {
     const choices: string[] = ['abort']
     choices.push('lan', 'repos', 'sourceforge', 'sources')
 
-    const questions: Array<Record<string, any>> = [
+    const questions: any = [
       {
         choices,
         message: 'select update method',

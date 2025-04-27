@@ -19,7 +19,7 @@ export default async function getLuksPassphrase(passphrase = '', confirm = ''): 
     return true
   }
 
-  const questions = [
+  const questions: any = [
     {
       default: passphrase,
       message: `default passphrase= "3volution"\nChoose a passphrase to encrypt device: `,

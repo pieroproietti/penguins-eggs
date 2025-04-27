@@ -10,7 +10,7 @@ import inquirer from 'inquirer'
 
 export default async function getAddress(initial: string): Promise<string> {
   return new Promise((resolve) => {
-    const questions: Array<Record<string, any>> = [
+    const questions: any = [
       {
         default: initial,
         message: 'What is ip address of this computer? ',

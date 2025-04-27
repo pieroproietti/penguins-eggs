@@ -22,7 +22,7 @@ export default async function selectUserSwapChoice(initialSwapChoice: SwapChoice
     partitions.initialSwapChoice = initialSwapChoice
   }
 
-  const questions: Array<Record<string, any>> = [
+  const questions: any = [
     {
       choices: partitions.userSwapChoices,
       default: partitions.initialSwapChoice,
