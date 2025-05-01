@@ -17,6 +17,7 @@ import Ovary from '../ovary.js'
 
 // functions
 import rexec from './rexec.js'
+import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -52,6 +53,10 @@ export async function userCreateLive(this: Ovary) {
     // da problemi con il mount sshfs
     cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
 
+
+    /**
+     * 
+     */
     switch (this.familyId) {
         case 'debian': {
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
@@ -97,8 +102,7 @@ export async function userCreateLive(this: Ovary) {
     }
 
     /**
-     * educaandos and others themes
-     * users.yml
+     * look to calamares/modules/users.yml for groups
      */
     let usersConf = path.resolve(__dirname, `../../../addons/${this.theme}/theme/calamares/modules/users.yml`)
     if (this.theme.includes('/')) {
@@ -122,5 +126,9 @@ export async function userCreateLive(this: Ovary) {
         for (const group of o.defaultGroups) {
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt}`, this.verbose))
         }
+    } else {
+        console.log(`il file ${usersConf} non esiste!`)
+        await Utils.pressKeyToExit()
     }
+
 }

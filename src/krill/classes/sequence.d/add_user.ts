@@ -8,6 +8,9 @@
  */
 
 import Utils from '../../../classes/utils.js'
+import path from 'path'
+import fs from 'fs'
+import yaml from 'js-yaml'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
 
@@ -29,7 +32,7 @@ export default async function addUser(this: Sequence, name = 'live', password = 
     cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
   } else if (this.distro.familyId === 'fedora') {
     cmd = `chroot ${this.installTarget} adduser ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-  }  else if (this.distro.familyId === 'opensuse') {
+  } else if (this.distro.familyId === 'opensuse') {
     cmd = `chroot ${this.installTarget} useradd ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
   await exec(cmd, this.echo)
@@ -40,10 +43,39 @@ export default async function addUser(this: Sequence, name = 'live', password = 
 
   let group = 'wheel'
   if (this.distro.familyId === 'debian') {
-    group = 'sudo'
+    /**
+     * look to calamares/modules/users.yml for groups
+     */
+    let usersConf = '/etc/calamares/modules/users.conf'
+    if (!fs.existsSync(usersConf)) {
+      usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
+    }
+
+    if (fs.existsSync(usersConf)) {
+      interface IUserCalamares {
+        defaultGroups: string[]
+        doAutologin: boolean
+        doReusePassword: boolean
+        passwordRequirements: {
+          maxLenght: number
+          minLenght: number
+        }
+        setRootPassword: boolean
+        sudoersGroup: string
+        userShell: string
+      }
+      const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
+      for (const group of o.defaultGroups) {
+        cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
+        await exec(cmd, this.echo)
+      }
+    } else {
+      group = 'sudo'
+    }
+    cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
+    await exec(cmd, this.echo)
+
   }
-  cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
-  await exec(cmd, this.echo)
 
   // add autologin group in archlinux
   await exec(cmd, this.echo)
