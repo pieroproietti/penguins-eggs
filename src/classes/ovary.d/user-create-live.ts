@@ -104,9 +104,9 @@ export async function userCreateLive(this: Ovary) {
     /**
      * look to calamares/modules/users.yml for groups
      */
-    let usersConf = path.resolve(__dirname, `../../../addons/${this.theme}/theme/calamares/modules/users.yml`)
-    if (this.theme.includes('/')) {
-        usersConf = `${this.theme}/theme/calamares/modules/users.yml`
+    let usersConf = '/etc/calamares/modules/users.conf'
+    if (!fs.existsSync(usersConf)) {
+      usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
     }
 
     if (fs.existsSync(usersConf)) {
