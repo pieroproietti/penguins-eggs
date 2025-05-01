@@ -10,6 +10,7 @@ defaultGroups:
   - video
   - plugdev
   - netdev
+  # www-data
   # lpadmin
   # scanner
   # bluetooth
