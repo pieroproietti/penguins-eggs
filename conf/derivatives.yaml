@@ -108,6 +108,8 @@
   family: debian
   ids:
     - oracular # Ubuntu oracular 24.10
+    - plucky # Ubuntu 25.04
+    # others
     - abuntu # Abuntu
     - devel  # Rhino
     - wilma  # Linuxmint 22

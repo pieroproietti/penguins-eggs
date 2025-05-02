@@ -13,6 +13,7 @@ defaultGroups:
       must_exist: false
       system: true
     - sudo
+    # www-data
 passwordRequirements:
     minLength: 1
     maxLength: -1
