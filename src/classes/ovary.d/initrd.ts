@@ -56,7 +56,7 @@ export async function initrdArch(this: Ovary) {
  * initrdDebian
  */
 export async function initrdDebian(this: Ovary, verbose = false) {
-    Utils.warning(`creating ${this.initrd}} using mkinitramfs on ISO/live`)
+    Utils.warning(`creating ${this.initrd} using mkinitramfs on ISO/live`)
 
     let isCrypted = false
 
