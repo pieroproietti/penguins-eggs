@@ -171,7 +171,11 @@ export default class Utils {
          /**
           * kernel da /usr/lib/modules
           */
-         const kernels = fs.readdirSync('/usr/lib/modules')
+         let kernelModules = `/usr/lib/modules`
+         if (fs.existsSync(kernelModules)) {
+            kernelModules = `/lib/modules`
+         }
+         const kernels = fs.readdirSync(kernelModules)
          kernels.sort()
 
          const distro = new Distro()
