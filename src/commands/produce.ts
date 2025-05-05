@@ -176,14 +176,18 @@ export default class Produce extends Command {
       const unsecure = flags.unsecure || clone || cryptedclone
 
       let { kernel } = flags
-      if (kernel === undefined ) {
-        kernel=''
+      if (kernel === undefined) {
+        kernel = ''
       }
-      if (kernel !=='') {
+      if (kernel !== '') {
         if (!fs.existsSync(`/usr/lib/modules/${kernel}`)) {
-          let kernels = fs.readdirSync(`/usr/lib/modules/`)
+          let kernelModules = `/usr/lib/modules/`
+          if (!fs.existsSync(kernelModules)) {
+            kernelModules = `/lib/modules/`
+          }
+          let kernels = fs.readdirSync(kernelModules)
           console.log("modules available:")
-          for (const k of kernels)         {
+          for (const k of kernels) {
             console.log(`- ${k}`)
           }
           console.log(`\nNo available modules for kernel version "${kernel}" in /usr/lib/modules/`)
@@ -237,7 +241,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (i.calamares) {
-        let message="this is a GUI system, calamares is available, but NOT installed\n"
+        let message = "this is a GUI system, calamares is available, but NOT installed\n"
         Utils.warning(message)
       }
 
