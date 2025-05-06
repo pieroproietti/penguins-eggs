@@ -172,7 +172,7 @@ export default class Utils {
           * kernel da /usr/lib/modules
           */
          let kernelModules = `/usr/lib/modules`
-         if (fs.existsSync(kernelModules)) {
+         if (!fs.existsSync(kernelModules)) {
             kernelModules = `/lib/modules`
          }
          const kernels = fs.readdirSync(kernelModules)
