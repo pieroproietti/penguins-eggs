@@ -180,7 +180,20 @@ export default class Utils {
 
          const distro = new Distro()
          if (distro.familyId === "archlinux") {
-            vmlinuz = `/boot/vmlinuz-linux`
+            const moduleDirs = fs.readdirSync('/usr/lib/modules');
+            let archKernelType: string = '';
+            for (const dir of moduleDirs) {
+               if (dir.includes('-lts')) {
+                  archKernelType = 'linux-lts';
+                  break;
+               } else if (dir.includes('-rt')) {
+                  archKernelType = 'linux-rt';
+                  break;
+               } else if (/^[0-9]+\.[0-9]+/.test(dir)) {
+                  archKernelType = 'linux';
+               }
+            }
+            vmlinuz = `/boot/vmlinuz-${archKernelType}`
 
             // manjaro: vmlinux-${major}.${minor}-arch
             if (Diversions.isManjaroBased(distro.distroId)) {
