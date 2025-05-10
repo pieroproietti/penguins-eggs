@@ -319,7 +319,7 @@ function srcGAE(): string {
 function srcGAES(): string {
     let signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
     if (!fs.existsSync(signedGrub)) {
-        Utils.warning(`cannot find ${signedGrub}}`)
+        Utils.warning(`cannot find ${signedGrub}`)
     }
     return signedGrub
 }
