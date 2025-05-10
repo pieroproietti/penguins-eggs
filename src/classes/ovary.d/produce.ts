@@ -70,7 +70,20 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
         if (this.familyId === 'alpine') {
             // to do
         } else if (this.familyId === 'archlinux') {
-            this.kernel = (await exec(`pacman -Q linux | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
+            const moduleDirs = fs.readdirSync('/usr/lib/modules');
+            let archKernelType: string = '';
+            for (const dir of moduleDirs) {
+               if (dir.includes('-lts')) {
+                  archKernelType = 'linux-lts';
+                  break;
+               } else if (dir.includes('-rt')) {
+                  archKernelType = 'linux-rt';
+                  break;
+               } else if (/^[0-9]+\.[0-9]+/.test(dir)) {
+                  archKernelType = 'linux';
+               }
+            }
+            this.kernel = (await exec(`pacman -Q ${archKernelType} | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
             this.kernel = this.kernel.replace(/[\r\n]+/g, '')
             this.kernel = this.kernel.replace('.arch', '-arch')
             if (Diversions.isManjaroBased(this.distroId)) {
