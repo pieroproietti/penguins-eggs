@@ -217,7 +217,14 @@ export default class Utils {
           */
          const distro = new Distro()
          if (distro.familyId === "archlinux") {
-            vmlinuz = `/boot/vmlinuz-linux`
+            if (fs.existsSync(`/boot/vmlinuz-linux`)) {
+               vmlinuz = `/boot/vmlinuz-linux`
+            } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
+               vmlinuz = `/boot/vmlinuz-linux-lts`
+            } else if (!fs.existsSync(`/boot/vmlinuz-linux-rt`)) {
+               vmlinuz = `/boot/vmlinuz-linux-rt`
+            }
+
             if (Diversions.isManjaroBased(distro.distroId)) {
                const match = kernel.match(/^(\d+)\.(\d+)\./) // cattura minor e major
                if (match) {
@@ -264,7 +271,13 @@ export default class Utils {
       } else if (distro.familyId === 'archlinux') {
          initrd = 'initramfs'
          separator = '-'
-         version = 'linux'
+         if (fs.existsSync(`/boot/vmlinuz-linux`)) {
+            version = `linux`
+         } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
+            version = `linux-lts`
+         } else if (!fs.existsSync(`/boot/vmlinuz-linux-rt`)) {
+            version = `linux-rt`
+         }
          suffix = '.img'
          if (Diversions.isManjaroBased(distro.distroId)) {
             // solo vmlinux-
