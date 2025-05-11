@@ -71,21 +71,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             // to do
         } else if (this.familyId === 'archlinux') {
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
-            let archKernelType: string = 'linux'
-            if (moduleDirs.includes('-lts')) {
-                archKernelType = `-lts`
-            } else if (moduleDirs.includes('-hardened')) {
-                archKernelType = `-hardened`
-            } else if (moduleDirs.includes('-zen')) {
-                archKernelType = `-zen`
-            } else {
-                archKernelType = ``
-            }
-            this.kernel = (await exec(`pacman -Q ${archKernelType} | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
-            this.kernel = this.kernel.replace(/[\r\n]+/g, '')
-            this.kernel = this.kernel.replace('.arch', '-arch')
-            this.kernel += archKernelType
-            console.log(this.kernel)
+            this.kernel = moduleDirs[0]
 
             if (Diversions.isManjaroBased(this.distroId)) {
                 this.kernel += '-MANJARO'
