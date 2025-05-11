@@ -73,17 +73,18 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
             let archKernelType: string = 'linux'
             if (moduleDirs.includes('-lts')) {
-                archKernelType = `linux-lts`
+                archKernelType = `-lts`
             } else if (moduleDirs.includes('-hardened')) {
-                archKernelType = `linux-hardened`
+                archKernelType = `-hardened`
             } else if (moduleDirs.includes('-zen')) {
-                archKernelType = `linux-zen`
+                archKernelType = `-zen`
             } else {
-                archKernelType = `linux`
+                archKernelType = ``
             }
             this.kernel = (await exec(`pacman -Q ${archKernelType} | awk '{print $2}'`, { capture: true, echo: false, ignore: false })).data
             this.kernel = this.kernel.replace(/[\r\n]+/g, '')
             this.kernel = this.kernel.replace('.arch', '-arch')
+            this.kernel += archKernelType
             console.log(this.kernel)
 
             if (Diversions.isManjaroBased(this.distroId)) {
