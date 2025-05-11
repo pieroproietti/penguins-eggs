@@ -185,8 +185,10 @@ export default class Utils {
             for (const dir of moduleDirs) {
                if (dir.includes('-lts')) {
                   archKernelType = 'linux-lts';
-               } else if (dir.includes('-rt')) {
-                  archKernelType = 'linux-rt';
+               } else if (dir.includes('-hardened')) {
+                  archKernelType = 'linux-hardened';
+               } else if (dir.includes('-zen')) {
+                  archKernelType = 'linux-zen';
                } else {
                   archKernelType = 'linux';
                }
@@ -273,10 +275,15 @@ export default class Utils {
             version = `linux`
          } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
             version = `linux-lts`
-         } else if (!fs.existsSync(`/boot/vmlinuz-linux-rt`)) {
-            version = `linux-rt`
+         } else if (!fs.existsSync(`/boot/vmlinuz-hardened`)) {
+            version = `linux-hardenet`
          }
+         } else if (!fs.existsSync(`/boot/vmlinuz-zen`)) {
+            version = `linux-zen`
+         }
+         
          suffix = '.img'
+
          if (Diversions.isManjaroBased(distro.distroId)) {
             // solo vmlinux-
             version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
