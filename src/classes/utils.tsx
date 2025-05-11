@@ -180,18 +180,18 @@ export default class Utils {
 
          const distro = new Distro()
          if (distro.familyId === "archlinux") {
-            const moduleDirs = fs.readdirSync('/usr/lib/modules');
-            let archKernelType: string = '';
-            for (const dir of moduleDirs) {
-               if (dir.includes('-lts')) {
-                  archKernelType = 'linux-lts';
-               } else if (dir.includes('-hardened')) {
-                  archKernelType = 'linux-hardened';
-               } else if (dir.includes('-zen')) {
-                  archKernelType = 'linux-zen';
-               } else {
-                  archKernelType = 'linux';
-               }
+            const moduleDirs = fs.readdirSync('/usr/lib/modules')
+            const first = moduleDirs[0]
+
+            let archKernelType= ''
+            if (first.includes('-lts')) {
+               archKernelType = 'linux-lts';
+            } else if (first.includes('-hardened')) {
+               archKernelType = 'linux-hardened';
+            } else if (first.includes('-zen')) {
+               archKernelType = 'linux-zen';
+            } else {
+               archKernelType = 'linux';
             }
             vmlinuz = `/boot/vmlinuz-${archKernelType}`
 
