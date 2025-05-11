@@ -73,8 +73,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
             this.kernel = moduleDirs[0]
 
+            /**
+             * no need more
+             */
             if (Diversions.isManjaroBased(this.distroId)) {
-                this.kernel += '-MANJARO'
+                // this.kernel += '-MANJARO'
             }
 
         } else { // debian, fedora, openmamba, opensuse, voidlinux
