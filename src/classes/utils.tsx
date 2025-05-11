@@ -185,11 +185,9 @@ export default class Utils {
             for (const dir of moduleDirs) {
                if (dir.includes('-lts')) {
                   archKernelType = 'linux-lts';
-                  break;
                } else if (dir.includes('-rt')) {
                   archKernelType = 'linux-rt';
-                  break;
-               } else if (/^[0-9]+\.[0-9]+/.test(dir)) {
+               } else {
                   archKernelType = 'linux';
                }
             }
