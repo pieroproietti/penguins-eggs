@@ -277,7 +277,6 @@ export default class Utils {
             version = `linux-lts`
          } else if (!fs.existsSync(`/boot/vmlinuz-hardened`)) {
             version = `linux-hardenet`
-         }
          } else if (!fs.existsSync(`/boot/vmlinuz-zen`)) {
             version = `linux-zen`
          }
