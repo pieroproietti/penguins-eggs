@@ -1400,7 +1400,8 @@ If you have any questions or need further assistance, feel free to contact me vi
 Thank you!
 
 ## Book
-My friend Hosein Seilany, has written a book on Penguins eggs. A remarkable work, even in size and weight, and so it is with much honor that I post the link in this message.
+My friend Hosein Seilany, has written a book on Penguins eggs. A remarkable work, even in size and weight, and so it is with much honor to have it here!
+
 [![book](https://predator-store.com/wp-content/uploads/2025/05/final1-copy-2-1450x2048.jpg?raw=true)](https://predator-store.com/product/penguins-eggs-tool/)
 
 ## Star History
