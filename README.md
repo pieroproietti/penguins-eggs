@@ -1398,6 +1398,9 @@ If you have any questions or need further assistance, feel free to contact me vi
 
 Thank you!
 
+## book
+![](https://predator-store.com/product/penguins-eggs-tool/)
+
 ## Star History
 This project collects stars, look to the sky... contribute! 
 
@@ -1406,4 +1409,3 @@ This project collects stars, look to the sky... contribute!
 # Copyright and licenses
 Copyright (c) 2017, 2025 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
 
-![](https://predator-store.com/product/penguins-eggs-tool/)
