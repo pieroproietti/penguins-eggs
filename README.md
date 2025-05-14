@@ -21,6 +21,7 @@
 * [Usage](#usage)
 * [Commands](#commands)
 * [GUI](#gui)
+* [BOOK](#book)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
