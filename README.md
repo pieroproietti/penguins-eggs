@@ -21,7 +21,7 @@
 * [Usage](#usage)
 * [Commands](#commands)
 * [GUI](#gui)
-* [BOOK](#book)
+* [BOOK](#book) Penguins eggs tool
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
