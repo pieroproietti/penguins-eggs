@@ -29,7 +29,7 @@
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
-  * [Penguins' eggs book](https://penguins-eggs.gitbook.io/book)
+  * [Penguins Eggs' book](https://penguins-eggs.gitbook.io/book)
   * [FAQ](https://penguins-eggs.net/docs/faq)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
@@ -41,7 +41,7 @@ It’s often used to create customized live ISO images or backups of a Linux sys
 Here’s a breakdown of what it’s used for:
 
 
-* Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), penguins-eggs simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.
+* Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), `penguins-eggs` simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.
 
 * Creating Custom Live ISOs: It lets you generate a bootable live ISO from your system. You can share this ISO with others or use it to boot your setup on different hardware. It’s like creating your own personalized Linux distro without starting from scratch.
 
@@ -52,7 +52,7 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 # Installation
 
 ## penguins-eggs-10.0.x installation
-`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
+`penguins-eggs-10.0.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
 ### using get-eggs
 It's the most pratical way and is valid for Alpine, Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need and install the right package. Copy and paste:
@@ -63,14 +63,14 @@ sudo ./get-eggs.sh
 ```
 ### Manual installation
 
-#### Arch, Manjaro, Debian 12 bookworm, Ubuntu 24.04
+#### Arch, Manjaro, Debian 12 Bookworm, Ubuntu 24.04 Noble
 Just download and install penguins-eggs-10.0.x.
 
-#### Debian 10 buster, Debian 11 bullseye, Ubuntu 20.04, Ubuntu 22.04
-Before to install `penguins-eggs-10.x` add the repos from `nodesource`, follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
+#### Debian 10 Buster, Debian 11 Bullseye, Ubuntu 20.04 Focal, Ubuntu 22.04 Jammy
+Before to install `penguins-eggs-10.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
 
-#### Debian 9 stretch, Ubuntu 18.04 bionic
-Use the package `penguins-eggs-10.x.x-bionic-x` - compilated against node16 - and follow this [indications](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
+#### Debian 9 Stretch, Ubuntu 18.04 Bionic
+Use the package `penguins-eggs-10.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
 ### Openmanba
 Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
@@ -93,17 +93,17 @@ Initially built with javascript and then switched to Typescript as the main deve
 
 Other commands follow: like `kill` for removing produced ISOs, `calamares` for configuring the graphical installer, `mom` as interactive help, `dad` to configure eggs, `status`, `tools`, etc.
 
-Considered a work-in-progress, the ultimate goal of Penguins' Eggs is to allow the creation of live ISOs from an installed system and their use for system installations.  It can be used both to create images on USB devices - even [Ventoy](https://www.ventoy.net/en/index.html) - and as a PXE server to distribute the image itself over a local network. Inspired by the behavior of the cuckoo bird, which depends on others to hatch its eggs.
+Considered a work-in-progress, the ultimate goal of Penguins Eggs is to allow the creation of live ISOs from an installed system and their use for system installations.  It can be used both to create images on USB devices - even [Ventoy](https://www.ventoy.net/en/index.html) - and as a PXE server to distribute the image itself over a local network. Inspired by the behavior of the cuckoo bird, which depends on others to hatch its eggs.
 
 Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible with various Linux distributions, despite differences in package managers, file paths, and more. 
 
 The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64. 
 
-From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs), nowday eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, RockyLinux too.
+From the release of version 9.6.x, Penguins’ Eggs is available as a [Debian package](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs), then was extended to Arch Linux creating the relative [PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs). Nowadays, eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, and  RockyLinux too.
 
-So, catering to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
+Penguins Eggs caters to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures. 
 
-For more information and updates, visit the [Penguins’ Eggs official website](https://penguins-eggs.net).
+For more information and updates, visit the [Penguins Eggs' official website](https://penguins-eggs.net).
 
 
  > [!TIP]
@@ -142,7 +142,7 @@ Additionally, you can find examples of remastered ISO images created with `eggs`
  
  Penguins-eggs has got you covered. To get started with Penguins-eggs, you'll need to install it on your Linux distribution. The tool supports a wide range of Linux distributions and their major derivatives, including Arch, Debian, Devuan, Manjaro, Ubuntu, and more. Additionally, you can easily add support for additional derivatives, expanding the tool's capabilities even further.
 
-1. fast and efficient
+1. Fast and Efficient
 Penguins-eggs is designed to be fast and efficient. Unlike traditional methods that involve copying the entire file system, Penguins-eggs utilizes livefs, which allows for instant acquisition of the live system. By default, the tool.
 
 2. Supports Compression Algorithm
@@ -158,18 +158,18 @@ Employs the zstd compression algorithm, significantly reducing the time required
  To simplify the installation process, Penguins-eggs provides its own system installer called krill. This installer is particularly useful when a GUI (Graphical User Interface) is not available, allowing for installation in various situations. However, if you are using a desktop system, Penguins-eggs recommends and configures the calamares GUI installer, ensuring a seamless and user-friendly experience.
 Penguins Eggs Linux spearheads a transformative revolution in the realm of system installation with the incorporation of its TUI (Text-based User Interface) / GUI (Graphical User Interface) installer, setting a new standard of versatility and accessibility within the landscape of Linux distributions. 
 
-6. repository lists
+6. Repository Lists
  One of the key advantages of Penguins-eggs is its commitment to utilizing only the original distro's packages. This means that no modifications are made to your repository lists, ensuring a safe and reliable environment. Penguins-eggs prioritizes maintaining the integrity and authenticity of your Linux distribution.
 
 7. Wardrobe
  To enhance customization options, Penguins-eggs introduces the concept of Wardrobe. With Wardrobe and its various components, such as costumes, you can easily organize and manage your customizations, samples, and more. This feature enables a streamlined and efficient workflow, allowing you to tailor your Linux system to your preferences.
 
-8. supporting multiple distributions
+8. Supporting Multiple Distributions
 Eggs supporting multiple distributions and their derivatives
 Supports: Alpine, Arch, Debian, Fedora, Devuan, Manjaro, Ubuntu,
  and major derivatives like: Linuxmint, KDE neon, EndeavourOS, Garuda, etc. You can easily add more derivatives.
 
-10. supports hardware architectures
+10. Supports Hardware Architectures
 supports a wide range of hardware architectures.
 Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to single board computers like Raspberry Pi 4/5
 
@@ -179,8 +179,8 @@ Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to si
 
 ## Wardrobe, Themes, and Addons
  In April 2022, the `wardrobe` command was introduced to `eggs`. This addition serves as a comprehensive tool to assist and streamline the process of creating a customized version of Linux, starting from a command-line interface (CLI) system. I have embraced wardrobe for all my editions to enhance convenience, enabling me to better organize, consolidate, and manage my work effectively.
-To add a unique touch to my customizations, I have assigned bird names to each edition. Except for the "naked" edition, there are various options available, including "Colibri," "eagle," "duck," "owl," and "chicks" under the bookworm and plastilinux distributions. [bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/)  and [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/),.Furthermore, under Waydroid on the eggs' SourceForge page, you can find "wagtail" and "warbier."
-I have high hopes that people will take an interest in wardrobe and consider forking the main repository to incorporate their own customizations. By collaborating, we can achieve significant progress that would be challenging for a single developer to accomplish. If you would like to delve deeper into the wardrobe, I recommend reading the [Penguins' eggs blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/). post titled Wardrobe: Colibri, Duck, Eagle, and Owl, which provides further insights into its features and benefits.
+To add a unique touch to my customizations, I have assigned bird names to each edition. Except for the "naked" edition, there are various options available, including "Colibri," "eagle," "duck," "owl," and "chicks" under the bookworm and plastilinux distributions. [bookworm](https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/)  and [plastilinux](https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/).Furthermore, under Waydroid on the eggs' SourceForge page, you can find "wagtail" and "warbier."
+I have high hopes that people will take an interest in wardrobe and consider forking the main repository to incorporate their own customizations. By collaborating, we can achieve significant progress that would be challenging for a single developer to accomplish. If you would like to delve deeper into the wardrobe, I recommend reading the [Penguins Eggs' blog](https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/). post titled Wardrobe: Colibri, Duck, Eagle, and Owl, which provides further insights into its features and benefits.
 Furthermore, addons, predominantly themes, have been organized under the vendor's folder in the penguin's wardrobe. I encourage utilizing your wardrobe for all your customization needs to maintain consistency and organization throughout your work.
 
 > [!NOTE]
@@ -192,9 +192,9 @@ When creating a live distribution of your system, you have different options to 
 •	The default mode, achieved by using the command `eggs produce`, completely removes user data from the live distribution. This ensures that no private data remains in the live system.
  
 •	The `eggs produce --clone` command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the 
-user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable for sensitive information.
+user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable if you have sensitive information on your system.
  
-•	On the other hand, the ìeggs produce --cryptedclone` command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
+•	On the other hand, the `eggs produce --cryptedclone` command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
 
 To summarize the available options:
 
@@ -207,7 +207,7 @@ To summarize the available options:
 >    During the installation process, you can use the "krill" installer to restore your crypted data automatically. By running the command "sudo eggs install" with the "krill" installer, your encrypted data will be securely transferred and made available in the installed system.
 
 
-## calamares and krill
+## Calamares and krill
  Calamares and Krill are powerful tools in the Eggs project, [calamares](https://calamares.io), offering versatile installation options for Linux systems. The Eggs project was specifically designed to utilize Calamares as the default system installer, providing users with the flexibility to customize their installations using themes. However, Eggs goes beyond Calamares by introducing its own installer called Krill, which focuses on command-line interface (CLI) installations, particularly for server environments.
 
  Krill adopts a TUI interface that closely resembles Calamares, ensuring a consistent user experience. Leveraging the same configuration files created by Eggs for Calamares, Krill maintains compatibility and allows for seamless transitions between desktop and server installations. By simply adding the flag during installation, Krill enables unattended installations, streamlining the process for system administrators. Fine-tuning installation parameters becomes effortless as the configuration values can be modified in the ```/etc/penguins-eggs.d/krill.yaml``` file, facilitating automated deployments.
@@ -215,19 +215,19 @@ To summarize the available options:
 > [!TIP]
 > Thanks to the Eggs project's integration of Calamares and the introduction of Krill, users can enjoy a comprehensive installation toolkit. Whether one prefers the graphical interface of Calamares or the command-line efficiency of Krill, Eggs caters to diverse installation needs, making Linux setup a breeze.
 
-## cuckoo 
+## Cuckoo 
  Just like the cuckoo bird lays its eggs in the nests of other birds, the Eggs project introduces a similar concept in the form of a self-configuring PXE service. This service allows you to boot and install your ISO on networked computers that are not originally configured for your specific ISO.
 With the command `cuckoo` you can deploy a newly created ISO on an already installed system, or you can live to boot the ISO itself. This means that you can either install your ISO on existing systems or directly run the ISO without the need for a permanent installation.
 
 > [!TIP]
 >  By leveraging the cuckoo command, the Eggs project provides a convenient method for deploying and testing your ISO on a variety of networked computers, expanding the possibilities for system installations and evaluations.
 
-## mom and dad
+## Mom and Dad
  I have introduced two helpful built-in assistants: Mom and Dad. Mom, based on the easybashgui [easybashgui](https://github.com/BashGui/easybashgui) script, serves as a comprehensive guide, providing explanations of various commands and documentation. This ensures that users have access to clear instructions and information as they navigate through Eggs' functionalities.
 On the other hand, Dad serves as a convenient shortcut for properly configuring Eggs. By simply typing ```sudo eggs dad``` and following the straightforward instructions, users can quickly configure Eggs to meet their specific requirements. For even faster configuration, utilizing the command ```sudo eggs dad -d``` allows for a complete reset of the configuration, loading default settings, and deleting any created ISOs.
 Once Eggs is properly configured, generating your live environment becomes a breeze. Just type ```sudo eggs produce``` to effortlessly generate your live ISO. With this streamlined workflow, Eggs empowers users to efficiently create customized live environments tailored to their needs. Whether you rely on Mom's guidance or Dad's configuration shortcuts, Eggs offers a user-friendly experience for ISO creation and customization.
 
-## yolk 
+## Yolk 
  Yolk is a local repository that is bundled within the LiveCD of Eggs. This repository contains a carefully curated selection of essential packages required for installation. Yolk serves as a valuable resource, as it allows you to install your system confidently, even without an active internet connection.
 By including Yolk in the LiveCD, Eggs ensures that all the necessary packages are readily available during the installation process. This eliminates the dependency on an internet connection, making it possible to install your system in offline environments or situations where internet access is limited or unavailable.
 Yolk acts as a safety net, providing the minimum set of indispensable packages required for a successful installation. This guarantees a smooth and reliable installation experience, regardless of the availability of an internet connection. With Yolk by your side, you can confidently proceed with system installations, knowing that the essential packages are at your disposal.
@@ -339,7 +339,7 @@ This will automatically install any required dependencies for Eggs.
 >   By following these instructions, you can upgrade Eggs either through the penguins-eggs-ppa repository or by manually downloading and installing the latest version from the SourceForge page. Ensure that you choose the appropriate method based on your current setup to keep Eggs up to date with the latest enhancements and bug fixes.
 
 ## Arch families
- Eggs have been available in the Arch User Repository (AUR) for quite some time, thanks to the support of the Arch Linux community. Although I was initially unaware of its presence, I am now directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs). Additionally, I am actively participating in the Manjaro Community Repository, specifically for the [penguins-eggs](https://gitlab.manjaro.org/packages/community/penguins-eggs) package.
+ Eggs has been available in the Arch User Repository (AUR) for quite some time, thanks to the support of the Arch Linux community. Although I was initially unaware of its presence, I am now directly maintaining the AUR version of [penguins-eggs](https://aur.archlinux.org/packages/penguins-eggs). Additionally, I am actively participating in the Manjaro Community Repository, specifically for the [penguins-eggs](https://gitlab.manjaro.org/packages/community/penguins-eggs) package.
 
  Being present in the AUR signifies that Eggs is available for Arch Linux users to easily install and manage through their package managers. The AUR is a community-driven repository that allows users to contribute and maintain packages that are not officially supported by Arch Linux. By maintaining the AUR version of penguins-eggs, I can ensure that Arch Linux users have access to the latest updates and improvements for Eggs.
 
@@ -456,7 +456,7 @@ sudo eggs produce --standard
 sudo eggs produce --max
 ```
 > [!TIP]
->  This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult [Penguins' eggs official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed informations.
+>  This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult [Penguins Eggs' official guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide) for more detailed informations.
 # Commands
 <!-- commands -->
 * [`eggs adapt`](#eggs-adapt)
@@ -1200,7 +1200,7 @@ _See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguin
 
 ## `eggs update`
 
-update the Penguins' eggs tool
+update the Penguins Eggs' tool
 
 ```
 USAGE
@@ -1211,7 +1211,7 @@ FLAGS
   -v, --verbose  verbose
 
 DESCRIPTION
-  update the Penguins' eggs tool
+  update the Penguins Eggs' tool
 
 EXAMPLES
   $ eggs update
@@ -1378,14 +1378,14 @@ I like it, I hope you like it too, and I thank Jorge for his daring.
 
 ## That's all, Folks!
 
- One of the standout features of Penguins' Eggs is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins' Eggs lies within - no additional setup required! 
+ One of the standout features of Penguins Eggs' is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins Eggs' lies within - no additional setup required! 
 
 ## More Information
 
-In addition to the official guide, there are other resources available for Penguins' Eggs users, particularly developers. These resources can be found in the [penguins-eggs repository](https://github.com/pieroproietti/penguins-eggs) under the [documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents) section.
+In addition to the official guide, there are other resources available for Penguins Eggs' users, particularly developers. These resources can be found in the [penguins-eggs repository](https://github.com/pieroproietti/penguins-eggs) under the [documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents) section.
 
 Some noteworthy documents include:
-- [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master//hens-different-species.md): A brief guide on using Penguins' Eggs in Debian, Arch, and Manjaro.
+- [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master//hens-different-species.md): A brief guide on using Penguins Eggs' in Debian, Arch, and Manjaro.
 - [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html): A blog post detailing how to create an Arch naked live, install it, and customize the resulting system into a graphics development station.
  
 If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my [blog](https://penguins-eggs.net) or connecting with me on , [Telegram](https://t.me/penguins_eggs), [Mastodom](https://social.treehouse.systems/@artisan), [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61) or [Twitter](https://twitter.com/pieroproietti), 
