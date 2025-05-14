@@ -1,7 +1,7 @@
 ---
 name: PR Template
 about: Contribute to Penguins Eggs!
-title: ''
+title: '[PR]:'
 labels: '' 
 assignees: ''
 
