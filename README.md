@@ -1242,7 +1242,7 @@ _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/
 
 ## `eggs wardrobe get [REPO]`
 
-get warorobe
+get wardrobe
 
 ```
 USAGE
@@ -1256,7 +1256,7 @@ FLAGS
   -v, --verbose
 
 DESCRIPTION
-  get warorobe
+  get wardrobe
 
 EXAMPLES
   $ eggs wardrobe get
