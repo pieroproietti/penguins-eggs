@@ -15,6 +15,7 @@ import inquirer from 'inquirer'
 import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
 import { Netmask } from 'netmask'
+import Kernel from './kernel.js'
 
 // libraries
 import { exec } from '../lib/utils.js'
@@ -155,169 +156,18 @@ export default class Utils {
       return isOpenRc
    }
 
-
    /**
-    * ricava path per vmlinuz
-    * Normalmente cerca BOOT_IMAGE
-    * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=13768873-d6ba-4ae5-9e14-b5011f5aa31c ro quiet splash resume=UUID=beafb9b4-c429-4e1f-a268-4270b63a14e6
-    * se non è presente, come nel caso di Franco, cerca initrd e ricostruisce vmlinuz
-    * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
+    * @deprecated Use Kernel.vmlinuz() instead
     */
    static vmlinuz(kernel = ''): string {
-      let vmlinuz = ''
-
-
-      if (kernel === '') {
-         /**
-          * kernel da /usr/lib/modules
-          */
-         let kernelModules = `/usr/lib/modules`
-         if (!fs.existsSync(kernelModules)) {
-            kernelModules = `/lib/modules`
-         }
-         const kernels = fs.readdirSync(kernelModules)
-         kernels.sort()
-
-         const distro = new Distro()
-         if (distro.familyId === "archlinux") {
-            const moduleDirs = fs.readdirSync('/usr/lib/modules')
-            const first = moduleDirs[0]
-
-            let archKernelType= ''
-            if (first.includes('-lts')) {
-               archKernelType = 'linux-lts';
-            } else if (first.includes('-hardened')) {
-               archKernelType = 'linux-hardened';
-            } else if (first.includes('-zen')) {
-               archKernelType = 'linux-zen';
-            } else {
-               archKernelType = 'linux';
-            }
-            vmlinuz = `/boot/vmlinuz-${archKernelType}`
-
-            // manjaro: vmlinux-${major}.${minor}-arch
-            if (Diversions.isManjaroBased(distro.distroId)) {
-               const modulesDir = fs.readdirSync('/usr/lib/modules/')
-               modulesDir.sort()
-               let max = modulesDir[modulesDir.length - 1]
-               const match = max.match(/^(\d+)\.(\d+)\./); // Cattura major.minor
-               if (match) {
-                  const major = match[1]
-                  const minor = match[2]
-                  vmlinuz = `/boot/vmlinuz-${major}.${minor}-x86_64`
-               }
-            }
-         } else {
-            vmlinuz = `/boot/vmlinuz-${kernels[kernels.length - 1]}`
-         }
-
-      } else {
-         /**
-          * kernel definito
-          */
-         const distro = new Distro()
-         if (distro.familyId === "archlinux") {
-            if (fs.existsSync(`/boot/vmlinuz-linux`)) {
-               vmlinuz = `/boot/vmlinuz-linux`
-            } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
-               vmlinuz = `/boot/vmlinuz-linux-lts`
-            } else if (!fs.existsSync(`/boot/vmlinuz-linux-rt`)) {
-               vmlinuz = `/boot/vmlinuz-linux-rt`
-            }
-
-            if (Diversions.isManjaroBased(distro.distroId)) {
-               const match = kernel.match(/^(\d+)\.(\d+)\./) // cattura minor e major
-               if (match) {
-                  const major = match[1]
-                  const minor = match[2]
-                  vmlinuz = `/boot/vmlinuz-${major}.${minor}-x86_64`
-               }
-            }
-         } else {
-            vmlinuz = `/boot/vmlinuz-${kernel}`
-         }
-
-      }
-
-
-      // If vmlinuz doesn't exist exit
-      if (!fs.existsSync(vmlinuz)) {
-         console.log(`file ${vmlinuz} does not exist!`)
-         process.exit()
-      }
-
-      return vmlinuz;
+      return Kernel.vmlinuz(kernel)
    }
 
-
    /**
-    * ricava path per initrdImg
+    * @deprecated Use Kernel.initramfs() instead  
     */
    static initrdImg(kernel = ''): string {
-      let vmlinuz = Utils.vmlinuz(kernel)
-      const path = vmlinuz.substring(0, vmlinuz.lastIndexOf('/')) + '/'
-
-      let initrd = ''
-      let separator = ''
-      let version = ''
-      let suffix = ''
-
-      let distro = new Distro()
-      if (distro.familyId === 'alpine') {
-         initrd = 'initramfs'
-         separator = '-'
-         version = 'lts'
-
-      } else if (distro.familyId === 'archlinux') {
-         initrd = 'initramfs'
-         separator = '-'
-         if (fs.existsSync(`/boot/vmlinuz-linux`)) {
-            version = `linux`
-         } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
-            version = `linux-lts`
-         } else if (!fs.existsSync(`/boot/vmlinuz-hardened`)) {
-            version = `linux-hardenet`
-         } else if (!fs.existsSync(`/boot/vmlinuz-zen`)) {
-            version = `linux-zen`
-         }
-         
-         suffix = '.img'
-
-         if (Diversions.isManjaroBased(distro.distroId)) {
-            // solo vmlinux-
-            version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-         }
-
-      } else if (distro.familyId === 'debian') {
-         initrd = 'initrd.img'
-         separator = "-"
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-
-      } else if (distro.familyId === 'fedora') {
-         initrd = 'initramfs'
-         separator = '-'
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-         suffix = '.img'
-
-      } else if (distro.familyId === 'openmamba') {
-         initrd = 'initramfs'
-         separator = '-'
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-
-      } else if (distro.familyId === 'opensuse') {
-         initrd = 'initrd'
-         separator = '-'
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-
-      } else if (distro.familyId === 'voidlinux') {
-         initrd = 'initramfs'
-         separator = '-'
-         version = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
-         suffix = '.img'
-      }
-
-      initrd = path + initrd + separator + version + suffix
-      return initrd
+      return Kernel.initramfs(kernel)
    }
 
    /**
