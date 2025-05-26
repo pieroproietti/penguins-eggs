@@ -20,7 +20,7 @@
 * [Packages](#packages)
 * [Usage](#usage)
 * [Commands](#commands)
-* [GUI](#gui)
+* [GUI](#gui) Eggsmaker
 * [BOOK](#book) Penguins eggs tool
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
