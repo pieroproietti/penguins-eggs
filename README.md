@@ -8,8 +8,8 @@
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
-# Idee
-* [Conversione a Deno](https://claude.ai/public/artifacts/8caa0378-54cf-4fff-b5dc-46259354bd3a)
+# Plan
+* [Conversione a Deno](./DOCS/DENO.md)
 
 # Index
 <!-- toc -->
