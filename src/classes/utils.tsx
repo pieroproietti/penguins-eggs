@@ -15,7 +15,7 @@ import inquirer from 'inquirer'
 import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
 import { Netmask } from 'netmask'
-import Kernel from './kernel.js'
+import Kernel from './utils.d/kernel.js'
 
 // libraries
 import { exec } from '../lib/utils.js'

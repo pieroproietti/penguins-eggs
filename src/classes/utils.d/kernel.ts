@@ -6,8 +6,8 @@
  */
 
 import fs from 'node:fs'
-import Distro from './distro.js'
-import Diversions from './diversions.js'
+import Distro from '../distro.js'
+import Diversions from '../diversions.js'
 
 /**
  * Kernel utilities for managing vmlinuz and initramfs paths
