@@ -25,6 +25,7 @@
 * [Usage](#usage)
 * [Commands](#commands)
 * [GUI](#gui)
+* [Book](#book)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
@@ -33,7 +34,6 @@
   * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
   * [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
   * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
-  * [Penguins Eggs' book](https://penguins-eggs.gitbook.io/book)
   * [FAQ](https://penguins-eggs.net/docs/faq)
   * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
@@ -1380,6 +1380,12 @@ I like it, I hope you like it too, and I thank Jorge for his daring.
 
  The development of a GUI for `eggs` with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to `penguins-eggs`. If you have any specific questions or need further information about the penGUI project, feel free to ask!
 
+# Book
+
+My friend [Hosein Seilany](https://predator-store.com/about-us/)  founder of [predator-os](https://predator-os.ir/), has written a book on Penguins's eggs, with my partecipation. It's a remarkable work - even in size and weight - so it's a great honor to [announce](https://predator-store.com/product/penguins-eggs-tool) it here!
+
+[![book](https://predator-store.com/wp-content/uploads/2025/05/final1-copy-2-1450x2048.jpg?raw=true)](https://predator-store.com/product/penguins-eggs-tool/)
+
 ## That's all, Folks!
 
  One of the standout features of Penguins Eggs' is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins Eggs' lies within - no additional setup required! 
@@ -1401,11 +1407,6 @@ If you have any questions or need further assistance, feel free to contact me vi
 * and a word of thanks to all of you who are using it and providing feedback and motivation to continue it. 
 
 Thank you!
-
-## Book
-My friend [Hosein Seilany](https://predator-store.com/about-us/)  founder of [predator-os](https://predator-os.ir/), has written a book on Penguins's eggs, with my partecipation. It's a remarkable work - even in size and weight - so it's a great honor to [announce](https://predator-store.com/product/penguins-eggs-tool) it here!
-
-[![book](https://predator-store.com/wp-content/uploads/2025/05/final1-copy-2-1450x2048.jpg?raw=true)](https://predator-store.com/product/penguins-eggs-tool/)
 
 ## Star History
 This project collects stars, look to the sky... contribute! 
