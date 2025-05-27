@@ -12,6 +12,8 @@ penguins-eggs
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
+## penguins-eggs-10.1.0-11
+I started using Artificial Intelligence intensively on the penguins-eggs code. Beyond any “philosophical” considerations I performed a deep refactoring of `src/classes/utils.tsx`, it worked on the first hit. A genera job, manually would have cost a week at least, I did it in one evening with the help of claude.ai.
 
 ## penguins-eggs-10.1.0-4
 The creation of the live user for the ISO, and that of the main user during installation with krill, is now done using the configuration of the yaml users.conf file.
