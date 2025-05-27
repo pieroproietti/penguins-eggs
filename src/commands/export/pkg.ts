@@ -105,7 +105,7 @@ export default class ExportPkg extends Command {
         Utils.warning("manjaro PKGBUILD")
         localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
-        filter = `penguins-eggs-10.?.*-?-any.pkg.tar.*`
+        filter = `penguins-eggs-10.?.*-*-any.pkg.tar.*`
 
         /**
          * Arch
@@ -114,7 +114,7 @@ export default class ExportPkg extends Command {
         Utils.warning("aur PKGBUILD")
         localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
-        filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
+        filter = `penguins-eggs-10.?.*-*-any.pkg.tar.zst`
       }
 
       /**
@@ -129,7 +129,6 @@ export default class ExportPkg extends Command {
         arch = '*'
       }
       filter = `penguins-eggs_10.?.*-*_${arch}.deb`
-      // filter = `penguins-eggs_10.?.*-[0-9]_${arch}.deb`
 
       /**
        * fedora
@@ -138,8 +137,7 @@ export default class ExportPkg extends Command {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/fedora"
-      filter = `penguins-eggs-10.?.*-?fedora.*.rpm`
-      
+      filter = `penguins-eggs-10.?.*-*fedora.*.rpm`
 
       /**
        * openmamba
@@ -149,7 +147,7 @@ export default class ExportPkg extends Command {
       localPath = `/usr/src/RPM/RPMS/x86_64`
 
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
-      filter = `penguins-eggs-10.?.*-?mamba.*.rpm`
+      filter = `penguins-eggs-10.?.*-*mamba.*.rpm`
 
       /**
        * opensuse
@@ -185,4 +183,3 @@ export default class ExportPkg extends Command {
     await exec(cmd, this.echo)
   }
 }
-
