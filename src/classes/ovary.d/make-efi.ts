@@ -57,7 +57,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     if (!fs.existsSync(GAE)) {
         if (this.familyId === 'debian') {
             console.log(`error: cannot find ${GAE}`)
-            process.exit(1)
+            if (!Utils.isi686()) {
+                process.exit(1)
+            }
         }
     }
 
@@ -284,7 +286,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
  * @returns 
  */
 function bootArchEfi(): string {
-    let bn = 'nothing.efi'
+    let bn = 'bootia32.efi' // Per l'architettura i686 EFI è: bootia32.efi
     if (process.arch === 'x64') {
         bn = 'bootx64.efi'
     } else if (process.arch === 'arm64') {
@@ -298,13 +300,13 @@ function bootArchEfi(): string {
  * FUNCTIONS
  */
 function nameGAE(): string {
-    let bn = 'nothing.efi'
+    let gn = 'grubia32.efi' // Per l'architettura i686 EFI è: grubia32.efi
     if (process.arch === 'x64') {
-        bn = 'grubx64.efi'
+        gn = 'grubx64.efi'
     } else if (process.arch === 'arm64') {
-        bn = 'grubaa64.efi'
+        gn = 'grubaa64.efi'
     }
-    return bn
+    return gn
 }
 
 function nameGAES(): string {
