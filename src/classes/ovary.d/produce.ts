@@ -240,7 +240,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             if (this.settings.config.make_efi) {
-                await this.makeEfi(this.theme)
+                if (!Utils.isi686()) {
+                    await this.makeEfi(this.theme)
+                }
             }
 
             await this.bindLiveFs()
