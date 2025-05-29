@@ -14,8 +14,8 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 ## penguins-eggs-10.1.1-2
 * `krill`: now krill takes user's default groups from calamares or krill. This avoids errors and simplifies the code, making the behavior of krill and calamares similar. Previously the groups were hard coded in the source;
-* `get-eggs`: I have included in get-eggs and removed from penguins-packs the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
-* `distros`: I redid the fedora42, openSUSE and rocky9.5 [ISOs](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN?dmr=1&ec=wgc-drive-globalnav-goto).
+* `get-eggs`: I have included in [get-eggs](https://github.com/pieroproietti/get-eggs) and removed from [penguins-packs](https://github.com/pieroproietti/penguins-packs) the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
+* `distros`: I redid the Almalinux10, Fedora42, openSUSE and rocky9.5 [ISOs](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN?dmr=1&ec=wgc-drive-globalnav-goto).
 
 ## penguins-eggs-10.1.1
 I started using Artificial Intelligence intensively on the penguins-eggs code. Beyond any “philosophical” considerations I performed a deep refactoring of `src/classes/utils.tsx`, it worked on the first hit. Such work, which manually would have cost at least a week, I did in one evening with the help of claude.ai.
