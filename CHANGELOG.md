@@ -28,7 +28,9 @@ Tested on Debian and Arch no errors appeared to me so I decided to release the v
 The creation of the live user for the ISO, and that of the main user during installation with krill, is now done using the configuration of the yaml users.conf file.
 
 ## penguins-eggs-10.1.0-2
-Added a new command: `pods` to create minimal live ISO images starting from containers. To use it, give the command: `eggs pods [almalinux/ archlinux/ debian/ devuan /fedora /opensuse /ubuntu]`.
+Added a new command: `pods` to create minimal live ISO images starting from containers. To use it, give the command: 
+
+```eggs pods [almalinux/ archlinux/ debian/ devuan /fedora /opensuse /ubuntu]```
 
 This command is experimental and, of course you need `podman` installed, I would appreciate your feedback.
 
