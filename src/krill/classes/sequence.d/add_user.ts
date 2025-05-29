@@ -64,6 +64,7 @@ export default async function addUser(this: Sequence, name = 'live', password = 
         sudoersGroup: string
         userShell: string
       }
+      
       const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
       for (const group of o.defaultGroups) {
         cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`

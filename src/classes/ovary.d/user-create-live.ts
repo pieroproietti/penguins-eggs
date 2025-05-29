@@ -98,6 +98,11 @@ export async function userCreateLive(this: Ovary) {
             break
         }
 
+        case 'opensuse': {
+            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
+
+            break
+        }
         // No default
     }
 

@@ -2,18 +2,16 @@
 ---
 userGroup: users
 defaultGroups:
-  - cdrom
-  - floppy
-  - sudo
   - audio
-  - dip
-  - video
-  - plugdev
+  - cdrom
+  - dialout
+  - floppy
   - netdev
-  # lpadmin
-  # scanner
-  # bluetooth
+  - plugdev
+  - users
+  - video
 autologinGroup: autologin
 sudoersGroup: sudo
 setRootPassword: true
 doReusePassword: false
+
