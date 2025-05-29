@@ -84,7 +84,7 @@ Use the package `penguins-eggs-10.x.x-bionic-x`, which is compiled against node1
 Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
 
 ### AlmaLinux, Fedora, openSuSE, RockyLinux
-You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs).
+You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs), using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 ### AlpineLinux
 Given the difficulties encountered in updating my version of Alpine's initramfs, I have been forced to suspend the release of packages for this splendid operating system.
