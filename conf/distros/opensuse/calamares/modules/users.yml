@@ -3,11 +3,10 @@
 userGroup: users
 defaultGroups:
   - users
-  - wheel
   - audio
   - video
   - cdrom
-  - floppy
+  # floppy
   - dialout
 autologinGroup: autologin
 sudoersGroup: sudo
