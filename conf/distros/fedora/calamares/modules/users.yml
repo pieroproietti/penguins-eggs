@@ -6,10 +6,10 @@ defaultGroups:
   - cdrom
   - dialout
   - floppy
-  - netdev
-  - plugdev
   - users
   - video
+  # netdev
+  # plugdev
 autologinGroup: autologin
 sudoersGroup: sudo
 setRootPassword: true
