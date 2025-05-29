@@ -59,12 +59,16 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 `penguins-eggs-10.0.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
 ### using get-eggs
-It's the most pratical way and is valid for Alpine, Arch, Debian, Devuan and Ubuntu. get-eggs configure automatically `nodesource` when need and install the right package. Copy and paste:
+It's the most pratical way and is valid for Almalinux, Arch, Debian, Devuan, Fedora, OpenSUSE, Rocky and Ubuntu. 
+
+get-eggs configure automatically `nodesource` when need, and install the right package or tarballs. Copy and paste, the follow commands:
 ```
 git clone https://github.com/pieroproietti/get-eggs
 cd get-eggs
 sudo ./get-eggs.sh
 ```
+And follow instructions.
+
 ### Manual installation
 
 #### Arch, Manjaro, Debian 12 Bookworm, Ubuntu 24.04 Noble
