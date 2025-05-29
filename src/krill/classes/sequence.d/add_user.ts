@@ -17,66 +17,37 @@ import Sequence from '../sequence.js'
 /**
  *
  * @param this
- * @param name
+ * @param username
  * @param password
- * @param fullName
+ * @param fullusername
  * @param roomNumber
  * @param workPhone
  * @param homePhone
  */
-export default async function addUser(this: Sequence, name = 'live', password = 'evolution', fullName = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
+export default async function addUser(this: Sequence, username = 'live', password = 'evolution', fullusername = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
 
   // adduser user
-  let cmd = `chroot ${this.installTarget} adduser ${name} --home /home/${name} --shell /bin/bash --disabled-password --gecos "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+  let cmd = `chroot ${this.installTarget} adduser ${username} --home /home/${username} --shell /bin/bash --disabled-password --gecos "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   if (this.distro.familyId === 'archlinux') {
-    cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${name} ${this.toNull}`
+    cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${username} ${this.toNull}`
   } else if (this.distro.familyId === 'fedora') {
-    cmd = `chroot ${this.installTarget} adduser ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+    cmd = `chroot ${this.installTarget} adduser ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   } else if (this.distro.familyId === 'opensuse') {
-    cmd = `chroot ${this.installTarget} useradd ${name} --create-home --shell /bin/bash --comment "${fullName},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+    cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
   await exec(cmd, this.echo)
 
   // chpasswd user
-  cmd = `echo ${name}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+  cmd = `echo ${username}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
   await exec(cmd, this.echo)
 
   let group = 'wheel'
   if (this.distro.familyId === 'debian') {
-    /**
-     * look to calamares/modules/users.yml for groups
-     */
-    let usersConf = '/etc/calamares/modules/users.conf'
-    if (!fs.existsSync(usersConf)) {
-      usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
-    }
-
-    if (fs.existsSync(usersConf)) {
-      interface IUserCalamares {
-        defaultGroups: string[]
-        doAutologin: boolean
-        doReusePassword: boolean
-        passwordRequirements: {
-          maxLenght: number
-          minLenght: number
-        }
-        setRootPassword: boolean
-        sudoersGroup: string
-        userShell: string
-      }
-      
-      const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
-      for (const group of o.defaultGroups) {
-        cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
-        await exec(cmd, this.echo)
-      }
-    } else {
-      group = 'sudo'
-    }
-    cmd = `chroot ${this.installTarget} usermod -aG ${group} ${name} ${this.toNull}`
-    await exec(cmd, this.echo)
-
+    group = 'sudo'
   }
+
+  cmd = `chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`
+  await exec(cmd, this.echo)
 
   // add autologin group in archlinux
   await exec(cmd, this.echo)
@@ -84,4 +55,35 @@ export default async function addUser(this: Sequence, name = 'live', password = 
     await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
     await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
   }
+
+  /**
+   * look to calamares/modules/users.yml for groups
+   */
+  let usersConf = '/etc/calamares/modules/users.conf'
+  if (!fs.existsSync(usersConf)) {
+    usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
+  }
+
+  if (fs.existsSync(usersConf)) {
+    interface IUserCalamares {
+      defaultGroups: string[]
+      doAutologin: boolean
+      doReusePassword: boolean
+      passwordRequirements: {
+        maxLenght: number
+        minLenght: number
+      }
+      setRootPassword: boolean
+      sudoersGroup: string
+      userShell: string
+    }
+    const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
+    for (const group of o.defaultGroups) {
+      await exec (`chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`)
+    }
+  } else {
+    console.log(`il file ${usersConf} non esiste!`)
+    await Utils.pressKeyToExit()
+  }
+
 }

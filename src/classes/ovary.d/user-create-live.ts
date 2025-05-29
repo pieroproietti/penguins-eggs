@@ -65,11 +65,6 @@ export async function userCreateLive(this: Ovary) {
         }
 
         case 'alpine': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG cdrom ${this.settings.config.user_opt}`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG games ${this.settings.config.user_opt}`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG input ${this.settings.config.user_opt}`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG users ${this.settings.config.user_opt}`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG video ${this.settings.config.user_opt}`, this.verbose))
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
 
             break
