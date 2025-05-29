@@ -69,11 +69,12 @@ export default class Kernel {
       if (distro.familyId === "archlinux") {
          initramfs = this.getArchInitramfs(kernel, distro)
       } else {
-         // Debian/Ubuntu/derivati
+         // Debian/Ubuntu/derivatives
          const possiblePaths = [
             `/boot/initrd.img-${kernel}`,
             `/boot/initramfs-${kernel}.img`,
-            `/boot/initramfs-${kernel}`
+            `/boot/initramfs-${kernel}`,
+            `/boot/initrd-${kernel}` // opensuse
          ]
          
          for (const path of possiblePaths) {
