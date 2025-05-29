@@ -2,17 +2,13 @@
 ---
 userGroup: users
 defaultGroups:
+  - users
+  - wheel
+  - audio
+  - video
   - cdrom
   - floppy
-  - sudo
-  - audio
-  - dip
-  - video
-  - plugdev
-  - netdev
-  # lpadmin
-  # scanner
-  # bluetooth
+  - dialout
 autologinGroup: autologin
 sudoersGroup: sudo
 setRootPassword: true
