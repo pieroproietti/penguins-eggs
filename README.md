@@ -10,7 +10,7 @@
 
 ## Index
 <!-- toc -->
-- [Introduction](#introduction)
+- [Presentation](#presentation)
 - [Installation](#installation)
 - [Introduction](#introduction)
 - [Technology](#technology)
@@ -31,13 +31,12 @@
  - [FAQ](https://penguins-eggs.net/docs/faq)
  - [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
-# Introduction
+# Presentation
 **penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
 
 It’s often used to create customized live ISO images or backups of a Linux system, allowing users to replicate or share their setup easily. Think of it as a way to "hatch" a new system from an existing one—hence the funny name.
 
 Here’s a breakdown of what it’s used for:
-
 
 * Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), `penguins-eggs` simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.
 
