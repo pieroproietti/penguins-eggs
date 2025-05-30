@@ -8,34 +8,28 @@
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
-# Plan
-* [Conversione a Deno](./DOCS/DENO.md)
-
-# Index
+## Index
 <!-- toc -->
-* [penguins-eggs](#penguins-eggs)
-* [Plan](#plan)
-* [Index](#index)
-* [penguins-eggs](#penguins-eggs)
-* [Installation](#installation)
-* [Introduction](#introduction)
-* [Technology](#technology)
-* [Features](#features)
-* [Packages](#packages)
-* [Usage](#usage)
-* [Commands](#commands)
-* [GUI](#gui)
-* [Book](#book)
-* [Copyright and licenses](#copyright-and-licenses)
+- [penguins-eggs](#penguins-eggs)
+- [Installation](#installation)
+- [Introduction](#introduction)
+- [Technology](#technology)
+- [Features](#features)
+- [Packages](#packages)
+- [Usage](#usage)
+- [Commands](#commands)
+- [GUI](#gui)
+- [Book](#book)
+- [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
 ## Links
-  * [Blog](https://penguins-eggs.net/blog)
-  * [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
-  * [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
-  * [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
-  * [FAQ](https://penguins-eggs.net/docs/faq)
-  * [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
+ - [Blog](https://penguins-eggs.net/blog)
+ - [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
+ - [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
+ - [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+ - [FAQ](https://penguins-eggs.net/docs/faq)
+ - [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
 # penguins-eggs
 **penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
