@@ -1,17 +1,11 @@
 # eggs tarballs
 
-Install penguins-eggs with a tarball. Tested on almalinux, fedora, rockylinux.
+It's the most pratical way and is valid for Almalinux, Arch, Debian, Devuan, Fedora, OpenSUSE, Rocky and Ubuntu. 
 
-
-## Usage
-
-Download the tarball from [sourceforge](https://sourceforge.net/projects/penguins-eggs/files/Packages/TARBALLS/), then:
-
-* `git clone https://github.com/pieroproietti/penguins-packs`
-* `cd penguins-packs/tarballs`
-* `./setup ~/Downloads/penguins-eggs-tarball-10.0.54-1-linux-x64.tar.gz`
-
-Although the setup command, is a simple bash script, and MUST be started as a common user, you must still have admin rights to do the installation.
-
-penguins-eggs will be installed under the `/opt/penguins-eggs/ ` directory.
-
+[get-eggs](https://github.com/pieroproietti/get-eggs) configure automatically `nodesource` when need, and install the right package or tarball. Copy and paste, the follow commands:
+```
+git clone https://github.com/pieroproietti/get-eggs
+cd get-eggs
+sudo ./get-eggs.sh
+```
+And follow instructions.
