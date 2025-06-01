@@ -12,6 +12,9 @@ penguins-eggs
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
+## penguins-eggs-10.1.1-3
+* Added lmde 7 gigi and linux mint 22.2 zara, thanks to add lmde, thanks to [rreyn331](https://github.com/rreyn331).
+
 ## penguins-eggs-10.1.1-2
 * `krill`: now krill takes user's default groups from calamares or krill. This avoids errors and simplifies the code, making the behavior of krill and calamares similar. Previously the groups were hard coded in the source;
 * `get-eggs`: I have included in [get-eggs](https://github.com/pieroproietti/get-eggs) and removed from [penguins-packs](https://github.com/pieroproietti/penguins-packs) the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
