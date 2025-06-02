@@ -78,15 +78,12 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     }
     const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
     for (const group of o.defaultGroups) {
-      const groupExists = await exec(`getent group ${group}`, { ignore: true })
+      const groupExists = await exec(`getent group ${group}`)
       if (groupExists.code == 0) {
         let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${this.settings.config.user_opt}`
-        console.log(addGroup)
         await exec(addGroup)
       }
     }
-    console.log(`check groups: ${usersConf}!`)
-    await Utils.pressKeyToExit()
   } else {
     console.log(`cannot find: ${usersConf}!`)
     await Utils.pressKeyToExit()
