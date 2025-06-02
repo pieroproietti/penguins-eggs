@@ -52,7 +52,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
   await exec(cmd, this.echo)
   if (this.distro.familyId === 'archlinux') {
     await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
-    await exec(`chroot ${this.installTarget} gpasswd -a ${this.settings.config.user_opt} autologin`)
+    await exec(`chroot ${this.installTarget} usermod -aG autologin ${username}`)
   }
 
   /**
@@ -80,7 +80,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     for (const group of o.defaultGroups) {
       const groupExists = await exec(`getent group ${group}`)
       if (groupExists.code == 0) {
-        let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${this.settings.config.user_opt}`
+        let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${username}`
         await exec(addGroup)
       }
     }
