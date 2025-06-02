@@ -81,8 +81,6 @@ export default async function addUser(this: Sequence, username = 'live', passwor
       const groupExists = await exec(`chroot ${this.settings.work_dir.merged} getent group ${group}`, {ignore: true})
       if (groupExists.code == 0) {
         await exec(`chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`)
-      } else {
-        console.log(`Group ${group} does not exist on your system`)
       }
     }
   } else {
