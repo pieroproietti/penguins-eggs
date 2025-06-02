@@ -79,8 +79,9 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     }
     const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
     for (const group of o.defaultGroups) {
+      // add the user to the group if it exists:
       await exec(`
-          chroot ${this.installTarget} getent group ${group} || 
+          chroot ${this.installTarget} getent group ${group} && 
           chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`
         )
       // await exec (`chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`)
