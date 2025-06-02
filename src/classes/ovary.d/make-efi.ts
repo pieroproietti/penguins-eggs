@@ -56,7 +56,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     if (!fs.existsSync(GAE)) {
         if (this.familyId === 'debian') {
-            console.log(`error: cannot find ${GAE}`)
+            Utils.error(`error: ${GAE} does not exist`)
             if (!Utils.isi686()) {
                 process.exit(1)
             }
@@ -193,7 +193,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     if (!fs.existsSync(splashSrc)) {
-        Utils.warning('Cannot find: ' + splashSrc)
+        Utils.warning(`warning: ${splashSrc} does not exists`)
         process.exit(1)
     }
     await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
@@ -207,7 +207,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // copy theme
     const themeDest = `${isoDir}/boot/grub/theme.cfg`
     if (!fs.existsSync(themeSrc)) {
-        Utils.warning('Cannot find: ' + themeSrc)
+        Utils.error(`error: ${themeSrc} does not exist`)
         process.exit(1)
     }
     fs.copyFileSync(themeSrc, themeDest)
@@ -237,7 +237,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     if (!fs.existsSync(grubTemplate)) {
-        Utils.warning('Cannot find: ' + grubTemplate)
+        Utils.error(`error: ${grubTemplate} does not exist`)
         process.exit(1)
     }
 
@@ -321,7 +321,7 @@ function srcGAE(): string {
 function srcGAES(): string {
     let signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
     if (!fs.existsSync(signedGrub)) {
-        Utils.warning(`cannot find ${signedGrub}`)
+        Utils.warning(`warning: ${signedGrub} does not exist`)
     }
     return signedGrub
 }
