@@ -8,7 +8,6 @@
  */
 
 import Utils from '../../../classes/utils.js'
-import path from 'path'
 import fs from 'fs'
 import yaml from 'js-yaml'
 import { exec } from '../../../lib/utils.js'
@@ -82,6 +81,8 @@ export default async function addUser(this: Sequence, username = 'live', passwor
       const groupExists = (await exec(`chroot ${this.installTarget} getent group ${group} ${this.toNull}`)).code === 0;
       if (groupExists) {
         await exec(`chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`)
+      } else {
+        console.log(`Group ${group} does not exist on your system`)
       }
     }
   } else {

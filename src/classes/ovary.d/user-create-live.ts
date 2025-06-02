@@ -127,9 +127,7 @@ export async function userCreateLive(this: Ovary) {
         for (const group of o.defaultGroups) {
             const groupExists = (await exec(`chroot ${this.settings.work_dir.merged} getent group ${group} ${this.toNull}`)).code === 0;
             if (groupExists) {
-                cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt}`, this.verbose))
-            } else {
-                Utils.warning(`Group ${group} does not exist in this system`)
+                cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt} ${this.toNull}`, this.verbose))
             }
         }
     } else {
