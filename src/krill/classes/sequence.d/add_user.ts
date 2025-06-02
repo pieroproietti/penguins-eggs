@@ -81,6 +81,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
       const groupExists = await exec(`getent group ${group}`, { ignore: true })
       if (groupExists.code == 0) {
         let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${this.settings.config.user_opt}`
+        console.log(addGroup)
         await exec(addGroup)
       }
     }
