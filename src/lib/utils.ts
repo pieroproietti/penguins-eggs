@@ -10,9 +10,9 @@
  * Executes shell command as it would happen in BASH script
  * @param {string} command
  * @param {Object} [options] Object with options.
- *                           Set `echo` to TRUE, to echo command passed.
- *                           Set `ignore` to TRUE to ignore stdout
- *                           Set `capture` to TRUE, to capture and return stdout.
+ *                           echo: true, to echo command passed.
+ *                           ignore: true to ignore stdout
+ *                           capture: true, to capture and return stdout.
  *
  * @returns {Promise<{code: number, data: string | undefined, error: Object}>}
  *
@@ -33,7 +33,7 @@ import { IExec } from '../interfaces/index.js'
  * @param param1
  * @returns
  */
-export async function exec(command: string, { capture = false, echo = false, ignore = false } = {}): Promise<IExec> {
+export async function exec(command: string, { echo = false, ignore = false, capture = false} = {}): Promise<IExec> {
   /**
    * You could wrap spawn in a promise,
    * listen to exit event,
@@ -73,27 +73,3 @@ export async function exec(command: string, { capture = false, echo = false, ign
   })
 }
 
-/**
- * Compare two instances in order to determinate if they have save property values
- * 
- * @param instance1 T
- * @param instance2 T
- * @returns boolean
- */
-export function compareInstances<T>(instance1: T, instance2: T): boolean { return JSON.stringify(instance1) === JSON.stringify(instance2); } 
-
-/**
-  * Il problema è in questa funzione: core/cli-ux/indesx.ts
-  * qui riportata solo come esempio
-  *
-function timeout(p: Promise<any>, ms: number) {
-  function wait(ms: number, unref = false) {
-    return new Promise(resolve => {
-      const t: any = setTimeout(() => resolve(null), ms)
-      if (unref) t.unref()
-    })
-  }
-
-  return Promise.race([p, wait(ms, true).then(() => ux.error('timed out'))])
-}
-*/

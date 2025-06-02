@@ -125,7 +125,7 @@ export async function userCreateLive(this: Ovary) {
         }
         const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
         for (const group of o.defaultGroups) {
-            const groupExists = await exec(`chroot ${this.settings.work_dir.merged} getent group ${group}`, {ignore: false})
+            const groupExists = await exec(`chroot ${this.settings.work_dir.merged} getent group ${group}`, {ignore: true})
             if (groupExists.code) {
                 cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt} ${this.toNull}`, this.verbose))
             }
