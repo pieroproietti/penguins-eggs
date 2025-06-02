@@ -103,7 +103,7 @@ export async function userCreateLive(this: Ovary) {
     }
 
     /**
-     * look to calamares/modules/users.yml for groups
+     * look to calamares/modules/users.conf for groups
      */
     let usersConf = '/etc/calamares/modules/users.conf'
     if (!fs.existsSync(usersConf)) {

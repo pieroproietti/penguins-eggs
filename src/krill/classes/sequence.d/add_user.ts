@@ -56,7 +56,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
   }
 
   /**
-   * look to calamares/modules/users.yml for groups
+   * look to calamares/modules/users.conf for groups
    */
   let usersConf = '/etc/calamares/modules/users.conf'
   if (!fs.existsSync(usersConf)) {
@@ -78,10 +78,11 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     }
     const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
     for (const group of o.defaultGroups) {
-      const groupExists = await exec(`chroot ${this.installTarget} getent group ${group}`, {ignore: true})
+      const groupExists = await exec(`getent group ${group}`, {ignore: true})
       if (groupExists.code == 0) {
-          await exec(`chroot ${this.installTarget} usermod -aG ${group} ${this.settings.config.user_opt} ${this.toNull}`)
-      }
+          let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${this.settings.config.user_opt}`
+          await exec(addGroup, {ignore: true})
+        }
     }
   } else {
     console.log(`il file ${usersConf} non esiste!`)
