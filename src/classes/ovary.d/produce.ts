@@ -330,8 +330,8 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
             await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
             // correggendo
-            //await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
-            fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}${pathName}.sfs`)
+            await exec(`ln -s ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
+            // fs.linkSync(`${this.settings.iso_work}live/filesystem.squashfs`, `${this.settings.iso_work}${pathName}.sfs`)
         }
 
         await this.makeIso(mkIsofsCmd, scriptOnly)
