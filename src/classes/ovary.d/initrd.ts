@@ -24,12 +24,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export async function initrdAlpine(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} Alpine on ISO/live`)
-    const sidecar = path.resolve(__dirname, `../../../mkinitfs/initramfs-init.in`)
-    Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
-    await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
+    // const sidecar = path.resolve(__dirname, `../../../mkinitfs/initramfs-init.in`)
+    //Utils.warning(`Adding ${sidecar} to /usr/share/mkinitfs/initramfs-init`)
+    //await exec(`cp ${sidecar} /usr/share/mkinitfs/initramfs-init`)
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
-    const pathConf = path.resolve(__dirname, `../../mkinitfs/live.conf`)
+    const pathConf = path.resolve(__dirname, `../../../mkinitfs/live.conf`)
     await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
 }
 
