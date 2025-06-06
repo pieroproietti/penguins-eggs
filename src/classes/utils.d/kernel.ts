@@ -68,7 +68,7 @@ export default class Kernel {
 
       if (distro.familyId === "archlinux") {
          initramfs = this.getArchInitramfs(kernel, distro)
-      } else if (distro.familyId === "archlinux") {
+      } else if (distro.familyId === "alpine") {
          initramfs = 'initramfs-lts'
       } else {
          // Debian/Ubuntu/derivatives
@@ -110,7 +110,7 @@ export default class Kernel {
       if (distro.familyId === "archlinux") {
          return this.getArchLinuxKernelPath(distro, kernelModulesPath, kernels)
       } else if (distro.familyId === "alpine") {
-         return `vmlinuz-lts`
+         return `/boot/vmlinuz-lts`
       } else {
          // Per Debian/Ubuntu usa l'ultimo kernel disponibile
          const latestKernel = kernels[kernels.length - 1]
