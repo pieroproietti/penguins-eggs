@@ -69,7 +69,7 @@ export default class Kernel {
       if (distro.familyId === "archlinux") {
          initramfs = this.getArchInitramfs(kernel, distro)
       } else if (distro.familyId === "alpine") {
-         initramfs = 'initramfs-lts'
+         initramfs = '/boot/initramfs-lts'
       } else {
          // Debian/Ubuntu/derivatives
          const possiblePaths = [
