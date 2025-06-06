@@ -120,6 +120,8 @@ export default class Kernel {
    private static getSpecificKernelPath(kernel: string, distro: Distro): string {
       if (distro.familyId === "archlinux") {
          return this.getArchLinuxSpecificKernel(kernel, distro)
+      } else if (distro.familyId === "alpine") {
+         return `vmlinuz-lts`
       } else {
          return `/boot/vmlinuz-${kernel}`
       }
