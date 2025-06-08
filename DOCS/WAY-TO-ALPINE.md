@@ -137,7 +137,7 @@ Insert on `~/.abuild/abuild.conf`:
 PACKAGER_PRIVKEY="/home/artisan/.abuild/piero.proietti@gmail.com-66b8815d.rsa"
 
 ```
-copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys`.
+copy ` piero.proietti@gmail.com-68452915.rsa.pub` on `/etc/apk/keys`.
 
 ## Create the package
 ```
