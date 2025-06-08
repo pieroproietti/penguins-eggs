@@ -12,7 +12,8 @@ penguins-eggs
 
 # Changelog
 Versions are listed on reverse order, the first is the last one.
-## penguins-eggs-10.1.1-5
+## penguins-eggs-10.1.1-8
+* Alpine linux is finally back on penguins-eggs, rewrote [penguins-sidecar](https://github.com/pieroproietti/penguins-sidecar). It works now, without to go on recovery shell.
 * I rewrote the part for adding the user to the default groups of the various distributions, both during the produce phase and during installation with krill;
 * Added `lmde 7 gigi` and `linuxmint 22.2 zara` Thanks to [rreyn331](https://github.com/rreyn331).
 * `krill`: now krill takes user's default groups from calamares or krill. This avoids errors and simplifies the code, making the behavior of krill and calamares similar. Previously the groups were hard coded in the source;
