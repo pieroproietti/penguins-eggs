@@ -14,7 +14,7 @@ penguins-eggs
 
 I have not yet been able to get my [packages](https://gitlab.alpinelinux.org/pieroproietti/aports/) accepted on AlpineLinux, pending approval, you can find them here.
 
-copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys/`.
+copy `piero.proietti@gmail.com-68452915.rsa.pub` on `/etc/apk/keys/`.
 
 ## penguins-sidecar
 
