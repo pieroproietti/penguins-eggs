@@ -74,6 +74,7 @@ export default class CliAutologin {
         }
         content += lines[i] + '\n'
       }
+      console.log(`Writing ${inittab}`)
       fs.writeFileSync(inittab, content, 'utf-8')
       const autologin = chroot + '/bin/autologin'
       content = '#!/bin/sh' + '\n'
@@ -100,7 +101,7 @@ export default class CliAutologin {
 
         content += lines[i] + '\n'
       }
-
+      console.log(`Writing ${inittab}`)
       fs.writeFileSync(inittab, content, 'utf-8')
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
