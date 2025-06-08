@@ -20,7 +20,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * Ritorna true se c'è bisogno del mount --bind
  *
- * Ci sono tre tipologie:
+ * Ci sono quattro tipologie:
  *
  * - copied
  * - mergedAndOverlay
@@ -48,7 +48,8 @@ export function copied(this: Ovary, dir: string): boolean {
  * 
  */
 export function mergedAndOverlay(this: Ovary, dir: string): boolean {
-    const moDirs = ['usr', 'var']
+    // per Alpine ho agginto bin
+    const moDirs = ['bin', 'usr', 'var']
     let mergedOverlay = false
     for (const moDir of moDirs) {
         if (moDir === dir) {
