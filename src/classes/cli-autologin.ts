@@ -42,7 +42,7 @@ export default class CliAutologin {
       /**
        * systemd
        */
-      Utils.warning("creating CLI autologin systemd")
+      Utils.warning("systemd: creating CLI autologin")
       const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
       if (fs.existsSync(dirOverride)) {
@@ -62,7 +62,7 @@ export default class CliAutologin {
       /**
        * openrc 
        */
-      Utils.warning("creating CLI autologin openrc")
+      Utils.warning("openrc: creating CLI autologin")
       const inittab = chroot + '/etc/inittab'
       let content = ''
       const search = `tty1::respawn:/sbin/getty 38400 tty1`
@@ -88,7 +88,7 @@ export default class CliAutologin {
       /**
        * sysvinit
        */
-      Utils.warning("creating CLI autologin sysvinit")
+      Utils.warning("sysvinit: creating CLI autologin")
       const inittab = chroot + '/etc/inittab'
       const search = '1:2345:respawn:/sbin/getty'
       const replace = `1:2345:respawn:/sbin/getty --autologin ${user} 38400 tty1`
