@@ -35,9 +35,7 @@ export default class System {
       } else {
          isSystemd = true
          let distro = new Distro()
-         if (distro.distroId === "Devuan") {
-            isSystemd = false
-         } else if (distro.distroId === "Alpine") {
+         if (distro.distroId === "Alpine" || distro.distroId === "Devuan") {
             isSystemd = false
          }
       }
@@ -53,7 +51,7 @@ export default class System {
          isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
       } else {
          let distro = new Distro()
-         if (distro.distroId === "Devuan") {
+         if (distro.distroId === "Alpine" || distro.distroId === "Devuan") {
             isSysvinit = true
          }
       }
