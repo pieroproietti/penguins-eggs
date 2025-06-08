@@ -37,6 +37,8 @@ export default class System {
          let distro = new Distro()
          if (distro.distroId === "Devuan") {
             isSystemd = false
+         } else if (distro.distroId === "Alpine") {
+            isSystemd = false
          }
       }
       return isSystemd
