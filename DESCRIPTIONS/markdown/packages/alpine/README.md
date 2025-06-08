@@ -12,9 +12,19 @@ penguins-eggs
 
 # AlpineLinux
 
-Before to install the packages, copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys/`.
-
 I have not yet been able to get my [packages](https://gitlab.alpinelinux.org/pieroproietti/aports/) accepted on AlpineLinux, pending approval, you can find them here.
 
+copy `piero.proietti@gmail.com-66b8815d.rsa.pub` on `/etc/apk/keys/`.
+
+## penguins-sidecar
+
+The idea for [penguins-sidecar](https://github.com/pieroproietti/penguins-sidecar) came from the first tempts to get Alpine working with eggs. I added to script on initram-fs to let Alpine to welcome the new way to boot, from that come `sidecar`.
+
+
+Actually the script is included on initramfs-init, and - before to produce ISOs, copy it on the right posistion:  ```
+doas cp main/sidecar/initramfs-init /usr/share/mkinitfs/initramfs-init
+
+
+```
 
 ![](https://www.alpinelinux.org/alpinelinux-logo.svg)
