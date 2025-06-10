@@ -131,6 +131,7 @@ initialSwapChoice: none
 # Names are case-sensitive and defined by KPMCore.
 defaultFileSystemType:  "ext4"
 
+
 # Selectable filesystem type, used when "erase" is done.
 #
 # When erasing the disk, the *defaultFileSystemType* is used (see
@@ -143,7 +144,7 @@ defaultFileSystemType:  "ext4"
 #
 # If not specified at all, uses *defaultFileSystemType* without a
 # warning (this matches traditional no-choice-available behavior best).
-availableFileSystemTypes:  ["ext4"]
+availableFileSystemTypes:  ["ext4","btrfs"]
 
 # Show/hide LUKS related functionality in automated partitioning modes.
 # Disable this if you choose not to deploy early unlocking support in GRUB2
