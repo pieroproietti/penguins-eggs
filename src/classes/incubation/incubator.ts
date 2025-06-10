@@ -397,7 +397,8 @@ async function partitionCustomize() {
   partition.defaultFileSystemType = test.data.trim()
   partition.availableFileSystemTypes = ['ext4']
 
-  if (Pacman.packageIsInstalled('btrfs-progs')) {
+  if (Pacman.packageIsInstalled('btrfs-progs') ||
+      Pacman.packageIsInstalled('btrfsprogs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
 
