@@ -184,7 +184,7 @@ export default class ExportPkg extends Command {
     cmd += 'sync\n'
     cmd +=`# wait before to umount\n`
     cmd += 'sleep 2s\n'
-    cmd += `fusermount -u ${remoteMountpoint}\n`
+    cmd += `fusermount3 -u ${remoteMountpoint}\n`
     cmd +=`# remove mountpoint\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
