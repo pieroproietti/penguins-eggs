@@ -172,6 +172,7 @@ export default class ExportPkg extends Command {
 
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
+    cmd += 'sleep 5\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
