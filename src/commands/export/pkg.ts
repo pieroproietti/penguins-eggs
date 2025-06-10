@@ -84,13 +84,13 @@ export default class ExportPkg extends Command {
        * alpine
        */
     } else if (familyId === 'alpine') {
-      Utils.warning("alpine apk")
       let arch = 'x86_64'
       if (process.arch === 'ia32') {
         arch = 'i386'
       }
+      Utils.warning(`alpine apk`)
       localPath = `/home/${this.user}/packages/alpine/${arch}`
-      remotePath = `${this.Tu.config.remotePathPackages}/alpine/`
+      remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
       filter = `penguins-eggs*10.?.*-r*.apk`
 
       /**
@@ -163,17 +163,29 @@ export default class ExportPkg extends Command {
       Utils.warning("voidlinux packages")
       process.exit()
     }
-
-    let cmd = `mkdir ${remoteMountpoint}\n`
+    let cmd=`#!/bin/bash\n`
+    cmd += `set -e\n`
+    cmd += `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/${filter}\n`
+      let archDest = ''
+      if (distro.familyId === 'alpine') {
+        let archDest = 'x86_64/'
+        if (process.arch === 'ia32') {
+          archDest = 'i386/'
+        }
+      }
+      cmd +=`# Delete old packages\n`
+      cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
 
+    cmd +=`# copy new packages\n`
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
-    cmd += 'sleep 5\n'
-    cmd += `umount ${remoteMountpoint}\n`
+    cmd +=`# wait before to umount\n`
+    cmd += 'sleep 2s\n'
+    cmd += `fusermount -u ${remoteMountpoint}\n`
+    cmd +=`# remove mountpoint\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
@@ -181,6 +193,7 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
+    // console.log(cmd)
     await exec(cmd, this.echo)
   }
 }
