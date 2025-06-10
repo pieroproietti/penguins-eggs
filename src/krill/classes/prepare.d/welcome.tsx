@@ -12,7 +12,6 @@ import {confirm} from './confirm.js'
 
 import Welcome from '../../components/welcome.js'
 import Prepare from '../prepare.js'
-import Utils from '../../../classes/utils.js'
 import selectLanguages from '../../lib/select_languages.js'
 import { IWelcome } from '../../interfaces/i_krill.js'
 
