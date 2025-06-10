@@ -1369,13 +1369,7 @@ eggsmaker is a graphical interface for penguins-eggs.
 
 Written by my friend Jorge Luis Endres, it is essential and functional. It doesn’t cover all the possibilities of penguins-eggs, but in the end, a GUI should be simple and intuitive.
 
-I like it, I hope you like it too, and I thank Jorge for his daring.
-
-## penGUI
-![icon](https://github.com/pieroproietti/pengui/blob/main/assets/pengui.png?raw=true)
-### penGUI take cure of eggs!
-
- The development of a GUI for `eggs` with the penGUI project sounds promising. It's exciting to see that work on the GUI has started and is progressing rapidly. GUIs can greatly enhance the user experience and make it more accessible to a wider range of users. I hope the penGUI [penGUI](https://github.com/pieroproietti/pengui) project continues to thrive and brings a user-friendly interface to `penguins-eggs`. If you have any specific questions or need further information about the penGUI project, feel free to ask!
+I like it, I hope you like it too, and I thank Jorge for his daring. Downloads are available oj [Jorge gdrive](https://drive.google.com/drive/folders/1hK8OB3e5sM2M9Z_vy1uR3_X7gPdNFYdO)
 
 # Book
 
