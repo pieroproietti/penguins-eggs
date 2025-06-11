@@ -50,7 +50,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   /**
    * fstab
    */
-  if (!Pacman.packageIsInstalled('btrfs-progs')) {
+  if (!Pacman.packageIsInstalled('btrfs-progs')||
+        Pacman.packageIsInstalled('btrfsprogs')) {
     this.partitions.filesystemType === 'ext4'
   }
 
