@@ -60,7 +60,7 @@ zypper install -y \
 
 echo "filesystem and disk support"
 zypper install -y \
-    btrfs-progs \
+    btrfsprogs \
     xfsprogs \
     dosfstools \
     ntfs-3g \
