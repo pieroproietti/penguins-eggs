@@ -73,5 +73,5 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using dracut on ISO/live`)
     const confdir = path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
-    await exec(`dracut --confdir ${confdir} ${this.settings.iso_work}live/${path.basename(this.initrd)}  ${this.kernel}`, this.echo)
+    await exec(`dracut --no-hostonly --confdir ${confdir} ${this.settings.iso_work}live/${path.basename(this.initrd)}  ${this.kernel}`, this.echo)
 }
