@@ -13,8 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 ## penguins-eggs-10.1.1-11
+* dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
 * OpenSUSE: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
-
 * Alpine linux is finally back on penguins-eggs! I rewrote [penguins-sidecar](https://github.com/pieroproietti/penguins-sidecar). It works now without to go on recovery shell. I did 3 versions: naked, colibri and colibri-vs, naked and colibri are incredible light, colibri-vs include visual studio code.
 * I rewrote the part for adding the user to the default groups of the various distributions, both during the produce phase and during installation with krill;
 * Added `lmde 7 gigi` and `linuxmint 22.2 zara` Thanks to [rreyn331](https://github.com/rreyn331).
