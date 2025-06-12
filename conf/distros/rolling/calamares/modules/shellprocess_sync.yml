@@ -1,0 +1,6 @@
+# Arch
+---
+dontChroot: true
+timeout: 30
+commnd : sync
+   
