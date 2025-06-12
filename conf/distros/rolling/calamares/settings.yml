@@ -41,11 +41,11 @@ sequence:
       - networkcfg
       - hwclock
       # grubcfg 
-      - bootloader
       - packages
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
+      - bootloader
       # shellprocess removelink
       - umount
 
