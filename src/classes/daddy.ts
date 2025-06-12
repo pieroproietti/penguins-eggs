@@ -150,7 +150,7 @@ export default class Daddy {
           } else {
             fstype =''            
           }
-          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fstype + `-`
+          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fstype
         }
 
         jsonConf = JSON.stringify(config)
