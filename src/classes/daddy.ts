@@ -12,6 +12,7 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 // _dirname
 import path from 'node:path'
+import { exec } from '../lib/utils.js'
 
 // We need to remove .js extension from import
 import Pacman from '../classes/pacman.js'
@@ -143,7 +144,13 @@ export default class Daddy {
 
       if (reset || isCustom) {
         if (config.snapshot_prefix === '') {
-          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
+          let fst=(await exec(`findmnt -no UUID -T /swapfile`)).data.trim()
+          if (fst !== 'ext4') {
+            fst+='-'
+          }else {
+            fst+=''
+          }
+          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fst + `-`
         }
 
         jsonConf = JSON.stringify(config)
