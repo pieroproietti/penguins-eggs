@@ -144,13 +144,13 @@ export default class Daddy {
 
       if (reset || isCustom) {
         if (config.snapshot_prefix === '') {
-          let fst=(await exec(`findmnt -no UUID -T /swapfile`)).data.trim()
-          if (fst !== 'ext4') {
-            fst+='-'
-          }else {
-            fst+=''
+          let fstype=((await exec(`findmnt -n -o FSTYPE /`,{capture: true})).data.trim())
+          if (fstype !=='ext4'){
+              fstype +='-'
+          } else {
+            fstype =''            
           }
-          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fst + `-`
+          config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fstype + `-`
         }
 
         jsonConf = JSON.stringify(config)
