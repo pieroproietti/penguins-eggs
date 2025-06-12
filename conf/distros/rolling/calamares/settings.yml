@@ -40,7 +40,7 @@ sequence:
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
-      - shellprocess sync
+      - shellprocess_sync
       - bootloader
       # shellprocess removelink
       - umount
