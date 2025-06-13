@@ -47,7 +47,6 @@ sequence:
       - removeuser
       - shellprocess@sync
       - bootloader
-      # shellprocess removelink
       - umount
 
   # Phase 3 - postinstall.
