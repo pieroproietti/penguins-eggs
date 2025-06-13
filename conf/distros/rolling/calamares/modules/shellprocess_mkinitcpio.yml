@@ -1,5 +1,5 @@
 # Arch
 ---
 chrooted: true
-command: "mkinitcpio -P"
-timeout: 180
+command: "pacman -S --noconfirm linux"
+timeout: 300
