@@ -3,6 +3,5 @@
 chrooted: true
 command: 
 - "ln -sf /proc/self/mounts /etc/mtab"
-- >
-  pacman -S --noconfirm $(pacman -Qo /boot/vmlinuz-* | awk '{print $5}' | sort -u)
+- "pacman -S --noconfirm linux"
 timeout: 300
