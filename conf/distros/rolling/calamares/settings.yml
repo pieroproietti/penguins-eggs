@@ -49,8 +49,8 @@ sequence:
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
-      - shellprocess@mkinitcpio
-      - shellprocess@sync
+      - mkinitcpio  # Richiama l'istanza con id: mkinitcpio
+      - sync        # Richiama l'istanza con id: sync
       - bootloader
       - umount
 
