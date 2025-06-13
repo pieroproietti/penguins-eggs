@@ -8,10 +8,6 @@ instances:
   module: shellprocess
   config: shellprocess_sync.conf
 
-- id: mkinitcpio
-  module: shellprocess
-  config: shellprocess_mkinitcpio.conf
-
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -44,14 +40,12 @@ sequence:
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
-      # grubcfg 
+      - shellprocess@sync        # Richiama l'istanza con id: sync
+      - bootloader
       - packages
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
-      - shellprocess@sync        # Richiama l'istanza con id: sync
-      - shellprocess@mkinitcpio  # Richiama l'istanza con id: mkinitcpio
-      - bootloader
       - umount
 
   # Phase 3 - postinstall.
