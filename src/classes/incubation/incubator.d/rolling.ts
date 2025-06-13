@@ -76,9 +76,8 @@ export class Rolling {
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
-    // await fisherman.buildModule('initramfscfg')
-    // await fisherman.buildModule('initramfs')
     await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.shellprocess('mkinitcpio')
     await fisherman.shellprocess('sync')
 
     /**
