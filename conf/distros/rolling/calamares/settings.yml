@@ -41,7 +41,7 @@ sequence:
       - plymouthcfg
       - removeuser
       - module: shellprocess
-        name: shellprocess_shell
+        name: shellprocess_sync
       - bootloader
       # shellprocess removelink
       - umount
