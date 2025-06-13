@@ -3,5 +3,6 @@
 chrooted: true
 command: 
 - "ln -sf /proc/self/mounts /etc/mtab"
-- "pacman -S --noconfirm linux"
+- °mkinitcpio -P"
+#- "pacman -S --noconfirm linux"
 timeout: 300
