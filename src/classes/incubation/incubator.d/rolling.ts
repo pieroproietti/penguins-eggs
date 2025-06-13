@@ -80,7 +80,6 @@ export class Rolling {
     // await fisherman.buildModule('initramfs')
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.shellprocess('sync')
-    await fisherman.shellprocess('removelink')
 
     /**
      * cfs: custom final steps

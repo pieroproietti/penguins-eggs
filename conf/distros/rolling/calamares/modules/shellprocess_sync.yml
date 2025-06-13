@@ -1,6 +1,6 @@
-# Arch
+Arch
 ---
-dontChroot: true
-timeout: 30
-command : sync
-   
+timeout: 5
+script: |
+  echo "Eseguo sync..."
+  sync
