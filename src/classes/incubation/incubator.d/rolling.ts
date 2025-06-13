@@ -77,8 +77,8 @@ export class Rolling {
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.shellprocess('mkinitcpio')
     await fisherman.shellprocess('sync')
+    await fisherman.shellprocess('mkinitcpio')
 
     /**
      * cfs: custom final steps
