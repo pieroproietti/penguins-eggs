@@ -8,6 +8,10 @@ instances:
   module: shellprocess
   config: shellprocess_sync.conf
 
+- id: mkinitcpio
+  module: shellprocess
+  config: shellprocess_mkinitcpio.conf
+
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -45,6 +49,7 @@ sequence:
       - luksbootkeyfile
       - plymouthcfg
       - removeuser
+      - shellprocess@mkinitcpio
       - shellprocess@sync
       - bootloader
       - umount
