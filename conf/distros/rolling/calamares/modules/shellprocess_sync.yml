@@ -1,6 +1,5 @@
 # Arch
 ---
 timeout: 5
-script: |
-  echo "Eseguo sync..."
+script:
   sync
