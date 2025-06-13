@@ -1,7 +1,0 @@
-# Arch
----
-chrooted: true
-script: 
-  - "ln -sf /proc/self/mounts /etc/mtab"
-  - "mkinitcpio -P"
-timeout: 300

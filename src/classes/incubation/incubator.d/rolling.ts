@@ -78,8 +78,7 @@ export class Rolling {
     await fisherman.buildModule('plymouthcfg')
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.shellprocess('sync')
-    await fisherman.shellprocess('mkinitcpio')
-
+    
     /**
      * cfs: custom final steps
      */
