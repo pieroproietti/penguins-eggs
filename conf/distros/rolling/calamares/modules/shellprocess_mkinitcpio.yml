@@ -1,8 +1,7 @@
 # Arch
 ---
 chrooted: true
-command: 
-- "ln -sf /proc/self/mounts /etc/mtab"
-- °mkinitcpio -P"
-#- "pacman -S --noconfirm linux"
+script: 
+  - "ln -sf /proc/self/mounts /etc/mtab"
+  - "mkinitcpio -P"
 timeout: 300
