@@ -1,4 +1,6 @@
+
 modules-search: [ local ]
+
 sequence:
 - show:
   - welcome
