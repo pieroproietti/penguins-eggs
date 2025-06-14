@@ -14,7 +14,7 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.1.1-13
-arch: the configuration of mkinitcpio for Arch was changed by inserting the btrfs module, also the configuration of calamares was changed by inserting a synchronization module before the grub configuration. On ext4 all OK, on btrfs we get an errore on reboot thi installed system. To fix ot:
+arch: the configuration of mkinitcpio for Arch was changed by inserting the btrfs module, also the configuration of calamares was changed by inserting a synchronization module before the grub configuration. On ext4 all is OK, but on btrfs we get an error when reboot the installed system. To fix ot:
  - reboot with ISO
  - `sudo mount -o subvol=@ /dev/sdx /mnt`
  - `sudo arch-chroot /mnt`
