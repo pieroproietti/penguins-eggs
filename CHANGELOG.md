@@ -21,6 +21,7 @@ Versions are listed on reverse order, the first is the last one.
  - `ln -sf /proc/self/mounts /etc/mtab`
  - `pacman -S linux`
  - reboot
+ 
 After that our installed btrfs system will work nicelly.
 
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
