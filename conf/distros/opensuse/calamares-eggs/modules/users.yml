@@ -1,0 +1,14 @@
+# Debian/bookworm
+---
+userGroup: users
+defaultGroups:
+  - users
+  - audio
+  - video
+  - cdrom
+  # floppy
+  - dialout
+autologinGroup: autologin
+sudoersGroup: sudo
+setRootPassword: true
+doReusePassword: false

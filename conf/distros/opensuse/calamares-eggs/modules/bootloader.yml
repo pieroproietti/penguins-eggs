@@ -1,3 +1,4 @@
+# OpenSuSE
 # Bootloader configuration. The bootloader is installed to allow
 # the system to start (and pick one of the installed operating
 # systems to run).
@@ -5,6 +6,20 @@
 # Define which bootloader you want to use for EFI installations
 # Possible options are 'grub', 'sb-shim' and 'systemd-boot'.
 efiBootLoader: "grub"
+
+# systemd-boot configuration files settings, set kernel and initramfs file names
+# and amount of time before default selection boots
+kernel: "/vmlinuz-linux"
+img: "/initramfs-linux.img"
+fallback: "/initramfs-linux-fallback.img"
+timeout: "10"
+
+# Optionally set the menu entry name and kernel name to use in systemd-boot.
+# If not specified here, these settings will be taken from branding.desc.
+#
+# bootloaderEntryName: "Generic GNU/Linux"
+# kernelLine: ", with Stable-Kernel"
+# fallbackKernelLine:  ", with Stable-Kernel (fallback initramfs)"
 
 # GRUB 2 binary names and boot directory
 # Some distributions (e.g. Fedora) use grub2-* (resp. /boot/grub2/) names.
@@ -14,9 +29,9 @@ efiBootLoader: "grub"
 #
 grubInstall: "grub2-install"
 grubMkconfig: "grub2-mkconfig"
-grubCfg: "/boot/grub2/grub.cfg"
-grubProbe: "/usr/sbin/grub2-probe"
-efiBootMgr: "/usr/sbin/efibootmgr"
+grubCfg: "/boot/grub/grub.cfg"
+grubProbe: "grub2-probe"
+efiBootMgr: "efibootmgr"
 
 # Optionally set the bootloader ID to use for EFI. This is passed to
 # grub-install --bootloader-id.
@@ -29,7 +44,8 @@ efiBootMgr: "/usr/sbin/efibootmgr"
 # setting the option here, keep in mind that the name is sanitized
 # (problematic characters, see above, are replaced).
 #
-efiBootloaderId: "geckolinux"
+# efiBootloaderId: "dirname"
+efiBootloaderId: "fedora"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootia32.efi or bootx64.efi depending on
@@ -37,4 +53,5 @@ efiBootloaderId: "geckolinux"
 # seems to be the only one). If you set this to false, take care
 # to add another module to optionally install the fallback on those
 # boards that need it.
+# NOTE: eggs unti calamres 3.2 was installEFIFallback: false
 installEFIFallback: true

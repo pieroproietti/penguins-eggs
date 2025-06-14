@@ -1,4 +1,6 @@
-# OpenSuSE
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
+#
 # Mount filesystems in the target (generally, before treating the
 # target as a usable chroot / "live" system). Filesystems are
 # automatically mounted from the partitioning module. Filesystems
@@ -10,47 +12,53 @@
 # Extra filesystems to mount. The key's value is a list of entries; each
 # entry has four keys:
 #   - device    The device node to mount
-#   - fs        The filesystem type to use
+#   - fs (optional) The filesystem type to use
 #   - mountPoint Where to mount the filesystem
 #   - options (optional) Extra options to pass to mount(8)
 #
+# The device is not mounted if the mountPoint is unset or if the fs is
+# set to unformatted.
+#
 extraMounts:
-  - device: proc
-    fs: proc
-    mountPoint: /proc
-  - device: sys
-    fs: sysfs
-    mountPoint: /sys
-  - device: /dev
-    mountPoint: /dev
-    options: {{{options}}}
-  - device: tmpfs
-    fs: tmpfs
-    mountPoint: /run
-  - device: /run/udev
-    mountPoint: /run/udev
-    options: {{{options}}}
+    - device: proc
+      fs: proc
+      mountPoint: /proc
+    - device: sys
+      fs: sysfs
+      mountPoint: /sys
+    - device: /dev
+      mountPoint: /dev
+      options: bind
+    - device: tmpfs
+      fs: tmpfs
+      mountPoint: /run
+    - device: /run/udev
+      mountPoint: /run/udev
+      options: bind
 
 extraMountsEfi:
-  - device: efivarfs
-    fs: efivarfs
-    mountPoint: /sys/firmware/efi/efivars
+    - device: efivarfs
+      fs: efivarfs
+      mountPoint: /sys/firmware/efi/efivars
 
-# added from spiralLinux
+# Btrfs subvolumes to create if root filesystem is on btrfs volume.
+# If *mountpoint* is mounted already to another partition, it is ignored.
+# Separate subvolume for swapfile is handled separately and automatically.
+#
+# It is possible to prevent subvolume creation -- this is likely only relevant
+# for the root (/) subvolume -- by giving an empty string as a subvolume
+# name. In this case no subvolume will be created. When using snapper as
+# a rollback mechanism, it is recommended to **not** create a subvolume
+# for root.
+
 btrfsSubvolumes:
     - mountPoint: /
-      subvolume: /@
+      subvolume: ""
     - mountPoint: /.snapshots
-      subvolume: /@snapshots
+      subvolume: /.snapshots
     - mountPoint: /home
-      subvolume: /@home
+      subvolume: /home
     - mountPoint: /root
-      subvolume: /@root
-    - mountPoint: /var/log
-      subvolume: /@var@log
-    - mountPoint: /var/lib/AccountsService
-      subvolume: /@var@lib@AccountsService
-    - mountPoint: /var/lib/blueman
-      subvolume: /@var@lib@blueman
-    - mountPoint: /tmp
-      subvolume: /@tmp
+      subvolume: /root
+    - mountPoint: /var
+      subvolume: /var
