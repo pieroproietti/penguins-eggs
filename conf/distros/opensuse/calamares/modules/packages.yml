@@ -1,0 +1,6 @@
+# Arch
+# Calamares 3.3
+---
+backend: pacman
+
+{{operations}}

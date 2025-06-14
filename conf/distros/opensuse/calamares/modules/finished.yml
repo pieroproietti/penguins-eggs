@@ -1,0 +1,5 @@
+# Debian/Bookworm
+---
+restartNowEnabled: true
+restartNowChecked: true
+restartNowCommand: none
