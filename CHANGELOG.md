@@ -14,7 +14,11 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.1.1-13
-arch: the configuration of mkinitcpio for Arch was changed by inserting the btrfs module, also the configuration of calamares was changed by inserting a synchronization module before the grub configuration. On ext4 all is OK, but on btrfs we get an error when reboot the installed system. To fix ot:
+arch: the configuration of live mkinitcpio for Arch was changed inserting the btrfs module. Also the configuration of calamares was changed by inserting a sync module before the bootloader installation. On ext4 all is OK, but on btrfs we get an error when reboot the installed system: 
+
+```premature end of file @/boot/vmlinux-linux.```
+
+A workaround to fix it, is:
  - reboot with ISO
  - `sudo mount -o subvol=@ /dev/sdx /mnt`
  - `sudo arch-chroot /mnt`
