@@ -1,9 +1,10 @@
-sudo zypper install -t pattern devel_basis
 git clone https://github.com/calamares/calamares.git
+
+sudo zypper install -t pattern devel_basis
 
 sudo zypper install extra-cmake-modules kpmcore-devel libpwquality-devel \
 libyaml-cpp-devel parted-devel plasma-framework-devel boost-devel \
-polkit-qt-1-devel qt6-base-devel qt6-svg-devel qt6-tools-devel \
+polkit-qt-1-devel qt5-base-devel qt5-svg-devel qt5-tools-devel \
 solid-devel squashfs
 
 # cerca ed installa pacchetti mancanti
