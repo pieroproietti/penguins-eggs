@@ -1,22 +1,34 @@
-git clone https://github.com/calamares/calamares.git
-
+# devel_basis
 sudo zypper install -t pattern devel_basis
 
+# Installazione massiva qt5
 sudo zypper install \
-    extra-cmake-modules kpmcore-devel libpwquality-devel libyaml-cpp-devel \
-    parted-devel polkit-qt-1-devel squashfs boost-devel libicu-devel \
-    libqt5-linguist-devel libQt5Concurrent-devel libQt5Svg-devel \
-    libKF5Crash-devel libKF5Parts-devel libKF5I18n-devel libKF5WidgetsAddons-devel \
-    python3-PyYAML python3-jsonschema \
-    libpolkit-qt5-1-devel yaml-cpp-devel kcoreaddons-devel
-
-sudo zypper install libQt5DBus-devel
-sudo zypper install libqt5-qtbase-devel
-sudo zypper install libqt5-qtdeclarative-devel
-
-
-# lavoro sporco
-sudo zypper install kpmcore-devel parted-devel solid-devel
+    boost-devel \
+    extra-cmake-modules \
+    kcompletion-devel \
+    kconfig-devel \
+    kcoreaddons-devel \
+    kcrash-devel \
+    ki18n-devel \
+    kio-devel \
+    kpackage-devel \
+    kparts-devel \
+    kpmcore-devel \
+    kservice-devel \
+    kwidgetsaddons-devel \
+    libicu-devel \
+    libpwquality-devel \
+    libqt5-qtbase-devel \
+    libqt5-qtdeclarative-devel \
+    libqt5-qtsvg-devel \
+    plasma-framework-devel \
+    polkit-qt-1-devel \
+    python3-devel \
+    python3-jsonschema
+    python3-PyYAML \
+    solid-devel parted-devel \
+    squashfs \
+    yaml-cpp-devel 
 
 # clone calamares
 git clone https://github.com/calamares/calamares.git
