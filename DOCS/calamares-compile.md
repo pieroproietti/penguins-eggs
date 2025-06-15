@@ -3,18 +3,13 @@ git clone https://github.com/calamares/calamares.git
 sudo zypper install -t pattern devel_basis
 
 sudo zypper install \
-    # Librerie di sistema e C++ generiche
     extra-cmake-modules kpmcore-devel libpwquality-devel libyaml-cpp-devel \
     parted-devel polkit-qt-1-devel squashfs boost-devel libicu-devel \
-    \
-    # Librerie di sviluppo per Qt5
     libqt5-linguist-devel libQt5Concurrent-devel libQt5Svg-devel \
-    \
-    # Librerie di sviluppo per KDE Frameworks 5
     libKF5Crash-devel libKF5Parts-devel libKF5I18n-devel libKF5WidgetsAddons-devel \
-    \
-    # Dipendenze Python (metodo per openSUSE)
-    python3-PyYAML python3-jsonschema
+    python3-PyYAML python3-jsonschema \
+    libpolkit-qt5-1-devel yaml-cpp-devel kcoreaddons-devel
+
 
 # Entra nella cartella del codice che hai clonato
 cd calamares
