@@ -22,7 +22,7 @@ sudo zypper install \
     libqt5-qtdeclarative-devel \
     libqt5-qtsvg-devel \
     plasma-framework-devel \
-    polkit-qt-1-devel \
+    libpolkit-qt5-1-devel \
     python3-devel \
     python3-jsonschema
     python3-PyYAML \
