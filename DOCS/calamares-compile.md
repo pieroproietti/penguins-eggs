@@ -10,6 +10,16 @@ sudo zypper install \
     python3-PyYAML python3-jsonschema \
     libpolkit-qt5-1-devel yaml-cpp-devel kcoreaddons-devel
 
+sudo zypper install libQt5DBus-devel
+sudo zypper install libqt5-qtbase-devel
+sudo zypper install libqt5-qtdeclarative-devel
+
+
+# lavoro sporco
+sudo zypper install kpmcore-devel parted-devel solid-devel
+
+# clone calamares
+git clone https://github.com/calamares/calamares.git
 
 # Entra nella cartella del codice che hai clonato
 cd calamares
