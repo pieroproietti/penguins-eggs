@@ -2,27 +2,19 @@ git clone https://github.com/calamares/calamares.git
 
 sudo zypper install -t pattern devel_basis
 
-sudo zypper install extra-cmake-modules kpmcore-devel libpwquality-devel \
-libyaml-cpp-devel parted-devel plasma-framework-devel boost-devel \
-polkit-qt-1-devel qt5-base-devel qt5-svg-devel qt5-tools-devel \
-solid-devel squashfs
-
-# cerca ed installa pacchetti mancanti
-
-sudo zypper install libQt5Concurrent-devel
-sudo zypper install libqt5-linguist-devel
-sudo zypper install libQt5Svg-devel
-sudo zypper install yaml-cpp-devel
-sudo zypper install libpolkit-qt5-1-devel
-sudo zypper install python3-pip python3-devel
-sudo zypper install ki18n-devel
-sudo zypper install kwidgetsaddons-devel
-sudo zypper install kcrash-devel
-sudo zypper install kf5-kparts-devel libicu-devel
-sudo zypper install python3-PyYAML python3-jsonschema
-
-
-
+sudo zypper install \
+    # Librerie di sistema e C++ generiche
+    extra-cmake-modules kpmcore-devel libpwquality-devel libyaml-cpp-devel \
+    parted-devel polkit-qt-1-devel squashfs boost-devel libicu-devel \
+    \
+    # Librerie di sviluppo per Qt5
+    libqt5-linguist-devel libQt5Concurrent-devel libQt5Svg-devel \
+    \
+    # Librerie di sviluppo per KDE Frameworks 5
+    libKF5Crash-devel libKF5Parts-devel libKF5I18n-devel libKF5WidgetsAddons-devel \
+    \
+    # Dipendenze Python (metodo per openSUSE)
+    python3-PyYAML python3-jsonschema
 
 # Entra nella cartella del codice che hai clonato
 cd calamares
