@@ -63,3 +63,19 @@ sudo zipper install ki18n-devel
 sudo zipper install kwidgetsaddons-devel
 sudo zipper install kparts-devel
 
+# ora manca solo partition reinstalliamo questi
+sudo zypper install --force kpmcore-devel parted-devel solid-devel
+
+# Altre dipendenze opzionali
+sudo zypper install libKF5Plasma-devel libKF5Package-devel libqt5-qtlocation-devel
+
+# Installazione massiva
+sudo zypper install kpmcore-devel solid-devel parted-devel \
+    libKF5CoreAddons-devel ki18n-devel kwidgetsaddons-devel \
+    kparts-devel kcrash-devel kservice-devel kconfig-devel \
+    kcompletion-devel kio-devel plasma-framework-devel kpackage-devel
+
+# ripassiamo a QT6
+sudo zypper install qt6-core-devel
+sudo zypper install qt6-declarativeopcua-private-devel
+sudo zypper install qt6-svg-devel
