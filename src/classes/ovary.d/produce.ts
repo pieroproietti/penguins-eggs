@@ -224,7 +224,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             await this.kernelCopy()
 
             /**
-             * differents initrd for different families
+             * spostare alla fine per dracut
              */
             if (this.familyId === 'alpine') {
                 await this.initrdAlpine()
