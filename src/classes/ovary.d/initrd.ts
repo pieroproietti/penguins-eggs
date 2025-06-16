@@ -75,6 +75,6 @@ export async function initrdDracut(this: Ovary) {
     const prefix = this.settings.config.snapshot_prefix
     const confdir = path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     const dest=`${this.settings.iso_work}live/${path.basename(this.initrd)}`
-    const log=`> ${this.settings.iso_work}${prefix}dracut.log 2>&1`
+    const log=`> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
     await exec(`dracut --force --debug --no-hostonly --confdir ${confdir} ${dest} ${this.kernel} ${log}`, this.echo)
 }
