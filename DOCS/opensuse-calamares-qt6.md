@@ -21,14 +21,13 @@ sudo zypper install \
     kf6-kauth-devel \
     kf6-kio-devel \
     kf6-solid-devel
-    
-
 
 * git clone https://github.com/calamares/calamares.git
-# cmake .. > log
 
-* cmake .. > log
-# OK
+* cd calamares
+* mkdir build
+* cd build
+* cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DFORCE_QT6=ON ..
 * make
 
 
