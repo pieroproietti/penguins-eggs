@@ -72,8 +72,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0
       systeminformation:
-        specifier: ^5.27.1
-        version: 5.27.1
+        specifier: ^5.27.2
+        version: 5.27.2
       tftp:
         specifier: ^0.1.2
         version: 0.1.2
@@ -142,8 +142,8 @@ importers:
         specifier: ^11.6.0
         version: 11.6.0
       oclif:
-        specifier: ^4.18.4
-        version: 4.18.4(@types/node@22.15.31)
+        specifier: ^4.19.0
+        version: 4.19.0(@types/node@22.15.31)
       perrisbrewery:
         specifier: ^10
         version: 10.1.3
@@ -2819,8 +2819,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.18.4:
-    resolution: {integrity: sha512-KhgePuvoIvD8UvDpDd0gdrZ+sYd+pWhiD/CG7HBEN12JFNQi/ka8zpjlLFyDIaFpqSy4P9qcJ/h65kt/WbVjdA==}
+  oclif@4.19.0:
+    resolution: {integrity: sha512-Edb844zoNrMP/m4SUXLxP9HfLpM0MTeS8NMEjavPBS0x4vZpAMkFjY9Q9yZRm+V0wLeQpGJgeSGFlTIt24EfLg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -3391,8 +3391,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  systeminformation@5.27.1:
-    resolution: {integrity: sha512-FgkVpT6GgATtNvADgtEzDxI/SVaBisfnQ4fmgQZhCJ4335noTgt9q6O81ioHwzs9HgnJaaFSdHSEMIkneZ55iA==}
+  systeminformation@5.27.2:
+    resolution: {integrity: sha512-Xsv9p3pU0QPpWl+VWVxXnc017Ld7yEcWSJz56ydoyJ1XULrne37PEFq/J2JcLE+ll2Fr1U5IdhPT0Cyx28OupA==}
     engines: {node: '>=8.0.0'}
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
@@ -7132,7 +7132,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  oclif@4.18.4(@types/node@22.15.31):
+  oclif@4.19.0(@types/node@22.15.31):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.828.0
       '@aws-sdk/client-s3': 3.828.0
@@ -7823,7 +7823,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  systeminformation@5.27.1: {}
+  systeminformation@5.27.2: {}
 
   tapable@2.2.2: {}
 
