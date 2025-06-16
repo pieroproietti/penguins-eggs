@@ -30,7 +30,7 @@
         "react": "^18.3.1",
         "read": "^4.1.0",
         "shelljs": "^0.10.0",
-        "systeminformation": "^5.27.1",
+        "systeminformation": "^5.27.2",
         "tftp": "^0.1.2"
     },
     "devDependencies": {
@@ -55,7 +55,7 @@
         "eslint-config-prettier": "^10.1.5",
         "glob": "^11.0.3",
         "mocha": "^11.6.0",
-        "oclif": "^4.18.4",
+        "oclif": "^4.19.0",
         "perrisbrewery": "^10",
         "prettier": "^3.5.3",
         "shx": "^0.4.0",
