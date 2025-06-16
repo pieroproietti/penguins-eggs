@@ -5,6 +5,6 @@
 * git clone https://github.com/calamares/calamares.git
 
 cd calamares
-VERSION=3.3
+VERSION=3.3.15
 git archive --format=tar.gz --prefix=calamares-${VERSION}/ HEAD > ../calamares-${VERSION}.tar.gz
-#mv calamares-${VERSION}.tar.gz ../rpmbuild/SOURCES/
+mv ../calamares-${VERSION}.tar.gz ../rpmbuild/SOURCES/
