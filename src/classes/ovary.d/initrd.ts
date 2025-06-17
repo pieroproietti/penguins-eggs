@@ -83,4 +83,8 @@ export async function initrdDracut(this: Ovary) {
     //const cmd=`ls -la /lib /lib/modules ${log}`
     console.log(cmd)
     await exec(cmd, this.echo)
+
+    let clean=`../../../scripts/99clean ${this.kernel}`
+    console.log(clean)
+    await exec(clean, this.echo)
 }
