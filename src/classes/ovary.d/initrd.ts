@@ -84,7 +84,7 @@ export async function initrdDracut(this: Ovary) {
     console.log(cmd)
     await exec(cmd, this.echo)
 
+    // clean per btrfs
     let clean=`../../../scripts/99clean ${this.kernel}`
-    console.log(clean)
     await exec(clean, this.echo)
 }
