@@ -1,6 +1,0 @@
-# OpenSuSE
-# packages
----
-backend: dnf
-
-{{operations}}
