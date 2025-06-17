@@ -1,6 +1,0 @@
-# Fedora
-# packages
----
-backend: dnf
-
-{{operations}}

@@ -95,6 +95,8 @@ export default class Filesystem {
       text += `# Created at: ${Formatters.formatDate(new Date())}\n`
       text += `# By: penguins_eggs v. ${PackageInfo.getPackageVersion()}\n`
       text += `# ==> Perri\'s Brewery edition <== \n\n`
+      text += 'set -e\n'
+      text += 'set -x\n'
       text += cmd
       Filesystem.write(file, text)
       shx.chmod('+x', file)
