@@ -142,8 +142,6 @@ sequence:
   - packages
   - grubcfg
   - bootloader
-  # openmamba-postinstall tuo
-  # cleanup mio 
   - umount
 - show:
   - finished

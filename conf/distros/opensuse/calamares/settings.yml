@@ -4,16 +4,15 @@ sequence:
 - show:
   - welcome
   - locale
-#  - licence
   - keyboard
   - partition
-  - users
+  {{createUsers}}users
   - summary
 - exec:
   - partition
   - mount
   - unpackfs
-  - machineid
+  {{hasSystemd}}machineid
   - fstab
   - locale
   - keyboard
@@ -21,16 +20,16 @@ sequence:
   - plymouthcfg
   - luksbootkeyfile
   - dracutlukscfg
-  - users
-  - displaymanager
+  {{createUsers}}users
+  {{hasDisplaymanager}}displaymanager 
   - networkcfg
   - hwclock
+  {{hasSystemd}}services-systemd 
   - dracut
+  - packages
   - grubcfg
   - bootloader
   - removeuser
-  - packages
-  # shellprocess
   - umount
 - show:
   - finished
