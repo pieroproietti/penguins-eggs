@@ -19,7 +19,7 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
 # Access control to run calamares as root for xwayland
 xhost +si:localuser:root
-pkexec calamares
+sudo -E calamares
 xhost -si:localuser:root
 
 # Restore stale fstab, for what it's worth
