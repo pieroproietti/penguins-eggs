@@ -43,7 +43,7 @@ kernelParams: [ "quiet" ]
 #
 grubInstall: "grub2-install"
 grubMkconfig: "grub2-mkconfig"
-grubCfg: "/boot/grub/grub.cfg"
+grubCfg: "/boot/grub2/grub.cfg"
 grubProbe: "grub2-probe"
 efiBootMgr: "efibootmgr"
 
