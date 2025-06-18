@@ -281,7 +281,7 @@ user:
 hostname:
   location: EtcFile
   writeHostsFile: true
-  template: "derp-${cpu}"
+  # template: "derp-${cpu}"
   forbidden_names: [ localhost ]
 
 # Enable Active Directory enrollment support (opt-in)
