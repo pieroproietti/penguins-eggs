@@ -13,7 +13,9 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-13
+## penguins-eggs-10.1.1-14
+fedora: changed calamares configuration, but now yet working. It's installable using `sudo eggs install` on ext4.
+opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
 arch: the configuration of live mkinitcpio for Arch was changed inserting the btrfs module. Also the configuration of calamares was changed by inserting a sync module before the bootloader installation. On ext4 all is OK, but on btrfs we get an error when reboot the installed system: 
 
 ```premature end of file @/boot/vmlinux-linux.```
