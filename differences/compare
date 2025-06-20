@@ -1,4 +1,0 @@
-sed 's/-[0-9].*//' opensuse-naked-list.txt | sort -u > naked-cleaned.txt
-sed 's/-[0-9].*//' opensuse-minimal-list.txt | sort -u > minimal-cleaned.txt
-comm -23 naked-cleaned.txt minimal-cleaned.txt > opensuse-differenza.txt
-sed 's/$/ \\/' opensuse-differenza.txt > differenza-con-backslash.txt
