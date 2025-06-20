@@ -89,8 +89,8 @@ export default class ExportPkg extends Command {
         arch = 'i386'
       }
       Utils.warning(`alpine apk`)
-      localPath = `/home/${this.user}/packages/alpine/${arch}`
-      remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
+      localPath = `/home/${this.user}/packages/aports/${arch}`
+      remotePath = `${this.Tu.config.remotePathPackages}/aports/${arch}`
       filter = `penguins-eggs*10.?.*-r*.apk`
 
       /**
