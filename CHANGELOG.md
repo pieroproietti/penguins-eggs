@@ -14,8 +14,8 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.1.1-15
-arch: seem to work now nicefully, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous prepblem ```premature end of file @/boot/vmlinux-linux.``` vanished. 
-fedora: changed calamares configuration, but now yet working. It's installable using `sudo eggs install` on ext4.
+* arch: seem to work now nicefully, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous prepblem ```premature end of file @/boot/vmlinux-linux.``` vanished. 
+* fedora: changed calamares configuration, but now yet working. It's installable using `sudo eggs install` on ext4.
 opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
 * OpenSUSE: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
