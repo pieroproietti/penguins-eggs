@@ -15,6 +15,17 @@ Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.1.1-15
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous prepblem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
+
+Sometime, againd don't understand why and when, the problem arise agai. To fux it:
+
+- reboot with ISO
+- sudo mount -o subvol=@ /dev/sdx /mnt
+- sudo arch-chroot /mnt
+- ln -sf /proc/self/mounts /etc/mtab
+- pacman -S linux
+- reboot
+After that our installed btrfs system will work nicelly.
+
 * fedora: changed calamares configuration, but now yet working. It's installable using `sudo eggs install` on ext4.
 opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
