@@ -13,23 +13,10 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-14
+## penguins-eggs-10.1.1-15
+arch: seem to work now nicefully, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous prepblem ```premature end of file @/boot/vmlinux-linux.``` vanished. 
 fedora: changed calamares configuration, but now yet working. It's installable using `sudo eggs install` on ext4.
 opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
-arch: the configuration of live mkinitcpio for Arch was changed inserting the btrfs module. Also the configuration of calamares was changed by inserting a sync module before the bootloader installation. On ext4 all is OK, but on btrfs we get an error when reboot the installed system: 
-
-```premature end of file @/boot/vmlinux-linux.```
-
-A workaround to fix it, is:
- - reboot with ISO
- - `sudo mount -o subvol=@ /dev/sdx /mnt`
- - `sudo arch-chroot /mnt`
- - `ln -sf /proc/self/mounts /etc/mtab`
- - `pacman -S linux`
- - reboot
-
-After that our installed btrfs system will work nicelly.
-
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
 * OpenSUSE: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
 * Alpine linux is finally back on penguins-eggs! I rewrote [penguins-sidecar](https://github.com/pieroproietti/penguins-sidecar). It works now without to go on recovery shell. I did 3 versions: naked, colibri and colibri-vs, naked and colibri are incredible light, colibri-vs include visual studio code.
