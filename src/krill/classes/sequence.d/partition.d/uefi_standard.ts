@@ -37,7 +37,6 @@ export default async function uefiStandard(this: Sequence, installDevice = "", p
     // BOOT/DATA/EFI
     this.devices.boot.name = 'none'
     this.devices.data.name = 'none'
-    // this.devices.efi.name = `none`
 
     return true
 }

@@ -50,11 +50,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
   /**
    * fstab
    */
-  if (!Pacman.packageIsInstalled('btrfs-progs')||
-        Pacman.packageIsInstalled('btrfsprogs')) {
-    this.partitions.filesystemType === 'ext4'
-  }
-
   const fstab = this.installTarget + '/etc/fstab'
   /**
     boot: IDevice
@@ -160,28 +155,22 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
       text += `# swap undefined\n`
     }
 
+
+
     /**
-     * brtfs: TUTTO da rivedere!
+     * btrfs
      */
   } else if (this.partitions.filesystemType === 'btrfs') {
-    const base = '/        btrfs  subvol=/@,defaults 0 0'
-    const snapshots = '/.snapshots               btrfs  subvol=/@snapshots,defaults 0 0'
-    const home = '/home                     btrfs  subvol=/@home,defaults 0 0'
-    const root = '/root                     btrfs  subvol=/@root,defaults 0 0'
-    const var_log = '/var/log                  btrfs  subvol=/@var@log,defaults 0 0'
-    const var_lib_AccountsService = '/var/lib/AccountsService  btrfs  subvol=/@var@lib@AccountsService,defaults 0 0'
-    const var_lib_blueman = '/var/lib/blueman          btrfs  subvol=/@var@lib@blueman,defaults 0 0'
-    const tmp = '/tmp                      btrfs  subvol=/@tmp,defaults 0 0'
+    const rootMountPoint=this.devices.root.mountPoint
+    const rootUuid=Utils.uuid(this.devices.root.name)
 
-    text += `# ${this.devices.root.name}  btrfs ${this.devices.root.mountPoint} subvol\n`
-    text += `UUID=${Utils.uuid(this.devices.root.name)} ${base}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${snapshots}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${home}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${root}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_log}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_AccountsService}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${var_lib_blueman}\n`
-    text += `# UUID=${Utils.uuid(this.devices.root.name)} ${tmp}\n`
+    text += `# ${this.devices.root.name}  btrfs ${rootMountPoint} subvol\n`
+    text += `UUID=${rootUuid} /               btrfs       subvol=/@,defaults 0 0\n`
+    text += `UUID=${rootUuid} /home           btrfs       /@home,defaults 0 0\n`
+    text += `UUID=${rootUuid} /var/cache      btrfs       /@cache,defaults 0 0\n`
+    text += `UUID=${rootUuid} /var/log        btrfs       /@log,defaults 0 0\n`
+    text += `# swapfile\n`
+    text += `/swapfile   none  swap  sw  0  0`
   }
   Utils.write(fstab, text)
 }

@@ -26,9 +26,12 @@ export default async function grubcfg(this: Sequence) {
   let content = ''
   const grubs = fs.readFileSync(file, 'utf8').split('\n')
   for (let i = 0; i < grubs.length; i++) {
+    // RESUME
     if (grubs[i].includes('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-      if (this.partitions.userSwapChoice != SwapChoice.File) {
-        grubs[i] = this.partitions.installationMode === InstallationMode.Luks ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+      if (this.partitions.filesystemType==='btrfs'){
+        // userSwapChoice != SwapChoice.File) {
+        // grubs[i] = this.partitions.installationMode === InstallationMode.Luks ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash resume=UUID=${Utils.uuid(this.devices.swap.name)}"`
+        grubs[i] = this.partitions.installationMode === InstallationMode.Luks ? `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${Utils.uuid(this.devices.swap.name)}"` : `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash rootflags=subvol=@"`
       }
     }
 
