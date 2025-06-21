@@ -36,21 +36,13 @@ extraMountsEfi:
     fs: efivarfs
     mountPoint: /sys/firmware/efi/efivars
 
-# added from spiralLinux
+# added from spiralLinux, updated
 btrfsSubvolumes:
     - mountPoint: /
       subvolume: /@
-    - mountPoint: /.snapshots
-      subvolume: /@snapshots
     - mountPoint: /home
       subvolume: /@home
-    - mountPoint: /root
-      subvolume: /@root
+    - mountPoint: /var/cache
+      subvolume: /@cache
     - mountPoint: /var/log
-      subvolume: /@var@log
-    - mountPoint: /var/lib/AccountsService
-      subvolume: /@var@lib@AccountsService
-    - mountPoint: /var/lib/blueman
-      subvolume: /@var@lib@blueman
-    - mountPoint: /tmp
-      subvolume: /@tmp
+      subvolume: /@log

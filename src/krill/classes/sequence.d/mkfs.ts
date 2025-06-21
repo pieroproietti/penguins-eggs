@@ -15,7 +15,7 @@ import Utils from '../../../classes/utils.js'
 /**
  * mkfs
  * 
- * mke2fs - create an ext2/ext3/ext4 file system -F force, -t type
+ * mkfs - create an ext2/ext3/ext4/btrfs
  */
 export default async function mkfs(this: Sequence): Promise<boolean> {
   const result = true
@@ -58,8 +58,6 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
 
     // data
     if (this.devices.data.name !== 'none') {
-      await exec(`mke2fs -Ft ${this.devices.data.fsType} ${this.devices.data.name} ${this.toNull}`, this.echo)
-
     } 
     
     // swap
@@ -72,15 +70,17 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
 
 
   } else if (this.partitions.filesystemType === 'btrfs') {
-    await exec(`mkfs.btrfs -f ${this.devices.root.name} ${this.toNull}`, this.echo)
-    //  create subvolumes
-    // await exec(`btrfs subvolume create /.snapshots ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /home ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /root ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /var/log ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /var/lib/AccountsService ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /var/lib/blueman ${this.toNull}`, this.echo)
-    // await exec(`btrfs subvolume create /tmp ${this.toNull}`, this.echo)
+    await exec(`mkfs.btrfs -f btrfs ${this.devices.root.name} ${this.toNull}`, this.echo)
+    
+    // Monta temporaneamente il volume Btrfs
+    await exec(`mount ${this.devices.root.name} /mnt`)
+    await exec(`btrfs subvolume create /mnt/@/`)
+    await exec(`btrfs subvolume create /mnt/@home`)
+    await exec(`btrfs subvolume create /mnt/@cache`)
+    await exec(`btrfs subvolume create /mnt/@log`)
+
+    // Smonta /mnt
+    await exec(`umount /mnt`)
   }
 
   return result
