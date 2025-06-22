@@ -13,7 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-15
+## penguins-eggs-10.1.1-16
+* debian: seem to work now nicefully on btrfs using both: calamares GUI installer or krill (internal TUI installer).
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
 
 Sometime, again  don't understand why and when, the problem arise again. To fix it:
