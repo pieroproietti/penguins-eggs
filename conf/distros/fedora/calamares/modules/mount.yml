@@ -50,9 +50,6 @@ extraMounts:
 btrfsSubvolumes:
     - mountPoint: /
       subvolume: /@
-      # As an alternative:
-      #
-      # subvolume: ""
     - mountPoint: /home
       subvolume: /@home
     - mountPoint: /var/cache
