@@ -13,7 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-16
+## penguins-eggs-10.1.1-18
+* fedora: updated calamares configuration, not yet working (same error on bootloader to fix), not tested with btrfs. Remain installable using `sudo eggs install` on ext4.
 * debian: seem to work now nicefully on btrfs using both: calamares GUI installer or krill (internal TUI installer).
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
 
@@ -28,7 +29,6 @@ Sometime, again  don't understand why and when, the problem arise again. To fix 
 
 After that our installed btrfs system will work nicelly.
 
-* fedora: changed calamares configuration, but not yet working. It's installable using `sudo eggs install` on ext4.
 * opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
 * OpenSUSE: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
