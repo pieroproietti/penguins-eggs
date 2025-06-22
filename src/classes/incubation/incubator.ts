@@ -31,6 +31,7 @@ import { Alpine } from './incubator.d/alpine.js'
 import { Bionic } from './incubator.d/bionic.js'
 import { Buster } from './incubator.d/buster.js'
 import { Jessie } from './incubator.d/jessie.js'
+import { Fedora } from './incubator.d/fedora.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
@@ -91,16 +92,9 @@ export default class Incubator {
     const codenameLikeId = this.distro.codenameLikeId
 
       /**
-       * aldos
-       */
-    if (codenameLikeId === 'aldos') {
-      const aldos = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-      await aldos.create()
-
-      /**
        * Alpine
        */
-    } else if (codenameLikeId === 'alpine') {
+    if (codenameLikeId === 'alpine') {
       const alpine = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await alpine.create()
 
@@ -154,7 +148,7 @@ export default class Incubator {
        * fedora
        */
     } else if (codenameLikeId === 'fedora') {
-      const fedora = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+      const fedora = new Fedora(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
       await fedora.create()
 
       /**
