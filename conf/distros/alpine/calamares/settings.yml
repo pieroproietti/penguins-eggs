@@ -67,24 +67,16 @@ sequence:
       - unpackfs
       {{hasSystemd}}machineid
       - fstab
-      - locale
       - keyboard
-      - localecfg
       {{createUsers}}users
       {{hasDisplaymanager}}displaymanager 
       - networkcfg
       - hwclock
       {{hasSystemd}}services-systemd 
-      - bootloader-config
       - grubcfg
       - bootloader
       - packages
-      - luksbootkeyfile
-      - plymouthcfg
-      - initramfscfg
-      - initramfs
       - removeuser
-      - cleanup
       - umount
 
   # Phase 3 - postinstall.
