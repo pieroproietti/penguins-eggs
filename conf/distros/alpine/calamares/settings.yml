@@ -62,23 +62,22 @@ sequence:
   # view module jobs should be enqueued. Job modules are
   # also allowed.
   - exec:
-      - partition
-      - mount
-      - unpackfs
-      {{hasSystemd}}machineid
-      - fstab
-      - keyboard
-      {{createUsers}}users
-      {{hasDisplaymanager}}displaymanager 
-      - networkcfg
-      - hwclock
-      {{hasSystemd}}services-systemd 
-      - grubcfg
-      - bootloader
-      - packages
-      - removeuser
-      - umount
-
+    - partition
+    - mount
+    - unpackfs
+    - machineid
+    - fstab
+    - locale
+    - keyboard
+    {{createUsers}}users
+    {{hasDisplaymanager}}displaymanager 
+    - hwclock
+    - services-openrc  # Modulo per OpenRC
+    - mkinitfs         # Modulo per Alpine
+    - bootloader
+    - umount
+    - finished  
+    
   # Phase 3 - postinstall.
   # View modules are shown as UI pages, jobs from job modules are
   # executed immediately in the background.
