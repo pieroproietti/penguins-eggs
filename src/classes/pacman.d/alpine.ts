@@ -19,8 +19,8 @@ import Utils from '../utils.js'
 export default class Alpine {
   static packs4calamares = [
     'calamares',
+    'calamares-dev',
     'calamares-doc',
-    'calamares-extensions',
     'calamares-lang',
     'calamares-mod-bootloader',
     'calamares-mod-displaymanager',
@@ -30,21 +30,25 @@ export default class Alpine {
     'calamares-mod-grubcfg',
     'calamares-mod-hostinfo',
     'calamares-mod-hwclock',
-    'calamares-mod-interactiveterminal',
     'calamares-mod-keyboard',
     'calamares-mod-keyboardq',
     'calamares-mod-locale',
     'calamares-mod-localeq',
     'calamares-mod-luksbootkeyfile',
-    'calamares-mod-luksopenswaphookcfg',
+    'calamares-mod-luksopenswaphookcfg-',
     'calamares-mod-machineid',
     'calamares-mod-mkinitfs',
     'calamares-mod-mount',
+    'calamares-mod-netinstall',
     'calamares-mod-networkcfg',
-    'calamares-mod-packages',
+    'calamares-mod-notesqml',
+    'calamares-mod-oemid',
+    'calamares-mod-packagechooser',
+    'calamares-mod-packages-3.3.6-r1.apk
     'calamares-mod-partition',
-    'calamares-mod-plasmalnf',
     'calamares-mod-plymouthcfg',
+    'calamares-mod-preservefiles',
+    'calamares-mod-rawfs',
     'calamares-mod-removeuser',
     'calamares-mod-services-openrc',
     'calamares-mod-shellprocess',
@@ -52,9 +56,8 @@ export default class Alpine {
     'calamares-mod-umount',
     'calamares-mod-unpackfs',
     'calamares-mod-users',
-    'calamares-mod-webview',
     'calamares-mod-welcome',
-    'calamares-mod-welcomeq'
+    'calamares-mod-welcomeq',
   ]
 
   /**
@@ -87,7 +90,9 @@ export default class Alpine {
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
-    // nothing
+    const echo = Utils.setEcho(verbose)
+    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+    await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
   }
 
   /**
