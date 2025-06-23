@@ -72,9 +72,7 @@ export default class Pacman {
     if (this.isInstalledGui()) {
 
       const familyId = this.distro().familyId
-      if (familyId === 'aldos') {
-        await Aldos.calamaresInstall(verbose)
-      } else if (familyId === 'alpine') {
+      if (familyId === 'alpine') {
         await Alpine.calamaresInstall(verbose)
       } else if (familyId === 'archlinux') {
         if (Diversions.isManjaroBased(this.distro().distroId)) {
@@ -101,9 +99,7 @@ export default class Pacman {
    */
   static async calamaresPolicies(verbose = false) {
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      await Aldos.calamaresPolicies(verbose)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       await Alpine.calamaresPolicies(verbose)
     } else if (familyId === 'archlinux') {
       await Archlinux.calamaresPolicies(verbose)
