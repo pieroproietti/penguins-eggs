@@ -44,7 +44,7 @@ export default class Alpine {
     'calamares-mod-notesqml',
     'calamares-mod-oemid',
     'calamares-mod-packagechooser',
-    'calamares-mod-packages-3.3.6-r1.apk
+    'calamares-mod-packages',
     'calamares-mod-partition',
     'calamares-mod-plymouthcfg',
     'calamares-mod-preservefiles',
