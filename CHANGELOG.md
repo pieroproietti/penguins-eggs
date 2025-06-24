@@ -14,9 +14,7 @@ penguins-eggs
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs-10.1.1-18
-* alpine: I was able to create the calamares 3.3 package for Alpine. See the repository [penguins-alpine](https://github.com/pieroproietti/penguins-alpine/).
-* fedora: updated calamares configuration, not yet working (same error on bootloader to fix), not tested with btrfs. Remain installable using `sudo eggs install` on ext4.
-* debian: seem to work now nicefully on btrfs using both: calamares GUI installer or krill (internal TUI installer).
+* alpine: Linux Alpine is back on penguins-eggs, look to [penguins-alpine](https://github.com/pieroproietti/penguins-alpine/). In addition, I was able to create the calamares 3.3 packages for Alpine.
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
 
 Sometime, again  don't understand why and when, the problem arise again. To fix it:
@@ -30,15 +28,15 @@ Sometime, again  don't understand why and when, the problem arise again. To fix 
 
 After that our installed btrfs system will work nicelly.
 
+* debian: seem to work now nicefully on btrfs using both: calamares GUI installer or krill (internal TUI installer).
+* fedora: updated calamares configuration, not yet working (same error on bootloader to fix), not tested with btrfs. Remain installable using `sudo eggs install` on ext4.
 * opensuse: now install using calamares on UEFI with ext4, EFI and btrfs must to be solved. It's installable using `sudo eggs install` on ext4.
+* opensuse: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
-* OpenSUSE: trying to remaster btrfs, at the moment we have a problem with dracut, when used with ext4 all works, using it on btrfs dracut ignome `--no-hostonly` option. To try to understand, I added a log `/var/log/penguins-eggs-dracut-output.log`, to let to check the results.
-* Alpine linux is finally back on penguins-eggs! I rewrote [penguins-sidecar](https://github.com/pieroproietti/penguins-sidecar). It works now without to go on recovery shell. I did 3 versions: naked, colibri and colibri-vs, naked and colibri are incredible light, colibri-vs include visual studio code.
-* I rewrote the part for adding the user to the default groups of the various distributions, both during the produce phase and during installation with krill;
 * Added `lmde 7 gigi` and `linuxmint 22.2 zara` Thanks to [rreyn331](https://github.com/rreyn331).
-* `krill`: now krill takes user's default groups from calamares or krill. This avoids errors and simplifies the code, making the behavior of krill and calamares similar. Previously the groups were hard coded in the source;
+* `krill`: now krill takes user's default groups from calamares users module template. This avoids errors and simplifies the code, making the behavior of krill and calamares similar.
 * `get-eggs`: I have included in [get-eggs](https://github.com/pieroproietti/get-eggs) and removed from [penguins-packs](https://github.com/pieroproietti/penguins-packs) the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
-* `distros`: I redid the Almalinux10, Fedora42, openSUSE and rocky9.5 [ISOs](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN?dmr=1&ec=wgc-drive-globalnav-goto).
+* `ISOs`: I remake Almalinux10, Fedora42, openSUSE and rocky9.5 [ISOs](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN?dmr=1&ec=wgc-drive-globalnav-goto).
 
 ## penguins-eggs-10.1.1
 I started using Artificial Intelligence intensively on the penguins-eggs code. Beyond any “philosophical” considerations I performed a deep refactoring of `src/classes/utils.tsx`, it worked on the first hit. Such work, which manually would have cost at least a week, I did in one evening with the help of claude.ai.
