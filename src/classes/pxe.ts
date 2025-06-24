@@ -9,7 +9,8 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import { DHCPProxy } from 'etrick'
+import etrick_pkg from 'etrick';
+const { DHCPProxy } = etrick_pkg;
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
