@@ -9,7 +9,7 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import { dhcpd } from 'node-proxy-dhcpd'
+import { DHCPProxy } from 'etrick'
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
@@ -84,6 +84,7 @@ export default class Pxe {
     await this.bios()
     await this.ipxe()
     await this.http()
+
   }
 
   /**
@@ -91,7 +92,8 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpStart(dhcpOptions: IDhcpOptions) {
-    new dhcpd(dhcpOptions)
+    console.log(dhcpOptions)
+    new DHCPProxy(dhcpOptions) // <-- Usa il nome della classe importata
   }
 
   /**

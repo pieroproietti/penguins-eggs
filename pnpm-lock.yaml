@@ -35,6 +35,9 @@ importers:
       debug:
         specifier: ^4.4.1
         version: 4.4.1(supports-color@8.1.1)
+      etrick:
+        specifier: ../etrick
+        version: link:../etrick
       ink:
         specifier: ^5.2.1
         version: 5.2.1(@types/react@18.3.18)(react@18.3.1)
@@ -56,9 +59,6 @@ importers:
       netmask:
         specifier: ^2.0.2
         version: 2.0.2
-      node-proxy-dhcpd:
-        specifier: 0.1.2
-        version: 0.1.2
       node-static:
         specifier: ^0.7.11
         version: 0.7.11
@@ -2763,9 +2763,6 @@ packages:
 
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
-
-  node-proxy-dhcpd@0.1.2:
-    resolution: {integrity: sha512-GXLkmJ+vqfWq44FDCv0TfdN3Jbq2dAWdEMTY4cO8jgmnfxP6YH9OlbKYhmb+deb/l2cIokbLATqgc8s4Qr1SAg==}
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
@@ -7066,11 +7063,6 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.8.1
-
-  node-proxy-dhcpd@0.1.2:
-    dependencies:
-      netmask: 2.0.2
       tslib: 2.8.1
 
   node-releases@2.0.19: {}

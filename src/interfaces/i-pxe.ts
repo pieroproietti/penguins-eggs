@@ -12,6 +12,7 @@ export interface IDhcpOptions {
   host: string
   subnet: string
   tftpserver: string
+  broadcast: string
 }
 
 export interface IDhcpd {

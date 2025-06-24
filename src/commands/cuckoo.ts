@@ -50,8 +50,10 @@ export default class Cuckoo extends Command {
         efi64_filename: 'ipxe.efi',
         host: n.address,
         subnet: n.cidr,
-        tftpserver: n.address
+        tftpserver: n.address,
+        broadcast: n.broadcast()
       }
+      console.log("starting dhcp")
       pxe.dhcpStart(dhcpOptions)
 
       /**
