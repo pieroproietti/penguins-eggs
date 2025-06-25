@@ -19,7 +19,7 @@ interface DHCPProxyOptions {
 
 // Rendiamo la nostra classe un EventEmitter per gestire gli eventi in modo pulito
 // e la componiamo con un Socket, invece di estenderla. Questo è un pattern più robusto.
-export default class DHCPProxy extends EventEmitter {
+export default class DHCPDProxy extends EventEmitter {
     private socket: Socket;
     private broadcast: string;
 

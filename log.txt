@@ -1,0 +1,27 @@
+
+> penguins-eggs@10.1.1 deb /home/artisan/penguins-eggs
+> shx rm -rf dist && tsc -p . && oclif manifest && pb deb --release $(cat ./release)
+
+src/dhcpd-proxy/lib/sprintf.ts(30,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/dhcpd-proxy/lib/sprintf.ts(75,5): error TS7006: Parameter '_' implicitly has an 'any' type.
+src/dhcpd-proxy/lib/sprintf.ts(126,75): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(127,89): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(128,82): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(129,82): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(130,83): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(131,83): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(132,83): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(137,60): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/dhcpd-proxy/lib/sprintf.ts(145,30): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Number'.
+  No index signature with a parameter of type 'string' was found on type 'Number'.
+src/dhcpd-proxy/lib/sprintf.ts(146,69): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+ ELIFECYCLE  Command failed with exit code 2.

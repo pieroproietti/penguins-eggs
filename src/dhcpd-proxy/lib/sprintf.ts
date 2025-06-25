@@ -1,48 +1,30 @@
-// @ts-nocheck
 /**
  * sprintf.ts
  *
- * Converted to a TypeScript module to ensure consistent compilation.
- * The @ts-nocheck directive tells the compiler to trust the code inside,
- * even though it uses older JavaScript patterns.
+ * Converted to a pure, strictly-typed TypeScript module.
  */
-// NOTA BENE: La firma della funzione è cambiata in `...args: any[]`.
-// Questo dice a TypeScript che la funzione accetta un numero variabile
-// di argomenti, risolvendo l'errore "Expected 0 arguments".
-function sprintf(...args: any[]) {
-  // Return a formatted string
-  //
-  // version: 1107.2516
-  // discuss at: http://phpjs.org/functions/sprintf
-  var regex =
-    /%%|%(\d+\$)?([\-+\'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegEG])/g;
-  var a = arguments,
-    i = 0,
-    format = a[i++];
+export default function sprintf(format: string, ...args: any[]): string {
+  let i = 0;
+  const regex =
+    /%%|%(\d+\$)?([-+'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegEG])/g;
 
-  // pad()
-  var pad = function (str, len, chr, leftJustify) {
-    if (!chr) {
-      chr = " ";
-    }
-    var padding =
-      str.length >= len ? "" : Array((1 + len - str.length) >>> 0).join(chr);
+  const pad = (str: string, len: number, chr: string, leftJustify: boolean): string => {
+    const padding = str.length >= len ? "" : Array(1 + len - str.length).join(chr || ' ');
     return leftJustify ? str + padding : padding + str;
   };
 
-  // justify()
-  var justify = function (
-    value,
-    prefix,
-    leftJustify,
-    minWidth,
-    zeroPad,
-    customPadChar,
-  ) {
-    var diff = minWidth - value.length;
+  const justify = (
+    value: string,
+    prefix: string,
+    leftJustify: boolean,
+    minWidth: number,
+    zeroPad: boolean,
+    customPadChar?: string,
+  ): string => {
+    const diff = minWidth - value.length;
     if (diff > 0) {
       if (leftJustify || !zeroPad) {
-        value = pad(value, minWidth, customPadChar, leftJustify);
+        value = pad(value, minWidth, customPadChar || ' ', leftJustify);
       } else {
         value =
           value.slice(0, prefix.length) +
@@ -52,225 +34,118 @@ function sprintf(...args: any[]) {
     }
     return value;
   };
-  // formatBaseX()
-  var formatBaseX = function (
-    value,
-    base,
-    prefix,
-    leftJustify,
-    minWidth,
-    precision,
-    zeroPad,
-  ) {
-    // Note: casts negative numbers to positive ones
-    var number = value >>> 0;
-    prefix =
-      (prefix &&
-        number &&
-        {
-          2: "0b",
-          8: "0",
-          16: "0x",
-        }[base]) ||
-      "";
-    value = prefix + pad(number.toString(base), precision || 0, "0", false);
-    return justify(value, prefix, leftJustify, minWidth, zeroPad);
+
+  const formatBaseX = (
+    value: number,
+    base: number,
+    prefix: boolean,
+    leftJustify: boolean,
+    minWidth: number,
+    precision: number | undefined,
+    zeroPad: boolean,
+  ): string => {
+    const number = value >>> 0;
+    let p = (prefix && number && ({ 2: "0b", 8: "0", 16: "0x" } as const)[base]) || "";
+    let val = p + pad(number.toString(base), precision || 0, "0", false);
+    return justify(val, p, leftJustify, minWidth, zeroPad);
   };
 
-  // formatString()
-  var formatString = function (
-    value,
-    leftJustify,
-    minWidth,
-    precision,
-    zeroPad,
-    customPadChar,
-  ) {
-    if (precision !== null) {
+  const formatString = (
+    value: string,
+    leftJustify: boolean,
+    minWidth: number,
+    precision: number | undefined,
+    zeroPad: boolean,
+    customPadChar?: string,
+  ): string => {
+    if (precision !== null && precision !== undefined) {
       value = value.slice(0, precision);
     }
     return justify(value, "", leftJustify, minWidth, zeroPad, customPadChar);
   };
 
-  // doFormat()
-  var doFormat = function (
-    substring,
-    valueIndex,
-    flags,
-    minWidth,
-    _,
-    precision,
-    type,
-  ) {
-    var number;
-    var prefix;
-    var method;
-    var textTransform;
-    var value;
-    if (substring == "%%") {
+  const doFormat = (
+    substring: string,
+    valueIndex: string,
+    flags: string,
+    minWidthStr: string,
+    _: any, // Explicitly type the unused parameter
+    precisionStr: string,
+    type: string,
+  ): string => {
+    if (substring === "%%") {
       return "%";
     }
 
-    // parse flags
-    var leftJustify = false,
-      positivePrefix = "",
-      zeroPad = false,
-      prefixBaseX = false,
-      customPadChar = " ";
-    var flagsl = flags.length;
-    for (var j = 0; flags && j < flagsl; j++) {
-      switch (flags.charAt(j)) {
-        case " ":
-          positivePrefix = " ";
-          break;
-        case "+":
-          positivePrefix = "+";
-          break;
-        case "-":
-          leftJustify = true;
-          break;
-        case "'":
-          customPadChar = flags.charAt(j + 1);
-          break;
-        case "0":
-          zeroPad = true;
-          break;
-        case "#":
-          prefixBaseX = true;
-          break;
-      }
+    let leftJustify = false;
+    let positivePrefix = "";
+    let zeroPad = false;
+    let prefixBaseX = false;
+    let customPadChar = " ";
+    for (let j = 0; flags && j < flags.length; j++) {
+        switch (flags.charAt(j)) {
+            case " ": positivePrefix = " "; break;
+            case "+": positivePrefix = "+"; break;
+            case "-": leftJustify = true; break;
+            case "'": customPadChar = flags.charAt(j + 1); break;
+            case "0": zeroPad = true; break;
+            case "#": prefixBaseX = true; break;
+        }
     }
-
-    // parameters may be null, undefined, empty-string or real valued
-    // we want to ignore null, undefined and empty-string values
-    if (!minWidth) {
-      minWidth = 0;
-    } else if (minWidth == "*") {
-      minWidth = +a[i++];
-    } else if (minWidth.charAt(0) == "*") {
-      minWidth = +a[minWidth.slice(1, -1)];
-    } else {
-      minWidth = +minWidth;
+    
+    let minWidth = minWidthStr ? +minWidthStr : 0;
+    if (minWidthStr === "*") {
+        minWidth = +args[i++];
+    } else if (minWidthStr?.charAt(0) === "*") {
+        minWidth = +args[parseInt(minWidthStr.slice(1, -1)) - 1];
     }
-    // Note: undocumented perl feature:
     if (minWidth < 0) {
-      minWidth = -minWidth;
-      leftJustify = true;
+        minWidth = -minWidth;
+        leftJustify = true;
+    }
+    if (!isFinite(minWidth)) {
+        throw new Error("sprintf: (minimum-)width must be finite");
     }
 
-    if (!isFinite(minWidth)) {
-      throw new Error("sprintf: (minimum-)width must be finite");
+    let precision: number | undefined = precisionStr ? +precisionStr : undefined;
+    if (precisionStr === "*") {
+        precision = +args[i++];
+    } else if (precisionStr?.charAt(0) === "*") {
+        precision = +args[parseInt(precisionStr.slice(1, -1)) - 1];
     }
-    if (!precision) {
-      precision = "fFeE".indexOf(type) > -1 ? 6 : type == "d" ? 0 : undefined;
-    } else if (precision == "*") {
-      precision = +a[i++];
-    } else if (precision.charAt(0) == "*") {
-      precision = +a[precision.slice(1, -1)];
-    } else {
-      precision = +precision;
+    if (precision === undefined) {
+        precision = "fFeE".indexOf(type) > -1 ? 6 : type === "d" ? 0 : undefined;
     }
-    // grab value using valueIndex if required?
-    value = valueIndex ? a[valueIndex.slice(0, -1)] : a[i++];
+
+    let value = valueIndex ? args[parseInt(valueIndex.slice(0, -1)) - 1] : args[i++];
 
     switch (type) {
-      case "s":
-        return formatString(
-          String(value),
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-          customPadChar,
-        );
-      case "c":
-        return formatString(
-          String.fromCharCode(+value),
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        );
-      case "b":
-        return formatBaseX(
-          value,
-          2,
-          prefixBaseX,
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        );
-      case "o":
-        return formatBaseX(
-          value,
-          8,
-          prefixBaseX,
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        );
-      case "x":
-        return formatBaseX(
-          value,
-          16,
-          prefixBaseX,
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        );
-      case "X":
-        return formatBaseX(
-          value,
-          16,
-          prefixBaseX,
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        ).toUpperCase();
-      case "u":
-        return formatBaseX(
-          value,
-          10,
-          prefixBaseX,
-          leftJustify,
-          minWidth,
-          precision,
-          zeroPad,
-        );
-      case "i":
-      case "d":
-        number = +value | 0;
-        prefix = number < 0 ? "-" : positivePrefix;
-        value = prefix + pad(String(Math.abs(number)), precision, "0", false);
-        return justify(value, prefix, leftJustify, minWidth, zeroPad);
-      case "e":
-      case "E":
-      case "f":
-      case "F":
-      case "g":
-      case "G":
-        number = +value;
-        prefix = number < 0 ? "-" : positivePrefix;
-        method = ["toExponential", "toFixed", "toPrecision"][
-          "efg".indexOf(type.toLowerCase())
-        ];
-        textTransform = ["toString", "toUpperCase"]["eEfFgG".indexOf(type) % 2];
-        value = prefix + Math.abs(number)[method](precision);
-        return justify(value, prefix, leftJustify, minWidth, zeroPad)[
-          textTransform
-        ]();
-      default:
-        return substring;
+        case "s": return formatString(String(value), leftJustify, minWidth, precision, zeroPad, customPadChar);
+        case "c": return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
+        case "b": return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        case "o": return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        case "x": return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        case "X": return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad).toUpperCase();
+        case "u": return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        case "i":
+        case "d": {
+            const number = +value | 0;
+            const prefix = number < 0 ? "-" : positivePrefix;
+            const val = prefix + pad(String(Math.abs(number)), precision || 0, "0", false);
+            return justify(val, prefix, leftJustify, minWidth, zeroPad);
+        }
+        case "e": case "E": case "f": case "F": case "g": case "G": {
+            const number = +value;
+            const prefix = number < 0 ? "-" : positivePrefix;
+            const method = ["toExponential", "toFixed", "toPrecision"]["efg".indexOf(type.toLowerCase())] as 'toExponential' | 'toFixed' | 'toPrecision';
+            const textTransform = ["toString", "toUpperCase"]["eEfFgG".indexOf(type) % 2] as 'toString' | 'toUpperCase';
+            const val = prefix + (Math.abs(number) as any)[method](precision);
+            return (justify(val, prefix, leftJustify, minWidth, zeroPad) as any)[textTransform]();
+        }
+        default:
+            return substring;
     }
   };
 
   return format.replace(regex, doFormat);
 }
-
-
-
-export default sprintf;

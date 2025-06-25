@@ -12,7 +12,7 @@ import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/index.js'
+import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'

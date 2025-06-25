@@ -9,7 +9,9 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import {DHCPDProxy, IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/index.js'
+import DHCPDProxy from '../dhcpd-proxy/classes/proxy.js'
+import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
+
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
