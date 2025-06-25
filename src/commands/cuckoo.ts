@@ -12,7 +12,7 @@ import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
+import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
@@ -50,9 +50,11 @@ export default class Cuckoo extends Command {
         efi64_filename: 'ipxe.efi',
         host: n.address,
         subnet: n.cidr,
-        tftpserver: n.address
+        tftpserver: n.address,
+        broadcast: n.broadcast()
       }
-      pxe.dhcpStart(dhcpOptions)
+      console.log("starting dhcp")
+      pxe.dhcpdStart(dhcpOptions)
 
       /**
        * service tftp
@@ -63,11 +65,8 @@ export default class Cuckoo extends Command {
         port: 69,
         root: pxeRoot
       }
-      await pxe.tftpStart(tftpOptions)
 
-      /**
-       * service http
-       */
+      await pxe.tftpStart(tftpOptions)
       await pxe.httpStart()
     } else {
       Utils.useRoot(this.id)

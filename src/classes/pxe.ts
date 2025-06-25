@@ -9,12 +9,14 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import { dhcpd } from 'node-proxy-dhcpd'
+import DHCPDProxy from '../dhcpd-proxy/classes/proxy.js'
+import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
+import { WebSocketServer } from 'ws';
+import { Packet } from '../dhcpd-proxy/classes/packet.js';
+import { DhcpMessageType } from '../dhcpd-proxy/lib/packet/message-types.js';
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
-
-import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Settings from './settings.js'
@@ -84,14 +86,16 @@ export default class Pxe {
     await this.bios()
     await this.ipxe()
     await this.http()
+
   }
 
   /**
    *
    * @param dhcpOptions
    */
-  dhcpStart(dhcpOptions: IDhcpOptions) {
-    new dhcpd(dhcpOptions)
+  dhcpdStart(dhcpOptions: IDhcpOptions) {
+    console.log('CTRL-C to finish')
+    new DHCPDProxy(dhcpOptions)
   }
 
   /**
@@ -239,6 +243,7 @@ export default class Pxe {
 
     tftpServer.listen()
   }
+
 
   /**
    * Il resto PRIVATO
