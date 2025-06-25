@@ -9,13 +9,10 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import etrick_pkg from 'etrick';
-const { DHCPProxy } = etrick_pkg;
+import {DHCPDProxy, IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/index.js'
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
-
-import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Settings from './settings.js'
@@ -92,9 +89,9 @@ export default class Pxe {
    *
    * @param dhcpOptions
    */
-  dhcpStart(dhcpOptions: IDhcpOptions) {
+  dhcpdStart(dhcpOptions: IDhcpOptions) {
     console.log(dhcpOptions)
-    new DHCPProxy(dhcpOptions) // <-- Usa il nome della classe importata
+    new DHCPDProxy(dhcpOptions) // <-- Usa il nome della classe importata
   }
 
   /**

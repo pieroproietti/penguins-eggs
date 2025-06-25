@@ -12,7 +12,7 @@ import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import { IDhcpOptions, ITftpOptions } from '../interfaces/i-pxe.js'
+import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/index.js'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
@@ -54,7 +54,7 @@ export default class Cuckoo extends Command {
         broadcast: n.broadcast()
       }
       console.log("starting dhcp")
-      pxe.dhcpStart(dhcpOptions)
+      pxe.dhcpdStart(dhcpOptions)
 
       /**
        * service tftp
