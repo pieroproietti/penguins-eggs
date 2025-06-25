@@ -10,8 +10,10 @@ import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
 import DHCPDProxy from '../dhcpd-proxy/classes/proxy.js'
-import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
-
+import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
+import { WebSocketServer } from 'ws';
+import { Packet } from '../dhcpd-proxy/classes/packet.js';
+import { DhcpMessageType } from '../dhcpd-proxy/lib/packet/message-types.js';
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
@@ -92,8 +94,8 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
-    console.log(dhcpOptions)
-    new DHCPDProxy(dhcpOptions) // <-- Usa il nome della classe importata
+    console.log('CTRL-C to finish')
+    new DHCPDProxy(dhcpOptions)
   }
 
   /**
@@ -241,6 +243,7 @@ export default class Pxe {
 
     tftpServer.listen()
   }
+
 
   /**
    * Il resto PRIVATO

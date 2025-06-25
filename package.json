@@ -26,12 +26,12 @@
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "node-static": "^0.7.11",
-
         "react": "^18.3.1",
         "read": "^4.1.0",
         "shelljs": "^0.10.0",
         "systeminformation": "^5.27.6",
-        "tftp": "^0.1.2"
+        "tftp": "^0.1.2",
+        "ws": "^8.18.2"
     },
     "devDependencies": {
         "@oclif/prettier-config": "^0.2.1",
@@ -49,6 +49,7 @@
         "@types/react": "18.3.18",
         "@types/read": "^0.0.32",
         "@types/shelljs": "^0.8.16",
+        "@types/ws": "^8.18.1",
         "chai": "^5.2.0",
         "eslint": "^9.29.0",
         "eslint-config-oclif": "^6.0.75",
@@ -114,7 +115,7 @@
         "_postpack": "shx rm -f oclif.manifest.json",
         "_prepack": "oclif manifest && ocl -t linux-x64",
         "build": "shx rm -rf dist && tsc -b",
-        "deb": "shx rm -rf dist && tsc -p . && oclif manifest && pb deb --release $(cat ./release)",
+        "deb": "shx rm -rf dist && tsc -p . && pb deb --release $(cat ./release)",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",

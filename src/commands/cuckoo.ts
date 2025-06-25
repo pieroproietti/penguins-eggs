@@ -65,11 +65,8 @@ export default class Cuckoo extends Command {
         port: 69,
         root: pxeRoot
       }
-      await pxe.tftpStart(tftpOptions)
 
-      /**
-       * service http
-       */
+      await pxe.tftpStart(tftpOptions)
       await pxe.httpStart()
     } else {
       Utils.useRoot(this.id)
