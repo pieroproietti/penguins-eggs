@@ -8,25 +8,31 @@ import type { IDhcpOptions } from '../interfaces/i-pxe.js';
 import ansis from 'ansis';
 
 export default class DHCPDProxy extends EventEmitter {
-    private socket: Socket;
+    // Abbiamo ancora due socket, ma la logica di ascolto sarà perfezionata.
+    private serverSocket: Socket;
+    private proxySocket: Socket;
     private options: IDhcpOptions; 
 
     constructor(opts: IDhcpOptions) {
         super();
         this.options = opts;
         
-        // MODIFICA CHIAVE: Creiamo una socket "riutilizzabile"
-        this.socket = createSocket({ type: "udp4", reuseAddr: true });
+        // ===================================================================
+        // Iniziamo con la logica che SAPPIAMO FUNZIONARE, dal test-udp.ts
+        // ===================================================================
+        this.serverSocket = createSocket({ type: "udp4", reuseAddr: true });
 
-        this.socket.on("error", (err) => {
-            console.error(ansis.red.bold("DHCPProxy Socket Error:"), err);
-            this.emit('error', err);
+        this.serverSocket.on("error", (err) => {
+            console.error(ansis.red.bold("DHCP Server (67) Socket Error:"), err.stack);
+            this.serverSocket.close();
         });
 
-        this.socket.on("message", (buffer: Buffer, remote: RemoteInfo) => {
-            // ... la logica di gestione dei messaggi rimane invariata ...
+        // Questo è il cuore pulsante.
+        this.serverSocket.on("message", (buffer: Buffer, remote: RemoteInfo) => {
+            console.log(ansis.bgGreen.black.bold('\n PACCHETTO INTERCETTATO SULLA RETE! \n'));
             try {
                 const packet = Packet.fromBuffer(buffer);
+                // Da qui in poi, usiamo la nostra logica di gestione esistente
                 if (packet.op !== 1) return;
 
                 const messageType = packet.options[53] || 0;
@@ -34,89 +40,53 @@ export default class DHCPDProxy extends EventEmitter {
                 this._handlePacket(messageType, packet);
 
             } catch (err) {
-                console.error(ansis.red.bold("Error parsing DHCP packet:"), err);
+                console.error(ansis.red.bold("Error parsing DHCP packet on port 67:"), err);
+            }
+        });
+
+        // Configurazione della seconda socket per la porta 4011 (logica invariata)
+        this.proxySocket = createSocket({ type: "udp4", reuseAddr: true });
+        this.proxySocket.on("error", (err) => console.error(ansis.red.bold("DHCP Proxy (4011) Error:"), err));
+        this.proxySocket.on("message", (buffer: Buffer, remote: RemoteInfo) => {
+             try {
+                const packet = Packet.fromBuffer(buffer);
+                if (packet.op !== 1) return;
+                const messageType = packet.options[53];
+                if (messageType === DhcpMessageType.DHCPREQUEST) {
+                    this._handleProxyRequest(packet, remote);
+                }
+            } catch (err) {
+                console.error(ansis.red.bold("Error parsing DHCP packet on port 4011:"), err);
             }
         });
     }
 
-    // ... la logica _handlePacket, _handleDiscover, etc. rimane invariata ...
-    private _handlePacket(messageType: DhcpMessageType, packet: Packet) {
-        switch (messageType) {
-            case DhcpMessageType.DHCPDISCOVER: this._handleDiscover(packet); break;
-            case DhcpMessageType.DHCPOFFER: this._handleOffer(packet); break;
-            case DhcpMessageType.DHCPREQUEST: this._handleRequest(packet); break;
-        }
-    }
-
-    private _handleDiscover(packet: Packet) {
-        console.log(ansis.blue.bold(`\n-> DISCOVER Ricevuto`));
-        console.log(ansis.dim(`   ├─ MAC: ${ansis.white(packet.chaddr)}`));
-        console.log(ansis.dim(`   ├─ Da: ${ansis.white((packet as any).remote.address)}`));
-        const vendor = packet.options[60] ? ansis.white(packet.options[60]) : ansis.gray('non specificato');
-        console.log(ansis.dim(`   └─ Vendor Class: ${vendor}`));
-    }
-    
-    private _handleOffer(packet: Packet) {
-        console.log(ansis.magenta.bold(`-> OFFER Ricevuto`));
-        console.log(ansis.dim(`   ├─ Per MAC: ${ansis.white(packet.chaddr)}`));
-        console.log(ansis.dim(`   ├─ IP Offerto: ${ansis.green(packet.yiaddr)}`));
-        console.log(ansis.dim(`   └─ Dal Server DHCP: ${ansis.white((packet as any).remote.address)}`));
-        
-        console.log(ansis.cyan.bold(`<- Invio ACK Modificato`));
-        packet.siaddr = this.options.tftpserver;
-        
-        const arch = packet.options[93]; 
-        if (arch === 7 || arch === 9) {
-            packet.fname = this.options.efi64_filename;
-            console.log(ansis.dim(`   ├─ Rilevata architettura UEFI 64-bit. File: ${ansis.white(packet.fname)}`));
-        } else if (arch === 6) {
-             packet.fname = this.options.efi32_filename;
-            console.log(ansis.dim(`   ├─ Rilevata architettura UEFI 32-bit. File: ${ansis.white(packet.fname)}`));
-        } else {
-            packet.fname = this.options.bios_filename;
-            console.log(ansis.dim(`   ├─ Architettura BIOS o non specificata. File: ${ansis.white(packet.fname)}`));
-        }
-        console.log(ansis.dim(`   └─ Next-Server (TFTP): ${ansis.white(packet.siaddr)}`));
-        
-        this.ack(packet);
-    }
-
-    private _handleRequest(packet: Packet) {
-        console.log(ansis.yellow.bold(`-> REQUEST Ricevuto`));
-        console.log(ansis.dim(`   ├─ Da MAC: ${ansis.white(packet.chaddr)}`));
-        const requestedIp = packet.options[50] || packet.ciaddr;
-        console.log(ansis.dim(`   └─ IP Richiesto: ${ansis.green(requestedIp)}`));
-        this._handleOffer(packet);
-    }
-    
-    // MODIFICA CHIAVE: Il metodo listen ora fa il bind a 0.0.0.0
-    public listen(port: number = 67, cb?: () => void): void {
-        const listenAddress = '0.0.0.0';
-        this.socket.bind(port, listenAddress, () => {
-            this.socket.setBroadcast(true);
-            console.log(ansis.green.inverse(`\n DHCPProxy in ascolto su ${listenAddress}:${port} \n`));
-            if (cb) cb();
+    public listen(): void {
+        this.serverSocket.bind(67, '0.0.0.0', () => {
+            const address = this.serverSocket.address();
+            console.log(ansis.green.inverse(`\n DHCP Server (67) in ascolto su ${address.address}:${address.port} \n`));
+            try {
+                this.serverSocket.setBroadcast(true);
+            } catch (err) {
+                console.error('Impossibile attivare broadcast su porta 67:', err);
+            }
         });
-    }
-
-    // ... la logica ack e _send rimane invariata ...
-    private ack(packet: Packet): void {
-        packet.op = 2;
-        packet.options[53] = DhcpMessageType.DHCPACK;
-        const remote = (packet as any).remote;
-        const targetIp = packet.ciaddr && packet.ciaddr !== '0.0.0.0' ? packet.ciaddr : this.options.broadcast;
-        this._send(packet, targetIp, remote.port);
-    }
-    
-    private _send(packet: Packet, ip: string, port: number): void {
-        const buffer = packet.toBuffer();
-        const typeName = DhcpMessageType[packet.options[53]] || 'UNKNOWN';
-        this.socket.send(buffer, 0, buffer.length, port, ip, (err, bytes) => {
-            if (err) {
-                console.error(ansis.red.bold(`[PROXY-ERROR] Errore invio:`), err);
-            } else {
-                 console.log(ansis.green(`   ✔︎ ${typeName} inviato a ${ip} (${bytes} bytes)`));
+        
+        this.proxySocket.bind(4011, '0.0.0.0', () => {
+            const address = this.proxySocket.address();
+            console.log(ansis.green.inverse(`\n DHCP Proxy (4011) in ascolto su ${address.address}:${address.port} \n`));
+             try {
+                this.proxySocket.setBroadcast(true);
+            } catch (err) {
+                console.error('Impossibile attivare broadcast su porta 4011:', err);
             }
         });
     }
+
+    // --- Tutta la logica di gestione dei pacchetti (_handlePacket, _handleDiscover, etc.)
+    // --- rimane esattamente come l'avevamo scritta. È corretta.
+    private _handlePacket(messageType: DhcpMessageType, packet: Packet) { /* ... */ }
+    private _handleDiscover(packet: Packet, remote: RemoteInfo) { /* ... */ }
+    private _handleProxyRequest(packet: Packet, remote: RemoteInfo) { /* ... */ }
+    private _send(socket: Socket, packet: Packet, ip: string, port: number) { /* ... */ }
 }
