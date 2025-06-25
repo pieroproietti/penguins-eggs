@@ -87,8 +87,6 @@ export default class DHCPDProxy extends EventEmitter {
         
         this.ack(packet);
     }
-    
-    // ... il resto della classe (listen, _send, ack, etc.) rimane invariato ...
 
     public listen(port: number = 67, address: string = '0.0.0.0', cb?: () => void): void {
         this.socket.bind(port, address, () => {
