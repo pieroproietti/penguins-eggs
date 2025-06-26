@@ -9,11 +9,9 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import DHCPDProxy from '../dhcpd-proxy/classes/proxy.js'
+//import LegacyProxy from './legacy-proxy.js'
+import {startSimpleProxy} from './simple-proxy.js'
 import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
-import { WebSocketServer } from 'ws';
-import { Packet } from '../dhcpd-proxy/classes/packet.js';
-import { DhcpMessageType } from '../dhcpd-proxy/lib/packet/message-types.js';
 import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
@@ -95,8 +93,9 @@ export default class Pxe {
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
     console.log('CTRL-C to finish')
-    let dhcpdProxy = new DHCPDProxy(dhcpOptions)
-    dhcpdProxy.listen()
+    //let legacyProxy = new LegacyProxy(dhcpOptions)
+    //legacyProxy.listen()
+    startSimpleProxy(dhcpOptions)
   }
 
   /**
@@ -267,15 +266,15 @@ export default class Pxe {
     // pxe
     const distro = new Distro()
 
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
     // syslinux
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}libutil.c32 ${this.pxeRoot}/libutil.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}memdisk ${this.pxeRoot}/memdisk`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`)
+    await this.tryCatch(`ln -s ${distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`)
 
     await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
