@@ -95,7 +95,8 @@ export default class Pxe {
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
     console.log('CTRL-C to finish')
-    new DHCPDProxy(dhcpOptions)
+    let dhcpdProxy = new DHCPDProxy(dhcpOptions)
+    dhcpdProxy.listen()
   }
 
   /**
