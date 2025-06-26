@@ -9,8 +9,7 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-//import LegacyProxy from './legacy-proxy.js'
-import {startSimpleProxy} from './simple-proxy.js'
+import {startSimpleProxy} from '../dhcpd-proxy/simple-proxy.js'
 import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
 import nodeStatic from 'node-static'
 // @ts-ignore
@@ -93,8 +92,6 @@ export default class Pxe {
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
     console.log('CTRL-C to finish')
-    //let legacyProxy = new LegacyProxy(dhcpOptions)
-    //legacyProxy.listen()
     startSimpleProxy(dhcpOptions)
   }
 
@@ -266,8 +263,10 @@ export default class Pxe {
     // pxe
     const distro = new Distro()
 
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    // await this.tryCatch(`ln -s ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+    // await this.tryCatch(`ln -s ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    await this.tryCatch(`cp ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+    await this.tryCatch(`cp ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
     // syslinux
     await this.tryCatch(`ln -s ${distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)

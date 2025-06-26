@@ -61,6 +61,7 @@
         "prettier": "^3.5.3",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
+        "ts-prune": "^0.10.3",
         "typescript": "^5.7.3"
     },
     "engines": {
@@ -122,13 +123,14 @@
         "posttest": "pnpm run lint",
         "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r . && pb tarballs --release $(cat ./release)",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+        "unused": "ts-prune",
         "version": "oclif readme && git add README.md"
     },
     "types": "dist/index.d.ts",
     "pnpm": {
         "overrides": {
-        "react": "^18.3.1",
-        "@types/react": "^18.3.18"
+            "react": "^18.3.1",
+            "@types/react": "^18.3.18"
         }
-    }    
+    }
 }
