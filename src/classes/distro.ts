@@ -80,13 +80,6 @@ const FAMILY_CONFIGS: Record<string, FamilyConfig> = {
     codenameLikeId: 'openmamba',
     liveMediumPath: '/run/initramfs/live/'
   },
-  aldus: {
-    familyId: 'aldus',
-    distroLike: 'Aldus',
-    codenameId: 'rolling',
-    codenameLikeId: 'aldus',
-    liveMediumPath: '/run/initramfs/live/'
-  },
   voidlinux: {
     familyId: 'voidlinux',
     distroLike: 'Voidlinux',
@@ -134,7 +127,6 @@ class DistroDetector {
     if (distroId === 'Openmamba') return 'openmamba'
     if (distroId.includes('Opensuse')) return 'opensuse'
     if (distroId === 'Voidlinux') return 'voidlinux'
-    if (distroId === 'Aldus') return 'aldus'
     
     return null
   }

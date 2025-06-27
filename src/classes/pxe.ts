@@ -69,9 +69,9 @@ export default class Pxe {
     }
 
     if (fs.existsSync(this.eggRoot)) {
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
     }
 
@@ -91,8 +91,7 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
-    console.log('CTRL-C to finish')
-    startSimpleProxy(dhcpOptions)
+   startSimpleProxy(dhcpOptions)
   }
 
   /**
@@ -163,23 +162,13 @@ export default class Pxe {
      */
     const pathFiles = this.eggRoot + 'live'
     const files = fs.readdirSync(pathFiles)
+    // nomina vmlinux e initrdImg 
     for (const file of files) {
-      if (this.settings.distro.familyId === 'debian') {
-        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
-          this.vmlinuz = path.basename(file)
-        }
-
-        if (path.basename(file).slice(0, 6) === 'initrd') {
+      if (path.basename(file).slice(0, 7) === 'vmlinuz') {
+        this.vmlinuz = path.basename(file)
+      }
+      if (path.basename(file).slice(0, 4) === 'init') {
           this.initrdImg = path.basename(file)
-        }
-      } else if (this.settings.distro.familyId === 'archlinux') {
-        if (path.basename(file).slice(0, 7) === 'vmlinuz') {
-          this.vmlinuz = path.basename(file)
-        }
-
-        if (path.basename(file).slice(0, 9) === 'initramfs') {
-          this.initrdImg = path.basename(file)
-        }
       }
     }
 
@@ -206,8 +195,9 @@ export default class Pxe {
   async httpStart() {
     const port = 80
     const httpRoot = this.pxeRoot + '/'
-    console.log('http root: ' + httpRoot)
     console.log('http listening: 0.0.0.0:' + port)
+    console.log('pxe root: ' + httpRoot)
+
     // const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
     const file = new nodeStatic.Server(httpRoot)
     http
