@@ -53,7 +53,6 @@ export default class Cuckoo extends Command {
         tftpserver: n.address,
         broadcast: n.broadcast()
       }
-      console.log("starting dhcp")
       pxe.dhcpdStart(dhcpOptions)
 
       /**

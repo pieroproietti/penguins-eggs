@@ -10,6 +10,7 @@ import ansis from 'ansis';
 import { Packet } from '../dhcpd-proxy/classes/packet.js';
 import { DhcpMessageType } from '../dhcpd-proxy//lib/packet/message-types.js';
 import type { IDhcpOptions } from '../dhcpd-proxy//interfaces/i-pxe.js';
+import Utils from '../classes/utils.js';
 
 // Un semplice Map in memoria per tracciare gli IP offerti
 const offeredIPs = new Map<string, string>();
@@ -19,6 +20,9 @@ const offeredIPs = new Map<string, string>();
  * @param options Le opzioni di configurazione PXE
  */
 export function startSimpleProxy(options: IDhcpOptions): void {
+
+  Utils.warning("Starting dhcp-proxy service, CTRL-C to exit!")
+  
   // 1. Creiamo la socket, esattamente come nel test funzionante
   const socket = createSocket({ type: 'udp4', reuseAddr: true });
 
@@ -55,6 +59,7 @@ export function startSimpleProxy(options: IDhcpOptions): void {
 
   // 4. Avviamo l'ascolto
   socket.bind(67, '0.0.0.0');
+
 
   // --- Funzioni Helper Interne ---
 
@@ -140,4 +145,5 @@ export function startSimpleProxy(options: IDhcpOptions): void {
       }
     });
   }
+
 }
