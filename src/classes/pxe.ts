@@ -287,6 +287,7 @@ export default class Pxe {
        * ALPINE
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
+      // alpinelivelabel=colibri alpinelivesquashfs=/mnt/live/filesystem.squashfs
       content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       content += 'sysappend 3\n'
       content += '\n'
@@ -317,7 +318,6 @@ export default class Pxe {
         content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       }
     } 
-
 
     if (this.isos.length > 0) {
       content += 'menu separator\n'
