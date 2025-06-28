@@ -34,6 +34,7 @@ export default class Pxe {
   isos: string[] = [] // cuckoo's eggs
   nest = ''
   pxeRoot = ''
+  distro = {} as Distro
   settings = {} as Settings
   verbose = false
   vmlinuz = ''
@@ -62,9 +63,9 @@ export default class Pxe {
     await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
     await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    if (this.settings.distro.distroId === 'Manjaro') {
+    if (this.distro.distroId === 'Manjaro') {
       await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-    } else if (this.settings.distro.distroId === 'Arch' || this.settings.distro.distroId === 'RebornOS') {
+    } else if (this.distro.distroId === 'Arch' || this.distro.distroId === 'RebornOS') {
       await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
     }
 
@@ -100,20 +101,19 @@ export default class Pxe {
    * cuckoo's nest
    */
   async fertilization() {
-    this.settings = new Settings()
-    await this.settings.load()
+    this.distro = new Distro()
 
     if (Utils.isLive()) {
-      this.eggRoot = this.settings.distro.liveMediumPath
+      this.eggRoot = this.distro.liveMediumPath
       if (
         // ArchisoCompatibles
-        this.settings.distro.distroId === 'Arch' ||
-        this.settings.distro.distroId === 'ArcoLinux' ||
-        this.settings.distro.distroId === 'blendOS' ||
-        this.settings.distro.distroId === 'EndeavourOS' ||
-        this.settings.distro.distroId === 'Garuda' ||
-        this.settings.distro.distroId === 'phyOS' ||
-        this.settings.distro.distroId === 'RebornOS'
+        this.distro.distroId === 'Arch' ||
+        this.distro.distroId === 'ArcoLinux' ||
+        this.distro.distroId === 'blendOS' ||
+        this.distro.distroId === 'EndeavourOS' ||
+        this.distro.distroId === 'Garuda' ||
+        this.distro.distroId === 'phyOS' ||
+        this.distro.distroId === 'RebornOS'
       ) {
         this.eggRoot = '/run/archiso/bootmnt/'
         await exec(`mkdir ${this.eggRoot} -p`)
@@ -281,7 +281,7 @@ export default class Pxe {
     content += 'label egg\n'
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
 
-    if (this.settings.distro.familyId === 'alpine') {
+    if (distro.familyId === 'alpine') {
       /**
        * ALPINE
        */
@@ -303,11 +303,11 @@ export default class Pxe {
       content += 'sysappend 3\n'
       content += '\n'
 
-    } else if (this.settings.distro.familyId === 'debian') {
+    } else if (distro.familyId === 'debian') {
       /**
        * DEBIAN
        */
-      const clid = this.settings.distro.codenameLikeId
+      const clid = this.distro.codenameLikeId
       if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
         content += 'kernel vmlinuz\n'
         content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
