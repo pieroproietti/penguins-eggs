@@ -280,7 +280,30 @@ export default class Pxe {
     content += '\n'
     content += 'label egg\n'
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
-    if (this.settings.distro.familyId === 'debian') {
+    if (this.settings.distro.familyId === 'alpine') {
+      /**
+       * ALPINE
+       */
+      const clid = this.settings.distro.codenameLikeId
+      content += `kernel http://${Utils.address()}/vmlinuz\n`
+      content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+      content += 'sysappend 3\n'
+      content += '\n'
+
+    } else if (distro.familyId === 'archlinux') {
+      /**
+       * ARCH LINUX
+       */
+      let tool = 'archiso'
+      if (distro.distroId === 'Manjarolinux') {
+        tool = 'miso'
+      }
+      content += `kernel http://${Utils.address()}/vmlinuz\n`
+      content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
+      content += 'sysappend 3\n'
+      content += '\n'
+
+    } else if (this.settings.distro.familyId === 'debian') {
       /**
        * DEBIAN
        */
@@ -292,21 +315,9 @@ export default class Pxe {
         content += `kernel http://${Utils.address()}/vmlinuz\n`
         content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       }
-    } else if (distro.familyId === 'archlinux') {
-      /**
-       * ARCH LINUX
-       */
-      let tool = 'archiso'
-      if (distro.distroId === 'Manjarolinux') {
-        tool = 'miso'
-      }
+    } 
 
-      content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
-      content += 'sysappend 3\n'
-      content += '\n'
-    }
-
+    
     if (this.isos.length > 0) {
       content += 'menu separator\n'
       for (const iso of this.isos) {
