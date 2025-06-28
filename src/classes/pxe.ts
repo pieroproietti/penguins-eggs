@@ -101,6 +101,10 @@ export default class Pxe {
    * cuckoo's nest
    */
   async fertilization() {
+    // to remove
+    this.settings = new Settings()
+    this.settings.load()
+
     this.distro = new Distro()
 
     if (Utils.isLive()) {
@@ -127,9 +131,6 @@ export default class Pxe {
       console.log('no image available, build an image with: sudo eggs produce')
       process.exit()
     }
-
-    const settings = new Settings()
-    settings.load()
 
     /**
      * se pxeRoot non esiste viene creato
