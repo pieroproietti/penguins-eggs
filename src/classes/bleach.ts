@@ -53,7 +53,7 @@ export default class Bleach {
     }
 
     // remove flatpack cache
-    await exec(`rm -rf /var/tmp/flatpak-cache-*`, echo)
+    await rm(`/var/tmp/flatpak-cache-*`, verbose)
 
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
