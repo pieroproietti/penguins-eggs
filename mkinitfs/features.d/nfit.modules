@@ -1,0 +1,2 @@
+kernel/drivers/acpi/nfit/*
+kernel/drivers/nvdimm/*
