@@ -287,33 +287,7 @@ export default class Pxe {
        * ALPINE
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append \
-        initrd=http://${Utils.address()}/live/initramfs-lts \
-        ip=dhcp \
-        alpinelivelabel=colibri-vs \
-        alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs \
-        priority=critical \
-        retbleed=off \
-        mitigations=off \
-        audit=0 \
-        amd_pstate.enable=1 \
-        amd-pstate=active \
-        intel_pstate=enable \
-        nowatchdog \
-        loglevel=0 \
-        fsck.mode=skip \
-        debugfs=off \
-        nmi_watchdog=0 \
-        debug=0 \
-        audit=0 \
-        show_ssp=0 \
-        earlyprintk=off \
-        kaslr=off \
-        no_pasr \
-        cfi=of \
-        quiet \
-        splash`
-
+      content += `append initrd=http://${Utils.address()}/live/initramfs-lts alpinelivelabel=colibri-vs alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
