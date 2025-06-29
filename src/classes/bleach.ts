@@ -52,10 +52,14 @@ export default class Bleach {
       await exec(`xbps-remove -O`, echo)
     }
 
+    // remove flatpack cache
+    await exec(`rm -rf /var/tmp/flatpak-cache-*`, echo)
+
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
   }
+
 
   /**
    * cleanHistory
