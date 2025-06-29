@@ -52,14 +52,25 @@ export default class Bleach {
       await exec(`xbps-remove -O`, echo)
     }
 
-    // remove flatpack cache
-    await rm(`/var/tmp/flatpak-cache-*`, verbose)
-
+    await this.cleanFastpack(verbose)
     await this.cleanHistory(verbose)
     await this.cleanJournal(verbose)
     await this.cleanSystemCache(verbose)
   }
 
+
+  /**
+   * 
+   * @param verbose 
+   */
+  private async cleanFastpack(verbose=false) {
+    let echo = { capture: false, echo: false, ignore: true }
+    if (verbose) {
+      echo = { capture: false, echo: true, ignore: true }
+      Utils.warning('cleaning fastpack')
+    }
+    await exec(`rm /var/tmp/flatpak-cache-* -rf`, echo)
+  }
 
   /**
    * cleanHistory
