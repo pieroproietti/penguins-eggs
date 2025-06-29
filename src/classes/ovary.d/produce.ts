@@ -68,7 +68,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
      */
     if (this.kernel === '') {
         if (this.familyId === 'alpine') {
-            // to do
+            const moduleDirs = fs.readdirSync('/lib/modules')
+            this.kernel = moduleDirs[0]
+
         } else if (this.familyId === 'archlinux') {
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
             this.kernel = moduleDirs[0]
