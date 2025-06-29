@@ -288,31 +288,32 @@ export default class Pxe {
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
       content += `append \
-                  initrd=http://${Utils.address()}/live/initramfs-lts \
-                  alpinelivelabel=network \
-                  alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs \
-                  amd_pstate.enable=1 \
-                  amd-pstate=active \
-                  audit=0 \
-                  audit=0 \
-                  cfi=of \
-                  debug=0 \
-                  debugfs=off \
-                  earlyprintk=off \
-                  fsck.mode=skip \
-                  intel_pstate=enable \
-                  ip=dhcp \
-                  kaslr=off \
-                  loglevel=0 \
-                  mitigations=off \
-                  nmi_watchdog=0 \
-                  no_pasr \
-                  nowatchdog \
-                  priority=critical \
-                  quiet \
-                  retbleed=off \
-                  show_ssp=0 \
-                  splash\n`
+        initrd=http://${Utils.address()}/live/initramfs-lts \
+        ip=dhcp \
+        alpinelivelabel=colibri-vs \
+        alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs \
+        priority=critical \
+        retbleed=off \
+        mitigations=off \
+        audit=0 \
+        amd_pstate.enable=1 \
+        amd-pstate=active \
+        intel_pstate=enable \
+        nowatchdog \
+        loglevel=0 \
+        fsck.mode=skip \
+        debugfs=off \
+        nmi_watchdog=0 \
+        debug=0 \
+        audit=0 \
+        show_ssp=0 \
+        earlyprintk=off \
+        kaslr=off \
+        no_pasr \
+        cfi=of \
+        quiet \
+        splash`
+
 
     } else if (distro.familyId === 'archlinux') {
       /**
