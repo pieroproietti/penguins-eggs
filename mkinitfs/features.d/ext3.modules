@@ -1,3 +1,0 @@
-kernel/arch/*/crypto/crc32*
-kernel/crypto/crc32*
-kernel/fs/ext4
