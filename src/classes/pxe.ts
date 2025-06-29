@@ -271,7 +271,7 @@ export default class Pxe {
     let content = ''
     content += '# eggs: pxelinux.cfg/default\n'
     content += '# search path for the c32 support libraries (libcom32, libutil etc.)\n'
-    content += 'path\n'
+    content += `path /\n`
     content += 'include isolinux.theme.cfg\n'
     content += 'UI vesamenu.c32\n'
     content += '\n'
@@ -279,7 +279,7 @@ export default class Pxe {
     content += 'PROMPT 0\n'
     content += 'TIMEOUT 200\n'
     content += '\n'
-    content += 'label egg\n'
+    content += `label ${this.distro.distroId}\n`
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
 
     if (distro.familyId === 'alpine') {
@@ -287,10 +287,8 @@ export default class Pxe {
        * ALPINE
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
-      // alpinelivelabel=colibri alpinelivesquashfs=/mnt/live/filesystem.squashfs
-      content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-      content += 'sysappend 3\n'
-      content += '\n'
+      content += `initrd=http://${Utils.address()}/initrd\n`
+      content += `append initrd=http://${Utils.address()}/live/initramfs-lts http://${Utils.address()}/live/filesystem.squashfs priority=critical retbleed=off mitigations=off audit=0 amd_pstate.enable=1 amd-pstate=active intel_pstate=enable nowatchdog loglevel=0 fsck.mode=skip debugfs=off nmi_watchdog=0 debug=0 audit=0 show_ssp=0 earlyprintk=off kaslr=off no_pasr cfi=of quiet splash\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
