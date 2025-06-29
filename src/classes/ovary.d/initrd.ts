@@ -27,7 +27,7 @@ export async function initrdAlpine(this: Ovary) {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../../mkinitfs/live.conf`)
-    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg}`, Utils.setEcho(true))
+    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel}`, Utils.setEcho(true))
 }
 
 
