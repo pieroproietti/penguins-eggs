@@ -63,20 +63,6 @@ export default class Pxe {
 
     if (Utils.isLive()) {
       this.eggRoot = this.distro.liveMediumPath
-      if (
-        // ArchisoCompatibles
-        this.distro.distroId === 'Arch' ||
-        this.distro.distroId === 'ArcoLinux' ||
-        this.distro.distroId === 'blendOS' ||
-        this.distro.distroId === 'EndeavourOS' ||
-        this.distro.distroId === 'Garuda' ||
-        this.distro.distroId === 'phyOS' ||
-        this.distro.distroId === 'RebornOS'
-      ) {
-        this.eggRoot = '/run/archiso/bootmnt/'
-        await exec(`mkdir ${this.eggRoot} -p`)
-        await exec(`mount /dev/sr0 ${this.eggRoot}`)
-      }
     } else {
       this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
     }
