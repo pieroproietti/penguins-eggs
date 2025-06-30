@@ -29,7 +29,7 @@
         "react": "^18.3.1",
         "read": "^4.1.0",
         "shelljs": "^0.10.0",
-        "systeminformation": "^5.27.6",
+        "systeminformation": "^5.27.7",
         "tftp": "^0.1.2",
         "ws": "^8.18.2"
     },
@@ -51,7 +51,7 @@
         "@types/shelljs": "^0.8.16",
         "@types/ws": "^8.18.1",
         "chai": "^5.2.0",
-        "eslint": "^9.29.0",
+        "eslint": "^9.30.0",
         "eslint-config-oclif": "^6.0.75",
         "eslint-config-prettier": "^10.1.5",
         "glob": "^11.0.3",
