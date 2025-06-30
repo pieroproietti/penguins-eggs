@@ -2,7 +2,6 @@
  * simple-proxy.ts
  * Un proxy DHCP minimale che agisce come un mini-server DHCP completo
  * solo per i client PXE, per aggirare le protezioni di rete.
- * Basato sulla logica del test 'test-udp.ts' che ha funzionato.
  */
 
 import { createSocket, Socket, RemoteInfo } from 'dgram';
@@ -20,10 +19,8 @@ const offeredIPs = new Map<string, string>();
  */
 export function startSimpleProxy(options: IDhcpOptions): void {
   
-  // 1. Creiamo la socket, esattamente come nel test funzionante
   const socket = createSocket({ type: 'udp4', reuseAddr: true });
 
-  // 2. Impostiamo i listener
   socket.on('error', (err) => {
     console.error(ansis.red.bold(`ERRORE SOCKET: ${err.stack}`));
     socket.close();
@@ -35,15 +32,12 @@ export function startSimpleProxy(options: IDhcpOptions): void {
     console.log(ansis.green.inverse(`\n Proxy DHCP listening su ${address.address}:${address.port}. CTRL-C to end!\n`));
   });
 
-  // 3. Il cuore della logica, nel listener 'message'
   socket.on('message', (buffer: Buffer, rinfo: RemoteInfo) => {
     try {
       const packet = Packet.fromBuffer(buffer);
       (packet as any).remote = rinfo;
-
       const messageType = packet.options[53] || 0;
 
-      // Logica di gestione basata sul tipo di pacchetto
       if (packet.op === 1 && messageType === DhcpMessageType.DHCPDISCOVER) {
         handleDiscover(packet, options);
       } else if (packet.op === 1 && messageType === DhcpMessageType.DHCPREQUEST) {
@@ -54,11 +48,30 @@ export function startSimpleProxy(options: IDhcpOptions): void {
     }
   });
 
-  // 4. Avviamo l'ascolto
   socket.bind(67, '0.0.0.0');
 
 
   // --- Funzioni Helper Interne ---
+
+  function setBootFilename(packet: Packet, opts: IDhcpOptions): string {
+    const isIpxe = packet.options[77] && packet.options[77].toString().includes('iPXE');
+    const arch = packet.options[93] || packet.options[60];
+    const isUefi64 = arch && (String(arch).includes('00007') || String(arch).includes('00009'));
+
+    // LOGICA DI ASSEGNAZIONE PRECISA
+    if (isIpxe && isUefi64) {
+        // CASO 1: Il client è iPXE e anche UEFI. Offriamo lo script!
+        console.log(ansis.magenta.bold(`<- Rilevato client iPXE su UEFI! Offro script autoexec...`));
+        return `http://${opts.host}/autoexec.ipxe`;
+    } else if (isUefi64) {
+        // CASO 2: Il client è UEFI ma non è ancora iPXE. Offriamo il bootloader iPXE per UEFI.
+        return opts.efi64_filename;
+    } else {
+        // CASO 3: Il client è BIOS. Offriamo il bootloader iPXE per BIOS.
+        // (Aggiunta logica per altri tipi di architettura se necessario)
+        return opts.bios_filename;
+    }
+  }
 
   function handleDiscover(packet: Packet, opts: IDhcpOptions): void {
     console.log(ansis.blue.bold(`\n-> DISCOVER Ricevuto`));
@@ -70,27 +83,18 @@ export function startSimpleProxy(options: IDhcpOptions): void {
       const offerPacket = new Packet(packet);
       offerPacket.op = 2; // BOOTREPLY
       
-      // NOTA: Questa è una logica di assegnazione IP molto basilare.
-      // Prende l'IP del server e cambia l'ultimo ottetto.
-      // Funziona per un test, ma non è robusta per più client.
       const ipParts = opts.host.split('.');
-      ipParts[3] = (parseInt(ipParts[3]) + 10).toString(); // Es. 192.168.1.192 -> 192.168.1.202
+      ipParts[3] = (parseInt(ipParts[3]) + 10).toString(); 
       const offeredIp = ipParts.join('.');
-      offeredIPs.set(packet.chaddr, offeredIp); // Salviamo l'offerta
+      offeredIPs.set(packet.chaddr, offeredIp); 
 
-      offerPacket.yiaddr = offeredIp; // Assegniamo l'IP
-      offerPacket.siaddr = opts.tftpserver; // Next-server IP
+      offerPacket.yiaddr = offeredIp;
+      offerPacket.siaddr = opts.tftpserver;
       offerPacket.options[53] = DhcpMessageType.DHCPOFFER;
-      offerPacket.options[54] = opts.host; // Ci identifichiamo come il server
+      offerPacket.options[54] = opts.host;
 
-      const arch = packet.options[93] || packet.options[60];
-      if (arch && (String(arch).includes('00007') || String(arch).includes('00009'))) {
-        offerPacket.fname = opts.efi64_filename;
-      } else if (arch && String(arch).includes('00006')) {
-        offerPacket.fname = opts.efi32_filename;
-      } else {
-        offerPacket.fname = opts.bios_filename;
-      }
+      // Imposta il filename usando la nuova funzione logica
+      offerPacket.fname = setBootFilename(packet, opts);
 
       console.log(ansis.dim(`   ├─ Offro IP: ${ansis.green(offeredIp)}`));
       console.log(ansis.dim(`   ├─ Next-Server: ${ansis.white(offerPacket.siaddr)}`));
@@ -102,7 +106,6 @@ export function startSimpleProxy(options: IDhcpOptions): void {
 
   function handleRequest(packet: Packet, opts: IDhcpOptions): void {
     const offeredIp = offeredIPs.get(packet.chaddr);
-    // Rispondiamo solo se il client sta richiedendo l'IP che gli abbiamo offerto
     if (!offeredIp || (packet.options[50] && packet.options[50] !== offeredIp)) {
         return;
     }
@@ -117,15 +120,8 @@ export function startSimpleProxy(options: IDhcpOptions): void {
     ackPacket.options[53] = DhcpMessageType.DHCPACK;
     ackPacket.options[54] = opts.host;
 
-    // Aggiungiamo di nuovo il filename per sicurezza
-    const arch = packet.options[93] || packet.options[60];
-    if (arch && (String(arch).includes('00007') || String(arch).includes('00009'))) {
-        ackPacket.fname = opts.efi64_filename;
-    } else if (arch && String(arch).includes('00006')) {
-        ackPacket.fname = opts.efi32_filename;
-    } else {
-        ackPacket.fname = opts.bios_filename;
-    }
+    // Imposta il filename usando la stessa logica
+    ackPacket.fname = setBootFilename(packet, opts);
 
     console.log(ansis.cyan.bold(`<- Invio ACK finale...`));
     send(ackPacket, opts.broadcast, 68);
@@ -142,5 +138,4 @@ export function startSimpleProxy(options: IDhcpOptions): void {
       }
     });
   }
-
 }
