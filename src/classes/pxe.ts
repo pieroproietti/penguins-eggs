@@ -277,6 +277,8 @@ export default class Pxe {
       /**
        * ARCH LINUX
        */
+      await exec (`mkdir -p ${this.pxeRoot}/arch/x86_64 -p`)
+      await exec (`ln -s ${this.pxeRoot}/live/filesystem.squashfs ${this.pxeRoot}/arch/x86_64/airootfs.sfs`)
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
