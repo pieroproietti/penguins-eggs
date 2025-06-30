@@ -70,9 +70,9 @@ export default class Pxe {
     }
 
     if (fs.existsSync(this.eggRoot)) {
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`)
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
     }
 
@@ -254,8 +254,6 @@ export default class Pxe {
     // pxe
     const distro = new Distro()
 
-    // await this.tryCatch(`ln -s ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    // await this.tryCatch(`ln -s ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
     await this.tryCatch(`cp ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
     await this.tryCatch(`cp ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
@@ -287,7 +285,7 @@ export default class Pxe {
        * ALPINE
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append initrd=http://${Utils.address()}/live/initramfs-lts ip=dhcp alpinelivelabel=colibri-vs alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+      content += `append initrd=http://${Utils.address()}/initrd ip=dhcp alpinelivelabel=colibri-vs alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
