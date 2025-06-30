@@ -73,9 +73,6 @@ export default class Pxe {
       
       await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/${path.basename(this.vmlinuz)}`, true)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      // no copy more initrdImg
-      // await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/${path.basename(this.initrdImg)}`, true)
-      // await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
     }
 
     // link iso images in pxe
@@ -271,8 +268,8 @@ export default class Pxe {
       /**
        * ALPINE
        */
-      content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
-      content += `append initrd=http:///live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+      content += `kernel ${path.basename(this.vmlinuz)}\n`
+      content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
@@ -282,8 +279,8 @@ export default class Pxe {
       if (distro.distroId === 'Manjarolinux') {
         tool = 'miso'
       }
-      content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
-      content += `append initrd=http://${Utils.address()}//live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
+      content += `kernel ${path.basename(this.vmlinuz)}\n`
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
       content += 'sysappend 3\n'
       content += '\n'
 
@@ -293,10 +290,10 @@ export default class Pxe {
        */
       const clid = this.distro.codenameLikeId
       if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
-        content += 'kernel vmlinuz\n'
-        content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `kernel ${path.basename(this.vmlinuz)}\n`
+        content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       } else {
-        content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
+        content += `kernel ${path.basename(this.vmlinuz)}\n`
         content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       }
     } 
