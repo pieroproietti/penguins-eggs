@@ -285,7 +285,7 @@ export default class Pxe {
        * ALPINE
        */
       content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append initrd=http://${Utils.address()}/initrd ip=dhcp alpinelivelabel=colibri-vs alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+      content += `append initrd=http://${Utils.address()}/initrd ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
