@@ -50,51 +50,6 @@ export default class Pxe {
   }
 
   /**
-   * build
-   */
-  async build() {
-    if (fs.existsSync(this.pxeRoot)) {
-      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
-    }
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
-
-    if (this.distro.distroId === 'Manjaro') {
-      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-    } else if (this.distro.distroId === 'Arch' || this.distro.distroId === 'RebornOS') {
-      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
-    }
-
-    if (fs.existsSync(this.eggRoot)) {
-      
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/${path.basename(this.vmlinuz)}`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-    }
-
-    // link iso images in pxe
-    for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
-    }
-
-    await this.bios()
-    await this.ipxe()
-    await this.http()
-
-  }
-
-  /**
-   *
-   * @param dhcpOptions
-   */
-  dhcpdStart(dhcpOptions: IDhcpOptions) {
-   startSimpleProxy(dhcpOptions)
-  }
-
-  /**
    * fertilization()
    *
    * cuckoo's nest
@@ -168,9 +123,50 @@ export default class Pxe {
       this.bootLabel = c.slice(Math.max(0, c.lastIndexOf('/') + 1))
     }
 
+    console.log(`eggRoot: ${this.eggRoot}`)
+    console.log(`pxeRoot: ${this.pxeRoot}`)
     console.log(`bootLabel: ${this.bootLabel}`)
     console.log(`vmlinuz: ${this.vmlinuz}`)
     console.log(`initrd: ${this.initrdImg}`)
+  }
+
+  /**
+   * build
+   */
+  async build() {
+    if (fs.existsSync(this.pxeRoot)) {
+      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
+    }
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+
+    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
+    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
+
+    if (this.distro.distroId === 'Manjaro') {
+      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
+    } else if (this.distro.distroId === 'Arch' || this.distro.distroId === 'RebornOS') {
+      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
+    }
+
+    // link ISO images in pxe
+    for (const iso of this.isos) {
+      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
+    }
+
+    await this.bios()
+    await this.ipxe()
+    await this.http()
+
+  }
+
+  /**
+   *
+   * @param dhcpOptions
+   */
+  dhcpdStart(dhcpOptions: IDhcpOptions) {
+   startSimpleProxy(dhcpOptions)
   }
 
   /**
@@ -181,7 +177,6 @@ export default class Pxe {
     const port = 80
     const httpRoot = this.pxeRoot + '/'
     console.log('http listening: 0.0.0.0:' + port)
-    console.log('pxe root: ' + httpRoot)
 
     // const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
     const file = new nodeStatic.Server(httpRoot)
@@ -216,17 +211,37 @@ export default class Pxe {
     tftpServer.listen()
   }
 
-
   /**
-   * Il resto PRIVATO
+   * configure PXE http server
    */
+  private async http() {
+    const file = `${this.pxeRoot}/index.html`
+    let content = ''
+    content += "<html><title>Penguin's eggs PXE server</title>"
+    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
+    content += '<h1>Cuckoo PXE server</h1>'
+    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
+    if (Utils.isLive()) {
+      content += 'started from live iso image<br/>'
+    } else {
+      content += 'Serving:<li>'
+      for (const iso of this.isos) {
+        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
+      }
+
+      content += '</li>'
+    }
+
+    content += "source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>"
+    content += "manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>"
+    content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
+    fs.writeFileSync(file, content)
+  }
 
   /**
    * configure PXE bios
    */
   private async bios() {
-    console.log('creating cuckoo configuration: BIOS')
-
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
 
@@ -319,41 +334,10 @@ export default class Pxe {
     fs.writeFileSync(file, content)
   }
 
-  /**
-   * configure PXE http server
-   */
-  private async http() {
-    console.log('creating cuckoo configuration: html')
-
-    const file = `${this.pxeRoot}/index.html`
-    let content = ''
-    content += "<html><title>Penguin's eggs PXE server</title>"
-    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
-    content += '<h1>Cuckoo PXE server</h1>'
-    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
-    if (Utils.isLive()) {
-      content += 'started from live iso image<br/>'
-    } else {
-      content += 'Serving:<li>'
-      for (const iso of this.isos) {
-        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
-      }
-
-      content += '</li>'
-    }
-
-    content += "source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>"
-    content += "manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>"
-    content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
-    fs.writeFileSync(file, content)
-  }
-
-  /**
+    /**
    *
    */
   private async ipxe() {
-    console.log('creating cuckoo configuration: UEFI')
-
     let content = '#!ipxe\n'
     content += 'dhcp\n'
     content += 'set net0/ip=dhcp\n'
