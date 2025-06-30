@@ -263,12 +263,12 @@ export default class Pxe {
     content += '\n'
     content += `label ${this.distro.distroId}\n`
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
+    content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
 
     if (distro.familyId === 'alpine') {
       /**
        * ALPINE
        */
-      content += `kernel ${path.basename(this.vmlinuz)}\n`
       content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
@@ -279,7 +279,6 @@ export default class Pxe {
       if (distro.distroId === 'Manjarolinux') {
         tool = 'miso'
       }
-      content += `kernel ${path.basename(this.vmlinuz)}\n`
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
       content += 'sysappend 3\n'
       content += '\n'
@@ -288,28 +287,19 @@ export default class Pxe {
       /**
        * DEBIAN
        */
-      const clid = this.distro.codenameLikeId
-      if (clid === 'bionic' || clid === 'stretch' || clid === 'jessie') {
-        content += `kernel ${path.basename(this.vmlinuz)}\n`
-        content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-      } else {
-        content += `kernel ${path.basename(this.vmlinuz)}\n`
-        content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-      }
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       
     } if (distro.familyId === 'fedora') {
       /*
        * FEDORA
        */
-      content += `kernel ${path.basename(this.vmlinuz)}\n`
-      content += `TO_DO: append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)}\n`
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} root=live:http://${Utils.address()}/live/filesystem.squashfs rootfstype=auto ro rd.live.image rd.luks=0 rd.md=0 rd.dm=0\n`
 
     } if (distro.familyId === 'opensuse') {
       /*
        * OPENSUSE
        */
-      content += `kernel ${path.basename(this.vmlinuz)}\n`
-      content += `TO_DO: append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)}\n`
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} fetch=http://${Utils.address()}/live/filsesystem.squashfs\n`
     }
 
 
@@ -394,18 +384,10 @@ export default class Pxe {
     content += '\n'
 
     content += ':egg-menu\n'
-    content += `kernel http://${Utils.address()}/vmlinuz\n`
-    content += `initrd http://${Utils.address()}/initrd\n`
-    /**
-     * CORRECT:
-     * content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
-     */
-    if (this.settings.distro.familyId === 'debian') {
-      /**
-       * DEBIAN
-       */
-      content += `imgargs vmlinuz fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp initrd=initrd ro\n`
-    } else if (this.settings.distro.familyId === 'archlinux') {
+    content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
+    content += `initrd http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
+
+    if (this.settings.distro.familyId === 'archlinux') {
       /**
        * ARCH LINUX
        */
@@ -413,9 +395,14 @@ export default class Pxe {
       if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris' || this.settings.distro.codenameId === 'UltimaThule') {
         tool = 'miso'
       }
+      content += `imgargs ${tool}_http_srv=http://${Utils.address()}/ boot=live dhcp ro\n`
+      
+    } else if (this.settings.distro.familyId === 'debian') {
+      /**
+       * DEBIAN
+       */
+      content += `imgargs fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp ro\n`
 
-      content += `imgargs vmlinuz ${tool}_http_srv=http://${Utils.address()}/ boot=live dhcp initrd=initrd ro\n`
-      // content += 'ipappend 3\n'
     }
 
     content += 'sleep 5\n'
