@@ -18,6 +18,7 @@ import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Settings from './settings.js'
 import Utils from './utils.js'
+import Diversions from './diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -277,7 +278,7 @@ export default class Pxe {
        * ARCH LINUX
        */
       let tool = 'archiso'
-      if (distro.distroId === 'Manjarolinux') {
+      if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
@@ -320,21 +321,21 @@ export default class Pxe {
     fs.writeFileSync(file, content)
   }
 
-    /**
+   /**
    *
    */
   private async ipxe() {
     let content = '#!ipxe\n'
     content += 'dhcp\n'
     content += 'set net0/ip=dhcp\n'
-    content += `console --picture http://${Utils.address()}/splash.png -x 1024 -y 768\n`
+    content += `# console --picture http://${Utils.address()}/splash.png -x 1024 -y 768\n`
     content += 'goto start ||\n'
     content += '\n'
     content += ':start\n'
     content += `set server_root http://${Utils.address()}:80/\n`
     const serverRootVars = '${server_root}'
     content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
-    content += 'item --gap boot from ovarium\n'
+    content += `item --gap boot from PXE server at ${Utils.address()}\n`
     content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso', '')}\n\n`
 
     if (this.isos.length > 0) {
@@ -354,26 +355,24 @@ export default class Pxe {
     content += '\n'
 
     content += ':egg-menu\n'
-    content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
-    content += `initrd http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
 
-    if (this.settings.distro.familyId === 'archlinux') {
+    if (this.distro.familyId === 'archlinux') {
       /**
        * ARCH LINUX
        */
       let tool = 'archiso'
-      if (this.settings.distro.codenameId === 'Qonos' || this.settings.distro.codenameId === 'Ruah' || this.settings.distro.codenameId === 'Sikaris' || this.settings.distro.codenameId === 'UltimaThule') {
+      if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
       content += `imgargs ${tool}_http_srv=http://${Utils.address()}/ boot=live dhcp ro\n`
-      
-    } else if (this.settings.distro.familyId === 'debian') {
+
+    } else if (this.distro.familyId === 'debian') {
       /**
        * DEBIAN
        */
-      content += `imgargs fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp ro\n`
-
-    }
+      content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)} initrd=initrd.img fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp ro\n`
+      content += `initrd --name initrd.img http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
+    } 
 
     content += 'sleep 5\n'
     content += 'boot || goto start\n\n'

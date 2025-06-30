@@ -13,8 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-20
-* cuckoo: I am working on cucko for the various distributions, at the moment it works for the arch and debian families. I am working on making it available on alpine. fedora and opensuse.
+## penguins-eggs-10.1.1-21
+* cuckoo: working on Debian families on bios and uefi, on Arch/Manjaro on bios, I am working on making it available on alpine. fedora and opensuse.
 * cuckoo: command cuckoo is back! Install your systems across the LAN using PXE server included on live.
 * alpine: Linux Alpine is back on penguins-eggs, look to [penguins-alpine](https://github.com/pieroproietti/penguins-alpine/). In addition, I was able to create the calamares 3.3 packages for Alpine.
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
