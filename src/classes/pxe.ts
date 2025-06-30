@@ -296,7 +296,22 @@ export default class Pxe {
         content += `kernel ${path.basename(this.vmlinuz)}\n`
         content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       }
-    } 
+      
+    } if (distro.familyId === 'fedora') {
+      /*
+       * FEDORA
+       */
+      content += `kernel ${path.basename(this.vmlinuz)}\n`
+      content += `TO_DO: append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)}\n`
+
+    } if (distro.familyId === 'opensuse') {
+      /*
+       * OPENSUSE
+       */
+      content += `kernel ${path.basename(this.vmlinuz)}\n`
+      content += `TO_DO: append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)}\n`
+    }
+
 
     if (this.isos.length > 0) {
       content += 'menu separator\n'
