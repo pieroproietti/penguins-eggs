@@ -337,7 +337,7 @@ export default class Pxe {
     content += `set server_root http://${Utils.address()}:80/\n`
     const serverRootVars = '${server_root}'
     content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
-    content += `item --gap boot from PXE server at ${Utils.address()}\n`
+    content += `item --gap penguins-eggs PXE server at ${Utils.address()}\n`
     content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso', '')}\n\n`
 
     if (this.isos.length > 0) {
