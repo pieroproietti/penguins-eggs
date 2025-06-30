@@ -70,10 +70,12 @@ export default class Pxe {
     }
 
     if (fs.existsSync(this.eggRoot)) {
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/vmlinuz`, true)
+      
+      await this.tryCatch(`cp ${this.eggRoot}live/${this.vmlinuz} ${this.pxeRoot}/${path.basename(this.vmlinuz)}`, true)
       await this.tryCatch(`chmod 777 ${this.pxeRoot}/vmlinuz`)
-      await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/initrd`, true)
-      await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
+      // no copy more initrdImg
+      // await this.tryCatch(`cp ${this.eggRoot}live/${this.initrdImg} ${this.pxeRoot}/${path.basename(this.initrdImg)}`, true)
+      // await this.tryCatch(`chmod 777 ${this.pxeRoot}/initrd`)
     }
 
     // link iso images in pxe
@@ -141,29 +143,14 @@ export default class Pxe {
 
     /**
      * Ricerca delle ISOs
-     */
-    const isos: string[] = []
-
-    /*
-    if (!Utils.isLive()) {
-      const isos = fs.readdirSync(this.nest)
-      for (const iso of isos) {
-        if (path.extname(iso) === '.iso') {
-          this.isos.push(iso)
-        }
- 
-        this.isos = this.isos.sort()
-      }
-    }
-    */
-
-    /**
      * installed: /home/eggs/.mnt/iso/live
      * live: this.iso/live
      */
+    const isos: string[] = []
     const pathFiles = this.eggRoot + 'live'
     const files = fs.readdirSync(pathFiles)
-    // nomina vmlinux e initrdImg 
+
+    // rieva nome vmlinuz e initrdImg
     for (const file of files) {
       if (path.basename(file).slice(0, 7) === 'vmlinuz') {
         this.vmlinuz = path.basename(file)
@@ -284,8 +271,8 @@ export default class Pxe {
       /**
        * ALPINE
        */
-      content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append initrd=http://${Utils.address()}/initrd ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+      content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
+      content += `append initrd=http:///live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (distro.familyId === 'archlinux') {
       /**
@@ -295,8 +282,8 @@ export default class Pxe {
       if (distro.distroId === 'Manjarolinux') {
         tool = 'miso'
       }
-      content += `kernel http://${Utils.address()}/vmlinuz\n`
-      content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
+      content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
+      content += `append initrd=http://${Utils.address()}//live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
       content += 'sysappend 3\n'
       content += '\n'
 
@@ -309,8 +296,8 @@ export default class Pxe {
         content += 'kernel vmlinuz\n'
         content += `append initrd=initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       } else {
-        content += `kernel http://${Utils.address()}/vmlinuz\n`
-        content += `append initrd=http://${Utils.address()}/initrd boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+        content += `kernel http://${Utils.address()}/${path.basename(this.vmlinuz)}\n`
+        content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
       }
     } 
 
