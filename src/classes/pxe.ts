@@ -12,7 +12,6 @@ import path, { dirname } from 'node:path'
 import { startSimpleProxy } from '../dhcpd-proxy/simple-proxy.js'
 import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
 import express from 'express';
-// import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
 import { exec } from '../lib/utils.js'
@@ -57,7 +56,6 @@ export default class Pxe {
    * cuckoo's nest
    */
   async fertilization() {
-    // to remove
     this.settings = new Settings()
     this.settings.load()
 
@@ -147,9 +145,9 @@ export default class Pxe {
 
 
     // link ISO images in pxe
-    this.isos = fs.readdirSync(`${this.nest}`).filter(file => file.endsWith('.iso'))
+    this.isos = fs.readdirSync(`${this.eggRoot}`).filter(file => file.endsWith('.iso'))
     for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
+      await this.tryCatch(`ln -s ${this.eggRoot}/${iso} ${this.pxeRoot}/${iso}`)
     }
 
     // grub
@@ -170,7 +168,7 @@ export default class Pxe {
     fs.writeFileSync(grubName, grubContent, 'utf-8')
 
     await this.bios()
-    await this.ipxe()
+    await this.uefi()
     await this.http()
 
   }
@@ -307,7 +305,7 @@ export default class Pxe {
       /**
        * ARCH LINUX
        */
-      let tool = 'archiso'
+      let tool = 'arch'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
@@ -357,9 +355,9 @@ export default class Pxe {
   }
 
   /**
-  *
+  * uefi: uso ipxe solo per chainload di grub
   */
-  private async ipxe() {
+  private async uefi() {
     let content = '#!ipxe\n';
     content += 'dhcp\n';
     content += `chain http://${Utils.address()}/grub.efi\n`
