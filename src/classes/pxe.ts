@@ -247,23 +247,19 @@ export default class Pxe {
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
     await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
 
-    /**
-     * ipxe.efi
-     */
-    await this.tryCatch(`ln -s ${__dirname}/../../ipxe/ipxe.efi ${this.pxeRoot}/ipxe.efi`)
+    // ipxe.pxe
+    await this.tryCatch(`ln -s ${__dirname}/../../ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`)
 
     // pxe
-    const distro = new Distro()
-
-    await this.tryCatch(`cp ${distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    await this.tryCatch(`cp ${distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    await this.tryCatch(`cp ${this.distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
+    await this.tryCatch(`cp ${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
 
     // syslinux
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`)
-    await this.tryCatch(`ln -s ${distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`)
+    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
+    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
+    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
+    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`)
+    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`)
 
     await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
 
@@ -282,13 +278,13 @@ export default class Pxe {
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
 
-    if (distro.familyId === 'alpine') {
+    if (this.distro.familyId === 'alpine') {
       /**
        * ALPINE
        */
       content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
-    } else if (distro.familyId === 'archlinux') {
+    } else if (this.distro.familyId === 'archlinux') {
       /**
        * ARCH LINUX
        */
@@ -305,19 +301,19 @@ export default class Pxe {
       content += 'sysappend 3\n'
       content += '\n'
 
-    } else if (distro.familyId === 'debian') {
+    } else if (this.distro.familyId === 'debian') {
       /**
        * DEBIAN
        */
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
 
-    } if (distro.familyId === 'fedora') {
+    } if (this.distro.familyId === 'fedora') {
       /*
        * FEDORA
        */
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} root=live:http://${Utils.address()}/live/filesystem.squashfs rootfstype=auto ro rd.live.image rd.luks=0 rd.md=0 rd.dm=0\n`
 
-    } if (distro.familyId === 'opensuse') {
+    } if (this.distro.familyId === 'opensuse') {
       /*
        * OPENSUSE
        */
