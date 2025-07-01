@@ -321,17 +321,16 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
          * patch to emulate miso/archiso on archilinux family
          */
         if (this.familyId === 'archlinux') {
-            let pathName = `arch/x86_64/airootfs`
+            let filesystemName = `arch/x86_64/airootfs.sfs`
             let hashCmd = 'sha512sum'
             let hashExt = '.sha512'
             if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
-                pathName = `manjaro/x86_64/livefs`
+                filesystemName = `manjaro/x86_64/livefs.sfs`
                 hashCmd = `md5sum`
                 hashExt = '.md5'
             }
-
-            await exec(`mkdir ${this.settings.iso_work}${pathName} -p`, this.echo)
-            await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}/airootfs.sfs`, this.echo)
+            await exec(`mkdir ${this.settings.iso_work}${path.dirname(filesystemName)} -p`, this.echo)
+            await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
         }
 
         await this.makeIso(mkIsofsCmd, scriptOnly)
