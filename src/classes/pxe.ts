@@ -126,24 +126,48 @@ export default class Pxe {
     }
 
     await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
+    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    // await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    // await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    // await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
-
-    // const echoYes = Utils.setEcho(true)
-    // let filesystemName = `arch/x86_64/airootfs.sfs`
-    // if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
-    // filesystemName = `manjaro/x86_64/livefs.sfs`
-    // }
-    // await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
-    // await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+    const echoYes = Utils.setEcho(true)
+    if (this.distro.familyId === 'archlinux') {
+      let filesystemName = `arch/x86_64/airootfs.sfs`
+      if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
+        filesystemName = `manjaro/x86_64/livefs.sfs`
+      }
+      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
+      await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+    }
 
     // link ISO images in pxe
     this.isos = fs.readdirSync(`${this.nest}`).filter(file => file.endsWith('.iso'))
     for (const iso of this.isos) {
       await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
     }
+
+
+    // link ISO images in pxe
+    this.isos = fs.readdirSync(`${this.nest}`).filter(file => file.endsWith('.iso'))
+    for (const iso of this.isos) {
+      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
+    }
+
+    // grub
+    await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes)
+    await exec(`mkdir ${this.pxeRoot}/grub -p`, echoYes)
+    await exec (`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes)
+
+    let grubName = `${this.pxeRoot}/grub/${Diversions.grubName(this.distro.familyId)}.cfg`
+    let grubContent =''
+    grubContent +=`set timeout=5\n`
+    grubContent +=`set default=0\n`
+    grubContent +=`menuentry "Boot Debian Live from Network" {\n`
+    grubContent +=`echo "Loading Linux Kernel via GRUB..."\n`
+    grubContent +=`linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} boot=live fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+    grubContent +=`echo "Loading Initial Ramdisk..."\n`
+    grubContent +=`initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
+    grubContent +=`}\n`
+    fs.writeFileSync(grubName, grubContent, 'utf-8')
 
     await this.bios()
     await this.ipxe()
@@ -338,44 +362,8 @@ export default class Pxe {
   private async ipxe() {
     let content = '#!ipxe\n';
     content += 'dhcp\n';
-    content += 'goto start\n\n';
+    content += `chain http://${Utils.address()}/grub.efi\n`
 
-    // --- Sezione del Menu ---
-    content += ':start\n';
-    // content += `set server_url http://${Utils.address()}\n`;
-    content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n\n`;
-
-    // --- Genera una voce di menu ESCLUSIVAMENTE per ogni ISO trovata ---
-    if (this.isos.length > 0) {
-      content += 'item --gap -- Boot Local ISO Images\n';
-      for (const iso of this.isos) {
-        const menu_id = iso.replaceAll('.', '_');
-        content += `item ${menu_id} ${iso}\n`;
-      }
-      content += '\n';
-    } else {
-      content += 'item --gap -- ⚠️ No ISO images found!\n';
-    }
-
-    // --- Logica di scelta ---
-    content += 'choose target || goto start\n';
-    content += 'goto ${target}\n\n';
-
-    // --- Sezione delle Azioni (LABEL DI BOOT) ---
-
-    // --- Genera un'etichetta con "sanboot" per ogni ISO ---
-    if (this.isos.length > 0) {
-      for (const iso of this.isos) {
-        const menu_id = iso.replaceAll('.', '_');
-        content += `:${menu_id}\n`;
-        content += `# DEBUG: Mostra un messaggio prima di eseguire il comando critico\n`
-        content += `echo Attempting to boot from http://${Utils.address()}/${iso}\n`
-        content += `prompt --timeout 5000 Press Enter to continue or wait 5 seconds... || goto start\n`
-        content += `sanboot --iso http://${Utils.address()}/${iso} || goto start\n\n`; 
-      }
-    }
-
-    // --- Scrive il file finale ---
     const file = `${this.pxeRoot}/autoexec.ipxe`;
     fs.writeFileSync(file, content);
   }
