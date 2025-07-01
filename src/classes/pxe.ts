@@ -9,9 +9,10 @@
 import fs from 'node:fs'
 import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
-import {startSimpleProxy} from '../dhcpd-proxy/simple-proxy.js'
+import { startSimpleProxy } from '../dhcpd-proxy/simple-proxy.js'
 import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
-import nodeStatic from 'node-static'
+import express from 'express';
+// import nodeStatic from 'node-static'
 // @ts-ignore
 import tftp from 'tftp'
 import { exec } from '../lib/utils.js'
@@ -95,7 +96,7 @@ export default class Pxe {
         this.vmlinuz = path.basename(file)
       }
       if (path.basename(file).slice(0, 4) === 'init') {
-          this.initrdImg = path.basename(file)
+        this.initrdImg = path.basename(file)
       }
     }
 
@@ -111,7 +112,6 @@ export default class Pxe {
     }
 
     console.log(`eggRoot: ${this.eggRoot}`)
-    console.log(`pxeRoot: ${this.pxeRoot}`)
     console.log(`bootLabel: ${this.bootLabel}`)
     console.log(`vmlinuz: ${this.vmlinuz}`)
     console.log(`initrd: ${this.initrdImg}`)
@@ -127,19 +127,20 @@ export default class Pxe {
 
     await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
 
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
+    // await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
+    // await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
+    // await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    const echoYes = Utils.setEcho(true)
-    let filesystemName = `arch/x86_64/airootfs.sfs`
-    if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
-      filesystemName = `manjaro/x86_64/livefs.sfs`
-    }
-    await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
-    await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+    // const echoYes = Utils.setEcho(true)
+    // let filesystemName = `arch/x86_64/airootfs.sfs`
+    // if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
+    // filesystemName = `manjaro/x86_64/livefs.sfs`
+    // }
+    // await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
+    // await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
 
     // link ISO images in pxe
+    this.isos = fs.readdirSync(`${this.nest}`).filter(file => file.endsWith('.iso'))
     for (const iso of this.isos) {
       await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
     }
@@ -155,25 +156,28 @@ export default class Pxe {
    * @param dhcpOptions
    */
   dhcpdStart(dhcpOptions: IDhcpOptions) {
-   startSimpleProxy(dhcpOptions)
+    startSimpleProxy(dhcpOptions)
   }
+
 
   /**
    * start http server for images
-   *
    */
   async httpStart() {
-    const port = 80
-    const httpRoot = this.pxeRoot + '/'
-    console.log('http listening: 0.0.0.0:' + port)
+    const port = 80;
+    const httpRoot = this.pxeRoot + '/';
 
-    // const file = new nodeStatic.Server(httpRoot, { followSymlinks: true })
-    const file = new nodeStatic.Server(httpRoot)
-    http
-      .createServer((req: IncomingMessage, res: ServerResponse) => {
-        file.serve(req, res)
-      })
-      .listen(port)
+    // 1. Crea un'applicazione Express
+    const app = express();
+
+    // 2. Usa il middleware di Express per servire i file statici.
+    app.use(express.static(httpRoot));
+
+    // 3. Avvia il server
+    app.listen(port, () => {
+      console.log(`HTTP server (Express) listening on 0.0.0.0:${port}`);
+      console.log(`Serving files from ${httpRoot}`);
+    });
   }
 
   /**
@@ -297,7 +301,7 @@ export default class Pxe {
        * DEBIAN
        */
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-      
+
     } if (distro.familyId === 'fedora') {
       /*
        * FEDORA
@@ -328,87 +332,52 @@ export default class Pxe {
     fs.writeFileSync(file, content)
   }
 
-   /**
-   *
-   */
+  /**
+  *
+  */
   private async ipxe() {
-    let content = '#!ipxe\n'
-    content += 'dhcp\n'
-    content += 'set net0/ip=dhcp\n'
-    content += `# console --picture http://${Utils.address()}/splash.png -x 1024 -y 768\n`
-    content += 'goto start ||\n'
-    content += '\n'
-    content += ':start\n'
-    content += `set server_root http://${Utils.address()}:80/\n`
-    const serverRootVars = '${server_root}'
-    content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
-    content += `item --gap penguins-eggs PXE server at ${Utils.address()}\n`
-    content += `item egg-menu \${space} ${this.bootLabel.replaceAll('.iso', '')}\n\n`
+    let content = '#!ipxe\n';
+    content += 'dhcp\n';
+    content += 'goto start\n\n';
 
+    // --- Sezione del Menu ---
+    content += ':start\n';
+    // content += `set server_url http://${Utils.address()}\n`;
+    content += `menu cuckoo: when you need a flying PXE server! ${Utils.address()}\n\n`;
+
+    // --- Genera una voce di menu ESCLUSIVAMENTE per ogni ISO trovata ---
     if (this.isos.length > 0) {
-      content += 'item --gap boot iso images\n'
+      content += 'item --gap -- Boot Local ISO Images\n';
       for (const iso of this.isos) {
-        const menu = iso
-        const label = menu
-        content += `item ${menu} \${space} ${label}\n\n`
+        const menu_id = iso.replaceAll('.', '_');
+        content += `item ${menu_id} ${iso}\n`;
+      }
+      content += '\n';
+    } else {
+      content += 'item --gap -- ⚠️ No ISO images found!\n';
+    }
+
+    // --- Logica di scelta ---
+    content += 'choose target || goto start\n';
+    content += 'goto ${target}\n\n';
+
+    // --- Sezione delle Azioni (LABEL DI BOOT) ---
+
+    // --- Genera un'etichetta con "sanboot" per ogni ISO ---
+    if (this.isos.length > 0) {
+      for (const iso of this.isos) {
+        const menu_id = iso.replaceAll('.', '_');
+        content += `:${menu_id}\n`;
+        content += `# DEBUG: Mostra un messaggio prima di eseguire il comando critico\n`
+        content += `echo Attempting to boot from http://${Utils.address()}/${iso}\n`
+        content += `prompt --timeout 5000 Press Enter to continue or wait 5 seconds... || goto start\n`
+        content += `sanboot --iso http://${Utils.address()}/${iso} || goto start\n\n`; 
       }
     }
 
-    content += 'item --gap boot from internet\n'
-    content += 'item netboot ${space} netboot\n'
-
-    content += 'choose target || goto start\n'
-    content += 'goto ${target}\n'
-    content += '\n'
-
-    content += ':egg-menu\n'
-
-    if (this.distro.familyId === 'archlinux') {
-      /**
-       * ARCH LINUX
-       */
-      let archisoBaseDir = 'arch'
-      if (Diversions.isManjaroBased(this.distro.distroId)) {
-        archisoBaseDir = 'miso'
-      }
-      const base_url=``
-      content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
-      content += `initrd http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
-      content += `imgargs archiso_http_srv=http://${Utils.address()}/ archisobasedir=${archisoBaseDir} ip=dhcp\n`
-
-    } else if (this.distro.familyId === 'debian') {
-      /**
-       * DEBIAN
-       */
-      content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)} initrd=initrd.img fetch=http://${Utils.address()}/live/filesystem.squashfs boot=live dhcp ro\n`
-      content += `initrd --name initrd.img http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
-    } 
-
-    content += 'sleep 5\n'
-    content += 'boot || goto start\n\n'
-
-    if (this.isos.length > 0) {
-      for (const iso of this.isos) {
-        const menu = iso.replace('.iso', '')
-        content += `:${menu}\n`
-        content += `sanboot ${serverRootVars}/${iso}\n`
-        content += 'boot || goto start\n\n'
-      }
-    }
-
-    /**
-     * netboot.xyz
-     */
-    content += ':netboot\n'
-    content += 'ifopen net0\n'
-    content += 'set conn_type https\n'
-    content += 'chain --autofree https://boot.netboot.xyz/menu.ipxe || echo HTTPS failed... attempting HTTP...\n'
-    content += 'set conn_type http\n'
-    content += 'chain --autofree http://boot.netboot.xyz/menu.ipxe || echo HTTP failed, localbooting...\n'
-    content += 'goto start\n\n'
-
-    const file = `${this.pxeRoot}/autoexec.ipxe`
-    fs.writeFileSync(file, content)
+    // --- Scrive il file finale ---
+    const file = `${this.pxeRoot}/autoexec.ipxe`;
+    fs.writeFileSync(file, content);
   }
 
   /**
