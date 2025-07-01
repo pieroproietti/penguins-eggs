@@ -47,7 +47,7 @@ export default class Cuckoo extends Command {
       const dhcpOptions: IDhcpOptions = {
         bios_filename: 'lpxelinux.0',
         efi32_filename: 'ipxe32.efi',
-        efi64_filename: 'ipxe.efi',
+        efi64_filename: 'ipxe.pxe',     // era ipxe.efi
         host: n.address,
         subnet: n.cidr,
         tftpserver: n.address,
