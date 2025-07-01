@@ -132,9 +132,12 @@ export default class Pxe {
     await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
     const echoYes = Utils.setEcho(true)
-    const squashfsDir = path.dirname(this.distro.squashfs)
-    await exec (`mkdir -p ${this.pxeRoot}/${squashfsDir} -p`, echoYes)
-    await exec (`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${this.distro.squashfs}`, echoYes)
+    let filesystemName = `arch/x86_64/airootfs.sfs`
+    if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
+      filesystemName = `manjaro/x86_64/livefs.sfs`
+    }
+    await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
+    await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
 
     // link ISO images in pxe
     for (const iso of this.isos) {
@@ -364,12 +367,14 @@ export default class Pxe {
       /**
        * ARCH LINUX
        */
-      let tool = 'archiso'
+      let archisoBaseDir = 'arch'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
-        tool = 'miso'
+        archisoBaseDir = 'miso'
       }
+      const base_url=``
       content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
-      content += `imgargs ${tool}_http_srv=http://${Utils.address()}/live/ boot=live dhcp ro\n`
+      content += `initrd http://${Utils.address()}/live/${path.basename(this.initrdImg)}\n`
+      content += `imgargs archiso_http_srv=http://${Utils.address()}/ archisobasedir=${archisoBaseDir} ip=dhcp\n`
 
     } else if (this.distro.familyId === 'debian') {
       /**
