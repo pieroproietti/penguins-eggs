@@ -133,24 +133,11 @@ export default class Pxe {
       if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
         filesystemName = `manjaro/x86_64/livefs.sfs`
       }
-      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
-      await exec(`ln -s ${this.eggRoot}/live/live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, echoYes)
+      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
     }
 
-    // link ISO images in pxe
-    this.isos = fs.readdirSync(`${this.nest}`).filter(file => file.endsWith('.iso'))
-    for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.nest}/${iso} ${this.pxeRoot}/${iso}`)
-    }
-
-
-    // link ISO images in pxe
-    this.isos = fs.readdirSync(`${this.eggRoot}`).filter(file => file.endsWith('.iso'))
-    for (const iso of this.isos) {
-      await this.tryCatch(`ln -s ${this.eggRoot}/${iso} ${this.pxeRoot}/${iso}`)
-    }
-
-    // grub
+    // Debian /src/classes/ovary.d/make-efi.ts
     await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes)
     await exec(`mkdir ${this.pxeRoot}/grub -p`, echoYes)
     await exec (`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes)

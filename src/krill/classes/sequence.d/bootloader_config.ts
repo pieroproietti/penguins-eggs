@@ -20,30 +20,9 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   let cmd = ''
 
   /**
-     * aldos
-     */
-  if (this.distro.familyId === 'aldos') {
-    if (this.efi) {
-      try {
-        cmd = `chroot ${this.installTarget} yum install grub2 grub2-efi-x64 efibootmgr} ${this.toNull}`
-        await exec(cmd, this.echo)
-      } catch (error) {
-        await showError(cmd, error)
-      }
-    } else {
-      try {
-        cmd = `chroot ${this.installTarget} yum install grub2 grub2-pc ${this.toNull}`
-        await exec(cmd, this.echo)
-      } catch (error) {
-        await showError(cmd, error)
-      }
-    }
-
-
-    /**
-   * alpine
-   */
-  } else if (this.distro.familyId === 'alpine') {
+  * alpine
+  */
+  if (this.distro.familyId === 'alpine') {
     if (this.efi) {
       try {
         cmd = `chroot ${this.installTarget} apk add grub grub-efi efibootmgr} ${this.toNull}`
