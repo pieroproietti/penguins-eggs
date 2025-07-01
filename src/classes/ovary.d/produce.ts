@@ -330,8 +330,8 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
                 hashExt = '.md5'
             }
 
-            await exec(`mkdir ${this.settings.iso_work}${pathName}/x86_64 -p`, this.echo)
-            await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}.sfs`, this.echo)
+            await exec(`mkdir ${this.settings.iso_work}${pathName} -p`, this.echo)
+            await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${pathName}/airootfs.sfs`, this.echo)
         }
 
         await this.makeIso(mkIsofsCmd, scriptOnly)
