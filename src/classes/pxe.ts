@@ -131,11 +131,10 @@ export default class Pxe {
     await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
     await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    if (this.distro.distroId === 'Manjaro') {
-      await this.tryCatch(`ln -s ${this.eggRoot}manjaro ${this.pxeRoot}/manjaro`)
-    } else if (this.distro.distroId === 'Arch' || this.distro.distroId === 'RebornOS') {
-      await this.tryCatch(`ln -s ${this.eggRoot}arch ${this.pxeRoot}/arch`)
-    }
+    const echoYes = Utils.setEcho(true)
+    const squashfsDir = path.dirname(this.distro.squashfs)
+    await exec (`mkdir -p ${this.pxeRoot}/${squashfsDir} -p`, echoYes)
+    await exec (`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${this.distro.squashfs}`, echoYes)
 
     // link ISO images in pxe
     for (const iso of this.isos) {
@@ -277,9 +276,6 @@ export default class Pxe {
       /**
        * ARCH LINUX
        */
-      const squashfsDir = path.dirname(this.distro.squashfs)
-      await exec (`mkdir -p ${this.pxeRoot}/${squashfsDir} -p`)
-      await exec (`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${this.distro.squashfs}`)
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
@@ -372,7 +368,8 @@ export default class Pxe {
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
-      content += `imgargs ${tool}_http_srv=http://${Utils.address()}/ boot=live dhcp ro\n`
+      content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
+      content += `imgargs ${tool}_http_srv=http://${Utils.address()}/live/ boot=live dhcp ro\n`
 
     } else if (this.distro.familyId === 'debian') {
       /**
