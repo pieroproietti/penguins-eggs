@@ -277,13 +277,19 @@ export default class Pxe {
       /**
        * ARCH LINUX
        */
-      await exec (`mkdir -p ${this.pxeRoot}/arch/x86_64 -p`)
-      await exec (`ln -s ${this.pxeRoot}/live/filesystem.squashfs ${this.pxeRoot}/arch/x86_64/airootfs.sfs`)
+      const squashfsDir = path.dirname(this.distro.squashfs)
+      await exec (`mkdir -p ${this.pxeRoot}/${squashfsDir} -p`)
+      await exec (`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${this.distro.squashfs}`)
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt ${tool}_http_srv=http://${Utils.address()}/\n`
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+                  boot=live \
+                  config \
+                  noswap \
+                  noprompt \
+                  ${tool}_http_srv=http://${Utils.address()}/\n`
       content += 'sysappend 3\n'
       content += '\n'
 
