@@ -267,7 +267,7 @@ export default class Pxe {
     content += '# eggs: pxelinux.cfg/default\n'
     content += '# search path for the c32 support libraries (libcom32, libutil etc.)\n'
     content += `path /\n`
-    content += 'include isolinux.theme.cfg\n'
+    // content += 'include isolinux.theme.cfg\n'
     content += 'UI vesamenu.c32\n'
     content += '\n'
     content += `menu title cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
@@ -287,8 +287,9 @@ export default class Pxe {
     } else if (this.distro.familyId === 'archlinux') {
       /**
        * ARCH LINUX
+       * addons/eggs/theme/livecd/isolinux.main.simple.cfg
        */
-      let tool = 'arch'
+      let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         tool = 'miso'
       }
@@ -297,7 +298,11 @@ export default class Pxe {
                   config \
                   noswap \
                   noprompt \
-                  ${tool}_http_srv=http://${Utils.address()}/\n`
+                  ${tool}_http_srv=http://${Utils.address()}/ \
+                  ip=dhcp \
+                  copytoram=n \
+                  copytoram=n archisobasedir=arch\n`
+
       content += 'sysappend 3\n'
       content += '\n'
 
