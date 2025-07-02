@@ -353,12 +353,13 @@ export default class Pxe {
     const echoYes = Utils.setEcho(true);
 
     /**
-     * grubnetx64.efi.signed Debian bookworm
-     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed /ipxe/grub.efi
-     * cp -r /usr/lib/grub/x86_64-efi/ /ipxe/grub
+     * On Debian bookworm:
+     * cd ~/penguins-eggs
+     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./ipxe/
+     * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
-    await exec(`cp ${__dirname}/../../ipxe/grub.efi ${this.pxeRoot}/grub.efi`)
+    await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
     await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`)
 
 
