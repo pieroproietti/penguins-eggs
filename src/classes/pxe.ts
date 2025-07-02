@@ -356,11 +356,12 @@ export default class Pxe {
 
   // --- Copia i file di GRUB in base alla distro ---
   if (this.distro.familyId === 'archlinux') {
-    await exec(`ln -s /usr/lib/grub/x86_64-efi/grubx64.efi ${this.pxeRoot}/grub.efi`, echoYes);
-    await exec(`cp -r /usr/lib/grub/x86_64-efi ${this.pxeRoot}/grub/`, echoYes);
+    const bootstrap_path = '/tmp/bootstrap.cfg'
+    const bootstrap_content = `configfile (http,${Utils.address()})/grub/grub.cfg`
+    fs.writeFileSync(bootstrap_path, bootstrap_content)
+    await exec(`grub-mkstandalone -v -o ${this.pxeRoot}/grub.efi -O x86_64-efi --modules="part_gpt part_msdos http configfile normal linux initrd" "boot/grub/grub.cfg=/tmp/bootstrap.cfg"`)
 
-} else if (this.distro.familyId === 'debian') {
-      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes);
+} else if (this.distro.familyId === 'debian') {      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes);
       await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes);
     }
     // Aggiungi qui gli else if per Fedora, openSUSE, etc...
