@@ -7,6 +7,7 @@
  */
 
 // packages
+import mustache from 'mustache'
 import fs from 'fs'
 import path from 'node:path'
 
@@ -44,11 +45,16 @@ export async function initrdArch(this: Ovary) {
             dirConf = 'biglinux'
         }
     }
-    const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/live.conf`)
-    const eggsHooks = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/hooks/`)
-    let cmd = `mkinitcpio -c ${pathConf} -H ${eggsHooks}  -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
+    const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}`)
+    const fileConf = pathConf + '/live.conf'
+    const hookSrc = '/usr/lib/initcpio/hooks/archiso_pxe_http'
+    const hookDest = '/etc/initcpio/hooks/archiso_pxe_http'
+    await exec(`cp ${hookSrc} ${hookDest}`)
+    let edit = `sed -i 's/export copytoram="y"/# export copytoram="y"/' /etc/initcpio/hooks/archiso_pxe_http`
+    await exec(edit, Utils.setEcho(true))
+    let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
     await exec(cmd, Utils.setEcho(true))
-    process.exit()
+    await exec(`rm -f ${hookDest}`)
 }
 
 /**
