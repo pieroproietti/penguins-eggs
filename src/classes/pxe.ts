@@ -141,7 +141,7 @@ export default class Pxe {
       await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
     }
 
-    await this.grubCfg(this.distro.familyId) 
+    await this.grubCfg() 
     await this.bios()
     await this.uefi()
     await this.http()
@@ -255,7 +255,7 @@ export default class Pxe {
     content += '# eggs: pxelinux.cfg/default\n'
     content += '# search path for the c32 support libraries (libcom32, libutil etc.)\n'
     content += `path /\n`
-    // content += 'include isolinux.theme.cfg\n'
+    content += 'include isolinux.theme.cfg\n'
     content += 'UI vesamenu.c32\n'
     content += '\n'
     content += `menu title cuckoo: when you need a flying PXE server! ${Utils.address()}\n`
@@ -349,31 +349,68 @@ export default class Pxe {
    * grubCfg
    * @param familyId 
    */
-  private async grubCfg(familyId = ''){ 
-    const echoYes = Utils.setEcho(true)
+    private async grubCfg() {
+    const echoYes = Utils.setEcho(true);
 
-    await exec(`mkdir ${this.pxeRoot}/grub -p`, echoYes)
+    await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
 
-    // Copia grub /src/classes/ovary.d/make-efi.ts
-    if (familyId === 'archlinux') {
-
-    } else if (familyId === 'debian') {
-      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes)
-      await exec (`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes)
-
+    // --- Copia i file di GRUB in base alla distro ---
+    if (this.distro.familyId === 'archlinux') {
+      await exec(`ln -s /usr/lib/grub/x86_64-efi/grubx64.efi ${this.pxeRoot}/grub.efi`, echoYes);
+      await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes);
+    } else if (this.distro.familyId === 'debian') {
+      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes);
+      await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes);
     }
+    // Aggiungi qui gli else if per Fedora, openSUSE, etc...
 
-    let grubName = `${this.pxeRoot}/grub/${Diversions.grubName(this.distro.familyId)}.cfg`
-    let grubContent =''
-    grubContent +=`set timeout=5\n`
-    grubContent +=`set default=0\n`
-    grubContent +=`menuentry "Boot Debian Live from Network" {\n`
-    grubContent +=`echo "Loading Linux Kernel via GRUB..."\n`
-    grubContent +=`linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} boot=live fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-    grubContent +=`echo "Loading Initial Ramdisk..."\n`
-    grubContent +=`initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
-    grubContent +=`}\n`
-    fs.writeFileSync(grubName, grubContent, 'utf-8')
+    // --- Genera il file grub.cfg ---
+    const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
+    let grubContent = '';
+    grubContent += `set timeout=10\n`;
+    grubContent += `set default=0\n\n`;
+
+    // Titolo del menu dinamico
+    grubContent += `menuentry "Boot ${this.distro.distroId} Live (PXE)" {\n`;
+    grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`;
+
+    // Riga del kernel dinamica, basata sulla famiglia della distro
+    const kernelParams = this._getGrubLinuxParameters();
+    grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
+
+    grubContent += `  echo "Loading Initial Ramdisk..."\n`;
+    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
+    grubContent += `}\n`;
+
+    fs.writeFileSync(grubName, grubContent, 'utf-8');
+  }
+
+  /**
+   * Metodo helper per ottenere i parametri corretti per GRUB
+   * in base alla famiglia della distribuzione.
+   */
+  private _getGrubLinuxParameters(): string {
+    const http_srv = `http://${Utils.address()}/live/`;
+    const ip = 'ip=dhcp';
+
+    switch (this.distro.familyId) {
+      case 'archlinux':
+        return `archiso_http_srv=${http_srv} ${ip} copytoram=n archisobasedir=arch`;
+      
+      case 'debian':
+        return `boot=live fetch=${http_srv}filesystem.squashfs`;
+
+      case 'fedora':
+        return `root=live:${http_srv}filesystem.squashfs rd.live.image ro`;
+
+      case 'opensuse':
+        return `fetch=${http_srv}filesystem.squashfs`;
+
+      default:
+        // Un parametro di default o un errore
+        console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
+        return '';
+    }
   }
 
   /**
