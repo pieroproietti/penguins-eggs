@@ -126,7 +126,7 @@ One more step forward with fedora, openmamba, openSuSE and RHEL distributions in
 
 
 ## penguins-eggs-10.0.54
-* great news for rpm based distributions: almalinux, fedora, opensuse and rocklinux: we are finally able to produce bootable ISO images on UEFI systems;
+* great news for rpm based distributions: almalinux, fedora, opensuse and rocklinux: we are finally able to  bootable ISO images on UEFI systems;
 * openmamba, thanks the collaboration from [Silvan Calarco](https://openmamba.org/en/), have it's own rpm package;
 * almalinux, fedora, rocklinux can install penguins-eggs with [penguins-eggs-tarball](https://sourceforge.net/projects/penguins-eggs/files/Packages/TARBALLS/);
 * Manjaro-based bigLinux and bigCommunity distributions are now managed separately and properly;
@@ -206,7 +206,7 @@ the comments;
 
 ## penguins-eggs-10.0.45
 * `eggs love` now not fail if eggs is not configured yet and, configuration is made with `eggs dad --defailt`;
-* `eggs produce` bugfix, `eggs produce` under certain conditions asked for confirmation twice;
+* `eggs ` bugfix, `eggs ` under certain conditions asked for confirmation twice;
 * removed package `pxelinux`, `isolinux` dependecies on debian;
 * removed compatibility functions for node8, not more necessary.
 
@@ -256,9 +256,9 @@ I could really use someone to take care of implementing penguins-eggs packages f
 * To get penguins-eggs on fedora, follow [WAY-TO-FEDORA](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/WAY-TO-FEDORA.md), again don't have way to create a package, not too expert on Fedora. If someone want help.
 
 ## penguins-eggs-10.0.37
-* After getting to reproduce fedora using dracut, I tried to do the same job with AlpineLinux and OpenSuSE, unfortunately, I was not successful with either. In any case, on OpenSuSE I went ahead anyway; it remains for me to solve the mystery of why it won't boot from live image, I suspect a problem on syslinux. Cannot find on OpenSuSE the files: `ldlinux.c32`, `libcom32.c32` and `libutil.c32`, they are part of syslinux.
+* After getting to re fedora using dracut, I tried to do the same job with AlpineLinux and OpenSuSE, unfortunately, I was not successful with either. In any case, on OpenSuSE I went ahead anyway; it remains for me to solve the mystery of why it won't boot from live image, I suspect a problem on syslinux. Cannot find on OpenSuSE the files: `ldlinux.c32`, `libcom32.c32` and `libutil.c32`, they are part of syslinux.
 * On the source I check all the cases we must to choose with distros adding OpenSuSE and ordering the others distros: Alpine, Arch, Debian, Fedota and OpenSuSE.
-* Tryed to get NobaraLinux working, was possible di install it, add penguins-eggs and produce ISO, but there are problems and I was unable to install it with krll or calamares.
+* Tryed to get NobaraLinux working, was possible di install it, add penguins-eggs and  ISO, but there are problems and I was unable to install it with krll or calamares.
 * As always if same expert is reading, this project is unique with it's capabilities but It's just an one man show, if possible need help, thanks.
 
 ## penguins-eggs-10.0.36
@@ -348,7 +348,7 @@ I'm working mostly to bring eggs to AlpineLinux and fedora, the changes are incl
 * alpine: we get a corretct `filesystem.squashfs`, a not booting iso image, and laks again to be able to create an `initramfs` to boot from it.
 
 ## penguins-eggs-10.0.18
-* `produce`: removed flag `--udf`.
+* ``: removed flag `--udf`.
 
 Traditionally eggs use [xorriso](https://www.gnu.org/software/xorriso/) to create ISO images, but this can be a problem, becouse Windows don't support iso9960 larger than 4.7 G.
 
@@ -363,7 +363,7 @@ Depends: coreutils,
 Suggests: calamares
 ...
 ```
-Installing penguins-eggs with xorriso (default) produces images in [iso 9660](https://en.wikipedia.org/wiki/ISO_9660) format while installing penguins-eggs on a system where genisoimage is installed produces ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format).
+Installing penguins-eggs with xorriso (default) s images in [iso 9660](https://en.wikipedia.org/wiki/ISO_9660) format while installing penguins-eggs on a system where genisoimage is installed s ISOs in [Universal Disk Format](https://en.wikipedia.org/wiki/Universal_Disk_Format).
 
 In each case you can overcome the 4.7 G barrier, but if you want your users to be able to use rufus or similar on Windows to create boot devices, use the UDF format.
 
@@ -374,7 +374,7 @@ At this point the `--udf` flag is no longer necessary and was removed, depending
 * `yolk`: I added a completely new configuration file for command `yoik`. You, editing `/etc/penguins-eggs.d/yolk.yaml` can insert/delete packages to be present on the local repository `/var/local/yolk`.
 
 ## penguins-eggs-10.0.15
-produce: added new flag --udf to produce ISO in Universal Disk Format with `genisoimage` command. Note: genisoimage must to be installed before.
+: added new flag --udf to  ISO in Universal Disk Format with `genisoimage` command. Note: genisoimage must to be installed before.
 
 This is necessary because programs like rufus in Windows, do not correctly read ISO files generated with xorriso, when they are greater than 4.7 G.
 
@@ -387,16 +387,16 @@ This is necessary because programs like rufus in Windows, do not correctly read 
 ## penguins-eggs-10.0.13
 * `dad`: bugfix on flag --file;
 * `exclude.list.d`: usr.list is now completely - intentionally - empty;
-* `produce`: removed flag --sidecar, not necessary.
+* ``: removed flag --sidecar, not necessary.
 
 ## penguins-eggs-10.0.12
-`produce`: added the `--sidecar` flag, allows the inclusion of an arbitrary directory within the generated ISO. Uses can be disparate, I leave it to you.
+``: added the `--sidecar` flag, allows the inclusion of an arbitrary directory within the generated ISO. Uses can be disparate, I leave it to you.
 
 ## penguins-eggs-10.0.11-2
 The `/usr/bin/penguins-links-add.sh` script called by `/etc/xdg/autostart/penguins-links-add.desktop` now waits for the Desktop folder to be present before copying the links to the desktop, with the result that all links are shown correctly.
 
 ## penguins-eggs-10.0.11-1
-* `produce --excludes`, now accept `static`, `homes` and `home`,
+* ` --excludes`, now accept `static`, `homes` and `home`,
 
 Use:
 
@@ -431,16 +431,16 @@ Yolk was created mostly to let installation without internet connection during t
 
 ## penguins-eggs-10.0.8-1
 * removed the code that allowed `genisoimage` to be used instead of `xorriso` to generate the ISO;
-* restored the operation of `eggs produce --script` for both: Debian and Ubuntu derivatives (for the moment it has been tested only on Debian bookworm and Linuxmint 21.3 Virginia;
-* using `eggs produce --script` actually generated a link in `/home/eggs` to the ISO in `.mnt`;
-* warning: I checked `eggs produce --script` on ArchLinux too, but actually don't work.
+* restored the operation of `eggs  --script` for both: Debian and Ubuntu derivatives (for the moment it has been tested only on Debian bookworm and Linuxmint 21.3 Virginia;
+* using `eggs  --script` actually generated a link in `/home/eggs` to the ISO in `.mnt`;
+* warning: I checked `eggs  --script` on ArchLinux too, but actually don't work.
 
 I did my best, I hope you find errors but not too many, that's enough for today!
 
 ## penguins-eggs-10.0.7-1
-For the joy of all respin producer who don't like to have my eggs on the desktop, I changed a flag in `sudo eggs produce`.
+For the joy of all respin r who don't like to have my eggs on the desktop, I changed a flag in `sudo eggs `.
 
-I already add flag `--noicons`, equivalent to not create icons at all on the desktop: not eggs, not calamares, and so on, I think too much. So I update it to: `sudo eggs produce --noicon` in singular form, and remove just my eggs symbol and my blog link. For someone this can be important.
+I already add flag `--noicons`, equivalent to not create icons at all on the desktop: not eggs, not calamares, and so on, I think too much. So I update it to: `sudo eggs  --noicon` in singular form, and remove just my eggs symbol and my blog link. For someone this can be important.
 
 For others, don't take cure, always is better to have eggs on the fridge!
 
@@ -458,7 +458,7 @@ Now we have two template for control file:
 
 * perrisbrewery/template/dependencies.yaml;
 * perrisbrewery/template/dependencies-bionic.yaml I removed line: ```live-config-systemd | live-config-sysinitv```, added live `-- live-boot`, and put `nodejs (>= 16);
-* live-boot package: on bionic - for same reason - when the system is installed, directory `/lib/live/boot` is erased. The system work, eggs work and can produce, but the resulting ISO will not boot! To solve this problem, before generate the ISO, give: `sudo apt install live-boot --reinstall`. This will restore `/lib/live/boot` and it's full contents.
+* live-boot package: on bionic - for same reason - when the system is installed, directory `/lib/live/boot` is erased. The system work, eggs work and can , but the resulting ISO will not boot! To solve this problem, before generate the ISO, give: `sudo apt install live-boot --reinstall`. This will restore `/lib/live/boot` and it's full contents.
 
 ## penguins-eggs-10.0.6-1
 I received from Glenn Chugg same informations about fixes on README and on `eggs skel` command. 
@@ -467,8 +467,8 @@ I received from Glenn Chugg same informations about fixes on README and on `eggs
 * skel: cinnamon desktop. not more copy`./conf/cinnamon` in `/etc/skel`.
 
 ## penguins-eggs-10.0.5-2
-* produce: default compression is now `zstd 1M Xcompression-level 3`, fast the same and better in decompression;
-* produce: added flag --pendrive, using `zstd 1M Xcompression-level 15` optimized to use with pendrives.
+* : default compression is now `zstd 1M Xcompression-level 3`, fast the same and better in decompression;
+* : added flag --pendrive, using `zstd 1M Xcompression-level 15` optimized to use with pendrives.
 
 ## penguins-eggs-10.0.4
 * calamares: calamares now receive branding's configuration parameters homeUrl, supportUrl and bugReportUrl from /etc/os-release;
@@ -476,7 +476,7 @@ I received from Glenn Chugg same informations about fixes on README and on `eggs
 
 ## penguins-eggs-10.0.3
 * krill installaler: `sudo eggs install` now have a new option to chroot on the installed system before reboot. This let you di add/remove last time packages, before your system is rebooted;
-* again in krill: krill now respect the calamares module: `packages.conf` or it's own, packages are added/removed after it's configuration. This born becouse of Devuan daedalus amd64 version, I noted it go in kernel panic after installation, if penguins-eggs and it's dependecies are not removed. The problem arise - probably - from the package `live-config-sysvinit`. I solved using the option `--release` in command `produce`, to configurate calamares/krill to remove penguins-eggs, calamares and it's dependencies before to finish the installation process;
+* again in krill: krill now respect the calamares module: `packages.conf` or it's own, packages are added/removed after it's configuration. This born becouse of Devuan daedalus amd64 version, I noted it go in kernel panic after installation, if penguins-eggs and it's dependecies are not removed. The problem arise - probably - from the package `live-config-sysvinit`. I solved using the option `--release` in command ``, to configurate calamares/krill to remove penguins-eggs, calamares and it's dependencies before to finish the installation process;
 * Other little fixes on wardrobe.
 
 ## penguins-eggs-10.0.2
@@ -502,7 +502,7 @@ In short, what I am about to tell you is that it is a good time to get on board!
 I consider the cleanup and adjustments resulting from the switch to oclif4 and Debian package name change to be over. I put the new version in the PPA and you can install it with the command: `sudo apt install penguins-eggs`.
 
 ## penguins-eggs-9.8.2
-Removed a lot of unusefull code, when eggs started I thought to use npm packages to distribuite it, so inside there was the code to install necessary packages. From long time now, we produce deb packages and arch packages so there was no need ot that code. I tested it working on i386 Debian Bookworm, amd64 Debian Bookworm, Arch.
+Removed a lot of unusefull code, when eggs started I thought to use npm packages to distribuite it, so inside there was the code to install necessary packages. From long time now, we  deb packages and arch packages so there was no need ot that code. I tested it working on i386 Debian Bookworm, amd64 Debian Bookworm, Arch.
 
 ## penguins-eggs-9.8.1
 Released for i386, arm64 and amd64. Checked on i386 Debian Bookworm, amd64 Debian Bookworm, Arch.
