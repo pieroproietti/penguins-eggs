@@ -45,9 +45,10 @@ export async function initrdArch(this: Ovary) {
         }
     }
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/live.conf`)
-    const pathHooks = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/hooks`)
-    let cmd = `mkinitcpio -c ${pathConf} -H ${pathHooks}  -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
-    await exec(cmd, this.echo)
+    const eggsHooks = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}/hooks/`)
+    let cmd = `mkinitcpio -c ${pathConf} -H ${eggsHooks}  -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
+    await exec(cmd, Utils.setEcho(true))
+    process.exit()
 }
 
 /**
