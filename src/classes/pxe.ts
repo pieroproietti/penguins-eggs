@@ -354,13 +354,10 @@ export default class Pxe {
 
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
 
-    // --- Copia i file di GRUB in base alla distro ---
-    if (this.distro.familyId === 'archlinux') {
-      await exec(`grub-mkstandalone -v \
-                  -O x86_64-efi \
-                  -o ${this.pxeRoot}/grub.efi \
-                  --modules="part_gpt part_msdos http fat ext2 configfile normal" \
-                  "boot/grub/grub.cfg=${this.pxeRoot}/grub/grub.cfg"`)      
+  // --- Copia i file di GRUB in base alla distro ---
+  if (this.distro.familyId === 'archlinux') {
+    await exec(`ln -s /usr/lib/grub/x86_64-efi/grubx64.efi ${this.pxeRoot}/grub.efi`, echoYes);
+    await exec(`cp -r /usr/lib/grub/x86_64-efi ${this.pxeRoot}/grub/`, echoYes);
 
 } else if (this.distro.familyId === 'debian') {
       await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes);
