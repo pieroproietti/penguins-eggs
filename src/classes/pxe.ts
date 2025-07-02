@@ -119,15 +119,19 @@ export default class Pxe {
    * build
    */
   async build() {
+    const echoYes = Utils.setEcho(true)
+
+    // pxeRoot erase
     if (fs.existsSync(this.pxeRoot)) {
       await this.tryCatch(`rm ${this.pxeRoot} -rf`)
     }
 
+    // Struttura
     await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
     await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
     await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
 
-    const echoYes = Utils.setEcho(true)
+    // Link supplementari distro
     if (this.distro.familyId === 'archlinux') {
       let filesystemName = `arch/x86_64/airootfs.sfs`
       if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
@@ -137,23 +141,7 @@ export default class Pxe {
       await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
     }
 
-    // Debian /src/classes/ovary.d/make-efi.ts
-    await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes)
-    await exec(`mkdir ${this.pxeRoot}/grub -p`, echoYes)
-    await exec (`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes)
-
-    let grubName = `${this.pxeRoot}/grub/${Diversions.grubName(this.distro.familyId)}.cfg`
-    let grubContent =''
-    grubContent +=`set timeout=5\n`
-    grubContent +=`set default=0\n`
-    grubContent +=`menuentry "Boot Debian Live from Network" {\n`
-    grubContent +=`echo "Loading Linux Kernel via GRUB..."\n`
-    grubContent +=`linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} boot=live fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-    grubContent +=`echo "Loading Initial Ramdisk..."\n`
-    grubContent +=`initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
-    grubContent +=`}\n`
-    fs.writeFileSync(grubName, grubContent, 'utf-8')
-
+    await this.grubCfg(this.distro.familyId) 
     await this.bios()
     await this.uefi()
     await this.http()
@@ -289,9 +277,11 @@ export default class Pxe {
        * ARCH LINUX
        * addons/eggs/theme/livecd/isolinux.main.simple.cfg
        */
+      let archisobasedir = 'arch'
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
-        tool = 'miso'
+        tool = archisobasedir
+        archisobasedir = tool
       }
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
                   boot=live \
@@ -301,7 +291,7 @@ export default class Pxe {
                   ${tool}_http_srv=http://${Utils.address()}/ \
                   ip=dhcp \
                   copytoram=n \
-                  copytoram=n archisobasedir=arch\n`
+                  copytoram=n archisobasedir=${archisobasedir}\n`
 
       content += 'sysappend 3\n'
       content += '\n'
@@ -352,6 +342,37 @@ export default class Pxe {
 
     const file = `${this.pxeRoot}/autoexec.ipxe`;
     fs.writeFileSync(file, content);
+  }
+
+  /**
+   * grubCfg
+   * @param familyId 
+   */
+  private async grubCfg(familyId = ''){ 
+    const echoYes = Utils.setEcho(true)
+
+    await exec(`mkdir ${this.pxeRoot}/grub -p`, echoYes)
+
+    // Copia grub /src/classes/ovary.d/make-efi.ts
+    if (familyId === 'archlinux') {
+
+    } else if (familyId === 'debian') {
+      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes)
+      await exec (`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes)
+
+    }
+
+    let grubName = `${this.pxeRoot}/grub/${Diversions.grubName(this.distro.familyId)}.cfg`
+    let grubContent =''
+    grubContent +=`set timeout=5\n`
+    grubContent +=`set default=0\n`
+    grubContent +=`menuentry "Boot Debian Live from Network" {\n`
+    grubContent +=`echo "Loading Linux Kernel via GRUB..."\n`
+    grubContent +=`linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} boot=live fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+    grubContent +=`echo "Loading Initial Ramdisk..."\n`
+    grubContent +=`initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
+    grubContent +=`}\n`
+    fs.writeFileSync(grubName, grubContent, 'utf-8')
   }
 
   /**
