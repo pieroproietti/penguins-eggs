@@ -141,7 +141,7 @@ export default class Pxe {
       await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
     }
 
-    await this.grubCfg() 
+    await this.grubCfg()
     await this.bios()
     await this.uefi()
     await this.http()
@@ -349,22 +349,18 @@ export default class Pxe {
    * grubCfg
    * @param familyId 
    */
-    private async grubCfg() {
+  private async grubCfg() {
     const echoYes = Utils.setEcho(true);
 
+    /**
+     * grubnetx64.efi.signed Debian bookworm
+     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed /ipxe/grub.efi
+     * cp -r /usr/lib/grub/x86_64-efi/ /ipxe/grub
+     */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
+    await exec(`cp ${__dirname}/../../ipxe/grub.efi ${this.pxeRoot}/grub.efi`)
+    await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`)
 
-  // --- Copia i file di GRUB in base alla distro ---
-  if (this.distro.familyId === 'archlinux') {
-    const bootstrap_path = '/tmp/bootstrap.cfg'
-    const bootstrap_content = `configfile (http,${Utils.address()})/grub/grub.cfg`
-    fs.writeFileSync(bootstrap_path, bootstrap_content)
-    await exec(`grub-mkstandalone -v -o ${this.pxeRoot}/grub.efi -O x86_64-efi --modules="part_gpt part_msdos http configfile normal linux initrd" "boot/grub/grub.cfg=/tmp/bootstrap.cfg"`)
-
-} else if (this.distro.familyId === 'debian') {      await exec(`ln -s /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, echoYes);
-      await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`, echoYes);
-    }
-    // Aggiungi qui gli else if per Fedora, openSUSE, etc...
 
     // --- Genera il file grub.cfg ---
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
@@ -398,7 +394,7 @@ export default class Pxe {
     switch (this.distro.familyId) {
       case 'archlinux':
         return `archiso_http_srv=${http_srv} ${ip} copytoram=n archisobasedir=arch`;
-      
+
       case 'debian':
         return `boot=live fetch=${http_srv}filesystem.squashfs`;
 
