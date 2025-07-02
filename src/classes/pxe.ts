@@ -288,10 +288,11 @@ export default class Pxe {
                   config \
                   noswap \
                   noprompt \
-                  ${tool}_http_srv=http://${Utils.address()}/ \
+                  ${tool}_http_srv=http://${Utils.address()}/ \  // DEVE finire con /
                   ip=dhcp \
                   copytoram=n \
-                  copytoram=n archisobasedir=${archisobasedir}\n`
+                  copytoram=n \
+                  archisobasedir=${archisobasedir}\n`
 
       content += 'sysappend 3\n'
       content += '\n'
