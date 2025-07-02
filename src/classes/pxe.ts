@@ -388,21 +388,20 @@ export default class Pxe {
    * in base alla famiglia della distribuzione.
    */
   private _getGrubLinuxParameters(): string {
-    const http_srv = `http://${Utils.address()}/live/`;
     const ip = 'ip=dhcp';
 
     switch (this.distro.familyId) {
       case 'archlinux':
-        return `archiso_http_srv=${http_srv} ${ip} copytoram=n archisobasedir=arch`;
+        return `archiso_http_srv=http://${Utils.address()}/ ${ip} copytoram=n archisobasedir=arch`;
 
       case 'debian':
-        return `boot=live fetch=${http_srv}filesystem.squashfs`;
+        return `boot=live fetch=http://${Utils.address()}/filesystem.squashfs`;
 
       case 'fedora':
-        return `root=live:${http_srv}filesystem.squashfs rd.live.image ro`;
+        return `root=live:http://${Utils.address()}/filesystem.squashfs rd.live.image ro`;
 
       case 'opensuse':
-        return `fetch=${http_srv}filesystem.squashfs`;
+        return `fetch=http://${Utils.address()}/filesystem.squashfs`;
 
       default:
         // Un parametro di default o un errore
