@@ -16,6 +16,8 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import Diversions from '../diversions.js'
+import { hostname } from 'node:os'
+import { getHeapCodeStatistics } from 'node:v8'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -42,11 +44,13 @@ export async function initrdArch(this: Ovary) {
     let tool = 'archiso'
     let hookSrc = '/usr/lib/initcpio/hooks/archiso_pxe_http'
     let hookDest = '/etc/initcpio/hooks/archiso_pxe_http'
+    let edit = `sed -i 's/export copytoram="y"/# export copytoram="y"/' ${hookDest}`
     if (Diversions.isManjaroBased(this.distroId)) {
         dirConf = 'manjaro'
         tool = 'miso'
         hookSrc = `/etc/initcpio/hooks/miso_pxe_http`
-        hookDest = `/etc/initcpio/hooks/miso_pxe_http`
+        hookDest = hookSrc
+        edit = `sed -i 's/copytoram="y"/# copytoram="y"/' ${hookDest}`
         if (this.distroId === "Biglinux" || this.distroId === "Bigcommunity") {
             dirConf = 'biglinux'
         }
@@ -56,9 +60,10 @@ export async function initrdArch(this: Ovary) {
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}`)
     const fileConf = pathConf + '/live.conf'
     let hookSaved = `/tmp/${path.basename(hookSrc)}`
+    if (hookSrc !== hookDest) {
+        await exec(`cp ${hookSrc} ${hookDest}`)
+    }
     await exec(`cp ${hookSrc} ${hookSaved}`)
-    await exec(`cp ${hookSrc} ${hookDest}`)
-    let edit = `sed -i 's/export copytoram="y"/# export copytoram="y"/' ${hookDest}`
     await exec(edit, Utils.setEcho(true))
     let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
     await exec(cmd, Utils.setEcho(true))
