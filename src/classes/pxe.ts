@@ -377,10 +377,12 @@ export default class Pxe {
     const kernelParams = this._getGrubLinuxParameters();
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
 
-    grubContent += `  echo "Loading Initial Ramdisk..."\n`;
+    grubContent += `  echo "Loading Initial Ramdisk..."\n`
+
     if (this.distro.familyId === 'alpine') {
       const modloopImg = this.initrdImg.replace('initramfs', 'modloop');
       grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)} (http,${Utils.address()})/live/${path.basename(modloopImg)}\n`;
+
     } else {
       grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
     }
@@ -399,8 +401,10 @@ export default class Pxe {
     switch (this.distro.familyId) {
 
       case 'alpine':
-        // ALPINE usa 'alpine_repo' per trovare i suoi pacchetti
-        return `${ip} alpine_repo=http://${Utils.address()}/live/ modules=loop,squashfs,sd-mod,usb-storage quiet`
+        /**
+         * ALPINE
+         */
+        return `${ip} alpine_repo=http://${Utils.address()}/live/ modules=loop,squashfs,sd-mod,usb-storage`
 
       case 'archlinux':
         /**
