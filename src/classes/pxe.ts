@@ -143,13 +143,9 @@ export default class Pxe {
 
     // Firewall per fedora
     if (this.distro.familyId === 'fedora') {
-      // Permette il servizio DHCP (porta 67/udp)
       await exec(`firewall-cmd --add-service=dhcp --permanent`)
-      // Permette il servizio TFTP (porta 69/udp)
       await exec(`firewall-cmd --add-service=tftp --permanent`)
-      // Permette il servizio HTTP (porta 80/tcp)
       await exec(`firewall-cmd --add-service=http --permanent`)
-      // Ricarica il Firewall
       await exec(`firewall-cmd --reload`)
     }
 
@@ -384,20 +380,11 @@ export default class Pxe {
     // Titolo del menu dinamico
     grubContent += `menuentry "Boot ${this.distro.distroId} Live (PXE)" {\n`;
     grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`;
-
-    // Riga del kernel dinamica, basata sulla famiglia della distro
     const kernelParams = this._getGrubLinuxParameters();
-    grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
+    grubContent += `  kernel (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
-
-    if (this.distro.familyId === 'alpine') {
-      const modloopImg = this.initrdImg.replace('initramfs', 'modloop');
-      grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)} (http,${Utils.address()})/live/${path.basename(modloopImg)}\n`;
-
-    } else {
-      grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
-    }
+    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
     grubContent += `}\n`;
 
     fs.writeFileSync(grubName, grubContent, 'utf-8');
@@ -434,7 +421,7 @@ export default class Pxe {
         return `boot=live fetch=http://${Utils.address()}/filesystem.squashfs`;
 
       case 'fedora':
-        return `root=live:http://${Utils.address()}/filesystem.squashfs rd.live.image ro`;
+        return `root:live:http://${Utils.address()}/filesystem.squashfs rd.live.image ro`;
 
       case 'opensuse':
         return `fetch=http://${Utils.address()}/filesystem.squashfs`;
