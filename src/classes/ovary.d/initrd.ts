@@ -39,22 +39,34 @@ export async function initrdArch(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using mkinitcpio on ISO/live`)
 
     let dirConf = 'arch'
+    let tool = 'archiso'
+    let hookSrc = '/usr/lib/initcpio/hooks/archiso_pxe_http'
+    let hookDest = '/etc/initcpio/hooks/archiso_pxe_http'
     if (Diversions.isManjaroBased(this.distroId)) {
         dirConf = 'manjaro'
+        tool = 'miso'
+        hookSrc = `/etc/initcpio/hooks/miso_pxe_http`
+        hookDest = `/etc/initcpio/hooks/miso_pxe_http`
         if (this.distroId === "Biglinux" || this.distroId === "Bigcommunity") {
             dirConf = 'biglinux'
         }
     }
+
+    const restore = fs.existsSync(hookDest)
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}`)
     const fileConf = pathConf + '/live.conf'
-    const hookSrc = '/usr/lib/initcpio/hooks/archiso_pxe_http'
-    const hookDest = '/etc/initcpio/hooks/archiso_pxe_http'
+    let hookSaved = `/tmp/${path.basename(hookSrc)}`
+    await exec(`cp ${hookSrc} ${hookSaved}`)
     await exec(`cp ${hookSrc} ${hookDest}`)
-    let edit = `sed -i 's/export copytoram="y"/# export copytoram="y"/' /etc/initcpio/hooks/archiso_pxe_http`
+    let edit = `sed -i 's/export copytoram="y"/# export copytoram="y"/' ${hookDest}`
     await exec(edit, Utils.setEcho(true))
     let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
     await exec(cmd, Utils.setEcho(true))
     await exec(`rm -f ${hookDest}`)
+    if (restore) {
+        await exec(`cp ${hookSaved} ${hookDest}`)
+    }
+    await exec(`rm -f ${hookSaved}`)
 }
 
 /**
