@@ -141,6 +141,18 @@ export default class Pxe {
       await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
     }
 
+    // Firewall per fedora
+    if (this.distro.familyId === 'fedora') {
+      // Permette il servizio DHCP (porta 67/udp)
+      await exec(`firewall-cmd --add-service=dhcp --permanent`)
+      // Permette il servizio TFTP (porta 69/udp)
+      await exec(`firewall-cmd --add-service=tftp --permanent`)
+      // Permette il servizio HTTP (porta 80/tcp)
+      await exec(`firewall-cmd --add-service=http --permanent`)
+      // Ricarica il Firewall
+      await exec(`firewall-cmd --reload`)
+    }
+
     await this.grubCfg()
     await this.bios()
     await this.uefi()
