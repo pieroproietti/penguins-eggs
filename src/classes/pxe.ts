@@ -395,7 +395,6 @@ export default class Pxe {
       case 'archlinux':
         /**
          * ARCH LINUX
-         * addons/eggs/theme/livecd/isolinux.main.simple.cfg
          */
         let basedir = 'archisobasedir=arch'
         let tool = 'archiso'
