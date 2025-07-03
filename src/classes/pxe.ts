@@ -277,7 +277,7 @@ export default class Pxe {
        * ARCH LINUX
        * addons/eggs/theme/livecd/isolinux.main.simple.cfg
        */
-      let archisobasedir = `archisobasedir`
+      let archisobasedir = `archisobasedir=arch`
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         archisobasedir = ''
@@ -392,7 +392,7 @@ export default class Pxe {
     const ip = 'ip=dhcp';
 
     switch (this.distro.familyId) {
-        case 'archlinux':
+      case 'archlinux':
         /**
          * ARCH LINUX
          * addons/eggs/theme/livecd/isolinux.main.simple.cfg
