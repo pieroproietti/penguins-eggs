@@ -360,7 +360,7 @@ export default class Pxe {
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
     await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
-    await exec(`cp -r /usr/lib/grub/x86_64-efi/ ${this.pxeRoot}/grub`)
+    await exec(`cp -r ${__dirname}/../../ipxe/grub/* ${this.pxeRoot}/grub`)
 
 
     // --- Genera il file grub.cfg ---
@@ -378,7 +378,12 @@ export default class Pxe {
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`;
-    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
+    if (this.distro.familyId === 'alpine') {
+      const modloopImg = this.initrdImg.replace('initramfs', 'modloop');
+      grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)} (http,${Utils.address()})/live/${path.basename(modloopImg)}\n`;
+    } else {
+      grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
+    }
     grubContent += `}\n`;
 
     fs.writeFileSync(grubName, grubContent, 'utf-8');
@@ -392,6 +397,11 @@ export default class Pxe {
     const ip = 'ip=dhcp';
 
     switch (this.distro.familyId) {
+
+      case 'alpine':
+        // ALPINE usa 'alpine_repo' per trovare i suoi pacchetti
+        return `${ip} alpine_repo=http://${Utils.address()}/live/ modules=loop,squashfs,sd-mod,usb-storage quiet`
+
       case 'archlinux':
         /**
          * ARCH LINUX
