@@ -13,8 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-23
-* cuckoo: works fine on BIOS and UEFI on Arch and Debian families. I am working on making it available on alpine. fedora, Manjaro, opensuse and others.
+## penguins-eggs-10.1.1-24
+* cuckoo: works fine on BIOS and UEFI on Arch, BigLinux, Manjaro and Debian, Devuan, Ubuntu and derivatives (Linuxmint, LMDE, etc). I am working on making it available on almalinux, alpine, fedora, opensuse and rocky.
 * alpine: Linux Alpine is back on penguins-eggs, look to [penguins-alpine](https://github.com/pieroproietti/penguins-alpine/). In addition, I was able to create the calamares 3.3 packages for Alpine.
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.
 
