@@ -277,12 +277,12 @@ export default class Pxe {
        * ARCH LINUX
        * addons/eggs/theme/livecd/isolinux.main.simple.cfg
        */
-      let archisobasedir = 'arch'
+      let archisobasedir = `archisobasedir`
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
-        tool = archisobasedir
-        archisobasedir = tool
-      }
+        archisobasedir = ''
+        tool = 'miso'
+      } 
       content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
                   boot=live \
                   config \
@@ -292,7 +292,7 @@ export default class Pxe {
                   ip=dhcp \
                   copytoram=n \
                   copytoram=n \
-                  archisobasedir=${archisobasedir}\n`
+                  ${archisobasedir}\n`
 
       content += 'sysappend 3\n'
       content += '\n'
@@ -392,8 +392,18 @@ export default class Pxe {
     const ip = 'ip=dhcp';
 
     switch (this.distro.familyId) {
-      case 'archlinux':
-        return `archiso_http_srv=http://${Utils.address()}/ ${ip} copytoram=n archisobasedir=arch`;
+        case 'archlinux':
+        /**
+         * ARCH LINUX
+         * addons/eggs/theme/livecd/isolinux.main.simple.cfg
+         */
+        let basedir = 'archisobasedir=arch'
+        let tool = 'archiso'
+        if (Diversions.isManjaroBased(this.distro.distroId)) {
+          basedir = ''
+          tool = 'miso'
+        } 
+        return `${tool}_http_srv=http://${Utils.address()}/ ${ip} copytoram=n ${basedir}`;
 
       case 'debian':
         return `boot=live fetch=http://${Utils.address()}/filesystem.squashfs`;

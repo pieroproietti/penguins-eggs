@@ -91,7 +91,7 @@
   distroLike: Ubuntu
   family: debian
   ids:
-    - horus # elementary OS 7 Horus
+    - horus # Elementary OS 7 Horus
     - jolnir # Elementary jolnir
     - ShiFt # Makululu
     - ulyana # Linux Mint
@@ -137,3 +137,4 @@
 
     # Manjaro 
     - yonada
+    # Zetar
