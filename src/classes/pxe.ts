@@ -250,7 +250,7 @@ export default class Pxe {
     await exec(`cp ${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
 
     // syslinux
-    await exec(`${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
+    await exec(`ln -s ${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
     await exec(`ln -s ${this.distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
     await exec(`ln -s ${this.distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
     await exec(`ln -s ${this.distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
@@ -386,7 +386,7 @@ export default class Pxe {
 
     // Titolo del menu dinamico
     grubContent += `menuentry "Boot ${this.bootLabel.replace('.iso', '')} via (PXE)" {\n`
-    grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`
+    grubContent += `  echo "Loading Linux Kernel..."\n`
     const kernelParams = this._getGrubLinuxParameters()
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`
 
