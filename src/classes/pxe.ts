@@ -272,76 +272,8 @@ export default class Pxe {
     content += `label ${this.distro.distroId}\n`
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
-
-    if (this.distro.familyId === 'alpine') {
-      // ALPINE
-      content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} \
-                  ip=dhcp \
-                  alpinelivelabel=pxe \
-                  alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
-
-    } else if (this.distro.familyId === 'archlinux') {
-      // ARCH LINUX
-      let archisobasedir = `archisobasedir=arch`
-      let tool = 'archiso'
-      if (Diversions.isManjaroBased(this.distro.distroId)) {
-        archisobasedir = ''
-        tool = 'miso'
-      } 
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-                  boot=live \
-                  config \
-                  noswap \
-                  noprompt \
-                  ${tool}_http_srv=http://${Utils.address()}/ \  // DEVE finire con /
-                  ip=dhcp \
-                  copytoram=n \
-                  copytoram=n \
-                  ${archisobasedir}\n`
-
-      content += 'sysappend 3\n'
-      content += '\n'
-
-    } else if (this.distro.familyId === 'debian') {
-      // DEBIAN
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-                  boot=live \
-                  config \
-                  noswap \
-                  noprompt \
-                  fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
-
-    } else if (this.distro.familyId === 'fedora') {
-      // FEDORA
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-                  root=live:http://${Utils.address()}/live/filesystem.squashfs \
-                  rootfstype=auto \
-                  ro \
-                  rd.live.image \
-                  rd.luks=0 \
-                  rd.md=0 \
-                  rd.dm=0\n`
-
-    } else if (this.distro.familyId === 'opensuse') {
-      // OPENSUSE
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-                         fetch=http://${Utils.address()}/live/filsesystem.squashfs\n`
-    }
-
-    /**
-     * TO REMOVE
-    if (this.isos.length > 0) {
-      content += 'menu separator\n'
-      for (const iso of this.isos) {
-        content += '\n'
-        content += `label ${iso}\n`
-        content += `menu label ${iso}\n`
-        content += `kernel http://${Utils.address()}/memdisk\n`
-        content += `initrd http://${Utils.address()}/${iso}\n`
-        content += 'append iso raw sysappend 3\n'
-      }
-    }
-     */
+    const kernelParams = this._getKernelParameters();
+    content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} ${kernelParams}\n`;
 
     const file = `${this.pxeRoot}/pxelinux.cfg/default`
     fs.writeFileSync(file, content)
@@ -385,9 +317,9 @@ export default class Pxe {
     grubContent += `set default=0\n\n`;
 
     // Titolo del menu dinamico
-    grubContent += `menuentry "Boot ${this.bootLabel.replace('.iso', '')} via (PXE)" {\n`
+    grubContent += `menuentry "${this.bootLabel.replace('.iso', '')} via PXE" {\n`
     grubContent += `  echo "Loading Linux Kernel..."\n`
-    const kernelParams = this._getGrubLinuxParameters()
+    const kernelParams = this._getKernelParameters()
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
@@ -402,54 +334,56 @@ export default class Pxe {
    * Metodo helper per ottenere i parametri corretti per GRUB
    * in base alla famiglia della distribuzione.
    */
-  private _getGrubLinuxParameters(): string {
-    const ip = 'ip=dhcp';
-
+  private _getKernelParameters(): string {
+    let lp = ''
+    // .replaceAll(/\s\s+/g, ' ')
     switch (this.distro.familyId) {
 
       case 'alpine':
-        // ALPINE
-        return `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
-                modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
-                acpi=off \
-                ip=dhcp`
+        lp =  `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
+               modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
+               acpi=off \
+               ip=dhcp`
+      break
 
       case 'archlinux':
-        // ARCH LINUX
         let basedir = 'archisobasedir=arch'
         let hook = 'archiso_http_srv'
         if (Diversions.isManjaroBased(this.distro.distroId)) {
           basedir = ''
           hook = 'miso_http_srv'
         } 
-        return `${hook}=http://${Utils.address()}/ \
-                ${basedir} \
-                ip=dhcp \
-                copytoram=n \
-                `
+        lp =  `${hook}=http://${Utils.address()}/ \
+              ${basedir} \
+              ip=dhcp \
+              copytoram=n`
+      break
 
       case 'debian':
-        // DEBIAN
-        return `fetch=http://${Utils.address()}/filesystem.squashfs\
-                ip=dhcp \
-                boot=live`
+        lp =  `fetch=http://${Utils.address()}/live/filesystem.squashfs \
+                boot=live \
+                config \
+                noswap \
+                noprompt \
+                ip=dhcp`
+      break
 
       case 'fedora':
-        // FEDORA
-        return `root:live:http://${Utils.address()}/filesystem.squashfs \
-                ip=dhcp \
-                rd.live.image   
-                ro`
+        lp =  `root:live:http://${Utils.address()}/filesystem.squashfs \
+               ip=dhcp \
+               rd.live.image   
+               ro`
+      break
 
       case 'opensuse':
-        // OPENSUSE
-        return `fetch=http://${Utils.address()}/filesystem.squashfs`
+        lp =  `fetch=http://${Utils.address()}/filesystem.squashfs`
+      break
+      
 
       default:
-        // Un parametro di default o un errore
         console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
-        return '';
     }
+    return lp.replaceAll(/\s\s+/g, ' ')
   }
 
 }
