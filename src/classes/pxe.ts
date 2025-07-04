@@ -369,7 +369,8 @@ export default class Pxe {
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
     await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
     await exec(`cp -r ${__dirname}/../../ipxe/grub/* ${this.pxeRoot}/grub`)
-
+    // Alpine cerca /grub/x86_64-efi... lo accontentiamo
+    await exec(`ln -s ${__dirname}/../../ipxe/grub/ ${this.pxeRoot}/grub/x86_64-efi`)
 
     // --- Genera il file grub.cfg ---
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
@@ -381,10 +382,11 @@ export default class Pxe {
     grubContent += `menuentry "Boot ${this.distro.distroId} Live (PXE)" {\n`;
     grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`;
     const kernelParams = this._getGrubLinuxParameters();
-    grubContent += `  kernel (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
+    grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
-    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`;
+    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)} (http,${Utils.address()})/live/modloop-lts\n`;
+
     grubContent += `}\n`;
 
     fs.writeFileSync(grubName, grubContent, 'utf-8');
@@ -403,9 +405,9 @@ export default class Pxe {
         /**
          * ALPINE
          */
-        return `${ip} alpine_repo=http://${Utils.address()}/live/ modules=loop,squashfs,sd-mod,usb-storage`
+        return `${ip} alpine_repo=http://${Utils.address()}/live/filesystem.squashfs modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e acpi=off`
 
-      case 'archlinux':
+        case 'archlinux':
         /**
          * ARCH LINUX
          */
