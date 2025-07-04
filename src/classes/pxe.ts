@@ -7,7 +7,6 @@
  */
 
 import fs from 'node:fs'
-import http, { IncomingMessage, ServerResponse } from 'node:http'
 import path, { dirname } from 'node:path'
 import { startSimpleProxy } from '../dhcpd-proxy/simple-proxy.js'
 import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
@@ -123,13 +122,13 @@ export default class Pxe {
 
     // pxeRoot erase
     if (fs.existsSync(this.pxeRoot)) {
-      await this.tryCatch(`rm ${this.pxeRoot} -rf`)
+      await exec(`rm ${this.pxeRoot} -rf`, this.echo)
     }
 
     // Struttura
-    await this.tryCatch(`mkdir ${this.pxeRoot} -p`)
-    await this.tryCatch(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`)
-    await this.tryCatch(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`)
+    await exec(`mkdir ${this.pxeRoot} -p`, this.echo)
+    await exec(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`, this.echo)
+    await exec(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`, this.echo)
 
     // Link supplementari distro
     if (this.distro.familyId === 'archlinux') {
@@ -137,16 +136,16 @@ export default class Pxe {
       if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
         filesystemName = `manjaro/x86_64/livefs.sfs`
       }
-      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, echoYes)
-      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, echoYes)
+      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
+      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, this.echo)
     }
 
     // Firewall per fedora
     if (this.distro.familyId === 'fedora') {
-      await exec(`firewall-cmd --add-service=dhcp --permanent`)
-      await exec(`firewall-cmd --add-service=tftp --permanent`)
-      await exec(`firewall-cmd --add-service=http --permanent`)
-      await exec(`firewall-cmd --reload`)
+      await exec(`firewall-cmd --add-service=dhcp --permanent`, this.echo)
+      await exec(`firewall-cmd --add-service=tftp --permanent`, this.echo)
+      await exec(`firewall-cmd --add-service=http --permanent`, this.echo)
+      await exec(`firewall-cmd --reload`, this.echo)
     }
 
     await this.grubCfg()
@@ -240,24 +239,24 @@ export default class Pxe {
    * configure PXE bios
    */
   private async bios() {
-    await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`)
-    await this.tryCatch(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`)
+    await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`, this.echo)
+    await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
 
     // ipxe.pxe
-    await this.tryCatch(`ln -s ${__dirname}/../../ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`)
+    await exec(`ln -s ${__dirname}/../../ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
 
     // pxe
-    await this.tryCatch(`cp ${this.distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`)
-    await this.tryCatch(`cp ${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`)
+    await exec(`cp ${this.distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
+    await exec(`${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
 
     // syslinux
-    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`)
-    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`)
-    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`)
-    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`)
-    await this.tryCatch(`ln -s ${this.distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`)
+    await exec(`${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
+    await exec(`ln -s ${this.distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
+    await exec(`ln -s ${this.distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
+    await exec(`ln -s ${this.distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
+    await exec(`ln -s ${this.distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`, this.echo)
 
-    await this.tryCatch(`mkdir ${this.pxeRoot}/pxelinux.cfg`)
+    await exec(`mkdir ${this.pxeRoot}/pxelinux.cfg`, this.echo)
 
     let content = ''
     content += '# eggs: pxelinux.cfg/default\n'
@@ -373,7 +372,7 @@ export default class Pxe {
      * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./ipxe/
      * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub
      */
-    await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
+    await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo);
     await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
     await exec(`cp -r ${__dirname}/../../ipxe/grub/* ${this.pxeRoot}/grub`)
     // dato che Alpine cerca i moduli in: /grub/x86_64-efi, la accontentiamo...
@@ -453,20 +452,4 @@ export default class Pxe {
     }
   }
 
-  /**
-   *
-   * @param cmd
-   */
-  private async tryCatch(cmd = '', echo = false) {
-    try {
-      if (echo) {
-        console.log(cmd)
-      }
-
-      await exec(cmd, this.echo)
-    } catch (error) {
-      console.log(`Error: ${error}`)
-      await Utils.pressKeyToExit(cmd)
-    }
-  }
 }
