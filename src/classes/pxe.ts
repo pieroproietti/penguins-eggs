@@ -385,7 +385,7 @@ export default class Pxe {
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
-    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)} (http,${Utils.address()})/live/modloop-lts\n`;
+    grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
 
     grubContent += `}\n`;
 
