@@ -318,6 +318,7 @@ export default class Pxe {
 
     // Titolo del menu dinamico
     grubContent += `menuentry "${this.bootLabel.replace('.iso', '')} via PXE" {\n`
+    grubContent += `  echo "Booting ${this.bootLabel.replace('.iso', '')}..."\n`
     grubContent += `  echo "Loading Linux Kernel..."\n`
     const kernelParams = this._getKernelParameters()
     grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`
