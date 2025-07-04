@@ -247,7 +247,7 @@ export default class Pxe {
 
     // pxe
     await exec(`cp ${this.distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
-    await exec(`${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
+    await exec(`cp ${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
 
     // syslinux
     await exec(`${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
