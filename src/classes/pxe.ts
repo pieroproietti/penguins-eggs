@@ -275,16 +275,14 @@ export default class Pxe {
     content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
 
     if (this.distro.familyId === 'alpine') {
-      /**
-       * ALPINE
-       */
-      content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} ip=dhcp alpinelivelabel=pxe alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
+      // ALPINE
+      content += `append initrd=http://live/${Utils.address()}/${path.basename(this.initrdImg)} \
+                  ip=dhcp \
+                  alpinelivelabel=pxe \
+                  alpinelivesquashfs=http://${Utils.address()}/live/filesystem.squashfs\n`
 
     } else if (this.distro.familyId === 'archlinux') {
-      /**
-       * ARCH LINUX
-       * addons/eggs/theme/livecd/isolinux.main.simple.cfg
-       */
+      // ARCH LINUX
       let archisobasedir = `archisobasedir=arch`
       let tool = 'archiso'
       if (Diversions.isManjaroBased(this.distro.distroId)) {
@@ -306,25 +304,33 @@ export default class Pxe {
       content += '\n'
 
     } else if (this.distro.familyId === 'debian') {
-      /**
-       * DEBIAN
-       */
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} boot=live config noswap noprompt fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
+      // DEBIAN
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+                  boot=live \
+                  config \
+                  noswap \
+                  noprompt \
+                  fetch=http://${Utils.address()}/live/filesystem.squashfs\n`
 
-    } if (this.distro.familyId === 'fedora') {
-      /*
-       * FEDORA
-       */
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} root=live:http://${Utils.address()}/live/filesystem.squashfs rootfstype=auto ro rd.live.image rd.luks=0 rd.md=0 rd.dm=0\n`
+    } else if (this.distro.familyId === 'fedora') {
+      // FEDORA
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+                  root=live:http://${Utils.address()}/live/filesystem.squashfs \
+                  rootfstype=auto \
+                  ro \
+                  rd.live.image \
+                  rd.luks=0 \
+                  rd.md=0 \
+                  rd.dm=0\n`
 
-    } if (this.distro.familyId === 'opensuse') {
-      /*
-       * OPENSUSE
-       */
-      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} fetch=http://${Utils.address()}/live/filsesystem.squashfs\n`
+    } else if (this.distro.familyId === 'opensuse') {
+      // OPENSUSE
+      content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+                         fetch=http://${Utils.address()}/live/filsesystem.squashfs\n`
     }
 
-
+    /**
+     * TO REMOVE
     if (this.isos.length > 0) {
       content += 'menu separator\n'
       for (const iso of this.isos) {
@@ -336,6 +342,7 @@ export default class Pxe {
         content += 'append iso raw sysappend 3\n'
       }
     }
+     */
 
     const file = `${this.pxeRoot}/pxelinux.cfg/default`
     fs.writeFileSync(file, content)
@@ -369,20 +376,20 @@ export default class Pxe {
     await exec(`mkdir -p ${this.pxeRoot}/grub`, echoYes);
     await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
     await exec(`cp -r ${__dirname}/../../ipxe/grub/* ${this.pxeRoot}/grub`)
-    // Alpine cerca /grub/x86_64-efi... lo accontentiamo
+    // dato che Alpine cerca i moduli in: /grub/x86_64-efi, la accontentiamo...
     await exec(`ln -s ${__dirname}/../../ipxe/grub/ ${this.pxeRoot}/grub/x86_64-efi`)
 
-    // --- Genera il file grub.cfg ---
+    // Genera il file grub.cfg
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
     let grubContent = '';
     grubContent += `set timeout=10\n`;
     grubContent += `set default=0\n\n`;
 
     // Titolo del menu dinamico
-    grubContent += `menuentry "Boot ${this.distro.distroId} Live (PXE)" {\n`;
-    grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`;
-    const kernelParams = this._getGrubLinuxParameters();
-    grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`;
+    grubContent += `menuentry "Boot ${this.bootLabel.replace('.iso', '')} via (PXE)" {\n`
+    grubContent += `  echo "Loading Linux Kernel via GRUB..."\n`
+    const kernelParams = this._getGrubLinuxParameters()
+    grubContent += `  linux (http,${Utils.address()})/live/${path.basename(this.vmlinuz)} ${kernelParams}\n`
 
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
     grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
@@ -402,31 +409,42 @@ export default class Pxe {
     switch (this.distro.familyId) {
 
       case 'alpine':
-        /**
-         * ALPINE
-         */
-        return `${ip} alpine_repo=http://${Utils.address()}/live/filesystem.squashfs modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e acpi=off`
+        // ALPINE
+        return `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
+                modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
+                acpi=off \
+                ip=dhcp`
 
-        case 'archlinux':
-        /**
-         * ARCH LINUX
-         */
+      case 'archlinux':
+        // ARCH LINUX
         let basedir = 'archisobasedir=arch'
-        let tool = 'archiso'
+        let hook = 'archiso_http_srv'
         if (Diversions.isManjaroBased(this.distro.distroId)) {
           basedir = ''
-          tool = 'miso'
+          hook = 'miso_http_srv'
         } 
-        return `${tool}_http_srv=http://${Utils.address()}/ ${ip} copytoram=n ${basedir}`;
+        return `${hook}=http://${Utils.address()}/ \
+                ${basedir} \
+                ip=dhcp \
+                copytoram=n \
+                `
 
       case 'debian':
-        return `boot=live fetch=http://${Utils.address()}/filesystem.squashfs`;
+        // DEBIAN
+        return `fetch=http://${Utils.address()}/filesystem.squashfs\
+                ip=dhcp \
+                boot=live`
 
       case 'fedora':
-        return `root:live:http://${Utils.address()}/filesystem.squashfs rd.live.image ro`;
+        // FEDORA
+        return `root:live:http://${Utils.address()}/filesystem.squashfs \
+                ip=dhcp \
+                rd.live.image   
+                ro`
 
       case 'opensuse':
-        return `fetch=http://${Utils.address()}/filesystem.squashfs`;
+        // OPENSUSE
+        return `fetch=http://${Utils.address()}/filesystem.squashfs`
 
       default:
         // Un parametro di default o un errore
