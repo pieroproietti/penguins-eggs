@@ -369,10 +369,14 @@ export default class Pxe {
       break
 
       case 'fedora':
-        lp =  `root:live:http://${Utils.address()}/filesystem.squashfs \
-               ip=dhcp \
-               rd.live.image   
-               ro`
+        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+               root=live:http://${Utils.address()}/live/filesystem.squashfs \
+               rootfstype=auto \
+               ro \
+               rd.live.image \
+               rd.luks=0 \
+               rd.md=0 \
+               rd.dm=0\n`
       break
 
       case 'opensuse':
