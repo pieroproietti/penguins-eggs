@@ -141,7 +141,7 @@ export default class Pxe {
     }
 
     // Firewall per fedora
-    if (this.distro.familyId === 'fedora') {
+    if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
       await exec(`firewall-cmd --add-service=dhcp --permanent`, this.echo)
       await exec(`firewall-cmd --add-service=tftp --permanent`, this.echo)
       await exec(`firewall-cmd --add-service=http --permanent`, this.echo)
@@ -381,7 +381,14 @@ export default class Pxe {
       break
 
       case 'opensuse':
-        lp =  `fetch=http://${Utils.address()}/filesystem.squashfs`
+        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+               root=live:http://${Utils.address()}/live/filesystem.squashfs \
+               rootfstype=auto \
+               ro \
+               rd.live.image \
+               rd.luks=0 \
+               rd.md=0 \
+               rd.dm=0\n`
       break
       
 
