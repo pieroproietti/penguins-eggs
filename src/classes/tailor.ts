@@ -158,6 +158,17 @@ export default class Tailor {
         }
         break
       }
+      case 'opensuse': {
+        tailorList = `${this.costume}/opensuse.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible opensuse`)
+            process.exit()
+          }
+        }
+        break
+      }
     } // end analyze
 
 
@@ -271,6 +282,11 @@ export default class Tailor {
               await exec('dnf update', Utils.setEcho(false))
               break
             }
+
+            case 'opensuse': {
+              await exec('zypper update', Utils.setEcho(false))
+              break
+            }
           }
         }
 
@@ -299,6 +315,11 @@ export default class Tailor {
 
               case 'fedora': {
                 await exec('dnf upgrade', Utils.setEcho(false))
+                break
+              }
+
+              case 'opensuse': {
+                await exec('zypper upgrade', Utils.setEcho(false))
                 break
               }
             }
@@ -346,6 +367,11 @@ export default class Tailor {
 
             case 'fedora': {
               await this.packagesInstall(this.materials.sequence.packages, 'packages', `dnf install -y`)
+              break
+            }
+
+            case 'opensuse': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install -y`)
               break
             }
           }
@@ -481,6 +507,8 @@ export default class Tailor {
       cmd=`apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
     } else if (distro.familyId === 'fedora') {
       cmd=`dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+    } else if (distro.familyId === 'opensuse') { //controllare
+      cmd=`zypper list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     }
 
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
