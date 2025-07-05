@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@oclif/core':
-        specifier: ^4.4.0
-        version: 4.4.0
+        specifier: ^4.4.1
+        version: 4.4.1
       '@oclif/plugin-autocomplete':
         specifier: ^3.2.31
         version: 3.2.31
@@ -22,8 +22,8 @@ importers:
         specifier: ^6.2.29
         version: 6.2.29
       '@oclif/plugin-version':
-        specifier: ^2.2.30
-        version: 2.2.30
+        specifier: ^2.2.31
+        version: 2.2.31
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.3
@@ -90,7 +90,7 @@ importers:
         version: 0.2.1
       '@oclif/test':
         specifier: ^4.1.13
-        version: 4.1.13(@oclif/core@4.4.0)
+        version: 4.1.13(@oclif/core@4.4.1)
       '@types/chai':
         specifier: ^5.2.2
         version: 5.2.2
@@ -654,8 +654,8 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oclif/core@4.4.0':
-    resolution: {integrity: sha512-wH5g3SLmbRutnr7UzQBSozRFEAZ7U9YGB/wFuBRr0ZghTgv5DE+KQaf6ZtU7iFb9pvkvoVRnT5XheNAtbjRDaQ==}
+  '@oclif/core@4.4.1':
+    resolution: {integrity: sha512-RYonV4IJZcGAoi3pdo5CPl5hVH1YdtQMEX77TLdgTPVrMmIjbiB0Borfguj/mdDF2TjLXp+Z+RbmLUejuhSYTA==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-autocomplete@3.2.31':
@@ -670,8 +670,8 @@ packages:
     resolution: {integrity: sha512-HtDnLIcR7ojRgdeH4G6MMUIu1Dgub/iiFEA4srZcQVKUIPA/6nF117W7rBXZMlHcbch90OCoGkSP3ty55nGKDw==}
     engines: {node: '>=18.0.0'}
 
-  '@oclif/plugin-version@2.2.30':
-    resolution: {integrity: sha512-NEFpSm3nGlCLvsG52xwxGpm9fjQVNSb3cUMC871DlTrcj6xubXQL3WOxpXZCfbBwiuocIym/VA71e3guqPfxIQ==}
+  '@oclif/plugin-version@2.2.31':
+    resolution: {integrity: sha512-BMEq/zI5i8B/qqStls0eiza35WSlDx9C9Kx9fmj97uvnyn0Uaa2R+DlS+pg26nqoWWKH8177L/WbI7ujKGwfog==}
     engines: {node: '>=18.0.0'}
 
   '@oclif/plugin-warn-if-update-available@3.1.42':
@@ -4867,7 +4867,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oclif/core@4.4.0':
+  '@oclif/core@4.4.1':
     dependencies:
       ansi-escapes: 4.3.2
       ansis: 3.17.0
@@ -4890,7 +4890,7 @@ snapshots:
 
   '@oclif/plugin-autocomplete@3.2.31':
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       ansis: 3.17.0
       debug: 4.4.1(supports-color@8.1.1)
       ejs: 3.1.10
@@ -4899,25 +4899,25 @@ snapshots:
 
   '@oclif/plugin-help@6.2.29':
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
 
   '@oclif/plugin-not-found@3.2.57(@types/node@22.15.34)':
     dependencies:
       '@inquirer/prompts': 7.5.3(@types/node@22.15.34)
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       ansis: 3.17.0
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
       - '@types/node'
 
-  '@oclif/plugin-version@2.2.30':
+  '@oclif/plugin-version@2.2.31':
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       ansis: 3.17.0
 
   '@oclif/plugin-warn-if-update-available@3.1.42':
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       ansis: 3.17.0
       debug: 4.4.1(supports-color@8.1.1)
       http-call: 5.3.0
@@ -4928,9 +4928,9 @@ snapshots:
 
   '@oclif/prettier-config@0.2.1': {}
 
-  '@oclif/test@4.1.13(@oclif/core@4.4.0)':
+  '@oclif/test@4.1.13(@oclif/core@4.4.1)':
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       ansis: 3.17.0
       debug: 4.4.1(supports-color@8.1.1)
     transitivePeerDependencies:
@@ -7616,7 +7616,7 @@ snapshots:
       '@inquirer/confirm': 3.2.0
       '@inquirer/input': 2.3.0
       '@inquirer/select': 2.5.0
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       '@oclif/plugin-help': 6.2.29
       '@oclif/plugin-not-found': 3.2.57(@types/node@22.15.34)
       '@oclif/plugin-warn-if-update-available': 3.1.42
@@ -7798,11 +7798,11 @@ snapshots:
 
   perrisbrewery@10.1.3:
     dependencies:
-      '@oclif/core': 4.4.0
+      '@oclif/core': 4.4.1
       '@oclif/plugin-autocomplete': 3.2.31
       '@oclif/plugin-help': 6.2.29
-      '@oclif/plugin-version': 2.2.30
-      '@oclif/test': 4.1.13(@oclif/core@4.4.0)
+      '@oclif/plugin-version': 2.2.31
+      '@oclif/test': 4.1.13(@oclif/core@4.4.1)
       chalk: 4.1.2
       fs-extra: 11.3.0
       inquirer: 8.2.4
