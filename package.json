@@ -9,10 +9,10 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^4.4.0",
+        "@oclif/core": "^4.4.1",
         "@oclif/plugin-autocomplete": "^3.2.31",
         "@oclif/plugin-help": "^6.2.29",
-        "@oclif/plugin-version": "^2.2.30",
+        "@oclif/plugin-version": "^2.2.31",
         "@types/express": "^5.0.3",
         "ansis": "^4.1.0",
         "axios": "^1.9.0",
