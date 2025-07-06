@@ -287,7 +287,7 @@ export default class Tailor {
             }
 
             case 'opensuse': {
-              await exec('zypper dist-upgrade', Utils.setEcho(true))
+              await exec('zypper refresh', Utils.setEcho(true))
               break
             }
           }
@@ -512,10 +512,10 @@ export default class Tailor {
       cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     } else if (distro.familyId === 'opensuse') { //controllare
       cmd = `zypper search -s -t package | awk -F ' *\\| *' '/--\+--/{p=1;next} p{print $2}' | sort -u`
-      //cmd = escapeCommand(cmd)
+      cmd = escapeCommand(cmd)
     }
     let available: string[] = []
-    //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
     available = (await exec(cmd, Utils.setEcho(true))).data.split('\n')
     available.sort()
 
