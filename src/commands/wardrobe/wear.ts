@@ -86,7 +86,7 @@ export default class Wear extends Command {
       if (Utils.isRoot()) {
         const tailor = new Tailor(costume)
         // delete previous log
-        await exec(`rm -f ${path.dirname(wardrobe)}+"/wardrobe.log`)
+        await exec(`rm -f ${path.dirname(wardrobe)}/wardrobe.log`)
         await tailor.prepare(verbose, no_accessories, no_firmwares)
       } else {
         Utils.useRoot(this.id)
