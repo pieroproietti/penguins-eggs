@@ -49,15 +49,6 @@ export default class CliAutologin {
       if (fs.existsSync(dirOverride)) {
         shx.exec(`rm ${dirOverride} -rf`)
       }
-      // ecludo Opensuse ha un'altro sistema
-      if (distro !== 'Opensuse') {
-        shx.exec(`mkdir ${dirOverride}`)
-        let content = ''
-        content += '[Service]' + '\n'
-        content += 'ExecStart=' + '\n'
-        content += 'ExecStart=-/sbin/agetty --noclear --autologin ' + user + ' %I $TERM' + '\n'
-        fs.writeFileSync(fileOverride, content)
-      }
       shx.exec(`chmod +x ${fileOverride}`)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)

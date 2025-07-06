@@ -59,12 +59,6 @@ export async function userCreateLive(this: Ovary) {
      * 
      */
     switch (this.familyId) {
-        case 'debian': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-
-            break
-        }
-
         case 'alpine': {
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
 
@@ -77,6 +71,12 @@ export async function userCreateLive(this: Ovary) {
             // check or create group: autologin
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
             cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
+
+            break
+        }
+
+        case 'debian': {
+            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
 
             break
         }

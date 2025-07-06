@@ -1,0 +1,2 @@
+#!/bin/bash
+zypper --non-interactive search -s -t package | awk -F " *| *" '/--+--/{p=1;next} p{print $2}' | sort -u

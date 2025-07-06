@@ -351,6 +351,7 @@ export default class Tailor {
        */
       if (this.materials.sequence.packages !== undefined) {
         const packages = await this.packagesExists(this.materials.sequence.packages)
+        console.log(this.materials.sequence.packages)
         if (packages.length > 1) {
           switch (distro.familyId) {
             case 'debian': {
@@ -511,16 +512,15 @@ export default class Tailor {
     } else if (distro.familyId === 'fedora') {
       cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     } else if (distro.familyId === 'opensuse') { //controllare
-      cmd = `zypper search -s -t package | awk -F ' *\\| *' '/--\+--/{p=1;next} p{print $2}' | sort -u`
-      cmd = escapeCommand(cmd)
+      cmd = `rpm -qa --qf '%{NAME}\n' | sort -u`;
     }
     let available: string[] = []
     available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
-    available = (await exec(cmd, Utils.setEcho(true))).data.split('\n')
     available.sort()
 
     let exists: string[] = []
     let not_exists: string[] = []
+    console.log(wanted)
     for (const elem of wanted) {
       if (available.includes(elem)) {
         exists.push(elem)
@@ -529,6 +529,7 @@ export default class Tailor {
         fs.appendFileSync(this.log, `- ${elem}\n`)
       }
     }
+    console.log(exists)
 
     if (not_exists.length > 0) {
       console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
@@ -608,18 +609,4 @@ function sleep(ms = 0) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-}
-
-
-/**
- * Esegue l'escape di un comando per inserirlo in sicurezza
- * in una stringa JavaScript definita con backtick (template literal).
- * @param {string} rawCommand - Il comando grezzo da processare.
- * @returns {string} Il comando con i caratteri speciali protetti.
- */
-function escapeCommand(rawCommand: string) {
-  return rawCommand
-    .replace(/\\/g, '\\\\') // 1. Prima l'escape del backslash stesso
-    .replace(/`/g, '\\`')   // 2. Poi l'escape del backtick
-    .replace(/\$/g, '\\$');  // 3. Infine l'escape del dollaro
 }
