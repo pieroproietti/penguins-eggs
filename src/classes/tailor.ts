@@ -374,7 +374,9 @@ export default class Tailor {
             }
 
             case 'opensuse': {
-              await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install --non-interactive`)
+              // Quanto mi è costato
+              // await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install non-interactive --no-confirm`)
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install non-interactive --no-confirm`)
               break
             }
           }
@@ -511,18 +513,21 @@ export default class Tailor {
     } else if (distro.familyId === 'fedora') {
       cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     } else if (distro.familyId === 'opensuse') { //controllare
-      // cmd = `rpm -qa --qf '%{NAME}\n' | sort -u`;
-      cmd = `zypper --non-interactive search -s -t package | awk -F " *| *" '/--+--/{p=1;next} p{print $2}' | sort -u`
+      // questo funziona diretto
+      cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
     }
     let available: string[] = []
-    available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+    // trim di tutto per eseguire il confronto
+    available = result.data.split('\n').map(line => line.trim())
+    // precedente
+    // available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
     available.sort()
     wanted.sort()
-
     let exists: string[] = []
     let not_exists: string[] = []
     for (const elem of wanted) {
-      if (available.some(pkg => pkg.startsWith(elem))) {
+      if (available.includes(elem)) {
         exists.push(elem)
       } else {
         not_exists.push(elem)
@@ -540,10 +545,6 @@ export default class Tailor {
       await sleep(3000)
     }
 
-    // color patch
-    if (distro.familyId === 'opensuse') {
-      return wanted
-    }
     return exists
   }
 
