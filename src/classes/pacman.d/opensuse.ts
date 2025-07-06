@@ -109,8 +109,7 @@ export default class Opensuse {
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
     const cmd= `zypper search --installed-only ${packageName} | awk 'NR > 5 {print $3}'`
-    //const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-    const stdout = shx.exec(cmd, Utils.setEcho(true)).stdout.trim()
+    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
     if (stdout.includes(packageName)) {
       installed = true
     }
