@@ -110,8 +110,8 @@ export default class Opensuse {
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
     const cmd= `rpm -q ${packageName}`
-    const stdout = shx.exec(cmd, { silent: true }).stdout.trim()
-    if (stdout.includes(packageName)) {
+    const code = shx.exec(cmd, { silent: true }).code
+    if (code === 0) {
       installed = true
     }
     return installed
