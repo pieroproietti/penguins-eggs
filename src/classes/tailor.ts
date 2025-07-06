@@ -17,6 +17,7 @@ import Distro from './distro.js'
 import Pacman from './pacman.js'
 import SourcesList from './sources_list.js'
 import Utils from './utils.js'
+import a from 'ansis'
 
 /**
  *
@@ -38,7 +39,7 @@ export default class Tailor {
   constructor(costume: string, category = 'costume') {
     this.costume = costume
     this.wardrobe = path.dirname(path.dirname(costume))
-    this.log=path.dirname(this.wardrobe)+"/wardrobe.log"
+    this.log = path.dirname(this.wardrobe) + "/wardrobe.log"
     this.category = category
   }
 
@@ -60,7 +61,7 @@ export default class Tailor {
     fs.appendFileSync(this.log, `## ${this.costume}\n`)
     fs.appendFileSync(this.log, `Packages not found:\n`)
 
-    
+
 
     /**
      * check curl presence
@@ -73,6 +74,7 @@ export default class Tailor {
     // Analyze distro
     const distro = new Distro()
     let tailorList = ''
+
     switch (distro.distroLike) {
       case 'Debian': {
         tailorList = `${this.costume}/debian.yml`
@@ -158,7 +160,8 @@ export default class Tailor {
         }
         break
       }
-      case 'opensuse': {
+
+      case 'Opensuse': {
         tailorList = `${this.costume}/opensuse.yml`
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/debian.yml`
@@ -284,7 +287,7 @@ export default class Tailor {
             }
 
             case 'opensuse': {
-              await exec('zypper update', Utils.setEcho(false))
+              await exec('zypper dist-upgrade', Utils.setEcho(true))
               break
             }
           }
@@ -319,7 +322,7 @@ export default class Tailor {
               }
 
               case 'opensuse': {
-                await exec('zypper upgrade', Utils.setEcho(false))
+                await exec('zypper dist-upgrade', Utils.setEcho(true))
                 break
               }
             }
@@ -371,7 +374,7 @@ export default class Tailor {
             }
 
             case 'opensuse': {
-              await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install -y`)
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install --non-interactive`)
               break
             }
           }
@@ -497,43 +500,44 @@ export default class Tailor {
     wanted.sort()
 
     const distro = new Distro()
-    let cmd =""
+    let cmd = ""
     if (distro.familyId === "debian") {
       // cmd=`apt-cache --no-generate pkgnames`
-      cmd=`apt-cache pkgnames`
+      cmd = `apt-cache pkgnames`
     } else if (distro.familyId === "archlinux") {
-      cmd=`pacman -S --list | awk '{print $2}'`
+      cmd = `pacman -S --list | awk '{print $2}'`
     } else if (distro.familyId === "alpine") {
-      cmd=`apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
+      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
     } else if (distro.familyId === 'fedora') {
-      cmd=`dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+      cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     } else if (distro.familyId === 'opensuse') { //controllare
-      cmd=`zypper list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+      cmd = `zypper search -s -t package | awk -F ' *\\| *' '/--\+--/{p=1;next} p{print $2}' | sort -u`
+      //cmd = escapeCommand(cmd)
     }
-
+    let available: string[] = []
     //available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
-    let available: string[]=[]
-    available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    available = (await exec(cmd, Utils.setEcho(true))).data.split('\n')
     available.sort()
-    let exists: string[]=[]
-    let not_exists: string[]=[]
+
+    let exists: string[] = []
+    let not_exists: string[] = []
     for (const elem of wanted) {
-      if (available.includes(elem)){
+      if (available.includes(elem)) {
         exists.push(elem)
       } else {
         not_exists.push(elem)
         fs.appendFileSync(this.log, `- ${elem}\n`)
       }
     }
-    
-    if (not_exists.length>0) {
+
+    if (not_exists.length > 0) {
       console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
       for (const elem of not_exists) {
         console.log(`-${elem}`)
       }
       console.log()
       console.log("Wait 3 seconds")
-      await sleep(3000) 
+      await sleep(3000)
     }
     return exists
   }
@@ -584,7 +588,7 @@ export default class Tailor {
   async tryCheckSuccess(cmd: string, echo: {}): Promise<boolean> {
     let success = false
     try {
-      await exec(cmd, echo)
+      await exec(cmd, Utils.setEcho(true))
       success = true
     } catch {
       success = false
@@ -595,13 +599,27 @@ export default class Tailor {
 }
 
 
-  /**
-   *
-   * @param ms
-   * @returns
-   */
-  function sleep(ms = 0) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
+/**
+ *
+ * @param ms
+ * @returns
+ */
+function sleep(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+
+/**
+ * Esegue l'escape di un comando per inserirlo in sicurezza
+ * in una stringa JavaScript definita con backtick (template literal).
+ * @param {string} rawCommand - Il comando grezzo da processare.
+ * @returns {string} Il comando con i caratteri speciali protetti.
+ */
+function escapeCommand(rawCommand: string) {
+  return rawCommand
+    .replace(/\\/g, '\\\\') // 1. Prima l'escape del backslash stesso
+    .replace(/`/g, '\\`')   // 2. Poi l'escape del backtick
+    .replace(/\$/g, '\\$');  // 3. Infine l'escape del dollaro
+}

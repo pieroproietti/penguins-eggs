@@ -39,7 +39,7 @@
         "@oclif/test": "^4.1.13",
         "@types/chai": "^5.2.2",
         "@types/debug": "^4.1.12",
-        "@types/glob": "^8.1.0",
+        "@types/glob": "^9.0.0",
         "@types/inquirer": "^9.0.8",
         "@types/js-yaml": "^4.0.9",
         "@types/mocha": "^10.0.8",
