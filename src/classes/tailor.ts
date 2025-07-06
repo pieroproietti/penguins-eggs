@@ -17,7 +17,6 @@ import Distro from './distro.js'
 import Pacman from './pacman.js'
 import SourcesList from './sources_list.js'
 import Utils from './utils.js'
-import a from 'ansis'
 
 /**
  *
@@ -67,7 +66,7 @@ export default class Tailor {
      * check curl presence
      */
     if (!Pacman.packageIsInstalled('curl')) {
-      Utils.pressKeyToExit('In this tailoring shop we use curl. sudo apt update | apt install curl')
+      Utils.pressKeyToExit('In this tailoring shop we use curl. Install it with your package manager')
       process.exit()
     }
 
@@ -322,7 +321,7 @@ export default class Tailor {
               }
 
               case 'opensuse': {
-                await exec('zypper dist-upgrade', Utils.setEcho(true))
+                await exec('zypper update', Utils.setEcho(true))
                 break
               }
             }
@@ -512,24 +511,24 @@ export default class Tailor {
     } else if (distro.familyId === 'fedora') {
       cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
     } else if (distro.familyId === 'opensuse') { //controllare
-      cmd = `rpm -qa --qf '%{NAME}\n' | sort -u`;
+      // cmd = `rpm -qa --qf '%{NAME}\n' | sort -u`;
+      cmd = `zypper --non-interactive search -s -t package | awk -F " *| *" '/--+--/{p=1;next} p{print $2}' | sort -u`
     }
     let available: string[] = []
     available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
     available.sort()
+    wanted.sort()
 
     let exists: string[] = []
     let not_exists: string[] = []
-    console.log(wanted)
     for (const elem of wanted) {
-      if (available.includes(elem)) {
+      if (available.some(pkg => pkg.startsWith(elem))) {
         exists.push(elem)
       } else {
         not_exists.push(elem)
         fs.appendFileSync(this.log, `- ${elem}\n`)
       }
     }
-    console.log(exists)
 
     if (not_exists.length > 0) {
       console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
@@ -539,6 +538,11 @@ export default class Tailor {
       console.log()
       console.log("Wait 3 seconds")
       await sleep(3000)
+    }
+
+    // color patch
+    if (distro.familyId === 'opensuse') {
+      return wanted
     }
     return exists
   }
