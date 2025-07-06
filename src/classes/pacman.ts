@@ -755,9 +755,7 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      installed = Aldos.packageIsInstalled(packageName)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       installed = Alpine.packageIsInstalled(packageName)
     } else if (familyId === 'archlinux') {
       installed = Archlinux.packageIsInstalled(packageName)
