@@ -337,10 +337,12 @@ export default class Tailor {
         Utils.warning(step)
         for (const cmd of this.materials.sequence.cmds) {
           if (fs.existsSync(`${this.costume}/${cmd}`)) {
-            await exec(`${this.costume}/${cmd} ${this.materials.name}`, Utils.setEcho(true))
+            // Qui passave ${this.materials.name}
+            // exec ./costume/cmd
+            await exec(`${this.costume}/${cmd} `, Utils.setEcho(true))
           } else {
-            // exec cmd real env
-            await exec(`${cmd} ${this.materials.name}`, Utils.setEcho(true))
+            // exec cmd 
+            await exec(`${cmd}`, Utils.setEcho(true))
           }
         }
       }
