@@ -146,9 +146,9 @@ export default class Tailor {
         break
       }
 
+      case 'Fedora': 
       case 'Almalinux':
-      case 'Rocky':
-      case 'Fedora': {
+      case 'Rocky': {
         tailorList = `${this.costume}/fedora.yml`
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/debian.yml`
@@ -281,7 +281,7 @@ export default class Tailor {
             }
 
             case 'fedora': {
-              await exec('dnf update', Utils.setEcho(false))
+              await exec('dnf check-update --refresh', Utils.setEcho(false))
               break
             }
 
