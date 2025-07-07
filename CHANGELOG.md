@@ -13,8 +13,8 @@ penguins-eggs
 # Changelog
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs-10.1.1-26
-* wardrobe: added opensuse configuration.
+## penguins-eggs-10.1.1-27
+* wardrobe: opensuse configuration colibri, we can start to prepare other costumes.
 * cuckoo: works fine on BIOS and UEFI on Arch, Debian, Devuan, Ubuntu and derivatives (Linuxmint, LMDE, etc), now also on Fedora (almalinux, rocky), Manjaro and derivatives (BigLinux). I am working on making it available on alpine and opensuse too.
 * alpine: Linux Alpine is back on penguins-eggs, look to [penguins-alpine](https://github.com/pieroproietti/penguins-alpine/). In addition, I was able to create the calamares 3.3 packages for Alpine.
 * arch: seem to work now nicefully on btrfs, I just changed a bit [live.conf](./mkinitcpio/arch/live.conf), and the previous problem ```premature end of file @/boot/vmlinux-linux.``` vanished. **Note:** at the moment you can install on btrfs just with calamares, we must to solve same problems on our `krill` using btrfs.

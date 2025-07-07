@@ -337,7 +337,6 @@ export default class Tailor {
         Utils.warning(step)
         for (const cmd of this.materials.sequence.cmds) {
           if (fs.existsSync(`${this.costume}/${cmd}`)) {
-            // Qui passave ${this.materials.name}
             // exec ./costume/cmd
             await exec(`${this.costume}/${cmd} `, Utils.setEcho(true))
           } else {
@@ -465,6 +464,7 @@ export default class Tailor {
 
         for (const cmd of this.materials.finalize.cmds) {
           if (fs.existsSync(`${this.costume}/${cmd}`)) {
+            // Qui passiamo ${this.materials.name}
             await exec(`${this.costume}/${cmd} ${this.materials.name}`, Utils.setEcho(true))
           } else {
             // exec cmd real env
