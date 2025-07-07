@@ -122,24 +122,24 @@ export default class Tailor {
         break
       }
 
-      case 'Arch': {
-        tailorList = `${this.costume}/arch.yml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Arch`)
-            process.exit()
-          }
-        }
-        break
-      }
-
       case 'Alpine': {
         tailorList = `${this.costume}/alpine.yml`
         if (!fs.existsSync(tailorList)) {
           tailorList = `${this.costume}/debian.yml`
           if (!fs.existsSync(tailorList)) {
             console.log(`no costume definition found compatible Alpine`)
+            process.exit()
+          }
+        }
+        break
+      }
+
+      case 'Arch': {
+        tailorList = `${this.costume}/arch.yml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Arch`)
             process.exit()
           }
         }
@@ -265,8 +265,8 @@ export default class Tailor {
         Utils.warning(step)
         if (this.materials.sequence.repositories.update) {
           switch (distro.familyId) {
-            case 'debian': {
-              await exec('apt-get update', Utils.setEcho(false))
+            case 'alpine': {
+              await exec('apk update', Utils.setEcho(false))
               break
             }
 
@@ -275,8 +275,8 @@ export default class Tailor {
               break
             }
 
-            case 'alpine': {
-              await exec('apk update', Utils.setEcho(false))
+            case 'debian': {
+              await exec('apt-get update', Utils.setEcho(false))
               break
             }
 
@@ -300,8 +300,8 @@ export default class Tailor {
           Utils.warning(step)
           if (this.materials.sequence.repositories.upgrade) {
             switch (distro.familyId) {
-              case 'debian': {
-                await exec('apt-get full-upgrade', Utils.setEcho(false))
+              case 'alpine': {
+                await exec('apk upgrade', Utils.setEcho(false))
                 break
               }
 
@@ -310,8 +310,8 @@ export default class Tailor {
                 break
               }
 
-              case 'alpine': {
-                await exec('apk upgrade', Utils.setEcho(false))
+              case 'debian': {
+                await exec('apt-get full-upgrade', Utils.setEcho(false))
                 break
               }
 
@@ -353,8 +353,8 @@ export default class Tailor {
         console.log(this.materials.sequence.packages)
         if (packages.length > 1) {
           switch (distro.familyId) {
-            case 'debian': {
-              await this.packagesInstall(packages)
+            case 'alpine': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `apk add`)
               break
             }
 
@@ -363,8 +363,8 @@ export default class Tailor {
               break
             }
 
-            case 'alpine': {
-              await this.packagesInstall(this.materials.sequence.packages, 'packages', `apk add`)
+            case 'debian': {
+              await this.packagesInstall(packages)
               break
             }
 
@@ -503,15 +503,19 @@ export default class Tailor {
 
     const distro = new Distro()
     let cmd = ""
-    if (distro.familyId === "debian") {
-      // cmd=`apt-cache --no-generate pkgnames`
-      cmd = `apt-cache pkgnames`
+    if (distro.familyId === "alpine") {
+      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
+
     } else if (distro.familyId === "archlinux") {
       cmd = `pacman -S --list | awk '{print $2}'`
-    } else if (distro.familyId === "alpine") {
-      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
+
+    } else if (distro.familyId === "debian") {
+      // cmd=`apt-cache --no-generate pkgnames`
+      cmd = `apt-cache pkgnames`
+
     } else if (distro.familyId === 'fedora') {
       cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+
     } else if (distro.familyId === 'opensuse') { //controllare
       // questo funziona diretto
       cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
