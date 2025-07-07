@@ -11,28 +11,26 @@ penguins-eggs
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 # Changelog
+We switched to a version number based on year, month, day, and release number. I hope it will be more clear and useful. 
+
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.7.7-1
-I decided to switch to a version number based on year, month, day, and release number. I hope it will be more clear and useful. Based on that, our first actuale release is named penguins-eggs_25.7.7-0.
-
 These days I have been doing a lot of work on remote installation via PXE, on some long neglected distributions: alpine, opensuse, etc. This is the current situation:
 
-* alpine: remaster OK, installation CLI ok, calamares no, PXE boot
-* arch: remaster OK, installation CLI ok, calamares ok, PXE boot
-* debian: remaster OK, installation CLI ok, calamares ok, PXE boot
-* fedora: remaster OK, installation CLI ok, calamares ko, PXE boot
-* opensuse: remaster OK, installation CLI ok, calamares ko, PXE boot
+* alpine: remaster OK, installation CLI ok, calamares no, PXE boot OK
+* arch: remaster OK, installation CLI ok, calamares ok, PXE boot OK
+* debian: remaster OK, installation CLI ok, calamares ok, PXE boot OK
+* fedora: remaster OK, installation CLI ok, calamares ko, PXE boot OK
+* opensuse: remaster OK, installation CLI ok, calamares ko, PXE boot OK
 
-## Here is a summary of the changes for the provided versions of penguins-eggs.
-
-# Summary of Penguins-Eggs Changelog
+## Summary of Penguins-Eggs Changelog 10.1.x
 
 This summary categorizes the updates into major features, expanded distribution support, installer improvements, and other key refinements to provide a clear overview of the project's progress.
 
 ***
 
-## 🚀 Major Features & Enhancements
+### Major Features & Enhancements
 
 * **AI-Powered Refactoring**: In version **10.1.1**, the developer began using AI for intensive code refactoring, significantly speeding up development and improving code quality.
 * **New `pods` Command**: Version **10.1.0-2** introduced the experimental `eggs pods` command, which allows users to create minimal live ISO images directly from `podman` containers.
@@ -43,7 +41,7 @@ This summary categorizes the updates into major features, expanded distribution 
 
 ***
 
-## 🌐 Expanded Distribution Support
+### Expanded Distribution Support
 
 The project has significantly broadened its compatibility across different Linux families.
 
@@ -55,7 +53,7 @@ The project has significantly broadened its compatibility across different Linux
 
 ***
 
-## 🛠️ Installer Improvements (Krill & Calamares)
+### Installer Improvements (Krill & Calamares)
 
 Both the command-line installer (`krill`) and the graphical installer (`calamares`) received significant updates.
 
@@ -71,7 +69,7 @@ Both the command-line installer (`krill`) and the graphical installer (`calamare
 
 ***
 
-## ✨ Other Key Changes & Refinements
+### Other Key Changes & Refinements
 
 * **Development & Packaging**: The project's build system was modernized to support both CommonJS and ECMAScript modules. The official package name was changed from `eggs` to **`penguins-eggs`** to reflect this major update (**10.0.0**, **9.8.0**).
 * **Dependency Management**: Unnecessary dependencies like `lsb_release`, `pxelinux`, and `isolinux` were removed to streamline the tool (**10.0.57**, **10.0.45**, **10.0.42**).
@@ -79,8 +77,9 @@ Both the command-line installer (`krill`) and the graphical installer (`calamare
 * **Code Cleanup**: A significant amount of old, unused code was removed, particularly code related to the initial plan of distributing `eggs` via npm packages (**9.8.2**).
 
 
-# changelog.d
-Old changelogs are located on[changelog.d](https://github.com/pieroproietti/penguins-eggs/tree/master/changelog.d).
+
+# CHANGELOG.d
+You can find old changelogs under [CHANGELOG.d](https://github.com/pieroproietti/penguins-eggs/tree/master/CHANGELOG.d).
 
 # Help
 Don't esitate to ask me for suggestions and help. I hope to receive [feedback](https://github.com/pieroproietti/penguins-eggs/issues).
