@@ -35,15 +35,9 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
   await exec(cmd, this.echo)
-
-  const openssl_cmd = `echo '${password}' | openssl passwd -6 -stdin`
-  const result = await exec(openssl_cmd, { capture: true })
-  const crypted_passwd = result.data.trim();
-  cmd = `echo "${username}:${crypted_passwd}" | chroot ${this.installTarget} chpasswd -e`
+  
+  cmd = `echo ${username}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
   await exec(cmd, this.echo)
-  // Versione precedente
-  // cmd = `echo ${username}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
-  // await exec(cmd, this.echo)
 
   let group = 'wheel'
   if (this.distro.familyId === 'debian') {
