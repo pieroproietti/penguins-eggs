@@ -91,7 +91,7 @@ export default class ExportPkg extends Command {
       Utils.warning(`alpine apk`)
       localPath = `/home/${this.user}/packages/aports/${arch}`
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
-      filter = `penguins-eggs*10.?.*-r*.apk`
+      filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*apk`
 
       /**
        * Arch/Manjaro 
@@ -105,7 +105,7 @@ export default class ExportPkg extends Command {
         Utils.warning("manjaro PKGBUILD")
         localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
-        filter = `penguins-eggs-10.?.*-*-any.pkg.tar.*`
+        filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`
 
         /**
          * Arch
@@ -114,7 +114,7 @@ export default class ExportPkg extends Command {
         Utils.warning("aur PKGBUILD")
         localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
-        filter = `penguins-eggs-10.?.*-*-any.pkg.tar.zst`
+        filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
       }
 
       /**
@@ -128,7 +128,7 @@ export default class ExportPkg extends Command {
       if (this.all) {
         arch = '*'
       }
-      filter = `penguins-eggs_10.?.*-*_${arch}.deb`
+      filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
 
       /**
        * fedora
@@ -137,7 +137,7 @@ export default class ExportPkg extends Command {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/fedora"
-      filter = `penguins-eggs-10.?.*-*fedora.*.rpm`
+      filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*fedora.*.rpm`
 
       /**
        * openmamba
@@ -147,7 +147,7 @@ export default class ExportPkg extends Command {
       localPath = `/usr/src/RPM/RPMS/x86_64`
 
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
-      filter = `penguins-eggs-10.?.*-*mamba.*.rpm`
+      filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
 
       /**
        * opensuse
@@ -165,6 +165,7 @@ export default class ExportPkg extends Command {
     }
     let cmd=`#!/bin/bash\n`
     cmd += `set -e\n`
+    cmd += 'shopt -s extglob\n'
     cmd += `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
@@ -179,7 +180,7 @@ export default class ExportPkg extends Command {
       cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
 
-    cmd +=`# copy new packages\n`
+    cmd +=`# Export packages\n`
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd +=`# wait before to umount\n`
