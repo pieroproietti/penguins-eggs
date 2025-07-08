@@ -91,7 +91,7 @@ export default class ExportPkg extends Command {
       Utils.warning(`alpine apk`)
       localPath = `/home/${this.user}/packages/aports/${arch}`
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
-      filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
+      filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
 
       /**
        * Arch/Manjaro 
