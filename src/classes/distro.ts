@@ -61,7 +61,7 @@ const FAMILY_CONFIGS: Record<string, FamilyConfig> = {
   alpine: {
     familyId: 'alpine',
     distroLike: 'Alpine',
-    codenameId: 'rolling',
+    codenameId: '',
     codenameLikeId: 'alpine',
     liveMediumPath: '/mnt/'
   },
