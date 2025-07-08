@@ -28,7 +28,7 @@ export default class Snapshot {
       } else {
          result += `${codenameId.toLowerCase()}-`
       }
-      result = result.replace(`/`, '-')
+      // result = result.replace(`/`, '-')
       return result
    }
 
