@@ -16,13 +16,15 @@ We switched to a version number based on year, month, day, and release number. I
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.7.7-1
-These days I have been doing a lot of work on remote installation via PXE, on some long neglected distributions: alpine, opensuse, etc. This is the current situation:
+These days I have been doing a lot of work on remote installation via PXE, on some long neglected distributions: alpine, opensuse, etc. 
 
-* alpine: remaster OK, installation CLI ok, calamares no, PXE boot OK
-* arch: remaster OK, installation CLI ok, calamares ok, PXE boot OK
-* debian: remaster OK, installation CLI ok, calamares ok, PXE boot OK
-* fedora: remaster OK, installation CLI ok, calamares ko, PXE boot OK
-* opensuse: remaster OK, installation CLI ok, calamares ko, PXE boot OK
+This is the actual situation:
+
+* alpine: remaster OK, installation CLI OK, calamares KO, PXE boot OK, install from PXE OK
+* arch: remaster OK, installation CLI OKk, calamares OK, PXE boot OK, install from PXE OK
+* debian: remaster OK, installation CLI OK, calamares OK, PXE boot OK, install from PXE OK
+* fedora: remaster OK, installation CLI OK, calamares KO, PXE boot OK, install CLI from PXE KO
+* opensuse: remaster OK, installation CLI OK, calamares KO, PXE boot OK, install CLI from PXE KO
 
 ## Summary of Penguins-Eggs Changelog 10.1.x
 
