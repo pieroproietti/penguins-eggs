@@ -22,48 +22,27 @@ import Utils from '../utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * makeEFI
+ * 
+ * @param this 
+ * @param theme 
+ * cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ./bootloaders/
+ * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
-export async function makeEfi(this: Ovary, theme = 'eggs') {
-    Utils.warning("creating efi configuration...")
-
+export async function makeEfi (this:Ovary, theme ='eggs') {
+    const signedGrub = path.resolve(__dirname, `../../../bootloaders/grubx64.efi.signed`)
+    const signedShim = path.resolve(__dirname, `../../../bootloaders/shimx64.efi.signed`)
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
-
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiMnt = path.join(efiPath, '/mnt/')
-
     const isoDir = this.settings.iso_work
     const readmes = `${isoDir}/READMES`
     let readmeContent = `# README\n`
 
-    /**
-     * check: grub/grub2 command MUST to exists
-     */
-    const grubName = Diversions.grubName(this.familyId)
-    if (grubName === '') {
-        Utils.error('Cannot find command grub/grub2.')
-        process.exit(1)
-    }
+    await exec(`mkdir ${isoDir}/EFI/boot/ -p`, Utils.setEcho(true))
+    await exec(`cp ${signedShim} ${isoDir}/EFI/boot/${bootArchEfi()}`, Utils.setEcho(true))
+    await exec(`cp ${signedGrub} ${isoDir}/EFI/boot/${nameGAE()}`, Utils.setEcho(true))
 
-    /**
-     * GAE = Grub Arch Efi path+grubx86.efi/signed
-     */
-    let GAE = srcGAES()
-    if (!fs.existsSync(srcGAE())) {
-        GAE = srcGAE()
-    }
-
-    if (!fs.existsSync(GAE)) {
-        if (this.familyId === 'debian') {
-            Utils.error(`error: ${GAE} does not exist`)
-            if (!Utils.isi686()) {
-                process.exit(1)
-            }
-        }
-    }
-
-    // Create READMES on ISO
     await exec(`mkdir ${readmes}`)
 
     // clean/create all in efiPath
@@ -133,51 +112,19 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * copy grub.cfg to (efi.img)/boot/grub
      */
     await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
-    // readme
-    readmeContent += `## copyng on (efi.img) ${efiMnt}\n`
-    readmeContent += `${grub1} copied to /boot/grub`
-    if (this.settings.distro.codenameLikeId === 'bookworm' ||
-        this.settings.distro.codenameLikeId === 'daedalus') {
-        /**
-         * (efi.img)/EFI/boot/bootx84.efi (shimx64.efi)
-         * (efi.img)/EFI/boot/grubx84.efi 
-         */
-        Utils.warning(`copy ${srcShim()} to ${efiMnt}/EFI/boot/${bootArchEfi()}`)
-        Utils.warning(`copy ${srcGAES()} to ${efiMnt}/EFI/boot/${nameGAE()}`)
-        await exec(`cp ${srcShim()} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-        await exec(`cp ${srcGAES()} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
-        readmeContent += `${srcShim()} copied as  ${bootArchEfi()}\n`
-        readmeContent += `${GAE} copied as ${nameGAE()}\n`
-    } else {
 
-        /**
-         * we need to build bootx64.efi
-         */
-        Utils.warning(`create ${bootArchEfi()} not signed and copy as ${bootArchEfi()}`)
-        await exec(
-            `${grubName}-mkimage  -O "${Utils.uefiFormat()}" \
-                -m "${efiMemdiskDir}/memdisk" \
-                -o "${efiMemdiskDir}/${bootArchEfi()}" \
-                -p '(memdisk)/boot/grub' \
-                search iso9660 configfile normal memdisk tar cat part_msdos part_gpt fat ext2 ntfs ntfscomp hfsplus chain boot linux squash4 loopback`,
-            this.echo
-        )
-        await exec(`cp ${efiMemdiskDir}/${bootArchEfi()} ${efiMnt}/EFI/boot/`, this.echo)
-
-        // Rolf patch: copiare i file mod da /usr/lib/grub/x86_64-efi a ${isoDir}/boot/grub/x86_64-efi
-        await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${isoDir}/boot/grub/x86_64-efi/`, this.echo)
-
-        // Creare EFI
-        readmeContent += `created grubx64.efi not signed and copied as  ${bootArchEfi()}\n`
-    }
+    /**
+     * (efi.img)/EFI/boot/bootx84.efi (shimx64.efi)
+     * (efi.img)/EFI/boot/grubx84.efi 
+     */
+    await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
+    await exec(`cp ${signedGrub} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
 
     // replicate EFI on ISO
     await exec(`cp -r ${efiMnt}/EFI ${isoDir}/EFI`, this.echo)
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
-
-
 
 
     /**
@@ -279,7 +226,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     fs.writeFileSync(`${readmes}/grub2.cfg`, grubText2)
     fs.writeFileSync(`${readmes}/README.md`, readmeContent)
 }
-
 
 /**
  * 
