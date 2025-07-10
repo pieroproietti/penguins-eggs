@@ -30,8 +30,13 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
     const bootloaders = path.resolve(__dirname, `../../../bootloaders`)
-    const signedGrub = path.resolve(bootloaders, `grubx64.efi.signed`)
-    const signedShim = path.resolve(bootloaders, `shimx64.efi.signed`)
+    const grubEfi = path.resolve(bootloaders, `grubx64.efi`)
+    const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
+    let signed = ''
+    console.log(this.distroId)
+    if (this.familyId === 'debian') {
+        signed = '.signed'
+    }
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
@@ -42,8 +47,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
-    await exec(`cp ${signedShim} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${signedGrub} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
 
 
     // clean/create all in efiPath
@@ -102,8 +107,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
     await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`)
-    await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${signedGrub} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)

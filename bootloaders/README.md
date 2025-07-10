@@ -15,4 +15,8 @@ To boot from live, We use bootloaders from Debian bookworm for every distro.
 ## syslinux
 * /syslinux
 
-
+# Path signed/unsigned
+* /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed
+* /usr/lib/grub/x86_64-efi/monolithic/grubx64.efi
+* /usr/lib/shim/shimx64.efi.signed
+* /usr/lib/shim/shimx64.efi
