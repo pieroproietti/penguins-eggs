@@ -35,11 +35,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
     let signed = ''
     if (this.distroLike === 'Debian') {
-        signed = '.signed'
-    }
-
-    if (signed!=='') {
         Utils.warning(`Secure boot enabled on ${this.distroLike}`)
+        signed = '.signed'
     }
 
 
@@ -52,8 +49,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
-    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, Utils.setEcho(true))
+    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, Utils.setEcho(true))
 
 
     // clean/create all in efiPath
@@ -112,8 +109,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
     await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`)
-    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, Utils.setEcho(true))
+    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${grubEFI()}`, Utils.setEcho(true))
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
