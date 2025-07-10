@@ -17,6 +17,7 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
+import { util } from 'chai'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -33,9 +34,14 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const grubEfi = path.resolve(bootloaders, `grubx64.efi`)
     const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
     let signed = ''
-    if (this.distroLike === 'debian') {
+    if (this.distroLike === 'Debian') {
         signed = '.signed'
     }
+
+    if (signed!=='') {
+        Utils.warning(`Secure boot enabled on ${this.distroLike}`)
+    }
+
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
