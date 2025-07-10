@@ -36,7 +36,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
-    const efiMnt = path.join(efiPath, '/mnt/')
+    const efiMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
 
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
@@ -58,8 +58,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * create efi.img
      */
-    Utils.warning("creating grub.cfg (1) in (efi.img)/boot/grub")
+    Utils.warning("creating grub.cfg (1) on efi.img")
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
+
     const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1\n`
     grubText1 += `# created on ${efiMemdiskDir}\n`
@@ -90,7 +91,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
 
-    // mount efi.img on mnt-img
+    // mount efi.img on mountpoint mnt-img
     await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
 
     // create structure inside (efi.img)
@@ -98,7 +99,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMnt}/EFI/boot -p`, this.echo)
 
     /**
-     * copy grub.cfg to (efi.img)/boot/grub
+     * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
     await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`)
     await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
@@ -108,9 +109,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`umount ${efiMnt}`, this.echo)
 
     // Copy isoImg in ${${isoDir}/boot/grub
+    Utils.warning("copyng efi.img on (iso)/boot/grub")
     await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
-
-
 
 
     /**
@@ -206,6 +206,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
 }
 
+
+/**
+ * FUNCTIONS
+ */
+
 /**
  * 
  * @returns 
@@ -220,9 +225,9 @@ function bootEFI(): string {
     return bn
 }
 
-
 /**
- * FUNCTIONS
+ * 
+ * @returns 
  */
 function grubEFI(): string {
     let gn = 'grubia32.efi' // Per l'architettura i686 EFI è: grubia32.efi
@@ -232,4 +237,8 @@ function grubEFI(): string {
         gn = 'grubaa64.efi'
     }
     return gn
+}
+
+function moduleEFI(){
+    return `x86_64-efi`
 }
