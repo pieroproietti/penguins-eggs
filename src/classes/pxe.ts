@@ -21,6 +21,7 @@ import Diversions from './diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const bootloaders = path.resolve(__dirname, `../../bootloaders`)
 
 /**
  * Pxe:
@@ -239,22 +240,23 @@ export default class Pxe {
    * configure PXE bios
    */
   private async bios() {
+   
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`, this.echo)
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
 
     // ipxe.pxe
-    await exec(`ln -s ${__dirname}/../../ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
+    await exec(`ln -s ${bootloaders}ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
 
     // pxe
-    await exec(`cp ${this.distro.syslinuxPath}/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
-    await exec(`cp ${this.distro.syslinuxPath}/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
+    await exec(`cp ${bootloaders}/syslinux/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
+    await exec(`cp ${bootloaders}/syslinux/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
 
     // syslinux
-    await exec(`ln -s ${this.distro.syslinuxPath}/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
-    await exec(`ln -s ${this.distro.syslinuxPath}/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
-    await exec(`ln -s ${this.distro.syslinuxPath}/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
-    await exec(`ln -s ${this.distro.syslinuxPath}/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
-    await exec(`ln -s ${this.distro.syslinuxPath}/memdisk ${this.pxeRoot}/memdisk`, this.echo)
+    await exec(`ln -s ${bootloaders}/syslinux/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}/syslinux/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}/syslinux/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}/syslinux/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}/syslinux/memdisk ${this.pxeRoot}/memdisk`, this.echo)
 
     await exec(`mkdir ${this.pxeRoot}/pxelinux.cfg`, this.echo)
 
@@ -305,10 +307,10 @@ export default class Pxe {
      * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo);
-    await exec(`cp ${__dirname}/../../ipxe/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
-    await exec(`cp -r ${__dirname}/../../ipxe/grub/* ${this.pxeRoot}/grub`)
+    await exec(`cp ${bootloaders}/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
+    await exec(`cp -r ${bootloaders}/grub/* ${this.pxeRoot}/grub`)
     // dato che Alpine cerca i moduli in: /grub/x86_64-efi, la accontentiamo...
-    await exec(`ln -s ${__dirname}/../../ipxe/grub/ ${this.pxeRoot}/grub/x86_64-efi`)
+    await exec(`ln -s ${bootloaders}/grub/ ${this.pxeRoot}/grub/x86_64-efi`)
 
     // Genera il file grub.cfg
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
