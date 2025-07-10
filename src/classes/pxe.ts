@@ -303,11 +303,15 @@ export default class Pxe {
     /**
      * On Debian bookworm:
      * cd ~/penguins-eggs
-     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./ipxe/
-     * vecchio cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub/
-     * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub/x86_64-efi/
+     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./bootloaders/
+     * cp -r /usr/lib/grub/x86_64-efi/ ./bootloaders/grub/x86_64-efi/
      */
-    await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo);
+    await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
+    /**
+     * Si potrebbe usare:
+     * ${bootloaders}/grub/x86_64-efi/monolithic/grubnetx64.efi
+     * come alternativa per distroname!=="Debian"
+     */
     await exec(`cp ${bootloaders}/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
 
