@@ -27,6 +27,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
     const distro = new Distro()
     this.familyId = distro.familyId
     this.distroId = distro.distroId
+    this.distroLike = distro.distroLike
 
     this.settings = new Settings()
 
