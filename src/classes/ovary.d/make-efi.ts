@@ -39,6 +39,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiMnt = path.join(efiPath, '/mnt/')
     const isoDir = this.settings.iso_work
 
+    // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
+    await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
+    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
+    await exec(`cp ${signedShim} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${signedGrub} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
+
+
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
         await exec(`rm -rf ${efiPath}`)
@@ -47,8 +54,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
-
-
 
     /**
      * create efi.img
@@ -88,14 +93,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // mount efi.img on mnt-img
     await exec(`mount -o loop ${efiImg} ${efiMnt}`, this.echo)
 
-    // create structure inside efiMnt
-    await exec(`mkdir ${efiMnt}/boot`, this.echo)
-    await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-    //await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo)
-    //await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo)
-    await exec(`mkdir ${isoDir}/boot/grub/ -p`, Utils.setEcho(true))
-    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, Utils.setEcho(true))
-    
+    // create structure inside (efi.img)
+    await exec(`mkdir ${efiMnt}/boot/grub -p`, this.echo)
     await exec(`mkdir ${efiMnt}/EFI/boot -p`, this.echo)
 
     /**
@@ -105,11 +104,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${signedGrub} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
 
-    // replicate EFI on ISO
-    await exec(`cp -r ${efiMnt}/EFI ${isoDir}`, this.echo)
-
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
+
+    // Copy isoImg in ${${isoDir}/boot/grub
+    await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
+
+
 
 
     /**
