@@ -304,13 +304,12 @@ export default class Pxe {
      * On Debian bookworm:
      * cd ~/penguins-eggs
      * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./ipxe/
-     * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub
+     * vecchio cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub/
+     * cp -r /usr/lib/grub/x86_64-efi/ ./ipxe/grub/x86_64-efi/
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo);
-    await exec(`cp ${bootloaders}/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`)
-    await exec(`cp -r ${bootloaders}/grub/* ${this.pxeRoot}/grub`)
-    // dato che Alpine cerca i moduli in: /grub/x86_64-efi, la accontentiamo...
-    await exec(`ln -s ${bootloaders}/grub/ ${this.pxeRoot}/grub/x86_64-efi`)
+    await exec(`cp ${bootloaders}/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
 
     // Genera il file grub.cfg
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
