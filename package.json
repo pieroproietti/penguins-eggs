@@ -77,15 +77,13 @@
         "/dist",
         "/dracut",
         "/eui",
-        "/ipxe",
         "/maker",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
         "/perrisbrewery",
         "/pods",
-        "/scripts",
-        "/syslinux"
+        "/scripts"
     ],
     "homepage": "https://penguins-eggs.net",
     "keywords": [
