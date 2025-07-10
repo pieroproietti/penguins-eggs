@@ -33,8 +33,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const grubEfi = path.resolve(bootloaders, `grubx64.efi`)
     const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
     let signed = ''
-    console.log(this.distroId)
-    if (this.familyId === 'debian') {
+    if (this.distroLike === 'debian') {
         signed = '.signed'
     }
 

@@ -78,6 +78,8 @@ export default class Ovary {
 
   distroId = ''
 
+  distroLike = ''
+
   genisoimage = false
 
   incubator = {} as Incubator
