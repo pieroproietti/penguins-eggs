@@ -29,21 +29,15 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
-    const signedGrub = path.resolve(__dirname, `../../../bootloaders/grubx64.efi.signed`)
-    const signedShim = path.resolve(__dirname, `../../../bootloaders/shimx64.efi.signed`)
+    const bootloaders = path.resolve(__dirname, `../../../bootloaders`)
+    const signedGrub = path.resolve(bootloaders, `grubx64.efi.signed`)
+    const signedShim = path.resolve(bootloaders, `shimx64.efi.signed`)
+
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiMnt = path.join(efiPath, '/mnt/')
     const isoDir = this.settings.iso_work
-    const readmes = `${isoDir}/READMES`
-    let readmeContent = `# README\n`
-
-    await exec(`mkdir ${isoDir}/EFI/boot/ -p`, Utils.setEcho(true))
-    await exec(`cp ${signedShim} ${isoDir}/EFI/boot/${bootArchEfi()}`, Utils.setEcho(true))
-    await exec(`cp ${signedGrub} ${isoDir}/EFI/boot/${nameGAE()}`, Utils.setEcho(true))
-
-    await exec(`mkdir ${readmes}`)
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
@@ -54,26 +48,21 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
-    const grub1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let grubText1 = `# grub.cfg 1\n`
 
 
     /**
      * create efi.img
      */
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot")}`, this.echo)
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub")}`, this.echo)
-
-    // create grub.cfg 1 in memdisk
     Utils.warning("creating grub.cfg (1) in (efi.img)/boot/grub")
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
+    const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
+    let grubText1 = `# grub.cfg 1\n`
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
     grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
     grubText1 += 'set prefix=($root)/boot/grub\n'
     grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-
-
-    Utils.write(grub1, grubText1)
+    Utils.write(grubCfg1, grubText1)
 
     /**
      * creating structure efiWordDir
@@ -105,23 +94,17 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo)
     await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo)
 
-    await exec(`mkdir ${efiMnt}/EFI`, this.echo)
-    await exec(`mkdir ${efiMnt}/EFI/boot`, this.echo)
+    await exec(`mkdir ${efiMnt}/EFI/boot -p`, this.echo)
 
     /**
      * copy grub.cfg to (efi.img)/boot/grub
      */
-    await exec(`cp ${grub1} ${efiMnt}/boot/grub`)
-
-    /**
-     * (efi.img)/EFI/boot/bootx84.efi (shimx64.efi)
-     * (efi.img)/EFI/boot/grubx84.efi 
-     */
-    await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootArchEfi()}`, this.echo)
-    await exec(`cp ${signedGrub} ${efiMnt}/EFI/boot/${nameGAE()}`, this.echo)
+    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`)
+    await exec(`cp ${signedShim} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${signedGrub} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
 
     // replicate EFI on ISO
-    await exec(`cp -r ${efiMnt}/EFI ${isoDir}/EFI`, this.echo)
+    await exec(`cp -r ${efiMnt}/EFI ${isoDir}`, this.echo)
 
     // umount efiMnt
     await exec(`umount ${efiMnt}`, this.echo)
@@ -171,9 +154,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // Copy workdir files to ISO/boot
     await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
 
-    readmeContent += `\n`
-    readmeContent += `## Copyng on ${isoDir}\n`
-    readmeContent += `rsync -avx ${efiWorkDir}/boot (iso)/boot\n`
 
     /**
      * prepare main grub.cfg from grub.main.cfg
@@ -189,7 +169,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
-    const g2 = path.join(isoDir, '/boot/grub/grub.cfg')
+    const grubCfg2 = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
     const view = {
@@ -200,11 +180,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
     let grubText2 = `# grub.cfg 2\n`
-    grubText2 += ` # created on ${g2}`
+    grubText2 += ` # created on ${grubCfg2}`
     grubText2 += `\n`
     grubText2 += mustache.render(template, view)
 
-    fs.writeFileSync(g2, grubText2)
+    fs.writeFileSync(grubCfg2, grubText2)
 
 
     /**
@@ -221,17 +201,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * config.cfg
      */
     await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
-
-    fs.writeFileSync(`${readmes}/grub1.cfg`, grubText1)
-    fs.writeFileSync(`${readmes}/grub2.cfg`, grubText2)
-    fs.writeFileSync(`${readmes}/README.md`, readmeContent)
 }
 
 /**
  * 
  * @returns 
  */
-function bootArchEfi(): string {
+function bootEFI(): string {
     let bn = 'bootia32.efi' // Per l'architettura i686 EFI è: bootia32.efi
     if (process.arch === 'x64') {
         bn = 'bootx64.efi'
@@ -245,7 +221,7 @@ function bootArchEfi(): string {
 /**
  * FUNCTIONS
  */
-function nameGAE(): string {
+function grubEFI(): string {
     let gn = 'grubia32.efi' // Per l'architettura i686 EFI è: grubia32.efi
     if (process.arch === 'x64') {
         gn = 'grubx64.efi'
@@ -253,28 +229,4 @@ function nameGAE(): string {
         gn = 'grubaa64.efi'
     }
     return gn
-}
-
-function nameGAES(): string {
-    return nameGAE() + '.signed'
-
-}
-
-function srcGAE(): string {
-    return '/usr/lib/grub/' + Utils.uefiFormat() + '/monolithic/' + nameGAE()
-}
-
-function srcGAES(): string {
-    let signedGrub = `/usr/lib/grub/${Utils.uefiFormat()}-signed/${nameGAES()}`;
-    if (!fs.existsSync(signedGrub)) {
-        Utils.warning(`warning: ${signedGrub} does not exist`)
-    }
-    return signedGrub
-}
-
-function srcShim(): string {
-    const signedShim = '/usr/lib/shim/shimx64.efi.signed';
-    const unsignedShim = '/usr/lib/shim/shimx64.efi';
-
-    return fs.existsSync(signedShim) ? signedShim : unsignedShim;
 }

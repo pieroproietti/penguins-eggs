@@ -16,8 +16,6 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import Diversions from '../diversions.js'
-import { hostname } from 'node:os'
-import { getHeapCodeStatistics } from 'node:v8'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
