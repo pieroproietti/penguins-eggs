@@ -38,7 +38,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     await exec(`cp ${syspath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     // just fo x64 arch
-    await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, Utils.setEcho(true))
+    await exec(`cp ${syspath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)

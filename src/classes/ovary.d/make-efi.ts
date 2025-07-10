@@ -91,9 +91,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // create structure inside efiMnt
     await exec(`mkdir ${efiMnt}/boot`, this.echo)
     await exec(`mkdir ${efiMnt}/boot/grub`, this.echo)
-    await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo)
-    await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo)
-
+    //await exec(`mkdir ${efiMnt}/boot/grub/x86_64-efi`, this.echo)
+    //await exec(`cp -r /usr/lib/grub/x86_64-efi/*.mod ${efiMnt}/boot/grub/x86_64-efi/`, this.echo)
+    await exec(`mkdir ${isoDir}/boot/grub/ -p`, Utils.setEcho(true))
+    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, Utils.setEcho(true))
+    
     await exec(`mkdir ${efiMnt}/EFI/boot -p`, this.echo)
 
     /**
