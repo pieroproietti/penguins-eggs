@@ -28,7 +28,7 @@ export async function initrdAlpine(this: Ovary) {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../../mkinitfs/live.conf`)
-    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel}`, Utils.setEcho(true))
+    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel}`, this.echo)
 }
 
 
@@ -60,11 +60,11 @@ export async function initrdArch(this: Ovary) {
     let hookSaved = `/tmp/${path.basename(hookSrc)}`
     if (hookSrc !== hookDest) {
         await exec(`cp ${hookSrc} ${hookDest}`)
-    }
+    } 
     await exec(`cp ${hookSrc} ${hookSaved}`)
-    await exec(edit, Utils.setEcho(true))
+    await exec(edit, this.echo)
     let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
-    await exec(cmd, Utils.setEcho(true))
+    await exec(cmd, this.echo)
     await exec(`rm -f ${hookDest}`)
     if (restore) {
         await exec(`cp ${hookSaved} ${hookDest}`)
