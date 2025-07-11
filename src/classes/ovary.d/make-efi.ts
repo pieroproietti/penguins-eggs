@@ -47,11 +47,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const isoDir = this.settings.iso_work
 
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
-    await exec(`mkdir ${isoDir}/boot/grub/ -p`, Utils.setEcho(true))
+    await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
-    await exec(`mkdir ${isoDir}/EFI/boot -p`, Utils.setEcho(true))
-    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, Utils.setEcho(true))
-    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, Utils.setEcho(true))
+    await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
 
 
     // clean/create all in efiPath
@@ -96,32 +96,31 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * Create boot image "boot/grub/efi.img"
      */
     const efiImg = `${efiWorkDir}boot/grub/efi.img`
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, Utils.setEcho(true))
-    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, Utils.setEcho(true))
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
+    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
+    // await new Promise(resolve => setTimeout(resolve, 2000))
 
     // mount efi.img on mountpoint mnt-img
-    await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, Utils.setEcho(true))
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
+    // await new Promise(resolve => setTimeout(resolve, 2000))
 
     // create structure inside (efi.img)
-    await exec(`mkdir -p ${efiMnt}/boot/grub`, Utils.setEcho(true))
-    await exec(`mkdir -p ${efiMnt}/EFI/boot`, Utils.setEcho(true))
+    await exec(`mkdir -p ${efiMnt}/boot/grub`, this.echo)
+    await exec(`mkdir -p ${efiMnt}/EFI/boot`, this.echo)
 
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`, Utils.setEcho(true))
-    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, Utils.setEcho(true))
-    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${grubEFI()}`, Utils.setEcho(true))
+    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`, this.echo)
+    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
     
     //await Utils.pressKeyToExit(`controlla ${efiMnt}`)
-    await exec(`umount ${efiMnt}`, Utils.setEcho(true))
+    await exec(`umount ${efiMnt}`, this.echo)
 
     // Copy isoImg in ${${isoDir}/boot/grub
     Utils.warning("copyng efi.img on (iso)/boot/grub")
-    await exec(`cp ${efiImg} ${isoDir}/boot/grub`, Utils.setEcho(true))
-    // await Utils.pressKeyToExit(`controlla ${isoDir}`)
+    await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
 
 
 
