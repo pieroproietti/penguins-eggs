@@ -65,7 +65,7 @@ sequence:
     - partition
     - mount
     - unpackfs
-    - machineid
+    {{hasSystemd}}machineid
     - fstab
     - locale
     - keyboard
