@@ -15,6 +15,11 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.7.10-1
+I have greatly simplified boot management expecially on UEFI machines: previously for each distribution I used the grub of the distribution itself, which was very fine but time-consuming in terms of code maintenance. Now I use for booting from live CD the Debian grub and I do the same for booting via PXE and, this, has allowed me to simplify the code considerably. 
+
+All bootloaders: grub, ipxe and syslinux, are now collected in the bootloaders folders and contained in the package itself.
+
 ## penguins-eggs_25.7.7-1
 These days I have been doing a lot of work on remote installation via PXE, on some long neglected distributions: alpine, opensuse, etc. 
 
