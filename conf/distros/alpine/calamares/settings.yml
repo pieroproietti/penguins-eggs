@@ -1,7 +1,7 @@
 # Debian/bookworm
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
-modules-search: [ local, /usr/lib/calamares/modules ]
+modules-search: [ /etc/calamares/modules, /usr/lib/calamares/modules ]
 
 # If this is set to true, Calamares refers to itself as a "setup program"
 # rather than an "installer". Defaults to the value of dont-chroot, but
