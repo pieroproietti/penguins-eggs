@@ -38,9 +38,9 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 instances:
-- id: openrc-machineid
+- id: machineid-openrc
   module: shellprocess
-  config: openrc-machineid.conf  
+  config: machineid-openrc.conf  
 
 sequence:
   # Phase 1 - prepare.
