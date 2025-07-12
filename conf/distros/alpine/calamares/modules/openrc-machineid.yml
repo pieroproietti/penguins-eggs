@@ -1,0 +1,8 @@
+# Esegue i comandi per creare /etc/machine-id su sistemi non-systemd.
+---
+postinstall:
+    - command: |
+        sh -c "dbus-uuidgen > /etc/machine-id && \
+               mkdir -p /var/lib/dbus && \
+               ln -sf /etc/machine-id /var/lib/dbus/machine-id"
+               
