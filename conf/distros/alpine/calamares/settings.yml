@@ -69,16 +69,16 @@ sequence:
     - fstab
     - locale
     - keyboard
-    - localecfg    
+    # localecfg    
     {{createUsers}}users
     {{hasDisplaymanager}}displaymanager 
     - networkcfg
     - hwclock
     - services-openrc  # Modulo per OpenRC
-    - bootloader-config
+    # bootloader-config
     - grubcfg
     - bootloader
-    - packagges
+    - packages
     - mkinitfs         # Modulo per Alpine
     - umount
     - finished  
