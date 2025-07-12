@@ -199,6 +199,8 @@ export default class Incubator {
    * Rewrite modules 
    */
   private async cleanupConfiguration() {
+    console.log('cleanup modules')
+
     // modules
     const elements = fs.readdirSync(this.installer.modules)
     elements.sort()
@@ -212,10 +214,12 @@ export default class Incubator {
       fs.writeFileSync(file, destContent, 'utf8')
     }
 
+    console.log('cleanup settings.conf')
     // settings
     let file = this.installer.configRoot + '/settings.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
     let yamlContent = yaml.load(fileContent)
+    console.log(yamlContent)
     let destContent = `# settings.conf on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
     destContent += yaml.dump(yamlContent)

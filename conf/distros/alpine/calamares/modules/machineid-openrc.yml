@@ -1,8 +1,15 @@
-# Esegue i comandi per creare /etc/machine-id su sistemi non-systemd.
+# Esegue comandi shell per finalizzare la configurazione di Alpine
+# che non possono essere gestiti da altri moduli.
+
+# 'dontChroot: false' (default) significa che i comandi vengono
+# eseguiti all'interno del sistema appena installato.
+#
+# La sezione 'preinstall' è vuota
+# La sezione 'postinstall' esegue i comandi dopo l'installazione dei pacchetti.
+#
 ---
 postinstall:
     - command: |
         sh -c "dbus-uuidgen > /etc/machine-id && \
                mkdir -p /var/lib/dbus && \
                ln -sf /etc/machine-id /var/lib/dbus/machine-id"
-               
