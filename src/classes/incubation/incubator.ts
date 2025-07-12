@@ -209,9 +209,6 @@ export default class Incubator {
       let destContent = `# ${elem} on ${this.distro.distroId}, penguins-eggs ${pjson.version}\n`
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
-      if (elem==='services-openrc.conf') {
-        console.log(destContent)
-      }
       fs.writeFileSync(file, destContent, 'utf8')
     }
 

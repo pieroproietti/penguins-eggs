@@ -65,7 +65,7 @@ sequence:
     - partition
     - mount
     - unpackfs
-    {{hasSystemd}}machineid
+    - machineid # va in alpine 
     - fstab
     - locale
     - keyboard
