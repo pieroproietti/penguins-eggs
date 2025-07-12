@@ -36,6 +36,7 @@ import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
 import { Rolling } from './incubator.d/rolling.js'
+import e from 'express'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -200,16 +201,19 @@ export default class Incubator {
   private async cleanupConfiguration() {
     // modules
     const elements = fs.readdirSync(this.installer.modules)
+    elements.sort()
+    console.log(elements)
     for (const elem of elements) {
       let file = this.installer.modules + elem
       let fileContent = fs.readFileSync(file, 'utf8')
       let yamlContent = yaml.load(fileContent)
-
       let destContent = `# ${elem} on ${this.distro.distroId}, penguins-eggs ${pjson.version}\n`
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
+      if (elem==='services-openrc.conf') {
+        console.log(destContent)
+      }
       fs.writeFileSync(file, destContent, 'utf8')
-      console.log(elem)
     }
 
     // settings

@@ -45,9 +45,9 @@ runlevelsDir: /etc/runlevels
 #       runlevel: default
 #     - foo4
 services: [
-  - dbus
-  - lightdm
-  - acpid
-  - crond
+  dbus
+  lightdm
+  acpid
+  crond
 ]
 disable: []
