@@ -52,7 +52,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{{createUsers}}}users
+      {{createUsers}}users
       - summary
 
   # Phase 2 - install.
@@ -70,12 +70,11 @@ sequence:
     - locale
     - keyboard
     - localecfg
-    {{{createUsers}}}users
-    {{{hasDisplaymanager}}}displaymanager
+    {{createUsers}}users
+    {{hasDisplaymanager}}displaymanager
     - networkcfg
     - hwclock
     - services-openrc
-    # bootloader-config
     - grubcfg
     - bootloader
     - packages
@@ -98,7 +97,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: {{{branding}}}
+branding: {{branding}}
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
