@@ -202,7 +202,6 @@ export default class Incubator {
     // modules
     const elements = fs.readdirSync(this.installer.modules)
     elements.sort()
-    console.log(elements)
     for (const elem of elements) {
       let file = this.installer.modules + elem
       let fileContent = fs.readFileSync(file, 'utf8')

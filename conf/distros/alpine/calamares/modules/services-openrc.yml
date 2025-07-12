@@ -44,10 +44,13 @@ runlevelsDir: /etc/runlevels
 #     - name: foo3
 #       runlevel: default
 #     - foo4
-services: [
-  dbus
-  lightdm
-  acpid
-  crond
-]
+services: 
+  - name: dbus
+    runlevel: default
+  - name: lightdm
+    runlevel: default
+  - name: acpid
+    runlevel: default
+  - name: crond
+    runlevel: default
 disable: []
