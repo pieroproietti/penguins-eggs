@@ -209,6 +209,7 @@ export default class Incubator {
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
       fs.writeFileSync(file, destContent, 'utf8')
+      console.log(elem)
     }
 
     // settings
