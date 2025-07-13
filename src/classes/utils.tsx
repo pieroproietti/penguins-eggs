@@ -167,13 +167,47 @@ export default class Utils {
     */
    static vmlinuz(kernel = ''): string {
       let vmlinuz = ''
-      
+
       if (kernel === '') {
          vmlinuz = `/boot/vmlinuz-$(uname -r)`
          if (fs.existsSync(vmlinuz)) {
             return vmlinuz
+         } else {
+
+            /**
+             * kernel definito
+             */
+            const distro = new Distro()
+            if (distro.familyId === "archlinux") {
+               if (fs.existsSync(`/boot/vmlinuz-linux`)) {
+                  vmlinuz = `/boot/vmlinuz-linux`
+               } else if (!fs.existsSync(`/boot/vmlinuz-lts`)) {
+                  vmlinuz = `/boot/vmlinuz-linux-lts`
+               } else if (!fs.existsSync(`/boot/vmlinuz-linux-rt`)) {
+                  vmlinuz = `/boot/vmlinuz-linux-rt`
+               }
+
+               if (Diversions.isManjaroBased(distro.distroId)) {
+                  const match = kernel.match(/^(\d+)\.(\d+)\./) // cattura minor e major
+                  if (match) {
+                     const major = match[1]
+                     const minor = match[2]
+                     vmlinuz = `/boot/vmlinuz-${major}.${minor}-x86_64`
+                  }
+               }
+            } else {
+               vmlinuz = `/boot/vmlinuz-${kernel}`
+            }
          }
       }
+
+      // If vmlinuz doesn't exist exit
+      if (!fs.existsSync(vmlinuz)) {
+         console.log(`file ${vmlinuz} does not exist!`)
+         process.exit()
+      }
+
+      return vmlinuz;
 
 
       /**
@@ -193,7 +227,7 @@ export default class Utils {
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
             const first = moduleDirs[0]
 
-            let archKernelType= ''
+            let archKernelType = ''
             if (first.includes('-lts')) {
                archKernelType = 'linux-lts';
             } else if (first.includes('-hardened')) {
@@ -290,7 +324,7 @@ export default class Utils {
          } else if (!fs.existsSync(`/boot/vmlinuz-zen`)) {
             version = `linux-zen`
          }
-         
+
          suffix = '.img'
 
          if (Diversions.isManjaroBased(distro.distroId)) {
