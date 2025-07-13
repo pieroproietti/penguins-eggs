@@ -213,7 +213,6 @@ export default class Utils {
       /**
        * TUTTO QUESTO CODICE E' ESCLUSO
        * kernel da /usr/lib/modules
-       */
       if (kernel === '') {
          let kernelModules = `/usr/lib/modules`
          if (!fs.existsSync(kernelModules)) {
@@ -256,9 +255,6 @@ export default class Utils {
          }
 
       } else {
-         /**
-          * kernel definito
-          */
          const distro = new Distro()
          if (distro.familyId === "archlinux") {
             if (fs.existsSync(`/boot/vmlinuz-linux`)) {
@@ -291,6 +287,8 @@ export default class Utils {
       }
 
       return vmlinuz;
+          */
+
    }
 
 
