@@ -166,8 +166,10 @@ export default class Utils {
     * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
     */
    static vmlinuz(kernel = ''): string {
+      let vmlinuz = ''
+      
       if (kernel === '') {
-         let vmlinuz = `/boot/vmlinuz-$(uname -r)`
+         vmlinuz = `/boot/vmlinuz-$(uname -r)`
          if (fs.existsSync(vmlinuz)) {
             return vmlinuz
          }
