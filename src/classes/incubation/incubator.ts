@@ -192,12 +192,10 @@ export default class Incubator {
     } catch (error) {
       console.error('--- ERRORE FATALE CATTURATO ---');
       console.error('L\'esecuzione si è interrotta durante la creazione della configurazione specifica per la distro.');
-      console.error(error); // Questo stamperà l'errore completo e lo stack trace
-      process.exit(1); // Esci con un codice di errore per essere sicuro
+      console.error(error)
+      process.exit(1)
     }
 
-
-    console.log("fine creazione configurazione")
 
     if (Pacman.calamaresExists()) {
       await partitionCustomize()
