@@ -24,14 +24,16 @@ function install_tarball() {
     fi
 
     # Estrazione e installazione del pacchetto
-    tar -xzf "$EGGS_PACKAGE"
+    TEMP_DIR=$(mktemp -d -p "/tmp" "eggs-unpacked-XXXXXX")
+    tar -xzf "$EGGS_PACKAGE" -C "$TEMP_DIR"
+    # tar -xzf "$EGGS_PACKAGE"
     if [ $? -ne 0 ]; then
         echo "Error: not possoble extract $EGGS_PACKAGE."
         exit 1
     fi
 
-    mv eggs penguins-eggs
-    $SUDO mv penguins-eggs /opt/
+    mv $TEMP_DIR/eggs $TEMP_DIR/penguins-eggs
+    $SUDO mv $TEMP_DIR/penguins-eggs /opt/
 
     # Ricreazione dei link per i temi grub/isolinux
     $SUDO ln -sf "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.full.cfg" "${EGGS_HOME}addons/eggs/theme/livecd/isolinux.main.cfg"
@@ -79,7 +81,7 @@ function install_tarball() {
     $SUDO eggs config -n
 
     echo ""
-    echo "$EGGS_PACKAGE was installed."
+    echo "tarballs $EGGS_PACKAGE was installed on $EGGS_HOME."
     exit 0
 }
 
