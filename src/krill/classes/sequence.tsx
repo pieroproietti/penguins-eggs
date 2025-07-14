@@ -1,7 +1,7 @@
 /**
  * Sequence - Simple Refactoring
  * ./src/krill/sequence.ts
- * penguins-eggs v.10.0.0 / ecmascript 2020
+ * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

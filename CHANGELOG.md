@@ -15,6 +15,16 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.7.10-1 **back to future!**
+
+A few months ago - around March - I tried to introduce building complete systems from containers. This required a global review of the methods for getting the kernel name and version. Neither `uname -r` nor `/proc/cmdlive` parsing can be used in containers.
+
+Having received several reports from users who have the system with several kernels installed, I decided to return to the traditional method for common installed systems.
+
+I also retraced my steps for the entire utils.tsx and distro.ts library, which had been restructured with the help of AI. 
+
+The problem here was the fact that it was impossible for me to maintain them. However, I count-in the future-to partially recover this work by rewriting it from scratch.
+
 ## penguins-eggs_25.7.10-1
 I have greatly simplified boot management expecially on UEFI machines: previously for each distribution I used the grub of the distribution itself, which was very fine but time-consuming in terms of code maintenance. Now I use for booting from live CD the Debian grub and I do the same for booting via PXE and, this, has allowed me to simplify the code considerably. 
 
