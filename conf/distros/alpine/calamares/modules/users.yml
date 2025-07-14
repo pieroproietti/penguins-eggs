@@ -3,8 +3,9 @@
 userGroup: users
 defaultGroups:
   - cdrom
+  - input
   - floppy
-  - sudo
+  - wheel
   - audio
   - dip
   - video

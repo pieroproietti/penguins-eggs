@@ -15,6 +15,9 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.7.14-9
+`Alpine`: finally calamares is configured and installing.
+
 ## penguins-eggs_25.7.12-1 **back to future!**
 
 A few months ago - around March - I tried to introduce building complete systems from containers. This required a global review of the methods for getting the kernel name and version. Neither `uname -r` nor `/proc/cmdline` parsing can be used in containers.
