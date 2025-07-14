@@ -30,7 +30,6 @@ import IOsRelease from '../interfaces/i-os-release.js'
 
 // pjson
 import { createRequire } from 'module';
-import { RAW_VALUE } from 'mustache'
 const require = createRequire(import.meta.url);
 const pjson = require('../../package.json');
 
@@ -42,8 +41,16 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
  * @remarks all the utilities
  */
 export default class Utils {
-   static vmlinuz = Kernel.vmlinuz
-   static initrdImg = Kernel.initramfs
+   static vmlinuz(kernel = ''): string {
+      return Kernel.vmlinuz(kernel)
+   }
+
+   /**
+    * @deprecated Use Kernel.initramfs() instead  
+    */
+   static initrdImg(kernel = ''): string {
+      return Kernel.initramfs(kernel)
+   }
 
    /**
    * Custom function to sort object keys
