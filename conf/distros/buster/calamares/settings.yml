@@ -38,9 +38,9 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 instances:
-- id:       cleanup
+- id:       test
   module:   shellprocess
-  config:   shellprocess-cleanup.conf
+  config:   shellprocess_test.conf
 
 
 sequence:

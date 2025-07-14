@@ -60,7 +60,7 @@ export class Alpine {
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
     await fisherman.moduleUnpackfs()
-    await fisherman.buildModule('machineid-openrc')
+    await fisherman.buildCalamaresModule('machineid-openrc', true)
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale', this.theme)
     await fisherman.buildModule('keyboard')

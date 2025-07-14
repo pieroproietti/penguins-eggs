@@ -37,11 +37,6 @@ disable-cancel-during-exec: false
 #
 quit-at-end: false
 
-instances:
-- id: machineid-openrc
-  module: shellprocess
-  config: machineid-openrc.conf
-
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules

@@ -1,0 +1,8 @@
+# machineid-openrc
+---
+type: "job"
+name: "machineid-openrc"
+interface: "process"
+chroot: false
+command: "/usr/sbin/machineid-openrc.sh"
+timeout: 30
