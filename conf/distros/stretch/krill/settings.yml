@@ -40,7 +40,7 @@ quit-at-end: false
 instances:
 - id:       cleanup
   module:   shellprocess
-  config:   shellprocess_cleanup.conf
+  config:   shellprocess-cleanup.conf
 
 sequence:
   # Phase 1 - prepare.
