@@ -130,7 +130,6 @@ script:
         sh -c "dbus-uuidgen > /etc/machine-id && \
             mkdir -p /var/lib/dbus && \
             ln -sf /etc/machine-id /var/lib/dbus/machine-id"
-            "-touch ${ROOT}/tmp/thingy"
 
 # You can change the description of the job (as it is displayed in the
 # progress bar during installation) by defining an *i18n* key, which
