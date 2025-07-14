@@ -18,13 +18,6 @@ export default class Kernel {
     /**
      * Ricava path per vmlinuz
      * 
-     * Normalmente cerca BOOT_IMAGE nei parametri del kernel
-     * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=... ro quiet splash
-     * 
-     * Se non è presente, come nel caso di Franco, cerca initrd e ricostruisce vmlinuz
-     * ro root=UUID=... initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64
-     * 
-     * @param kernel - Versione specifica del kernel (opzionale)
      * @returns Path al file vmlinuz
      */
     static vmlinuz(kernel = ''): string {
@@ -33,9 +26,9 @@ export default class Kernel {
          * metodo /proc/cmdline
          */
         if (!Utils.isContainer()) {
-            vmlinuz = this._vmlinuxFromCmdline()
+            vmlinuz = this.vmlinuxFromCmdline()
         } else {
-            vmlinuz = this._vmLinuxFromFiles(kernel)
+            vmlinuz = this.vmLinuxFromFiles(kernel)
         }
 
         if (!fs.existsSync(vmlinuz)) {
@@ -45,15 +38,65 @@ export default class Kernel {
         return vmlinuz
     }
 
-    
+
     /**
-     * ricava path per vmlinuz
-     * Normalmente cerca BOOT_IMAGE
-     * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=13768873-d6ba-4ae5-9e14-b5011f5aa31c ro quiet splash resume=UUID=beafb9b4-c429-4e1f-a268-4270b63a14e6
-     * se non è presente, come nel caso di Franco, cerca initrd e ricostruisce vmlinuz
-     * ro root=UUID=3dc0f202-8ac8-4686-9316-dddcec060c48 initrd=boot\initrd.img-5.15.0-0.bpo.3-amd64 // Conidi
+     * Ricava path per initramfs/initrd
+     * 
+     * @param kernel - Versione del kernel
+     * @returns Path al file initramfs
      */
-    private static _vmlinuxFromCmdline() {
+    static initramfs(kernel = ''): string {
+        const distro = new Distro()
+        let initramfs = ''
+
+        if (kernel === '') {
+            // Auto-detection
+            const kernelModulesPath = this.getKernelModulesPath()
+            const kernels = this.getAvailableKernels(kernelModulesPath)
+            const latestKernel = kernels[kernels.length - 1]
+            kernel = latestKernel
+        }
+
+        if (distro.familyId === "archlinux") {
+            initramfs = this.getArchInitramfs(kernel, distro)
+        } else if (distro.familyId === "alpine") {
+            initramfs = '/boot/initramfs-lts'
+        } else {
+            // Debian/Ubuntu/derivatives
+            const possiblePaths = [
+                `/boot/initrd.img-${kernel}`,
+                `/boot/initramfs-${kernel}.img`,
+                `/boot/initramfs-${kernel}`,
+                `/boot/initrd-${kernel}` // opensuse
+            ]
+
+            for (const path of possiblePaths) {
+                if (fs.existsSync(path)) {
+                    initramfs = path
+                    break
+                }
+            }
+        }
+
+        if (!fs.existsSync(initramfs)) {
+            console.error(`ERROR: initramfs file ${initramfs} does not exist!`)
+            this.listAvailableInitramfs()
+            process.exit(1)
+        }
+
+        return initramfs
+    }
+
+    /**
+     * ALL PRIVATE
+     */
+
+    /**
+     * vmlinuxFromCmdline
+     * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=13768873-d6ba-4ae5-9e14-b5011f5aa31c ro quiet splash resume=UUID=beafb9b4-c429-4e1f-a268-4270b63a14e6
+     * se non è presente - come nel caso di Franco Conidi - lo ricostruisce da initrd
+     */
+    private static vmlinuxFromCmdline() {
         let distro = new Distro()
         let vmlinuz = ''
 
@@ -113,60 +156,13 @@ export default class Kernel {
         return vmlinuz
     }
 
+
     /**
-     * Ricava path per initramfs/initrd
-     * 
-     * @param kernel - Versione del kernel
-     * @returns Path al file initramfs
-     */
-    static initramfs(kernel = ''): string {
-        const distro = new Distro()
-        let initramfs = ''
-
-        if (kernel === '') {
-            // Auto-detection
-            const kernelModulesPath = this.getKernelModulesPath()
-            const kernels = this.getAvailableKernels(kernelModulesPath)
-            const latestKernel = kernels[kernels.length - 1]
-            kernel = latestKernel
-        }
-
-        if (distro.familyId === "archlinux") {
-            initramfs = this.getArchInitramfs(kernel, distro)
-        } else if (distro.familyId === "alpine") {
-            initramfs = '/boot/initramfs-lts'
-        } else {
-            // Debian/Ubuntu/derivatives
-            const possiblePaths = [
-                `/boot/initrd.img-${kernel}`,
-                `/boot/initramfs-${kernel}.img`,
-                `/boot/initramfs-${kernel}`,
-                `/boot/initrd-${kernel}` // opensuse
-            ]
-
-            for (const path of possiblePaths) {
-                if (fs.existsSync(path)) {
-                    initramfs = path
-                    break
-                }
-            }
-        }
-
-        if (!fs.existsSync(initramfs)) {
-            console.error(`ERROR: initramfs file ${initramfs} does not exist!`)
-            this.listAvailableInitramfs()
-            process.exit(1)
-        }
-
-        return initramfs
-    }
-
-/**
-     * 
-     * @param kernel 
-     * @returns 
-     */
-    private static _vmLinuxFromFiles(kernel = ''): string {
+         * 
+         * @param kernel 
+         * @returns 
+         */
+    private static vmLinuxFromFiles(kernel = ''): string {
         const distro = new Distro()
         let vmlinuz = ''
 
@@ -400,7 +396,7 @@ export default class Kernel {
     /**
      * Ottiene informazioni sul kernel corrente
      */
-    static getCurrentKernelInfo(): { version: string, vmlinuz: string, initramfs: string } {
+    private static getCurrentKernelInfo(): { version: string, vmlinuz: string, initramfs: string } {
         try {
             const version = fs.readFileSync('/proc/version', 'utf8').trim()
             const kernelRelease = fs.readFileSync('/proc/sys/kernel/osrelease', 'utf8').trim()
