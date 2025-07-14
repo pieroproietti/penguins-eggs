@@ -69,7 +69,6 @@ sequence:
     - fstab
     - locale
     - keyboard
-    - localecfg
     {{createUsers}}users
     {{hasDisplaymanager}}displaymanager
     - networkcfg
