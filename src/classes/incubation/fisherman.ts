@@ -311,8 +311,8 @@ export default class Fisherman {
   /**
    * dracut
    */
-  async moduleDracutCfg(initrd: string) {
-    const name = 'dracutcfg'
+  async moduleDracut(initrd: string) {
+    const name = 'dracut'
     this.buildModule(name)
     shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')
   }

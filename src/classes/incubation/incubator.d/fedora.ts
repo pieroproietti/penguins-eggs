@@ -68,7 +68,7 @@ export class Fedora {
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('plymouthcfg')
     // await fisherman.buildModule('luksbootkeyfile')
-    await fisherman.moduleDracutCfg('/boot/initramfs-6.15.5-200.fc42.x86_64.img')
+    await fisherman.buildModule('dracutlukscfg')
     await fisherman.buildModule('users', this.theme)
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
