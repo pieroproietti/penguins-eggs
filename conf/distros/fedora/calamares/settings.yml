@@ -73,6 +73,7 @@ sequence:
       - hwclock
       {{hasSystemd}}services-systemd 
       - dracut
+      - bootloaderspecification
       - grubcfg
       - bootloader
       - packages

@@ -1,0 +1,8 @@
+# bootloaderspecification
+---
+type: "job"
+name: "bootloaderspecification"
+interface: "process"
+chroot: false
+command: "/usr/sbin/bootloaderspecification.sh"
+timeout: 30
