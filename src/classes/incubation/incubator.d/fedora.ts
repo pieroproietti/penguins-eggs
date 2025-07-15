@@ -74,7 +74,7 @@ export class Fedora {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('dracut')
-    await fisherman.buildModule('grubcf')
+    await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.modulePackages(this.distro, this.release)
