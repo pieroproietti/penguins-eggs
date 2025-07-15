@@ -26,9 +26,10 @@ sequence:
   - hwclock
   {{hasSystemd}}services-systemd 
   - dracut
-  - packages
+  - bootloaderspecification
   - grubcfg
   - bootloader
+  - packages
   - removeuser
   - umount
 - show:
