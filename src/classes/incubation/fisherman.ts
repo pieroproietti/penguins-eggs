@@ -307,4 +307,14 @@ export default class Fisherman {
     this.buildModule(name)
     shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
   }
+
+  /**
+   * dracut
+   */
+  async moduleDracutCfg(initrd: string) {
+    const name = 'dracutcfg'
+    this.buildModule(name)
+    shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')
+  }
+
 }
