@@ -71,7 +71,7 @@ export class Openmamba {
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-systemd')
     await fisherman.buildModule('dracut')
-    await fisherman.buildModule('grubcf')
+    await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('plymouthcfg')

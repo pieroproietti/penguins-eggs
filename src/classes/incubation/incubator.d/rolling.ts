@@ -71,7 +71,7 @@ export class Rolling {
     await fisherman.buildModule('hwclock')
     // await fisherman.buildModule('services-systemd')
     // await fisherman.buildCalamaresModule('bootloader-config', true)
-    await fisherman.buildModule('grubcf')
+    await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')

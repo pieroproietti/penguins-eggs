@@ -70,7 +70,7 @@ export class Alpine {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-openrc')
-    await fisherman.buildModule('grubcf')
+    await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
