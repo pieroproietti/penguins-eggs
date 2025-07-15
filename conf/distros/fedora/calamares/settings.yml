@@ -76,8 +76,8 @@ sequence:
       - grubcfg
       - bootloader
       - packages
-      - removeuser
-      - umount
+      # removeuser
+      # umount
 
   # Phase 3 - postinstall.
   # View modules are shown as UI pages, jobs from job modules are
