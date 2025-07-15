@@ -16,7 +16,7 @@ We switched to a version number based on year, month, day, and release number. I
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.7.14-0
-`Alpine`/`Fedora`: finally calamares is configured and installing.
+`Alpine`/`Fedora`: finally calamares is configured and installing. Remain to solve for `OpenSUSE`.
 
 ## penguins-eggs_25.7.12-1 **back to future!**
 
