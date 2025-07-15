@@ -3,6 +3,6 @@
 type: "job"
 name: "bootloaderspecification"
 interface: "process"
-chroot: false
+chroot: true
 command: "/usr/sbin/bootloaderspecification.sh"
-timeout: 30
+timeout: 100
