@@ -81,7 +81,7 @@ export default class ExportTarballs extends Command {
     let cmd = `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     if (this.clean) {
-      cmd += `rm -f ${remoteMountpoint}/${tarNamePattern}\n`
+      cmd += `rm -f ${remoteMountpoint}/penguins-eggs_*-linux-x64.tar.gz\n`
     }
 
     cmd += `cp ${localPath}${tarNamePattern} ${remoteMountpoint}/\n`

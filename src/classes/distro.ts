@@ -144,7 +144,7 @@ class Distro implements IDistro {
        */
     } else if (this.distroId.includes('Opensuse')) {
       this.familyId = 'opensuse'
-      this.distroLike = this.distroId
+      this.distroLike = 'Opensuse' // this.distroId
       this.codenameId = 'rolling' // sistemare non 
       this.codenameLikeId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // check
