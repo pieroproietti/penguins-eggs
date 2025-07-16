@@ -70,8 +70,12 @@ export async function bindLiveFs(this: Ovary) {
             cmds.push(`# /${dir} is a directory`)
             if (dir !== 'ci' && dir !== 'lost+found') {
                 if (this.copied(dir)) {
-                    cmds.push(`# /${dir} is copied`)
-                    cmds.push(await rexec(`cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+                    cmds.push(`# /${dir} is copied if not exists on filesystem.squashfs`)
+                    let chkDir= path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
+                    cmds.push(`if ! [ -d "${chkDir}" ]; then`)
+                    cmds.push(await rexec(`   cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+                    cmds.push(`fi`)
+                    continue
 
                 } else if (this.mergedAndOverlay(dir)) {
                     cmds.push(`# /${dir} mergedAndOverlay (rw)\n`, '# create mountpoint lower')
@@ -143,7 +147,11 @@ export async function uBindLiveFs(this: Ovary) {
             cmds.push(startLine)
             if (fs.statSync(`/${dirname}`).isDirectory()) {
                 cmds.push(`\n# directory: ${dirname}`)
-                if (this.mergedAndOverlay(dirname)) {
+                if (this.copied(dirname)) {
+                    cmds.push(`\n# ${dirname} was copied, do nothings`)
+                    continue
+                    
+                } else if (this.mergedAndOverlay(dirname)) {
                     cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
                     cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
                     cmds.push(await rexec(`umount ${this.settings.work_dir.lowerdir}/${dirname}`, this.verbose))
@@ -152,13 +160,12 @@ export async function uBindLiveFs(this: Ovary) {
                 }
 
                 cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
-
                 /**
                  * We can't remove the nest!!!
                  */
                 const nest = this.settings.config.snapshot_dir.split('/')
+                // We can't remove first level nest
                 if (dirname !== nest[1]) {
-                    // We can't remove first level nest
                     cmds.push(await rexec(`rm -rf ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
                 }
             } else if (fs.statSync(`/${dirname}`).isFile()) {
