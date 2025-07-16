@@ -9,7 +9,7 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@oclif/core": "^4.5.0",
+        "@oclif/core": "^4.5.1",
         "@oclif/plugin-autocomplete": "^3.2.32",
         "@oclif/plugin-help": "^6.2.30",
         "@oclif/plugin-version": "^2.2.31",
@@ -56,7 +56,7 @@
         "eslint-config-prettier": "^10.1.5",
         "glob": "^11.0.3",
         "mocha": "^11.7.0",
-        "oclif": "^4.20.5",
+        "oclif": "^4.20.8",
         "perrisbrewery": "^10",
         "prettier": "^3.6.2",
         "shx": "^0.4.0",
