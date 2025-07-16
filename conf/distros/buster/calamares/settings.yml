@@ -37,11 +37,6 @@ disable-cancel-during-exec: false
 #
 quit-at-end: false
 
-instances:
-- id:       test
-  module:   shellprocess
-  config:   shellprocess_test.conf
-
 
 sequence:
   # Phase 1 - prepare.
