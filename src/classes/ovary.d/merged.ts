@@ -33,7 +33,7 @@ export function copied(this: Ovary, dir: string): boolean {
 
     let copiedDirs = [
         'boot',
-        'etc',
+        'etc'
     ]
 
     for (const copiedDir of copiedDirs) {
@@ -67,7 +67,7 @@ export function merged(this: Ovary, dir: string): boolean {
     if (dir === 'home') {
         merged = this.clone
     } else {
-        const justMks = [
+        const onlyFolders = [
             'cdrom',
             'dev',
             'media',
@@ -79,10 +79,10 @@ export function merged(this: Ovary, dir: string): boolean {
             'tmp'
         ]
         // deepiin
-        justMks.push('data', 'recovery')
+        onlyFolders.push('data', 'recovery')
 
-        for (const justMk of justMks) {
-            if (dir === justMk) {
+        for (const onlyFolder of onlyFolders) {
+            if (dir === onlyFolder) {
                 merged = false
             }
         }
