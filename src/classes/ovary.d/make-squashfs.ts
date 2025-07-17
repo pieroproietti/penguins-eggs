@@ -10,6 +10,7 @@
 import fs from 'fs'
 import path from 'node:path'
 import shx from 'shelljs'
+import Diversions from '../diversions.js'
 
 // classes
 import { exec } from '../../lib/utils.js'
@@ -99,6 +100,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/filesystem.squashfs ${compression} ${limit} -no-xattrs -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
     cmd = cmd.replaceAll(/\s\s+/g, ' ')
+
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
         Utils.warning('creating filesystem.squashfs on ISO/live')

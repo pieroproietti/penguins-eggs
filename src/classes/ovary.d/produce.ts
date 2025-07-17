@@ -331,6 +331,21 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
             await exec(`mkdir ${this.settings.iso_work}${path.dirname(filesystemName)} -p`, this.echo)
             await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+
+            /**
+             * patch 4 mksquashfs
+             */
+            let fname =`${this.settings.work_dir.ovarium}mksquashfs`
+            let content = fs.readFileSync(fname,'utf8')
+            const patched = '# Arch and Manjaro based distro need this link'
+            // not need check, is always clean here... but OK
+            if (!content.includes(patched)) {
+                content += patched + '\n'
+                content +=`if [ ! -e "${filesystemName}" ]; then\n`
+                content +=`   ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}\n`
+                content +=`fi\n`
+                fs.writeFileSync(fname, content, 'utf8')
+            }
         }
 
         await this.makeIso(mkIsofsCmd, scriptOnly)
