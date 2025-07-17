@@ -17,6 +17,7 @@ Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.7.14-1
 * `produce --script`: copied directories: `/etc` and `/boot` are not overwritten a second time when the `bind` script is run and are not deleted by `ubind`. This led to a malfunction of the `produce --script` command and the deletion of the live user in the generated ISO.
+* `produce --script`: added patch to the script `mksquashfs` to emulate livecd structure of archiso/miso. Now option: `sudo produce --script` can be successully used on every distro.
 * `Alpine`/`Fedora`: finally calamares is configured and installing. Remain to solve for `OpenSUSE`.
 
 ## penguins-eggs_25.7.12-1 **back to future!**
