@@ -10,7 +10,7 @@
 import fs from 'fs'
 import path from 'node:path'
 import os from 'os'
-
+import Diversions from '../diversions.js'
 
 // classes
 import { exec } from '../../lib/utils.js'
