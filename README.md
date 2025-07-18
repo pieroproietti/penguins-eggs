@@ -45,12 +45,12 @@ Here’s a breakdown of what it’s used for:
 
 * System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
 
-Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, OpenMamba, Fedora, Almalinux, Rocky, OpenSuSE and other derivatives, so you’re not locked into one ecosystem.
+Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Apine derivatives, so you’re not locked into one ecosystem.
 
 # Installation
 
-## penguins-eggs-10.0.x installation
-`penguins-eggs-10.0.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
+## penguins-eggs-25.7.x installation
+`penguins-eggs-25.7.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
 ### using get-eggs
 It's the most pratical way and is valid for Almalinux, Arch, Debian, Devuan, Fedora, OpenSUSE, Rocky and Ubuntu. 
@@ -81,7 +81,7 @@ Openmamba is an italian distribution based on rpm and using dnf as package manag
 You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs), using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 ### AlpineLinux
-Given the difficulties encountered in updating my version of Alpine's initramfs, I have been forced to suspend the release of packages for this splendid operating system.
+I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Falpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
 
 # Introduction
 
