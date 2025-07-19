@@ -65,23 +65,26 @@ And follow instructions.
 
 ### Manual installation
 
-#### Arch, Manjaro, Debian 12 Bookworm, Ubuntu 24.04 Noble
-Just download and install penguins-eggs-10.0.x.
-
-#### Debian 10 Buster, Debian 11 Bullseye, Ubuntu 20.04 Focal, Ubuntu 22.04 Jammy
-Before to install `penguins-eggs-10.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
-
-#### Debian 9 Stretch, Ubuntu 18.04 Bionic
-Use the package `penguins-eggs-10.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
-
-### Openmanba
-Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
-
 ### AlmaLinux, Fedora, openSuSE, RockyLinux
 You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs), using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 ### AlpineLinux
 I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Falpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
+
+#### Arch, Debian 12 Bookworm, Ubuntu 24.04 Noble
+Just download and install penguins-eggs-25.x.x using ]get-eggs](https://github.com/pieroproietti/get-eggs).
+
+#### Debian 10 Buster, Debian 11 Bullseye, Ubuntu
+Before to install `penguins-eggs-10.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
+
+#### Debian 9 Stretch, Ubuntu 18.04 Bionic
+Use the package `penguins-eggs-10.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
+
+### Manjaro
+penguins-eggs is con Manjaro community repo, so just: `sudo pamac install penguins-eggs`.
+
+### Openmanba
+Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
 
 # Introduction
 
