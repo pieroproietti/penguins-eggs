@@ -72,7 +72,7 @@ You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/
 I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Falpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
 
 #### Arch, Debian 12 Bookworm, Ubuntu 24.04 Noble
-Just download and install penguins-eggs-25.x.x using ]get-eggs](https://github.com/pieroproietti/get-eggs).
+Just download and install penguins-eggs-25.x.x using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 #### Debian 10 Buster, Debian 11 Bullseye, Ubuntu
 Before to install `penguins-eggs-10.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
