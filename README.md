@@ -75,10 +75,10 @@ I created and maintain a package for Alpine. Its repository is [penguins-alpine]
 Just download and install penguins-eggs-25.x.x using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 #### Debian 10 Buster, Debian 11 Bullseye, Ubuntu
-Before to install `penguins-eggs-10.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
+Before to install `penguins-eggs-25.x.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
 
 #### Debian 9 Stretch, Ubuntu 18.04 Bionic
-Use the package `penguins-eggs-10.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
+Use the package `penguins-eggs-25.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
 ### Manjaro
 penguins-eggs is con Manjaro community repo, so just: `sudo pamac install penguins-eggs`.
@@ -279,17 +279,17 @@ Overall, Eggs' packages offer a comprehensive and user-friendly experience, with
 This let to install, update, remove `penguins-eggs` like a native package.
 
 #### Debian families
-`penguins-eggs-10.0.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
+`penguins-eggs-25.x.x` depend on `nodejs >18`, not directly available in all the distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) adding them.
 
 ##### Download and install penguins-eggs packages
  To install Eggs, the simplest method is to download the package `penguins-eggs` from the project's SourceForge page  [package eggs](https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs) and install it on your system.
 
 After downloading the appropriate package, based on your system's architecture, you can proceed with the installation. If you are using an amd64 system, run the following command in the terminal:
 
-```sudo dpkg -i penguins_eggs_10.0.x-1_amd64.deb```
+```sudo dpkg -i penguins_eggs_25.x.x-1_amd64.deb```
 
 For i386 systems, the command would be:
-```sudo dpkg -i penguins_eggs_10.0.x-1_i386.deb```
+```sudo dpkg -i penguins_eggs_25.x.x-1_i386.deb```
 
 Executing these commands will initiate the installation process and install Eggs on your system.
 Once Eggs is successfully installed, you have the option to enhance its functionality by adding the penguins-eggs-ppa repository. This repository provides additional tools and features for Eggs. To add the penguins-eggs-ppa repository, run the following command in the terminal:
@@ -328,11 +328,11 @@ sudo apt upgrade
 
 1. Install the package using the `gdebi` command (assuming you have `gdebi` installed):
 ```
-sudo gdebi penguins_eggs_10.0.x-1_amd64.deb
+sudo gdebi penguins_eggs_25.x.x-1_amd64.deb
 ```
 or for i386 systems:
 ```
-sudo dpkg -i penguins_eggs_10.0.x-1_i386.deb
+sudo dpkg -i penguins_eggs_25.x.x-1_i386.deb
 ```
 
 2. In case of any missing dependencies, you can resolve them by running the following command:
