@@ -16,7 +16,7 @@ import Sequence from '../sequence.js'
  * @param newPassword
  */
 export default async function changePassword(this: Sequence, name = 'live', newPassword = 'evolution') {
-  const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+  const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} /usr/sbin/chpasswd ${this.toNull}`
   
   await exec(cmd, this.echo)
 }
