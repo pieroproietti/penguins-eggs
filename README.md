@@ -65,8 +65,8 @@ And follow instructions.
 
 ### Manual installation
 
-### AlmaLinux, openSuSE, RockyLinux
-You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs), using [get-eggs](https://github.com/pieroproietti/get-eggs).
+### AlmaLinux, RockyLinux
+Soon we will create rpm packages for Almalinux/Rocky. Actually You can easily install [penguins-eggs-tarball](https://penguins-eggs.net/basket/index.php?p=packages%2Ftarballs), using [get-eggs](https://github.com/pieroproietti/get-eggs).
 
 ### AlpineLinux
 I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Falpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
@@ -88,6 +88,10 @@ penguins-eggs is con Manjaro community repo, so just: `sudo pamac install pengui
 
 ### Openmanba
 Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.
+
+### OpenSUSE
+From penguins-eggs-25.7.14 rpm packages for [OpenSUSE-slowroll](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Fopensuse) are availables.
+
 
 # Introduction
 
