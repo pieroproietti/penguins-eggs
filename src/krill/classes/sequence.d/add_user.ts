@@ -36,7 +36,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
   }
   await exec(cmd, this.echo)
   
-  cmd = `echo ${username}:${password} | chroot ${this.installTarget} chpasswd ${this.toNull}`
+  cmd = `echo ${username}:${password} | chroot ${this.installTarget} /usr/sbin/chpasswd ${this.toNull}`
   await exec(cmd, this.echo)
 
   let group = 'wheel'
