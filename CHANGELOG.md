@@ -17,7 +17,7 @@ Versions are listed on reverse order, the first is the last one.
 
 
 ## penguins-eggs_25.7.22
-This is a settlement version, during version 25.7.14 rpm packages for [fedora](https://sourceforge.net/projects/penguins-eggs/files/Packages/fedora/), [opensuse](https://sourceforge.net/projects/penguins-eggs/files/Packages/opensuse/) and [rhel9](https://sourceforge.net/projects/penguins-eggs/files/Packages/el9/)  were created for the first time. Of course, this gradually required code changes. This version picks them up and includes all them, but has no substantial new features compared to the previous version.
+This is a settlement version. During version 25.7.14 rpm packages for [fedora](https://sourceforge.net/projects/penguins-eggs/files/Packages/fedora/), [opensuse](https://sourceforge.net/projects/penguins-eggs/files/Packages/opensuse/) and [rhel9](https://sourceforge.net/projects/penguins-eggs/files/Packages/el9/)  were created for the first time. Of course, this gradually required code changes. This version picks them up and includes all them, but has no substantial new features compared to the previous version.
 
 ## penguins-eggs_25.7.14
 * `produce --script`: copied directories: `/etc` and `/boot` are not overwritten a second time when the `bind` script is run and are not deleted by `ubind`. This led to a malfunction of the `produce --script` command and the deletion of the live user in the generated ISO.
