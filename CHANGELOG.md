@@ -15,12 +15,16 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.7.14-1
+
+## penguins-eggs_25.7.22
+This is a settlement version, during version 25.7.14 rpm packages for [fedora](https://sourceforge.net/projects/penguins-eggs/files/Packages/fedora/), [opensuse](https://sourceforge.net/projects/penguins-eggs/files/Packages/opensuse/) and [rhel9](https://sourceforge.net/projects/penguins-eggs/files/Packages/el9/)  were created for the first time. Of course, this gradually required code changes. This version picks them up and includes all them, but has no substantial new features compared to the previous version.
+
+## penguins-eggs_25.7.14
 * `produce --script`: copied directories: `/etc` and `/boot` are not overwritten a second time when the `bind` script is run and are not deleted by `ubind`. This led to a malfunction of the `produce --script` command and the deletion of the live user in the generated ISO.
 * `produce --script`: added patch to the script `mksquashfs` to emulate livecd structure of archiso/miso. Now option: `sudo produce --script` can be successully used on every distro.
 * `Alpine`/`Fedora`: finally calamares is configured and installing. Remain to solve for `OpenSUSE`.
 
-## penguins-eggs_25.7.12-1 **back to future!**
+## penguins-eggs_25.7.12 **back to future!**
 
 A few months ago - around March - I tried to introduce building complete systems from containers. This required a global review of the methods for getting the kernel name and version. Neither `uname -r` nor `/proc/cmdline` parsing can be used in containers.
 
@@ -30,12 +34,12 @@ I also retraced my steps for the classes utils.tsx and distro.ts, which had been
 
 The problem here was the fact that it was impossible for me to maintain them. AI has a broader knowledge of language and methodologies than myself, but also excessively tortuous from a logical point of view. However, I count-in the future-to partially recover the good parts of this work by rewriting it from scratch.
 
-## penguins-eggs_25.7.10-1
+## penguins-eggs_25.7.10
 I have greatly simplified boot management expecially on UEFI machines: previously for each distribution I used the grub of the distribution itself, which was very fine but time-consuming in terms of code maintenance. Now I use for booting from live CD the Debian grub and I do the same for booting via PXE and, this, has allowed me to simplify the code considerably. 
 
 All bootloaders: grub, ipxe and syslinux, are now collected in the bootloaders folders and contained in the package itself.
 
-## penguins-eggs_25.7.7-1
+## penguins-eggs_25.7.7
 These days I have been doing a lot of work on remote installation via PXE, on some long neglected distributions: alpine, opensuse, etc. 
 
 This is the actual situation:
