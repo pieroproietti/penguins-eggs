@@ -246,6 +246,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             await this.bindLiveFs()
+            
+            // We run them just to have scripts
+            await this.bindVfs()
+            await this.ubindVfs() 
 
             if (!this.clone) {
                 /**
