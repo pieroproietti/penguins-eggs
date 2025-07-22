@@ -1,8 +1,0 @@
-ID=telos
-ID_LIKE=debian
-NAME="TeLOS GNU/Linux"
-PRETTY_NAME="TeLOS GNU/Linux bookworm/sid"
-VERSION_ID="12"
-HOME_URL="https://www.debian.org/"
-SUPPORT_URL="https://www.debian.org/support"
-BUG_REPORT_URL="https://bugs.debian.org/"
