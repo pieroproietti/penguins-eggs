@@ -73,17 +73,7 @@ export default class ExportPkg extends Command {
     let remotePath = ''
     let filter = ''
 
-    /**
-     * aldos
-     */
-    if (familyId === 'aldos') {
-      Utils.warning("aldos rpm")
-      process.exit()
-
-      /**
-       * alpine
-       */
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       let arch = 'x86_64'
       if (process.arch === 'ia32') {
         arch = 'i386'
@@ -137,7 +127,7 @@ export default class ExportPkg extends Command {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/fedora"
-      filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*fedora.*.rpm`
+      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
 
       /**
        * openmamba
@@ -168,14 +158,8 @@ export default class ExportPkg extends Command {
     cmd += 'shopt -s extglob\n'
     cmd += `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
+    let archDest = 'x86_64'
     if (this.clean) {
-      let archDest = ''
-      if (distro.familyId === 'alpine') {
-        let archDest = 'x86_64/'
-        if (process.arch === 'ia32') {
-          archDest = 'i386/'
-        }
-      }
       cmd +=`# Delete old packages\n`
       cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
