@@ -68,14 +68,14 @@ export default class ExportTarballs extends Command {
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     const localPath = `/home/${this.user}/penguins-eggs/dist/`
     const remotePath = `${this.Tu.config.remotePathPackages}/tarballs/`
-    const tarNamePattern = `penguins-eggs_${pjson.version}-*-linux-x64.tar.gz`
-
+    const tarNamePattern = `penguins-eggs_[0-9][0-9].[0-9]*.[0-9]*-*-linux-x64.tar.gz`
+    
     const searchPattern = path.join(localPath, tarNamePattern);
     const matchingFiles = globSync(searchPattern);
     if (matchingFiles.length === 0) {
       console.log(`No ${searchPattern} exists!`)
       console.log(`Create it using: pnpm tarballs`)
-      process.exit(1)
+      // process.exit(1)
     }
 
     let cmd = `mkdir ${remoteMountpoint}\n`
