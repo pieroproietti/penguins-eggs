@@ -160,6 +160,13 @@ export default class ExportPkg extends Command {
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
     let archDest = 'x86_64'
     if (this.clean) {
+      let archDest = ''
+      if (distro.familyId === 'alpine') {
+        let archDest = 'x86_64/'
+        if (process.arch === 'ia32') {
+          archDest = 'i386/'
+        }
+      }
       cmd +=`# Delete old packages\n`
       cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
