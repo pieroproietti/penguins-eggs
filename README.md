@@ -45,7 +45,7 @@ Here’s a breakdown of what it’s used for:
 
 * System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
 
-Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Apine derivatives, so you’re not locked into one ecosystem.
+Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Here you will find a more complete [list of supported distros](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md).
 
 # Installation
 
