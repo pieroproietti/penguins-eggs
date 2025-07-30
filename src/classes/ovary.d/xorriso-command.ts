@@ -57,7 +57,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
 
     let isoHybridMbr = ''
     if (this.settings.config.make_isohybrid) {
-      const isolinuxFile = this.settings.distro.syslinuxPath + '/isohdpfx.bin'
+      const isolinuxFile = path.resolve(__dirname, `../../../bootloaders/syslinux/isohdpfx.bin`)
       if (fs.existsSync(isolinuxFile)) {
         isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
       } else {
