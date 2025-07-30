@@ -126,8 +126,13 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'fedora') {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
-      remotePath = this.Tu.config.remotePathPackages + "/fedora"
-      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
+      if (this.distroId === 'fedora') {
+        remotePath = this.Tu.config.remotePathPackages + "/fedora"
+        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
+      } else {
+        remotePath = this.Tu.config.remotePathPackages + "/el9"
+        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.el?.x86_64.rpm`
+      }
 
       /**
        * openmamba
