@@ -53,9 +53,9 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 `penguins-eggs-25.7.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
 ### using get-eggs
-It's the most pratical way and is valid for Almalinux, Arch, Debian, Devuan, Fedora, OpenSUSE, Rocky and Ubuntu and almost all [supported distros](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md). 
+It's the most pratical way and is suitable for all [supported distros](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md). 
 
-[get-eggs](https://github.com/pieroproietti/get-eggs) configure automatically `nodesource` when need, and install the right package or tarball. Copy and paste, the follow commands:
+[get-eggs](https://github.com/pieroproietti/get-eggs) configure automatically `nodesource` when need, and install the right package for your distro. Copy and paste, the follow commands:
 ```
 git clone https://github.com/pieroproietti/get-eggs
 cd get-eggs
