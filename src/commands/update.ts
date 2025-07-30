@@ -117,9 +117,9 @@ export default class Update extends Command {
    *
    */
   async getPkgFromRepo() {
-    let cmd=""
+    let cmd = ""
     if (this.distro.familyId === "debian") {
-      cmd='apt install penguins-eggs'
+      cmd = 'apt install penguins-eggs'
     } else if (this.distro.familyId === 'archlinux') {
       cmd = 'pacman -S penguins-eggs'
     } else if (this.distro.familyId === 'alpine') {
@@ -136,40 +136,39 @@ export default class Update extends Command {
     const Tu = new Tools()
     await Tu.loadSettings()
 
-    Utils.warning('import from lan')
-
-    if (this.distro.familyId === "debian") {
-      const filterDeb = `penguins-eggs_10.?.*-*_${Utils.uefiArch()}.deb`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filterDeb} /tmp`
-      await exec(cmd, { capture: true, echo: true })
-
-      if (await Utils.customConfirm(`Want to install ${filterDeb}`)) {
-        await exec(`dpkg -i /tmp/${filterDeb}`)
-      }
-
-    } else if (this.distro.familyId === 'archlinux') {
+    Utils.warning('Update from LAN')
+    if (this.distro.familyId === 'archlinux') {
       let repo = "aur"
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         repo = 'manjaro'
       }
-      const filterAur = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filterAur} /tmp`
+
+      const filter = `penguins-eggs-25.*.*-?-any.pkg.tar.zst`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
       await exec(cmd, { capture: true, echo: true })
-      if (await Utils.customConfirm(`Want to install ${filterAur}`)) {
-        await exec(`pacman -U /tmp/${filterAur}`)
+      if (await Utils.customConfirm(`Want to install ${filter}`)) {
+        await exec(`pacman -U /tmp/${filter}`)
       }
 
     } else if (this.distro.familyId === 'alpine') {
-      let arch='x86_64'
+      let arch = 'x86_64'
       if (process.arch === 'ia32') {
-        arch='i386'
+        arch = 'i386'
       }
-      const filter = `penguins-eggs*10.?.*-r*.apk`
+      const filter = `penguins-eggs-25.*.*-r*.apk`
       const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/alpine/${filter} /tmp`
       await exec(cmd, { capture: true, echo: true })
 
       if (await Utils.customConfirm(`Want to install ${filter}`)) {
         await exec(`apk add /tmp/${filter}`)
+      }
+    } else if (this.distro.familyId === "debian") {
+      const filter = `penguins-eggs_25.*.*-*_${Utils.uefiArch()}.deb`
+      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filter} /tmp`
+      await exec(cmd, { capture: true, echo: true })
+
+      if (await Utils.customConfirm(`Want to install ${filter}`)) {
+        await exec(`dpkg -i /tmp/${filter}`)
       }
     }
   }
@@ -182,12 +181,7 @@ export default class Update extends Command {
     let cmd = ''
     let url = 'https://sourceforge.net/projects/penguins-eggs/files/Packages'
     let filter = `penguins-eggs`
-    if (this.distro.familyId === "debian") {
-      repo = "debs"
-      url = `${url}/${repo}/${Utils.uefiArch()}`
-      filter = `penguins-eggs_10.?.*-?_${Utils.uefiArch()}.deb`
-      cmd = `sudo dpkg -i ${filter}`
-    } else if (this.distro.familyId === 'archlinux') {
+    if (this.distro.familyId === 'archlinux') {
       repo = "aur"
       filter = `penguins-eggs-10.?.*-?-any.pkg.tar.zst`
       cmd = `sudo pacman -U ${filter}`
@@ -195,14 +189,27 @@ export default class Update extends Command {
         repo = 'manjaro'
       }
       url = `${url}/${repo}`
+    } else if (this.distro.familyId === "alpine" ) {
+      let arch = 'x86_64'
+      if (process.arch === 'ia32') {
+        arch = 'i386'
+      }
+      repo="alpine"
+      url= `${url}/${repo}/$arch/${Utils.uefiArch()}`
+      const filter = `penguins-eggs-25.*.*-r*.apk`
+      cmd = `doas apk add ${filter}`
+
+    } else     if (this.distro.familyId === "debian") {
+      repo = "debs"
+      url = `${url}/${repo}`
+      filter = `penguins-eggs_25.*.*-*_${Utils.uefiArch()}.deb`
+      cmd = `sudo apt-get install ./${filter}`
     }
-    let command = `Open your browser at:\n`
-    command += `${url}\n`
-    command += `select and download the package: ${filter},\n`
-    command += `then type the command:\n`
-    command += `${cmd}`
+    let command = `- open your browser at ${url}\n`
+    command += `- select and download last package: ${filter}\n`
+    command += `- ${cmd}\n`
     console.log(command)
-    await this.show(url)
+    this.show(url)
   }
 
   /**
