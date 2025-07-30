@@ -45,7 +45,7 @@ Here’s a breakdown of what it’s used for:
 
 * System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
 
-Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Here you will find a more complete [list of supported distros](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md).
+Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Please consult the complete list of [SUPPORTED-DISTROS](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md) to get more informations.
 
 # Installation
 
@@ -66,10 +66,10 @@ And follow instructions.
 ### Manual installation
 
 ### AlmaLinux, RockyLinux
-From penguins-eggs-25.7.14 rpm packages for [rhel9](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Fel9) are availables.
+Since penguins-eggs-25.7.14 rpm packages for Enterprise Linux [el9](https://penguins-eggs.net/basket/index.php/packages/el9) are availables.
 
 ### AlpineLinux
-I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Falpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
+I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/alpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
 
 ### Arch
 Just download and install penguins-eggs-25.x.x using [get-eggs](https://github.com/pieroproietti/get-eggs).
@@ -84,7 +84,7 @@ Before to install `penguins-eggs-25.x.x`, add the repos from `nodesource`. Follo
 Use the package `penguins-eggs-25.x.x-bionic-x`, which is compiled against node16. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955) to get `nodejs>16` available.
 
 ### Fedora
-From penguins-eggs-25.7.14 rpm packages for [fedora42](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Ffedora) are availables.
+Since penguins-eggs-25.7.14 rpm packages for [fedora42](https://penguins-eggs.net/basket/index.php/packages/fedora) are availables.
 
 ### Manjaro
 penguins-eggs is on Manjaro community repo, so just: `sudo pamac install penguins-eggs`.
@@ -93,7 +93,7 @@ penguins-eggs is on Manjaro community repo, so just: `sudo pamac install penguin
 Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package. 
 
 ### OpenSUSE
-From penguins-eggs-25.7.14 rpm packages for [OpenSUSE](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Fopensuse) are availables.
+Since penguins-eggs-25.7.14 rpm packages for [OpenSUSE](https://penguins-eggs.net/basket/index.php/packages/opensuse) are availables.
 
  
 
