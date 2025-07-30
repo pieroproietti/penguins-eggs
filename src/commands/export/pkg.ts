@@ -126,7 +126,7 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'fedora') {
       Utils.warning("fedora rpm packages")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
-      if (this.distroId === 'fedora') {
+      if (distroId === 'fedora') {
         remotePath = this.Tu.config.remotePathPackages + "/fedora"
         filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       } else {
