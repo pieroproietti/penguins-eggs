@@ -20,7 +20,7 @@ During this time I did a great work on [get-eggs](https://github.com/pieroproiet
 * ovarium: 
     * reintroduced the `bindvfs` and `ubindvfs` scripts used to mount and unmount virtual file systems;
     * fixed path to `isohdpfx.bin` on the ovarium script `mkiso`;
-* fixed paths on the command `update` to reflect actual versioning and folder structure on sourceforge;
+* fixed paths on the commands `export` and `update` to reflect actual versioning and folders structure on [penguins-eggs.net](https://penguins-eggs.net/basket) and [sourceforge page](https://sourceforge.net/projects/penguins-eggs/).
 
 ## penguins-eggs_25.7.22
 This is a settlement version. During version 25.7.14 rpm packages for [fedora](https://sourceforge.net/projects/penguins-eggs/files/Packages/fedora/), [opensuse](https://sourceforge.net/projects/penguins-eggs/files/Packages/opensuse/) and [rhel9](https://sourceforge.net/projects/penguins-eggs/files/Packages/el9/)  were created for the first time. Of course, this gradually required code changes. This version picks them up and includes all them, but has no substantial new features compared to the previous version.
