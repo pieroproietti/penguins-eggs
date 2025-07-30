@@ -15,10 +15,12 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.7.24
-* ovarium: reintroduced the `bindvfs` and `ubindvfs` scripts used to mount and unmount virtual file systems;
+## penguins-eggs_25.7.30
+During this time I did a great work on [get-eggs](https://github.com/pieroproietti/get-eggs) completely rewritten and adding an usefull [SUPPORTED-DISTROS](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md) list. In addiction, same fixes and improvment on penguins-eggs:
+* ovarium: 
+    * reintroduced the `bindvfs` and `ubindvfs` scripts used to mount and unmount virtual file systems;
+    * fixed path to `isohdpfx.bin` on the ovarium script `mkiso`;
 * fixed paths on the command `update` to reflect actual versioning and folder structure on sourceforge;
-* fixed path to isohdpfx.bin;
 
 ## penguins-eggs_25.7.22
 This is a settlement version. During version 25.7.14 rpm packages for [fedora](https://sourceforge.net/projects/penguins-eggs/files/Packages/fedora/), [opensuse](https://sourceforge.net/projects/penguins-eggs/files/Packages/opensuse/) and [rhel9](https://sourceforge.net/projects/penguins-eggs/files/Packages/el9/)  were created for the first time. Of course, this gradually required code changes. This version picks them up and includes all them, but has no substantial new features compared to the previous version.
