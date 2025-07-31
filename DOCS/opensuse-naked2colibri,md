@@ -1,8 +1,0 @@
-# opensuse 
-
-eggs wardrobe get
-sudo cp .wardrobe/costumes/colibri/sysroot/* / -R
-sudo zypper install -t pattern xfce
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo zypper addrepo https://packages.microsoft.com/yumrepos/vscode vscode
-
