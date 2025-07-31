@@ -1428,7 +1428,7 @@ Thanks you!"
 
 [![Donate](./assets/donate.png)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 
-[![donate](https://img.shields.io/badge/www-donate-cyan)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
+[![donate](https://img.shields.io/badge/penguins-eggs-donate-cyan)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 
 # Copyright and licenses
 Copyright (c) 2017, 2025 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
