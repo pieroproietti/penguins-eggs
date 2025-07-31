@@ -21,6 +21,7 @@
 * [Commands](#commands)
 * [GUI](#gui)
 * [Book](#book)
+* [Donate](#donate)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
@@ -1421,12 +1422,11 @@ This project collects stars, look to the sky... contribute!
 
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
 
-# Donate
+# Donate(https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable. Thans you!"
 
-![](https://penguins-eggs.net/assets/images/eggs-packages-80fb4506ccb4c0ff68e8f88542ad9d24.png)
+![Donate](https://penguins-eggs.net/assets/images/eggs-packages-80fb4506ccb4c0ff68e8f88542ad9d24.png)
 
-[**Donate**](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 
 # Copyright and licenses
 Copyright (c) 2017, 2025 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
