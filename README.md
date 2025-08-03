@@ -10,6 +10,7 @@
 
 ## Index
 <!-- toc -->
+* [Donate](#donate)
 * [penguins-eggs](#penguins-eggs)
 * [Presentation](#presentation)
 * [Installation](#installation)
@@ -21,7 +22,6 @@
 * [Commands](#commands)
 * [GUI](#gui)
 * [Book](#book)
-* [Donate](#donate)
 * [Copyright and licenses](#copyright-and-licenses)
 <!-- tocstop -->
 
@@ -32,6 +32,16 @@
  - [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
  - [FAQ](https://penguins-eggs.net/docs/faq)
  - [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
+
+# [Donate](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
+It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
+
+Thanks you!
+
+[![Donate](./assets/donate.png)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
+
+[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
+
 
 # Presentation
 **penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
@@ -1421,14 +1431,6 @@ Thank you!
 This project collects stars, look to the sky... contribute! 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
-
-# [Donate](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
-It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
-Thanks you!"
-
-[![Donate](./assets/donate.png)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
-
-[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 
 # Copyright and licenses
 Copyright (c) 2017, 2025 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
