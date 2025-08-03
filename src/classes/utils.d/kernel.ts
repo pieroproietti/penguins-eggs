@@ -52,16 +52,14 @@ export default class Kernel {
         let initramfs = ''
 
         if (kernel === '') {
-
-            // Auto-detection
-            const kernelModulesPath = this.getKernelModulesPath()
-            const kernels = this.getAvailableKernels(kernelModulesPath)
-            const latestKernel = kernels[kernels.length - 1]
-            kernel = latestKernel
-            
-            // Se non è stato specificato un kernel, lo ricava da /proc/cmdline
-            const kernelVersion: string = execSync('uname -r').toString().trim();
-            kernel = kernelVersion
+            if (!Utils.isContainer()) {
+                kernel = execSync('uname -r').toString().trim();
+            } else {
+                const kernelModulesPath = this.getKernelModulesPath()
+                const kernels = this.getAvailableKernels(kernelModulesPath)
+                const latestKernel = kernels[kernels.length - 1]
+                kernel = latestKernel
+            }
         }
 
         if (distro.familyId === "archlinux") {
