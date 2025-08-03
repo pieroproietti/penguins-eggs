@@ -10,6 +10,8 @@ import path from 'path'
 import Distro from '../distro.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
+import { execSync } from 'node:child_process'
+
 
 /**
  * Kernel utilities for managing vmlinuz and initramfs paths
@@ -50,11 +52,16 @@ export default class Kernel {
         let initramfs = ''
 
         if (kernel === '') {
+
             // Auto-detection
             const kernelModulesPath = this.getKernelModulesPath()
             const kernels = this.getAvailableKernels(kernelModulesPath)
             const latestKernel = kernels[kernels.length - 1]
             kernel = latestKernel
+            
+            // Se non è stato specificato un kernel, lo ricava da /proc/cmdline
+            const kernelVersion: string = execSync('uname -r').toString().trim();
+            kernel = kernelVersion
         }
 
         if (distro.familyId === "archlinux") {
@@ -62,12 +69,12 @@ export default class Kernel {
         } else if (distro.familyId === "alpine") {
             initramfs = '/boot/initramfs-lts'
         } else {
-            // Debian/Ubuntu/derivatives
+            // Gestione generica per le altre distro (Debian, Fedora, SUSE, ecc.)
             const possiblePaths = [
-                `/boot/initrd.img-${kernel}`,
-                `/boot/initramfs-${kernel}.img`,
-                `/boot/initramfs-${kernel}`,
-                `/boot/initrd-${kernel}` // opensuse
+                `/boot/initrd.img-${kernel}`, // Debian, Ubuntu e derivate
+                `/boot/initramfs-${kernel}.img`, // Fedora, RHEL, CentOS e derivate
+                `/boot/initrd-${kernel}`, // openSUSE
+                `/boot/initramfs-${kernel}` // fallback generico
             ]
 
             for (const path of possiblePaths) {
