@@ -14,7 +14,6 @@ penguins-eggs
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
-[![Comprami un caffè su Buy Me a Coffee](https://img.shields.io/badge/Donate-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/TUO_USERNAME)
 
 # Changelog
 We switched to a version number based on year, month, day, and release number. I hope it will be more clear and useful. 
