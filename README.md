@@ -7,10 +7,15 @@
 [![gdrive](https://img.shields.io/badge/gdrive-all-blue)](https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY)
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
+[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://paypal.me/penguinseggs)
+
+# [Donate](https://paypal.me/penguinseggs)
+It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
+
+Thanks
 
 ## Index
 <!-- toc -->
-* [Donate](#donate)
 * [penguins-eggs](#penguins-eggs)
 * [Presentation](#presentation)
 * [Installation](#installation)
@@ -32,12 +37,6 @@
  - [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
  - [FAQ](https://penguins-eggs.net/docs/faq)
  - [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
-[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://paypal.me/penguinseggs)
-
-# [Donate](https://paypal.me/penguinseggs)
-It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
-
-Thanks
 
 # Presentation
 **penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
