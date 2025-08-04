@@ -9,6 +9,7 @@ penguins-eggs
 [![gdrive](https://img.shields.io/badge/gdrive-all-blue)](https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY)
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
+[![donate](https://img.shields.io/badge/penguins--eggs-donate-blue)](https://paypal.me/penguinseggs)
 
 # sourceforge/admin/metadata
 

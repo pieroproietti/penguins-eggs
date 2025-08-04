@@ -9,6 +9,6 @@ penguins-eggs
 [![drive](https://img.shields.io/badge/drive-isos-blue)](https://penguins-eggs.net/drive)
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/projects/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-
+[![donate](https://img.shields.io/badge/penguins--eggs-donate-blue)](https://paypal.me/penguinseggs)
 
 # This page is maintained as an alternative to [penguins-eggs.net/drive](https://penguins-eggs.net/drive) and [penguins-eggs.net/basket/](https://penguins-eggs.net/drive).
