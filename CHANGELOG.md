@@ -7,8 +7,10 @@ penguins-eggs
 [![telegram](https://img.shields.io/badge/telegram-group-cyan)](https://t.me/penguins_eggs)
 [![basket](https://img.shields.io/badge/basket-packages-blue)](https://penguins-eggs.net/basket/)
 [![drive](https://img.shields.io/badge/drive-isos-blue)](https://penguins-eggs.net/drive)
-[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
+[![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/
+penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
+[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://paypal.me/penguinseggs)
 
 # [Donate](https://paypal.me/penguinseggs)
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
@@ -16,8 +18,6 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 Thanks
 
 [![Donate](./assets/donate.png)](https://paypal.me/penguinseggs)
-
-[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://paypal.me/penguinseggs)
 
 # Changelog
 We switched to a version number based on year, month, day, and release number. I hope it will be more clear and useful. 
