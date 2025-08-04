@@ -11,7 +11,8 @@ penguins-eggs
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 [![donate](https://img.shields.io/badge/penguins--eggs-donate-yellow)](https://paypal.me/penguinseggs)
 
-[Donate](https://paypal.me/penguinseggs)
+[![Fai una donazione con PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
+
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
 
 Thanks
