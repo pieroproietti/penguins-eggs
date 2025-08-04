@@ -10,6 +10,15 @@ penguins-eggs
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
+# [Donate](https://paypal.me/penguinseggs)
+It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
+
+Thanks
+
+[![Donate](./assets/donate.png)](https://paypal.me/penguinseggs)
+
+[![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://paypal.me/penguinseggs)
+
 # Changelog
 We switched to a version number based on year, month, day, and release number. I hope it will be more clear and useful. 
 

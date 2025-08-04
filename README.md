@@ -42,7 +42,6 @@ Thanks you!
 
 [![donate](https://img.shields.io/badge/penguinseggs-donate-cyan)](https://www.paypal.com/pool/9h2CmPBaPG?sr=wccr)
 
-
 # Presentation
 **penguins-eggs** is a system cloning and distribution remastering tool primarily designed for Linux distributions. 
 
