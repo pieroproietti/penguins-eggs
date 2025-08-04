@@ -14,7 +14,6 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 ## Index
 <!-- toc -->
-* [penguins-eggs](#penguins-eggs)
 * [Presentation](#presentation)
 * [Installation](#installation)
 * [Introduction](#introduction)
