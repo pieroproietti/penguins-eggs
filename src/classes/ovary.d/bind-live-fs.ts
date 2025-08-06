@@ -73,7 +73,8 @@ export async function bindLiveFs(this: Ovary) {
                     cmds.push(`# /${dir} is copied if not exists on filesystem.squashfs`)
                     let chkDir= path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
                     cmds.push(`if ! [ -d "${chkDir}" ]; then`)
-                    cmds.push(await rexec(`   cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+                    //cmds.push(await rexec(`   cp -r /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
+                    cmds.push(await rexec(`   cp -a /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
                     cmds.push(`fi`)
                     continue
 
