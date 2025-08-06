@@ -44,8 +44,8 @@ export default class Love extends Command {
     let nointeractive = false
     let flagNointeractive = ''
     if (flags.nointeractive) {
-      nointeractive = true
       flagNointeractive = '--nointeractive'
+      nointeractive = true
     }
 
     const echo = Utils.setEcho(verbose)
