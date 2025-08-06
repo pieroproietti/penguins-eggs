@@ -19,7 +19,7 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.5
+## penguins-eggs_25.8.6
 I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
 
 I am also considering restoring the package for arm84 and, perhaps, i386, which I had to remove due to the decision to simplify bootloader management, but this step requires time and thought, so we will postpone it until September.
