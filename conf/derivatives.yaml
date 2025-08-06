@@ -133,9 +133,5 @@
     # BluestarLinux
     - bluestarlinux
 
-    # Garuda
-    - spizaetus
-
     # Manjaro 
-    - yonada
-    # Zetar
+    - zetar
