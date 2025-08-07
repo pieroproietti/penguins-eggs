@@ -30,9 +30,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
-    const bootloaders = path.resolve(__dirname, `../../../bootloaders`)
-    const grubEfi = path.resolve(bootloaders, `grubx64.efi`)
-    const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
+    // era bootloaders = path.resolve(__dirname, `../../../bootloaders`)
+    const bootloaders = '/usr/lib/penguins-bootloaders/'
+    // const grubEfi = path.resolve(bootloaders, `/grub/grubx64.efi`)
+    // #const shimEfi = path.resolve(bootloaders, `/shim/shimx64.efi`)
+    const grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
+    const shimEfi = path.resolve(bootloaders, `/shim/shimx64.efi`)
     let signed = ''
     if (this.distroLike === 'Debian') {
         Utils.warning(`Secure boot enabled on ${this.distroLike}`)
