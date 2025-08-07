@@ -20,6 +20,7 @@ common:
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
+  - penguins-bootloaders-pc|penguins-bootloaders-arm64
   - rsync
   - squashfs-tools
   - sshfs # eggs
