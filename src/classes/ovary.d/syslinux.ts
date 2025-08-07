@@ -26,8 +26,7 @@ import Utils from './../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-// era bootloaders = path.resolve(__dirname, `../../../bootloaders`)
-const bootloaders = path.resolve(__dirname, `../../../../penguins-bootloaders`)
+const bootloaders = '/usr/lib/penguins-bootloaders/'
 
 /**
    * syslinux: da syspath
@@ -35,10 +34,10 @@ const bootloaders = path.resolve(__dirname, `../../../../penguins-bootloaders`)
 export async function syslinux(this: Ovary, theme = 'eggs') {
 
     let syspath = path.join(bootloaders, 'syslinux/modules/bios')
-    let isolinuxPath = path.join(bootloaders, 'ISOLINUX/')
+    let isolinuxPath = path.join(bootloaders, 'ISOLINUX')
 
     await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${isolinuxPath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
     // just fo x64 arch
     await exec(`cp ${isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)

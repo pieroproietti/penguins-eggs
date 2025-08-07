@@ -30,18 +30,16 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
-    // era bootloaders = path.resolve(__dirname, `../../../bootloaders`)
     const bootloaders = '/usr/lib/penguins-bootloaders/'
-    // const grubEfi = path.resolve(bootloaders, `/grub/grubx64.efi`)
-    // #const shimEfi = path.resolve(bootloaders, `/shim/shimx64.efi`)
-    const grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
-    const shimEfi = path.resolve(bootloaders, `/shim/shimx64.efi`)
+
     let signed = ''
+    let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     if (this.distroLike === 'Debian') {
         Utils.warning(`Secure boot enabled on ${this.distroLike}`)
+        grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
         signed = '.signed'
     }
-
+    const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
@@ -50,12 +48,14 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const isoDir = this.settings.iso_work
 
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
+    console.log(`========================================================================`)
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
     await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
-
+    console.log(`copied ${shimEfi}${signed} and ${grubEfi}${signed} to ${isoDir}/EFI/boot`)
+    console.log(`========================================================================`)
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
