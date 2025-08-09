@@ -28,9 +28,7 @@ This way, the package becomes lighter and automatically loads the bootloaders fo
 
 Meanwhile the i386 version is performing quite well and cuckoo (PXE installation) is working too), and I think it's for the first time on this architecture.
 
-<img src="https://storage.googleapis.com/project-123-sandbox/generated/473c3f76-0f79-40b4-9c02-23c2a07521ab.png" alt="Triceratopo per Debian Trixie" width="300"/>
-
-Debian trixie - of course - is supported too, welcome trixie!
+Debian trixie - of course - is supported too, **welcome trixie!**
 
 ## penguins-eggs_25.8.6
 I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
