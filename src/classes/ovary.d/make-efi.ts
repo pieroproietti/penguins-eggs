@@ -48,14 +48,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const isoDir = this.settings.iso_work
 
     // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
-    console.log(`========================================================================`)
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
     await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
-    console.log(`copied ${shimEfi}${signed} and ${grubEfi}${signed} to ${isoDir}/EFI/boot`)
-    console.log(`========================================================================`)
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
