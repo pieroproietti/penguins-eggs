@@ -26,7 +26,7 @@ This way, the package becomes lighter and automatically loads the bootloaders fo
 
 `amd64` and `i386` versions are available immediately, the `arm64` version will be available later, probably on September.
 
-Meanwhile the i386 version is performing quite well and cuckoo (PXE installation) is working too), and I think it's for the first time on this architecture.
+Meanwhile the i386 version is performing quite well and cuckoo (PXE installation) is working too, I think it's the first time on this architecture.
 
 Debian trixie - of course - is supported too, **welcome trixie!**
 
