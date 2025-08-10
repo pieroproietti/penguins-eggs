@@ -19,6 +19,7 @@ common:
   - nodejs (>= 16)
   - live-boot # questo va reinstallato
   - parted 
+  - penguins-bootloaders-pc-amd64
   - rsync
   - squashfs-tools
   - sshfs # eggs
