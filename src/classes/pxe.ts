@@ -308,8 +308,13 @@ export default class Pxe {
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
     
-    await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+    if (process.arch === 'x64') {
+      await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+      await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+    } else if (process.arch === 'arm64') {
+      Utils.warning(`We need to add instructions to copy grubnetarm64.efi ${this.pxeRoot}/grub.efi`)
+      Utils.warning("Actually I can't test it. Piero")
+    }
 
     // Genera il file grub.cfg
     const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
