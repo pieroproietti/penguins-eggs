@@ -18,6 +18,7 @@ import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
 import { util } from 'chai'
+import { sign } from 'node:crypto'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -33,15 +34,18 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let signed = ''
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     if (this.distroLike === 'Debian') {
-        // solo amd64
         if (process.arch === 'x64') {
-            Utils.warning(`Secure boot enabled`)
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
             signed = '.signed'
-        } else {
-            Utils.warning(`Secure boot disabled`)
         }
     }
+
+    if (signed === '') {
+        Utils.warning(`Secure Boot disabled on ${this.distroId}`)
+    } else {
+        Utils.warning(`Secure Boot enabled on ${this.distroId}`)
+    }
+
     const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
