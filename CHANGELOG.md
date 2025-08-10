@@ -19,18 +19,15 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.9
-Le modifiche inerernti bootloaders sono su make-efi.ts, syslinux.ts, pxe.ts.
+## penguins-eggs_25.8.10
 
-I have split penguins-eggs - on Debian - into several packages: `penguins-eggs`, `penguins-bootloaders-pc` and `penguins-bootloaders`. I am adding both to the `penguins-eggs-ppa` repository, if you use it you can install simply with `sudo apt install penguins-eggs`. On get-eggs I have to adapt it for this version and will take same days, but the secret it's just to manually download `penguins-bootloaders-pc` then download and install `penguins-eggs`.
+I have recreated the packages for i386, amd64, and arm64 for Devuan/Debian/Ubuntu distributions and derivatives.
 
-This way, the package becomes lighter and automatically loads the bootloaders for the architecture in use, making it possible to build for different architecture: `i386`, `amd64`, and `arm64`.
+We will continue to use Debian bootloaders to boot the other supported distributions: Alpine, Arch, Fedora, Manjaro, OpenSUSE, Rocky, and Ubuntu. They will be collected in a `/bootloaders` folder under penguins-eggs.
 
-`amd64` and `i386` versions are available immediately, the `arm64` version will be available later, probably on September.
+The key to the solution was to restructure the folder `/bootloaders` using the same paths are used on Debian under `/usr/lib`, then create a simple function to get the real path for the actual distro used.
 
-Meanwhile the i386 version is performing quite well and cuckoo (PXE installation) is working too, I think it's the first time on this architecture.
-
-Debian trixie - of course - is supported too, **welcome trixie!**
+The arm64 packege need to be tested -  I have no way actually - so please test it and send me feedback.
 
 ## penguins-eggs_25.8.6
 I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
