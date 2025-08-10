@@ -26,19 +26,23 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * 
  * @param this 
  * @param theme 
- * cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ./bootloaders/
- * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
-    const bootloaders = path.resolve(__dirname, `../../../bootloaders`)
-    const grubEfi = path.resolve(bootloaders, `grubx64.efi`)
-    const shimEfi = path.resolve(bootloaders, `shimx64.efi`)
-    let signed = ''
-    if (this.distroLike === 'Debian') {
-        Utils.warning(`Secure boot enabled on ${this.distroLike}`)
-        signed = '.signed'
-    }
+    const bootloaders = Diversions.bootloaders(this.familyId)
 
+    let signed = ''
+    let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
+    if (this.distroLike === 'Debian') {
+        // solo amd64
+        if (process.arch === 'x64') {
+            Utils.warning(`Secure boot enabled`)
+            grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
+            signed = '.signed'
+        } else {
+            Utils.warning(`Secure boot disabled`)
+        }
+    }
+    const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
@@ -52,7 +56,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
     await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
-
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
