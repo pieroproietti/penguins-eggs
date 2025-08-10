@@ -143,7 +143,7 @@ export default class Diversions {
   static bootloaders(familyId: string): string {
     let bootloaders = '/usr/lib/'
     if (familyId !== 'debian') {
-      bootloaders = '/usr/lib/penguins-bootloaders/'
+      bootloaders = '/usr/lib/penguins-eggs/bootloaders/'
     }
     return bootloaders
   }
