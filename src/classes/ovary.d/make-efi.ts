@@ -35,9 +35,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     if (this.distroLike === 'Debian') {
         // solo amd64
         if (process.arch === 'x64') {
-            Utils.warning(`Secure boot enabled on ${this.distroLike}`)
+            Utils.warning(`Secure boot enabled`)
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
             signed = '.signed'
+        } else {
+            Utils.warning(`Secure boot disabled`)
         }
     }
     const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
