@@ -41,9 +41,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     if (signed === '') {
-        Utils.warning(`Secure Boot disabled on ${this.distroId}`)
+        Utils.warning(`You must disable Secure Boot on ${this.distroId}/${process.arch}`)
     } else {
-        Utils.warning(`Secure Boot enabled on ${this.distroId}`)
+        Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
     }
 
     const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
