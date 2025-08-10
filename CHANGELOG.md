@@ -20,6 +20,8 @@ We switched to a version number based on year, month, day, and release number. I
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.8.9
+Le modifiche inerernti bootloaders sono su make-efi.ts, syslinux.ts, pxe.ts.
+
 I have split penguins-eggs - on Debian - into several packages: `penguins-eggs`, `penguins-bootloaders-pc` and `penguins-bootloaders`. I am adding both to the `penguins-eggs-ppa` repository, if you use it you can install simply with `sudo apt install penguins-eggs`. On get-eggs I have to adapt it for this version and will take same days, but the secret it's just to manually download `penguins-bootloaders-pc` then download and install `penguins-eggs`.
 
 This way, the package becomes lighter and automatically loads the bootloaders for the architecture in use, making it possible to build for different architecture: `i386`, `amd64`, and `arm64`.

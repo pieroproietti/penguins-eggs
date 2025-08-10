@@ -20,35 +20,19 @@ common:
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
+  - penguins-bootloaders-pc-i386|penguins-bootloaders-pc-amd64|penguins-bootloaders-arm64
   - rsync
   - squashfs-tools
   - sshfs # eggs
   - xorriso | genisoimage
 
-  # bootloaders common
-  - ipxe
-  - pxelinux
-
 # dependencies arch specific
-#  arm64: grub-efi-arm64-bin, ipxe, shim-signed, u-boot-tools, 
-#  amd64: grub-pc-bin, grub-efi-ia32-bin, grub-efi-amd64-bin, syslinux-common, ipxe, isolinux, pxelinux, shim-signed
-#  i386: grub-pc-bin, grub-efi-ia32-bin, syslinux-common, ipxe, isolinux, pxelinux
-
 arch:
   amd64:
   - grub-efi-amd64-bin
-  - isolinux
-  - shim-signed
-  - syslinux-common
-
-  i386:
-  - grub-pc-bin
-  - isolinux
-  - grub-efi-ia32-bin
-  - syslinux-common
 
   arm64:
-  - grub-efi-arm64-bin
-  - shim-signed
-  - u-boot-tools
+  - syslinux-efi
 
+  i386:
+  - curl # repeated

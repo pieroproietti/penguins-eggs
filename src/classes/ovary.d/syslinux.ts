@@ -26,12 +26,14 @@ import Utils from './../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-const bootloaders = '/usr/lib/penguins-bootloaders/'
+let bootloaders = '/usr/lib/'
+
 
 /**
    * syslinux: da syspath
    */
 export async function syslinux(this: Ovary, theme = 'eggs') {
+    const bootloaders = Diversions.bootloaders(this.familyId)
 
     let syspath = path.join(bootloaders, 'syslinux/modules/bios')
     let isolinuxPath = path.join(bootloaders, 'ISOLINUX')

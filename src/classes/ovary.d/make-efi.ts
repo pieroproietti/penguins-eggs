@@ -26,11 +26,9 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * 
  * @param this 
  * @param theme 
- * cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ./bootloaders/
- * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
-    const bootloaders = '/usr/lib/penguins-bootloaders/'
+    const bootloaders = Diversions.bootloaders(this.familyId)
 
     let signed = ''
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)

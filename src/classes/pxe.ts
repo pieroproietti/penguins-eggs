@@ -21,7 +21,7 @@ import Diversions from './diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-const bootloaders = '/usr/lib/penguins-bootloaders/'
+ 
 
 /**
  * Pxe:
@@ -48,6 +48,7 @@ export default class Pxe {
   constructor(nest = '', pxeRoot = '') {
     this.nest = nest
     this.pxeRoot = pxeRoot
+    
   }
 
   /**
@@ -240,6 +241,7 @@ export default class Pxe {
    * configure PXE bios
    */
   private async bios() {
+    const bootloaders = Diversions.bootloaders(this.distro.familyId)
    
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`, this.echo)
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
@@ -298,20 +300,13 @@ export default class Pxe {
    * @param familyId 
    */
   private async grubCfg() {
+    const bootloaders = Diversions.bootloaders(this.distro.familyId)
     const echoYes = Utils.setEcho(true);
 
     /**
      * On Debian bookworm:
-     * cd ~/penguins-eggs
-     * cp /usr/lib/grub/x86_64-efi-signed/grubnetx64.efi.signed ./bootloaders/
-     * cp -r /usr/lib/grub/x86_64-efi/ ./bootloaders/grub/x86_64-efi/
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
-    /**
-     * Si potrebbe usare:
-     * ${bootloaders}/grub/x86_64-efi/monolithic/grubnetx64.efi
-     * come alternativa per distroname!=="Debian"
-     */
     
     await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
