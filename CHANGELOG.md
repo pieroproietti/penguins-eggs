@@ -19,15 +19,13 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.10
+## penguins-eggs_25.8.10 (San Lorenzo edition)
 
 I have recreated the packages for i386, amd64, and arm64 for Devuan/Debian/Ubuntu distributions and derivatives.
 
-We will continue to use Debian bootloaders to boot the other supported distributions: Alpine, Arch, Fedora, Manjaro, OpenSUSE, Rocky, and Ubuntu. They will be collected in a `/bootloaders` folder under penguins-eggs.
+We will continue to use Debian bootloaders to boot the other supported distributions: Alpine, Arch, Fedora, Manjaro, OpenSUSE, Rocky, and Ubuntu. The bootloaders will be collected in a `/bootloaders` folder under penguins-eggs, and will be created from the specific `bootloaders.tag.gz` associated with the current release.
 
-The key to the solution was to restructure the folder `/bootloaders` using the same paths are used on Debian under `/usr/lib`, then create a simple function to get the real path for the actual distro used.
-
-The arm64 packege need to be tested -  I have no way actually - so please test it and send me feedback.
+The arm64 package need to be tested -  I have no way actually - so please test it and send me feedback.
 
 ## penguins-eggs_25.8.6
 I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
