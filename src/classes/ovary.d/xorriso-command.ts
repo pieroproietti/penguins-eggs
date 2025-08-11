@@ -56,15 +56,31 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
     let isoHybridMbr = ''
-    if (this.settings.config.make_isohybrid) {
-      const isolinuxFile = path.resolve(__dirname, `../../../bootloaders/syslinux/isohdpfx.bin`)
-      if (fs.existsSync(isolinuxFile)) {
-        isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
-      } else {
-        Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+    if (!process.arch.includes('arm')) {
+      if (this.settings.config.make_isohybrid) {
+        const isolinuxFile = path.resolve(__dirname, `../../../bootloaders/syslinux/isohdpfx.bin`)
+        if (fs.existsSync(isolinuxFile)) {
+          isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
+        } else {
+          Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+        }
       }
     }
 
+    // su arm no isolinux
+    let isolinuxBin = ''
+    let isolinuxCat = ''
+    let noemulboot= ''
+    let bootloadsize = ''
+    let bootinfotable = ''
+
+    if (!process.arch.includes('arm')) {
+      isolinuxBin = `-b isolinux/isolinux.bin`
+      isolinuxCat = `-c isolinux/boot.cat`
+      noemulboot = '-no-emul-boot'
+      bootloadsize = '-boot-load-size 4'
+      bootinfotable = '-boot-info-table'
+    } 
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
@@ -77,11 +93,11 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
         -cache-inodes \
         -J \
         -l \
-        -b isolinux/isolinux.bin \
-        -c isolinux/boot.cat \
-        -no-emul-boot \
-        -boot-load-size 4 \
-        -boot-info-table \
+        ${isolinuxBin} \
+        ${isolinuxCat} \
+        ${noemulboot} \
+        ${bootloadsize} \
+        ${bootinfotable} \
         -eltorito-alt-boot \
         -e boot/grub/efi.img \
         -no-emul-boot \
@@ -121,8 +137,8 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
      ${isoHybridMbr} \
      -partition_offset 16 \
      -V ${this.volid} \
-     -b isolinux/isolinux.bin \
-     -c isolinux/boot.cat \
+     ${isolinuxBin} \
+     ${isolinuxCat} \
      -no-emul-boot \
      -boot-load-size 4 \
      -boot-info-table \

@@ -24,11 +24,13 @@ export default class Kernel {
      */
     static vmlinuz(kernel = ''): string {
         let vmlinuz = ''
-        /**
-         * metodo /proc/cmdline
-         */
+
         if (!Utils.isContainer()) {
             vmlinuz = this.vmlinuxFromCmdline()
+            if (vmlinuz === '') {
+                console.log('vmlinuz not found')
+                process.exit(1)
+            }
         } else {
             vmlinuz = this.vmLinuxFromFiles(kernel)
         }
@@ -102,6 +104,19 @@ export default class Kernel {
      * se non è presente - come nel caso di Franco Conidi - lo ricostruisce da initrd
      */
     private static vmlinuxFromCmdline() {
+        /**
+         * rasberry ed arm
+         * debian, fedora, opensuse, etc
+         */
+        const kernelVersion = execSync('uname -r').toString().trim()
+        let kernelPath = `/boot/vmlinuz-${kernelVersion}`
+        if (fs.existsSync(kernelPath)) {
+            return kernelPath
+        }
+
+        /**
+         * Arch ed altre rolling: nomi generici, es: vmlinuz-linux
+         */
         let distro = new Distro()
         let vmlinuz = ''
 
@@ -136,27 +151,6 @@ export default class Kernel {
             if (fs.existsSync(`/boot${vmlinuz}`)) {
                 vmlinuz = `/boot${vmlinuz}`
             }
-        }
-
-        /** 
-         * If vmlinuz not found
-         */
-        if (vmlinuz === '') {
-            let version = 'linux'
-            if (distro.familyId === 'debian') {
-                cmdline.forEach(cmd => {
-                    if (cmd.includes('initrd.img')) {
-                        version = cmd.substring(cmd.indexOf('initrd.img') + 10)
-                    }
-                })
-            } else if (distro.distroId === 'Manjaro') {
-                cmdline.forEach(cmd => {
-                    if (cmd.includes('initrd.img')) {
-                        version = cmd.substring(cmd.indexOf('initrd.img') + 10)
-                    }
-                })
-            }
-            vmlinuz = '/boot/vmlinuz-' + version
         }
         return vmlinuz
     }
