@@ -35,18 +35,18 @@ let bootloaders = '/usr/lib/'
 export async function syslinux(this: Ovary, theme = 'eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
-    let syspath = path.join(bootloaders, 'syslinux/modules/bios')
-    let isolinuxPath = path.join(bootloaders, 'ISOLINUX')
+    let sysPath = path.join(bootloaders, 'syslinux/modules/bios')
+    let isoPath = path.join(bootloaders, 'ISOLINUX')
 
-    await exec(`cp ${syspath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${isolinuxPath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${sysPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${isoPath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
 
-    // just fo x64 arch
-    await exec(`cp ${isolinuxPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
-    await exec(`cp ${syspath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    // just for x64 arch
+    await exec(`cp ${isoPath}/isolinux.bin ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${sysPath}/ldlinux.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${sysPath}/libcom32.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${sysPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
+    await exec(`cp ${sysPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     let isolinuxThemeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)

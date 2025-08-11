@@ -221,7 +221,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
             await this.incubator.config(release)
 
-            await this.syslinux(this.theme)
+            // need syslinux?
+            const arch = process.arch
+            if (arch === 'ia32' || arch ==='x64') {
+                await this.syslinux(this.theme)
+            }
 
             await this.kernelCopy()
 
