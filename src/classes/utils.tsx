@@ -110,12 +110,18 @@ export default class Utils {
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
-      let isContainer = false
-      let pathToCheck = '/ci/README.md'
-      if (fs.existsSync(pathToCheck)) {
-         isContainer = true
+      // Check for Docker's specific file
+      if (fs.existsSync('/.dockerenv')) {
+         return true;
       }
-      return isContainer
+
+      // Check the cgroup file, which works for Docker, Podman, LXC, etc.
+      try {
+         const cgroupContent = fs.readFileSync('/proc/1/cgroup', 'utf8');
+         return cgroupContent.includes('/docker/') || cgroupContent.includes('/kubepods/');
+      } catch (e) {
+         return false;
+      }
    }
 
    /**
