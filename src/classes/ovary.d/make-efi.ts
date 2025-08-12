@@ -51,12 +51,14 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-    if (process.arch === 'x64') {
-        shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-    } else if (process.arch === 'ia32') {
-        shimEfi = path.resolve(bootloaders, `shim/shimia32.efi`)
-    } else if (process.arch === 'arm64') {
-        shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi`)
+    if (this.distroLike === 'Debian') {
+        if (process.arch === 'x64') {
+            shimEfi = path.resolve(bootloaders, `shim/shimx64.efi.signed`)
+        } else if (process.arch === 'ia32') {
+            shimEfi = path.resolve(bootloaders, `shim/shimia32.efi.signed`)
+        } else if (process.arch === 'arm64') {
+            shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi.signed`)
+        }
     }
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
