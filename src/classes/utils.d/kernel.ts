@@ -100,8 +100,6 @@ export default class Kernel {
 
     /**
      * vmlinuxFromCmdline
-     * BOOT_IMAGE=/boot/vmlinuz-5.16.0-3-amd64 root=UUID=13768873-d6ba-4ae5-9e14-b5011f5aa31c ro quiet splash resume=UUID=beafb9b4-c429-4e1f-a268-4270b63a14e6
-     * se non è presente - come nel caso di Franco Conidi - lo ricostruisce da initrd
      */
     private static vmlinuxFromCmdline() {
         /**
@@ -157,10 +155,10 @@ export default class Kernel {
 
 
     /**
-         * 
-         * @param kernel 
-         * @returns 
-         */
+     * 
+     * @param kernel 
+     * @returns 
+     */
     private static vmLinuxFromFiles(kernel = ''): string {
         const distro = new Distro()
         let vmlinuz = ''
