@@ -230,9 +230,9 @@ export default class Kernel {
     private static getKernelModulesPath(): string {
         const candidates = ['/usr/lib/modules', '/lib/modules']
 
-        for (const path of candidates) {
-            if (fs.existsSync(path)) {
-                return path
+        for (const candidate of candidates) {
+            if (fs.existsSync(candidate)) {
+                return candidate
             }
         }
 
