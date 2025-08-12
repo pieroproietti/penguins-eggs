@@ -17,8 +17,6 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
-import { util } from 'chai'
-import { sign } from 'node:crypto'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -37,6 +35,12 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
             signed = '.signed'
+        } else if (process.arch === 'ia32') {
+            grubEfi = path.resolve(bootloaders, `grub/i386-efi-signed/grubia32.efi.signed`)
+            signed = '.signed'
+        } else if (process.arch === 'arm64') {
+            grubEfi = path.resolve(bootloaders, `grub/arm64-efi-signed/grubaa64.efi.signed`)
+            signed = '.signed'
         }
     }
 
@@ -46,7 +50,14 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
     }
 
-    const shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    if (process.arch === 'x64') {
+        shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    } else if (process.arch === 'ia32') {
+        shimEfi = path.resolve(bootloaders, `shim/shimia32.efi`)
+    } else if (process.arch === 'arm64') {
+        shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi`)
+    }
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')

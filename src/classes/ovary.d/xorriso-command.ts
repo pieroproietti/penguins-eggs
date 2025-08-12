@@ -81,6 +81,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
       bootloadsize = '-boot-load-size 4'
       bootinfotable = '-boot-info-table'
     } 
+    
     if (Pacman.packageIsInstalled('genisoimage')) {
       this.genisoimage = true
 
@@ -105,7 +106,8 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
 
       return command
     }
-
+    
+    
     /**
      * xorriso
      */
