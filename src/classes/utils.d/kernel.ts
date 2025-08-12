@@ -67,22 +67,24 @@ export default class Kernel {
             }
         }
 
-        if (distro.familyId === "archlinux") {
-            initramfs = this.getArchInitramfs(kernel, distro)
-        } else if (distro.familyId === "alpine") {
-            initramfs = '/boot/initramfs-lts'
+        // per le rolling nome unico
+        if (distro.familyId === "archlinux" ||
+            (distro.familyId === "alpine")
+        ) {
+            let suffix = kernel.substring(kernel.lastIndexOf('-'))
+            initramfs = `/boot/initramfs-linux${suffix}.img`
         } else {
             // Gestione generica per le altre distro (Debian, Fedora, SUSE, ecc.)
-            const possiblePaths = [
-                `/boot/initrd.img-${kernel}`, // Debian, Ubuntu e derivate
-                `/boot/initramfs-${kernel}.img`, // Fedora, RHEL, CentOS e derivate
+            const candidates = [
+                `/boot/initrd.img-${kernel}`, // Debian, Ubuntu
+                `/boot/initramfs-${kernel}.img`, // Fedora, RHEL
                 `/boot/initrd-${kernel}`, // openSUSE
-                `/boot/initramfs-${kernel}` // fallback generico
+                `/boot/initramfs-${kernel}`, // fallbacks
             ]
 
-            for (const path of possiblePaths) {
-                if (fs.existsSync(path)) {
-                    initramfs = path
+            for (const candidate of candidates) {
+                if (fs.existsSync(candidate)) {
+                    initramfs = candidate
                     break
                 }
             }
@@ -226,9 +228,9 @@ export default class Kernel {
      * Trova la directory dei moduli del kernel
      */
     private static getKernelModulesPath(): string {
-        const possiblePaths = ['/usr/lib/modules', '/lib/modules']
+        const candidates = ['/usr/lib/modules', '/lib/modules']
 
-        for (const path of possiblePaths) {
+        for (const path of candidates) {
             if (fs.existsSync(path)) {
                 return path
             }
@@ -309,15 +311,15 @@ export default class Kernel {
         }
 
         // Cerca i kernel Arch in ordine di preferenza
-        const archKernelCandidates = [
+        const archKernelcandidatess = [
             '/boot/vmlinuz-linux',
             '/boot/vmlinuz-linux-lts',
             '/boot/vmlinuz-linux-rt'
         ]
 
-        for (const candidate of archKernelCandidates) {
-            if (fs.existsSync(candidate)) {
-                return candidate
+        for (const candidates of archKernelcandidatess) {
+            if (fs.existsSync(candidates)) {
+                return candidates
             }
         }
 
@@ -338,7 +340,7 @@ export default class Kernel {
         }
 
         // Standard Arch initramfs paths
-        const archInitramfsCandidates = [
+        const archInitramfscandidatess = [
             '/boot/initramfs-linux.img',
             '/boot/initramfs-linux-lts.img',
             '/boot/initramfs-linux-rt.img',
@@ -346,9 +348,9 @@ export default class Kernel {
             '/boot/initramfs-linux-hardened.img'
         ]
 
-        for (const candidate of archInitramfsCandidates) {
-            if (fs.existsSync(candidate)) {
-                return candidate
+        for (const candidates of archInitramfscandidatess) {
+            if (fs.existsSync(candidates)) {
+                return candidates
             }
         }
 
