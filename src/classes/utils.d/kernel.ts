@@ -26,10 +26,13 @@ export default class Kernel {
         let vmlinuz = ''
 
         if (!Utils.isContainer()) {
-            vmlinuz = this.vmlinuxFromCmdline()
+            vmlinuz = this.vmlinuxFromUname()
             if (vmlinuz === '') {
-                console.log('vmlinuz not found')
-                process.exit(1)
+                vmlinuz = this.vmlinuxFromCmdline()
+                if (vmlinuz === '') {
+                    console.log('vmlinuz not found')
+                    process.exit(1)
+                }
             }
         } else {
             vmlinuz = this.vmLinuxFromFiles(kernel)
@@ -37,7 +40,7 @@ export default class Kernel {
 
         if (!fs.existsSync(vmlinuz)) {
             console.log(`file ${vmlinuz} does not exist!`)
-            process.exit()
+            process.exit(1)
         }
         return vmlinuz
     }
@@ -97,24 +100,25 @@ export default class Kernel {
     /**
      * ALL PRIVATE
      */
-
-    /**
-     * vmlinuxFromCmdline
-     */
-    private static vmlinuxFromCmdline() {
+    private static vmlinuxFromUname() {
         /**
-         * rasberry ed arm
-         * debian, fedora, opensuse, etc
+         * most of the distros:
+         * debian, fedora, opensuse, rasberry
          */
         const kernelVersion = execSync('uname -r').toString().trim()
         let kernelPath = `/boot/vmlinuz-${kernelVersion}`
         if (fs.existsSync(kernelPath)) {
             return kernelPath
+        } else {
+            return ''
         }
+    }
 
-        /**
-         * Arch ed altre rolling: nomi generici, es: vmlinuz-linux
-         */
+    /**
+     * vmlinuxFromCmdline
+     * raspbery /proc/cmdline dont contain it
+     */
+    private static vmlinuxFromCmdline() {
         let distro = new Distro()
         let vmlinuz = ''
 
@@ -137,7 +141,8 @@ export default class Kernel {
         })
 
         // btrfs: eg: /@root/boot/vmlinuz
-        if (vmlinuz.indexOf('@')) {
+        //if (vmlinuz.indexOf('@')) {
+        if (vmlinuz.includes('@')) {
             let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
             vmlinuz = vmlinuz.substring(subvolumeEnd)
         }
