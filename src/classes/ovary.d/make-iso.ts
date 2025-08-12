@@ -29,7 +29,7 @@ export async function makeIso(this: Ovary, cmd: string, scriptOnly = false) {
 
     Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
 
-    // Create link to iso ALLWAYES
+    // Create link to iso ALLWAYS
     const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
     const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
     await exec(`ln -s ${src} ${dest}`)
