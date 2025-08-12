@@ -42,7 +42,7 @@ export async function liveCreateStructure(this: Ovary) {
     }
 
     if (!fs.existsSync(this.settings.config.snapshot_dir + '/README.md')) {
-        cmd = `cp ${path.resolve(__dirname, '../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md`
+        cmd = `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md`
         tryCatch(cmd, this.verbose)
     }
 

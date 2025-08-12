@@ -29,36 +29,31 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 export async function makeEfi (this:Ovary, theme ='eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
-    let signed = ''
+    /**
+     * tutte le distribuzioni: not signed
+     */
+    let signed = false
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
-    if (this.distroLike === 'Debian') {
-        if (process.arch === 'x64') {
-            grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi`)
-            signed = '.signed'
-        } else if (process.arch === 'ia32') {
-            grubEfi = path.resolve(bootloaders, `grub/i386-efi-signed/grubia32.efi.signed`)
-            signed = '.signed'
-        } else if (process.arch === 'arm64') {
-            grubEfi = path.resolve(bootloaders, `grub/arm64-efi-signed/grubaa64.efi.signed`)
-            signed = '.signed'
-        }
-    }
-
-    if (signed === '') {
-        Utils.warning(`You must disable Secure Boot on ${this.distroId}/${process.arch}`)
-    } else {
-        Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
-    }
-
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+
     if (this.distroLike === 'Debian') {
+        signed = true
         if (process.arch === 'x64') {
+            grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
             shimEfi = path.resolve(bootloaders, `shim/shimx64.efi.signed`)
         } else if (process.arch === 'ia32') {
+            grubEfi = path.resolve(bootloaders, `grub/i386-efi-signed/grubia32.efi.signed`)
             shimEfi = path.resolve(bootloaders, `shim/shimia32.efi.signed`)
         } else if (process.arch === 'arm64') {
+            grubEfi = path.resolve(bootloaders, `grub/arm64-efi-signed/grubaa64.efi.signed`)
             shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi.signed`)
         }
+    }
+
+    if (signed) {
+        Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
+    } else {
+        Utils.warning(`You must disable Secure Boot on ${this.distroId}/${process.arch}`)
     }
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
@@ -71,8 +66,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
-    await exec(`cp ${shimEfi}${signed} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${grubEfi}${signed} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
+    await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
@@ -82,6 +77,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
+
 
     /**
      * create efi.img
@@ -132,8 +128,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
     await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`, this.echo)
-    await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
+    await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
     
     //await Utils.pressKeyToExit(`controlla ${efiMnt}`)
     await exec(`umount ${efiMnt}`, this.echo)

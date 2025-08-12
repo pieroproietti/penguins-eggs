@@ -43,7 +43,8 @@ export async function exec(command: string, { echo = false, ignore = false, capt
    */
   return new Promise((resolve, reject) => {
     if (echo) {
-      console.log(command)
+      // seem no noee!
+      // console.log(command)
     }
 
     const child = spawn('bash', ['-c', command], {
