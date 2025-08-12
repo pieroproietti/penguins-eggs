@@ -66,11 +66,14 @@ export default class Kernel {
         }
 
         // rolling...
-        if (distro.familyId === "archlinux" ||
-            (distro.familyId === "alpine")
-        ) {
+        if (distro.familyId === "alpine") {
+            let suffix = kernel.substring(kernel.lastIndexOf('-'))
+            initramfs = `/boot/initramfs${suffix}`
+
+        } else if (distro.familyId === "archlinux") {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs-linux${suffix}.img`
+
         } else {
             // Gestione generica per le altre distro (Debian, Fedora, SUSE, ecc.)
             const candidates = [
