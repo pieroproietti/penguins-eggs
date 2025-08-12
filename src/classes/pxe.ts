@@ -311,6 +311,9 @@ export default class Pxe {
     if (process.arch === 'x64') {
       await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
       await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+    } else if (process.arch === 'ia32') {
+      await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+      await exec(`cp -r ${bootloaders}/grub/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
     } else if (process.arch === 'arm64') {
       await exec(`cp ${bootloaders}/grub/arm64-efi-signed/grubnetaa64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
       await exec(`cp -r ${bootloaders}/grub/arm64-efi ${this.pxeRoot}/grub`, this.echo)
