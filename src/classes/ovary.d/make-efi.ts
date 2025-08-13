@@ -133,16 +133,20 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    // errata await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub/`, this.echo)
+    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`, this.echo)
     await exec(`cp ${grubCfg1} ${efiMnt}/EFI/boot/grub.cfg`, this.echo)
     await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
-    // errata if (fs.existsSync(`${efiMnt}/boot/grub/grub.cfg`)) {
     if (fs.existsSync(`${efiMnt}/EFI/boot/grub.cfg`)) {
-        Utils.warning("grub.cfg (1) was copied on efi.img")
+        Utils.warning("grub.cfg (1) was copied on efi.img/EFI/boot/grub.cfg")
     } else {
-        // console.log(`cp ${grubCfg1} ${efiMnt}/boot/grub/ not worked`)
-        console.log(`cp ${grubCfg1} ${efiMnt}/EFI/boot/grub.cfg`)
+        Utils.warning(`cp ${grubCfg1} ${efiMnt}/EFI/boot/grub.cfg`)
+        process.exit(1)
+    }
+    if (fs.existsSync(`${efiMnt}/boot/grub/grub.cfg`)) {
+        Utils.warning("grub.cfg (1) was copied on efi.img/boot/grub/grub.cfg")
+    } else {
+        Utils.warning(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`)
         process.exit(1)
     }
     
