@@ -17,6 +17,7 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
+import { util } from 'chai'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -25,6 +26,8 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * 
  * @param this 
  * @param theme 
+ * cp /usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed ./bootloaders/
+ * cp /usr/lib/shim/shimx64.efi.signed ./bootloaders/ 
  */
 export async function makeEfi (this:Ovary, theme ='eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
@@ -60,17 +63,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiMnt = path.join(efiPath, 'mnt')
-
-    // clean/create all in efiPath
-    if (fs.existsSync(efiPath)) {
-        await exec(`rm -rf ${efiPath}`)
-    }
-    await exec(`mkdir ${efiPath}`, this.echo)
-    await exec(`mkdir ${efiMemdiskDir}`, this.echo)
-    await exec(`mkdir ${efiMnt}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}`, this.echo)
-
-    // creo e copio direttamente in ${isdDir} il folder grub/x86_64-efi
     const isoDir = this.settings.iso_work
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
@@ -80,6 +72,16 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
 
+
+
+    // clean/create all in efiPath
+    if (fs.existsSync(efiPath)) {
+        await exec(`rm -rf ${efiPath}`)
+    }
+    await exec(`mkdir ${efiPath}`, this.echo)
+    await exec(`mkdir ${efiMemdiskDir}`, this.echo)
+    await exec(`mkdir ${efiMnt}`, this.echo)
+    await exec(`mkdir ${efiWorkDir}`, this.echo)
 
     /**
      * create efi.img
@@ -91,6 +93,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let grubText1 = `# grub.cfg 1\n`
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
+    grubText1 += `echo "OK: Sto eseguendo il grub.cfg di bootstrap dentro efi.img..."\n`
+    grubText1 += `sleep 5\n`
     grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
     grubText1 += 'set prefix=($root)/boot/grub\n'
     grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
@@ -116,11 +120,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiImg = `${efiWorkDir}boot/grub/efi.img`
     await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // await new Promise(resolve => setTimeout(resolve, 2000))
 
     // mount efi.img on mountpoint mnt-img
     await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    // await new Promise(resolve => setTimeout(resolve, 2000))
 
     // create structure inside (efi.img)
     await exec(`mkdir -p ${efiMnt}/boot/grub`, this.echo)
@@ -129,10 +133,15 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`, this.echo)
-    // copio grubEfi() grub[arch].efi e bootEF() shim[arch] in ${efiMnt}
+    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub/`, this.echo)
     await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
+    if (fs.existsSync(`${efiMnt}/boot/grub/grub.cfg`)) {
+        Utils.warning("grub.cfg (1) was copied on efi.img")
+    } else {
+        console.log(`cp ${grubCfg1} ${efiMnt}/boot/grub/ not worked`)
+        process.exit(1)
+    }
     
     //await Utils.pressKeyToExit(`controlla ${efiMnt}`)
     await exec(`umount ${efiMnt}`, this.echo)
@@ -260,11 +269,9 @@ function bootEFI(): string {
  * @returns 
  */
 function grubEFI(): string {
-    let gn = ''
+    let gn = 'grubia32.efi' // Per l'architettura i686 EFI è: grubia32.efi
     if (process.arch === 'x64') {
         gn = 'grubx64.efi'
-    } else if (process.arch === 'ia32') {
-        gn = 'grubia32.efi'
     } else if (process.arch === 'arm64') {
         gn = 'grubaa64.efi'
     }

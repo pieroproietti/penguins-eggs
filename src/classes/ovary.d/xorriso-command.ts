@@ -15,6 +15,7 @@ import path from 'node:path'
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
 import Utils from '../utils.js'
+import Diversions from '../diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -56,13 +57,15 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
     let isoHybridMbr = ''
-    if (!process.arch.includes('arm')) {
+    if (process.arch !== 'arm64') {
       if (this.settings.config.make_isohybrid) {
-        const isolinuxFile = path.resolve(__dirname, `../../../bootloaders/syslinux/isohdpfx.bin`)
+        const bootloaders = Diversions.bootloaders(this.familyId)
+        const isolinuxFile = path.resolve(bootloaders, `ISOLINUX/isolinux.bin`)
         if (fs.existsSync(isolinuxFile)) {
           isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
         } else {
-          Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found. \nThe resulting image will be a standard iso file`)
+          Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found!`)
+          process.exit()
         }
       }
     }
@@ -74,7 +77,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     let bootloadsize = ''
     let bootinfotable = ''
 
-    if (!process.arch.includes('arm')) {
+    if (process.arch !== 'arm64') {
       isolinuxBin = `-b isolinux/isolinux.bin`
       isolinuxCat = `-c isolinux/boot.cat`
       noemulboot = '-no-emul-boot'
@@ -101,7 +104,6 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
         ${bootinfotable} \
         -eltorito-alt-boot \
         -e boot/grub/efi.img \
-        -no-emul-boot \
         -o ${output} ${this.settings.iso_work}`
 
       return command
