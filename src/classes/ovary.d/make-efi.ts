@@ -62,13 +62,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
 
-    // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
-    await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
-    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
-    await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
-    await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
-    await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
-
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
         await exec(`rm -rf ${efiPath}`)
@@ -77,6 +70,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
+
+    // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
+    await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
+    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
+    await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
+    await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
+    await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
 
 
     /**
@@ -257,15 +257,14 @@ function bootEFI(): string {
  * @returns 
  */
 function grubEFI(): string {
-    let gn = 'grubia32.efi' // Per l'architettura i686 EFI è: grubia32.efi
+    let gn = ''
     if (process.arch === 'x64') {
         gn = 'grubx64.efi'
+    } else if (process.arch === 'ia32') {
+        gn = 'grubia32.efi'
     } else if (process.arch === 'arm64') {
         gn = 'grubaa64.efi'
     }
     return gn
 }
 
-function moduleEFI(){
-    return `x86_64-efi`
-}

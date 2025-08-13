@@ -250,6 +250,3 @@ function grubEFI(): string {
     return gn
 }
 
-function moduleEFI(){
-    return `x86_64-efi`
-}
