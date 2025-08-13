@@ -277,6 +277,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             await this.editLiveFs(clone, cryptedclone)
+            
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, unsecure)
             await this.uBindLiveFs() // Lo smonto prima della fase di backup
         }
