@@ -19,6 +19,13 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.8.10-9
+A huge debugging effort to restore UEFI functionality on Debian, and it's not over yet.
+
+The good news is that I did a complete overhaul of the make-efi.ts and xorriso-command.ts code, including restoring support for arm64 and i386.
+
+Now the penguins-eggs version is back to working with UEFI, but only with grub 2.06, not with grub 2.12 (the one on trixie). We will soon fix this chain method as well.
+
 ## penguins-eggs_25.8.10 (San Lorenzo edition)
 
 I have recreated the packages for i386, amd64, and arm64 for Devuan/Debian/Ubuntu distributions and derivatives.

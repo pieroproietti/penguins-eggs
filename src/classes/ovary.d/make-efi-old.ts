@@ -115,13 +115,12 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${shimEfi}${signed} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi}${signed} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
     
-    //await Utils.pressKeyToExit(`controlla ${efiMnt}`)
+    // await Utils.pressKeyToExit(`controlla ${efiMnt}`)
     await exec(`umount ${efiMnt}`, this.echo)
 
     // Copy isoImg in ${${isoDir}/boot/grub
     Utils.warning("copyng efi.img on (iso)/boot/grub")
     await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
-
 
 
     /**
