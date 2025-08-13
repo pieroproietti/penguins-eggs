@@ -36,7 +36,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
 
-    if (this.distroLike === 'Debian') {
+    if (this.familyId === 'Debian') {
         signed = true
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
@@ -60,7 +60,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiMnt = path.join(efiPath, 'mnt')
-    const isoDir = this.settings.iso_work
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
@@ -71,9 +70,12 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`mkdir ${efiMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
-    // creo e copio direttamente in ${isdDir} il folder ${bootloaders}/grub/x86_64-efi
+    // creo e copio direttamente in ${isdDir} il folder grub/x86_64-efi
+    const isoDir = this.settings.iso_work
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
+
+    // creo e copio grubEfi() grub[arch].efi e bootEF() shim[arch]
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
     await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEFI()}`, this.echo)
@@ -114,11 +116,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiImg = `${efiWorkDir}boot/grub/efi.img`
     await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
-    // await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
     // mount efi.img on mountpoint mnt-img
     await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
-    // await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
     // create structure inside (efi.img)
     await exec(`mkdir -p ${efiMnt}/boot/grub`, this.echo)
@@ -128,6 +130,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
     await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub`, this.echo)
+    // copio grubEfi() grub[arch].efi e bootEF() shim[arch] in ${efiMnt}
     await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEFI()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEFI()}`, this.echo)
     
