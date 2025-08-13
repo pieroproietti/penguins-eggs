@@ -59,11 +59,11 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
   let isoHybridMbr = ''
   if (this.settings.config.make_isohybrid) {
     const bootloaders = Diversions.bootloaders(this.familyId)
-    const isolinuxFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
-    if (fs.existsSync(isolinuxFile)) {
-      isoHybridMbr = `-isohybrid-mbr ${isolinuxFile}`
+    const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
+    if (fs.existsSync(isohybridFile)) {
+      isoHybridMbr = `-isohybrid-mbr ${isohybridFile}`
     } else {
-      Utils.warning(`Can't create isohybrid image. File: ${isolinuxFile} not found!`)
+      Utils.warning(`Can't create isohybrid image, file: ${isohybridFile} not found!`)
       process.exit()
     }
   }
