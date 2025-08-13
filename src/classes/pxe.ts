@@ -247,18 +247,21 @@ export default class Pxe {
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
 
     // ipxe.pxe
-    await exec(`ln -s ${bootloaders}/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
+    await exec(`ln -s ${bootloaders}ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
+
+    // snponly.efi
+    await exec(`ln -s ${bootloaders}ipxe/snponly.efi ${this.pxeRoot}/snponly.efi`, this.echo)
 
     // pxe
-    await exec(`cp ${bootloaders}/PXELINUX/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
-    await exec(`cp ${bootloaders}/PXELINUX/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
+    await exec(`cp ${bootloaders}PXELINUX/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
+    await exec(`cp ${bootloaders}PXELINUX/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
 
     // syslinux
-    await exec(`ln -s ${bootloaders}/syslinux/modules/bios/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}/syslinux/modules/bios/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}/syslinux/modules/bios/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}/syslinux/modules/bios/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}/syslinux/modules/bios/memdisk ${this.pxeRoot}/memdisk`, this.echo)
+    await exec(`ln -s ${bootloaders}syslinux/modules/bios/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}syslinux/modules/bios/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}syslinux/modules/bios/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}syslinux/modules/bios/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
+    await exec(`ln -s ${bootloaders}syslinux/modules/bios/memdisk ${this.pxeRoot}/memdisk`, this.echo)
 
     await exec(`mkdir ${this.pxeRoot}/pxelinux.cfg`, this.echo)
 
