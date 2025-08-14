@@ -35,8 +35,9 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     }
     shx.mkdir('-p', dotDisk);
 
-    let text = `# Created at: ${Utils.formatDate(new Date())}\n`;
-    text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`;
+    let text = this.volid
+    //`# Created at: ${Utils.formatDate(new Date())}\n`;
+    //text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`;
 
     /**
      * write test as .disk/info 
