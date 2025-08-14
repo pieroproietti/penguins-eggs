@@ -23,7 +23,7 @@ common:
   - rsync
   - squashfs-tools
   - sshfs # eggs
-  - xorriso | genisoimage
+  - xorriso
 
   # bootloaders common
   - ipxe

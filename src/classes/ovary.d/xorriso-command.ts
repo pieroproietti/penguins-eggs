@@ -68,7 +68,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     }
   }
 
-  // su arm no isolinux
+  // on arm64 no isolinux
   let isolinuxBin = ''
   let isolinuxCat = ''
   let noemulboot = ''
@@ -83,35 +83,9 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     bootinfotable = '-boot-info-table'
   }
 
-  if (Pacman.packageIsInstalled('genisoimage')) {
-    this.genisoimage = true
-
-    command = `genisoimage \
-        -iso-level 3 \
-        -allow-limited-size \
-        -joliet-long \
-        -r \
-        -V ${this.volid} \
-        -cache-inodes \
-        -J \
-        -l \
-        ${isolinuxBin} \
-        ${isolinuxCat} \
-        ${noemulboot} \
-        ${bootloadsize} \
-        ${bootinfotable} \
-        -eltorito-alt-boot \
-        -e boot/grub/efi.img \
-        -o ${output} ${this.settings.iso_work}`
-
-    return command
-  }
-
-
   /**
-   * xorriso
+   * xorriso: prepare
    */
-  // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efi.img -isohybrid-gpt-basdat -no-emul-boot"
   let uefi_elToritoAltBoot = ''
   let uefi_e = ''
   let uefi_isohybridGptBasdat = ''
@@ -122,15 +96,11 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
     uefi_noEmulBoot = '-no-emul-boot'
   }
-  /**
-   * L'immagine efi è efi.img ed è
-   * presente in boot/grub/efi.img
-   * per cui:
-   * -append_partition 2 0xef efi.img
-   * --efi-boot efi.img
-   * non sono necessari
-   */
 
+
+  /**
+   * xorriso: command
+   */
   command = `xorriso -as mkisofs \
      -J \
      -joliet-long \
