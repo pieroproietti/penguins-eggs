@@ -17,7 +17,6 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
-import { util } from 'chai'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -55,17 +54,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     if (signed) {
-        Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
+        Utils.warning(`Live system is ${this.distroId}/${process.arch}, can boot with Secure Boot enabled`)
     } else {
-        Utils.warning(`You must disable Secure Boot on ${this.distroId}/${process.arch}`)
+        Utils.warning(`Live system is ${this.distroId}/${process.arch}, You must disable Secure Boot to boot it!`)
     }
     // 2 secondi per leggere...
     await new Promise(resolve => setTimeout(resolve, 2000))
 
-    const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
-    const efiWorkDir = path.join(efiPath, '/work/')
-    const efiMemdiskDir = path.join(efiPath, '/memdisk/')
-    const efiMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
@@ -75,88 +70,38 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEfiName()}`, this.echo)
 
-    // clean/create all in efiPath
-    if (fs.existsSync(efiPath)) {
-        await exec(`rm -rf ${efiPath}`)
-    }
-    await exec(`mkdir ${efiPath}`, this.echo)
-    await exec(`mkdir ${efiMemdiskDir}`, this.echo)
-    await exec(`mkdir ${efiMnt}`, this.echo)
-    await exec(`mkdir ${efiWorkDir}`, this.echo)
+    // Definisci il percorso del file di configurazione temporaneo
+    const grubCfg = `${isoDir}/EFI/boot/grub.cfg`;
+    await exec(`mkdir -p ${path.dirname(grubCfg)}`, this.echo);
 
-    /**
-     * create efi.img
-     */
-    Utils.warning("creating grub.cfg (1) on efi.img")
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
+    // Prepara i dati per il template di GRUB
+    const grubTemplatePath = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/grub.main.cfg'); // Assicurati che il percorso sia corretto
+    const template = fs.readFileSync(grubTemplatePath, 'utf8');
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid);
 
-    const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let grubText1 = `# grub.cfg 1\n`
-    grubText1 += `# created on ${efiMemdiskDir}\n`
-    grubText1 += `\n`
-    grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
-    grubText1 += 'set prefix=($root)/boot/grub\n'
-    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
-    Utils.write(grubCfg1, grubText1)
+    const view = {
+        fullname: this.settings.remix.fullname.toUpperCase(),
+        initrdImg: `/live/${path.basename(this.initrd)}`,
+        vmlinuz: `/live/${path.basename(this.vmlinuz)}`,
+        kernel_parameters,
+    };
 
-    /**
-     * creating structure efiWordDir
-     */
-    await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo)
-    await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
+    // Genera il contenuto del grub.cfg finale
+    let grubText = `# GRUB 2.12+ configuration for UEFI (Single file method)\n`;
+    grubText += `\n`;
 
-    /**
-     * create tarred efiMemdiskDir
-     */
-    const currentDir = process.cwd()
-    process.chdir(efiMemdiskDir)
-    await exec('tar -cvf memdisk boot', this.echo)
-    process.chdir(currentDir)
+    // Comando essenziale per trovare la ISO e impostare la radice ($root)
+    grubText += `search --no-floppy --set=root --label ${this.volid}\n`;
+    grubText += `\n`;
 
-    /**
-     * Create boot image "boot/grub/efi.img"
-     */
-    const efiImg = `${efiWorkDir}boot/grub/efi.img`
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
-    await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // Renderizza il menu usando il template
+    grubText += mustache.render(template, view);
 
-    // mount efi.img on mountpoint mnt-img
-    await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
-    await new Promise(resolve => setTimeout(resolve, 500))
-
-    // create structure inside (efi.img)
-    await exec(`mkdir -p ${efiMnt}/boot/grub`, this.echo)
-    await exec(`mkdir -p ${efiMnt}/EFI/boot`, this.echo)
-
-    /**
-     * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
-     */
-    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`, this.echo)
-    await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEfiName()}`, this.echo)
-    await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEfiName()}`, this.echo)
-    if (fs.existsSync(`${efiMnt}/boot/grub/grub.cfg`)) {
-        Utils.warning("grub.cfg (1) was copied on efi.img/${efiMnt}/boot/grub/grub.cfg")
-    } else {
-        Utils.warning(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`)
-        process.exit(1)
-    }
-    
-    // await Utils.pressKeyToExit(`controlla ${efiMnt}`)
-    await exec(`umount ${efiMnt}`, this.echo)
-
-    // Copy isoImg in ${${isoDir}/boot/grub
-    Utils.warning("copyng efi.img on (iso)/boot/grub")
-    await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
-
-
-    /**
-     * creating grub.cfg (2) on (iso)/boot/grub
-     */
-    Utils.warning("creating grub.cfg (2) on (iso)/boot/grub")
+    // Scrivi il file di configurazione finale
+    Utils.write(grubCfg, grubText);
 
     // copy splash to efiWorkDir
-    const splashDest = `${efiWorkDir}/boot/grub/splash.png`
+    const splashDest = `${isoDir}/boot/grub/splash.png`
     let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
     if (this.theme.includes('/')) {
         splashSrc = `${theme}/theme/livecd/splash.png`
@@ -184,58 +129,12 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
 
     // selecting available fonts
     if (fs.existsSync('/usr/share/grub/font.pf2')) {
-        await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        await exec(`cp /usr/share/grub/font.pf2 ${isoDir}boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-        await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        await exec(`cp /usr/share/grub/unicode.pf2 ${isoDir}boot/grub/font.pf2`, this.echo)
     } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
-        await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        await exec(`cp /usr/share/grub/ascii.pf2 ${isoDir}boot/grub/font.pf2`, this.echo)
     }
-
-    // Copy workdir files to ISO/boot
-    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-
-
-    /**
-     * prepare main grub.cfg from grub.main.cfg
-     */
-    let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
-    if (!fs.existsSync(grubTemplate)) {
-        grubTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/grub.main.cfg')
-    }
-
-    if (!fs.existsSync(grubTemplate)) {
-        Utils.error(`error: ${grubTemplate} does not exist`)
-        process.exit(1)
-    }
-
-    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
-    const grubCfg2 = path.join(isoDir, '/boot/grub/grub.cfg')
-    const template = fs.readFileSync(grubTemplate, 'utf8')
-
-    const view = {
-        fullname: this.settings.remix.fullname.toUpperCase(),
-        initrdImg: `/live/${path.basename(this.initrd)}`,
-        kernel: this.kernel,
-        kernel_parameters,
-        vmlinuz: `/live/${path.basename(this.vmlinuz)}`
-    }
-    let grubText2 = `# grub.cfg 2\n`
-    grubText2 += ` # created on ${grubCfg2}`
-    grubText2 += `\n`
-    grubText2 += mustache.render(template, view)
-
-    fs.writeFileSync(grubCfg2, grubText2)
-
-
-    /**
-     * create loopback.cfg
-     */
-    fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-
-    /**
-     * create (iso)/boot/grub/x86_64-efi/grub.cfg
-     */
-    fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n')
 
     /**
      * config.cfg
@@ -273,7 +172,7 @@ function grubEfiName(): string {
     if (process.arch === 'x64') {
         gen = 'grubx64.efi'
     } else if (process.arch === 'ia32') {
-        gen = 'bootia32.efi'
+        gen = 'grubia32.efi'
     } else if (process.arch === 'arm64') {
         gen = 'grubaa64.efi'
     }

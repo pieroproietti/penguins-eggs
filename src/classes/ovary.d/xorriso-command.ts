@@ -68,13 +68,14 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     }
   }
 
-  // su arm no isolinux
+  /**
+   * on arm64 no syslinux and so: 
+  */
   let isolinuxBin = ''
   let isolinuxCat = ''
   let noemulboot = ''
   let bootloadsize = ''
   let bootinfotable = ''
-
   if (process.arch !== 'arm64') {
     isolinuxBin = `-b isolinux/isolinux.bin`
     isolinuxCat = `-c isolinux/boot.cat`
@@ -83,54 +84,24 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
     bootinfotable = '-boot-info-table'
   }
 
-  if (Pacman.packageIsInstalled('genisoimage')) {
-    this.genisoimage = true
-
-    command = `genisoimage \
-        -iso-level 3 \
-        -allow-limited-size \
-        -joliet-long \
-        -r \
-        -V ${this.volid} \
-        -cache-inodes \
-        -J \
-        -l \
-        ${isolinuxBin} \
-        ${isolinuxCat} \
-        ${noemulboot} \
-        ${bootloadsize} \
-        ${bootinfotable} \
-        -eltorito-alt-boot \
-        -e boot/grub/efi.img \
-        -o ${output} ${this.settings.iso_work}`
-
-    return command
-  }
-
-
   /**
    * xorriso
    */
-  // uefi_opt="-uefi_elToritoAltBoot-alt-boot -e boot/grub/efi.img -isohybrid-gpt-basdat -no-emul-boot"
+  const isoDir = this.settings.iso_work
   let uefi_elToritoAltBoot = ''
   let uefi_e = ''
   let uefi_isohybridGptBasdat = ''
   let uefi_noEmulBoot = ''
   if (this.settings.config.make_efi) {
     uefi_elToritoAltBoot = '-eltorito-alt-boot'
-    uefi_e = '-e boot/grub/efi.img'
+    uefi_e = `-e /EFI/boot/${bootEfiName()}`
     uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
     uefi_noEmulBoot = '-no-emul-boot'
   }
-  /**
-   * L'immagine efi è efi.img ed è
-   * presente in boot/grub/efi.img
-   * per cui:
-   * -append_partition 2 0xef efi.img
-   * --efi-boot efi.img
-   * non sono necessari
-   */
 
+  /**
+   * command
+   */
   command = `xorriso -as mkisofs \
      -J \
      -joliet-long \
@@ -152,4 +123,21 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
 
   return command
 
+}
+
+
+/**
+ * 
+ * @returns 
+ */
+function bootEfiName(): string {
+    let ben = ''
+    if (process.arch === 'x64') {
+        ben = 'bootx64.efi'
+    } else if (process.arch === 'ia32') {
+        ben = 'bootia32.efi'
+    } else if (process.arch === 'arm64') {
+        ben = 'bootaa64.efi'
+    }
+    return ben
 }
