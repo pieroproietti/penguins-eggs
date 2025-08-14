@@ -38,10 +38,14 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     
     /**
      * write volid .disk/info 
+     * Required
      */
     fs.writeFileSync(path.join(dotDisk, 'info'), this.volid, 'utf-8');
 
-    fs.writeFileSync(path.join(dotDisk, 'info'), this.volid, 'utf-8');
+
+    /**
+     * A readme now replace the old .disk/info
+     */
     let readme = ``
     readme += `# penguins_eggs\n`
     readme += `\n`
