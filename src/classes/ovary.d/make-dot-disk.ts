@@ -35,14 +35,21 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     }
     shx.mkdir('-p', dotDisk);
 
-    let text = this.volid
-    //`# Created at: ${Utils.formatDate(new Date())}\n`;
-    //text += `# penguins_eggs v. ${Utils.getPackageVersion()}\n`;
-
+    
     /**
-     * write test as .disk/info 
+     * write volid .disk/info 
      */
-    fs.writeFileSync(path.join(dotDisk, 'info'), text, 'utf-8');
+    fs.writeFileSync(path.join(dotDisk, 'info'), this.volid, 'utf-8');
+
+    fs.writeFileSync(path.join(dotDisk, 'info'), this.volid, 'utf-8');
+    let readme = ``
+    readme += `# penguins_eggs\n`
+    readme += `\n`
+    readme += `Image created at: ${Utils.formatDate(new Date())} using penguins_eggs v. ${Utils.getPackageVersion()})\n`
+    readme += `repo: [penguins-eggs](https://github.com/penguins-eggs)\n`
+    readme += `blog: [penguins-eggs.net](https://penguins-eggs.net)\n`
+    readme += `author: [Piero Proietti](mailto://piero.proietti@gmail.com)\n`
+    fs.writeFileSync(path.join(dotDisk, 'README.md'), readme, 'utf-8');
 
     /**
      * write mksquashfs as .disk/mksquashfs
