@@ -137,7 +137,6 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
      -l \
      -iso-level 3 \
      ${isoHybridMbr} \
-     -partition_offset 16 \
      -V ${this.volid} \
      ${isolinuxBin} \
      ${isolinuxCat} \
@@ -147,6 +146,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
      ${uefi_elToritoAltBoot} \
      ${uefi_e} \
      ${uefi_isohybridGptBasdat} \
+     -isohybrid-apm-hfsplus \
      ${uefi_noEmulBoot} \
      -o ${output} ${this.settings.iso_work}`
 
