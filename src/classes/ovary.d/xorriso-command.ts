@@ -57,14 +57,16 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
   // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
   let isoHybridMbr = ''
-  if (this.settings.config.make_isohybrid) {
-    const bootloaders = Diversions.bootloaders(this.familyId)
-    const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
-    if (fs.existsSync(isohybridFile)) {
-      isoHybridMbr = `-isohybrid-mbr ${isohybridFile}`
-    } else {
-      Utils.warning(`Can't create isohybrid image, file: ${isohybridFile} not found!`)
-      process.exit()
+  if (process.arch !== 'arm64') {
+    if (this.settings.config.make_isohybrid) {
+      const bootloaders = Diversions.bootloaders(this.familyId)
+      const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
+      if (fs.existsSync(isohybridFile)) {
+        isoHybridMbr = `-isohybrid-mbr ${isohybridFile}`
+      } else {
+        Utils.warning(`Can't create isohybrid image, file: ${isohybridFile} not found!`)
+        process.exit()
+      }
     }
   }
 
