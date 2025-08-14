@@ -94,9 +94,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let grubText1 = `# grub.cfg 1\n`
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
-    grubText1 += `search --set=root --file /.disk/id/${this.uuid}\n`
-    grubText1 += 'set prefix=($root)/boot/grub\n'
-    grubText1 += `configfile ($root)/boot/grub/grub.cfg\n`
+    grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
+    grubText1 += `set prefix=($root)/boot/grub\n`
+    grubText1 += `source ($root)/boot/grub/grub.cfg\n`
     Utils.write(grubCfg1, grubText1)
 
     /**
@@ -116,31 +116,32 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * Create boot image "boot/grub/efi.img"
      */
-    const efiImg = `${efiWorkDir}boot/grub/efi.img`
+    const efiImg = path.join(efiWorkDir, `boot/grub/efi.img`)
     await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 500))
 
     // mount efi.img on mountpoint mnt-img
     await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 1000))
 
     // create structure inside (efi.img)
-    await exec(`mkdir -p ${efiMnt}/boot/grub`, this.echo)
     await exec(`mkdir -p ${efiMnt}/EFI/boot`, this.echo)
 
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`, this.echo)
+    await exec(`cp ${grubCfg1} ${efiMnt}/EFI/boot/grub.cfg`, this.echo)
     await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEfiName()}`, this.echo)
-    if (fs.existsSync(`${efiMnt}/boot/grub/grub.cfg`)) {
-        Utils.warning("grub.cfg (1) was copied on efi.img/${efiMnt}/boot/grub/grub.cfg")
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    if (fs.existsSync(`${efiMnt}/EFI/boot/grub.cfg`)) {
+        Utils.warning(`grub.cfg (1) was copied on (efi.img)/EFI/boot/grub.cfg`)
     } else {
-        Utils.warning(`cp ${grubCfg1} ${efiMnt}/boot/grub/grub.cfg`)
+        console.log(`error copyng ${grubCfg1} on (efi.img)/EFI/boot/grub.cfg`)
         process.exit(1)
     }
+    await new Promise(resolve => setTimeout(resolve, 500))
     
     // await Utils.pressKeyToExit(`controlla ${efiMnt}`)
     await exec(`umount ${efiMnt}`, this.echo)
