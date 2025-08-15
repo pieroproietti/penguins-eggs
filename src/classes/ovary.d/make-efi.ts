@@ -62,10 +62,24 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // 2 secondi per leggere...
     await new Promise(resolve => setTimeout(resolve, 2000))
 
+    /**
+     * Debian 13 until luly 30 worked on EFI with same grun and xorriso
+     * 
+     * Debian 13 ofiginal
+     * (iso)/EFI/: boot -> bootx64.efi  grubx64.efi
+     *             debian -> grub.cfg
+     * 
+     * (efi.img) is inside (iso)/boot(grub)
+     * 
+     * (efi.img):  efi/boot -> bootx64.efi  grubx64.efi
+     *             efi/debian  -> grub.cfg
+     * 
+     */
+
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
-    const efiMnt = path.join(efiPath, 'mnt')
+    const efiImgMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
@@ -81,7 +95,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
     await exec(`mkdir ${efiPath}`, this.echo)
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
-    await exec(`mkdir ${efiMnt}`, this.echo)
+    await exec(`mkdir ${efiImgMnt}`, this.echo)
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
     /**
@@ -102,7 +116,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating structure efiWordDir
      */
-    await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo)
+    await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo) // qua va grub.cfg 2
     await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
 
     /**
@@ -122,20 +136,23 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     // mount efi.img on mountpoint mnt-img
-    await exec(`mount --make-shared -o loop ${efiImg} ${efiMnt}`, this.echo)
+    await exec(`mount --make-shared -o loop ${efiImg} ${efiImgMnt}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     // create structure inside (efi.img)
-    await exec(`mkdir -p ${efiMnt}/EFI/boot`, this.echo)
+    await exec(`mkdir -p ${efiImgMnt}/EFI/boot`, this.echo)
+    await exec(`mkdir -p ${efiImgMnt}/EFI/debian`, this.echo) // qua è tutto
 
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${grubCfg1} ${efiMnt}/EFI/boot/grub.cfg`, this.echo)
-    await exec(`cp ${shimEfi} ${efiMnt}/EFI/boot/${bootEfiName()}`, this.echo)
-    await exec(`cp ${grubEfi} ${efiMnt}/EFI/boot/${grubEfiName()}`, this.echo)
+    await exec(`cp ${grubCfg1} ${efiImgMnt}/EFI/boot/grub.cfg`, this.echo)
+    await exec(`cp ${grubCfg1} ${efiImgMnt}/EFI/debian/grub.cfg`, this.echo) // qua è tutto
+    
+    await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
+    await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
-    if (fs.existsSync(`${efiMnt}/EFI/boot/grub.cfg`)) {
+    if (fs.existsSync(`${efiImgMnt}/EFI/boot/grub.cfg`)) {
         Utils.warning(`grub.cfg (1) was copied on (efi.img)/EFI/boot/grub.cfg`)
     } else {
         console.log(`error copyng ${grubCfg1} on (efi.img)/EFI/boot/grub.cfg`)
@@ -143,8 +160,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
     await new Promise(resolve => setTimeout(resolve, 500))
     
-    // await Utils.pressKeyToExit(`controlla ${efiMnt}`)
-    await exec(`umount ${efiMnt}`, this.echo)
+    // await Utils.pressKeyToExit(`controlla ${efiImgMnt}`)
+    await exec(`umount ${efiImgMnt}`, this.echo)
 
     // Copy isoImg in ${${isoDir}/boot/grub
     Utils.warning("copyng efi.img on (iso)/boot/grub")
