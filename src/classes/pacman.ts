@@ -411,6 +411,13 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/trixie'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
+      /**
+       * Debian 14 forky eredita tutto da buster
+       */
+    } else if (codenameLikeId === 'forky') {
+      const dest = '/etc/penguins-eggs.d/distros/forky'
+      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
       /***********************************************************************************
        * Devuan
        **********************************************************************************/
