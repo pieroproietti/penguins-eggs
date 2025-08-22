@@ -131,6 +131,9 @@ export default class Incubator {
       } else if (codenameLikeId === 'trixie') {
         const trixie = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await trixie.create()
+      } else if (codenameLikeId === 'forky') {
+        const forky = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await forky.create()
 
         /**
          * Devuan
