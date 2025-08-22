@@ -40,6 +40,13 @@
     - orchid  # VanillaOS
     - gigi    #LMDE 7
 
+# forky
+- id: forky
+  distroLike: Debian
+  family: debian
+  ids:
+    - nobody  # for now
+
 #
 # DEVUAN
 #

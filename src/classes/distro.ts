@@ -177,7 +177,7 @@ class Distro implements IDistro {
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
         /**
-         * Debian jessie
+         * Debian 8 jessie
          */
       } else if (this.codenameId === 'jessie') {
         this.distroLike = 'Debian'
@@ -186,7 +186,7 @@ class Distro implements IDistro {
         this.isCalamaresAvailable = false
 
         /**
-         * Debian stretch
+         * Debian 9 stretch
          */
       } else if (this.codenameId === 'stretch') {
         this.distroLike = 'Debian'
@@ -195,32 +195,39 @@ class Distro implements IDistro {
         this.isCalamaresAvailable = false
 
         /**
-         * Debian buster
+         * Debian 10 buster
          */
       } else if (this.codenameId === 'buster') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'buster'
 
         /**
-         * Debian bullseye
+         * Debian 11 bullseye
          */
       } else if (this.codenameId === 'bullseye') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bullseye'
 
         /**
-         * Debian bookworm
+         * Debian 12 bookworm
          */
       } else if (this.codenameId === 'bookworm') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'bookworm'
 
         /**
-         * Debian trixie
+         * Debian 13 trixie
          */
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'trixie'
+
+        /**
+         * Debian 14 forky
+         */
+      } else if (this.codenameId === 'forky') {
+        this.distroLike = 'Debian'
+        this.codenameLikeId = 'forky'
 
         /**
          * Devuan beowulf
