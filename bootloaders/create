@@ -7,4 +7,4 @@ cp -r /usr/lib/ISOLINUX ~/bootloaders
 cp -r /usr/lib/PXELINUX ~/bootloaders
 cp -r /usr/lib/shim ~/bootloaders
 cp -r /usr/lib/syslinux ~/bootloaders
-tar -cvzf ~/bootloaders.tar.gs ~/bootloaders
+tar -cvzf ~/bootloaders.tar.gz ~/bootloaders
