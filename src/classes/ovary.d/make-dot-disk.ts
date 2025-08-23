@@ -40,7 +40,8 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
      * write volid .disk/info 
      * Required
      */
-    fs.writeFileSync(path.join(dotDisk, 'info'), this.volid, 'utf-8');
+    let volidContent = this.settings.isoFilename
+    fs.writeFileSync(path.join(dotDisk, 'info'), volidContent, 'utf-8')
 
 
     /**
@@ -49,6 +50,7 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
     let readme = ``
     readme += `# penguins_eggs\n`
     readme += `\n`
+    readme += `Volinfo: ${this.volid}\n`
     readme += `Image created at: ${Utils.formatDate(new Date())} using penguins_eggs v. ${Utils.getPackageVersion()})\n`
     readme += `repo: [penguins-eggs](https://github.com/penguins-eggs)\n`
     readme += `blog: [penguins-eggs.net](https://penguins-eggs.net)\n`

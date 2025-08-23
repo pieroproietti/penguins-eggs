@@ -89,6 +89,7 @@ export default class Incubator {
     Utils.warning(`creating ${installer().name} configuration files on ${installer().configRoot}`)
     this.createInstallerDirs()
     this.createBranding()
+    this.sudoers()
 
     const codenameLikeId = this.distro.codenameLikeId
 
@@ -378,6 +379,17 @@ export default class Incubator {
     shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
     shx.chmod('+x', '/usr/sbin/install-system.sh')
   }
+
+  /**
+   * soluzione tampone from Glenn
+   */
+  private sudoers() {
+  let live='live'
+  let content=`${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
+  let fname='/etc/sudoers.d/calamares'
+  fs.writeFileSync(fname, content, 'utf-8')
+}
+
 }
 
 /**
@@ -421,3 +433,5 @@ async function partitionCustomize() {
 
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
 }
+
+

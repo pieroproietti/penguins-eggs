@@ -112,8 +112,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
     grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
-    grubText1 += `set prefix=($root)/boot/grub\n`
-    grubText1 += `source ($root)/boot/grub/grub.cfg\n`
+    grubText1 += "set prefix=($root)/boot/grub\n"
+    grubText1 += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
+    // grubText1 += `source ($root)/boot/grub/grub.cfg\n` // precedente
     Utils.write(grubCfg1, grubText1)
 
     /**
@@ -121,6 +122,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      */
     await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo) // qua va grub.cfg 2
     await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
+
 
     /**
      * create tarred efiMemdiskDir
@@ -145,7 +147,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     // create structure inside (efi.img)
     await exec(`mkdir -p ${efiImgMnt}/boot`, this.echo)
     await exec(`mkdir -p ${efiImgMnt}/EFI/boot`, this.echo)
-    await exec(`mkdir -p ${efiImgMnt}/EFI/debian`, this.echo) // qua è tutto
 
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
@@ -246,6 +247,18 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
 
     fs.writeFileSync(grubCfg2, grubText2)
 
+    /**
+     * creating grub.cfg (3) on (iso)/EFI/debian
+     */
+    Utils.warning("creating grub.cfg (3) on (iso)/EFI/debian")
+    await exec(`mkdir -p ${isoDir}/EFI/debian`, this.echo)
+    const grubCfg3 = path.join(isoDir, '/EFI/debian/grub.cfg')
+    let grubText3 = ""
+    grubText3 += `search --file --set=root /.disk/id/${this.uuid}\n`
+    grubText3 += "set prefix=($root)/boot/grub\n"
+    grubText3 += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
+    fs.writeFileSync(grubCfg3, grubText3)
+ 
 
     /**
      * create loopback.cfg
