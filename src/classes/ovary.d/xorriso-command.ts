@@ -125,11 +125,11 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
         -cache-inodes \
         -J \
         -l \
-        ${isolinuxBin} \
-        ${isolinuxCat} \
-        ${noemulboot} \
-        ${bootloadsize} \
-        ${bootinfotable} \
+        -b isolinux/isolinux.bin \
+        -c isolinux/boot.cat \
+        -no-emul-boot \
+        -boot-load-size 4 \
+        -boot-info-table \
         -eltorito-alt-boot \
         -e boot/grub/efi.img \
         -o ${output} ${this.settings.iso_work}`

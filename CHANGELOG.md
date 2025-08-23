@@ -19,6 +19,12 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.8.22-1
+* reintroduced genisoimge;
+* added Debian 14 forky;
+* updated modules.
+This version as today: 234 august 2025 on Debian trixie will be not bootable on UEFI, but on Debian bookworm yes. 
+
 ## penguins-eggs_25.8.10-10
 * penguins-eggs will now use only xorriso, too long to manage two differents configuration, so genisoimage was removed;
 * `.disk/info` reflect now volid, to support Debian live-boot scripts, which rely on finding the correct Volume ID for device verification;

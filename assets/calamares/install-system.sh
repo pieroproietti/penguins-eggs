@@ -19,8 +19,8 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
 # Access control to run calamares as root for xwayland
 xhost +si:localuser:root
-pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY calamares
-#pkexec calamares
+#pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY calamares
+pkexec calamares
 xhost -si:localuser:root
 
 # Restore stale fstab, for what it's worth
