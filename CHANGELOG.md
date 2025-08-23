@@ -20,10 +20,12 @@ We switched to a version number based on year, month, day, and release number. I
 Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.8.22-1
-* reintroduced genisoimge;
+* changed the way the image ISO is generated, priority now is xorriso. Only if xorriso is not installed will try genisoimage;
 * added Debian 14 forky;
-* updated modules.
-This version as today: 234 august 2025 on Debian trixie will be not bootable on UEFI, but on Debian bookworm yes. 
+* updated modules;
+* work in progress... see note.
+
+This version as today: 23 august 2025 on Debian trixie will boot on UEFI, but will not correctly installed using calamares on Debian trixie. Note, it's possible to install using krill: `sudo eggs install`.
 
 ## penguins-eggs_25.8.10-10
 * penguins-eggs will now use only xorriso, too long to manage two differents configuration, so genisoimage was removed;
