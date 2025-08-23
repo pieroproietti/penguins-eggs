@@ -221,6 +221,7 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.codenameLikeId = 'trixie'
+        this.liveMediumPath ='/run/live/medium/'
 
         /**
          * Debian 14 forky
