@@ -19,6 +19,11 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+## penguins-eggs_25.8.23-1
+Finally, remastering Debian trixie, resulting ISO will boot on UEFI and will be correctly installed using calamares, but you need to DISABLE Secure Boot.
+
+We need to discover more, about this annoying problem. I'm releasing again, becouse need feedback.
+
 ## penguins-eggs_25.8.22-1
 * changed the way the image ISO is generated, priority now is xorriso. Only if xorriso is not installed will try genisoimage;
 * added Debian 14 forky;
