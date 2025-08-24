@@ -10,6 +10,7 @@ import path from 'path'
 import Distro from '../distro.js'
 import Utils from '../utils.js'
 import { execSync } from 'node:child_process'
+import Diversions from '../diversions.js'
 
 
 /**
@@ -66,13 +67,18 @@ export default class Kernel {
         }
 
         // rolling...
+        console.log(distro.distroId)
         if (distro.familyId === "alpine") {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs${suffix}`
 
-        } else if (distro.familyId === "archlinux") {
+        } else if (distro.familyId === "archlinux" &&  (!Diversions.isManjaroBased(distro.distroId))) {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs-linux${suffix}.img`
+
+        } else if (distro.familyId === "archlinux" &&  (Diversions.isManjaroBased(distro.distroId))) {
+            let version = kernel.split('.').slice(0, 2).join('.');
+            initramfs = `/boot/initramfs-${version}-x86_64.img`
 
         } else {
             // Gestione generica per le altre distro (Debian, Fedora, SUSE, ecc.)
