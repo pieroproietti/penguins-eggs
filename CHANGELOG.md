@@ -19,33 +19,21 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.23-1
+## penguins-eggs_25.8.24
+Released packages for all the distros.
+
+## penguins-eggs_25.8.23
 Finally, remastering Debian trixie, resulting ISO will boot on UEFI and will be correctly installed using calamares, but you need to DISABLE Secure Boot.
 
 We need to discover more, about this annoying problem. I'm releasing again, becouse need feedback.
 
-## penguins-eggs_25.8.22-1
+## penguins-eggs_25.8.22
 * changed the way the image ISO is generated, priority now is xorriso. Only if xorriso is not installed will try genisoimage;
 * added Debian 14 forky;
 * updated modules;
 * work in progress... see note.
 
-This version as today: 23 august 2025 on Debian trixie will boot on UEFI, but will not correctly installed using calamares on Debian trixie. Note, it's possible to install using krill: `sudo eggs install`.
-
-## penguins-eggs_25.8.10-10
-* penguins-eggs will now use only xorriso, too long to manage two differents configuration, so genisoimage was removed;
-* `.disk/info` reflect now volid, to support Debian live-boot scripts, which rely on finding the correct Volume ID for device verification;
-* introducead a `.disk/README.md` for general informations about the ISO and the tool used.
-
-This version as today: 14 august 2025 on Debian trixie will be not bootable on UEFI, but on Debian bookworm yes.
-
-
-## penguins-eggs_25.8.10-9
-A huge debugging effort to restore UEFI functionality on Debian, and it's not over yet.
-
-The good news is that I did a complete overhaul of the make-efi.ts and xorriso-command.ts code, including restoring support for arm64 and i386.
-
-Now the penguins-eggs version is back to working with UEFI, but only with grub 2.06, not with grub 2.12 (the one on trixie). We will soon fix this chain method as well.
+This version on Debian trixie will boot on UEFI, but will not correctly installed using calamares on Debian trixie. 
 
 ## penguins-eggs_25.8.10 (San Lorenzo edition)
 
@@ -53,7 +41,12 @@ I have recreated the packages for i386, amd64, and arm64 for Devuan/Debian/Ubunt
 
 We will continue to use Debian bootloaders to boot the other supported distributions: Alpine, Arch, Fedora, Manjaro, OpenSUSE, Rocky, and Ubuntu. The bootloaders will be collected in a `/bootloaders` folder under penguins-eggs, and will be created from the specific `bootloaders.tag.gz` associated with the current release.
 
+The good news is that I did a complete overhaul of the make-efi.ts and xorriso-command.ts code, including restoring support for arm64 and i386.
+
 The arm64 package need to be tested -  I have no way actually - so please test it and send me feedback.
+
+* `.disk/info` reflect now volid, to support Debian live-boot scripts, which rely on finding the correct Volume ID for device verification;
+* introduced a `.disk/README.md` for general informations about the ISO and the tool used.
 
 ## penguins-eggs_25.8.6
 I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
