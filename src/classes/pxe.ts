@@ -37,7 +37,6 @@ export default class Pxe {
   pxeRoot = ''
   distro = {} as Distro
   settings = {} as Settings
-  verbose = false
   vmlinuz = ''
 
   /**
@@ -45,10 +44,10 @@ export default class Pxe {
    * @param nest
    * @param pxeRoot
    */
-  constructor(nest = '', pxeRoot = '') {
+  constructor(nest = '', pxeRoot = '', verbose = false) {
     this.nest = nest
     this.pxeRoot = pxeRoot
-    
+    this.echo = Utils.setEcho(verbose)
   }
 
   /**

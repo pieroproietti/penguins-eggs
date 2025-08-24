@@ -224,6 +224,13 @@
           "name": "help",
           "allowNo": false,
           "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Show CLI help.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
         }
       },
       "hasDynamicHelp": false,

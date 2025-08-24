@@ -20,14 +20,15 @@ export default class Cuckoo extends Command {
   static examples = ['sudo eggs cuckoo']
 
   static flags = {
-    help: Flags.help({ char: 'h' })
+    help: Flags.help({ char: 'h' }),
+    verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Cuckoo)
 
     Utils.titles(this.id + ' ' + this.argv)
-
+    
     if (Utils.isRoot()) {
       const settings = new Settings()
       settings.load()
@@ -35,7 +36,7 @@ export default class Cuckoo extends Command {
       const nest = settings.config.snapshot_mnt
       const pxeRoot = nest + 'pxe'
 
-      const pxe = new Pxe(nest, pxeRoot)
+      const pxe = new Pxe(nest, pxeRoot, flags.verbose)
       await pxe.fertilization()
       await pxe.build()
 
