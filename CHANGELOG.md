@@ -68,7 +68,7 @@ This is a settlement version. During version 25.7.14 rpm packages for [fedora](h
 * `produce --script`: added patch to the script `mksquashfs` to emulate livecd structure of archiso/miso. Now option: `sudo produce --script` can be successully used on every distro.
 * `Alpine`/`Fedora`: finally calamares is configured and installing. Remain to solve for `OpenSUSE`.
 
-## penguins-eggs_25.7.12 **back to future!**
+## penguins-eggs_25.7.12 (Back to future!)
 
 A few months ago - around March - I tried to introduce building complete systems from containers. This required a global review of the methods for getting the kernel name and version. Neither `uname -r` nor `/proc/cmdline` parsing can be used in containers.
 

@@ -227,7 +227,7 @@
         },
         "verbose": {
           "char": "v",
-          "description": "Show CLI help.",
+          "description": "verbose",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
