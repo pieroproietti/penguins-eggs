@@ -325,7 +325,7 @@ export default class Pxe {
       /**
        * le altre distribuzione not signed
        */
-        await exec(`cp ${bootloaders}grub/x86_64-efi/monolithic/grubnetx64.efi`, this.echo)
+        await exec(`cp ${bootloaders}grub/x86_64-efi/monolithic/grubnetx64.efi ${this.pxeRoot}/grub.efi`, this.echo)
         await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
     }
 
