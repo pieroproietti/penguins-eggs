@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v10.0.55</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.8.24</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
@@ -14,30 +14,30 @@
     <pre><code>$ doas apk add penguins-eggs@testing
 </code></pre>
     <p>AlmaLinux/RockyLinux</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_10.0.55-1_amd64-1rocky9.5..x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.8.24-1_amd64-1rocky9.5..x86_64.rpm
 
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_10.0.55-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_25.8.24-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_10.0.55-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_25.8.24-1_amd64.deb
 </code></pre>
     <p>Fedora</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_10.0.55-1_amd64-1fedora.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.8.24-1_amd64-1fedora.x86_64.rpm
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
 </code></pre>
     <p>OpenMamba</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_10.0.55-1_amd64-1mamba.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.8.24-1_amd64-1mamba.x86_64.rpm
 </code></pre>
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/10.0.55  
+penguins-eggs/25.8.24  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -74,6 +74,7 @@ sudo eggs dad
       <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
       <li><a href="#eggs-love"><code>eggs love</code></a></li>
       <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
+      <li><a href="#eggs-pods-distro"><code>eggs pods [DISTRO]</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
       <li><a href="#eggs-status"><code>eggs status</code></a></li>
       <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
@@ -210,13 +211,14 @@ EXAMPLES
     <h2><code>eggs dad</code></h2>
     <p>ask help from daddy - TUI configuration helper</p>
     <pre><code>USAGE
-  $ eggs dad [-c] [-d] [-f &#x3C;value>] [-h] [-v]
+  $ eggs dad [-c] [-d] [-f &#x3C;value>] [-n] [-h] [-v]
 
 FLAGS
-  -c, --clean         remove old configuration before to create
-  -d, --default       reset to default values
-  -f, --file=&#x3C;value>  use a file configuration custom
-  -h, --help          Show CLI help.
+  -c, --clean          remove old configuration before to create
+  -d, --default        reset to default values
+  -f, --file=&#x3C;value>   use a file configuration custom
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
   -v, --verbose
 
 DESCRIPTION
@@ -304,7 +306,7 @@ DESCRIPTION
     <h2><code>eggs install</code></h2>
     <p>krill: the CLI system installer - the egg became a penguin!</p>
     <pre><code>USAGE
-  $ eggs install [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+  $ eggs install [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-t] [-u] [-v]
 
 FLAGS
   -H, --halt            Halt the system after installation
@@ -320,6 +322,7 @@ FLAGS
   -p, --pve             Proxmox VE install
   -r, --random          Add random to hostname, eg: colibri-ay412dt
   -s, --small           Swap small: RAM
+  -t, --testing         Just testing krill
   -u, --unattended      Unattended installation
   -v, --verbose         Verbose
 
@@ -356,7 +359,7 @@ EXAMPLES
     <h2><code>eggs krill</code></h2>
     <p>krill: the CLI system installer - the egg became a penguin!</p>
     <pre><code>USAGE
-  $ eggs krill [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-u] [-v]
+  $ eggs krill [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-t] [-u] [-v]
 
 FLAGS
   -H, --halt            Halt the system after installation
@@ -372,6 +375,7 @@ FLAGS
   -p, --pve             Proxmox VE install
   -r, --random          Add random to hostname, eg: colibri-ay412dt
   -s, --small           Swap small: RAM
+  -t, --testing         Just testing krill
   -u, --unattended      Unattended installation
   -v, --verbose         Verbose
 
@@ -391,10 +395,11 @@ EXAMPLES
     <h2><code>eggs love</code></h2>
     <p>the simplest way to get an egg!</p>
     <pre><code>USAGE
-  $ eggs love [-h] [-v]
+  $ eggs love [-h] [-v] [-n]
 
 FLAGS
-  -h, --help     Show CLI help.
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
   -v, --verbose
 
 DESCRIPTION
@@ -417,11 +422,33 @@ DESCRIPTION
 EXAMPLES
   $ eggs mom
 </code></pre>
+    <h2><code>eggs pods [DISTRO]</code></h2>
+    <p>eggs pods: build ISOs from containers</p>
+    <pre><code>USAGE
+  $ eggs pods [DISTRO] [-h]
+
+ARGUMENTS
+  DISTRO  distro to build
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  eggs pods: build ISOs from containers
+
+EXAMPLES
+  $ eggs pods archlinux
+
+  $ eggs pods debian
+
+  $ eggs pods ubuntu
+</code></pre>
     <h2><code>eggs produce</code></h2>
     <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
-  $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-C] [--excludes &#x3C;value>...] [-h] [--links
-    &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-S] [--theme &#x3C;value>] [-u] [-v] [-y]
+  $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-C] [--excludes &#x3C;value>...] [-h] [-k
+    &#x3C;value>] [--links &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-S] [--theme &#x3C;value>] [-u] [-v]
+    [-y]
 
 FLAGS
   -C, --cryptedclone         crypted clone
@@ -430,6 +457,7 @@ FLAGS
   -S, --standard             standard compression: xz -b 1M
   -c, --clone                clone
   -h, --help                 Show CLI help.
+  -k, --kernel=&#x3C;value>       kernel version
   -m, --max                  max compression: xz -Xbcj ...
   -n, --nointeractive        no user interaction
   -p, --pendrive             optimized for pendrive: zstd -b 1M -Xcompression-level 15

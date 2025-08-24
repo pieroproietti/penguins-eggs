@@ -15,7 +15,7 @@ adapt --help --verbose
 analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
-cuckoo --help
+cuckoo --help --verbose
 dad --clean --default --file --nointeractive --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
@@ -41,8 +41,8 @@ wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
 autocomplete --refresh-cache
-help --nested-commands
 version --json --verbose
+help --nested-commands
 "
 
   function __trim_colon_commands()
