@@ -121,9 +121,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     fs.writeFileSync(grubCfg2, grubText2)
 
     /**
-     * compatibility for non debian families
+     * compatibility for non debian families and Devuan
      */
-    if (this.familyId !== 'debian') {
+    if (this.familyId !== 'debian' || this.distroId ==='Devuan') {
         const compatPath = `${isoDir}/EFI/debian`
         await exec(`mkdir ${compatPath}`, this.echo)
         await exec(`cp ${grubCfg2} ${compatPath}/grub.cfg`, this.echo)
