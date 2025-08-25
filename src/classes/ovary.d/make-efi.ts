@@ -58,31 +58,17 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     } else {
         Utils.warning(`You must disable Secure Boot to boot live system ${this.distroId}/${process.arch}`)
     }
-    // 2 secondi per leggere...
+    // 2 secondi per leggere...    
     await new Promise(resolve => setTimeout(resolve, 2000))
 
-    /**
-     * Debian 13 until luly 30 worked on EFI with same grun and xorriso
-     * (efi.img)/boot -> boot.cfg    
-     *           EFI ->  boot -> bootx64.efi  grubx64.efi
-     * 
-     * (iso)/EFI/boot -> bootx64.efi  grubx64.efi
-     *           nothing-else-here
-     *  
-     * Debian 13 ofiginal
-     * (efi.img):  efi/boot -> bootx64.efi  grubx64.efi
-     *             efi/debian  -> grub.cfg
-     * 
-     * (iso)/EFI/: boot -> bootx64.efi  grubx64.efi
-     *             debian -> grub.cfg
-     * 
-     */
 
     const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
     const efiWorkDir = path.join(efiPath, '/work/')
     const efiMemdiskDir = path.join(efiPath, '/memdisk/')
     const efiImgMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
+
+    // create (iso)/boot/grub
     await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
     await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
 
@@ -103,17 +89,20 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * create efi.img
      */
-    Utils.warning("creating grub.cfg (1) on efi.img")
+    Utils.warning("creating grub.cfg (1) seeker, started from USB on (efi.img)/boot/grub/grub.cfg")
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
+
+    let seeker = ''
+    seeker += `search --file --set=root /.disk/id/${this.uuid}\n`
+    seeker += "set prefix=($root)/boot/grub\n"
+    seeker += "source $prefix/${grub_cpu}-efi/grub.cfg\n" // trixie
+    // seeker += `source ($root)/boot/grub/grub.cfg\n` // precedente
 
     const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let grubText1 = `# grub.cfg 1\n`
     grubText1 += `# created on ${efiMemdiskDir}\n`
     grubText1 += `\n`
-    grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
-    grubText1 += "set prefix=($root)/boot/grub\n"
-    grubText1 += "source $prefix/${grub_cpu}-efi/grub.cfg\n" // trixie
-    // grubText1 += `source ($root)/boot/grub/grub.cfg\n` // precedente
+    grubText1 += seeker
     Utils.write(grubCfg1, grubText1)
 
     /**
@@ -154,7 +143,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
     if (fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
-        Utils.warning(`grub.cfg (1) was copied on (efi.img)/boot/grub.cfg`)
+        // Utils.warning(`grub.cfg (1) was copied on (efi.img)/boot/grub.cfg`)
     } else {
         console.log(`error copyng ${grubCfg1} on (efi.img)/boot/grub.cfg`)
         process.exit(1)
@@ -172,7 +161,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (2) on (iso)/boot/grub
      */
-    Utils.warning("creating grub.cfg (2) on (iso)/boot/grub")
+    Utils.warning("creating grub.cfg (2) main menu on (iso)/boot/grub")
 
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
@@ -238,35 +227,38 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         kernel_parameters,
         vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
-    let grubText2 = `# grub.cfg 2\n`
-    grubText2 += ` # created on ${grubCfg2}`
+    let grubText2 = ''
+    grubText2 += `# grub.cfg 2\n`
+    grubText2 += `# created on ${grubCfg2}`
     grubText2 += `\n`
     grubText2 += mustache.render(template, view)
 
     fs.writeFileSync(grubCfg2, grubText2)
 
     /**
-     * creating grub.cfg (3) on (iso)/EFI/debian
+     * create grub.cfg (3) on (iso)/boot/grub/x86_64-efi/grub.cfg
      */
-    Utils.warning("creating grub.cfg (3) on (iso)/EFI/debian")
-    await exec(`mkdir -p ${isoDir}/EFI/debian`, this.echo)
-    const grubCfg3 = path.join(isoDir, '/EFI/debian/grub.cfg')
-    let grubText3 = ""
-    grubText3 += `search --file --set=root /.disk/id/${this.uuid}\n`
-    grubText3 += "set prefix=($root)/boot/grub\n"
-    grubText3 += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
+    Utils.warning(`creating grub.cfg (3), acting as bridge on (iso)/boot/grub/${Utils.uefiFormat()}`)
+    let grubCfg3=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    let grubText3 = `# grub.cfg 3\n`
+    grubText3 += `# created on ${grubCfg3}\n`
+    grubText3 += `\n`
+    grubText3 += `source /boot/grub/grub.cfg\n`
     fs.writeFileSync(grubCfg3, grubText3)
- 
+
 
     /**
-     * create loopback.cfg
+     * creating grub.cfg (4) on (iso)/EFI/distro_name
      */
-    fs.writeFileSync(`${isoDir}/boot/grub/loopback.cfg`, 'source /boot/grub/grub.cfg\n')
-
-    /**
-     * create (iso)/boot/grub/x86_64-efi/grub.cfg
-     */
-    fs.writeFileSync(`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`, 'source /boot/grub/grub.cfg\n')
+    const distroname = this.distroId.toLowerCase()
+    await exec(`mkdir -p ${isoDir}/EFI/${distroname}`, this.echo)
+    const grubCfg4 = path.join(isoDir, `/EFI/${distroname}/grub.cfg`)
+    Utils.warning(`creating grub.cfg (4) seeker, started from ISO, on ${grubCfg4}`)
+    let grubText4 = `# grub.cfg 4\n`
+    grubText4 += `# created on ${grubCfg4}\n`
+    grubText4 += `\n`
+    grubText4 += seeker
+    fs.writeFileSync(grubCfg4, grubText4)
 
     /**
      * config.cfg
