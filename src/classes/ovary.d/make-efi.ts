@@ -17,7 +17,6 @@ import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
 import Utils from '../utils.js'
-import { util } from 'chai'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -38,9 +37,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
 
     /**
-     * Except family debian
+     * Except distroLike Debian
      */
-    if (this.familyId === 'debian') {
+    if (this.distroLike === 'Debian') {
         signed = true
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
@@ -55,9 +54,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     if (signed) {
-        Utils.warning(`You can enable Secure Boot on ${this.distroId}/${process.arch}`)
+        Utils.warning(`Your live system ${this.distroId}/${process.arch} can boot with Secure Boot enabled`)
     } else {
-        Utils.warning(`You must disable Secure Boot on ${this.distroId}/${process.arch}`)
+        Utils.warning(`You must disable Secure Boot to boot live system ${this.distroId}/${process.arch}`)
     }
     // 2 secondi per leggere...
     await new Promise(resolve => setTimeout(resolve, 2000))
