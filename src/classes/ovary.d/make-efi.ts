@@ -112,7 +112,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     grubText1 += `\n`
     grubText1 += `search --file --set=root /.disk/id/${this.uuid}\n`
     grubText1 += "set prefix=($root)/boot/grub\n"
-    grubText1 += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
+    grubText1 += "source $prefix/${grub_cpu}-efi/grub.cfg\n" // trixie
     // grubText1 += `source ($root)/boot/grub/grub.cfg\n` // precedente
     Utils.write(grubCfg1, grubText1)
 
@@ -121,7 +121,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      */
     await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo) // qua va grub.cfg 2
     await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
-
 
     /**
      * create tarred efiMemdiskDir

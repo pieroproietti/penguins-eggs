@@ -67,7 +67,6 @@ export default class Kernel {
         }
 
         // rolling...
-        console.log(distro.distroId)
         if (distro.familyId === "alpine") {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs${suffix}`
