@@ -89,21 +89,48 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * create efi.img
      */
-    Utils.warning("creating grub.cfg (1) seeker, started from USB on (efi.img)/boot/grub/grub.cfg")
-    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
 
     let seeker = ''
     seeker += `search --file --set=root /.disk/id/${this.uuid}\n`
     seeker += "set prefix=($root)/boot/grub\n"
-    seeker += "source $prefix/${grub_cpu}-efi/grub.cfg\n" // trixie
-    // seeker += `source ($root)/boot/grub/grub.cfg\n` // precedente
+    seeker += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
 
+    /**
+     * creating grub.cfg (1) on (efi.img)/boot/grub/grub.cfg
+     */
+    Utils.warning("creating grub.cfg (1) seeker for USB, on (efi.img)/boot/grub/grub.cfg")
+    await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
     const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let grubText1 = `# grub.cfg 1\n`
-    grubText1 += `# created on ${efiMemdiskDir}\n`
+    let grubText1 = `# grub.cfg (1) seeker for USB\n`
+    grubText1 += `# created on ${efiMemdiskDir}, path ${grubCfg1}\n`
     grubText1 += `\n`
     grubText1 += seeker
     Utils.write(grubCfg1, grubText1)
+
+    /**
+     * creating grub.cfg (2) on (iso)/EFI/distro_name
+     */
+    const efiBootloaderId = this.distroId.toLocaleLowerCase()
+    await exec(`mkdir -p ${isoDir}/EFI/${efiBootloaderId}`, this.echo)
+    const grubCfg2 = path.join(isoDir, `/EFI/${efiBootloaderId}/grub.cfg`)
+    Utils.warning(`creating grub.cfg (2) seeker for ISO, on (iso)/EFI/${efiBootloaderId}/grub.cfg`)
+    let grubText2 = `# grub.cfg (2) seeker for ISO\n`
+    grubText2 += `# created on ${grubCfg2}\n`
+    grubText2 += `\n`
+    grubText2 += seeker
+    fs.writeFileSync(grubCfg2, grubText2)
+
+    /**
+     * create grub.cfg (3) on (iso)/boot/grub/x86_64-efi/grub.cfg
+     */
+    Utils.warning(`creating grub.cfg (3) bridge to main. (iso)/boot/grub/${Utils.uefiFormat()}`)
+    let grubCfg3=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    let grubText3 = `# grub.cfg (3) bridge\n`
+    grubText3 += `# created on ${grubCfg3}\n`
+    grubText3 += `\n`
+    grubText3 += `source /boot/grub/grub.cfg\n`
+    fs.writeFileSync(grubCfg3, grubText3)
+
 
     /**
      * creating structure efiWordDir
@@ -159,10 +186,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
 
 
     /**
-     * creating grub.cfg (2) on (iso)/boot/grub
+     * creating grub.cfg (4) on (iso)/boot/grub
      */
-    Utils.warning("creating grub.cfg (2) main menu on (iso)/boot/grub")
-
+    Utils.warning("creating grub.cfg (4) main on (iso)/boot/grub")
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
     let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
@@ -217,7 +243,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
-    const grubCfg2 = path.join(isoDir, '/boot/grub/grub.cfg')
+    const grubCfg4 = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
     const view = {
@@ -227,43 +253,18 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         kernel_parameters,
         vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
-    let grubText2 = ''
-    grubText2 += `# grub.cfg 2\n`
-    grubText2 += `# created on ${grubCfg2}`
-    grubText2 += `\n`
-    grubText2 += mustache.render(template, view)
-
-    fs.writeFileSync(grubCfg2, grubText2)
-
-    /**
-     * create grub.cfg (3) on (iso)/boot/grub/x86_64-efi/grub.cfg
-     */
-    Utils.warning(`creating grub.cfg (3), acting as bridge on (iso)/boot/grub/${Utils.uefiFormat()}`)
-    let grubCfg3=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
-    let grubText3 = `# grub.cfg 3\n`
-    grubText3 += `# created on ${grubCfg3}\n`
-    grubText3 += `\n`
-    grubText3 += `source /boot/grub/grub.cfg\n`
-    fs.writeFileSync(grubCfg3, grubText3)
-
-
-    /**
-     * creating grub.cfg (4) on (iso)/EFI/distro_name
-     */
-    const distroname = this.distroId.toLowerCase()
-    await exec(`mkdir -p ${isoDir}/EFI/${distroname}`, this.echo)
-    const grubCfg4 = path.join(isoDir, `/EFI/${distroname}/grub.cfg`)
-    Utils.warning(`creating grub.cfg (4) seeker, started from ISO, on ${grubCfg4}`)
-    let grubText4 = `# grub.cfg 4\n`
-    grubText4 += `# created on ${grubCfg4}\n`
+    let grubText4 = ''
+    grubText4 += `# grub.cfg (4) main\n`
+    grubText4 += `# created on ${grubCfg2}`
     grubText4 += `\n`
-    grubText4 += seeker
+    grubText4 += mustache.render(template, view)
+
     fs.writeFileSync(grubCfg4, grubText4)
 
     /**
-     * config.cfg
+     * config.cfg serve?
      */
-    await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
+    // await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
 }
 
 
