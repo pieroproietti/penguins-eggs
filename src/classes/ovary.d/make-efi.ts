@@ -96,7 +96,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     seeker += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
 
     /**
-     * creating grub.cfg (1) on (efi.img)/boot/grub/grub.cfg
+     * creating grub.cfg (1) seeker for usb on (efi.img)/boot/grub/grub.cfg
      */
     Utils.warning("creating grub.cfg (1) seeker for USB, on (efi.img)/boot/grub/grub.cfg")
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
@@ -108,7 +108,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     Utils.write(grubCfg1, grubText1)
 
     /**
-     * creating grub.cfg (2) on (iso)/EFI/distro_name
+     * creating grub.cfg (2) seeker for ISO on (iso)/EFI/distro_name
      */
     const efiBootloaderId = this.distroId.toLocaleLowerCase()
     await exec(`mkdir -p ${isoDir}/EFI/${efiBootloaderId}`, this.echo)
@@ -119,6 +119,20 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     grubText2 += `\n`
     grubText2 += seeker
     fs.writeFileSync(grubCfg2, grubText2)
+
+    /**
+     * compatibilità
+     */
+    if (this.distroId !== 'Debian') {
+        const compatPath = `${isoDir}/EFI/debian`
+        await exec(`mkdir ${compatPath}`, this.echo)
+        await exec(`cp ${grubCfg2} ${compatPath}/grub.cfg`, this.echo)
+        let compatText = `# penguins-eggs\n`
+        compatText += '\n'
+        compatText += `This is just an hack, to let ${this.distroId} boot using Debian bootloaders\n`
+        fs.writeFileSync(`${compatPath}/README.md`, compatText)
+    }
+
 
     /**
      * create grub.cfg (3) on (iso)/boot/grub/x86_64-efi/grub.cfg
