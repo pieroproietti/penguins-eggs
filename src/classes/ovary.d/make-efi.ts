@@ -129,7 +129,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         await exec(`cp ${grubCfg2} ${compatPath}/grub.cfg`, this.echo)
         let compatText = `# penguins-eggs\n`
         compatText += '\n'
-        compatText += `This is just an hack, to let ${this.distroId} boot using Debian bootloaders\n`
+        compatText += `This is just an hack, to let ${this.distroId} boot using Debian trixie bootloaders\n`
         fs.writeFileSync(`${compatPath}/README.md`, compatText)
     }
 
@@ -183,10 +183,8 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
-    if (fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
-        // Utils.warning(`grub.cfg (1) was copied on (efi.img)/boot/grub.cfg`)
-    } else {
-        console.log(`error copyng ${grubCfg1} on (efi.img)/boot/grub.cfg`)
+    if (!fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
+        console.log(`error copyng ${grubCfg1} seeker for USB on (efi.img)/boot/grub.cfg`)
         process.exit(1)
     }
     await new Promise(resolve => setTimeout(resolve, 500))
@@ -203,6 +201,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * creating grub.cfg (4) on (iso)/boot/grub
      */
     Utils.warning("creating grub.cfg (4) main on (iso)/boot/grub")
+    
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
     let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
