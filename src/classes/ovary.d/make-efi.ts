@@ -94,7 +94,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (1) seeker for usb on (efi.img)/boot/grub/grub.cfg
      */
-    Utils.warning("creating grub.cfg seeker on (efi.img)/boot/grub")
+    Utils.warning("creating grub.cfg seeker USB on (efi.img)/boot/grub")
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
     const cfgSeekerUsb = `${efiMemdiskDir}/boot/grub/grub.cfg`
     let cfgSeekerUsbText = ''
@@ -124,7 +124,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         pathBait = path.join(isoDir, '/EFI/ubuntu')
     }
     await exec(`mkdir ${pathBait} -p`, this.echo)
-    Utils.warning(`creating grub.cfg seeker/iso on (iso)/${pathBait}}`)
+    Utils.warning(`creating grub.cfg seeker ISO/DVD on (iso)/${pathBait}}`)
     let cfgBait = path.join(pathBait, '/grub.cfg')
     let cfgBaitText = ''
     cfgBaitText += `\n`
@@ -198,7 +198,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (4) on (iso)/boot/grub
      */
-    Utils.warning("creating grub.cfg (5) main on (iso)/boot/grub")
+    Utils.warning("creating grub.cfg main on (iso)/boot/grub")
     
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
