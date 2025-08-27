@@ -1,20 +1,23 @@
 # make-efi.ts
+# struttura ISO
+* boot/grub/grub.cfg (main)
+* boot/grub/efi.img
+* boot/grub/font.pf2
+* boot/grub/x86_64-efi/grub.cfg (bridge)
+* boot/bootx64.efi
+* boot/grubx64.efi
 
-eggs >>> grub.cfg (1) (efi.img)/boot/grub.cfg.
-eggs >>> grub.cfg (2) on (iso)/boot/grub.
-eggs >>> grub.cfg (3) on (iso)/boot/grub/x86_64-efi.
-eggs >>> grub.cfg (4) on (iso)/EFI/debian.
+* EFI/boot/bootx64.efi
+* EFI/boot/grubx64.efi
+* EFI/debian/grub.cfg (seeker/iso)
 
-# grub.cfg 1
-# created on /home/eggs/.mnt/efi/memdisk/
+# efi.img
+* boot/bootx64.efi
+* boot/grubx64.efi
+* (efi.img)debian/grub.cfg (seeker/usb)
 
-search --file --set=root /.disk/id/24dca125-5fbe-45dc-8856-39c23ccc2e5c
-set prefix=($root)/boot/grub
-source $prefix/${grub_cpu}-efi/grub.cfg
-
-
-# grub.cfg 2
-# created on /home/eggs/.mnt/iso/boot/grub/grub.cfg
+## boot/grub/grub.cfg (main)
+```
 set theme=/boot/grub/theme.cfg
 
 menuentry "DEBIAN TRIXIE COLIBRI Live/Installation" {
@@ -43,17 +46,23 @@ menuentry "Boot from local disk" {
 	exit 1
 }
 fi
+```
 
-# grub.cfg 3
-# created on /home/eggs/.mnt/iso//boot/grub/x86_64-efi/grub.cfg
-
+## boot/grub/x86_64-efi/grub.cfg (bridge)
+```
 source /boot/grub/grub.cfg
+```
 
-
-
-# grub.cfg 4
-# created on /home/eggs/.mnt/iso/EFI/debian/grub.cfg
-
-search --file --set=root /.disk/id/24dca125-5fbe-45dc-8856-39c23ccc2e5c
+## (efi.img)debian/grub.cfg (seeker/usb)
+```
+search --file --set=root /.disk/id/8bd3b8e9-a67f-45b9-bf21-60d81cdef7c0
 set prefix=($root)/boot/grub
 source $prefix/${grub_cpu}-efi/grub.cfg
+```
+
+## EFI/debian/grub.cfg (seeker/iso)
+```
+search --file --set=root /.disk/id/8bd3b8e9-a67f-45b9-bf21-60d81cdef7c0
+set prefix=($root)/boot/grub
+source $prefix/${grub_cpu}-efi/grub.cfg
+```
