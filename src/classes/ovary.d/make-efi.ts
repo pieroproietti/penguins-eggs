@@ -30,16 +30,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
     /**
-     * All distros families will user: not signed
+     * except Debian/Devuan/Ubuntu all distros will use: not signed
+     * paths here for Ubuntu and Debian are the same, here checked!
      */
     let signed = false
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-
-    /**
-     * Except distroLike Debian
-     */
-    if (this.distroLike === 'Debian') {
+    if (this.familyId="debian") {
         signed = true
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
@@ -69,8 +66,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const isoDir = this.settings.iso_work
 
     // create (iso)/boot/grub
-    await exec(`mkdir ${isoDir}/boot/grub/ -p`, this.echo)
-    await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${isoDir}/boot/grub/`, this.echo)
+    await exec(`mkdir ${isoDir}/boot/grub/${Utils.uefiFormat()} -p`, this.echo)
 
     // create (iso)/EFI
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
@@ -98,59 +94,55 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (1) seeker for usb on (efi.img)/boot/grub/grub.cfg
      */
-    Utils.warning("creating grub.cfg (1) seeker for USB, on (efi.img)/boot/grub/grub.cfg")
+    Utils.warning("creating grub.cfg seeker on (efi.img)/boot/grub")
     await exec(`mkdir ${path.join(efiMemdiskDir, "/boot/grub -p")}`, this.echo)
-    const grubCfg1 = `${efiMemdiskDir}/boot/grub/grub.cfg`
-    let grubText1 = `# grub.cfg (1) seeker for USB\n`
-    grubText1 += `# created on ${efiMemdiskDir}, path ${grubCfg1}\n`
-    grubText1 += `\n`
-    grubText1 += seeker
-    Utils.write(grubCfg1, grubText1)
+    const cfgSeekerUsb = `${efiMemdiskDir}/boot/grub/grub.cfg`
+    let cfgSeekerUsbText = ''
+    cfgSeekerUsbText += `# grub.cfg seeker\n`
+    cfgSeekerUsbText += `# created on ${efiMemdiskDir}, path ${cfgSeekerUsb}\n`
+    cfgSeekerUsbText += `\n`
+    cfgSeekerUsbText += seeker
+    Utils.write(cfgSeekerUsb, cfgSeekerUsbText)
 
     /**
-     * creating grub.cfg (2) seeker for ISO on (iso)/EFI/distro_name
+     * create grub.cfg (bridge) on (iso)/boot/grub/x86_64-efi/grub.cfg
      */
-    let efiBootloaderId = this.distroId.toLocaleLowerCase()
-    // special cases
-    if (efiBootloaderId === 'linuxmint') {
-        efiBootloaderId = 'ubuntu'
-    } else if (efiBootloaderId === 'lmde') {
-        efiBootloaderId = 'debian'
+    Utils.warning(`creating grub.cfg bridge to main. (iso)/boot/grub/${Utils.uefiFormat()}`)
+    let cfgBridge=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    let cfgBridgeText = `# grub.cfg bridge\n`
+    cfgBridgeText += `# created on ${cfgBridge}\n`
+    cfgBridgeText += `\n`
+    cfgBridgeText += `source /boot/grub/grub.cfg\n`
+    fs.writeFileSync(cfgBridge, cfgBridgeText)
+
+    /**
+     * grub bait: si applica a tutte le distro:
+     * /EFI/debian per tutti, tranne ubuntu
+     */
+    let pathBait = path.join(isoDir, '/EFI/debian')
+    if (this.distroLike === 'Ubuntu') {
+        pathBait = path.join(isoDir, '/EFI/ubuntu')
     }
-    await exec(`mkdir -p ${isoDir}/EFI/${efiBootloaderId}`, this.echo)
-    const grubCfg2 = path.join(isoDir, `/EFI/${efiBootloaderId}/grub.cfg`)
-    Utils.warning(`creating grub.cfg (2) seeker for ISO, on (iso)/EFI/${efiBootloaderId}/grub.cfg`)
-    let grubText2 = `# grub.cfg (2) seeker for ISO\n`
-    grubText2 += `# created on ${grubCfg2}\n`
-    grubText2 += `\n`
-    grubText2 += seeker
-    fs.writeFileSync(grubCfg2, grubText2)
+    await exec(`mkdir ${pathBait} -p`, this.echo)
+    Utils.warning(`creating grub.cfg seeker/iso on (iso)/${pathBait}}`)
+    let cfgBait = path.join(pathBait, '/grub.cfg')
+    let cfgBaitText = ''
+    cfgBaitText += `\n`
+    cfgBaitText += seeker
+    Utils.write(cfgBait, cfgBaitText)
+
 
     /**
-     * compatibility for non debian families and Devuan
+     * README.md, per tutti tranne distrolike Debian ed Ubuntu
      */
-    if (this.familyId !== 'debian' || this.distroId ==='Devuan') {
-        const compatPath = `${isoDir}/EFI/debian`
-        await exec(`mkdir ${compatPath}`, this.echo)
-        await exec(`cp ${grubCfg2} ${compatPath}/grub.cfg`, this.echo)
-        let compatText = `# penguins-eggs\n`
-        compatText += '\n'
-        compatText += `This is just an hack, to let ${this.distroId} boot using Debian trixie bootloaders\n`
-        fs.writeFileSync(`${compatPath}/README.md`, compatText)
+    let baitReadme = path.join(pathBait, '/README.md')
+    let baitReadmeText = ``
+    if (this.distroLike !== 'Debian' && this.distroLike !== 'Ubuntu') {
+        baitReadmeText += `# penguins-eggs\n`
+        baitReadmeText += '\n'
+        baitReadmeText += `This is just an hack, to let ${this.distroId} boot using Debian trixie bootloaders\n`
+        fs.writeFileSync(`${baitReadme}/README.md`, baitReadmeText)
     }
-
-
-    /**
-     * create grub.cfg (3) on (iso)/boot/grub/x86_64-efi/grub.cfg
-     */
-    Utils.warning(`creating grub.cfg (3) bridge to main. (iso)/boot/grub/${Utils.uefiFormat()}`)
-    let grubCfg3=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
-    let grubText3 = `# grub.cfg (3) bridge\n`
-    grubText3 += `# created on ${grubCfg3}\n`
-    grubText3 += `\n`
-    grubText3 += `source /boot/grub/grub.cfg\n`
-    fs.writeFileSync(grubCfg3, grubText3)
-
 
     /**
      * creating structure efiWordDir
@@ -185,12 +177,12 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${grubCfg1} ${efiImgMnt}/boot/grub.cfg`, this.echo) 
+    await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/boot/grub.cfg`, this.echo) 
     await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
     if (!fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
-        console.log(`error copyng ${grubCfg1} seeker for USB on (efi.img)/boot/grub.cfg`)
+        console.log(`error copyng ${cfgSeekerUsb} seeker for USB on (efi.img)/boot/grub.cfg`)
         process.exit(1)
     }
     await new Promise(resolve => setTimeout(resolve, 500))
@@ -206,7 +198,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (4) on (iso)/boot/grub
      */
-    Utils.warning("creating grub.cfg (4) main on (iso)/boot/grub")
+    Utils.warning("creating grub.cfg (5) main on (iso)/boot/grub")
     
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
@@ -262,7 +254,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
 
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid) // this.kernelParameters()
-    const grubCfg4 = path.join(isoDir, '/boot/grub/grub.cfg')
+    const cfgMain = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
     const view = {
@@ -272,24 +264,21 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         kernel_parameters,
         vmlinuz: `/live/${path.basename(this.vmlinuz)}`
     }
-    let grubText4 = ''
-    grubText4 += `# grub.cfg (4) main\n`
-    grubText4 += `# created on ${grubCfg2}`
-    grubText4 += `\n`
-    grubText4 += mustache.render(template, view)
+    let cfgMainText = ''
+    cfgMainText += `# grub.cfg (4) main\n`
+    cfgMainText += `# created on ${cfgMain}`
+    cfgMainText += `\n`
+    cfgMainText += mustache.render(template, view)
 
-    fs.writeFileSync(grubCfg4, grubText4)
-
-    /**
-     * config.cfg serve?
-     */
-    // await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
+    fs.writeFileSync(cfgMain, cfgMainText)
 }
 
 
 /**
  * FUNCTIONS
  */
+
+
 
 /**
  * 
@@ -316,7 +305,7 @@ function grubEfiName(): string {
     if (process.arch === 'x64') {
         gen = 'grubx64.efi'
     } else if (process.arch === 'ia32') {
-        gen = 'bootia32.efi'
+        gen = 'grub ia32.efi'
     } else if (process.arch === 'arm64') {
         gen = 'grubaa64.efi'
     }
