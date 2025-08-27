@@ -36,7 +36,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     let signed = false
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-    if (this.familyId="debian") {
+    if (this.familyId === "debian") {
         signed = true
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
