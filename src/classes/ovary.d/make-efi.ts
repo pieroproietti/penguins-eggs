@@ -110,7 +110,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * creating grub.cfg (2) seeker for ISO on (iso)/EFI/distro_name
      */
-    const efiBootloaderId = this.distroId.toLocaleLowerCase()
+    let efiBootloaderId = this.distroId.toLocaleLowerCase()
+    // special cases
+    if (efiBootloaderId === 'linuxmint') {
+        efiBootloaderId = 'ubuntu'
+    } else if (efiBootloaderId === 'lmde') {
+        efiBootloaderId = 'debian'
+    }
     await exec(`mkdir -p ${isoDir}/EFI/${efiBootloaderId}`, this.echo)
     const grubCfg2 = path.join(isoDir, `/EFI/${efiBootloaderId}/grub.cfg`)
     Utils.warning(`creating grub.cfg (2) seeker for ISO, on (iso)/EFI/${efiBootloaderId}/grub.cfg`)
