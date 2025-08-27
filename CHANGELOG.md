@@ -21,6 +21,8 @@ Versions are listed on reverse order, the first is the last one.
 
 ## penguins-eggs_25.8.27
 Another round on the merry-go-round: the ISO boot mechanism has been modified again.
+* boot and install with Secure Boot enabled on Debian (trixie, bookworm, bullseye), Devuan and Ubuntu and derivatives;
+* You must disable Secure Boot for Almalinux, Alpine, Arch, Fedora, Manjaro, OpenSuse;
 
 ## penguins-eggs_25.8.23
 Finally, remastering Debian trixie, resulting ISO will boot on UEFI and will be correctly installed using calamares, but you need to DISABLE Secure Boot.
