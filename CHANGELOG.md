@@ -19,8 +19,8 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.26
-A stabilisation release, with many small changes and tests on Debian, Devuan and Ubuntu.
+## penguins-eggs_25.8.27
+Another round on the merry-go-round: the ISO boot mechanism has been modified again.
 
 ## penguins-eggs_25.8.23
 Finally, remastering Debian trixie, resulting ISO will boot on UEFI and will be correctly installed using calamares, but you need to DISABLE Secure Boot.

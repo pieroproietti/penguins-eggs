@@ -30,13 +30,13 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
     /**
-     * All distros families will user: not signed
+     * except Debian/Devuan/Ubuntu all distros will use: not signed
+     * paths here for Ubuntu and Debian are the same, here checked!
      */
     let signed = false
     let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
     let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-    // All except Debian
-    if (this.distroLike === 'Debian') {
+    if (this.familyId="debian") {
         signed = true
         if (process.arch === 'x64') {
             grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
@@ -116,7 +116,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     fs.writeFileSync(cfgBridge, cfgBridgeText)
 
     /**
-     * grub bait: si applica a tutte le distro, 
+     * grub bait: si applica a tutte le distro:
      * /EFI/debian per tutti, tranne ubuntu
      */
     let pathBait = path.join(isoDir, '/EFI/debian')
@@ -143,8 +143,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         baitReadmeText += `This is just an hack, to let ${this.distroId} boot using Debian trixie bootloaders\n`
         fs.writeFileSync(`${baitReadme}/README.md`, baitReadmeText)
     }
-
-
 
     /**
      * creating structure efiWordDir
@@ -273,11 +271,6 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     cfgMainText += mustache.render(template, view)
 
     fs.writeFileSync(cfgMain, cfgMainText)
-
-    /**
-     * config.cfg serve?
-     */
-    // await exec(`cp ${path.resolve(__dirname, `../../../assets/config.cfg`)} ${isoDir}/boot/grub`)
 }
 
 
