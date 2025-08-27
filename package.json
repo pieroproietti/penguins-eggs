@@ -50,7 +50,7 @@
         "@types/read": "^0.0.32",
         "@types/shelljs": "^0.8.17",
         "@types/ws": "^8.18.1",
-        "chai": "^5.2.1",
+        "chai": "^6.0.1",
         "eslint": "^9.34.0",
         "eslint-config-oclif": "^6.0.98",
         "eslint-config-prettier": "^10.1.8",
