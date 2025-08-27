@@ -141,7 +141,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         baitReadmeText += `# penguins-eggs\n`
         baitReadmeText += '\n'
         baitReadmeText += `This is just an hack, to let ${this.distroId} boot using Debian trixie bootloaders\n`
-        fs.writeFileSync(`${baitReadme}/README.md`, baitReadmeText)
+        fs.writeFileSync(baitReadme, baitReadmeText)
     }
 
     /**
