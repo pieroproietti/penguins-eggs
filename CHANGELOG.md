@@ -19,7 +19,7 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
-## penguins-eggs_25.8.27
+## penguins-eggs_25.8.28
 Another round on the merry-go-round: the ISO boot mechanism has been modified again.
 * boot and install with Secure Boot enabled on Debian (trixie, bookworm, bullseye), Devuan and Ubuntu and derivatives;
 * You must disable Secure Boot for Almalinux, Alpine, Arch, Fedora, Manjaro, OpenSuse;
