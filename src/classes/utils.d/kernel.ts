@@ -80,10 +80,11 @@ export default class Kernel {
             initramfs = `/boot/initramfs-${version}-x86_64.img`
 
         } else {
-            // Gestione generica per le altre distro (Debian, Fedora, SUSE, ecc.)
+            // Gestione generica per le altre distro (Debian, Fedora, SUSE, OpenMamba, cc.)
             const candidates = [
                 `/boot/initrd.img-${kernel}`, // Debian, Ubuntu
                 `/boot/initramfs-${kernel}.img`, // Fedora, RHEL
+                `/boot/initramfs-${kernel}-1mamba-x86_64.img`, // Openmamba
                 `/boot/initrd-${kernel}`, // openSUSE
                 `/boot/initramfs-${kernel}`, // fallbacks
             ]
