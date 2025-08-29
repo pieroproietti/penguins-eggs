@@ -139,7 +139,7 @@ export default class ExportPkg extends Command {
        */
     } else if (familyId === 'openmamba') {
       Utils.warning("openmamba rpm packages")
-      localPath = `/usr/src/RPM/RPMS/x86_64`
+      localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
       filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
 
