@@ -94,15 +94,17 @@ export default class Utils {
     */
    static snapshotPrefix(distroId: string, codenameId: string): string {
       let result = `egg-of_${distroId.toLowerCase()}-`
+
       if (codenameId === 'rolling' || codenameId === '') {
          const releaseId = Utils.getOsRelease().VERSION_ID.trim()
          if (releaseId !== '') {
-            result += `${releaseId}-`
+            result += releaseId
          }
       } else {
-         result += `${codenameId.toLowerCase()}-`
+         result += codenameId.toLowerCase()
       }
       result = result.replace(`/`, '-')
+      result += '-'
       return result
    }
 
