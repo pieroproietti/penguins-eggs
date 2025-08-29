@@ -1,4 +1,1625 @@
 {
-  "commands": {},
+  "commands": {
+    "adapt": {
+      "aliases": [],
+      "args": {},
+      "description": "adapt monitor resolution for VM only",
+      "examples": [
+        "eggs adapt"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "adapt",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "adapt.js"
+      ]
+    },
+    "analyze": {
+      "aliases": [],
+      "args": {},
+      "description": "analyze for syncto",
+      "examples": [
+        "sudo eggs analyze"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "analyze",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "analyze.js"
+      ]
+    },
+    "calamares": {
+      "aliases": [],
+      "args": {},
+      "description": "configure calamares or install or configure it",
+      "examples": [
+        "sudo eggs calamares",
+        "sudo eggs calamares --install",
+        "sudo eggs calamares --install --theme=/path/to/theme",
+        "sudo eggs calamares --remove"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "install": {
+          "char": "i",
+          "description": "install calamares and its dependencies",
+          "name": "install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "policies": {
+          "char": "p",
+          "description": "configure calamares policies",
+          "name": "policies",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "release": {
+          "char": "r",
+          "description": "release: remove calamares and all its dependencies after the installation",
+          "name": "release",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "remove": {
+          "description": "remove calamares and its dependencies",
+          "name": "remove",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "theme": {
+          "description": "theme/branding for eggs and calamares",
+          "name": "theme",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "calamares",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "calamares.js"
+      ]
+    },
+    "config": {
+      "aliases": [],
+      "args": {},
+      "description": "Configure eggs to run it",
+      "examples": [
+        "sudo eggs config",
+        "sudo eggs config --clean",
+        "sudo eggs config --clean --nointeractive"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old configuration before to create new one",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "config",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "config.js"
+      ]
+    },
+    "cuckoo": {
+      "aliases": [],
+      "args": {},
+      "description": "PXE start with proxy-dhcp",
+      "examples": [
+        "sudo eggs cuckoo"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "cuckoo",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "cuckoo.js"
+      ]
+    },
+    "dad": {
+      "aliases": [],
+      "args": {},
+      "description": "ask help from daddy - TUI configuration helper",
+      "examples": [
+        "sudo dad",
+        "sudo dad --clean",
+        "sudo dad --default"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old configuration before to create",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "default": {
+          "char": "d",
+          "description": "reset to default values",
+          "name": "default",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "file": {
+          "char": "f",
+          "description": "use a file configuration custom",
+          "name": "file",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "dad",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "dad.js"
+      ]
+    },
+    "install": {
+      "aliases": [
+        "krill"
+      ],
+      "args": {},
+      "description": "krill: the CLI system installer - the egg became a penguin!",
+      "examples": [
+        "sudo eggs install",
+        "sudo eggs install --unattended --halt",
+        "sudo eggs install --chroot"
+      ],
+      "flags": {
+        "btrfs": {
+          "char": "b",
+          "description": "Format btrfs",
+          "name": "btrfs",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "chroot": {
+          "char": "c",
+          "description": "chroot before to end",
+          "name": "chroot",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "crypted": {
+          "char": "k",
+          "description": "Crypted CLI installation",
+          "name": "crypted",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "domain": {
+          "char": "d",
+          "description": "Domain name, defult: .local",
+          "name": "domain",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "halt": {
+          "char": "H",
+          "description": "Halt the system after installation",
+          "name": "halt",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "ip": {
+          "char": "i",
+          "description": "hostname as ip, eg: ip-192-168-1-33",
+          "name": "ip",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "none": {
+          "char": "N",
+          "description": "Swap none: 256M",
+          "name": "none",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pve": {
+          "char": "p",
+          "description": "Proxmox VE install",
+          "name": "pve",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "random": {
+          "char": "r",
+          "description": "Add random to hostname, eg: colibri-ay412dt",
+          "name": "random",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "small": {
+          "char": "s",
+          "description": "Swap small: RAM",
+          "name": "small",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "suspend": {
+          "char": "S",
+          "description": "Swap suspend: RAM x 2",
+          "name": "suspend",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "testing": {
+          "char": "t",
+          "description": "Just testing krill",
+          "name": "testing",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "unattended": {
+          "char": "u",
+          "description": "Unattended installation",
+          "name": "unattended",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "install",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "install.js"
+      ]
+    },
+    "kill": {
+      "aliases": [],
+      "args": {},
+      "description": "kill the eggs/free the nest",
+      "examples": [
+        "sudo eggs kill"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "isos": {
+          "char": "i",
+          "description": "erase all ISOs on remote mount",
+          "name": "isos",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "kill",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "kill.js"
+      ]
+    },
+    "love": {
+      "aliases": [],
+      "args": {},
+      "description": "the simplest way to get an egg!",
+      "examples": [
+        "eggs auto"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "love",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "love.js"
+      ]
+    },
+    "mom": {
+      "aliases": [],
+      "args": {},
+      "description": "ask help from mommy - TUI helper",
+      "examples": [
+        "eggs mom"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "mom",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "mom.js"
+      ]
+    },
+    "pods": {
+      "aliases": [],
+      "args": {
+        "distro": {
+          "description": "distro to build",
+          "name": "distro",
+          "required": false
+        }
+      },
+      "description": "eggs pods: build ISOs from containers",
+      "examples": [
+        "eggs pods archlinux",
+        "eggs pods debian",
+        "eggs pods ubuntu"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "pods",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "pods.js"
+      ]
+    },
+    "produce": {
+      "aliases": [],
+      "args": {},
+      "description": "produce a live image from your system whithout your data",
+      "examples": [
+        "sudo eggs produce                    # zstd fast compression",
+        "sudo eggs produce --standard         # xz compression",
+        "sudo eggs produce --max              # xz max compression",
+        "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
+        "sudo eggs produce --clone            # clone",
+        "sudo eggs produce --cryptedclone     # crypted clone",
+        "sudo eggs produce --basename=colibri",
+        "sudo eggs produce --theme lastos",
+        "sudo eggs produce --excludes static  # you can customize it",
+        "sudo eggs produce --excludes homes   # exclude /home/*",
+        "sudo eggs produce --excludes home    # exclude ~/*"
+      ],
+      "flags": {
+        "addons": {
+          "description": "addons to be used: adapt, pve, rsupport",
+          "name": "addons",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "basename": {
+          "description": "basename",
+          "name": "basename",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "clone": {
+          "char": "c",
+          "description": "clone",
+          "name": "clone",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedclone": {
+          "char": "C",
+          "description": "crypted clone",
+          "name": "cryptedclone",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "excludes": {
+          "description": "use: static, homes, home",
+          "name": "excludes",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "kernel": {
+          "char": "k",
+          "description": "kernel version",
+          "name": "kernel",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "links": {
+          "description": "desktop links",
+          "name": "links",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
+        },
+        "max": {
+          "char": "m",
+          "description": "max compression: xz -Xbcj ...",
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "noicon": {
+          "char": "N",
+          "description": "no icon eggs on desktop",
+          "name": "noicon",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pendrive": {
+          "char": "p",
+          "description": "optimized for pendrive: zstd -b 1M -Xcompression-level 15",
+          "name": "pendrive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "prefix": {
+          "char": "P",
+          "description": "prefix",
+          "name": "prefix",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "release": {
+          "description": "release: remove penguins-eggs, calamares and dependencies after installation",
+          "name": "release",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "script": {
+          "char": "s",
+          "description": "script mode. Generate scripts to manage iso build",
+          "name": "script",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "standard": {
+          "char": "S",
+          "description": "standard compression: xz -b 1M",
+          "name": "standard",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "theme": {
+          "description": "theme for livecd, calamares branding and partitions",
+          "name": "theme",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "unsecure": {
+          "char": "u",
+          "description": "/root contents are included on live",
+          "name": "unsecure",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yolk": {
+          "char": "y",
+          "description": "force yolk renew",
+          "name": "yolk",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "produce",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "produce.js"
+      ]
+    },
+    "status": {
+      "aliases": [],
+      "args": {},
+      "description": "informations about eggs status",
+      "examples": [
+        "eggs status"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "status",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "status.js"
+      ]
+    },
+    "syncfrom": {
+      "aliases": [],
+      "args": {},
+      "description": "restore users and user data from a LUKS volumes",
+      "examples": [
+        "sudo eggs syncfrom",
+        "sudo eggs syncfrom --file /path/to/luks-volume"
+      ],
+      "flags": {
+        "delete": {
+          "description": "rsync --delete delete extraneous files from dest dirs",
+          "name": "delete",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "file": {
+          "char": "f",
+          "description": "file containing luks-volume encrypted",
+          "name": "file",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "rootdir": {
+          "char": "r",
+          "description": "rootdir of the installed system, when used from live",
+          "name": "rootdir",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "syncfrom",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "syncfrom.js"
+      ]
+    },
+    "syncto": {
+      "aliases": [],
+      "args": {},
+      "description": "Save users and users' data ENCRYPTED",
+      "examples": [
+        "sudo eggs syncto",
+        "sudo eggs syncto --file /path/to/luks-volume",
+        "sudo eggs syncto --excludes"
+      ],
+      "flags": {
+        "excludes": {
+          "char": "e",
+          "description": "use: exclude.list.d/home.list",
+          "name": "excludes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "file": {
+          "char": "f",
+          "description": "file luks-volume encrypted",
+          "name": "file",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "syncto",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "syncto.js"
+      ]
+    },
+    "update": {
+      "aliases": [],
+      "args": {},
+      "description": "update the Penguins' eggs tool",
+      "examples": [
+        "eggs update"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "update.js"
+      ]
+    },
+    "export:iso": {
+      "aliases": [],
+      "args": {},
+      "description": "export iso in the destination host",
+      "examples": [
+        "eggs export iso",
+        "eggs export iso --clean"
+      ],
+      "flags": {
+        "checksum": {
+          "char": "C",
+          "description": "export checksums md5 and sha256",
+          "name": "checksum",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "clean": {
+          "char": "c",
+          "description": "delete old ISOs before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:iso",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "iso.js"
+      ]
+    },
+    "export:pkg": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso to the destination host",
+      "examples": [
+        "eggs export pkg",
+        "eggs export pkg --clean",
+        "eggs export pkg --all"
+      ],
+      "flags": {
+        "all": {
+          "char": "a",
+          "description": "export all archs",
+          "name": "all",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:pkg",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "pkg.js"
+      ]
+    },
+    "export:tarballs": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso/tarballs to the destination host",
+      "examples": [
+        "eggs export tarballs",
+        "eggs export tarballs --clean"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:tarballs",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "tarballs.js"
+      ]
+    },
+    "tools:clean": {
+      "aliases": [],
+      "args": {},
+      "description": "clean system log, apt, etc",
+      "examples": [
+        "sudo eggs tools clean"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:clean",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "clean.js"
+      ]
+    },
+    "tools:ppa": {
+      "aliases": [],
+      "args": {},
+      "description": "add/remove repo",
+      "examples": [
+        "sudo eggs tools ppa --add",
+        "sudo eggs tools ppa --remove"
+      ],
+      "flags": {
+        "add": {
+          "char": "a",
+          "description": "add penguins-eggs PPA repository",
+          "name": "add",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "remove": {
+          "char": "r",
+          "description": "remove penguins-eggs PPA repository",
+          "name": "remove",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:ppa",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "ppa.js"
+      ]
+    },
+    "tools:skel": {
+      "aliases": [],
+      "args": {},
+      "description": "update skel from home configuration",
+      "examples": [
+        "sudo eggs tools skel",
+        "sudo eggs tools skel --user user-to-be-copied"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "user": {
+          "char": "u",
+          "description": "user to be used",
+          "name": "user",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:skel",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "skel.js"
+      ]
+    },
+    "tools:stat": {
+      "aliases": [],
+      "args": {},
+      "description": "get statistics from sourceforge",
+      "examples": [
+        "eggs tools stat",
+        "eggs tools stat --month",
+        "eggs tools stat --year"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "month": {
+          "char": "m",
+          "description": "current month",
+          "name": "month",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "year": {
+          "char": "y",
+          "description": "current year",
+          "name": "year",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:stat",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "stat.js"
+      ]
+    },
+    "tools:yolk": {
+      "aliases": [],
+      "args": {},
+      "description": "configure eggs to install without internet",
+      "examples": [
+        "sudo eggs tools yolk"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:yolk",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "dir": "/var/local/yolk",
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "yolk.js"
+      ]
+    },
+    "wardrobe:get": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "repository to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "get warorobe",
+      "examples": [
+        "eggs wardrobe get",
+        "eggs wardrobe get your-wardrobe"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:get",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "get.js"
+      ]
+    },
+    "wardrobe:list": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "wardrobe to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "list costumes and accessoires in wardrobe",
+      "examples": [
+        "eggs wardrobe list",
+        "eggs wardrobe list your-wardrobe",
+        "eggs wardrobe list --distro arch"
+      ],
+      "flags": {
+        "distro": {
+          "char": "d",
+          "description": "distro",
+          "name": "distro",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:list",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "list.js"
+      ]
+    },
+    "wardrobe:show": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "costume to show",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "show costumes/accessories in wardrobe",
+      "examples": [
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "json": {
+          "char": "j",
+          "description": "output JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:show",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "example": [
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+      ],
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "show.js"
+      ]
+    },
+    "wardrobe:wear": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "costume to wear",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "wear costume/accessories from wardrobe",
+      "examples": [
+        "sudo eggs wardrobe wear duck",
+        "sudo eggs wardrobe wear accessories/firmwares",
+        "sudo eggs wardrobe wear wagtail/waydroid"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no_accessories": {
+          "char": "a",
+          "description": "not install accessories",
+          "name": "no_accessories",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no_firmwares": {
+          "char": "f",
+          "description": "not install firmwares",
+          "name": "no_firmwares",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:wear",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "wear.js"
+      ]
+    }
+  },
   "version": "26.5.29"
 }
