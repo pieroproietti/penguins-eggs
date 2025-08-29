@@ -103,8 +103,7 @@ export default class Utils {
       } else {
          result += codenameId.toLowerCase()
       }
-      result = result.replace(`/`, '-')
-      result += '-'
+      result = result.replace(`/`, '-')      
       return result
    }
 
