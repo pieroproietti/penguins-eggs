@@ -101,7 +101,7 @@ export default class Utils {
             result += releaseId
          }
       } else {
-         result += codenameId.toLowerCase()
+         result += `${codenameId.toLowerCase()}-`
       }
       result = result.replace(`/`, '-')      
       return result
