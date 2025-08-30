@@ -26,7 +26,17 @@ export default async function bootloader(this: Sequence) {
   /**
    * grub-install: added --force per fedora family
    */
-  let cmd = `chroot ${this.installTarget} ${grubName}-install ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
+  
+  // define grub-install --target=${target}
+  let target = `x86_64-efi`
+  if (!this.efi) {
+    target = 'i386-pc'
+  }
+  if (process.arch === 'arm64') {
+    target = `arm64-efi`
+  }
+  
+  let cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
   await exec(cmd, this.echo)
 
 
