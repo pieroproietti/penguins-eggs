@@ -148,7 +148,7 @@ export default class Sequence {
     this.devices.data = {} as IDevice
     this.devices.swap = {} as IDevice
     this.distro = new Distro()
-    this.efi = fs.existsSync('/sys/firmware/efi/efivars')
+    this.efi = fs.existsSync('/efivars')
     this.luksFile = `${this.distro.liveMediumPath}live/${this.luksName}`
   }
 

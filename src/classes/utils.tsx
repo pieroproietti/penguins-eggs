@@ -103,8 +103,9 @@ export default class Utils {
       } else {
          result += `${codenameId.toLowerCase()}`
       }
-      if (! result.endsWith('-')) {
-         result += result
+
+      if (!result.endsWith('-')) {
+         result += '-'
       }
          
       return result
