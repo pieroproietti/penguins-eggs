@@ -96,6 +96,7 @@ export default class Utils {
       let result = `egg-of_${distroId.toLowerCase()}-`
 
       if (codenameId === 'rolling' || codenameId === '') {
+         // releaseId viene con - incluso
          const releaseId = Utils.getOsRelease().VERSION_ID.trim()
          if (releaseId !== '') {
             result += releaseId
