@@ -19,6 +19,16 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+# v25.8.31 welcome back Openmamba!
+
+[openmamba](https://openmamba.org/) is an Italian Linux distribution, which originated from [QiLinux](https://openmamba.org/it/), discontinued in 2007.
+
+The author and maintainer: Silvan Calarco, performs the vast majority of updates. It can be installed on i386, x86_64, and arm64 computers or SBCs.
+
+In short, there is an incredible amount of work behind it and a lot of history behind it and... ahead of it. Yes, because it is still constantly updated, not for nothing is it a rolling release and supports version 6 of KDE and LXQT.
+
+* krill: in the generation of the command: grub-install in krill, I introduced the value `--target=<PLATFORM>`, previously omitted;
+
 ## penguins-eggs_25.8.28
 Another round on the merry-go-round: the ISO boot mechanism has been modified again.
 * boot and install with Secure Boot enabled on Debian (trixie, bookworm, bullseye), Devuan and Ubuntu and derivatives;
