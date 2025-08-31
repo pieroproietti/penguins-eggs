@@ -388,18 +388,10 @@ export default class Pxe {
                 ip=dhcp`
       break
 
-      case 'fedora':
-        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-               root=live:http://${Utils.address()}/live/filesystem.squashfs \
-               rootfstype=auto \
-               ro \
-               rd.live.image \
-               rd.luks=0 \
-               rd.md=0 \
-               rd.dm=0\n`
-      break
-
+      case 'fedora' :
+      case 'openmamba':
       case 'opensuse':
+
         lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
                root=live:http://${Utils.address()}/live/filesystem.squashfs \
                rootfstype=auto \
@@ -409,7 +401,6 @@ export default class Pxe {
                rd.md=0 \
                rd.dm=0\n`
       break
-      
 
       default:
         console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
