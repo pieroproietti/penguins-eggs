@@ -31,6 +31,8 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${username} ${this.toNull}`
   } else if (this.distro.familyId === 'fedora') {
     cmd = `chroot ${this.installTarget} adduser ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
+  } else if (this.distro.familyId === 'openmamba') {
+    cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   } else if (this.distro.familyId === 'opensuse') {
     cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
   }
@@ -42,7 +44,9 @@ export default async function addUser(this: Sequence, username = 'live', passwor
   let group = 'wheel'
   if (this.distro.familyId === 'debian') {
     group = 'sudo'
-  }
+  } else if (this.distro.familyId === 'openmamba') {
+    group = 'sysadmin'
+  } 
 
   cmd = `chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`
   await exec(cmd, this.echo)
