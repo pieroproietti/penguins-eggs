@@ -8,7 +8,9 @@
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
-[![](./images/cdrom.png)](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN)
+<a href="https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN">
+  <img src="./images/cdrom.png" width="280" height="300" alt="CD-ROM">
+</a>
 
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
 
