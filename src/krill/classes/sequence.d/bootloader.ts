@@ -26,7 +26,7 @@ export default async function bootloader(this: Sequence) {
   /**
    * grub-install: added --force per fedora family
    */
-  
+
   // define grub-install --target=${target}
   let target = `x86_64-efi`
   if (!this.efi) {
@@ -35,9 +35,34 @@ export default async function bootloader(this: Sequence) {
   if (process.arch === 'arm64') {
     target = `arm64-efi`
   }
-  
-  let cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
-  await exec(cmd, this.echo)
+
+  let cmd = ''
+  if (this.efi) {
+    /**
+     * UEFI Installation
+     * This is the correct way to install GRUB for UEFI systems.
+     * --target: Specifies the EFI architecture (x86_64-efi or arm64-efi).
+     * --efi-directory: Tells GRUB where the EFI System Partition is mounted. CRITICAL.
+     * --bootloader-id: Creates the \EFI\fedora directory on the ESP and labels the NVRAM entry. CRITICAL.
+     * We do NOT specify the device (e.g., /dev/sda) for UEFI.
+     */
+    let target = 'x86_64-efi'
+    if (process.arch === 'arm64') {
+      target = 'arm64-efi'
+    }
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=fedora --recheck ${this.toNull}`
+
+  } else {
+    /**
+     * MBR (Legacy BIOS) Installation
+     * For legacy boot, we specify the installation device directly.
+     */
+    const target = 'i386-pc'
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
+  }
+
+  // let cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
+  // await exec(cmd, this.echo)
 
 
   /**
