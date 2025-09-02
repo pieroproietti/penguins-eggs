@@ -19,6 +19,10 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.3
+* krill: fixed installation on UEFI on Debian and Ubuntu, to check for the other distros.
+* bionic: I had problem to release on Ubuntu bionic, same node modules updated breack compatibility with nodejs 16:
+
 ## v25.9.2
 * krill: fixed user creation for openmamba:
 * standardized display of:

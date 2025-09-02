@@ -12,12 +12,14 @@ import Sequence from '../../sequence.js'
 
 export default async function uefiStandard(this: Sequence, installDevice = "", p = ""): Promise<boolean> {
     await exec(`parted --script ${installDevice} mklabel gpt`, this.echo)
-    await exec(`parted --script ${installDevice} mkpart efi  fat32      34s                256MiB`, this.echo) // sda1 EFI
-    await exec(`parted --script ${installDevice} mkpart swap linux-swap 256MiB ${this.swapSize + 256}Mib`, this.echo) // sda2 swap
-    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 256}MiB         100%`, this.echo) // sda3 root
-    await exec(`parted --script ${installDevice} set 1 boot on`, this.echo) // sda1
-    await exec(`parted --script ${installDevice} set 1 esp on`, this.echo) // sda1
 
+    // Partizione EFI: inizia a 1MiB e ha una dimensione di circa 256MiB
+    // Finisce a 257MiB per avere uno spazio netto di 256MiB
+    await exec(`parted --script ${installDevice} mkpart efi fat32 1MiB 257MiB`, this.echo)
+    await exec(`parted --script ${installDevice} mkpart swap linux-swap 257MiB ${this.swapSize + 257}MiB`, this.echo)
+    await exec(`parted --script ${installDevice} mkpart root ext4 ${this.swapSize + 257}MiB 100%`, this.echo)
+    await exec(`parted --script ${installDevice} set 1 boot on`, this.echo)
+    await exec(`parted --script ${installDevice} set 1 esp on`, this.echo)
 
     this.devices.efi.name = `${installDevice}${p}1`
     this.devices.efi.fsType = 'F 32 -I'
