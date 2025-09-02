@@ -111,7 +111,7 @@ export default class ExportPkg extends Command {
        * Debian
        */
     } else if (familyId === "debian") {
-      Utils.warning("debian deb")
+      Utils.warning("debian DEB")
       localPath = `/home/${this.user}/penguins-eggs/dist`
       remotePath = this.Tu.config.remotePathPackages + "/debs"
       let arch = Utils.uefiArch()
@@ -124,7 +124,7 @@ export default class ExportPkg extends Command {
        * fedora
        */
     } else if (familyId === 'fedora') {
-      Utils.warning("fedora rpm packages")
+      Utils.warning("fedora RPM")
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       if (distroId === 'fedora') {
         remotePath = this.Tu.config.remotePathPackages + "/fedora"
