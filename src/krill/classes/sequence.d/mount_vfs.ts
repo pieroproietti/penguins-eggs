@@ -24,9 +24,12 @@ export async function mountVfs(this: Sequence) {
   await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, this.echo)
   await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, this.echo)
   if (this.efi) {
-    await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
+    await exec(`mkdir -p ${this.installTarget}/sys/firmware/efi/efivars ${this.toNull}`, this.echo)
+    await exec(`mount -o bind /sys/firmware/efi/efivars ${this.installTarget}/sys/firmware/efi/efivars`)
   }
-
+  /**
+   * recursive binding
+   */
   await exec(`mount -o rbind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
 }
 
