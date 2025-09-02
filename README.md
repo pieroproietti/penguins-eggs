@@ -9,7 +9,7 @@
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 <a href="https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN">
-  <img src="https://github.com/pieroproietti/penguins-eggs/blob/master/images/cdrom.png" width="280" height="300" alt="CD-ROM">
+  <img src="https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/images/cdrom.png" width="280" height="300" alt="CD-ROM">
 </a>
 
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
