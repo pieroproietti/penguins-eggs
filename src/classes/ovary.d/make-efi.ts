@@ -65,10 +65,10 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     const efiImgMnt = path.join(efiPath, 'mnt')
     const isoDir = this.settings.iso_work
 
-    // create (iso)/boot/grub
+    // create (ISO)/boot/grub
     await exec(`mkdir ${isoDir}/boot/grub/${Utils.uefiFormat()} -p`, this.echo)
 
-    // create (iso)/EFI
+    // create (ISO)/EFI
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
     await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEfiName()}`, this.echo)
@@ -105,9 +105,9 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     Utils.write(cfgSeekerUsb, cfgSeekerUsbText)
 
     /**
-     * create grub.cfg (bridge) on (iso)/boot/grub/x86_64-efi/grub.cfg
+     * create grub.cfg (bridge) on (ISO)/boot/grub/x86_64-efi/grub.cfg
      */
-    Utils.warning(`creating grub.cfg bridge to main. (iso)/boot/grub/${Utils.uefiFormat()}`)
+    Utils.warning(`creating grub.cfg bridge to main. (ISO)/boot/grub/${Utils.uefiFormat()}`)
     let cfgBridge=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
     let cfgBridgeText = `# grub.cfg bridge\n`
     cfgBridgeText += `# created on ${cfgBridge}\n`
@@ -124,7 +124,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         pathBait = path.join(isoDir, '/EFI/ubuntu')
     }
     await exec(`mkdir ${pathBait} -p`, this.echo)
-    Utils.warning(`creating grub.cfg seeker ISO/DVD on (iso)/${pathBait}}`)
+    Utils.warning(`creating grub.cfg seeker ISO/DVD on (ISO)/${path.basename(pathBait)}`)
     let cfgBait = path.join(pathBait, '/grub.cfg')
     let cfgBaitText = ''
     cfgBaitText += `\n`
@@ -191,14 +191,14 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     // Copy isoImg in ${${isoDir}/boot/grub
-    Utils.warning("copyng efi.img on (iso)/boot/grub")
+    Utils.warning("copyng (efi.img) on (ISO)/boot/grub")
     await exec(`cp ${efiImg} ${isoDir}/boot/grub`, this.echo)
 
 
     /**
-     * creating grub.cfg (4) on (iso)/boot/grub
+     * creating grub.cfg (4) on (ISO)/boot/grub
      */
-    Utils.warning("creating grub.cfg main on (iso)/boot/grub")
+    Utils.warning("creating grub.cfg main on (ISO)/boot/grub")
     
     // copy splash to efiWorkDir
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`

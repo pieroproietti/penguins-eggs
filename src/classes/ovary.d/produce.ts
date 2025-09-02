@@ -289,8 +289,8 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             await exec(synctoCmd, Utils.setEcho(true))
-            Utils.warning(`moving ${luksFile} in ${this.nest}iso/live`)
-            await exec(`mv ${luksFile} ${this.nest}iso/live`, this.echo)
+            Utils.warning(`moving ${luksFile} in ${this.nest}(ISO)/live`)
+            await exec(`mv ${luksFile} ${this.nest}(ISO)/live`, this.echo)
         }
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')
