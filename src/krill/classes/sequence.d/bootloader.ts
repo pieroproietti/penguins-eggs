@@ -23,19 +23,6 @@ export default async function bootloader(this: Sequence) {
   let grubName = Diversion.grubName(this.distro.familyId)
   let grubForce = Diversion.grubForce(this.distro.familyId)
 
-  /**
-   * grub-install: added --force per fedora family
-   */
-
-  // define grub-install --target=${target}
-  let target = `x86_64-efi`
-  if (!this.efi) {
-    target = 'i386-pc'
-  }
-  if (process.arch === 'arm64') {
-    target = `arm64-efi`
-  }
-
   let cmd = ''
   if (this.efi) {
     /**
@@ -46,11 +33,13 @@ export default async function bootloader(this: Sequence) {
      * --bootloader-id: Creates the \EFI\fedora directory on the ESP and labels the NVRAM entry. CRITICAL.
      * We do NOT specify the device (e.g., /dev/sda) for UEFI.
      */
-    let target = 'x86_64-efi'
+    let target = `x86_64-efi`
     if (process.arch === 'arm64') {
-      target = 'arm64-efi'
+      target = `arm64-efi`
     }
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=fedora --recheck ${this.toNull}`
+
+    let bootloaderId = this.distro.distroLike.toLowerCase()
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${this.toNull}`
 
   } else {
     /**
@@ -61,8 +50,8 @@ export default async function bootloader(this: Sequence) {
     cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
   }
 
-  // let cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
-  // await exec(cmd, this.echo)
+  fs.writeFileSync('/grub-install-command', cmd)
+  await exec(cmd, this.echo)
 
 
   /**
