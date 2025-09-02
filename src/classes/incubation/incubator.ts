@@ -384,12 +384,15 @@ export default class Incubator {
    * soluzione tampone from Glenn
    */
   private sudoers() {
-  let live='live'
-  let content=`${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
-  let fname='/etc/sudoers.d/calamares'
-  fs.writeFileSync(fname, content, 'utf-8')
-}
-
+    let live = 'live'
+    let content = `${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
+    content = `# ${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
+    let fname = '/etc/sudoers.d/calamares'
+    // su bionic fa un macello
+    if (this.distro.codenameLikeId !== 'bionic') {
+      fs.writeFileSync(fname, content, 'utf-8')
+    }
+  }
 }
 
 /**

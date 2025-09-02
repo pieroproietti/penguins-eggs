@@ -37,9 +37,11 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
 
   if (this.partitions.filesystemType === 'ext4') {
 
-    // efi
+    /**
+     * EFI
+     */
     if (this.efi) {
-      await exec(`mkdosfs -F 32 -I ${this.devices.efi.name} ${this.toNull}`, this.echo)
+      await exec(`mkfs.vfat -F 32 ${this.devices.efi.name} ${this.toNull}`, this.echo)
     }
 
     // boot
@@ -48,12 +50,14 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
         this.devices.boot.fsType = 'ext2'
         this.devices.boot.mountPoint = '/boot'
       }
-      await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
+      // await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
+      await exec(`mkfs.${this.devices.boot.fsType} -F ${this.devices.boot.name} ${this.toNull}`, this.echo)
     }
 
     // root 
     if (this.devices.root.name !== 'none') {
-      await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
+      // await exec(`mke2fs -Ft ${this.devices.root.fsType} ${this.devices.root.name} ${this.toNull}`, this.echo)
+      await exec(`mkfs.ext4 -F ${this.devices.root.name} ${this.toNull}`, this.echo)
     }
 
     // data
