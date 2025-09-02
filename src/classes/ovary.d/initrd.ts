@@ -24,7 +24,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initrdAlpine
  */
 export async function initrdAlpine(this: Ovary) {
-    Utils.warning(`creating ${path.basename(this.initrd)} Alpine on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.initrd)} Alpine on (ISO)/live`)
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../../mkinitfs/live.conf`)
@@ -36,7 +36,7 @@ export async function initrdAlpine(this: Ovary) {
  * initrdArch
  */
 export async function initrdArch(this: Ovary) {
-    Utils.warning(`creating ${path.basename(this.initrd)} using mkinitcpio on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.initrd)} using mkinitcpio on (ISO)/live`)
 
     let dirConf = 'arch'
     let tool = 'archiso'
@@ -76,7 +76,7 @@ export async function initrdArch(this: Ovary) {
  * initrdDebian
  */
 export async function initrdDebian(this: Ovary, verbose = false) {
-    Utils.warning(`creating ${this.initrd} using mkinitramfs on ISO/live`)
+    Utils.warning(`creating ${this.initrd} using mkinitramfs on (ISO)/live`)
 
     let isCrypted = false
 
@@ -94,7 +94,7 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 * initrdDracut) Almalinux/Fedora/Openmamba/Opensuse/Rocky/Voidlinux
 */
 export async function initrdDracut(this: Ovary) {
-    Utils.warning(`creating ${path.basename(this.initrd)} using dracut on ISO/live`)
+    Utils.warning(`creating ${path.basename(this.initrd)} using dracut on (ISO)/live`)
     const prefix = this.settings.config.snapshot_prefix
     const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     // const dracutdir='--dracutdir /opt/penguins-eggs/dracut'

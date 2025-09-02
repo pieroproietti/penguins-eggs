@@ -103,7 +103,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
 
     Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
     if (!scriptOnly) {
-        Utils.warning('creating filesystem.squashfs on ISO/live')
+        Utils.warning('creating filesystem.squashfs on (ISO)/live')
         // Utils.warning(`compression: ` + compression)
         const test = (await exec(cmd, Utils.setEcho(true))).code
         if (test !== 0) {
