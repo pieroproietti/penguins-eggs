@@ -1,6 +1,4 @@
-penguins-eggs
-=============
-
+# CHANGELOG
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![www](https://img.shields.io/badge/www-blog-cyan)](https://penguins-eggs.net)
@@ -10,16 +8,18 @@ penguins-eggs
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
+<a href="https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN">
+  <img src="./images/cdrom.png" width="280" height="300" alt="CD-ROM">
+</a>
+
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 # Changelog
-We switched to a version number based on year, month, day, and release number. I hope it will be more clear and useful. 
+The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-Versions are listed on reverse order, the first is the last one.
-
-# v25.9.2
+## v25.9.2
 * krill: fixed user creation for openmamba:
 * standardized display of:
   * copying the kernel to (ISO)/live;
@@ -32,7 +32,7 @@ Versions are listed on reverse order, the first is the last one.
 
 > (*) with the exception of Ubuntu and its derivatives, we use Debian bootloaders to boot live from ISO and via PXE, so it is correct to have `(ISO)/EFI/debian` on different distributions.
 
-# v25.8.31 welcome back Openmamba!
+## v25.8.31 welcome back Openmamba!
 
 [openmamba](https://openmamba.org/) is an Italian Linux distribution, which originated from [QiLinux](https://openmamba.org/it/), discontinued in 2007.
 
