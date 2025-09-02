@@ -4,21 +4,20 @@
 # common dependencies 
 common:
   - coreutils 
-  - cryptsetup 
-  - cryptsetup-initramfs
+  - cryptsetup
+  #- cryptsetup-initramfs
   - curl # wardrobe
-  - dbus-bin | uuidgen-runtime # uuid-runtime per devuan
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
   - jq # mom
   - live-boot # eggs
+  - live-boot # questo va reinstallato
   - live-boot-doc # eggs
   - live-boot-initramfs-tools # eggs
-  - live-config-systemd | live-config-sysvinit 
   - live-tools # eggs
   - lvm2  # pvdisplay in krill
-  - nodejs (>= 16) # bionic
+  - nodejs (>= 16)
   - parted 
   - rsync
   - squashfs-tools
@@ -28,27 +27,11 @@ common:
   # bootloaders common
   - ipxe
   - pxelinux
-
-# dependencies arch specific
-#  arm64: grub-efi-arm64-bin, ipxe, shim-signed, u-boot-tools, 
-#  amd64: grub-pc-bin, grub-efi-ia32-bin, grub-efi-amd64-bin, syslinux-common, ipxe, isolinux, pxelinux, shim-signed
-#  i386: grub-pc-bin, grub-efi-ia32-bin, syslinux-common, ipxe, isolinux, pxelinux
-
+  - pxelinux
+  
 arch:
   amd64:
   - grub-efi-amd64-bin
   - isolinux
   - shim-signed
   - syslinux-common
-
-  i386:
-  - grub-pc-bin
-  - isolinux
-  - grub-efi-ia32-bin
-  - syslinux-common
-
-  arm64:
-  - grub-efi-arm64-bin
-  - shim-signed
-  - u-boot-tools
-
