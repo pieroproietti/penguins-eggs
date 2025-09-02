@@ -26,9 +26,11 @@ Versions are listed on reverse order, the first is the last one.
   * creating initramfs on (ISO)/live;
   * creating grub.cfg seeker USB on (efi.img)/boot/grub;
   * creating grub.cfg bridge on main. (ISO)/boot/grub/{arch}-efi;
-  * creation of grub.cfg seeker ISO/DVD on (ISO)/{distro};
+  * creation of grub.cfg seeker ISO/DVD on (ISO)/EFI/{distro} (*);
   * copy (efi.img) to (ISO)/boot/grub;
   * creation of grub.cfg main on (ISO)/boot/grub.
+
+> (*) with the exception of Ubuntu and its derivatives, we use Debian bootloaders to boot live from ISO and via PXE, so it is correct to have `(ISO)/EFI/debian` on different distributions.
 
 # v25.8.31 welcome back Openmamba!
 
@@ -54,9 +56,10 @@ We need to discover more, about this annoying problem. I'm releasing again, beco
 * changed the way the image ISO is generated, priority now is xorriso. Only if xorriso is not installed will try genisoimage;
 * added Debian 14 forky;
 * updated modules;
-* work in progress... see note.
+* work in progress...
 
-This version on Debian trixie will boot on UEFI, but will not correctly installed using calamares on Debian trixie. 
+> [!NOTE]
+> This version on Debian trixie will boot on UEFI, but will not correctly installed using calamares on Debian trixie. 
 
 ## penguins-eggs_25.8.10 (San Lorenzo edition)
 

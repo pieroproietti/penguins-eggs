@@ -124,7 +124,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         pathBait = path.join(isoDir, '/EFI/ubuntu')
     }
     await exec(`mkdir ${pathBait} -p`, this.echo)
-    Utils.warning(`creating grub.cfg seeker ISO/DVD on (ISO)/${path.basename(pathBait)}`)
+    Utils.warning(`creating grub.cfg seeker ISO/DVD on (ISO)/EFI/${path.basename(pathBait)}`)
     let cfgBait = path.join(pathBait, '/grub.cfg')
     let cfgBaitText = ''
     cfgBaitText += `\n`
