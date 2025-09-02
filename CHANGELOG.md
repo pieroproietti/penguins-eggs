@@ -19,6 +19,17 @@ We switched to a version number based on year, month, day, and release number. I
 
 Versions are listed on reverse order, the first is the last one.
 
+# v25.9.2
+* krill: fixed user creation for openmamba:
+* standardized display of:
+  * copying the kernel to (ISO)/live;
+  * creating initramfs on (ISO)/live;
+  * creating grub.cfg seeker USB on (efi.img)/boot/grub;
+  * creating grub.cfg bridge on main. (ISO)/boot/grub/{arch}-efi;
+  * creation of grub.cfg seeker ISO/DVD on (ISO)/{distro};
+  * copy (efi.img) to (ISO)/boot/grub;
+  * creation of grub.cfg main on (ISO)/boot/grub.
+
 # v25.8.31 welcome back Openmamba!
 
 [openmamba](https://openmamba.org/) is an Italian Linux distribution, which originated from [QiLinux](https://openmamba.org/it/), discontinued in 2007.
