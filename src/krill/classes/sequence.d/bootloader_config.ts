@@ -101,12 +101,14 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       try {
         cmd = ``
         cmd += `chroot ${this.installTarget} `
-        cmd += `dnf -y install grub2 grub2-efi-${Utils.uefiArch()} `
-        cmd += `grub2-efi-${Utils.uefiArch()}-modules `
-        cmd += `efibootmgr shim ${this.toNull}`
+        cmd += `dnf -y install grub2 `
+        cmd += `grub2-efi-${process.arch} `
+        cmd += `grub2-efi-${process.arch}-modules `
+        cmd += `efibootmgr `
+        cmd += `shim-${process.arch} ${this.toNull}`
+        await this.showProblem(cmd, 'installazione pacchetti per grub')
         await exec(cmd, this.echo)
-        await Utils.pressKeyToExit(cmd)
-        
+
       } catch (error) {
         await showError(cmd, error)
       }

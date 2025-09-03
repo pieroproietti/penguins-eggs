@@ -51,7 +51,8 @@ export default async function bootloader(this: Sequence) {
     cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${grubLog}`
   }
 
-  fs.writeFileSync('/grub-command', cmd)
+  // Mostra comando grub-install
+  await this.showProblem(cmd, 'grub-install')
   await exec(cmd, this.echo)
 
 
@@ -135,3 +136,4 @@ function searchAndReplace(line: string, search: string, replace: string): string
   }
   return line
 }
+
