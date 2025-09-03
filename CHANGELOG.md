@@ -20,7 +20,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.9.3
-* krill: this is a significant development; we can finally use krill (sudo eggs install) to install on UEFI computers and VMs, not just BIOS ones. Tested on: Debian, Fedora, Openmamba, Ubuntu, I suppose the others work too:
+* krill: this is a significant development; we can finally use krill: `sudo eggs install` to install on UEFI computers and VMs, not just BIOS ones. Tested on: Arch, Debian, Fedora, Manjaro, Openmamba, Opensuse, Rocky and Ubuntu,  remastered Alpine not work on UEFI, Almalinux to be tested;
 * bionic: I had problem to release on Ubuntu bionic, same node modules updated breack compatibility with nodejs 16:
 
 ## v25.9.2
