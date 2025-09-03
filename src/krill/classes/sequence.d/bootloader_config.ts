@@ -106,7 +106,8 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
         cmd += `grub2-efi-${process.arch}-modules `
         cmd += `efibootmgr `
         cmd += `shim-${process.arch} ${this.toNull}`
-        await this.showProblem(cmd, 'installazione pacchetti per grub')
+
+        await Utils.pressKeyToExit(`grub installa packages: ${cmd}`)
         await exec(cmd, this.echo)
 
       } catch (error) {
