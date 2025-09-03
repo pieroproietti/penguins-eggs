@@ -911,8 +911,22 @@ export default class Utils {
    /**
     *
     */
-   static async pressKeyToExit(warming = 'Process will end', procContinue = true) {
-      Utils.warning(warming)
+   static async pressKeyToExit(warning = 'Process will end', procContinue = true) {
+      Utils.warning(warning)
+      let msg = 'Press a key to exit...'
+      if (procContinue) {
+         msg = 'Press a key to continue...'
+      }
+      console.log(msg)
+
+      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      if (!procContinue) {
+         process.exit(0)
+      }
+   }
+
+   static async debug(cmd = 'cmd', procContinue = true) {
+      console.log('DEBUG >>> ' + chalk.cyanBright(cmd))
       let msg = 'Press a key to exit...'
       if (procContinue) {
          msg = 'Press a key to continue...'
