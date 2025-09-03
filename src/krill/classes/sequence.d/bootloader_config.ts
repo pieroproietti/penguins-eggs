@@ -52,7 +52,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       }
     } else {
       try {
-        cmd = `chroot ${this.installTarget} pacman -Sy grub os-prober ${this.toNull}`
+        cmd = `chroot ${this.installTarget} pacman -Sy grub ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
@@ -76,7 +76,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     const aptInstallOptions = ' apt install -y --no-upgrade --allow-unauthenticated -o Acquire::gpgv::Options::=--ignore-time-conflict '
     if (this.efi) {
       try {
-        cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.uefiArch()} --allow-unauthenticated ${this.toNull}`
+        cmd = `chroot ${this.installTarget} ${aptInstallOptions} grub-efi-${Utils.uefiArch()} efibootmgr shim-signed --allow-unauthenticated ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
