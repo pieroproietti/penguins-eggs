@@ -45,7 +45,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   } else if (this.distro.familyId === 'archlinux') {
     if (this.efi) {
       try {
-        cmd = `chroot ${this.installTarget} pacman -Sy grub efibootmgr shim-signed} ${this.toNull}`
+        cmd = `chroot ${this.installTarget} pacman -Sy grub efibootmgr shim} ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
@@ -94,11 +94,19 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * fedora/openmamba
      */
-  } else if (this.distro.familyId === 'fedora' || this.distro.familyId === 'openmamba') {
+  } else if (this.distro.familyId === 'fedora' || 
+             this.distro.familyId === 'openmamba') {
+
     if (this.efi) {
       try {
-        cmd = `chroot ${this.installTarget} dnf -y install grub2 grub2-efi-x64 grub2-efi-x64-modules efibootmgr shim ${this.toNull}`
+        cmd = ``
+        cmd += `chroot ${this.installTarget} `
+        cmd += `dnf -y install grub2 grub2-efi-${Utils.uefiArch()} `
+        cmd += `grub2-efi-${Utils.uefiArch()}-modules `
+        cmd += `efibootmgr shim ${this.toNull}`
         await exec(cmd, this.echo)
+        await Utils.pressKeyToExit(cmd)
+        
       } catch (error) {
         await showError(cmd, error)
       }
