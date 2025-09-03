@@ -926,7 +926,7 @@ export default class Utils {
    }
 
    static async debug(cmd = 'cmd', procContinue = true) {
-      console.log('DEBUG >>> ' + chalk.cyanBright(cmd))
+      console.log(chalk.redBright('DEBUG >>> ') + cmd + '\n')
       let msg = 'Press a key to exit...'
       if (procContinue) {
          msg = 'Press a key to continue...'
