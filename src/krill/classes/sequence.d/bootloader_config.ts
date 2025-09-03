@@ -114,7 +114,10 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       }
     } else {
       try {
-        cmd = `chroot ${this.installTarget} dnf -y install grub2 grub2-pc grub2-pc-modules ${this.toNull}`
+        cmd = ``
+        cmd += `chroot ${this.installTarget} `
+        cmd += `dnf -y install grub2 grub2-pc `
+        cmd += `grub2-pc-modules ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
@@ -142,7 +145,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       }
     }
   }
-  // await Utils.debug(`grub packages install cmd: ${cmd}`)
+  await Utils.debug(`grub packages install cmd: ${cmd}`)
 }
 
 
