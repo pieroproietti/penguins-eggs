@@ -60,7 +60,7 @@ defaultGroups:
 # Autologin causes a user to become automatically logged in to
 # the desktop environment on boot.
 # Disable when your Distribution does not require such a group.
-autologinGroup:  autologin
+# autologinGroup:  autologin
 
 
 ### ROOT AND SUDO
