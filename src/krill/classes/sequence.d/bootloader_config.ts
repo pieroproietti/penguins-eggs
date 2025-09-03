@@ -97,7 +97,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   } else if (this.distro.familyId === 'fedora' || this.distro.familyId === 'openmamba') {
     if (this.efi) {
       try {
-        cmd = `chroot ${this.installTarget} dnf -y install grub2 grub2-efi-x64 efibootmgr shim ${this.toNull}`
+        cmd = `chroot ${this.installTarget} dnf -y install grub2 grub2-efi-x64 grub2-efi-x64-modules efibootmgr shim ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
