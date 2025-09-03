@@ -131,6 +131,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
         await showError(cmd, error)
       }
     }
+  }
 }
 
 
