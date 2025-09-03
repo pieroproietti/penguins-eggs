@@ -40,7 +40,7 @@ export default async function bootloader(this: Sequence) {
     }
 
     let bootloaderId = this.distro.distroLike.toLowerCase()
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${grubLog}`
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${grubForce}`
 
   } else {
     /**
@@ -51,8 +51,7 @@ export default async function bootloader(this: Sequence) {
     cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${grubLog}`
   }
 
-  // Mostra comando grub-install
-  await this.showProblem(cmd, 'grub-install')
+  await Utils.pressKeyToExit(`grub-install: ${cmd}`)
   await exec(cmd, this.echo)
 
 
