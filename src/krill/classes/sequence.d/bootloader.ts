@@ -24,6 +24,7 @@ export default async function bootloader(this: Sequence) {
   let grubForce = Diversion.grubForce(this.distro.familyId)
 
   let cmd = ''
+  let grubLog = '/grub-install.lgo'
   if (this.efi) {
     /**
      * UEFI Installation
@@ -39,7 +40,7 @@ export default async function bootloader(this: Sequence) {
     }
 
     let bootloaderId = this.distro.distroLike.toLowerCase()
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${this.toNull}`
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${grubLog}`
 
   } else {
     /**
@@ -47,10 +48,10 @@ export default async function bootloader(this: Sequence) {
      * For legacy boot, we specify the installation device directly.
      */
     const target = 'i386-pc'
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${this.toNull}`
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${grubLog}`
   }
 
-  fs.writeFileSync('/grub-install-command', cmd)
+  fs.writeFileSync('/grub-command', cmd)
   await exec(cmd, this.echo)
 
 

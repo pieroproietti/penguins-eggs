@@ -172,13 +172,7 @@ export default class Sequence {
     await this.setupInstallation(domain, unattended, nointeractive, chroot, halt, verbose)
 
     // Installation sequence - each step clearly visible
-    await this.runInstallationSequence()
-
-    // Handle chroot if requested
-    if (chroot) {
-      const message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
-      await this.emergencyShell(message)
-    }
+    await this.runInstallationSequence(chroot)
 
     // Completion
     await this.completeInstallation()
@@ -229,7 +223,7 @@ export default class Sequence {
   /**
    * Main installation sequence - Linear and clear
    */
-  private async runInstallationSequence(): Promise<void> {
+  private async runInstallationSequence(chroot=false): Promise<void> {
     // 1. Partitioning and formatting
     let isPartitioned = false
     await this.executeStep("Creating partitions", 0, async () => {
@@ -354,9 +348,16 @@ export default class Sequence {
       }
     }
 
-    // 14. Unmounting
+    // 14- Handle chroot if requested
+    if (chroot) {
+      const message = `You are in chroot mode under ${this.installTarget}, type "exit" to exit.`
+      await this.emergencyShell(message)
+    }
+
+    // 15. Unmounting
     await this.executeStep("umount Virtual File System", 96, () => this.umountVfs())
     await this.executeStep("umount File system", 99, () => this.umountFs())
+    
   }
 
   /**
