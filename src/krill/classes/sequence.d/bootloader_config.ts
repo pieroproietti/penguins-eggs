@@ -115,7 +115,8 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       try {
         cmd = ``
         cmd += `chroot ${this.installTarget} `
-        cmd += `dnf -y install grub2 grub2-pc `
+        cmd += `dnf -y install grub2 `
+        cmd += `grub2-pc `
         cmd += `grub2-pc-modules ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
@@ -124,7 +125,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     }
 
     /**
-     * fedora
+     * openmamba
      */
   } else if (this.distro.familyId === 'openmamba') {
 
@@ -146,7 +147,8 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       try {
         cmd = ``
         cmd += `chroot ${this.installTarget} `
-        cmd += `dnf -y install grub2 grub2-pc `
+        cmd += `dnf -y install grub2 `
+        cmd += `grub2-pc `
         cmd += `grub2-pc-modules ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
