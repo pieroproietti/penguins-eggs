@@ -51,7 +51,7 @@ export default async function bootloader(this: Sequence) {
     cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} ${this.partitions.installationDevice} ${grubForce} ${grubLog}`
   }
 
-  //await Utils.debug(`grub-install: ${cmd}`)
+  await Utils.debug(`grub-install: ${cmd}`)
   
   await exec(cmd, this.echo)
 
