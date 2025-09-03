@@ -177,7 +177,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       }
     }
   }
-  await Utils.debug(`grub packages install cmd: ${cmd}`)
+  // await Utils.debug(`grub packages install cmd: ${cmd}`)
 }
 
 
