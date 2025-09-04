@@ -24,6 +24,10 @@ swapfile
 sys/*
 tmp/*
 
+# fedora/el9 etc
+boot/*rescue*
+
+
 *.cache # suggestion from blaxbox-ai
 
 ######################################################################################################
