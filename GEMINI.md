@@ -2,7 +2,11 @@
 
 ## Project Overview
 
-`penguins-eggs` is a command-line tool for remastering Debian, Ubuntu, and derivative systems. It allows users to create a live, bootable ISO image of their current system, which can be used for backups, distribution, or creating custom operating system versions. The project is written in TypeScript and built using the oclif framework for CLIs.
+`penguins-eggs` is a command-line tool for remastering AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and derivative systems. It allows users to create a live, bootable ISO image of their current system, which can be used for backups, distribution, or creating custom operating system versions. The project is written in TypeScript and built using the oclif framework for CLIs.
+
+Can use two different system installer:
+- **krill**: `sudo eggs install` is a TUI system installer, always included and operational
+- **calamares**: calamares is the GUI system installer.
 
 ## Tech Stack
 
@@ -13,13 +17,18 @@
 - **Linting:** ESLint
 - **Formatting:** Prettier
 
-## Key Commands
+## Development Key Commands
 
 - **Installation:** `npm install` or `pnpm install`
 - **Build:** `npm run build` (compiles TypeScript to JavaScript in `dist/`)
 - **Run Tests:** `npm test`
 - **Lint Code:** `npm run lint`
 - **Run the CLI locally:** `./bin/run [COMMAND]` (e.g., `./bin/run eggs --help`)
+
+## User Key Commands
+- **eggs love** get your ISO in one command (run: eggs krll, eggs dad -d, eggs tools clean amd and produce)
+- **eggs kill** remove old createed ISOs
+- **eggs dad** configure eggs
 
 ## Project Structure
 
@@ -41,3 +50,6 @@
 - ** https://aur.archlinux.org/packages/penguins-eggs the PKGBUILD used to create paenguins-eggs package from [Chaos](https://aur.chaotic.cx/)
 
 - **[website](https://github.com/pieroproietti/website)**: Il codice sorgente del sito web ufficiale **[penguins-eggs.net](https://penguins-eggs.net)**, che include la documentazione e le guide per l'utente.
+
+## Author
+- **Piero Proietti <piero.proietti@gmail.com>**
