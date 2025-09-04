@@ -6,15 +6,27 @@
  * license: MIT
  */
 
+/**
+ * Debian 13 trixe, Ubuntu 24.04 noble usano il formato deb822
+ * 
+ * esiste un comando per modernizzare le sorgenti:
+ * sudo apt modernize-sources
+ */
+
+
 import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
+import path from 'node:path'
 
 import Distro from '../../classes/distro.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
+import Diversions from '../../classes/diversions.js'
 
-const fkey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
-const flist = '/etc/apt/sources.list.d/penguins-eggs-ppa.list'
+const ppaKey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
+const ppaName = `/etc/apt/sources.list.d/penguins-eggs-ppa`
+const ppaList = ppaName + '.list'
+const ppaSources = ppaName + '.sources'
 
 /**
  *
@@ -54,38 +66,44 @@ export default class Ppa extends Command {
        */
       if (distro.familyId === 'debian') {
         if (flags.add) {
-          Utils.warning(`Are you sure to add ${flist} to your repositories?`)
+          Utils.warning(`Are you sure to add source ${path.basename(ppaName)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
-            await debianAdd()
+            if (await is822()) {
+              debianAdd822()
+            } else {
+              await debianAdd()
+            }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove ${flist} to your repositories?`)
+          Utils.warning(`Are you sure to remove source ${path.basename(ppaName)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             await debianRemove()
           }
         }
 
-        /**
-         * archlinux
-         */
-      }
 
-      if (distro.familyId === 'archlinux') {
+        /**
+         * Arch and only Arch!  no Manjaro...
+         */
+      } else if (distro.familyId === 'archlinux' && !Diversions.isManjaroBased(distro.distroId)) {
         if (flags.add) {
-          if (distro.distroId !== 'Manjarolinux') {
-            Utils.warning(`Are you sure to add chaotic-aur to your repositories?`)
-            if (await Utils.customConfirm('Select yes to continue...')) {
-              await archAdd()
-            }
+          Utils.warning(`Are you sure to add Chaotic-AUR to your repositories?`)
+          if (await Utils.customConfirm('Select yes to continue...')) {
+            await archAdd()
           }
         } else if (flags.remove) {
-          await archRemove()
+          Utils.warning(`Are you sure to remove Chaotic-AUR to your repositories?`)
+          if (await Utils.customConfirm('Select yes to continue...')) {
+            await archRemove()
+          }
         }
-      } else {
+
+
         /**
-         * Others
+         * Alle the others
          */
-        Utils.warning(`Distro> ${distro.distroId}/${distro.codenameId}, cannot use this command here!`)
+      } else {
+        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs-ppa nor chaotic-aur!`)
       }
     }
   }
@@ -101,7 +119,7 @@ async function archAdd() {
   const echo = Utils.setEcho(true)
 
   if (fs.existsSync(path + keyring) && fs.existsSync(path + mirrorlist)) {
-    console.log('repository chaotic-aur, already present!')
+    console.log('repository Chaotic-AUR, already present!')
     await archRemove()
     process.exit()
   }
@@ -136,12 +154,29 @@ async function archRemove() {
 }
 
 /**
+ * debianAdd822
+ */
+async function debianAdd822() {
+  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
+  let content = ''
+  content += 'Types: deb'
+  content += 'URIs: https://pieroproietti.github.io/penguins-eggs-ppa'
+  content += 'Suites: ./'
+  content += 'Signed-By: /usr/share/keyrings/penguins-eggs-ppa.gpg'
+  fs.writeFileSync(ppaSources, content)
+
+  // crea un penguins-eggs-ppa.list vuoto
+  await exec(`touch ${ppaList}`)
+  await exec('apt-get update')
+}
+
+/**
  * debianAdd
  */
 async function debianAdd() {
-  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${fkey} > /dev/null`)
-  const content = `deb [signed-by=${fkey}] https://pieroproietti.github.io/penguins-eggs-ppa ./\n`
-  fs.writeFileSync(flist, content)
+  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
+  const content = `deb [signed-by=${ppaKey}] https://pieroproietti.github.io/penguins-eggs-ppa ./\n`
+  fs.writeFileSync(ppaList, content)
   await exec('apt-get update')
 }
 
@@ -149,9 +184,23 @@ async function debianAdd() {
  * debianRemove
  */
 async function debianRemove() {
-  await exec('rm -f /etc/apt/trusted.gpg.d/penguins-eggs*')
-  await exec('rm -f /etc/apt/sources.list.d/penguins-eggs*')
-  await exec('rm -f /usr/share/keyrings/penguins-eggs*')
+  await exec(`rm -f ${ppaKey}`)
+  await exec(`rm -f ${ppaList}`)
+  await exec(`rm -f ${ppaSources}`)
 
   await exec('apt-get update')
+}
+
+
+/**
+ * is822 (usa lo standard deb822 per le sorgenti)
+ */
+async function is822(): Promise<boolean> {
+  const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
+  const is822 = (await exec(test)).data
+  if (is822 !== '1') {
+    return false
+  } else {
+    return true
+  }
 }
