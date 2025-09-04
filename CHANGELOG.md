@@ -19,6 +19,21 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.3-2 (amd64)
+I introduced the new deb822 format for the penguins-eggs Personal Package Archive (penguins-eggs-ppa).
+
+The deb822 format is the new standard for defining software repositories in Debian, Ubuntu, and derivative systems. It abandons the old single-line format in favor of a much more readable, structured, and error-prone “key-value” system.
+
+Support for using the deb822 format for repository files (.sources) was added to APT in version 1.1, released in 2015. For almost a decade, the feature remained present but was never the default, used only by experienced users or for complex configurations.
+
+**Adoption as Standard (2023-2025)**
+
+Driven by the need to improve readability and security (particularly with the Signed-By option), the Ubuntu and Debian teams decided to make it the default format:
+
+Ubuntu 23.04 began the transition, using it for PPAs.
+
+Ubuntu 24.04 LTS and Debian 13 “Trixie” have adopted it as the standard for new installations, also introducing the apt modernize-sources command to facilitate migration.
+
 ## v25.9.3
 * krill: this is a significant development; we can finally use krill: `sudo eggs install` to install on UEFI computers and VMs, not just BIOS ones. Tested on: Arch, Debian, Fedora, Manjaro, Openmamba, Opensuse, Rocky and Ubuntu,  remastered Alpine not work on UEFI, Almalinux to be tested;
 * bionic: I had problem to release on Ubuntu bionic, same node modules updated breack compatibility with nodejs 16:

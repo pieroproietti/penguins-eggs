@@ -68,6 +68,8 @@ export default class Ppa extends Command {
         if (flags.add) {
           Utils.warning(`Are you sure to add source ${path.basename(ppaName)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
+            // remove old penguins-eggs-ppa.list
+            debianRemove()
             if (await is822()) {
               debianAdd822()
             } else {
@@ -80,6 +82,7 @@ export default class Ppa extends Command {
             await debianRemove()
           }
         }
+        await exec('apt-get update')
 
 
         /**
@@ -159,15 +162,14 @@ async function archRemove() {
 async function debianAdd822() {
   await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
   let content = ''
-  content += 'Types: deb'
-  content += 'URIs: https://pieroproietti.github.io/penguins-eggs-ppa'
-  content += 'Suites: ./'
-  content += 'Signed-By: /usr/share/keyrings/penguins-eggs-ppa.gpg'
+  content += 'Types: deb\n'
+  content += 'URIs: https://pieroproietti.github.io/penguins-eggs-ppa\n'
+  content += 'Suites: ./\n'
+  content += 'Signed-By: /usr/share/keyrings/penguins-eggs-ppa.gpg\n'
   fs.writeFileSync(ppaSources, content)
 
   // crea un penguins-eggs-ppa.list vuoto
   await exec(`touch ${ppaList}`)
-  await exec('apt-get update')
 }
 
 /**
@@ -177,7 +179,6 @@ async function debianAdd() {
   await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
   const content = `deb [signed-by=${ppaKey}] https://pieroproietti.github.io/penguins-eggs-ppa ./\n`
   fs.writeFileSync(ppaList, content)
-  await exec('apt-get update')
 }
 
 /**
@@ -187,20 +188,20 @@ async function debianRemove() {
   await exec(`rm -f ${ppaKey}`)
   await exec(`rm -f ${ppaList}`)
   await exec(`rm -f ${ppaSources}`)
-
-  await exec('apt-get update')
 }
 
 
 /**
  * is822 (usa lo standard deb822 per le sorgenti)
  */
-async function is822(): Promise<boolean> {
+async function is822(): Promise <boolean> {
+  let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
-  const is822 = (await exec(test)).data
-  if (is822 !== '1') {
-    return false
-  } else {
-    return true
+  const is822 = (await exec(test, { capture: true, echo: false, ignore: false }))
+  if (is822.code === 0) {
+    if (is822.data.trim() === '1') {
+      retval = true
+    }
   }
+  return retval
 }
