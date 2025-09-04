@@ -24,7 +24,7 @@ swapfile
 sys/*
 tmp/*
 
-# fedora/el9 etc
+# fedora/el9/etc
 boot/*rescue*
 
 
