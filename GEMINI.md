@@ -30,3 +30,14 @@
 - `manpages/`: Man pages for the CLI commands.
 - `package.json`: Defines project metadata, dependencies, and scripts.
 - `pnpm-lock.yaml`: Indicates that pnpm is the preferred package manager.
+
+## Related Repositories (Project Ecosystem)
+- **[get-eggs](https://github.com/pieroproietti/get-eggs)**: get-eggs: install penguins-eggs and configure it on your AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and most derivatives.
+
+- **[penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)**: t is a repository mainly consisting of .yaml files and simple bash scripts used by eggs to create customizations of Linux systems starting from a minimal image - referred to as "naked" - to achieve a complete system.
+
+- **[penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa)**: The repository hosting the **PPA** (Personal Package Archive) for easy installation and updating of `eggs` on Debian, Ubuntu, and derivative systems.
+
+- ** https://aur.archlinux.org/packages/penguins-eggs the PKGBUILD used to create paenguins-eggs package from [Chaos](https://aur.chaotic.cx/)
+
+- **[website](https://github.com/pieroproietti/website)**: Il codice sorgente del sito web ufficiale **[penguins-eggs.net](https://penguins-eggs.net)**, che include la documentazione e le guide per l'utente.
