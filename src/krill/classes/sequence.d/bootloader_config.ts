@@ -147,9 +147,7 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
       try {
         cmd = ``
         cmd += `chroot ${this.installTarget} `
-        cmd += `dnf -y install grub2 `
-        cmd += `grub2-pc `
-        cmd += `grub2-pc-modules ${this.toNull}`
+        cmd += `dnf -y install grub ${this.toNull}`
         await exec(cmd, this.echo)
       } catch (error) {
         await showError(cmd, error)
