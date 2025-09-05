@@ -23,7 +23,8 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKey = '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
+const ppaKey = '/usr/share/keyrings/penguins-eggs-ppa.gpg'
+//             '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
 const ppaName = `/etc/apt/sources.list.d/penguins-eggs-ppa`
 const ppaList = ppaName + '.list'
 const ppaSources = ppaName + '.sources'
@@ -182,19 +183,11 @@ async function debianAdd() {
 }
 
 /**
- * debianRemove
- */
-async function debianRemove() {
-  await exec(`rm -f ${ppaKey}`)
-  await exec(`rm -f ${ppaList}`)
-  await exec(`rm -f ${ppaSources}`)
-}
-
-
-/**
  * is822 (usa lo standard deb822 per le sorgenti)
  */
 async function is822(): Promise <boolean> {
+  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
+
   let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
   const is822 = (await exec(test, { capture: true, echo: false, ignore: false }))
@@ -205,3 +198,15 @@ async function is822(): Promise <boolean> {
   }
   return retval
 }
+
+
+/**
+ * debianRemove
+ */
+async function debianRemove() {
+  await exec(`rm -f ${ppaKey}`)
+  await exec(`rm -f ${ppaList}`)
+  await exec(`rm -f ${ppaSources}`)
+}
+
+
