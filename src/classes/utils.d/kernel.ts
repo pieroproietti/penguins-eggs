@@ -120,7 +120,7 @@ export default class Kernel {
             'initramfs-lts',        // Kernel Long-Term Support
             'initramfs-virt',       // Kernel per ambienti virtualizzati
             'initramfs-standard',   // Kernel standard (meno comune)
-            'initramfs-rpi',        // Kernel per Raspberry Pi            
+            'initramfs-rpi',        // Kernel per Raspberry Pi
             // --- Arch Linux ---
             'initramfs-linux.img',          // Arch Linux standard
             'initramfs-linux-lts.img',      // Arch Linux LTS
@@ -138,7 +138,7 @@ export default class Kernel {
         }
 
         // 5. Se nessuna delle strategie ha funzionato, esci con errore
-        console.error(`ERRORE: Impossibile trovare un file initramfs per il kernel ${targetKernel} in ${bootDir}.`);
+        Utils.warning(`Could not find an initramfs file for kernel ${targetKernel} in ${bootDir}.`)
         process.exit(1);
     }
 
