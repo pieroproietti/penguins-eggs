@@ -65,6 +65,7 @@ export default class Kernel {
             }
             targetKernel = execSync('uname -r').toString().trim()
         }
+        const kernelVersionShort = targetKernel.split('.').slice(0, 2).join('.');
 
         const bootDir = '/boot';
 
@@ -81,18 +82,16 @@ export default class Kernel {
         const candidates: string[] = [];
 
         for (const filename of bootFiles) {
-            /**
-             * La corrispondenza più probabile: 
-             * - inizia con: initramfs-/ initrd.img-/ initrd- e
-             * - contiene la versione del kernel e
-             */
-            if ((   filename.startsWith('initramfs-') || 
-                    filename.startsWith('initrd.img-') || 
-                    filename.startsWith('initrd-')) && filename.includes(targetKernel)) {
-
+          if ((
+                filename.startsWith('initramfs-') ||
+                filename.startsWith('initrd.img-') ||
+                filename.startsWith('initrd-')) &&
+                (filename.includes(targetKernel) || filename.includes(kernelVersionShort))
+            ) {
                 candidates.push(filename);
             }
         }
+
 
         // Se troviamo almeno un candidato, usiamo quello
         if (candidates.length > 0) {
@@ -100,10 +99,15 @@ export default class Kernel {
 
             /**
              * ma, se sono più di uno, usiamo il più breve 
-             * per evitare estensioni come .old, .bak, etc
+             * per evitare estensioni come -fallback.img, .old, .bak, etc
              */
             if (candidates.length > 1) {
-                for (const candidate of candidates) {
+                // Filtra i candidati per escludere quelli di fallback se esiste un'alternativa
+                const nonFallbackCandidates = candidates.filter(c => !c.includes('-fallback'));
+                const searchArray = nonFallbackCandidates.length > 0 ? nonFallbackCandidates : candidates;
+
+                foundPath = path.join(bootDir, searchArray[0]); // Inizia con il primo
+                for (const candidate of searchArray) {
                     const current = path.join(bootDir, candidate)
                     if (current.length < foundPath.length) {
                         foundPath = current
@@ -112,6 +116,7 @@ export default class Kernel {
             }
             return foundPath;
         }
+
 
         // 4. Fallback per casi specifici (Arch e Alpine Linux)
         // Questo viene eseguito solo se la ricerca dinamica fallisce.
@@ -128,6 +133,7 @@ export default class Kernel {
             'initramfs-linux-hardened.img', // Arch Linux hardened
         ];
 
+
         for (const fallback of staticFallbacks) {
             const fallbackPath = path.join(bootDir, fallback);
             if (fs.existsSync(fallbackPath)) {
@@ -136,6 +142,7 @@ export default class Kernel {
                 return fallbackPath;
             }
         }
+
 
         // 5. Se nessuna delle strategie ha funzionato, esci con errore
         Utils.warning(`Could not find an initramfs file for kernel ${targetKernel} in ${bootDir}.`)
