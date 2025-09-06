@@ -23,7 +23,7 @@ After that our installed btrfs system will work nicelly.
 * dracut: when is used dracut to build the live initramfs (Fedora, OpenSUSE), a dracut-debug.log is created on the resulting ISO.
 * Added `lmde 7 gigi` and `linuxmint 22.2 zara` Thanks to [rreyn331](https://github.com/rreyn331).
 * `krill`: now krill takes user's default groups from calamares users module template. This avoids errors and simplifies the code, making the behavior of krill and calamares similar.
-* `get-eggs`: I have included in [get-eggs](https://github.com/pieroproietti/get-eggs) and removed from [penguins-packs](https://github.com/pieroproietti/penguins-packs) the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
+* `fresh-eggs`: I have included in [fresh-eggs](https://github.com/pieroproietti/fresh-eggs) and removed from [penguins-packs](https://github.com/pieroproietti/penguins-packs) the procedure for installing tarballs packages to be used for Almalinux, Fedora, OpenSUSE and Rocky;
 * `ISOs`: I remake Almalinux10, Fedora42, openSUSE and rocky9.5 [ISOs](https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN?dmr=1&ec=wgc-drive-globalnav-goto).
 
 ## penguins-eggs_10.1.1

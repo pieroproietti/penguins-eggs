@@ -97,12 +97,12 @@ The arm64 package need to be tested -  I have no way actually - so please test i
 * introduced a `.disk/README.md` for general informations about the ISO and the tool used.
 
 ## penguins-eggs_25.8.6
-I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
+I spent most of my time compiling a list of [supported distributions](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md), which was a huge task, and I'm only halfway through the 100 distributions I need to test. On the other hand, this experience forced me to review the derivatives.yaml file and make some additions.
 
 I am also considering restoring the package for arm84 and, perhaps, i386, which I had to remove due to the decision to simplify bootloader management, but this step requires time and thought, so we will postpone it until September.
 
 ## penguins-eggs_25.7.30
-During this time I did a great work on [get-eggs](https://github.com/pieroproietti/get-eggs) completely rewritten and adding an usefull [SUPPORTED-DISTROS](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md) list. In addiction, same fixes and improvment on penguins-eggs:
+During this time I did a great work on [fresh-eggs](https://github.com/pieroproietti/fresh-eggs) completely rewritten and adding an usefull [SUPPORTED-DISTROS](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md) list. In addiction, same fixes and improvment on penguins-eggs:
 * ovarium: 
     * reintroduced the `bindvfs` and `ubindvfs` scripts used to mount and unmount virtual file systems;
     * fixed path to `isohdpfx.bin` on the ovarium script `mkiso`;
