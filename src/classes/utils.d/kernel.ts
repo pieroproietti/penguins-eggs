@@ -113,9 +113,15 @@ export default class Kernel {
             return foundPath;
         }
 
-        // 4. Fallback per casi specifici (Arch Linux standard)
+        // 4. Fallback per casi specifici (Arch e Alpine Linux)
         // Questo viene eseguito solo se la ricerca dinamica fallisce.
         const staticFallbacks = [
+            // --- Alpine Linux ---
+            'initramfs-lts',        // Kernel Long-Term Support
+            'initramfs-virt',       // Kernel per ambienti virtualizzati
+            'initramfs-standard',   // Kernel standard (meno comune)
+            'initramfs-rpi',        // Kernel per Raspberry Pi            
+            // --- Arch Linux ---
             'initramfs-linux.img',          // Arch Linux standard
             'initramfs-linux-lts.img',      // Arch Linux LTS
             'initramfs-linux-zen.img',      // Arch Linux Zen
@@ -126,7 +132,7 @@ export default class Kernel {
             const fallbackPath = path.join(bootDir, fallback);
             if (fs.existsSync(fallbackPath)) {
                 // Nota: questo potrebbe non corrispondere al 100% al kernel in esecuzione,
-                // ma è il comportamento atteso su sistemi come Arch.
+                // ma è il comportamento atteso su questi sistemi
                 return fallbackPath;
             }
         }
