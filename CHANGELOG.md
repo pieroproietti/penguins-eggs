@@ -19,7 +19,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-## v25.9.5-1 (amd64)
+## v25.9.5-1
 * BUGFIX on krill: a typo om v25.9.4-1 - from yesterda - was instroduced. I realized that just this morning. krill was able to install on UEFI but became unable to install on BIOS. This version fix krill.
 
 ## v25.9.3-2 (amd64)
