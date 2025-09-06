@@ -48,12 +48,102 @@ export default class Kernel {
 
 
     /**
+     * cerca il path per initramfs/initrd nella directory /boot 
+     * se fallisce, prova la convenzione Arch
+     *
+     * @param kernel - Versione del kernel (es. '6.5.0-14-generic'). Se omessa, usa il kernel in esecuzione.
+     * @returns Path al file initramfs.
+     */
+    static initramfs(kernel = ''): string {
+        let targetKernel = kernel
+
+        // 1. Determina la versione del kernel target
+        if (targetKernel === '') {
+            if (Utils.isContainer()) {
+                Utils.warning("Non è possibile determinare il kernel in un container.")
+                process.exit(1)
+            }
+            targetKernel = execSync('uname -r').toString().trim()
+        }
+
+        const bootDir = '/boot';
+
+        // 2. Leggi tutti i file nella directory /boot
+        let bootFiles: string[];
+        try {
+            bootFiles = fs.readdirSync(bootDir);
+        } catch (error) {
+            console.error(`ERRORE: Impossibile leggere la directory ${bootDir}.`);
+            process.exit(1);
+        }
+
+        // 3. Cerca il file corrispondente con un sistema di priorità
+        const candidates: string[] = [];
+
+        for (const filename of bootFiles) {
+            /**
+             * La corrispondenza più probabile: 
+             * - inizia con: initramfs-/ initrd.img-/ initrd- e
+             * - contiene la versione del kernel e
+             */
+            if ((   filename.startsWith('initramfs-') || 
+                    filename.startsWith('initrd.img-') || 
+                    filename.startsWith('initrd-')) && filename.includes(targetKernel)) {
+
+                candidates.push(filename);
+            }
+        }
+
+        // Se troviamo almeno un candidato, usiamo quello
+        if (candidates.length > 0) {
+            let foundPath = path.join(bootDir, candidates[0])
+
+            /**
+             * ma, se sono più di uno, usiamo il più breve 
+             * per evitare estensioni come .old, .bak, etc
+             */
+            if (candidates.length > 1) {
+                for (const candidate of candidates) {
+                    const current = path.join(bootDir, candidate)
+                    if (current.length < foundPath.length) {
+                        foundPath = current
+                    }
+                }
+            }
+            return foundPath;
+        }
+
+        // 4. Fallback per casi specifici (Arch Linux standard)
+        // Questo viene eseguito solo se la ricerca dinamica fallisce.
+        const staticFallbacks = [
+            'initramfs-linux.img',          // Arch Linux standard
+            'initramfs-linux-lts.img',      // Arch Linux LTS
+            'initramfs-linux-zen.img',      // Arch Linux Zen
+            'initramfs-linux-hardened.img', // Arch Linux hardened
+        ];
+
+        for (const fallback of staticFallbacks) {
+            const fallbackPath = path.join(bootDir, fallback);
+            if (fs.existsSync(fallbackPath)) {
+                // Nota: questo potrebbe non corrispondere al 100% al kernel in esecuzione,
+                // ma è il comportamento atteso su sistemi come Arch.
+                return fallbackPath;
+            }
+        }
+
+        // 5. Se nessuna delle strategie ha funzionato, esci con errore
+        console.error(`ERRORE: Impossibile trovare un file initramfs per il kernel ${targetKernel} in ${bootDir}.`);
+        process.exit(1);
+    }
+
+
+    /**
      * Ricava path per initramfs/initrd
      * 
      * @param kernel - Versione del kernel
      * @returns Path al file initramfs
      */
-    static initramfs(kernel = ''): string {
+    static initramfsOld(kernel = ''): string {
         const distro = new Distro()
         let initramfs = ''
 
@@ -71,11 +161,11 @@ export default class Kernel {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs${suffix}`
 
-        } else if (distro.familyId === "archlinux" &&  (!Diversions.isManjaroBased(distro.distroId))) {
+        } else if (distro.familyId === "archlinux" && (!Diversions.isManjaroBased(distro.distroId))) {
             let suffix = kernel.substring(kernel.lastIndexOf('-'))
             initramfs = `/boot/initramfs-linux${suffix}.img`
 
-        } else if (distro.familyId === "archlinux" &&  (Diversions.isManjaroBased(distro.distroId))) {
+        } else if (distro.familyId === "archlinux" && (Diversions.isManjaroBased(distro.distroId))) {
             let version = kernel.split('.').slice(0, 2).join('.');
             initramfs = `/boot/initramfs-${version}-x86_64.img`
 
