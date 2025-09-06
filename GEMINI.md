@@ -41,7 +41,7 @@ Can use two different system installer:
 - `pnpm-lock.yaml`: Indicates that pnpm is the preferred package manager.
 
 ## Related Repositories (Project Ecosystem)
-- **[get-eggs](https://github.com/pieroproietti/get-eggs)**: get-eggs: install penguins-eggs and configure it on your AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and most derivatives.
+- **[fresh-eggs](https://github.com/pieroproietti/fresh-eggs)**: fresh-eggs: install penguins-eggs and configure it on your AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and most derivatives.
 
 - **[penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)**: t is a repository mainly consisting of .yaml files and simple bash scripts used by eggs to create customizations of Linux systems starting from a minimal image - referred to as "naked" - to achieve a complete system.
 

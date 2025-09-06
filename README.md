@@ -9,7 +9,7 @@
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
 
 <a href="https://drive.google.com/drive/folders/19M7fDEebPZjEY4yHD79zSMWFndCPishN">
-  <img src="https://github.com/pieroproietti/penguins-eggs/images/cdrom.png" width="280" height="300" alt="CD-ROM">
+  <img src="https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/images/cdrom.png" width="280" height="300" alt="CD-ROM">
 </a>
 
 It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
@@ -52,21 +52,21 @@ Here’s a breakdown of what it’s used for:
 
 * System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.
 
-Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Please consult the complete list of [SUPPORTED-DISTROS](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md) to get more informations.
+Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Please consult the complete list of [SUPPORTED-DISTROS](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md) to get more informations.
 
 # Installation
 
 ## penguins-eggs-25.7.x installation
 `penguins-eggs-25.7.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
-### using get-eggs
-It's the most pratical way and is suitable for all [supported distros](https://github.com/pieroproietti/get-eggs/blob/main/SUPPORTED-DISTROS.md). 
+### using fresh-eggs
+It's the most pratical way and is suitable for all [supported distros](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md). 
 
-[get-eggs](https://github.com/pieroproietti/get-eggs) configure automatically `nodesource` when need, and install the right package for your distro. Copy and paste, the follow commands:
+[fresh-eggs](https://github.com/pieroproietti/fresh-eggs) configure automatically `nodesource` when need, and install the right package for your distro. Copy and paste, the follow commands:
 ```
-git clone https://github.com/pieroproietti/get-eggs
-cd get-eggs
-sudo ./get-eggs.sh
+git clone https://github.com/pieroproietti/fresh-eggs
+cd fresh-eggs
+sudo ./fresh-eggs.sh
 ```
 And follow instructions.
 
@@ -79,10 +79,10 @@ Since penguins-eggs-25.7.14 rpm packages for Enterprise Linux [el9](https://peng
 I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/alpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
 
 ### Arch
-Just download and install penguins-eggs-25.x.x using [get-eggs](https://github.com/pieroproietti/get-eggs).
+Just download and install penguins-eggs-25.x.x using [fresh-eggs](https://github.com/pieroproietti/fresh-eggs).
 
 ### Debian, Devuan, Ubuntu
-Just download and install penguins-eggs-25.x.x using [get-eggs](https://github.com/pieroproietti/get-eggs).
+Just download and install penguins-eggs-25.x.x using [fresh-eggs](https://github.com/pieroproietti/fresh-eggs).
 
 #### Debian 10 Buster, Debian 11 Bullseye
 Before to install `penguins-eggs-25.x.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
@@ -284,15 +284,15 @@ Overall, Eggs' packages offer a comprehensive and user-friendly experience, with
 
 
 ### Install eggs
- There are multiple methods available, lately I prefer `get-eggs` way, working for all the supported distros: Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:
+ There are multiple methods available, lately I prefer `fresh-eggs` way, working for all the supported distros: Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:
 
  ```
- git clone https://github.com/pieroproietti/get-eggs
- cd get-eggs
- sudo ./get-eggs.sh
+ git clone https://github.com/pieroproietti/fresh-eggs
+ cd fresh-eggs
+ sudo ./fresh-eggs.sh
  ```
 
-`get-eggs` on Debian families add automatically the `penguins-eggs-ppa` repository and, when need, add `nodesource` repository. On Arch, `chaotic-aur` repo will be added.
+`fresh-eggs` on Debian families add automatically the `penguins-eggs-ppa` repository and, when need, add `nodesource` repository. On Arch, `chaotic-aur` repo will be added.
 
 This let to install, update, remove `penguins-eggs` like a native package.
 
@@ -316,7 +316,7 @@ This command will add the penguins-eggs-ppa repository to your system, allowing 
 By following these steps, you can easily install Eggs, add the penguins-eggs-ppa repository, [penguins-eggs-ppa](https://pieroproietti.github.io/penguins-eggs-ppa), and unlock further capabilities and enhancements for your Eggs installation.
 
 ##### Using penguins-eggs-ppa
-For derivatives of Debian, Devuan, and Ubuntu, such as Linuxmint, LMDE, etc., `get-eggs` will typically work as well. However, if needed, you can manually add the penguins-eggs-ppa repository by copying and pasting the following two lines into a terminal:
+For derivatives of Debian, Devuan, and Ubuntu, such as Linuxmint, LMDE, etc., `fresh-eggs` will typically work as well. However, if needed, you can manually add the penguins-eggs-ppa repository by copying and pasting the following two lines into a terminal:
 
 ```
 curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
@@ -384,7 +384,7 @@ sudo pacman -Sy penguins-eggs
 ```
 This command will synchronize the package databases and install penguins-eggs on your system.
 
-Alternatively, you can use a utility called `get-eggs`. This script will add the AUR repository and install penguins-eggs on your system.
+Alternatively, you can use a utility called `fresh-eggs`. This script will add the AUR repository and install penguins-eggs on your system.
 
 It's possible too to use the popular AUR helper tool called `yay`. Simply run the following command:
 ```
