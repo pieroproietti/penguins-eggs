@@ -78,7 +78,7 @@ export default class ExportPkg extends Command {
       if (process.arch === 'ia32') {
         arch = 'i386'
       }
-      Utils.warning(`alpine apk`)
+      Utils.warning(`exporting Alpine APK packages`)
       localPath = `/home/${this.user}/packages/aports/${arch}`
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
       filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
@@ -92,7 +92,7 @@ export default class ExportPkg extends Command {
        * Manjaro
        */
       if (Diversions.isManjaroBased(distroId)) {
-        Utils.warning("manjaro PKGBUILD")
+        Utils.warning(`exporting Manjaro .pkg.tar.zst packages`)
         localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
         filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`
@@ -101,7 +101,7 @@ export default class ExportPkg extends Command {
          * Arch
          */
       } else {
-        Utils.warning("aur PKGBUILD")
+        Utils.warning(`exporting Arch .pkg.tar.zst packages`)
         localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
         filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
@@ -111,7 +111,7 @@ export default class ExportPkg extends Command {
        * Debian
        */
     } else if (familyId === "debian") {
-      Utils.warning("debian DEB")
+      Utils.warning(`exporting Devuan/Debian/Ubuntu DEB packages`)
       localPath = `/home/${this.user}/penguins-eggs/dist`
       remotePath = this.Tu.config.remotePathPackages + "/debs"
       let arch = Utils.uefiArch()
@@ -124,12 +124,14 @@ export default class ExportPkg extends Command {
        * fedora
        */
     } else if (familyId === 'fedora') {
-      Utils.warning("fedora RPM")
-      localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
-      if (distroId === 'fedora') {
+      if (distroId === 'Fedora') {
+        Utils.warning(`exporting Fedora fc42 RPM packages`)
+        localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
         remotePath = this.Tu.config.remotePathPackages + "/fedora"
         filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       } else {
+        Utils.warning(`exporting Almalinux/Rocky el9 RPM packages`)
+        localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
         remotePath = this.Tu.config.remotePathPackages + "/el9"
         filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.el?.x86_64.rpm`
       }
@@ -138,7 +140,7 @@ export default class ExportPkg extends Command {
        * openmamba
        */
     } else if (familyId === 'openmamba') {
-      Utils.warning("openmamba rpm packages")
+      Utils.warning(`exporting Openmamba RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
       filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
@@ -147,17 +149,11 @@ export default class ExportPkg extends Command {
        * opensuse
        */
     } else if (familyId === 'opensuse') {
-      Utils.warning("opensuse rpm packages")
+      Utils.warning(`exporting OpenSuSE RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/opensuse"
       filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
 
-      /**
-       * voidlinux
-       */
-    } else if (familyId === 'voidlinux') {
-      Utils.warning("voidlinux packages")
-      process.exit()
     }
     let cmd=`#!/bin/bash\n`
     cmd += `set -e\n`
@@ -192,6 +188,7 @@ export default class ExportPkg extends Command {
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
     // console.log(cmd)
+    console.log(cmd)
     await exec(cmd, this.echo)
   }
 }
