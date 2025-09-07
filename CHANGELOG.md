@@ -19,10 +19,15 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-## v25.9.6-1
+## v25.9.7
+* bugfix: Manjaro and derivatives initramfs find:
+* import/export packages for all the distros ( this is only for developers);
+
+
+## v25.9.6
 * **Multi-distribution initramfs detection:** The logic for searching for the initramfs file has been made more robust and compatible. In addition to dynamic searching based on the kernel version, the static fallback system has been enhanced to recognize distribution-specific file naming conventions such as Arch and Alpine Linux.
 
-## v25.9.5-1
+## v25.9.5
 * BUGFIX on krill: a typo om v25.9.4-1 - from yesterda - was instroduced. I realized that just this morning. krill was able to install on UEFI but became unable to install on BIOS. This version fix krill.
 
 ## v25.9.3-2 (amd64)
