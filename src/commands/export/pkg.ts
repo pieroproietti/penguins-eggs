@@ -126,9 +126,11 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'fedora') {
       let repo = 'fedora'
       let warning = `exporting Fedora RPM packages`
+      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.el9.x86_64.rpm`
       if (distro.distroLike !=='Fedora') {
         repo = 'el9'
         warning = `exporting Almalinux/Rocky RPM packages`
+        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       }
       Utils.warning(warning)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
@@ -175,6 +177,7 @@ export default class ExportPkg extends Command {
     cmd +=`# Export packages\n`
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
+    cmd += `\n`
     cmd +=`# wait before to umount\n`
     cmd += 'sleep 2s\n'
     cmd += `fusermount3 -u ${remoteMountpoint}\n`
