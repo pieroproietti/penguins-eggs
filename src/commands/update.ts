@@ -200,7 +200,7 @@ export default class Update extends Command {
       let repo = 'openmamba'
       let filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `dnf install /tmp/${filter}`
+      install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
 
       /**
        * opensuse
