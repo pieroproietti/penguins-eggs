@@ -190,8 +190,8 @@ export default class Update extends Command {
       }
       let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `dnf install /tmp/${filter}`
-
+      install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+ 
 
       /**
        * openmamba
