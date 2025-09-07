@@ -34,7 +34,6 @@ dpkg: errore nell'elaborare il pacchetto penguins-eggs (--configure):
 * bugfix: Manjaro and derivatives initramfs find:
 * import/export packages for all the distros ( this is only for developers);
 
-
 ## v25.9.6
 * **Multi-distribution initramfs detection:** The logic for searching for the initramfs file has been made more robust and compatible. In addition to dynamic searching based on the kernel version, the static fallback system has been enhanced to recognize distribution-specific file naming conventions such as Arch and Alpine Linux.
 
