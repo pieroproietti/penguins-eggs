@@ -125,12 +125,12 @@ export default class ExportPkg extends Command {
        */
     } else if (familyId === 'fedora') {
       let repo = 'fedora'
-      let warning = `exporting Fedora fc42 RPM packages`
+      let warning = `exporting Fedora RPM packages`
       if (distro.distroLike !=='Fedora') {
         repo = 'el9'
-        warning = `exporting Almalinux/Rocky el9 RPM packages`
+        warning = `exporting Almalinux/Rocky RPM packages`
       }
-       Utils.warning(warning)
+      Utils.warning(warning)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + `/` + repo
 
@@ -153,6 +153,7 @@ export default class ExportPkg extends Command {
       filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
 
     }
+
     let cmd=`#!/bin/bash\n`
     cmd += `set -e\n`
     cmd += 'shopt -s extglob\n'
@@ -185,6 +186,7 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
+    console.log(cmd)
     await exec(cmd, this.echo)
   }
 }
