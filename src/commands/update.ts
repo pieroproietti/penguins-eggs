@@ -63,8 +63,8 @@ export default class Update extends Command {
     const choose = await this.choosePkg()
     Utils.titles(`updating via ${choose}`)
     switch (choose) {
-      case 'repos': {
-        await this.getPkgFromRepo()
+      case 'package_manager': {
+        await this.getPkgFromPackageManager()
 
         break
       }
@@ -95,7 +95,7 @@ export default class Update extends Command {
    */
   async choosePkg(): Promise<string> {
     const choices: string[] = ['abort']
-    choices.push('lan', 'repos', 'sourceforge', 'sources')
+    choices.push('lan', 'package_manager', 'sources')
 
     const questions: any = [
       {
@@ -116,14 +116,20 @@ export default class Update extends Command {
   /**
    *
    */
-  async getPkgFromRepo() {
+  async getPkgFromPackageManager() {
     let cmd = ""
-    if (this.distro.familyId === "debian") {
-      cmd = 'apt install penguins-eggs'
+    if (this.distro.familyId === 'alpine') {
+      cmd = `apk add penguins-egga`
     } else if (this.distro.familyId === 'archlinux') {
       cmd = 'pacman -S penguins-eggs'
-    } else if (this.distro.familyId === 'alpine') {
-      cmd = `apk add penguins-egga`
+    } else if (this.distro.familyId === "debian") {
+      cmd = 'apt install penguins-eggs'
+    } else if (this.distro.familyId === "fedora") {
+      cmd = 'dnf install penguins-eggs'
+    } else if (this.distro.familyId === "openmamba") {
+      cmd = 'dnf install penguins-eggs'
+    } else if (this.distro.familyId === "opensuse") {
+      cmd = 'dnf install penguins-eggs'
     }
     console.log(cmd)
     await exec(cmd)
@@ -136,42 +142,86 @@ export default class Update extends Command {
     const Tu = new Tools()
     await Tu.loadSettings()
 
-    Utils.warning('Update from LAN')
-    if (this.distro.familyId === 'archlinux') {
+    Utils.warning('Update penguins-eggs from LAN')
+    let copy = ''
+    let install = ''
+
+    /**
+     * Alpine
+     */
+    if (this.distro.familyId === 'alpine') {
+      let repo = `alpine/x86_64`
+      let filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `apk add /tmp/${filter}`
+    
+    
+    /**
+     * Arch
+     */
+    } else if (this.distro.familyId === 'archlinux') {
       let repo = "aur"
+      let filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
       if (Diversions.isManjaroBased(this.distro.distroId)) {
         repo = 'manjaro'
+        filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`        
       }
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `pacman -U /tmp/${filter}`
 
-      const filter = `penguins-eggs-25.*.*-?-any.pkg.tar.zst`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      await exec(cmd, { capture: true, echo: true })
-      if (await Utils.customConfirm(`Want to install ${filter}`)) {
-        await exec(`pacman -U /tmp/${filter}`)
-      }
 
-    } else if (this.distro.familyId === 'alpine') {
-      let arch = 'x86_64'
-      if (process.arch === 'ia32') {
-        arch = 'i386'
-      }
-      const filter = `penguins-eggs-25.*.*-r*.apk`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/alpine/${filter} /tmp`
-      await exec(cmd, { capture: true, echo: true })
-
-      if (await Utils.customConfirm(`Want to install ${filter}`)) {
-        await exec(`apk add /tmp/${filter}`)
-      }
+     /**
+     * Devuan/Debian/Ubuntu
+     */
     } else if (this.distro.familyId === "debian") {
-      const filter = `penguins-eggs_25.*.*-*_${Utils.uefiArch()}.deb`
-      const cmd = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/debs/${filter} /tmp`
-      await exec(cmd, { capture: true, echo: true })
+      let repo = 'debs'
+      let filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${Utils.uefiArch()}.deb`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `dpkg -i /tmp/${filter}`
 
-      if (await Utils.customConfirm(`Want to install ${filter}`)) {
-        await exec(`dpkg -i /tmp/${filter}`)
+
+     /**
+     * fedora/el9
+     */
+    } else if (this.distro.familyId === "fedora") {
+      let repo = 'fedora'
+      if (this.distro.distroId !=='fedora') {
+        repo = 'el9'
       }
+      let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `dnf install /tmp/${filter}`
+
+
+      /**
+       * openmamba
+       */
+    } else if (this.distro.familyId === "openmamba") {
+      let repo = 'openmamba'
+      let filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `dnf install /tmp/${filter}`
+
+      /**
+       * opensuse
+       */
+    } else if (this.distro.familyId === "opensuse") {
+      let repo = 'opensuse'
+      let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+      install = `zypper install /tmp/${filter}`
+    }
+  
+
+    /**
+     * copy and install
+     */
+    if (await Utils.customConfirm(`Want to update/reinstall penguins-eggs`)) {
+      await exec(copy, { capture: true, echo: true })
+      await exec(install)
     }
   }
+
 
   /**
    *
