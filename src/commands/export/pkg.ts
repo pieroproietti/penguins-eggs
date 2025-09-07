@@ -185,8 +185,6 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
-    // console.log(cmd)
-    console.log(cmd)
     await exec(cmd, this.echo)
   }
 }
