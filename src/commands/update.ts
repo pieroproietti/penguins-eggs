@@ -185,7 +185,7 @@ export default class Update extends Command {
      */
     } else if (this.distro.familyId === "fedora") {
       let repo = 'fedora'
-      if (this.distro.distroId !=='fedora') {
+      if (this.distro.distroId !=='Fedora') {
         repo = 'el9'
       }
       let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
