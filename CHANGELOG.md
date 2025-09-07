@@ -20,6 +20,17 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.9.7
+* v25.9.6, on Devuan/Debian/Ubuntu results :
+```
+Configurazione di penguins-eggs (25.9.6-1)...
+ ›   ModuleLoadError: [MODULE_NOT_FOUND] import() failed to load 
+ ›   /usr/lib/penguins-eggs/dist/commands/config.js: Cannot find module 
+ ›   '/usr/lib/penguins-eggs/dist/commands/config.js' imported from 
+ ›   /usr/lib/penguins-eggs/node_modules/.pnpm/@oclif+core@4.5.2/node_modules/@
+ ›   oclif/core/lib/module-loader.js
+ ›   Code: MODULE_NOT_FOUND
+dpkg: errore nell'elaborare il pacchetto penguins-eggs (--configure):
+```
 * bugfix: Manjaro and derivatives initramfs find:
 * import/export packages for all the distros ( this is only for developers);
 
