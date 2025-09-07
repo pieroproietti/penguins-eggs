@@ -33,7 +33,7 @@ Configurazione di penguins-eggs (25.9.6-1)...
  ›   Code: MODULE_NOT_FOUND
 dpkg: errore nell'elaborare il pacchetto penguins-eggs (--configure):
 ```
-## v25.9.6
+## v25.9.6 (deprecated)
 * **Multi-distribution initramfs detection:** The logic for searching for the initramfs file has been made more robust and compatible. In addition to dynamic searching based on the kernel version, the static fallback system has been enhanced to recognize distribution-specific file naming conventions such as Arch and Alpine Linux.
 
 ## v25.9.5
