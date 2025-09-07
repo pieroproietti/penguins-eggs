@@ -127,7 +127,7 @@ export default class ExportPkg extends Command {
       let repo = 'fedora'
       let warning = `exporting Fedora RPM packages`
       filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
-      if (distro.distroId !=='Fedora') {
+      if (distro.distroId !== 'Fedora') {
         repo = 'el9'
         warning = `exporting Almalinux/Rocky RPM packages`
         filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
@@ -155,7 +155,7 @@ export default class ExportPkg extends Command {
       filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
     }
 
-    let cmd=`#!/bin/bash\n`
+    let cmd = `#!/bin/bash\n`
     cmd += `set -e\n`
     cmd += 'shopt -s extglob\n'
     cmd += `mkdir ${remoteMountpoint}\n`
@@ -169,18 +169,18 @@ export default class ExportPkg extends Command {
           archDest = 'i386/'
         }
       }
-      cmd +=`# Delete old packages\n`
+      cmd += `# Delete old packages\n`
       cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
 
-    cmd +=`# Export packages\n`
+    cmd += `# Export packages\n`
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `\n`
-    cmd +=`# wait before to umount\n`
+    cmd += `# wait before to umount\n`
     cmd += 'sleep 2s\n'
     cmd += `fusermount3 -u ${remoteMountpoint}\n`
-    cmd +=`# remove mountpoint\n`
+    cmd += `# remove mountpoint\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose) {
       if (this.clean) {
