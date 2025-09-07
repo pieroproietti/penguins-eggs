@@ -124,17 +124,15 @@ export default class ExportPkg extends Command {
        * fedora
        */
     } else if (familyId === 'fedora') {
-      if (distroId === 'Fedora') {
-        Utils.warning(`exporting Fedora fc42 RPM packages`)
-        localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
-        remotePath = this.Tu.config.remotePathPackages + "/fedora"
-        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
-      } else {
-        Utils.warning(`exporting Almalinux/Rocky el9 RPM packages`)
-        localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
-        remotePath = this.Tu.config.remotePathPackages + "/el9"
-        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.el?.x86_64.rpm`
+      let repo = 'fedora'
+      let warning = `exporting Fedora fc42 RPM packages`
+      if (distroId !=='fedora') {
+        repo = 'el9'
+        warning = `exporting Almalinux/Rocky el9 RPM packages`
       }
+       Utils.warning(warning)
+      localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
+      remotePath = this.Tu.config.remotePathPackages + `/` + repo
 
       /**
        * openmamba
