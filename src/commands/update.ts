@@ -234,10 +234,11 @@ export default class Update extends Command {
     console.log('cd ~')
     console.log('git clone https://github.com/pieroproietti/penguins-eggs')
     console.log('cd penguins-eggs')
-    console.log('pnpm i')
+    console.log('pnpm install')
+    console.log('pnpm build')
     console.log('./eggs')
     console.log('')
-    console.log('Note: requires nodejs>18 and pnpm installed')
+    console.log('NOTE: requires nodejs>18 and pnpm installed')
   }
 
   /**
