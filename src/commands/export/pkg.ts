@@ -125,13 +125,14 @@ export default class ExportPkg extends Command {
        */
     } else if (familyId === 'fedora') {
       let repo = 'fedora'
+      let ftype = 'fc??'
       let warning = `exporting Fedora RPM packages`
-      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       if (distro.distroId !== 'Fedora') {
         repo = 'el9'
+        ftype = `el?`
         warning = `exporting Almalinux/Rocky RPM packages`
-        filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       }
+      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
       Utils.warning(warning)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + `/` + repo
