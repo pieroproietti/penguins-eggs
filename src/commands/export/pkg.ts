@@ -153,7 +153,6 @@ export default class ExportPkg extends Command {
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/opensuse"
       filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
-
     }
 
     let cmd=`#!/bin/bash\n`
@@ -189,7 +188,6 @@ export default class ExportPkg extends Command {
       }
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
-    console.log(cmd)
     await exec(cmd, this.echo)
   }
 }
