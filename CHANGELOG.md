@@ -20,7 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.9.7
-* v25.9.6, on Devuan/Debian/Ubuntu results :
+* bugfix: Manjaro and derivatives initramfs find:
+* import/export packages for all the distros ( this is only for developers);
+* bugfix: installing penguins-eggs v25.9.6, on Devuan/Debian/Ubuntu results  on this error:
 ```
 Configurazione di penguins-eggs (25.9.6-1)...
  ›   ModuleLoadError: [MODULE_NOT_FOUND] import() failed to load 
@@ -31,9 +33,6 @@ Configurazione di penguins-eggs (25.9.6-1)...
  ›   Code: MODULE_NOT_FOUND
 dpkg: errore nell'elaborare il pacchetto penguins-eggs (--configure):
 ```
-* bugfix: Manjaro and derivatives initramfs find:
-* import/export packages for all the distros ( this is only for developers);
-
 ## v25.9.6
 * **Multi-distribution initramfs detection:** The logic for searching for the initramfs file has been made more robust and compatible. In addition to dynamic searching based on the kernel version, the static fallback system has been enhanced to recognize distribution-specific file naming conventions such as Arch and Alpine Linux.
 
