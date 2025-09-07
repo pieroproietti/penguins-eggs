@@ -126,7 +126,7 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'fedora') {
       let repo = 'fedora'
       let warning = `exporting Fedora RPM packages`
-      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.el9.x86_64.rpm`
+      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.fc??.x86_64.rpm`
       if (distro.distroLike !=='Fedora') {
         repo = 'el9'
         warning = `exporting Almalinux/Rocky RPM packages`
