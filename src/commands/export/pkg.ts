@@ -126,7 +126,7 @@ export default class ExportPkg extends Command {
     } else if (familyId === 'fedora') {
       let repo = 'fedora'
       let warning = `exporting Fedora fc42 RPM packages`
-      if (distroId !=='fedora') {
+      if (distro.distroLike !=='Fedora') {
         repo = 'el9'
         warning = `exporting Almalinux/Rocky el9 RPM packages`
       }
