@@ -90,7 +90,7 @@ export default class Update extends Command {
    */
   async choosePkg(): Promise<string> {
     const choices: string[] = ['Abort']
-    choices.push('LAN', 'Source', 'Package_Manager')
+    choices.push('LAN', 'Package_Manager', 'Source')
 
     const questions: any = [
       {
@@ -118,16 +118,16 @@ export default class Update extends Command {
     } else if (this.distro.familyId === 'archlinux') {
       cmd = 'sudo pacman -S penguins-eggs'
     } else if (this.distro.familyId === "debian") {
-      cmd = 'sudo apt install penguins-eggs'
+      cmd = 'sudo apt install penguins-eggs\nsudo apt reinstall penguins-eggs'
     } else if (this.distro.familyId === "fedora") {
-      cmd = 'sudo dnf install penguins-eggs\nsudo dnf install penguins-eggs'
+      cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
     } else if (this.distro.familyId === "openmamba") {
-      cmd = 'sudo dnf install penguins-eggs\nsudo dnf install penguins-eggs'
+      cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
     } else if (this.distro.familyId === "opensuse") {
-      cmd = 'sudo zypper install penguins-eggs'
+      cmd = 'sudo zypper install penguins-eggs\\zypper install --force penguins-eggs'
     }
     Utils.titles(`update`)
-    Utils.warning(`To update/install penguins-eggs cut and copy follow commands`)
+    Utils.warning(`To install/update penguins-eggs cut and copy one of the follow commands`)
     console.log()
     console.log(cmd)
     console.log()
@@ -177,7 +177,7 @@ export default class Update extends Command {
       let repo = 'debs'
       filter = `penguins-eggs_??.*.*-?_${Utils.uefiArch()}.deb`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `dpkg -i /tmp/${filter}`
+      install = `apt reinstall /tmp/${filter}`
 
 
      /**
@@ -211,7 +211,7 @@ export default class Update extends Command {
       let repo = 'opensuse'
       filter = `penguins-eggs-*.*.*-?.opensuse.x86_64.rpm`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `zypper install /tmp/${filter}`
+      install = `zypper install --force /tmp/${filter} || zypper install /tmp/${filter}`
     }
   
 
