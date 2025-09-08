@@ -19,6 +19,12 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.8
+* `eggs export pkg` fixed on Almalinux/Rocky;
+* `eggs update` revision.
+* removed old critery search initramfs;
+
+
 ## v25.9.7
 * bugfix: Manjaro and derivatives initramfs find:
 * import/export packages for all the distros ( this is only for developers);
