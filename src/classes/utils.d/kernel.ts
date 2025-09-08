@@ -10,7 +10,6 @@ import path from 'path'
 import Distro from '../distro.js'
 import Utils from '../utils.js'
 import { execSync } from 'node:child_process'
-import Diversions from '../diversions.js'
 
 
 /**
@@ -26,9 +25,9 @@ export default class Kernel {
         let vmlinuz = ''
 
         if (!Utils.isContainer()) {
-            vmlinuz = this.vmlinuxFromUname()
+            vmlinuz = this.vmlinuzFromUname()
             if (vmlinuz === '') {
-                vmlinuz = this.vmlinuxFromCmdline()
+                vmlinuz = this.vmlinuzFromCmdline()
                 if (vmlinuz === '') {
                     console.log('vmlinuz not found')
                     process.exit(1)
@@ -151,64 +150,6 @@ export default class Kernel {
 
 
     /**
-     * Ricava path per initramfs/initrd
-     * 
-     * @param kernel - Versione del kernel
-     * @returns Path al file initramfs
-     */
-    static initramfsOld(kernel = ''): string {
-        const distro = new Distro()
-        let initramfs = ''
-
-        if (kernel === '') {
-            if (!Utils.isContainer()) {
-                kernel = execSync('uname -r').toString().trim();
-            } else {
-                Utils.warning("cannot work on containers actually!")
-                process.exit(1)
-            }
-        }
-
-        // rolling...
-        if (distro.familyId === "alpine") {
-            let suffix = kernel.substring(kernel.lastIndexOf('-'))
-            initramfs = `/boot/initramfs${suffix}`
-
-        } else if (distro.familyId === "archlinux" && (!Diversions.isManjaroBased(distro.distroId))) {
-            let suffix = kernel.substring(kernel.lastIndexOf('-'))
-            initramfs = `/boot/initramfs-linux${suffix}.img`
-
-        } else if (distro.familyId === "archlinux" && (Diversions.isManjaroBased(distro.distroId))) {
-            let version = kernel.split('.').slice(0, 2).join('.');
-            initramfs = `/boot/initramfs-${version}-x86_64.img`
-
-        } else {
-            // Gestione generica per le altre distro (Debian, Fedora, SUSE, OpenMamba, cc.)
-            const candidates = [
-                `/boot/initrd.img-${kernel}`, // Debian, Ubuntu
-                `/boot/initramfs-${kernel}.img`, // Fedora, RHEL
-                `/boot/initramfs-${kernel}-1mamba-x86_64.img`, // Openmamba
-                `/boot/initrd-${kernel}`, // openSUSE
-                `/boot/initramfs-${kernel}`, // fallbacks
-            ]
-
-            for (const candidate of candidates) {
-                if (fs.existsSync(candidate)) {
-                    initramfs = candidate
-                    break
-                }
-            }
-        }
-
-        if (!fs.existsSync(initramfs)) {
-            console.error(`ERROR: initramfs file ${initramfs} does not exist!`)
-            process.exit(1)
-        }
-
-        return initramfs
-    }
-
-    /**
      * ALL PRIVATE
      */
 
@@ -217,7 +158,7 @@ export default class Kernel {
      * most of the distros:
      * debian, fedora, opensuse, rasberry
      */
-    private static vmlinuxFromUname() {
+    private static vmlinuzFromUname() {
         const kernelVersion = execSync('uname -r').toString().trim()
         let kernelPath = `/boot/vmlinuz-${kernelVersion}`
         if (fs.existsSync(kernelPath)) {
@@ -231,7 +172,7 @@ export default class Kernel {
      * vmlinuxFromCmdline
      * raspbery /proc/cmdline dont contain it
      */
-    private static vmlinuxFromCmdline() {
+    private static vmlinuzFromCmdline() {
         let distro = new Distro()
         let vmlinuz = ''
 
