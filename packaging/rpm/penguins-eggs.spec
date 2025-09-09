@@ -33,7 +33,8 @@ AutoReqProv: no
 
 License:        GPL-3.0-or-later
 URL:            https://penguins-eggs.net/
-# No sorgenti no prep
+ource0:        penguins-eggs-25.9.8.tar.gz
+Source1:       bootloaders.tar.gz
 
 # Fedora uses system-provided nodejs libraries where possible.
 # We bundle them here as per nodejs packaging guidelines when they can't be unbundled.
@@ -71,10 +72,10 @@ Requires:       zstd
 A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
 
 %prep
-# Usiamo un comando 'cp' più robusto per copiare TUTTO il contenuto
-# (inclusi i file nascosti) dalla directory del checkout, 
-# senza dipendere dall'espansione della shell (*).
-cp -a /github/workspace/. .
+# Usiamo il classico %setup per estrarre i nostri sorgenti.
+# -q = quiet
+# -a 1 = dopo aver estratto Source0, estrai anche Source1
+%setup -q -a 1
 
 %build
 pnpm install 

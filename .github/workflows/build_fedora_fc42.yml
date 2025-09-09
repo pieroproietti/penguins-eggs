@@ -1,5 +1,3 @@
-# .github/workflows/build-fedora.yml
-
 name: Build Fedora Package
 
 on:
@@ -11,35 +9,39 @@ jobs:
   build-rpm-fedora:
     runs-on: ubuntu-latest
     
-    strategy:
-      matrix:
-        fedora_version: [42] 
-
     container:
-      image: fedora:${{ matrix.fedora_version }}
+      image: fedora:42
 
     steps:
       - name: 1. Check out repository code
         uses: actions/checkout@v4
 
-      # --- NUOVO STEP ---
-      # Questo step scarica il tarball dei bootloader e lo estrae.
-      # Verrà creata una cartella 'bootloaders' nella root del progetto.
-      - name: 2. Download and Extract Bootloaders
-        run: |
-          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
-          tar -xvf bootloaders.tar.gz
+      - name: 2. Download Bootloaders
+        run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
 
       - name: 3. Install Build Dependencies
         run: |
-          dnf install -y rpm-build dnf-plugins-core
+          dnf install -y rpm-build dnf-plugins-core git tar gzip
           dnf builddep -y ./packaging/rpm/penguins-eggs.spec
 
-      - name: 4. Build RPM package
+      # --- NUOVO STEP FONDAMENTALE ---
+      - name: 4. Prepare RPM Sources
+        run: |
+          # Creiamo la cartella dove rpmbuild cerca i sorgenti
+          mkdir -p ~/rpmbuild/SOURCES
+          
+          # Creiamo un tarball dei sorgenti dal checkout di Git
+          # Il nome del file DEVE corrispondere a Source0 nello .spec
+          git archive --format=tar.gz --output=~/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
+          
+          # Copiamo il tarball dei bootloader nella stessa cartella
+          cp bootloaders.tar.gz ~/rpmbuild/SOURCES/
+
+      - name: 5. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
 
-      - name: 5. Upload RPM Artifact
+      - name: 6. Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fedora-${{ matrix.fedora_version }}-rpm
+          name: fedora-42-rpm
           path: ~/rpmbuild/RPMS/**/*.rpm
