@@ -9,7 +9,7 @@ if [ -z "$APP_NAME" ] || [ -z "$VERSION" ]; then
   echo "ERRORE: Impossibile leggere nome o versione da package.json."
   exit 1
 fi
-TARBALL_NAME="../${APP_NAME}-${VERSION}-obs.tar.gz"
-tar --exclude='.git' -czvf "${TARBALL_NAME}" .
+TARBALL_NAME="../${APP_NAME}.tar.gz"
+tar --exclude='.git dist tmp' -czvf "${TARBALL_NAME}" .
 echo ""
-echo "==> Fatto! ${TARBALL_NAME}"
+echo "==> Create ${APP_NAME} v${VERSION}! in ${TARBALL_NAME} "
