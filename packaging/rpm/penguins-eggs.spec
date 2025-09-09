@@ -72,6 +72,13 @@ A console tool that allows you to remaster your system and redistribute it as li
 
 %prep
 # No sorgenti no prep
+# Copiamo manualmente tutti i file e le cartelle dalla directory
+# del checkout di Git alla directory di build di RPM.
+# Il percorso /github/workspace è standard negli ambienti GitHub Actions.
+cp -a /github/workspace/* .
+# ed anche i file nascosti (es. .oclif.manifest.json)
+cp -a /github/workspace/.* . || true 
+
 
 %build
 pnpm install 
