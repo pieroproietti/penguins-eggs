@@ -13,15 +13,12 @@ jobs:
       image: fedora:42
 
     steps:
-      # Step 1: Esegui un checkout COMPLETO del repository
-      - name: 1. Check out repository code (full clone)
+      - name: 1. Check out repository code
         uses: actions/checkout@v4
+        # Lasciamo fetch-depth: 0, non fa male
         with:
-          # fetch-depth: 0 dice all'azione di scaricare l'intera cronologia di Git,
-          # rendendo disponibile la directory .git e abilitando comandi come 'git archive'.
           fetch-depth: 0
 
-      # Step 2: Installa gli strumenti di base necessari subito
       - name: 2. Install Core Tools
         run: dnf install -y git tar gzip
 
@@ -30,16 +27,20 @@ jobs:
 
       - name: 4. Install Build Dependencies
         run: |
-          # Installiamo solo le dipendenze di build, git è già installato
           dnf install -y rpm-build dnf-plugins-core
           dnf builddep -y ./packaging/rpm/penguins-eggs.spec
 
-      - name: 5. Prepare RPM Sources
+      # --- STEP MODIFICATO ---
+      - name: 5. Prepare RPM Sources (using tar)
         run: |
-          # Ora questo step funzionerà perché 'git' esiste ed è in un repo valido
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           mkdir -p $HOME/rpmbuild/SOURCES
-          git archive --format=tar.gz --output=$HOME/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
+          
+          # SOSTITUIAMO 'git archive' CON 'tar'.
+          # Questo comando crea un tarball dal contenuto della cartella corrente,
+          # escludendo la cartella .git (se mai ci fosse) e .github.
+          # Lavora sui file, che sappiamo esserci.
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz --exclude=.git --exclude=.github .
+          
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 6. Build RPM package
