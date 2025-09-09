@@ -1,0 +1,38 @@
+# Nome del workflow, apparirà nella tab "Actions" di GitHub
+name: Build Fedora Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-rpm-fedora:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        fedora_version: [42] 
+
+    container:
+      image: fedora:${{ matrix.fedora_version }}
+
+    steps:
+      - name: 1. Check out repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Install Build Dependencies
+        run: |
+          dnf install -y rpm-build dnf-plugins-core
+          # AGGIORNATO: Punta al nuovo percorso del file .spec
+          dnf builddep -y ./packaging/rpm/penguins-eggs.spec
+
+      - name: 3. Build RPM package
+        # AGGIORNATO: Usa il nuovo percorso per il comando di build
+        run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
+
+      - name: 4. Upload RPM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fedora-${{ matrix.fedora_version }}-rpm
+          path: ~/rpmbuild/RPMS/**/*.rpm
