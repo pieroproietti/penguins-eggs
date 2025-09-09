@@ -26,7 +26,7 @@ jobs:
 
       - name: 4. Prepare RPM Sources
         run: |
-          # Usare $HOME invece di ~
+          git config --global --add safe.directory /github/workspace
           mkdir -p $HOME/rpmbuild/SOURCES
           git archive --format=tar.gz --output=$HOME/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
