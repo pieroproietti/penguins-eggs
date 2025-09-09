@@ -33,8 +33,8 @@ AutoReqProv: no
 
 License:        GPL-3.0-or-later
 URL:            https://penguins-eggs.net/
-Source0:        %{app_name}.tar.gz
-Source1:        bootloaders.tar.gz
+#vuota Source0:        %{app_name}.tar.gz
+#vuota Source1:        bootloaders.tar.gz
 
 # Fedora uses system-provided nodejs libraries where possible.
 # We bundle them here as per nodejs packaging guidelines when they can't be unbundled.
@@ -72,9 +72,11 @@ Requires:       zstd
 A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
 
 %prep
-%setup -q -c -a 1
+# ora è vuota, lo famo prima
+# %setup -q -c -a 1
 
 %build
+pnpm install 
 pnpm build
 
 %install
