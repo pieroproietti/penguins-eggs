@@ -71,14 +71,10 @@ Requires:       zstd
 A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
 
 %prep
-# No sorgenti no prep
-# Copiamo manualmente tutti i file e le cartelle dalla directory
-# del checkout di Git alla directory di build di RPM.
-# Il percorso /github/workspace è standard negli ambienti GitHub Actions.
-cp -a /github/workspace/* .
-# ed anche i file nascosti (es. .oclif.manifest.json)
-cp -a /github/workspace/.* . || true 
-
+# Usiamo un comando 'cp' più robusto per copiare TUTTO il contenuto
+# (inclusi i file nascosti) dalla directory del checkout, 
+# senza dipendere dall'espansione della shell (*).
+cp -a /github/workspace/. .
 
 %build
 pnpm install 
