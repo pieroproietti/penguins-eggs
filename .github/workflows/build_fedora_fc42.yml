@@ -24,18 +24,12 @@ jobs:
           dnf install -y rpm-build dnf-plugins-core git tar gzip
           dnf builddep -y ./packaging/rpm/penguins-eggs.spec
 
-      # --- NUOVO STEP FONDAMENTALE ---
       - name: 4. Prepare RPM Sources
         run: |
-          # Creiamo la cartella dove rpmbuild cerca i sorgenti
-          mkdir -p ~/rpmbuild/SOURCES
-          
-          # Creiamo un tarball dei sorgenti dal checkout di Git
-          # Il nome del file DEVE corrispondere a Source0 nello .spec
-          git archive --format=tar.gz --output=~/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
-          
-          # Copiamo il tarball dei bootloader nella stessa cartella
-          cp bootloaders.tar.gz ~/rpmbuild/SOURCES/
+          # Usare $HOME invece di ~
+          mkdir -p $HOME/rpmbuild/SOURCES
+          git archive --format=tar.gz --output=$HOME/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 5. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
