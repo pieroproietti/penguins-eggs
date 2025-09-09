@@ -1,0 +1,15 @@
+#!/bin/bash
+set -e
+cd ~/penguins-eggs
+rm -rf node_modules
+pnpm install
+APP_NAME=$(node -p "require('./package.json').name")
+VERSION=$(node -p "require('./package.json').version")
+if [ -z "$APP_NAME" ] || [ -z "$VERSION" ]; then
+  echo "ERRORE: Impossibile leggere nome o versione da package.json."
+  exit 1
+fi
+TARBALL_NAME="../${APP_NAME}-${VERSION}-obs.tar.gz"
+tar --exclude='.git' -czvf "${TARBALL_NAME}" .
+echo ""
+echo "==> Fatto! ${TARBALL_NAME}"
