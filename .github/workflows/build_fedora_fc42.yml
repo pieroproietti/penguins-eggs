@@ -16,25 +16,46 @@ jobs:
       - name: 1. Check out repository code
         uses: actions/checkout@v4
 
-      - name: 2. Download Bootloaders
+      # --- NUOVO STEP DI DIAGNOSTICA ---
+      # Questo step ci mostrerà cosa c'è realmente nel workspace
+      - name: 2. Debug Workspace Contents
+        run: |
+          echo "--- Current Directory ---"
+          pwd
+          echo
+          echo "--- Directory Listing (including hidden files) ---"
+          ls -la
+          echo
+          echo "--- Verifying Git Repository ---"
+          # Questo è il test chiave. Se fallisce qui, il problema è il checkout.
+          git status
+
+      # === GLI STEP SUCCESSIVI SONO TEMPORANEAMENTE DISABILITATI ===
+
+      - name: 3. Download Bootloaders
+        if: false # Disabilitato temporaneamente
         run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
 
-      - name: 3. Install Build Dependencies
+      - name: 4. Install Build Dependencies
+        if: false # Disabilitato temporaneamente
         run: |
           dnf install -y rpm-build dnf-plugins-core git tar gzip
           dnf builddep -y ./packaging/rpm/penguins-eggs.spec
 
-      - name: 4. Prepare RPM Sources
+      - name: 5. Prepare RPM Sources
+        if: false # Disabilitato temporaneamente
         run: |
           git config --global --add safe.directory /github/workspace
           mkdir -p $HOME/rpmbuild/SOURCES
           git archive --format=tar.gz --output=$HOME/rpmbuild/SOURCES/penguins-eggs-25.9.8.tar.gz HEAD
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 5. Build RPM package
+      - name: 6. Build RPM package
+        if: false # Disabilitato temporaneamente
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
 
-      - name: 6. Upload RPM Artifact
+      - name: 7. Upload RPM Artifact
+        if: false # Disabilitato temporaneamente
         uses: actions/upload-artifact@v4
         with:
           name: fedora-42-rpm
