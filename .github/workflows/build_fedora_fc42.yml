@@ -37,7 +37,7 @@ jobs:
           # MODIFICA CHIAVE: Aggiungiamo --transform per creare una cartella 
           # di primo livello dentro il tarball, come si aspetta %setup.
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
-            --transform='s,^\.,penguins-eggs,' \
+            --transform='s,^\.,penguins-eggs-25.9.8,' \
             --exclude=.git \
             --exclude=.github \
             .
