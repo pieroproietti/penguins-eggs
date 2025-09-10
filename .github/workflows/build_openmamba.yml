@@ -14,26 +14,27 @@ jobs:
 
     steps:
       - name: 1. Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@@v4
 
       - name: 2. Install Core Tools
-        run: dnf install -y git tar gzip curl rpm-build
+        # Installiamo subito dnf-plugins-core che fornisce il comando config-manager
+        run: dnf install -y git tar gzip curl rpm-build dnf-plugins-core
 
-      - name: 3. Install Build Dependencies Manually
+      - name: 3. Disable 32-bit Repositories
         # --- QUESTA È LA SOLUZIONE FINALE ---
-        # Abbandoniamo 'dnf builddep' perché ignora le nostre direttive.
-        # Invece, estraiamo le dipendenze dal file .spec e forziamo
-        # l'installazione della versione a 64-bit per ogni pacchetto.
-        run: |
-          grep '^BuildRequires:' ./packaging/rpm/penguins-eggs-openmamba.spec | \
-            awk '{print $2}' | \
-            sed 's/$/.x86_64/' | \
-            xargs dnf install -y
+        # Disabilitiamo completamente il repository che fornisce i pacchetti i586.
+        # Se DNF non può vedere i pacchetti, non può installarli.
+        run: dnf config-manager --disable rolling-i586
 
-      - name: 4. Build RPM package
+      - name: 4. Install Build Dependencies from .spec
+        # Ora, senza accesso ai pacchetti a 32-bit, 'dnf builddep' è forzato
+        # a trovare una soluzione usando solo pacchetti a 64-bit.
+        run: dnf builddep -y ./packaging/rpm/penguins-eggs-openmamba.spec
+
+      - name: 5. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs-openmamba.spec
 
-      - name: 5. Upload RPM Artifact
+      - name: 6. Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openmamba-rolling-rpm
