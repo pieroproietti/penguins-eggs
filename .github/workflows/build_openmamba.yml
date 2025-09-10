@@ -16,24 +16,24 @@ jobs:
       - name: 1. Check out repository code
         uses: actions/checkout@v4
 
-      - name: 2. Configure DNF to disable multilib
-        # --- QUESTA È LA SOLUZIONE DEFINITIVA ---
-        # Modifichiamo la configurazione di DNF per installare solo
-        # i pacchetti dell'architettura migliore (x86_64), evitando conflitti.
-        run: echo 'multilib_policy=best' >> /etc/dnf/dnf.conf
+      - name: 2. Install Core Tools
+        run: dnf install -y git tar gzip curl rpm-build
 
-      - name: 3. Install Build and Download Tools
-        run: dnf install -y git tar gzip curl rpm-build dnf-plugins-core
+      - name: 3. Install Build Dependencies Manually
+        # --- QUESTA È LA SOLUZIONE FINALE ---
+        # Abbandoniamo 'dnf builddep' perché ignora le nostre direttive.
+        # Invece, estraiamo le dipendenze dal file .spec e forziamo
+        # l'installazione della versione a 64-bit per ogni pacchetto.
+        run: |
+          grep '^BuildRequires:' ./packaging/rpm/penguins-eggs-openmamba.spec | \
+            awk '{print $2}' | \
+            sed 's/$/.x86_64/' | \
+            xargs dnf install -y
 
-      - name: 4. Install Build Dependencies from .spec
-        # Ora il comando 'dnf builddep' rispetterà la nuova politica
-        # e non tenterà più di installare pacchetti .i586
-        run: dnf builddep -y ./packaging/rpm/penguins-eggs-openmamba.spec
-
-      - name: 5. Build RPM package
+      - name: 4. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs-openmamba.spec
 
-      - name: 6. Upload RPM Artifact
+      - name: 5. Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openmamba-rolling-rpm
