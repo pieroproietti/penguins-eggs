@@ -34,7 +34,7 @@ jobs:
           zypper --non-interactive refresh
           grep '^BuildRequires:' ./packaging/rpm/penguins-eggs.spec | \
             awk '{print $2}' | \
-            xargs sudo zypper --non-interactive install
+            xargs zypper --non-interactive install
 
       - name: 5. Prepare RPM Sources (using tar with transform)
         run: |
