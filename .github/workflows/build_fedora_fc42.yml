@@ -34,7 +34,7 @@ jobs:
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           
-          # MODIFICA CHIAVE: Aggiungiamo --transform per creare una cartella 
+          # Aggiungiamo --transform per creare una cartella 
           # di primo livello dentro il tarball, come si aspetta %setup.
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
             --transform='s,^\.,penguins-eggs-25.9.8,' \
@@ -43,6 +43,7 @@ jobs:
             .
           
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+          
       - name: 6. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
 
