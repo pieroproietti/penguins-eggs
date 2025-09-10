@@ -21,8 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: 2. Install Core Tools
-        # Aggiungiamo 'curl' qui per coerenza, dato che viene usato dopo
-        run: dnf install -y git tar gzip curl
+        run: dnf install -y --allowerasing git tar gzip curl
 
       - name: 3. Download Bootloaders
         run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
