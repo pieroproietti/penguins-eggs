@@ -12,7 +12,7 @@ jobs:
     container:
       # --- ATTENZIONE: Questo rimane il punto più incerto ---
       # Se fallisce qui, dovrai trovare il nome corretto dell'immagine Docker.
-      image: openmamba/rolling
+      image: openmamba/openmamba
 
     steps:
       - name: 1. Check out repository code
