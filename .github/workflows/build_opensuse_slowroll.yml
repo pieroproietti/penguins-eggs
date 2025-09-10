@@ -32,13 +32,9 @@ jobs:
           # SUSE: occorre abilitare i repo dei sorgenti e ritardo
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          # Ci tocca: Leggiamo le dipendenze dal file .spec e le installiamo.
-          # - grep: Trova tutte le righe che iniziano con "BuildRequires:".
-          # - awk: Estrae la seconda colonna (il nome del pacchetto).
-          # - xargs: Converte la lista di nomi in argomenti per zypper.
           grep '^BuildRequires:' ./packaging/rpm/penguins-eggs.spec | \
             awk '{print $2}' | \
-            xargs zypper --non-interactive installpackaging/rpm/penguins-eggs.spec
+            xargs sudo zypper --non-interactive install
 
       - name: 5. Prepare RPM Sources (using tar with transform)
         run: |
