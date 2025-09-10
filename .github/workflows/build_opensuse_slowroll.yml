@@ -10,8 +10,6 @@ jobs:
   build-rpm-slowroll:
     runs-on: ubuntu-latest
     
-    # MODIFICA: Usiamo un'immagine di OpenSUSE Tumbleweed, su cui si basa Slowroll.
-    # L'immagine "opensuse:42" si riferisce a una versione molto vecchia (Leap 42.x).
     container:
       image: opensuse/tumbleweed
 
@@ -22,14 +20,12 @@ jobs:
           # Manteniamo fetch-depth: 0 per avere la storia completa di git, utile per versioning.
           fetch-depth: 0
 
-      # MODIFICA: Sostituiamo 'dnf' con 'zypper', il package manager di OpenSUSE.
       - name: 2. Install Core Tools
         run: zypper --non-interactive install git tar gzip
 
       - name: 3. Download Bootloaders
         run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
 
-      # MODIFICA: Usiamo zypper per installare le dipendenze di build.
       - name: 4. Install Build Dependencies
         run: |
           zypper --non-interactive install rpm-build gcc make
@@ -39,22 +35,21 @@ jobs:
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           
-          # La logica di creazione del tarball con --transform è corretta e universale per rpmbuild.
+          # Aggiungiamo --transform per creare una cartella 
+          # di primo livello dentro il tarball, come si aspetta %setup.
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
-            --transform='s,^\.,penguins,' \
+            --transform='s,^\.,penguins-eggs-25.9.8,' \
             --exclude=.git \
             --exclude=.github \
             .
-          
+         
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 6. Build RPM package
-        # Il comando rpmbuild è standard e non cambia tra le distribuzioni.
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
 
       - name: 7. Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
-          # MODIFICA: Cambiamo il nome dell'artefatto per riflettere la nuova distribuzione.
           name: opensuse-slowroll-rpm
           path: ~/rpmbuild/RPMS/**/*.rpm
