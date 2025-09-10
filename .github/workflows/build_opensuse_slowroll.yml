@@ -29,7 +29,7 @@ jobs:
       - name: 4. Install Build Dependencies
         run: |
           zypper --non-interactive install rpm-build gcc make
-          sudo zypper --non-interactive source-install -d ./packaging/rpm/penguins-eggs.spec
+          zypper --non-interactive source-install -d ./packaging/rpm/penguins-eggs.spec
 
       - name: 5. Prepare RPM Sources (using tar with transform)
         run: |
