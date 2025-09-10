@@ -33,8 +33,8 @@ AutoReqProv: no
 
 License:        GPL-3.0-or-later
 URL:            https://penguins-eggs.net/
-Source0:        penguins-eggs-25.9.8.tar.gz
-Source1:       bootloaders.tar.gz
+Source0:        penguins-eggs.tar.gz
+Source1:        bootloaders.tar.gz
 
 # Fedora uses system-provided nodejs libraries where possible.
 # We bundle them here as per nodejs packaging guidelines when they can't be unbundled.
