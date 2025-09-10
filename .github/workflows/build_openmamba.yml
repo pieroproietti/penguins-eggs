@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      image: openmamba/rolling
+      image: openmamba/openmamba
 
     steps:
       - name: 1. Check out repository code
