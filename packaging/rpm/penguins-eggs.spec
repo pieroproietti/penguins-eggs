@@ -21,10 +21,6 @@
 %global debug_package %{nil}
 %global _with_network 1
 
-
-# BootloadersVersion
-%define bootloadersver 25.9.8
-
 Name:           %{app_name}
 Version:        25.9.8
 Release:        1%{?dist}
@@ -43,24 +39,23 @@ Source1:        bootloaders.tar.gz
 Provides:       bundled(nodejs-module)
 
 # ==============================================================================
-# DIPENDENZE DI BUILD CONDIZIONALI
+# DIPENDENZE DI BUILD COMUNI
 # ==============================================================================
-# Usiamo le macro condizionali per gestire le differenze nei nomi dei pacchetti
-# tra openSUSE e Fedora.
-
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  pnpm
+
+# ==============================================================================
+# DIPENDENZE DI BUILD CONDIZIONALI
+# ==============================================================================
 %if 0%{?suse_version}
-# openSUSE richiede 'nodejs-devel' per i file di intestazione.
 BuildRequires:  nodejs-devel
 %else
-# Fedora include tutto il necessario nel pacchetto 'nodejs'.
 BuildRequires:  nodejs
 %endif
 
 # ==============================================================================
-# DIPENDENZE DI RUNTIME CONDIZIONALI
+# DIPENDENZE DI RUNTIME COMUNI
 # ==============================================================================
 Requires:       bash-completion
 Requires:       cryptsetup
@@ -78,6 +73,14 @@ Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
 Requires:       rsync
+Requires:       wget
+Requires:       xdg-utils
+Requires:       xorriso
+Requires:       zstd
+
+# ==============================================================================
+# DIPENDENZE DI RUNTIME CONDIZIONALI
+# ==============================================================================
 %if 0%{?suse_version}
 # Su openSUSE, il pacchetto per sshfs si chiama 'fuse-sshfs'.
 Requires:       fuse-sshfs
@@ -85,10 +88,7 @@ Requires:       fuse-sshfs
 # Su Fedora, si chiama semplicemente 'sshfs'.
 Requires:       sshfs
 %endif
-Requires:       wget
-Requires:       xdg-utils
-Requires:       xorriso
-Requires:       zstd
+
 
 %description
 A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
@@ -147,7 +147,7 @@ install -d -m 755 %{buildroot}%{_datadir}/pixmaps
 install -m 644 assets/eggs.png %{buildroot}%{_datadir}/pixmaps/eggs.png
 
 %files
-#%license LICENSE
+%license LICENSE
 %doc README.md
 %{_bindir}/eggs
 %dir %{nodejs_prefix}
