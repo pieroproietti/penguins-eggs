@@ -39,13 +39,13 @@ jobs:
           dnf module enable nodejs:18 -y
           dnf install -y nodejs
           npm install -g pnpm
-          # installe le BuildRequires tranne pnpm
+          # installa i BuildRequires tranne pnpm
           grep '^BuildRequires:' ./packaging/rpm/penguins-eggs.spec | \
             grep -v 'pnpm' | \
             awk '{print $2}' | \
             xargs dnf install -y --allowerasing          
 
-            
+
       - name: 5. Prepare RPM Sources (using tar with transform)
         # Questo step è IDENTICO a quello di Fedora
         run: |

@@ -43,7 +43,7 @@ Provides:       bundled(nodejs-module)
 # ==============================================================================
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  pnpm
+
 
 # ==============================================================================
 # DIPENDENZE DI BUILD CONDIZIONALI
@@ -54,6 +54,9 @@ BuildRequires:  nodejs-devel
 %else
 # Fedora: nodejs
 BuildRequires:  nodejs
+%endif
+%if %{?fedora} || %{?suse_version}
+BuildRequires:  pnpm
 %endif
 
 # ==============================================================================
