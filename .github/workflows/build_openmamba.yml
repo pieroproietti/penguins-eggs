@@ -1,4 +1,4 @@
-name: Build openmamba Package
+name: Build Openmamba Package
 
 on:
   push:
@@ -10,31 +10,30 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      # --- ATTENZIONE: Questo rimane il punto più incerto ---
-      # Se fallisce qui, dovrai trovare il nome corretto dell'immagine Docker.
-      image: openmamba/openmamba
+      image: openmamba/rolling
 
     steps:
       - name: 1. Check out repository code
-        # Facciamo il checkout solo per avere il file .spec a disposizione
         uses: actions/checkout@v4
 
-      - name: 2. Install Build and Download Tools
-        # Aggiungiamo curl, che sarà usato da rpmbuild per scaricare i sorgenti
+      - name: 2. Configure DNF to disable multilib
+        # --- QUESTA È LA SOLUZIONE DEFINITIVA ---
+        # Modifichiamo la configurazione di DNF per installare solo
+        # i pacchetti dell'architettura migliore (x86_64), evitando conflitti.
+        run: echo 'multilib_policy=best' >> /etc/dnf/dnf.conf
+
+      - name: 3. Install Build and Download Tools
         run: dnf install -y git tar gzip curl rpm-build dnf-plugins-core
 
-      - name: 3. Install Build Dependencies from .spec
-        # Questo comando ora legge le BuildRequires (pnpm, etc.) e le installa
-        run: dnf builddep -y --exclude=*.i586 ./packaging/rpm/penguins-eggs-openmamba.spec
- 
-      - name: 4. Build RPM package
-        # Ora rpmbuild farà tutto:
-        # 1. Creerà le cartelle in $HOME/rpmbuild
-        # 2. Scaricherà Source0 e Source1 usando curl
-        # 3. Eseguirà il build come definito nel .spec
+      - name: 4. Install Build Dependencies from .spec
+        # Ora il comando 'dnf builddep' rispetterà la nuova politica
+        # e non tenterà più di installare pacchetti .i586
+        run: dnf builddep -y ./packaging/rpm/penguins-eggs-openmamba.spec
+
+      - name: 5. Build RPM package
         run: rpmbuild -ba ./packaging/rpm/penguins-eggs-openmamba.spec
 
-      - name: 5. Upload RPM Artifact
+      - name: 6. Upload RPM Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openmamba-rolling-rpm
