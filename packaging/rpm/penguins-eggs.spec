@@ -97,7 +97,7 @@ A console tool that allows you to remaster your system and redistribute it as li
 # Usiamo il classico %setup per estrarre i nostri sorgenti.
 # -q = quiet
 # -a 1 = dopo aver estratto Source0, estrai anche Source1
-%setup -q -a 1
+%setup -q -n penguins-eggs -a 1
 
 %build
 pnpm install 
