@@ -48,17 +48,19 @@ BuildRequires:  make
 # ==============================================================================
 # DIPENDENZE DI BUILD CONDIZIONALI
 # ==============================================================================
+# --- Blocco 1: Gestisce il nome diverso del pacchetto Node.js ---
 %if 0%{?suse_version}
-# OpenSUSE: nodejs-devel
 BuildRequires:  nodejs-devel
 %else
-# Fedora: nodejs
 BuildRequires:  nodejs
 %endif
-%if %{?fedora} || %{?suse_version}
+
+# --- Blocco 2: Gestisce l'esistenza del pacchetto pnpm ---
+%if %{expr: 0%{?fedora} || 0%{?suse_version}}
 BuildRequires:  pnpm
 %endif
 
+# ... resto del file .spec ...
 # ==============================================================================
 # DIPENDENZE DI RUNTIME COMUNI
 # ==============================================================================
