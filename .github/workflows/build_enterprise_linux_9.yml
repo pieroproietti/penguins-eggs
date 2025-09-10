@@ -1,0 +1,67 @@
+name: Build Enterprise Linux 9 Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Nome del job aggiornato per EL9
+  build-rpm-el9:
+    runs-on: ubuntu-latest
+    
+    container:
+      # Immagine aggiornata a AlmaLinux 9, una comune distro EL
+      image: almalinux:9
+
+    steps:
+      - name: 1. Check out repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Install Core Tools
+        # Aggiungiamo 'curl' qui per coerenza, dato che viene usato dopo
+        run: dnf install -y git tar gzip curl
+
+      - name: 3. Download Bootloaders
+        run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
+
+      - name: 4. Install Build Dependencies
+        run: |
+          # 1. Installa gli strumenti di base per la build
+          dnf install -y rpm-build dnf-plugins-core
+          
+          # 2. Abilita il repository EPEL (Extra Packages for Enterprise Linux)
+          #    Questo è il passaggio FONDAMENTALE per trovare tutte le dipendenze.
+          dnf install -y epel-release
+          
+          # 3. (Opzionale ma consigliato) Aggiorna la cache dopo aver aggiunto un nuovo repo
+          dnf -y upgrade --refresh
+          
+          # 4. Installa le dipendenze di build, ora con EPEL disponibile
+          dnf builddep -y ./packaging/rpm/penguins-eggs.spec
+
+      - name: 5. Prepare RPM Sources (using tar with transform)
+        # Questo step è IDENTICO a quello di Fedora
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-25.9.8,' \
+            --exclude=.git \
+            --exclude=.github \
+            .
+          
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+          
+      - name: 6. Build RPM package
+        # Questo step è IDENTICO, non serve --define perché EL usa $HOME/rpmbuild
+        run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
+
+      - name: 7. Upload RPM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome dell'artefatto aggiornato per EL9
+          name: el9-rpm
+          path: ~/rpmbuild/RPMS/**/*.rpm
