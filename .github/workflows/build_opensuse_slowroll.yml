@@ -51,7 +51,7 @@ jobs:
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 6. Build RPM package
-        run: rpmbuild -ba ./packaging/rpm/penguins-eggs.spec
+        run: rpmbuild -ba --define "_topdir $HOME/rpmbuild" ./packaging/rpm/penguins-eggs.spec
 
       - name: 7. Upload RPM Artifact
         uses: actions/upload-artifact@v4
