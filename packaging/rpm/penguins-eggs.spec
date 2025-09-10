@@ -26,7 +26,7 @@ Version:        25.9.8
 Release:        1%{?dist}
 Summary:        A console tool to remaster your system and create live images
 # rimuove scoperta dipendenze
-AutoReqProv: no
+AutoReqProv:    no
 
 License:        GPL-3.0-or-later
 URL:            https://penguins-eggs.net/
@@ -49,8 +49,10 @@ BuildRequires:  pnpm
 # DIPENDENZE DI BUILD CONDIZIONALI
 # ==============================================================================
 %if 0%{?suse_version}
+# OpenSUSE: nodejs-devel
 BuildRequires:  nodejs-devel
 %else
+# Fedora: nodejs
 BuildRequires:  nodejs
 %endif
 
@@ -82,10 +84,10 @@ Requires:       zstd
 # DIPENDENZE DI RUNTIME CONDIZIONALI
 # ==============================================================================
 %if 0%{?suse_version}
-# Su openSUSE, il pacchetto per sshfs si chiama 'fuse-sshfs'.
+# openSUSE: 'fuse-sshfs'
 Requires:       fuse-sshfs
 %else
-# Su Fedora, si chiama semplicemente 'sshfs'.
+# Fedora: 'sshfs'
 Requires:       sshfs
 %endif
 
@@ -94,10 +96,7 @@ Requires:       sshfs
 A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
 
 %prep
-# Usiamo il classico %setup per estrarre i nostri sorgenti.
-# -q = quiet
-# -a 1 = dopo aver estratto Source0, estrai anche Source1
-%setup -q -n penguins-eggs -a 1
+%setup -q -a 1
 
 %build
 pnpm install 
