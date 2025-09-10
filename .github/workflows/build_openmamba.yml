@@ -25,8 +25,8 @@ jobs:
 
       - name: 3. Install Build Dependencies from .spec
         # Questo comando ora legge le BuildRequires (pnpm, etc.) e le installa
-        run: dnf builddep -y ./packaging/rpm/penguins-eggs-openmamba.spec
-
+        run: dnf builddep -y --exclude=*.i586 ./packaging/rpm/penguins-eggs-openmamba.spec
+ 
       - name: 4. Build RPM package
         # Ora rpmbuild farà tutto:
         # 1. Creerà le cartelle in $HOME/rpmbuild
