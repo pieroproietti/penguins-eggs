@@ -26,15 +26,21 @@ jobs:
       - name: 3. Download Bootloaders
         run: curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
 
-
       - name: 4. Install Build Dependencies
         run: |
+          # 1. Installa gli strumenti di base per la build
           dnf install -y rpm-build dnf-plugins-core
+          
+          # 2. Abilita il repository EPEL
           dnf install -y epel-release
+          
+          # 3. Abilita il repository CRB
           /usr/bin/crb enable
+          dnf module enable nodejs:18 -y
           dnf install -y nodejs
           npm install -g pnpm
-          dnf builddep -y ./packaging/rpm/penguins-eggs.spec        
+          dnf builddep -y ./packaging/rpm/penguins-eggs.spec  
+
 
       - name: 5. Prepare RPM Sources (using tar with transform)
         # Questo step è IDENTICO a quello di Fedora
