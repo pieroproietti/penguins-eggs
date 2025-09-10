@@ -1,8 +1,7 @@
+# fedora_fc42
 #
-# Fedora (fc42+) e openSUSE (Slowroll/Tumbleweed)
+# spec file for package penguins-eggs
 #
-# Spec file per il pacchetto penguins-eggs
-# 
 # Copyright (c) 2025 Piero Proietti
 #
 # All modifications and additions to the file contributed by third parties
@@ -42,26 +41,11 @@ Source1:        bootloaders.tar.gz
 # See: https://docs.fedoraproject.org/en-US/packaging-guidelines/Node.js/
 Provides:       bundled(nodejs-module)
 
-# ==============================================================================
-# DIPENDENZE DI BUILD CONDIZIONALI
-# ==============================================================================
-# Usiamo le macro condizionali per gestire le differenze nei nomi dei pacchetti
-# tra openSUSE e Fedora.
-
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  pnpm
-%if 0%{?suse_version}
-# openSUSE richiede 'nodejs-devel' per i file di intestazione.
-BuildRequires:  nodejs-devel
-%else
-# Fedora include tutto il necessario nel pacchetto 'nodejs'.
 BuildRequires:  nodejs
-%endif
 
-# ==============================================================================
-# DIPENDENZE DI RUNTIME CONDIZIONALI
-# ==============================================================================
 Requires:       bash-completion
 Requires:       cryptsetup
 Requires:       curl
@@ -78,13 +62,7 @@ Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
 Requires:       rsync
-%if 0%{?suse_version}
-# Su openSUSE, il pacchetto per sshfs si chiama 'fuse-sshfs'.
-Requires:       fuse-sshfs
-%else
-# Su Fedora, si chiama semplicemente 'sshfs'.
 Requires:       sshfs
-%endif
 Requires:       wget
 Requires:       xdg-utils
 Requires:       xorriso
@@ -170,5 +148,5 @@ install -m 644 assets/eggs.png %{buildroot}%{_datadir}/pixmaps/eggs.png
 %{_mandir}/man1/eggs.1.gz
 
 %changelog
-* Wed Sep 10 2025 Piero Proietti <piero.proietti@gmail.com> - 25.9.8-1
-- Initial package for Fedora and openSUSE
+* Sat Jul 19 2025 Tuo Nome <tua@email.com> - 10.0.59-1
+- Initial Fedora package
