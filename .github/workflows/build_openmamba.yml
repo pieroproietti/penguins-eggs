@@ -1,4 +1,4 @@
-name: Build Openmamba Package
+name: Build OpenMamba Package
 
 on:
   push:
