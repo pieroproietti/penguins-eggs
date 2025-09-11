@@ -1,4 +1,4 @@
-name: Build Debian 13 Package
+name: Build Debian 13 Package (Robust)
 
 on:
   push:
@@ -10,33 +10,40 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      # Usiamo l'immagine ufficiale di Debian 13 (Trixie)
       image: debian:13
 
     steps:
       - name: 1. Check out repository code
         uses: actions/checkout@v4
 
-      - name: 2. Install Build Dependencies
+      - name: 2. Install Dependencies with Specific Node.js Version
         run: |
-          # Aggiorniamo la lista dei pacchetti, fondamentale su Debian/Ubuntu
+          # Step 2.1: Aggiorna e installa gli strumenti di base per aggiungere repository esterni
+          apt-get update
+          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot sudo
+          
+          # Step 2.2: Aggiungi il repository ufficiale di NodeSource per Node.js 20.x
+          mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+          
+          # Step 2.3: Aggiorna di nuovo la lista pacchetti dopo aver aggiunto il nuovo repo
           apt-get update
           
-          # Installiamo Node.js, npm, e gli strumenti essenziali per la build
-          apt-get install -y nodejs npm curl git build-essential dpkg-dev fakeroot
+          # Step 2.4: Installa la versione 20.x di Node.js. Questo installerà anche npm.
+          apt-get install -y nodejs
           
-          # Usiamo npm per installare pnpm globalmente
+          # Step 2.5: Usa npm per installare pnpm globalmente
           npm install -g pnpm
 
       - name: 3. Build .deb packages
-        # Eseguiamo i comandi esatti che hai fornito
         run: |
           pnpm install
-          pnpm deb
+          pnpm deb -a
 
       - name: 4. Upload .deb Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: debian-13-packages
-          # Carichiamo tutti i file .deb generati nella cartella dist/
           path: dist/*.deb
+
