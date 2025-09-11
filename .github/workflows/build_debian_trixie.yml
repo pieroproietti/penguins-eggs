@@ -1,0 +1,42 @@
+name: Build Debian 13 Package
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-deb-trixie:
+    runs-on: ubuntu-latest
+    
+    container:
+      # Usiamo l'immagine ufficiale di Debian 13 (Trixie)
+      image: debian:13
+
+    steps:
+      - name: 1. Check out repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Install Build Dependencies
+        run: |
+          # Aggiorniamo la lista dei pacchetti, fondamentale su Debian/Ubuntu
+          apt-get update
+          
+          # Installiamo Node.js, npm, e gli strumenti essenziali per la build
+          apt-get install -y nodejs npm curl git build-essential dpkg-dev fakeroot
+          
+          # Usiamo npm per installare pnpm globalmente
+          npm install -g pnpm
+
+      - name: 3. Build .deb packages
+        # Eseguiamo i comandi esatti che hai fornito
+        run: |
+          pnpm install
+          pnpm deb -a
+
+      - name: 4. Upload .deb Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-13-packages
+          # Carichiamo tutti i file .deb generati nella cartella dist/
+          path: dist/*.deb
