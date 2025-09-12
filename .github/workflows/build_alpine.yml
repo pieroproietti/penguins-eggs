@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@vv4
 
       - name: Prepare Build Environment
         run: |
@@ -28,10 +28,13 @@ jobs:
           adduser -D builder
           addgroup builder abuild
           
-          # LA SOLUZIONE: Usiamo 'echo' per inviare un "Invio" al comando,
-          # rendendolo non interattivo.
-          echo | sudo -u builder abuild-keygen -a -i
+          # Step 1: Come utente 'builder', GENERIAMO solo la chiave (senza -i)
+          echo | sudo -u builder abuild-keygen -a
           
+          # Step 2: Come 'root' (utente di default), COPIAMO la chiave pubblica
+          cp /home/builder/.abuild/*.pub /etc/apk/keys/
+          
+          # Step 3: Diamo la proprieta' dei file del progetto al builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
