@@ -38,4 +38,4 @@ jobs:
         with:
           name: archlinux-package
           path: "*.pkg.tar.zst"
-       working-directory: ./packaging/arch
+          working-directory: ./packaging/arch
