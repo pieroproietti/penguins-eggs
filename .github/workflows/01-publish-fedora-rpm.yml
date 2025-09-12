@@ -29,19 +29,17 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # SOLUZIONE: Aggiunto 'rpmsign' alla lista dei pacchetti da installare
           dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             dnf install -y "$package"
           done
 
-      - name: 4. Import GPG Key and Prime Agent
+      - name: 4. Import GPG Key and Configure RPM
         run: |
+          # Importiamo solo la chiave e configuriamo .rpmmacros
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
-          eval $(gpg-agent --daemon)
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /dev/null -s /dev/null
 
       - name: 5. Prepare RPM Sources
         run: |
@@ -55,10 +53,14 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Step 6.1: Costruiamo il pacchetto
+          # Avviamo e "inneschiamo" l'agente QUI, subito prima di usarlo
+          eval $(gpg-agent --daemon)
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /dev/null -s /dev/null
+          
+          # Costruiamo il pacchetto
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           
-          # Step 6.2: Firmiamo i pacchetti appena creati
+          # Firmiamo i pacchetti appena creati
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
@@ -100,6 +102,8 @@ jobs:
           find ./rpm/fedora/42 -name "*.rpm" -exec mv -t ./rpm/fedora/42/ {} +
           cd ./rpm/fedora/42
           createrepo_c .
+          
+          # Avviamo e inneschiamo l'agente anche qui, prima di firmare i metadati
           eval $(gpg-agent --daemon)
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
