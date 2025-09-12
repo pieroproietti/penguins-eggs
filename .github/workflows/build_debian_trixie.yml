@@ -39,7 +39,7 @@ jobs:
       - name: 3. Build .deb packages
         run: |
           pnpm install
-          pnpm deb -a
+          pnpm deb
 
       - name: 4. Upload .deb Artifacts
         uses: actions/upload-artifact@v4
