@@ -13,7 +13,6 @@ jobs:
 
     steps:
       - name: Checkout repository code
-        # CORREZIONE: Ho cambiato 'vv4' in 'v4'
         uses: actions/checkout@v4
 
       - name: Prepare Build Environment
@@ -28,18 +27,22 @@ jobs:
         run: |
           adduser -D builder
           addgroup builder abuild
-          
-          # Generiamo la chiave come 'builder'
           echo | sudo -u builder abuild-keygen -a
-          
-          # Copiamo la chiave pubblica come 'root'
           cp /home/builder/.abuild/*.pub /etc/apk/keys/
-          
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: Build The Package as Non-Root User
-        run: sudo -u builder abuild -r
+      - name: Generate Checksums and Build The Package
+        # Eseguiamo i comandi nella cartella che contiene il file APKBUILD
         working-directory: ./packaging/alpine
+        run: |
+          # Step 1: Come utente 'builder', scarichiamo i sorgenti
+          sudo -u builder abuild fetch
+          
+          # Step 2: Calcoliamo i checksum corretti e aggiorniamo l'APKBUILD
+          sudo -u builder abuild checksum
+          
+          # Step 3: Ora eseguiamo il build. Il controllo dei checksum passera'
+          sudo -u builder abuild -r
         
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
