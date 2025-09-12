@@ -42,7 +42,12 @@ jobs:
             /usr/bin/crb enable
           fi
           echo "Installing build dependencies from spec file..."
-          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
+          # Per EL9, dobbiamo escludere pnpm che non esiste come RPM
+          local_grep_opts=""
+          if [ "${{ matrix.distro.name }}" = "EL9" ]; then
+            local_grep_opts="-v 'pnpm'"
+          fi
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep $local_grep_opts | awk '{print $2}'); do
             echo "Installing $package..."
             dnf install -y --allowerasing "$package"
           done
@@ -53,7 +58,8 @@ jobs:
           zypper --non-interactive install rpm-build git tar gzip curl
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}'); do
+          # SOLUZIONE: Rimosso il 'grep -v pnpm' che era l'errore
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
@@ -70,13 +76,9 @@ jobs:
       - name: 5. Build RPM package
         id: build
         run: |
-          # SOLUZIONE FINALE: Per openSUSE, configuriamo _topdir usando .rpmmacros
-          # per evitare qualsiasi errore di parsing sulla riga di comando.
           if [ "${{ matrix.distro.name }}" = "openSUSE" ]; then
             echo '%_topdir %(echo $HOME)/rpmbuild' > $HOME/.rpmmacros
           fi
-          
-          # Ora il comando e' semplice e uguale per tutti, senza opzioni extra.
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
