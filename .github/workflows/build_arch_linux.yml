@@ -30,7 +30,7 @@ jobs:
       - name: 4. Build the package
         # Usiamo la direttiva 'working-directory' di GitHub Actions
         # per forzare l'esecuzione di questo step nella cartella del progetto.
-        # Questa è la soluzione robusta che risolve il problema alla radice.
+        # Questa e' la soluzione robusta che risolve il problema alla radice.
         run: |
           sudo -u builder makepkg -s --noconfirm
         working-directory: ${{ github.workspace }}
@@ -39,7 +39,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
-          # makepkg crea il pacchetto nella cartella corrente
+          # Cerchiamo l'artefatto nella cartella del progetto
           path: ./*.pkg.tar.zst
         working-directory: ${{ github.workspace }}
 
