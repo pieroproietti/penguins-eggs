@@ -132,6 +132,13 @@ package() {
    ln -s /usr/lib/"$pkgname"/bin/run.js "$pkgdir"/usr/bin/eggs
 }
 
+# per evitare la ricerca di libreiie fantasma
+override_so_deps() {
+    # Usiamo il comando 'sed' per rimuovere (delete) qualsiasi riga
+    # che contenga la stringa "libdevmapper" dal file delle dipendenze.
+    sed -i '/libdevmapper/d' "$so_deps"
+}
+
 check() {
   # eggs version
   node bin/run.js version
