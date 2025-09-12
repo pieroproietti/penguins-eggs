@@ -11,25 +11,25 @@ jobs:
     container:
       image: archlinux
     steps:
-      - name: 1. Check out repository code
+      - name: Checkout repository code
         uses: actions/checkout@v4
 
-      - name: 2. Prepare Build Environment
+      - name: Prepare Build Environment
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm
 
-      - name: 3. Create a non-root user for building
+      - name: Create a non-root user for building
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 4. Build the package
+      - name: Build the package
         run: sudo -u builder makepkg -s --noconfirm
         working-directory: ${{ github.workspace }}
         
-      - name: 5. Upload Package Artifact
+      - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
