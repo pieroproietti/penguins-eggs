@@ -10,40 +10,33 @@ jobs:
     runs-on: ubuntu-latest
     
     container:
-      # Usiamo l'immagine container ufficiale e sempre aggiornata di Arch Linux
       image: archlinux
 
     steps:
       - name: 1. Check out repository code
+        # Assicurati che PKGBUILD sia nella root del tuo repo!
         uses: actions/checkout@v4
 
       - name: 2. Prepare Build Environment
         run: |
-          # Aggiorniamo i repository e il sistema di base
           pacman -Syu --noconfirm
-          
-          # Installiamo il gruppo 'base-devel' che contiene tutti gli strumenti
-          # essenziali per la compilazione (make, gcc, etc.) e git.
-          # Aggiungiamo 'pnpm' che è una dipendenza di build esplicita (makedepends).
           pacman -S --noconfirm base-devel git pnpm
 
       - name: 3. Create a non-root user for building
         run: |
-          # makepkg per sicurezza non può essere eseguito come root.
-          # Creiamo un utente 'builder', gli diamo la proprietà della cartella
-          # e lo aggiungiamo al file sudoers per installare le dipendenze.
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          chown -R builder:builder .
+          # Diamo la proprietà della cartella del workspace al builder
+          chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: 4. Build the package
-        # Eseguiamo makepkg come utente 'builder'
+        # Eseguiamo il comando come utente 'builder' DENTRO la cartella corretta
         run: |
+          cd "$GITHUB_WORKSPACE"
           sudo -u builder makepkg -s --noconfirm
-
+        
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
-          # makepkg crea il pacchetto nella cartella corrente, il nome è prevedibile
-          path: penguins-eggs-*.pkg.tar.zst
+          path: ./*.pkg.tar.zst
