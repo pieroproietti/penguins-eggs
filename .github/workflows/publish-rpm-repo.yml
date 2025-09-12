@@ -70,13 +70,14 @@ jobs:
       - name: 5. Build RPM package
         id: build
         run: |
-          RPMBUILD_OPTS=""
+          # SOLUZIONE FINALE: Per openSUSE, configuriamo _topdir usando .rpmmacros
+          # per evitare qualsiasi errore di parsing sulla riga di comando.
           if [ "${{ matrix.distro.name }}" = "openSUSE" ]; then
-            RPMBUILD_OPTS="--define '_topdir $HOME/rpmbuild'"
+            echo '%_topdir %(echo $HOME)/rpmbuild' > $HOME/.rpmmacros
           fi
-          # SOLUZIONE: Usiamo 'cat' e una pipe per passare il file a rpmbuild
-          # Questo evita che la shell interpreti i caratteri '%' nel file .spec
-          cat packaging/rpm/penguins-eggs.spec | rpmbuild -ba $RPMBUILD_OPTS -
+          
+          # Ora il comando e' semplice e uguale per tutti, senza opzioni extra.
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 6. Upload RPM Artifact
