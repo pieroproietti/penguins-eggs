@@ -18,7 +18,6 @@ jobs:
       - name: Prepare Build Environment
         run: |
           apk update
-          # AGGIUNTO 'sudo' alla lista dei pacchetti da installare
           apk add alpine-sdk git nodejs npm sudo
 
       - name: Install PNPM
@@ -29,8 +28,9 @@ jobs:
           adduser -D builder
           addgroup builder abuild
           
-          # Ora questo comando funzionera' perche' 'sudo' esiste
-          sudo -u builder abuild-keygen -a -i
+          # LA SOLUZIONE: Usiamo 'echo' per inviare un "Invio" al comando,
+          # rendendolo non interattivo.
+          echo | sudo -u builder abuild-keygen -a -i
           
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
