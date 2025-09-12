@@ -47,16 +47,19 @@ subpackages="$pkgname-bash-completion $pkgname-doc"
 
 # Usa il commit specifico
 builddir="$srcdir"/penguins-eggs-$pkgver
+
+# Usiamo il pacchetto locale
 source="
-  $pkgname-$pkgver.tar.gz::https://github.com/pieroproietti/penguins-eggs/archive/refs/tags/v$pkgver.tar.gz
   bootloaders.tar.gz::https://github.com/pieroproietti/penguins-bootloaders/releases/download/v$_bootloadersver/bootloaders.tar.gz
 "
 
+# Aggiungi questa nuova funzione 'prepare()'
+prepare() {
+    # Copia i sorgenti locali (dallo checkout di git) nella cartella di build
+    cp -a "$startdir"/../../. "$builddir"
+}
 
-#$source="
-#  https://github.com/pieroproietti/penguins-eggs/archive/$_commit/penguins-eggs-$_commit.tar.gz
-#  https://github.com/pieroproietti/penguins-eggs/releases/download/v$pkgver/bootloaders.tar.gz
-#
+
 
 
 build() {

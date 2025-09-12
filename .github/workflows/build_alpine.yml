@@ -38,9 +38,15 @@ jobs:
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
-        run: sudo -u builder abuild -r
+        # Eseguiamo i comandi nella cartella che contiene il file APKBUILD
         working-directory: ./packaging/alpine
-        
+        run: |
+          # Aggiorniamo il checksum SOLO per il file stabile bootloaders.tar.gz
+          sudo -u builder abuild checksum
+          
+          # Eseguiamo il build.
+          sudo -u builder abuild -r        
+          
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
