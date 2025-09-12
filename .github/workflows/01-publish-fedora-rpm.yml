@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Fedora
-name: Build and Publish Fedora RPM
+name: 01 Build and Publish Fedora RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -36,21 +36,13 @@ jobs:
 
       - name: 4. Import GPG Key and Prime Agent
         run: |
-          # Importa la chiave
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-          
-          # Configura rpm per usare la chiave
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
-          
-          # Avvia l'agente
           eval $(gpg-agent --daemon)
-          
-          # "Inietta" la passphrase nell'agente con un'operazione fittizia
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /dev/null -s /dev/null
 
       - name: 5. Prepare RPM Sources
-        # (Questo step rimane invariato)
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
@@ -62,8 +54,13 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Ora l'agente ha gia' la passphrase e non la chiedera'
-          rpmbuild -ba --sign packaging/rpm/penguins-eggs.spec
+          # Step 6.1: Costruiamo il pacchetto (SENZA --sign)
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          
+          # Step 6.2: Firmiamo i pacchetti appena creati con rpmsign
+          # L'agente GPG e' gia' pronto dallo step precedente
+          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 7. Upload RPM Artifact for publishing
@@ -103,8 +100,6 @@ jobs:
           find ./rpm/fedora/42 -name "*.rpm" -exec mv -t ./rpm/fedora/42/ {} +
           cd ./rpm/fedora/42
           createrepo_c .
-          
-          # Avvia e "innesca" l'agente anche qui
           eval $(gpg-agent --daemon)
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
