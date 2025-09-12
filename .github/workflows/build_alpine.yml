@@ -9,7 +9,6 @@ jobs:
   build-apk:
     runs-on: ubuntu-latest
     container:
-      # Usiamo l'immagine ufficiale e sempre aggiornata di Alpine
       image: alpine:latest
 
     steps:
@@ -18,41 +17,30 @@ jobs:
 
       - name: Prepare Build Environment
         run: |
-          # Aggiorniamo i repository di Alpine
           apk update
-          
-          # Installiamo l'alpine-sdk (contiene abuild, make, gcc, etc.),
-          # git, nodejs e npm. Le altre makedepends (gcompat, zstd-dev, etc.)
-          # verranno installate automaticamente da "abuild -r".
-          apk add alpine-sdk git nodejs npm
+          # AGGIUNTO 'sudo' alla lista dei pacchetti da installare
+          apk add alpine-sdk git nodejs npm sudo
 
       - name: Install PNPM
         run: npm install -g pnpm
 
       - name: Create Build User and Keys
         run: |
-          # Creiamo un utente non-root 'builder' per la compilazione
           adduser -D builder
-          
-          # Lo aggiungiamo al gruppo 'abuild', necessario per i permessi
           addgroup builder abuild
           
-          # abuild richiede una chiave per firmare i pacchetti.
-          # La generiamo per l'utente 'builder' e la spostiamo nella posizione corretta.
+          # Ora questo comando funzionera' perche' 'sudo' esiste
           sudo -u builder abuild-keygen -a -i
           
-          # Diamo la proprieta' dei file al nostro utente
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
         run: sudo -u builder abuild -r
-        # Eseguiamo il build nella cartella che contiene il file APKBUILD
         working-directory: ./packaging/alpine
         
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: alpine-package
-          # abuild crea i pacchetti in /home/<utente>/packages/<repo>/<arch>
           path: /home/builder/packages/**/*.apk
 
