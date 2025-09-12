@@ -52,13 +52,13 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Scriviamo le istruzioni per l'agente nel suo file di configurazione
+          # Scriviamo le istruzioni corrette nei file di configurazione corretti
           mkdir -p ~/.gnupg
-          echo "pinentry-mode loopback" > ~/.gnupg/gpg-agent.conf
-          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           
-          # Avviamo l'agente (ora leggerà la configurazione)
-          eval $(gpg-agent --daemon)
+          # Ricarichiamo l'agente per fargli leggere la nuova configurazione
+          gpg-connect-agent reloadagent /bye
           
           # "Inneschiamo" l'agente con la passphrase
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
@@ -109,11 +109,11 @@ jobs:
           cd ./rpm/fedora/42
           createrepo_c .
           
-          # Scriviamo le istruzioni per l'agente anche qui
+          # Scriviamo le istruzioni corrette anche qui
           mkdir -p ~/.gnupg
-          echo "pinentry-mode loopback" > ~/.gnupg/gpg-agent.conf
-          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
-          eval $(gpg-agent --daemon)
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
           
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
