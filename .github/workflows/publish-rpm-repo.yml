@@ -1,0 +1,110 @@
+# Nome del workflow, chiaro e descrittivo
+name: Build and Publish RPM Repository
+
+# Si attiva al push sul branch 'main' o manualmente
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  # --- JOB 1: COSTRUISCE TUTTI I PACCHETTI RPM IN PARALLELO ---
+  build-rpms:
+    runs-on: ubuntu-latest
+    
+    # Usiamo una "matrix" per eseguire lo stesso job su container diversi
+    strategy:
+      matrix:
+        # Definiamo le nostre "varianti" di build
+        distro:
+          - { name: "Fedora", image: "fedora:42", artifact: "fedora-rpm" }
+          - { name: "openSUSE", image: "opensuse/tumbleweed", artifact: "opensuse-rpm" }
+          - { name: "EL9", image: "almalinux:9", artifact: "el9-rpm" }
+
+    container:
+      image: ${{ matrix.distro.image }}
+
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Get Package Version from spec file
+        id: version
+        run: |
+          echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: 3. Install Build Dependencies (Fedora/EL9)
+        if: matrix.distro.name == 'Fedora' || matrix.distro.name == 'EL9'
+        run: |
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl
+          if [ "${{ matrix.distro.name }}" = "EL9" ]; then
+            dnf install -y epel-release
+            dnf install -y --allowerasing curl
+            /usr/bin/crb enable
+          fi
+          dnf builddep -y packaging/rpm/penguins-eggs.spec
+
+      - name: 3. Install Build Dependencies (openSUSE)
+        if: matrix.distro.name == 'openSUSE'
+        run: |
+          zypper --non-interactive install rpm-build git tar gzip curl
+          zypper modifyrepo --enable repo-source
+          zypper --non-interactive refresh
+          grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}' | xargs zypper --non-interactive install
+
+      - name: 4. Prepare RPM Sources
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
+            --exclude=.git --exclude=.github .
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+
+      - name: 5. Build RPM package
+        id: build
+        run: |
+          RPMBUILD_OPTS=""
+          if [ "${{ matrix.distro.name }}" = "openSUSE" ]; then
+            RPMBUILD_OPTS="--define '_topdir $HOME/rpmbuild'"
+          fi
+          rpmbuild -ba $RPMBUILD_OPTS packaging/rpm/penguins-eggs.spec
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+
+      - name: 6. Upload RPM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.distro.artifact }}
+          path: ${{ steps.build.outputs.rpm_path }}
+
+  # --- JOB 2: PUBBLICA IL REPOSITORY (DOPO CHE TUTTI I BUILD SONO FINITI) ---
+  publish-repo:
+    needs: build-rpms
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Download all RPM artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: rpm-repo
+
+      - name: 2. Install createrepo tool
+        run: sudo apt-get update && sudo apt-get install -y createrepo-c
+
+      - name: 3. Create repository metadata
+        run: |
+          # Spostiamo tutti gli RPM nella cartella principale del repo
+          find rpm-repo -name "*.rpm" -exec mv {} rpm-repo/ \;
+          createrepo_c rpm-repo/
+          echo "Repository created successfully. Contents:"
+          ls -l rpm-repo/
+
+      - name: 4. Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./rpm-repo
+          publish_branch: gh-pages
+          destination_dir: rpm
+          keep_files: true
