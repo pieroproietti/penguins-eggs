@@ -1,7 +1,7 @@
 # Nome del workflow, specifico per Fedora
-name: 1 Build and Publish Fedora RPM
+name: Build and Publish Fedora RPM
 
-# Controllo per evitare conflitti di scrittura su gh-pages
+# Controllo per evitare che più workflow scrivano contemporaneamente su gh-pages
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -25,19 +25,24 @@ jobs:
 
       - name: 2. Get Package Version
         id: version
-        run: |
-          echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
+        run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: 3. Install Build Dependencies
         run: |
-          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2
           echo "Installing build dependencies from spec file..."
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             echo "Installing $package..."
             dnf install -y "$package"
           done
 
-      - name: 4. Prepare RPM Sources
+      - name: 4. Import GPG Key
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+
+      - name: 5. Prepare RPM Sources
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
@@ -46,16 +51,18 @@ jobs:
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 5. Build RPM package
+      - name: 6. Build and Sign RPM package
         id: build
         run: |
-          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          eval $(gpg-agent --daemon)
+          echo "${{ secrets.GPG_PASSPHRASE }}" | /usr/bin/gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -o /dev/null -s /dev/null
+          rpmbuild -ba --sign packaging/rpm/penguins-eggs.spec
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 6. Upload RPM Artifact for publishing
+      - name: 7. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
-          name: fedora-rpm-for-repo
+          name: fedora-42-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
   # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
@@ -71,33 +78,35 @@ jobs:
           ref: gh-pages
           
       - name: 2. Download Fedora RPM artifact
+        run: mkdir -p rpm/fedora/42
         uses: actions/download-artifact@v4
         with:
-          name: fedora-rpm-for-repo
-          path: ./rpm
+          name: fedora-42-rpm-for-repo
+          path: ./rpm/fedora/42
 
-      - name: 3. Install createrepo tool
-        run: sudo apt-get update && sudo apt-get install -y createrepo-c
-
-      - name: 4. Update repository
+      - name: 3. Install Tools and Import GPG Key
         run: |
-          # Spostiamo tutti i file .rpm al livello giusto
-          find ./rpm -name "*.rpm" -exec mv {} ./rpm/ \;
+          sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import
+
+      - name: 4. Update and Sign Repository for Fedora 42
+        run: |
+          # Spostiamo tutti i file .rpm dalla sottocartella creata da download-artifact
+          find ./rpm/fedora/42 -name "*.rpm" -exec mv -t ./rpm/fedora/42/ {} +
           
-          # Creiamo il file .nojekyll per velocizzare i deploy
-          touch .nojekyll
-          
-          # Ora aggiorniamo l'indice del repository
-          cd ./rpm
+          # Entriamo nella cartella specifica e aggiorniamo solo quel repository
+          cd ./rpm/fedora/42
           createrepo_c .
-          echo "Repository metadata updated."
-          ls -lR
+          
+          # Firmiamo i nuovi metadati
+          eval $(gpg-agent --daemon)
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
       - name: 5. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Pubblichiamo l'intero contenuto del branch, che ora e' aggiornato
           publish_dir: .
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-
