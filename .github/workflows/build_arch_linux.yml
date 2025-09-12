@@ -1,4 +1,4 @@
-name: Build Arch Linux Package
+name: Build Arch rolling Package
 
 on:
   push:

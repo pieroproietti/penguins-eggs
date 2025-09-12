@@ -1,4 +1,4 @@
-name: Build Debian 13 Package (Robust)
+name: Build Debian 13 Package
 
 on:
   push:
