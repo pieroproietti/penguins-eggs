@@ -1,0 +1,164 @@
+# Maintainer: Piero Proietti <piero.proietti@gmail.com>
+#
+_bootloadersver=25.9.8
+
+pkgname=penguins-eggs
+pkgver=25.9.8
+pkgrel=1
+pkgdesc="A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE"
+url="https://penguins-eggs.net"
+arch="x86_64"
+license="GPL-3.0-or-later"
+
+# per fregare scanelf
+#options="!glibc"
+
+depends="
+  alpine-conf
+  apk-tools
+  bash
+  bash-completion
+  cryptsetup
+  curl
+  dosfstools
+  fuse
+  git
+  grub-bios
+  grub-efi
+  jq
+  lsblk
+  lvm2
+  mkinitfs
+  musl-locales
+  nodejs
+  parted
+  rsync
+  shadow
+  squashfs-tools
+  sshfs
+  xorriso
+  zstd
+  libc6-compat
+"
+
+makedepends="gcompat libc6-compat pnpm zstd-dev lvm2"
+subpackages="$pkgname-bash-completion $pkgname-doc"
+
+# Usa il commit specifico
+builddir="$srcdir"/penguins-eggs-$pkgver
+source="
+  $pkgname-$pkgver.tar.gz::https://github.com/pieroproietti/penguins-eggs/archive/refs/tags/v$pkgver.tar.gz
+  bootloaders.tar.gz::https://github.com/pieroproietti/penguins-bootloaders/releases/download/v$_bootloadersver/bootloaders.tar.gz
+"
+
+
+#$source="
+#  https://github.com/pieroproietti/penguins-eggs/archive/$_commit/penguins-eggs-$_commit.tar.gz
+#  https://github.com/pieroproietti/penguins-eggs/releases/download/v$pkgver/bootloaders.tar.gz
+#
+
+
+build() {
+  #ln -s /lib/ld-musl-x86_64.so.1 /lib/libdl.so.2
+  pnpm install
+  # pnpm approve-builds
+  pnpm build
+}
+
+
+package() {
+  # set -x # Attiva il debug da qui
+  # ln -s /lib/ld-musl-x86_64.so.1 /lib/ld-linux-x86_64.so.2
+
+  install -Dm644 .oclif.manifest.json package.json \
+  -t "$pkgdir/usr/lib/$pkgname/"
+
+  cp -a addons \
+  assets \
+  bin \
+  conf \
+  dist \
+  mkinitfs \
+  node_modules \
+  scripts \
+  "$pkgdir/usr/lib/$pkgname/"
+
+  # La seconda sorgente viene estratta in una sua cartella allo stesso livello
+  install -d -m 755 "$pkgdir/usr/lib/$pkgname/bootloaders"
+  cp -a ../bootloaders/* "$pkgdir/usr/lib/$pkgname/bootloaders/"
+
+  # Fix permissions
+  chown -R root:root "$pkgdir/usr/lib/$pkgname/"
+
+  # Package contains reference to $srcdir
+  find "$pkgdir/usr/lib/$pkgname" -name package.json -print0 | xargs -r -0 sed -i '/_where/d'
+
+  # Install documentation
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+
+  # Install bash completion files
+  install -d "$pkgdir"/usr/share/bash-completion/completions
+  mv "$pkgdir/usr/lib/$pkgname/scripts/eggs.bash" \
+    "$pkgdir"/usr/share/bash-completion/completions/
+
+  # Install Zsh completion files
+  install -d "$pkgdir"/usr/share/zsh/functions/Completion/Zsh/
+  mv "$pkgdir/usr/lib/$pkgname/scripts/_eggs" \
+    "$pkgdir"/usr/share/zsh/functions/Completion/Zsh/
+
+  # Install man page
+  install -Dm644 manpages/doc/man/eggs.1.gz -t "$pkgdir"/usr/share/man/man1/
+
+  # create applications
+  install -d "${pkgdir}/usr/share/applications"
+
+  # Install desktop file
+  install -Dm644 "assets/$pkgname.desktop" \
+    -t "$pkgdir"/usr/share/applications/
+
+  # Install icon
+  install -Dm644 assets/eggs.png -t "$pkgdir"/usr/share/pixmaps/
+
+  # revitalize mom
+  chmod +x "$pkgdir"/usr/lib/penguins-eggs/scripts/mom.sh
+
+  # We need fuse loaded
+  install -d "$pkgdir"/etc/modules-load.d
+  echo fuse > "$pkgdir"/etc/modules-load.d/penguins-eggs-fuse.conf
+
+  # Symlink executable
+   install -d "$pkgdir/"usr/bin
+   ln -s /usr/lib/"$pkgname"/bin/run.js "$pkgdir"/usr/bin/eggs
+}
+
+check() {
+  # eggs version
+  node bin/run.js version
+}
+
+
+penguins-eggs() {
+  pkgdesc="A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE"
+  options="!check"
+}
+
+penguins-eggs-doc() {
+  pkgdesc="Documentation for penguins-eggs"
+
+  install -d "$subpkgdir"/usr/share
+  mv "$pkgdir"/usr/share/doc  "$subpkgdir"/usr/share
+  mv "$pkgdir"/usr/share/man "$subpkgdir"/usr/share
+}
+
+penguins-eggs-bash-completion() {
+  pkgdesc="Bash completion for penguins-eggs"
+  depends="bash-completion" # Il subpackage ha le sue dipendenze
+
+  install -d "$subpkgdir"/usr/share
+  mv "$pkgdir"/usr/share/bash-completion "$subpkgdir"/usr/share/
+}
+
+sha512sums="
+8957e775de5785b8334ae7df2417c1b2452bf2852481abb8cdf87544e1811a56d04730b5c63a0622eb1d1a623f9bd7e1878c1c4f69ec2c366e4f53472f35a1d8  penguins-eggs-25.9.8.tar.gz
+650a37c707754d4e6e5470a654600ab0e0d7305920fd7d5ad1b9277efadf0e0eb5a7ff612504b5d5276400281f9110b9ebb917db0b6a0a906431e69f580b9f1f  bootloaders.tar.gz
+"
