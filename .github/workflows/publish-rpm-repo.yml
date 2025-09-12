@@ -1,5 +1,5 @@
 # Nome del workflow, chiaro e descrittivo
-name: Build and Publish RPM Repository
+name: 1 Publish RPM Repository
 
 # Si attiva al push sul branch 'main' o manualmente
 on:
