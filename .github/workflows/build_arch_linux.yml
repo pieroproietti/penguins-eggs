@@ -8,10 +8,8 @@ on:
 jobs:
   build-pkg-arch:
     runs-on: ubuntu-latest
-    
     container:
       image: archlinux
-
     steps:
       - name: 1. Check out repository code
         uses: actions/checkout@v4
@@ -28,18 +26,13 @@ jobs:
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: 4. Build the package
-        # Usiamo la direttiva 'working-directory' di GitHub Actions
-        # per forzare l'esecuzione di questo step nella cartella del progetto.
-        # Questa e' la soluzione robusta che risolve il problema alla radice.
-        run: |
-          sudo -u builder makepkg -s --noconfirm
+        run: sudo -u builder makepkg -s --noconfirm
         working-directory: ${{ github.workspace }}
         
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
-          # Cerchiamo l'artefatto nella cartella del progetto
           path: ./*.pkg.tar.zst
         working-directory: ${{ github.workspace }}
 
