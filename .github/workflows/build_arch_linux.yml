@@ -14,7 +14,6 @@ jobs:
 
     steps:
       - name: 1. Check out repository code
-        # Assicurati che PKGBUILD sia nella root del tuo repo!
         uses: actions/checkout@v4
 
       - name: 2. Prepare Build Environment
@@ -26,17 +25,21 @@ jobs:
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-          # Diamo la proprietà della cartella del workspace al builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: 4. Build the package
-        # Eseguiamo il comando come utente 'builder' DENTRO la cartella corretta
+        # Usiamo la direttiva 'working-directory' di GitHub Actions
+        # per forzare l'esecuzione di questo step nella cartella del progetto.
+        # Questa è la soluzione robusta che risolve il problema alla radice.
         run: |
-          cd "$GITHUB_WORKSPACE"
           sudo -u builder makepkg -s --noconfirm
+        working-directory: ${{ github.workspace }}
         
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
+          # makepkg crea il pacchetto nella cartella corrente
           path: ./*.pkg.tar.zst
+        working-directory: ${{ github.workspace }}
+
