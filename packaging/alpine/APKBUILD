@@ -42,7 +42,7 @@ depends="
   libc6-compat
 "
 
-makedepends="gcompat libc6-compat pnpm zstd-dev lvm2 device-mapper-static"
+makedepends="gcompat libc6-compat pnpm zstd-dev lvm2 device-mapper"
 subpackages="$pkgname-bash-completion $pkgname-doc"
 
 # Usa il commit specifico
