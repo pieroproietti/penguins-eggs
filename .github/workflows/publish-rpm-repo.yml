@@ -1,5 +1,5 @@
 # Nome del workflow, chiaro e descrittivo
-name: 1 Publish RPM Repository
+name: 1 Build and Publish RPM Repository
 
 # Si attiva al push sul branch 'main' o manualmente
 on:
@@ -12,10 +12,8 @@ jobs:
   build-rpms:
     runs-on: ubuntu-latest
     
-    # Usiamo una "matrix" per eseguire lo stesso job su container diversi
     strategy:
       matrix:
-        # Definiamo le nostre "varianti" di build
         distro:
           - { name: "Fedora", image: "fedora:42", artifact: "fedora-rpm" }
           - { name: "openSUSE", image: "opensuse/tumbleweed", artifact: "opensuse-rpm" }
@@ -38,12 +36,16 @@ jobs:
       - name: 3. Install Build Dependencies (Fedora/EL9)
         if: matrix.distro.name == 'Fedora' || matrix.distro.name == 'EL9'
         run: |
-          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl
+          # SOLUZIONE: Aggiunto --allowerasing al primo comando.
+          # Risolve il conflitto per EL9 ed e' innocuo su Fedora.
+          dnf install -y --allowerasing 'dnf-plugins-core' rpm-build git tar gzip curl
+          
+          # Eseguiamo i comandi specifici per EL9
           if [ "${{ matrix.distro.name }}" = "EL9" ]; then
             dnf install -y epel-release
-            dnf install -y --allowerasing curl
             /usr/bin/crb enable
           fi
+          
           dnf builddep -y packaging/rpm/penguins-eggs.spec
 
       - name: 3. Install Build Dependencies (openSUSE)
@@ -94,11 +96,10 @@ jobs:
 
       - name: 3. Create repository metadata
         run: |
-          # Spostiamo tutti gli RPM nella cartella principale del repo
           find rpm-repo -name "*.rpm" -exec mv {} rpm-repo/ \;
           createrepo_c rpm-repo/
           echo "Repository created successfully. Contents:"
-          ls -l rpm-repo/
+          ls -lR rpm-repo/
 
       - name: 4. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -108,3 +109,4 @@ jobs:
           publish_branch: gh-pages
           destination_dir: rpm
           keep_files: true
+
