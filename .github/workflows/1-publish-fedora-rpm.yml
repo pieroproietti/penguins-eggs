@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Fedora
-name: 1 Build and Publish Fedora RPM
+name: Build and Publish Fedora RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -63,7 +63,7 @@ jobs:
     needs: build-fedora
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Permesso necessario per fare il push su gh-pages
+      contents: write
     steps:
       - name: 1. Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -74,17 +74,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: fedora-rpm-for-repo
-          # Scarichiamo il nuovo RPM nella sottocartella 'rpm'
           path: ./rpm
 
       - name: 3. Install createrepo tool
         run: sudo apt-get update && sudo apt-get install -y createrepo-c
 
-      - name: 4. Flatten directory and update metadata
+      - name: 4. Update repository
         run: |
-          # Spostiamo tutti i file .rpm da eventuali sottocartelle
-          # create da download-artifact, direttamente in ./rpm
+          # Spostiamo tutti i file .rpm al livello giusto
           find ./rpm -name "*.rpm" -exec mv {} ./rpm/ \;
+          
+          # Creiamo il file .nojekyll per velocizzare i deploy
+          touch .nojekyll
           
           # Ora aggiorniamo l'indice del repository
           cd ./rpm
@@ -96,7 +97,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # La cartella da pubblicare è la root del nostro checkout (che ora è gh-pages)
           publish_dir: .
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
