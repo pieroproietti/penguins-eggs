@@ -1,5 +1,4 @@
-# Nome del workflow, specifico per Fedora
-name: Build and Publish Fedora RPM
+name: 01 Build and Publish Fedora RPM
 
 # Controllo per evitare che più workflow scrivano contemporaneamente su gh-pages
 concurrency:
