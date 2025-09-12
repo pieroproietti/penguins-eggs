@@ -41,13 +41,9 @@ jobs:
             dnf install -y epel-release
             /usr/bin/crb enable
           fi
-          
-          # --- SOLUZIONE FINALE ---
-          # Leggiamo le dipendenze direttamente dal file .spec, senza usare il pesante 'dnf builddep'
           echo "Installing build dependencies from spec file..."
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             echo "Installing $package..."
-            # Aggiungiamo --allowerasing anche qui per sicurezza
             dnf install -y --allowerasing "$package"
           done
 
@@ -78,7 +74,9 @@ jobs:
           if [ "${{ matrix.distro.name }}" = "openSUSE" ]; then
             RPMBUILD_OPTS="--define '_topdir $HOME/rpmbuild'"
           fi
-          rpmbuild -ba $RPMBUILD_OPTS packaging/rpm/penguins-eggs.spec
+          # SOLUZIONE: Usiamo 'cat' e una pipe per passare il file a rpmbuild
+          # Questo evita che la shell interpreti i caratteri '%' nel file .spec
+          cat packaging/rpm/penguins-eggs.spec | rpmbuild -ba $RPMBUILD_OPTS -
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 6. Upload RPM Artifact
