@@ -24,16 +24,19 @@ jobs:
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          # Diamo la proprietà dell'intera cartella del progetto al builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
+        # Eseguiamo makepkg nella cartella che contiene il PKGBUILD
         run: sudo -u builder makepkg -s --noconfirm
-        working-directory: ${{ github.workspace }}
+        # NOTA: Modifica questo percorso se il tuo PKGBUILD si trova altrove
+        working-directory: ./packaging/arch
         
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
           path: "*.pkg.tar.zst"
-        working-directory: ${{ github.workspace }}
-
+        # L'artefatto si trova nella stessa cartella del build
+        working-directory: ./packaging/arch
