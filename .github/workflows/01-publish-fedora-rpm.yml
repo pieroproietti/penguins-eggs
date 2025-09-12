@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Fedora
-name: 01 Build and Publish Fedora RPM
+name: 01.Build and Publish Fedora RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -29,7 +29,8 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2
+          # SOLUZIONE: Aggiunto 'rpmsign' alla lista dei pacchetti da installare
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             dnf install -y "$package"
           done
@@ -54,11 +55,10 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Step 6.1: Costruiamo il pacchetto (SENZA --sign)
+          # Step 6.1: Costruiamo il pacchetto
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           
-          # Step 6.2: Firmiamo i pacchetti appena creati con rpmsign
-          # L'agente GPG e' gia' pronto dallo step precedente
+          # Step 6.2: Firmiamo i pacchetti appena creati
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
