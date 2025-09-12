@@ -36,7 +36,6 @@ jobs:
 
       - name: 4. Import GPG Key and Configure RPM
         run: |
-          # Importiamo solo la chiave e configuriamo .rpmmacros.
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
@@ -53,8 +52,13 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Avviamo l'agente in modalita' non interattiva
-          eval $(gpg-agent --daemon --pinentry-mode loopback)
+          # Scriviamo le istruzioni per l'agente nel suo file di configurazione
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg-agent.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          
+          # Avviamo l'agente (ora leggerà la configurazione)
+          eval $(gpg-agent --daemon)
           
           # "Inneschiamo" l'agente con la passphrase
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
@@ -62,7 +66,7 @@ jobs:
           # Costruiamo il pacchetto
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           
-          # Firmiamo i pacchetti appena creati. L'agente ha la passphrase in cache.
+          # Firmiamo i pacchetti. L'agente è pronto.
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
@@ -104,7 +108,13 @@ jobs:
           find ./rpm/fedora/42 -name "*.rpm" -exec mv -t ./rpm/fedora/42/ {} +
           cd ./rpm/fedora/42
           createrepo_c .
-          eval $(gpg-agent --daemon --pinentry-mode loopback)
+          
+          # Scriviamo le istruzioni per l'agente anche qui
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg-agent.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          eval $(gpg-agent --daemon)
+          
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
       - name: 6. Commit and Deploy to GitHub Pages
