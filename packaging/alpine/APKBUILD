@@ -131,10 +131,6 @@ package() {
    install -d "$pkgdir/"usr/bin
    ln -s /usr/lib/"$pkgname"/bin/run.js "$pkgdir"/usr/bin/eggs
 
-  # dipendenza fantasma trovata da scanelf.
-  install -d "$pkgdir"/usr/lib
-  ln -s /usr/lib/libdevmapper.so.1.02 "$pkgdir"/usr/lib/libdevmapper.so.1.02.1
-
 }
 
 

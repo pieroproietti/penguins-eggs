@@ -18,31 +18,28 @@ jobs:
       - name: Prepare Build Environment
         run: |
           apk update
-          apk add alpine-sdk git nodejs npm sudo
+          # Installiamo anche device-mapper esplicitamente per assicurarci
+          # che la libreria di base esista prima di creare il link
+          apk add alpine-sdk git nodejs npm sudo device-mapper
 
       - name: Install PNPM
         run: npm install -g pnpm
 
-      - name: Create Build User and Keys
+      - name: Create Build User, Keys, and Fix Environment
         run: |
+          # Questo comando viene eseguito come root e risolve il problema alla radice.
+          ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
+          
+          # Ora procediamo con la creazione dell'utente come prima
           adduser -D builder
           addgroup builder abuild
           echo | sudo -u builder abuild-keygen -a
           cp /home/builder/.abuild/*.pub /etc/apk/keys/
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: Generate Checksums and Build The Package
-        # Eseguiamo i comandi nella cartella che contiene il file APKBUILD
+      - name: Build The Package as Non-Root User
+        run: sudo -u builder abuild -r
         working-directory: ./packaging/alpine
-        run: |
-          # Step 1: Come utente 'builder', scarichiamo i sorgenti
-          sudo -u builder abuild fetch
-          
-          # Step 2: Calcoliamo i checksum corretti e aggiorniamo l'APKBUILD
-          sudo -u builder abuild checksum
-          
-          # Step 3: Ora eseguiamo il build. Il controllo dei checksum passera'
-          sudo -u builder abuild -r
         
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
