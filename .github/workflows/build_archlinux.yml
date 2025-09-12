@@ -1,4 +1,4 @@
-name: Build Arch rolling Package
+name: Build Arch Linux Package (Diagnostic)
 
 on:
   push:
@@ -11,25 +11,32 @@ jobs:
     container:
       image: archlinux
     steps:
-      - name: Checkout repository code
+      - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
-      - name: Prepare Build Environment
+      - name: 2. Prepare Build Environment
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm
 
-      - name: Create a non-root user for building
+      - name: 3. Create a non-root user and set permissions
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: Build the package
+      # --- NUOVO STEP DI DEBUG ---
+      - name: 4. Verify Filesystem and Permissions
+        run: |
+          echo "--- Current Directory Content (Recursive Listing) ---"
+          ls -laR
+        working-directory: ${{ github.workspace }}
+
+      - name: 5. Build the package
         run: sudo -u builder makepkg -s --noconfirm
         working-directory: ${{ github.workspace }}
         
-      - name: Upload Package Artifact
+      - name: 6. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package
