@@ -13,7 +13,8 @@ jobs:
 
     steps:
       - name: Checkout repository code
-        uses: actions/checkout@vv4
+        # CORREZIONE: Ho cambiato 'vv4' in 'v4'
+        uses: actions/checkout@v4
 
       - name: Prepare Build Environment
         run: |
@@ -28,13 +29,12 @@ jobs:
           adduser -D builder
           addgroup builder abuild
           
-          # Step 1: Come utente 'builder', GENERIAMO solo la chiave (senza -i)
+          # Generiamo la chiave come 'builder'
           echo | sudo -u builder abuild-keygen -a
           
-          # Step 2: Come 'root' (utente di default), COPIAMO la chiave pubblica
+          # Copiamo la chiave pubblica come 'root'
           cp /home/builder/.abuild/*.pub /etc/apk/keys/
           
-          # Step 3: Diamo la proprieta' dei file del progetto al builder
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
