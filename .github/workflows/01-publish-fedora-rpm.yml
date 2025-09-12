@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Fedora
-name: 01.Build and Publish Fedora RPM
+name: 01. Build and Publish Fedora RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -37,6 +37,7 @@ jobs:
       - name: 4. Import GPG Key and Configure RPM
         run: |
           # Importiamo solo la chiave e configuriamo .rpmmacros
+          # L'agente verra' attivato nello step di build.
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
