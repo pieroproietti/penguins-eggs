@@ -18,8 +18,6 @@ jobs:
       - name: Prepare Build Environment
         run: |
           apk update
-          # Installiamo anche device-mapper esplicitamente per assicurarci
-          # che la libreria di base esista prima di creare il link
           apk add alpine-sdk git nodejs npm sudo device-mapper
 
       - name: Install PNPM
@@ -27,8 +25,11 @@ jobs:
 
       - name: Create Build User, Keys, and Fix Environment
         run: |
-          # Questo comando viene eseguito come root e risolve il problema alla radice.
+          # Creiamo il link per libdevmapper
           ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
+
+          # Creiamo il link per la libreria C 'libdl' (glibc -> musl)
+          ln -s /lib/ld-musl-x86_64.so.1 /lib/libdl.so.2
           
           # Ora procediamo con la creazione dell'utente come prima
           adduser -D builder
@@ -38,15 +39,11 @@ jobs:
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
       - name: Build The Package as Non-Root User
-        # Eseguiamo i comandi nella cartella che contiene il file APKBUILD
-        working-directory: ./packaging/alpine
         run: |
-          # Aggiorniamo il checksum SOLO per il file stabile bootloaders.tar.gz
           sudo -u builder abuild checksum
-          
-          # Eseguiamo il build.
-          sudo -u builder abuild -r        
-          
+          sudo -u builder abuild -r
+        working-directory: ./packaging/alpine
+        
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
