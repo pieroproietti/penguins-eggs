@@ -130,14 +130,13 @@ package() {
   # Symlink executable
    install -d "$pkgdir/"usr/bin
    ln -s /usr/lib/"$pkgname"/bin/run.js "$pkgdir"/usr/bin/eggs
+
+  # dipendenza fantasma trovata da scanelf.
+  install -d "$pkgdir"/usr/lib
+  ln -s /usr/lib/libdevmapper.so.1.02 "$pkgdir"/usr/lib/libdevmapper.so.1.02.1
+
 }
 
-# per evitare la ricerca di libreiie fantasma
-override_so_deps() {
-    # Usiamo il comando 'sed' per rimuovere (delete) qualsiasi riga
-    # che contenga la stringa "libdevmapper" dal file delle dipendenze.
-    sed -i '/libdevmapper/d' "$so_deps"
-}
 
 check() {
   # eggs version
