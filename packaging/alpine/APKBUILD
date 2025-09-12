@@ -36,6 +36,7 @@ depends="
   shadow
   squashfs-tools
   sshfs
+  syslinux
   xorriso
   zstd
   libc6-compat
