@@ -36,17 +36,20 @@ jobs:
       - name: 3. Install Build Dependencies (Fedora/EL9)
         if: matrix.distro.name == 'Fedora' || matrix.distro.name == 'EL9'
         run: |
-          # SOLUZIONE: Aggiunto --allowerasing al primo comando.
-          # Risolve il conflitto per EL9 ed e' innocuo su Fedora.
+          # Installiamo solo gli strumenti di base, non le dipendenze di build
           dnf install -y --allowerasing 'dnf-plugins-core' rpm-build git tar gzip curl
           
-          # Eseguiamo i comandi specifici per EL9
           if [ "${{ matrix.distro.name }}" = "EL9" ]; then
             dnf install -y epel-release
             /usr/bin/crb enable
           fi
           
-          dnf builddep -y packaging/rpm/penguins-eggs.spec
+          # SOLUZIONE: Installiamo le dipendenze una per una per risparmiare memoria
+          echo "Installing build dependencies one by one..."
+          for package in $(dnf builddep --installroot=$(mktemp -d) --releasever=9 -y packaging/rpm/penguins-eggs.spec | grep '^ ' | awk '{print $1}'); do
+            echo "Installing $package..."
+            dnf install -y "$package"
+          done
 
       - name: 3. Install Build Dependencies (openSUSE)
         if: matrix.distro.name == 'openSUSE'
@@ -54,7 +57,11 @@ jobs:
           zypper --non-interactive install rpm-build git tar gzip curl
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}' | xargs zypper --non-interactive install
+          # Anche qui, meglio installare uno per uno
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}'); do
+            echo "Installing $package..."
+            zypper --non-interactive install "$package"
+          done
 
       - name: 4. Prepare RPM Sources
         run: |
