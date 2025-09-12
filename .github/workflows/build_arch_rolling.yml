@@ -38,5 +38,4 @@ jobs:
         with:
           name: archlinux-package
           path: "*.pkg.tar.zst"
-        # L'artefatto si trova nella stessa cartella del build
-        working-directory: ./packaging/arch
+       working-directory: ./packaging/arch
