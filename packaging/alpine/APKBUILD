@@ -55,8 +55,9 @@ source="
 
 # Aggiungi questa nuova funzione 'prepare()'
 prepare() {
-    # Copia i sorgenti locali (dallo checkout di git) nella cartella di build
-    cp -a "$startdir"/../../. "$builddir"
+    # Usiamo rsync per copiare i sorgenti, escludendo la cartella 
+    # di build per evitare la ricorsione.
+    rsync -a --exclude 'packaging/alpine/src' "$startdir"/../../. "$builddir/"  
 }
 
 
