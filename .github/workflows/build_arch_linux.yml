@@ -35,4 +35,3 @@ jobs:
           name: archlinux-package
           path: ./*.pkg.tar.zst
         working-directory: ${{ github.workspace }}
-
