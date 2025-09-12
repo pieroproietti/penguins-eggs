@@ -20,9 +20,10 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm
 
-      - name: Create Build User and Set Permissions
+      - name: Prepare Build User
         run: |
-          useradd -m builder
+          # L'utente 'builder' esiste gia', quindi non lo creiamo.
+          # Ci assicuriamo solo che abbia i permessi sudo e la proprieta' dei file.
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
