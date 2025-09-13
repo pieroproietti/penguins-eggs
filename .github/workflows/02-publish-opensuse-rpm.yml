@@ -43,10 +43,10 @@ jobs:
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
       - name: 5. Prepare RPM Sources
+        # SOLUZIONE: Usiamo working-directory per forzare l'esecuzione nella cartella giusta
+        working-directory: ${{ github.workspace }}
         run: |
-          # SOLUZIONE: Ci spostiamo esplicitamente nella cartella del progetto
-          cd "$GITHUB_WORKSPACE"
-
+          # Il 'cd' non e' piu' necessario
           # Usiamo 'git archive' in due passaggi per la massima affidabilita'.
           mkdir -p $HOME/rpmbuild/SOURCES
           git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" -o $HOME/rpmbuild/SOURCES/penguins-eggs.tar HEAD
