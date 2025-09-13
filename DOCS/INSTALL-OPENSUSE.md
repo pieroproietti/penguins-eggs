@@ -9,7 +9,9 @@ Per prima cosa, dobbiamo importare la chiave GPG con cui sono firmati i pacchett
 
 Esegui questo comando per importare la chiave:
 
-sudo rpm --import [https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs](https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs)
+```
+sudo rpm --import https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
+```
 
 ## Passaggio 2: Aggiungere il Repository di penguins-eggs
 Ora, dobbiamo dire a zypper (il gestore di pacchetti di openSUSE) dove trovare i nostri pacchetti. Creeremo un nuovo file di configurazione per il repository.
@@ -22,10 +24,10 @@ Incolla il seguente testo all'interno dell'editor:
 ```
 [penguins-eggs]
 name=Penguins-eggs Repository
-baseurl=[https://pieroproietti.github.io/penguins-eggs/rpm/opensuse/leap/](https://pieroproietti.github.io/penguins-eggs/rpm/opensuse/leap/)
+baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/opensuse/leap/](https://pieroproietti.github.io/penguins-eggs/rpm/opensuse/leap/
 enabled=1
 gpgcheck=1
-gpgkey=[https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs](https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs)
+gpgkey=https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
 autorefresh=1
 type=rpm-md
 ```
