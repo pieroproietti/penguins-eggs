@@ -29,8 +29,8 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # Usiamo rsync per creare il tarball, quindi lo aggiungiamo qui
-          zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync-daemon
+          # Corretto il nome da 'rsync-daemon' a 'rsync'
+          zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
