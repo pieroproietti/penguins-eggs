@@ -85,7 +85,7 @@ jobs:
           
           # SOLUZIONE FINALE: Spostiamo i file .deb al livello corretto
           echo "Moving .deb files to the correct location..."
-          find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
+          #find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
           
           # Mostriamo la struttura dei file per debug
           echo "Current file structure:"
