@@ -29,10 +29,11 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # rsync non e' piu' necessario, lo rimuoviamo
+          # Installiamo 'gpg2' e le altre dipendenze di base
           zypper --non-interactive install rpm-build git tar gzip curl gpg2
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
+          # Installiamo le dipendenze di build dal file .spec
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             zypper --non-interactive install "$package"
           done
@@ -46,7 +47,7 @@ jobs:
       - name: 5. Prepare RPM Sources
         run: |
           # Usiamo 'git archive' per creare un tarball pulito e robusto.
-          # L'opzione --prefix aggiunge la cartella di primo livello richiesta da rpmbuild.
+          # Questo risolve l'errore 'No such file or directory' durante il %prep.
           mkdir -p $HOME/rpmbuild/SOURCES
           git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" HEAD | gzip > $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz
 
@@ -57,12 +58,15 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
+          # Configuriamo _topdir e l'agente GPG per la firma non interattiva
           echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          
+          # Costruiamo e firmiamo i pacchetti con i comandi corretti
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
