@@ -35,22 +35,22 @@ jobs:
 
       - name: 3. Prepare Simplified Spec and Install Dependencies
         run: |
-          # Installiamo gli strumenti di base
-          zypper --non-interactive install rpm-build curl gpg2 rsync
+          # Installiamo gli strumenti di base, incluso nodejs-devel per avere 'npm'
+          zypper --non-interactive install rpm-build curl gpg2 rsync nodejs-devel
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           
-          # SOLUZIONE: Creiamo una versione semplificata dello .spec PRIMA di tutto
-          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          # Usiamo npm per installare pnpm globalmente
+          npm install -g pnpm
           
-          # Sostituiamo i blocchi condizionali con le direttive semplici per openSUSE
-          # Usiamo 'sed' per trovare e sostituire i blocchi if/endif
+          # Creiamo una versione semplificata dello .spec
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
 
-          # Ora leggiamo le dipendenze dal file SEMPLIFICATO e le installiamo
-          echo "Installing build dependencies from simplified spec file..."
-          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
+          # Ora leggiamo le dipendenze dal file SEMPLIFICATO, ma escludiamo pnpm
+          echo "Installing RPM build dependencies from simplified spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | grep -v 'pnpm' | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
