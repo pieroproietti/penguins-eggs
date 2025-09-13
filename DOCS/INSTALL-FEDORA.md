@@ -9,7 +9,7 @@ Per prima cosa, dobbiamo importare la chiave GPG con cui sono firmati i pacchett
 
 Esegui questo comando per importare la chiave:
 ```
-sudo rpm --import [https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs](https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs)
+sudo rpm --import https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
 ```
 
 ## Passaggio 2: Aggiungere il Repository di penguins-eggs
@@ -26,7 +26,7 @@ name=Penguins-eggs Repository
 baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/fedora/42/fedora/42/
 enabled=1
 gpgcheck=1
-gpgkey=[https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs](https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs)
+gpgkey=https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
 ```
 Nota per gli utenti non-Fedora: Puoi sostituire fedora/42 con la cartella appropriata per il tuo sistema (es. el/9 per AlmaLinux/Rocky 9).
 
