@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Enterprise Linux 9
-name: 03. Build and Publish EL9 RPM (install rpm-sign)
+name: 03. Build and Publish EL9 RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -35,7 +35,7 @@ jobs:
 
       - name: 3. Install Build Dependencies for EL9
         run: |
-          # SOLUZIONE: Aggiunto 'rpm-sign' alla lista dei pacchetti da installare
+          # Aggiunto 'rpm-sign' alla lista dei pacchetti da installare
           dnf install -y --allowerasing 'dnf-plugins-core' rpm-build curl gnupg2 rpm-sign
           
           # Abilitiamo i repository extra necessari per le dipendenze
@@ -116,7 +116,7 @@ jobs:
 
       - name: 5. Update and Sign Repository for EL9
         run: |
-          find ./rpm/el/9 -name "*.rpm" -exec mv -t ./rpm/el/9/ {} +
+          # La riga 'find ... mv' e' stata rimossa perche' non necessaria
           cd ./rpm/el/9
           createrepo_c .
           mkdir -p ~/.gnupg
