@@ -44,8 +44,10 @@ jobs:
 
       - name: 5. Prepare RPM Sources
         run: |
+          # SOLUZIONE: Ci spostiamo esplicitamente nella cartella del progetto
+          cd "$GITHUB_WORKSPACE"
+
           # Usiamo 'git archive' in due passaggi per la massima affidabilita'.
-          # Prima creiamo il .tar, poi lo comprimiamo con gzip.
           mkdir -p $HOME/rpmbuild/SOURCES
           git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" -o $HOME/rpmbuild/SOURCES/penguins-eggs.tar HEAD
           gzip $HOME/rpmbuild/SOURCES/penguins-eggs.tar
