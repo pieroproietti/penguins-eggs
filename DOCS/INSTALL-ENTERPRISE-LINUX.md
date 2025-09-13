@@ -1,6 +1,6 @@
-# Come Installare penguins-eggs su Fedora (e sistemi derivati)
+# Come Installare penguins-eggs su Enterprise linux (e sistemi derivati)
 
-Per installare penguins-eggs sul tuo sistema Fedora o qualsiasi altra distribuzione basata su dnf/yum, puoi aggiungere il nostro repository RPM ufficiale. Questo ti garantirà un'installazione semplice e aggiornamenti automatici.
+Per installare penguins-eggs sul tuo sistema Enterprise linux: AlmaLinux, Rocky Linux o qualsiasi altra distribuzione basata su dnf/yum, puoi aggiungere il nostro repository RPM ufficiale. Questo ti garantirà un'installazione semplice e aggiornamenti automatici.
 
 Il processo richiede pochi comandi da terminale.
 
@@ -23,7 +23,7 @@ Incolla il seguente testo all'interno dell'editor:
 ```
 [penguins-eggs]
 name=Penguins-eggs Repository
-baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/fedora/42/
+baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/el/9
 enabled=1
 gpgcheck=1
 gpgkey=https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
