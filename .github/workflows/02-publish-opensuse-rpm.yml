@@ -29,11 +29,9 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # Aggiungiamo 'rsync' che ci serve per preparare i sorgenti
-          zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync
+          zypper --non-interactive install rpm-build git tar gzip curl gpg2
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          # Installiamo le dipendenze di build dal file .spec
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             zypper --non-interactive install "$package"
           done
@@ -46,18 +44,11 @@ jobs:
 
       - name: 5. Prepare RPM Sources
         run: |
-          # Usiamo il metodo robusto con una cartella di staging
-          STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
-          mkdir -p "$STAGING_DIR"
-          
-          # Copiamo i sorgenti escludendo le cartelle non necessarie
-          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/"
-          
-          # Creiamo il tarball dalla cartella temporanea
+          # Usiamo 'git archive' in due passaggi per la massima affidabilita'.
+          # Prima creiamo il .tar, poi lo comprimiamo con gzip.
           mkdir -p $HOME/rpmbuild/SOURCES
-          cd /tmp/staging
-          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
-          cd -
+          git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" -o $HOME/rpmbuild/SOURCES/penguins-eggs.tar HEAD
+          gzip $HOME/rpmbuild/SOURCES/penguins-eggs.tar
 
           # Gestiamo i bootloaders come prima
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
@@ -66,15 +57,12 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Configuriamo _topdir e l'agente GPG per la firma non interattiva
           echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-          
-          # Costruiamo e firmiamo i pacchetti con i comandi corretti
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
