@@ -83,11 +83,13 @@ jobs:
         run: |
           export GPG_TTY=$(tty)
           cd ./deb
+
+          # SOLUZIONE: Spostiamo i file .deb dalle sottocartelle al livello corretto
+          find . -name "*.deb" -exec mv -t . {} +
           
           # Creiamo l'indice nella cartella corrente
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
           
-          # --- SEZIONE CORRETTA ---
           # Calcoliamo tutti i metadati necessari per un file Release robusto
           MD5=$(md5sum Packages.gz | awk '{print $1}')
           SHA1=$(sha1sum Packages.gz | awk '{print $1}')
@@ -107,7 +109,6 @@ jobs:
           printf ' %s %d %s\n' "$SHA1" "$FILESIZE" "Packages.gz" >> $RELEASE_FILE
           echo "SHA256:" >> $RELEASE_FILE
           printf ' %s %d %s\n' "$SHA256" "$FILESIZE" "Packages.gz" >> $RELEASE_FILE
-          # --- FINE SEZIONE CORRETTA ---
           
           # Firmiamo il file Release
           mkdir -p ~/.gnupg
