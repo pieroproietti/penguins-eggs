@@ -48,8 +48,7 @@ jobs:
           sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
 
-          # SOLUZIONE FINALE: Rimuoviamo la riga BuildRequires: pnpm dal file temporaneo
-          # perche' rpmbuild non la trovera' come pacchetto RPM.
+          # Rimuoviamo la riga BuildRequires: pnpm dal file temporaneo
           sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
 
           # Ora leggiamo le dipendenze dal file completamente corretto
@@ -130,7 +129,7 @@ jobs:
       - name: 5. Update and Sign Repository for openSUSE
         run: |
           export GPG_TTY=$(tty)
-          find ./rpm/opensuse/leap -name "*.rpm" -exec mv -t ./rpm/opensuse/leap/ {} +
+          # Il comando 'find' e' stato rimosso
           cd ./rpm/opensuse/leap
           createrepo_c .
           mkdir -p ~/.gnupg
