@@ -70,7 +70,6 @@ Requires:       curl
 Requires:       device-mapper
 Requires:       dosfstools
 Requires:       dracut
-Requires:       dracut-live
 Requires:       efibootmgr
 Requires:       fuse
 Requires:       git
@@ -91,9 +90,11 @@ Requires:       zstd
 %if 0%{?suse_version}
 # openSUSE: 'fuse-sshfs'
 Requires:       fuse-sshfs
+Requires:       dracut-kiwi-live
 %else
 # Fedora: 'sshfs'
 Requires:       sshfs
+Requires:       dracut-live
 %endif
 
 
