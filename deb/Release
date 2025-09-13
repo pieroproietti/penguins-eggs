@@ -1,0 +1,10 @@
+Origin: Piero Proietti
+Label: penguins-eggs
+Suite: stable
+Codename: stable
+Architectures: amd64
+Components: main
+Description: penguins-eggs Debian/Ubuntu repository
+Date: Sat, 13 Sep 2025 14:08:29 +0000
+SHA256:
+ 1272619b8e4babcb5da896118dec9f9c2ceb03d50d88c340918168f6f4a4d37f 716 Packages.gz

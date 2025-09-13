@@ -1,0 +1,29 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Origin: Piero Proietti
+Label: penguins-eggs
+Suite: stable
+Codename: stable
+Architectures: amd64
+Components: main
+Description: penguins-eggs Debian/Ubuntu repository
+Date: Sat, 13 Sep 2025 14:08:29 +0000
+SHA256:
+ 1272619b8e4babcb5da896118dec9f9c2ceb03d50d88c340918168f6f4a4d37f 716 Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE9nc+p9LzCbo+XeCKRbEPJxUlQD8FAmjFet0ACgkQRbEPJxUl
+QD8quw/8Do6QzJnGPUV3aJZ/RmPb3+/gPX4Ob5vAZrq78MJ5hbqFfvjtaaC4lv05
+0w3IyAjwlppkdGfh24AyOmJc+3/i6oFNmzQfyrO9W6BRVcGXIE3tzQ6pKilP3Um7
+N3z7EyoJxHLEyfg1ayL5ck8N2xiSvH4AorXhdwjTWTCS/dlJ+MQ1VSXSlKjcmjU7
+EVvOqTndiWQmVu/duG8HPyDtAZWbnBwU8ftY+SYq9OppYMgtjlcZOyha/EyPqisX
+3Uh18tq+2xOyBaGoRUHA2zP9D8DkgxyV3p6umPUlbilhV7PlzCdYsfLlSpFzpJdk
+FCwgcGgDyv1op8KAqj4FRFg6VUIP8mvkto10HTyQo72P9TJAfqUfB39iD7GJkNwN
+OrlGNSccw71cf+jmeOOYn/FayxotEnlKKco27YbZ5R8UyZDrP+S3wqu4tzEfuczL
+bZhGNdhWaQoi1TjTQwXkm80PyN/M1DkAxlTfzde8iMkk7Ifm9phGGOw6ZjenKx6U
+p7RLWy8f8KMNAjoEbe6ohNOS+l+DgVtjArRP1Ca4TrzP2rLCg0z7S7509RnLlU3r
+spi9nV8/uC0Frz3PBaubJk5Fzc8TXEjMoHuB4IC23cI3u2KnUC6Pteu8LtfNMkT3
+8JkrMvvdLruX9YxD0i3j0YstETimXUPtsmg13jFUblIh05032+Q=
+=GaIQ
+-----END PGP SIGNATURE-----
