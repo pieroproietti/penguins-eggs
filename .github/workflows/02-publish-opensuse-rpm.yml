@@ -30,7 +30,8 @@ jobs:
       - name: 3. Install Build Dependencies
         # <-- MODIFICA 2: Logica di build per openSUSE
         run: |
-          zypper --non-interactive install rpm-build git tar gzip curl gnupg2
+          # Corretto il nome del pacchetto da 'gnupg2' a 'gpg2' per openSUSE
+          zypper --non-interactive install rpm-build git tar gzip curl gpg2
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
@@ -120,3 +121,4 @@ jobs:
           publish_dir: .
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+
