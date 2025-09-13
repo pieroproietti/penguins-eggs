@@ -52,23 +52,13 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # Scriviamo le istruzioni corrette nei file di configurazione corretti
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-          
-          # Ricarichiamo l'agente per fargli leggere la nuova configurazione
           gpg-connect-agent reloadagent /bye
-          
-          # "Inneschiamo" l'agente con la passphrase
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-
-          # Costruiamo il pacchetto
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
-          
-          # Firmiamo i pacchetti. L'agente è pronto.
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
-          
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 7. Upload RPM Artifact for publishing
@@ -105,16 +95,13 @@ jobs:
 
       - name: 5. Update and Sign Repository for Fedora 42
         run: |
-          find ./rpm/fedora/42 -name "*.rpm" -exec mv -t ./rpm/fedora/42/ {} +
+          # Il comando 'find' e' stato rimosso perche' non necessario
           cd ./rpm/fedora/42
           createrepo_c .
-          
-          # Scriviamo le istruzioni corrette anche qui
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
       - name: 6. Commit and Deploy to GitHub Pages
