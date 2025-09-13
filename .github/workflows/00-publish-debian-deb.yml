@@ -77,19 +77,14 @@ jobs:
       - name: 4. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2
-          # Corretto il nome del segreto da GGPG_SIGNING_KEY a GPG_SIGNING_KEY
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
       - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          
-          # SOLUZIONE FINALE: Spostiamo i file .deb al livello corretto
-          find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
-          
+          # Il comando 'find' e' stato rimosso perche' non necessario
           cd ./deb
           
-          # Ora dpkg-scanpackages trovera' i file e creera' un indice corretto
           dpkg-scanpackages pool/ | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
           
           cd dists/stable
