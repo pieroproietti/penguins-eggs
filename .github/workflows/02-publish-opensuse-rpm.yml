@@ -29,8 +29,8 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # Installiamo 'gpg2' e le altre dipendenze di base
-          zypper --non-interactive install rpm-build git tar gzip curl gpg2
+          # Aggiungiamo 'rsync' che ci serve per preparare i sorgenti
+          zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           # Installiamo le dipendenze di build dal file .spec
@@ -46,10 +46,18 @@ jobs:
 
       - name: 5. Prepare RPM Sources
         run: |
-          # Usiamo 'git archive' per creare un tarball pulito e robusto.
-          # Questo risolve l'errore 'No such file or directory' durante il %prep.
+          # Usiamo il metodo robusto con una cartella di staging
+          STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
+          mkdir -p "$STAGING_DIR"
+          
+          # Copiamo i sorgenti escludendo le cartelle non necessarie
+          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/"
+          
+          # Creiamo il tarball dalla cartella temporanea
           mkdir -p $HOME/rpmbuild/SOURCES
-          git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" HEAD | gzip > $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz
+          cd /tmp/staging
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
+          cd -
 
           # Gestiamo i bootloaders come prima
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
