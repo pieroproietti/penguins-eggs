@@ -82,18 +82,9 @@ jobs:
       - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          
-          # SOLUZIONE FINALE: Spostiamo i file .deb al livello corretto
-          echo "Moving .deb files to the correct location..."
-          #find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
-          
-          # Mostriamo la struttura dei file per debug
-          echo "Current file structure:"
-          ls -lR ./deb
-          
+          # Il comando 'find' e' stato rimosso perche' non necessario
           cd ./deb
           
-          # Ora dpkg-scanpackages trovera' i file
           dpkg-scanpackages pool/ | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
           
           cd dists/stable
