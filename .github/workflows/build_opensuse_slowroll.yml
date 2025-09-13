@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per openSUSE
-name: 02. Build and Publish openSUSE RPM
+name: Build openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
