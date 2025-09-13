@@ -1,0 +1,122 @@
+# Nome del workflow, specifico per openSUSE
+name: 02. Build and Publish openSUSE RPM
+
+# Controllo per evitare conflitti di scrittura su gh-pages
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  # --- JOB 1: COSTRUISCE IL PACCHETTO PER openSUSE ---
+  build-opensuse:
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/tumbleweed # <-- MODIFICA 1: Immagine container
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Get Package Version
+        id: version
+        run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: 3. Install Build Dependencies
+        # <-- MODIFICA 2: Logica di build per openSUSE
+        run: |
+          zypper --non-interactive install rpm-build git tar gzip curl gnupg2
+          zypper modifyrepo --enable repo-source
+          zypper --non-interactive refresh
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
+            zypper --non-interactive install "$package"
+          done
+
+      - name: 4. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+
+      - name: 5. Prepare RPM Sources
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
+            --exclude=.git --exclude=.github .
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+
+      - name: 6. Build and Sign RPM package
+        id: build
+        run: |
+          # Configura _topdir per openSUSE tramite .rpmmacros
+          echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
+          
+          # Configura e avvia l'agente GPG
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          
+          # Costruisce e firma
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+
+      - name: 7. Upload RPM Artifact for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensuse-tumbleweed-rpm-for-repo # <-- MODIFICA 3: Nome artefatto
+          path: ${{ steps.build.outputs.rpm_path }}
+
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+  publish-repo:
+    needs: build-opensuse
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 1. Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          
+      - name: 2. Create directory structure
+        # <-- MODIFICA 4: Percorso per openSUSE
+        run: mkdir -p rpm/opensuse/tumbleweed
+
+      - name: 3. Download openSUSE RPM artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: opensuse-tumbleweed-rpm-for-repo
+          path: ./rpm/opensuse/tumbleweed
+
+      - name: 4. Install Tools and Import GPG Key
+        run: |
+          sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+
+      - name: 5. Update and Sign Repository for openSUSE
+        run: |
+          cd ./rpm/opensuse/tumbleweed
+          createrepo_c .
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
+
+      - name: 6. Commit and Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
