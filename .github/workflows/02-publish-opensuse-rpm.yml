@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per openSUSE
-name: 02. Build and Publish openSUSE RPM
+name: Build and Publish openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -83,11 +83,14 @@ jobs:
           # "Inneschiamo" l'agente con la passphrase
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
-          # Pre-processiamo il file .spec per risolvere i problemi di parsing di rpmbuild
-          rpmspec -P packaging/rpm/penguins-eggs.spec > packaging/rpm/penguins-eggs.spec.parsed
-          
+          # Creiamo una versione semplificata dello .spec per la vecchia versione di rpmbuild
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          # Sostituiamo i blocchi condizionali con le direttive semplici per openSUSE
+          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
+
           # Ora rpmbuild lavorera' sul file "tradotto"
-          rpmbuild -ba packaging/rpm/penguins-eggs.spec.parsed
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 7. Upload RPM Artifact for publishing
