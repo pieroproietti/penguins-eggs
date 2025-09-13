@@ -51,7 +51,8 @@ jobs:
         run: |
           export GPG_TTY=$(tty)
           pnpm install
-          pnpm deb -a
+          # Costruisce solo per l'architettura corrente (amd64)
+          pnpm deb
 
       - name: 5. Upload .deb Artifacts for publishing
         uses: actions/upload-artifact@v4
@@ -93,7 +94,6 @@ jobs:
           # Creiamo l'indice dei pacchetti
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
           
-          # --- SEZIONE CORRETTA ---
           # Calcoliamo le variabili necessarie (checksum, dimensione, nome file)
           CHECKSUM=$(sha256sum Packages.gz | awk '{print $1}')
           FILESIZE=$(stat -c %s Packages.gz)
@@ -105,13 +105,13 @@ jobs:
           echo "Label: penguins-eggs" >> $RELEASE_FILE
           echo "Suite: stable" >> $RELEASE_FILE
           echo "Codename: stable" >> $RELEASE_FILE
-          echo "Architectures: amd64 arm64 all" >> $RELEASE_FILE
+          # Dichiaramo solo l'architettura amd64
+          echo "Architectures: amd64" >> $RELEASE_FILE
           echo "Components: main" >> $RELEASE_FILE
           echo "Description: penguins-eggs Debian/Ubuntu repository" >> $RELEASE_FILE
           echo "Date: $(date -Ru)" >> $RELEASE_FILE
           echo "SHA256:" >> $RELEASE_FILE
           printf ' %s %d %s\n' "$CHECKSUM" "$FILESIZE" "$FILENAME" >> $RELEASE_FILE
-          # --- FINE SEZIONE CORRETTA ---
 
           # Firmiamo il file Release per creare InRelease e Release.gpg
           mkdir -p ~/.gnupg
