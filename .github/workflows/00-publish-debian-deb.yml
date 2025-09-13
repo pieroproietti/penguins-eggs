@@ -76,41 +76,32 @@ jobs:
 
       - name: 4. Install Tools and Import GPG Key
         run: |
-          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2
+          # Aggiungiamo apt-utils (per apt-ftparchive) e xz-utils (per .xz)
+          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
       - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          # Il comando 'find' e' stato rimosso perche' non necessario
           cd ./deb
           
-          dpkg-scanpackages pool/ | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
+          # Creiamo l'indice Packages
+          dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
           
-          cd dists/stable
+          # Comprimiamo l'indice nei formati richiesti
+          gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+          xz -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.xz
           
-          CHECKSUM=$(sha256sum main/binary-amd64/Packages.gz | awk '{print $1}')
-          FILESIZE=$(stat -c %s main/binary-amd64/Packages.gz)
-          FILENAME="main/binary-amd64/Packages.gz"
-
-          RELEASE_FILE="Release"
-          echo "Origin: Piero Proietti" > $RELEASE_FILE
-          echo "Label: penguins-eggs" >> $RELEASE_FILE
-          echo "Suite: stable" >> $RELEASE_FILE
-          echo "Codename: stable" >> $RELEASE_FILE
-          echo "Architectures: amd64" >> $RELEASE_FILE
-          echo "Components: main" >> $RELEASE_FILE
-          echo "Description: penguins-eggs Debian/Ubuntu repository" >> $RELEASE_FILE
-          echo "Date: $(date -Ru)" >> $RELEASE_FILE
-          echo "SHA256:" >> $RELEASE_FILE
-          printf ' %s %d %s\n' "$CHECKSUM" "$FILESIZE" "$FILENAME" >> $RELEASE_FILE
-
+          # Usiamo apt-ftparchive per creare un file Release corretto e completo
+          apt-ftparchive release dists/stable > dists/stable/Release
+          
+          # Firmiamo il file Release
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease $RELEASE_FILE
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg $RELEASE_FILE
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o dists/stable/InRelease dists/stable/Release
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o dists/stable/Release.gpg dists/stable/Release
           
       - name: 6. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
