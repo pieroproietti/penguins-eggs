@@ -58,6 +58,8 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 
 # Installation
 
+**Try the new repo for [Fedora 42](./DOCS/INSTALL-FEDORA.md)**
+
 ## penguins-eggs-25.7.x installation
 `penguins-eggs-25.7.x` depends on `nodejs >18`, which is not directly available on all distros. We can rely on [nodesource](https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions) for adding them.
 
