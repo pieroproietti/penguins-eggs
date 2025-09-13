@@ -48,9 +48,13 @@ jobs:
           sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
 
-          # Ora leggiamo le dipendenze dal file SEMPLIFICATO, ma escludiamo pnpm
+          # SOLUZIONE FINALE: Rimuoviamo la riga BuildRequires: pnpm dal file temporaneo
+          # perche' rpmbuild non la trovera' come pacchetto RPM.
+          sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
+
+          # Ora leggiamo le dipendenze dal file completamente corretto
           echo "Installing RPM build dependencies from simplified spec file..."
-          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | grep -v 'pnpm' | awk '{print $2}'); do
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
@@ -87,7 +91,7 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
-          # Lavoriamo sempre sul file .spec.suse, che e' gia' stato creato
+          # Lavoriamo sempre sul file .spec.suse, che ora e' corretto
           rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
