@@ -82,20 +82,26 @@ jobs:
       - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          # Il comando 'find' e' stato rimosso perche' non necessario
+          
+          # SOLUZIONE FINALE: Spostiamo i file .deb al livello corretto
+          echo "Moving .deb files to the correct location..."
+          find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
+          
+          # Mostriamo la struttura dei file per debug
+          echo "Current file structure:"
+          ls -lR ./deb
+          
           cd ./deb
           
-          # Ora dpkg-scanpackages trovera' i file e creera' un indice corretto
+          # Ora dpkg-scanpackages trovera' i file
           dpkg-scanpackages pool/ | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
           
           cd dists/stable
           
-          # Calcoliamo le variabili necessarie
           CHECKSUM=$(sha256sum main/binary-amd64/Packages.gz | awk '{print $1}')
           FILESIZE=$(stat -c %s main/binary-amd64/Packages.gz)
           FILENAME="main/binary-amd64/Packages.gz"
 
-          # Creiamo il file Release
           RELEASE_FILE="Release"
           echo "Origin: Piero Proietti" > $RELEASE_FILE
           echo "Label: penguins-eggs" >> $RELEASE_FILE
@@ -108,7 +114,6 @@ jobs:
           echo "SHA256:" >> $RELEASE_FILE
           printf ' %s %d %s\n' "$CHECKSUM" "$FILESIZE" "$FILENAME" >> $RELEASE_FILE
 
-          # Firmiamo il file Release
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
