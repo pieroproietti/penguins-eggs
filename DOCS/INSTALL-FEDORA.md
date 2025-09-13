@@ -23,7 +23,7 @@ Incolla il seguente testo all'interno dell'editor:
 ```
 [penguins-eggs]
 name=Penguins-eggs Repository
-baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/fedora/42/fedora/42/
+baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/fedora/42/
 enabled=1
 gpgcheck=1
 gpgkey=https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
