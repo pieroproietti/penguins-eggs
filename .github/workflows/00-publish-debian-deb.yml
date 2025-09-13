@@ -77,7 +77,8 @@ jobs:
       - name: 4. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2
-          echo "${{ secrets.GGPG_SIGNING_KEY }}" | gpg --import --batch
+          # Corretto il nome del segreto da GGPG_SIGNING_KEY a GPG_SIGNING_KEY
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
       - name: 5. Update and Sign APT Repository
         run: |
