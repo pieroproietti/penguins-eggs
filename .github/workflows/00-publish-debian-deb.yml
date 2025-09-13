@@ -24,7 +24,7 @@ jobs:
       - name: 2. Install Dependencies with Specific Node.js Version
         run: |
           apt-get update
-          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2
+          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils
           mkdir -p /etc/apt/keyrings
           curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
           echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
@@ -65,45 +65,43 @@ jobs:
         with:
           ref: gh-pages
           
-      - name: 2. Create directory structure
-        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
-
-      - name: 3. Download .deb artifacts
+      - name: 2. Create directory structure and download artifacts
+        run: mkdir -p deb/
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          path: deb/pool/main
+          # Scarichiamo i pacchetti direttamente nella cartella 'deb'
+          path: deb/
 
-      - name: 4. Install Tools and Import GPG Key
+      - name: 3. Install Tools and Import GPG Key
         run: |
-          # Aggiungiamo apt-utils (per apt-ftparchive) e xz-utils (per .xz)
-          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
+          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 5. Update and Sign APT Repository
+      - name: 4. Update and Sign Simple APT Repository
         run: |
           export GPG_TTY=$(tty)
           cd ./deb
           
-          # Creiamo l'indice Packages
-          dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
+          # Creiamo l'indice nella cartella corrente
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
           
-          # Comprimiamo l'indice nei formati richiesti
-          gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
-          xz -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.xz
-          
-          # Usiamo apt-ftparchive per creare un file Release corretto e completo
-          apt-ftparchive release dists/stable > dists/stable/Release
+          # Creiamo un file Release minimale, senza Suite e Codename
+          RELEASE_FILE="Release"
+          echo "Origin: Piero Proietti" > $RELEASE_FILE
+          echo "Label: penguins-eggs" >> $RELEASE_FILE
+          echo "Architectures: amd64" >> $RELEASE_FILE
+          echo "Description: penguins-eggs Debian/Ubuntu repository" >> $RELEASE_FILE
           
           # Firmiamo il file Release
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o dists/stable/InRelease dists/stable/Release
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o dists/stable/Release.gpg dists/stable/Release
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease $RELEASE_FILE
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg $RELEASE_FILE
           
-      - name: 6. Commit and Deploy to GitHub Pages
+      - name: 5. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
