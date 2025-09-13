@@ -29,11 +29,15 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          # Aggiungiamo 'rsync' che ci serve per il nuovo metodo
           zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
+          
+          # SOLUZIONE: Usiamo rpmspec per ottenere la lista corretta di dipendenze
+          # Questo comando interpreta i condizionali (%if, etc.) nel file .spec
+          echo "Installing parsed build dependencies..."
+          for package in $(rpmspec -P packaging/rpm/penguins-eggs.spec | grep '^BuildRequires:' | awk '{print $2}'); do
+            echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
 
@@ -44,24 +48,15 @@ jobs:
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
       - name: 5. Prepare RPM Sources
-        # SOLUZIONE: Usiamo working-directory per forzare lo step
-        # a essere eseguito dalla cartella principale del progetto.
         working-directory: ${{ github.workspace }}
         run: |
-          # Ora possiamo usare percorsi relativi e il robusto metodo rsync + tar
           STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
           mkdir -p "$STAGING_DIR"
-          
-          # Copiamo i sorgenti dalla cartella corrente ('.')
           rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/"
-          
-          # Creiamo il tarball dalla cartella temporanea
           mkdir -p $HOME/rpmbuild/SOURCES
           cd /tmp/staging
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
-          cd - # Torniamo alla directory precedente
-
-          # Gestiamo i bootloaders
+          cd -
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
@@ -73,7 +68,7 @@ jobs:
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          echo "${{ secrets.GGPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
