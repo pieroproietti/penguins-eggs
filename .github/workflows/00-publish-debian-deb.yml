@@ -65,7 +65,6 @@ jobs:
         with:
           ref: gh-pages
       
-      # --- SEZIONE CORRETTA ---
       - name: 2. Create directory structure
         run: mkdir -p deb/
 
@@ -74,7 +73,6 @@ jobs:
         with:
           name: deb-packages-for-repo
           path: deb/
-      # --- FINE SEZIONE CORRETTA ---
 
       - name: 4. Install Tools and Import GPG Key
         run: |
@@ -89,12 +87,27 @@ jobs:
           # Creiamo l'indice nella cartella corrente
           dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
           
-          # Creiamo un file Release minimale, senza Suite e Codename
+          # --- SEZIONE CORRETTA ---
+          # Calcoliamo tutti i metadati necessari per un file Release robusto
+          MD5=$(md5sum Packages.gz | awk '{print $1}')
+          SHA1=$(sha1sum Packages.gz | awk '{print $1}')
+          SHA256=$(sha256sum Packages.gz | awk '{print $1}')
+          FILESIZE=$(stat -c %s Packages.gz)
+
+          # Creiamo il file Release completo
           RELEASE_FILE="Release"
           echo "Origin: Piero Proietti" > $RELEASE_FILE
           echo "Label: penguins-eggs" >> $RELEASE_FILE
           echo "Architectures: amd64" >> $RELEASE_FILE
           echo "Description: penguins-eggs Debian/Ubuntu repository" >> $RELEASE_FILE
+          echo "Date: $(date -Ru)" >> $RELEASE_FILE
+          echo "MD5Sum:" >> $RELEASE_FILE
+          printf ' %s %d %s\n' "$MD5" "$FILESIZE" "Packages.gz" >> $RELEASE_FILE
+          echo "SHA1:" >> $RELEASE_FILE
+          printf ' %s %d %s\n' "$SHA1" "$FILESIZE" "Packages.gz" >> $RELEASE_FILE
+          echo "SHA256:" >> $RELEASE_FILE
+          printf ' %s %d %s\n' "$SHA256" "$FILESIZE" "Packages.gz" >> $RELEASE_FILE
+          # --- FINE SEZIONE CORRETTA ---
           
           # Firmiamo il file Release
           mkdir -p ~/.gnupg
