@@ -16,7 +16,8 @@ jobs:
   build-opensuse:
     runs-on: ubuntu-latest
     container:
-      image: opensuse/tumbleweed
+      # Usiamo l'immagine stabile 'leap' per la massima affidabilita'
+      image: opensuse/leap
     steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
@@ -33,9 +34,7 @@ jobs:
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           
-          # SOLUZIONE: Usiamo rpmspec per ottenere la lista corretta di dipendenze
-          # Questo comando interpreta i condizionali (%if, etc.) nel file .spec
-          echo "Installing parsed build dependencies..."
+          # Usiamo rpmspec per ottenere la lista corretta di dipendenze
           for package in $(rpmspec -P packaging/rpm/penguins-eggs.spec | grep '^BuildRequires:' | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
@@ -50,33 +49,42 @@ jobs:
       - name: 5. Prepare RPM Sources
         working-directory: ${{ github.workspace }}
         run: |
-          STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
-          mkdir -p "$STAGING_DIR"
-          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/"
+          STAGING_DIR="/tmp/staging"
+          SOURCE_DIR_NAME="penguins-eggs-${{ steps.version.outputs.version }}"
+          mkdir -p "$STAGING_DIR/$SOURCE_DIR_NAME"
+          
+          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/$SOURCE_DIR_NAME/"
+          
           mkdir -p $HOME/rpmbuild/SOURCES
-          cd /tmp/staging
-          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
-          cd -
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz -C "$STAGING_DIR" "$SOURCE_DIR_NAME"
+
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 6. Build and Sign RPM package
         id: build
         run: |
+          # SOLUZIONE FINALE: Aggiungiamo GPG_TTY per stabilizzare GPG negli script
+          export GPG_TTY=$(tty)
+          
+          # Configuriamo e avviamo l'agente GPG
           echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GGPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          
+          # "Inneschiamo" l'agente con la passphrase
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          
+          # rpmbuild usa la firma definita in .rpmmacros, non serve --sign
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
-          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 7. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
-          name: opensuse-tumbleweed-rpm-for-repo
+          name: opensuse-leap-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
   # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
@@ -92,13 +100,13 @@ jobs:
           ref: gh-pages
           
       - name: 2. Create directory structure
-        run: mkdir -p rpm/opensuse/tumbleweed
+        run: mkdir -p rpm/opensuse/leap
 
       - name: 3. Download openSUSE RPM artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensuse-tumbleweed-rpm-for-repo
-          path: ./rpm/opensuse/tumbleweed
+          name: opensuse-leap-rpm-for-repo
+          path: ./rpm/opensuse/leap
 
       - name: 4. Install Tools and Import GPG Key
         run: |
@@ -107,8 +115,9 @@ jobs:
 
       - name: 5. Update and Sign Repository for openSUSE
         run: |
-          find ./rpm/opensuse/tumbleweed -name "*.rpm" -exec mv -t ./rpm/opensuse/tumbleweed/ {} +
-          cd ./rpm/opensuse/tumbleweed
+          export GPG_TTY=$(tty)
+          find ./rpm/opensuse/leap -name "*.rpm" -exec mv -t ./rpm/opensuse/leap/ {} +
+          cd ./rpm/opensuse/leap
           createrepo_c .
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
