@@ -1,7 +1,6 @@
 # Nome del workflow, specifico per Enterprise Linux 9
 name: 03. Build and Publish EL9 RPM
 
-
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
