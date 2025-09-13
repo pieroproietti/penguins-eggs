@@ -29,7 +29,8 @@ jobs:
 
       - name: 3. Install Build Dependencies
         run: |
-          zypper --non-interactive install rpm-build git tar gzip curl gpg2
+          # Aggiungiamo 'rsync' che ci serve per il nuovo metodo
+          zypper --non-interactive install rpm-build git tar gzip curl gpg2 rsync
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
@@ -43,16 +44,22 @@ jobs:
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
       - name: 5. Prepare RPM Sources
-        # SOLUZIONE: Usiamo working-directory per forzare l'esecuzione nella cartella giusta
-        working-directory: ${{ github.workspace }}
         run: |
-          # Il 'cd' non e' piu' necessario
-          # Usiamo 'git archive' in due passaggi per la massima affidabilita'.
+          # SOLUZIONE ROBUSTA: Usiamo rsync e tar con percorsi assoluti
+          # per evitare problemi con la directory di lavoro.
+          STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
+          mkdir -p "$STAGING_DIR"
+          
+          # Copiamo i sorgenti usando il percorso assoluto del workspace
+          rsync -av --exclude '.git' --exclude '.github' "${{ github.workspace }}/" "$STAGING_DIR/"
+          
+          # Creiamo il tarball dalla cartella temporanea
           mkdir -p $HOME/rpmbuild/SOURCES
-          git archive --format=tar --prefix="penguins-eggs-${{ steps.version.outputs.version }}/" -o $HOME/rpmbuild/SOURCES/penguins-eggs.tar HEAD
-          gzip $HOME/rpmbuild/SOURCES/penguins-eggs.tar
-
-          # Gestiamo i bootloaders come prima
+          cd /tmp/staging
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
+          
+          # Torniamo nel workspace per scaricare i bootloaders
+          cd "${{ github.workspace }}"
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
