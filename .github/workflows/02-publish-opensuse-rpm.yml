@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per openSUSE
-name: Build and Publish openSUSE RPM
+name: 02. Build and Publish openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -21,7 +21,6 @@ jobs:
     steps:
       - name: 0. Install Prerequisite Tools
         run: |
-          # Installiamo gli strumenti essenziali prima di qualsiasi altra operazione
           zypper --non-interactive refresh
           zypper --non-interactive install git tar gzip
 
@@ -34,14 +33,24 @@ jobs:
         id: version
         run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
 
-      - name: 3. Install Build Dependencies
+      - name: 3. Prepare Simplified Spec and Install Dependencies
         run: |
+          # Installiamo gli strumenti di base
           zypper --non-interactive install rpm-build curl gpg2 rsync
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
           
-          # Usiamo rpmspec per ottenere la lista corretta di dipendenze
-          for package in $(rpmspec -P packaging/rpm/penguins-eggs.spec | grep '^BuildRequires:' | awk '{print $2}'); do
+          # SOLUZIONE: Creiamo una versione semplificata dello .spec PRIMA di tutto
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          
+          # Sostituiamo i blocchi condizionali con le direttive semplici per openSUSE
+          # Usiamo 'sed' per trovare e sostituire i blocchi if/endif
+          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
+
+          # Ora leggiamo le dipendenze dal file SEMPLIFICATO e le installiamo
+          echo "Installing build dependencies from simplified spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
@@ -70,26 +79,15 @@ jobs:
       - name: 6. Build and Sign RPM package
         id: build
         run: |
-          # SOLUZIONE FINALE: Aggiungiamo GPG_TTY per stabilizzare GPG negli script
           export GPG_TTY=$(tty)
-          
-          # Configuriamo e avviamo l'agente GPG
           echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          
-          # "Inneschiamo" l'agente con la passphrase
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
-          # Creiamo una versione semplificata dello .spec per la vecchia versione di rpmbuild
-          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
-          # Sostituiamo i blocchi condizionali con le direttive semplici per openSUSE
-          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
-          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
-
-          # Ora rpmbuild lavorera' sul file "tradotto"
+          # Lavoriamo sempre sul file .spec.suse, che e' gia' stato creato
           rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
