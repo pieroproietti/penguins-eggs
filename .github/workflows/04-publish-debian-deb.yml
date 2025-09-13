@@ -1,0 +1,128 @@
+# Nome del workflow, specifico per Debian e derivate
+name: Build and Publish Debian Repository
+
+# Controllo per evitare conflitti di scrittura su gh-pages
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  # --- JOB 1: COSTRUISCE IL PACCHETTO .deb ---
+  build-deb:
+    runs-on: ubuntu-latest
+    container:
+      # Usiamo un'immagine Debian stabile e moderna come base
+      image: debian:12
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Install Dependencies with Specific Node.js Version
+        run: |
+          apt-get update
+          # Installiamo gli strumenti di base per aggiungere repository e per la firma
+          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2
+          
+          # Aggiungiamo il repository ufficiale di NodeSource per Node.js 20.x
+          mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+          
+          apt-get update
+          apt-get install -y nodejs
+          
+          # Usiamo npm per installare pnpm
+          npm install -g pnpm
+
+      - name: 3. Import GPG Key and Prime Agent
+        run: |
+          # Importiamo la chiave e prepariamo l'agente per la firma non interattiva
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+      - name: 4. Build and Sign .deb packages
+        run: |
+          export GPG_TTY=$(tty)
+          pnpm install
+          # Il comando 'pnpm deb' dovrebbe usare automaticamente la chiave GPG importata
+          pnpm deb
+
+      - name: 5. Upload .deb Artifacts for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-packages-for-repo
+          # Carichiamo tutti i pacchetti .deb dalla cartella dist
+          path: dist/*.deb
+
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+  publish-repo:
+    needs: build-deb
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 1. Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          
+      - name: 2. Create directory structure
+        run: mkdir -p deb/
+
+      - name: 3. Download .deb artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: deb-packages-for-repo
+          path: ./deb
+
+      - name: 4. Install Tools and Import GPG Key
+        run: |
+          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+
+      - name: 5. Update and Sign APT Repository
+        run: |
+          export GPG_TTY=$(tty)
+          cd ./deb
+          
+          # Creiamo l'indice dei pacchetti
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+          
+          # Creiamo il file Release
+          # Nota: Questo e' un file Release minimale per un repository semplice
+          RELEASE_FILE="Release"
+          echo "Origin: Piero Proietti" > $RELEASE_FILE
+          echo "Label: penguins-eggs" >> $RELEASE_FILE
+          echo "Suite: stable" >> $RELEASE_FILE
+          echo "Codename: stable" >> $RELEASE_FILE
+          echo "Architectures: amd64 arm64 all" >> $RELEASE_FILE
+          echo "Components: main" >> $RELEASE_FILE
+          echo "Description: penguins-eggs Debian/Ubuntu repository" >> $RELEASE_FILE
+          echo "Date: $(date -Ru)" >> $RELEASE_FILE
+          echo "SHA256:" >> $RELEASE_FILE
+          printf ' %s %d %s\n' $(sha256sum Packages.gz) "Packages.gz" >> $RELEASE_FILE
+          
+          # Firmiamo il file Release per creare InRelease e Release.gpg
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease $RELEASE_FILE
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg $RELEASE_FILE
+          
+      - name: 6. Commit and Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
