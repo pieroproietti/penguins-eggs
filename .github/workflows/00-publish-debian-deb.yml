@@ -65,20 +65,14 @@ jobs:
         with:
           ref: gh-pages
           
-      # --- SEZIONE CORRETTA ---
       - name: 2. Create directory structure
-        run: |
-          # Creiamo la struttura standard di un repository Debian
-          mkdir -p deb/dists/stable/main/binary-amd64
-          mkdir -p deb/pool/main/p/penguins-eggs
+        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
 
       - name: 3. Download .deb artifacts
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          # Scarichiamo i pacchetti nella cartella 'pool'
-          path: deb/pool/main/p/penguins-eggs
-      # --- FINE SEZIONE CORRETTA ---
+          path: deb/pool/main
 
       - name: 4. Install Tools and Import GPG Key
         run: |
@@ -88,12 +82,16 @@ jobs:
       - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
+          
+          # SOLUZIONE: Spostiamo tutti i file .deb dalle sottocartelle
+          # create da download-artifact, direttamente nella cartella 'pool/main'
+          find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
+          
           cd ./deb
           
-          # Creiamo l'indice 'Packages' dalla cartella 'pool'
+          # Ora dpkg-scanpackages trovera' i file e creera' un indice corretto
           dpkg-scanpackages pool/ | gzip -9c > dists/stable/main/binary-amd64/Packages.gz
           
-          # Ora creiamo il file Release DENTRO la cartella dists/stable
           cd dists/stable
           
           # Calcoliamo le variabili necessarie
