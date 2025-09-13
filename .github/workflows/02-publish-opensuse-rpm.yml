@@ -44,22 +44,24 @@ jobs:
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
       - name: 5. Prepare RPM Sources
+        # SOLUZIONE: Usiamo working-directory per forzare lo step
+        # a essere eseguito dalla cartella principale del progetto.
+        working-directory: ${{ github.workspace }}
         run: |
-          # SOLUZIONE ROBUSTA: Usiamo rsync e tar con percorsi assoluti
-          # per evitare problemi con la directory di lavoro.
+          # Ora possiamo usare percorsi relativi e il robusto metodo rsync + tar
           STAGING_DIR="/tmp/staging/penguins-eggs-${{ steps.version.outputs.version }}"
           mkdir -p "$STAGING_DIR"
           
-          # Copiamo i sorgenti usando il percorso assoluto del workspace
-          rsync -av --exclude '.git' --exclude '.github' "${{ github.workspace }}/" "$STAGING_DIR/"
+          # Copiamo i sorgenti dalla cartella corrente ('.')
+          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/"
           
           # Creiamo il tarball dalla cartella temporanea
           mkdir -p $HOME/rpmbuild/SOURCES
           cd /tmp/staging
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz "penguins-eggs-${{ steps.version.outputs.version }}"
-          
-          # Torniamo nel workspace per scaricare i bootloaders
-          cd "${{ github.workspace }}"
+          cd - # Torniamo alla directory precedente
+
+          # Gestiamo i bootloaders
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
