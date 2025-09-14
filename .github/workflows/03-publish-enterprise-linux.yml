@@ -1,3 +1,4 @@
+# EL9 con vesioning
 # Nome del workflow, specifico per Enterprise Linux 9
 name: 03. Build and Publish EL9 RPM
 
@@ -10,6 +11,9 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+
+env:
+  BOOTLOADERS_VERSION: v25.9.8
 
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER EL9 ---
@@ -29,16 +33,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 2. Get Package Version
-        id: version
-        run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
-
-      - name: 3. Install Build Dependencies for EL9
+      - name: 2. Install Build Dependencies (with jq)
         run: |
-          # Aggiunto 'rpm-sign' alla lista dei pacchetti da installare
-          dnf install -y --allowerasing 'dnf-plugins-core' rpm-build curl gnupg2 rpm-sign
+          # Aggiunto 'jq' per leggere il file package.json e 'rpm-sign' per la firma
+          dnf install -y --allowerasing 'dnf-plugins-core' rpm-build curl gnupg2 rpm-sign jq
           
-          # Abilitiamo i repository extra necessari per le dipendenze
+          # Abilitiamo i repository extra necessari
           dnf install -y epel-release
           /usr/bin/crb enable
           
@@ -54,22 +54,33 @@ jobs:
             dnf install -y --allowerasing "$package"
           done
 
-      - name: 4. Import GPG Key and Configure RPM
+      - name: 3. Get Package Version from package.json
+        id: version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: 4. Update Version in .spec File
+        run: |
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+
+      - name: 5. Import GPG Key and Configure RPM
         run: |
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
-      - name: 5. Prepare RPM Sources
+      - name: 6. Prepare RPM Sources
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
+          # Ora questo comando usa la versione letta da package.json
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
             --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
             --exclude=.git --exclude=.github .
-          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
+          # Usiamo la variabile per la versione dei bootloaders
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 6. Build and Sign RPM package
+      - name: 7. Build and Sign RPM package
         id: build
         run: |
           mkdir -p ~/.gnupg
@@ -82,7 +93,7 @@ jobs:
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 7. Upload RPM Artifact for publishing
+      - name: 8. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: el9-rpm-for-repo
@@ -116,7 +127,6 @@ jobs:
 
       - name: 5. Update and Sign Repository for EL9
         run: |
-          # La riga 'find ... mv' e' stata rimossa perche' non necessaria
           cd ./rpm/el/9
           createrepo_c .
           mkdir -p ~/.gnupg

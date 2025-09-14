@@ -1,4 +1,3 @@
-# con versioning automatico
 # Nome del workflow, specifico per openSUSE
 name: 02. Build and Publish openSUSE RPM
 
