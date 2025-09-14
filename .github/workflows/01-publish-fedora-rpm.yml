@@ -11,6 +11,13 @@ on:
   push:
     branches: [ main ]
 
+# --- SEZIONE AGGIUNTA ---
+# Definiamo le variabili globali del workflow qui
+# Quando devi aggiornare, ti bastera' cambiare solo questa riga.
+env:
+  BOOTLOADERS_VERSION: v25.9.8
+# --- FINE SEZIONE AGGIUNTA ---
+
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
   build-fedora:
@@ -46,7 +53,9 @@ jobs:
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
             --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
             --exclude=.git --exclude=.github .
-          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
+          # --- RIGA CORRETTA ---
+          # Ora usiamo la variabile definita in cima al file
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
       - name: 6. Build and Sign RPM package
@@ -95,7 +104,6 @@ jobs:
 
       - name: 5. Update and Sign Repository for Fedora 42
         run: |
-          # Il comando 'find' e' stato rimosso perche' non necessario
           cd ./rpm/fedora/42
           createrepo_c .
           mkdir -p ~/.gnupg
