@@ -60,29 +60,29 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 1. Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          
-      - name: 2. Create directory structure
-        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
-
-      - name: 3. Download .deb artifacts
+      # Lo step "Checkout gh-pages" e' stato rimosso.
+      # Costruiamo la struttura localmente in una cartella temporanea.
+      
+      - name: 1. Create directory structure and download artifacts
+        run: |
+          # Creiamo la struttura completa del repository in una cartella temporanea
+          mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
+          mkdir -p repo-to-publish/deb/pool/main
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          path: deb/pool/main
+          # Scarichiamo i pacchetti nella cartella 'pool'
+          path: repo-to-publish/deb/pool/main
 
-      - name: 4. Install Tools and Import GPG Key
+      - name: 2. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 5. Update and Sign APT Repository (The Right Way)
+      - name: 3. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          cd ./deb
+          cd ./repo-to-publish/deb
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
@@ -92,7 +92,7 @@ jobs:
           # Usiamo apt-ftparchive per creare un file Release corretto e completo
           apt-ftparchive release dists/stable > dists/stable/Release
           
-          # Firmiamo il file Release per creare InRelease (l'unico file che ci serve)
+          # Firmiamo il file Release
           cd dists/stable
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
@@ -100,11 +100,12 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
           
-      - name: 6. Commit and Deploy to GitHub Pages
+      - name: 4. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          # Pubblichiamo la cartella che abbiamo preparato
+          publish_dir: ./repo-to-publish
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
