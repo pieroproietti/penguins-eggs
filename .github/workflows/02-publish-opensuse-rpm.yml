@@ -1,5 +1,6 @@
+# con versioning automatico
 # Nome del workflow, specifico per openSUSE
-name: Build and Publish openSUSE RPM
+name: 02. Build and Publish openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -19,7 +20,6 @@ jobs:
   build-opensuse:
     runs-on: ubuntu-latest
     container:
-      # Usiamo l'immagine stabile 'leap' per la massima affidabilita'
       image: opensuse/leap
     steps:
       - name: 0. Install Prerequisite Tools
@@ -35,23 +35,36 @@ jobs:
       - name: 2. Install Build Dependencies (with jq)
         run: |
           # Aggiunto 'jq' per leggere il file package.json
-          zypper --non-interactive install rpm-build curl gpg2 rsync jq
+          zypper --non-interactive install rpm-build curl gpg2 rsync nodejs-devel jq
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          # Usiamo rpmspec per ottenere la lista corretta di dipendenze, interpretando i condizionali
-          for package in $(rpmspec -P packaging/rpm/penguins-eggs.spec | grep '^BuildRequires:' | awk '{print $2}'); do
-            echo "Installing $package..."
-            zypper --non-interactive install "$package"
-          done
+          # Installiamo pnpm manualmente dato che non e' un pacchetto RPM su Leap
+          npm install -g pnpm
 
       - name: 3. Get Package Version from package.json
         id: version
+        # Leggiamo la versione da package.json, la nostra "unica fonte di verita'"
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
-      - name: 4. Update Version in .spec File
+      - name: 4. Update .spec and Install Dependencies
         run: |
+          # Aggiorniamo dinamicamente la versione nel file .spec
           echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+          
+          # Creiamo una versione semplificata dello .spec per la vecchia versione di rpmbuild
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
+          # Rimuoviamo la riga pnpm perche' lo abbiamo installato manualmente
+          sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
+
+          # Ora leggiamo le dipendenze dal file .spec temporaneo e corretto
+          echo "Installing RPM build dependencies from simplified spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
+            echo "Installing $package..."
+            zypper --non-interactive install "$package"
+          done
 
       - name: 5. Import GPG Key and Configure RPM
         run: |
@@ -85,8 +98,10 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
-          rpmbuild -ba packaging/rpm/penguins-eggs.spec
-          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          # Lavoriamo sempre sul file .spec.suse, che e' gia' stato creato
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
+          # Firma non e' piu' necessaria qui se la facciamo dopo
+          
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
       - name: 8. Upload RPM Artifact for publishing
