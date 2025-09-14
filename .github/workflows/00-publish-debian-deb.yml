@@ -1,4 +1,3 @@
-# standard
 # Nome del workflow, specifico per Debian e derivate
 name: 00. Build and Publish Debian Repository
 
@@ -66,10 +65,8 @@ jobs:
         with:
           ref: gh-pages
       
-      # --- SEZIONE CORRETTA ---
       - name: 2. Create directory structure
         run: |
-          # Creiamo la struttura standard di un repository Debian
           mkdir -p deb/dists/stable/main/binary-amd64
           mkdir -p deb/pool/main
 
@@ -77,24 +74,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          # Scarichiamo i pacchetti nella cartella 'pool'
           path: deb/pool/main
-      # --- FINE SEZIONE CORRETTA ---
 
       - name: 4. Install Tools and Import GPG Key
         run: |
-          # Aggiungiamo apt-utils (per apt-ftparchive) e xz-utils (per .xz)
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
       - name: 5. Update and Sign APT Repository (The Right Way)
         run: |
           export GPG_TTY=$(tty)
-          
-          # Spostiamo i file .deb dalle sottocartelle al livello corretto
-          find ./deb/pool/main -name "*.deb" -exec mv -t ./deb/pool/main/ {} +
-          
           cd ./deb
+          
+          # Il file .deb e' gia' nel posto giusto, quindi procediamo direttamente
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
