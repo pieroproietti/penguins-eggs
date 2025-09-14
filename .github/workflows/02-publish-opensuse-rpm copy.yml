@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per openSUSE
-name: Build and Publish openSUSE RPM
+name: 02. Build and Publish openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -10,9 +10,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
-
-env:
-  BOOTLOADERS_VERSION: v25.9.8
 
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER openSUSE ---
@@ -32,34 +29,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 2. Install Build Dependencies (with jq)
+      - name: 2. Get Package Version
+        id: version
+        run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
+
+      - name: 3. Prepare Simplified Spec and Install Dependencies
         run: |
-          # Aggiunto 'jq' per leggere il file package.json
-          zypper --non-interactive install rpm-build curl gpg2 rsync jq
+          # Installiamo gli strumenti di base, incluso nodejs-devel per avere 'npm'
+          zypper --non-interactive install rpm-build curl gpg2 rsync nodejs-devel
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          # Usiamo rpmspec per ottenere la lista corretta di dipendenze, interpretando i condizionali
-          for package in $(rpmspec -P packaging/rpm/penguins-eggs.spec | grep '^BuildRequires:' | awk '{print $2}'); do
+          
+          # Usiamo npm per installare pnpm globalmente
+          npm install -g pnpm
+          
+          # Creiamo una versione semplificata dello .spec
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
+
+          # Rimuoviamo la riga BuildRequires: pnpm dal file temporaneo
+          sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
+
+          # Ora leggiamo le dipendenze dal file completamente corretto
+          echo "Installing RPM build dependencies from simplified spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
 
-      - name: 3. Get Package Version from package.json
-        id: version
-        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
-
-      - name: 4. Update Version in .spec File
-        run: |
-          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
-          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
-
-      - name: 5. Import GPG Key and Configure RPM
+      - name: 4. Import GPG Key and Configure RPM
         run: |
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
-      - name: 6. Prepare RPM Sources
+      - name: 5. Prepare RPM Sources
         working-directory: ${{ github.workspace }}
         run: |
           STAGING_DIR="/tmp/staging"
@@ -71,10 +76,10 @@ jobs:
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz -C "$STAGING_DIR" "$SOURCE_DIR_NAME"
 
-          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 7. Build and Sign RPM package
+      - name: 6. Build and Sign RPM package
         id: build
         run: |
           export GPG_TTY=$(tty)
@@ -85,11 +90,11 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
-          rpmbuild -ba packaging/rpm/penguins-eggs.spec
-          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          # Lavoriamo sempre sul file .spec.suse, che ora e' corretto
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 8. Upload RPM Artifact for publishing
+      - name: 7. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
@@ -124,6 +129,7 @@ jobs:
       - name: 5. Update and Sign Repository for openSUSE
         run: |
           export GPG_TTY=$(tty)
+          # Il comando 'find' e' stato rimosso
           cd ./rpm/opensuse/leap
           createrepo_c .
           mkdir -p ~/.gnupg
