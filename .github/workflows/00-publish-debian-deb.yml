@@ -1,4 +1,3 @@
-# con creazione della struttura gh-pages
 # Nome del workflow, specifico per Debian e derivate
 name: 00. Build and Publish Debian Repository
 
@@ -61,31 +60,29 @@ jobs:
     permissions:
       contents: write
     steps:
-      # Lo step "Checkout gh-pages" e' stato rimosso.
-      # Costruiamo la struttura localmente e poi la pubblichiamo.
-      
-      - name: 1. Create directory structure
-        run: |
-          # Creiamo la struttura completa del repository
-          mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
-          mkdir -p repo-to-publish/deb/pool/main
+      - name: 1. Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
           
-      - name: 2. Download artifacts
+      - name: 2. Create directory structure
+        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
+
+      - name: 3. Download .deb artifacts
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          # Scarichiamo i pacchetti nella cartella 'pool'
-          path: repo-to-publish/deb/pool/main
+          path: deb/pool/main
 
-      - name: 3. Install Tools and Import GPG Key
+      - name: 4. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 4. Update and Sign APT Repository
+      - name: 5. Update and Sign APT Repository (The Right Way)
         run: |
           export GPG_TTY=$(tty)
-          cd ./repo-to-publish/deb
+          cd ./deb
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
@@ -95,21 +92,19 @@ jobs:
           # Usiamo apt-ftparchive per creare un file Release corretto e completo
           apt-ftparchive release dists/stable > dists/stable/Release
           
-          # Firmiamo il file Release
+          # Firmiamo il file Release per creare InRelease (l'unico file che ci serve)
           cd dists/stable
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg Release.gpg
           
-      - name: 5. Deploy to GitHub Pages
+      - name: 6. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Pubblichiamo la cartella che abbiamo preparato
-          publish_dir: ./repo-to-publish
+          publish_dir: .
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
