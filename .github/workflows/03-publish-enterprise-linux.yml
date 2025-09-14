@@ -1,4 +1,3 @@
-# EL9 con vesioning
 # Nome del workflow, specifico per Enterprise Linux 9
 name: 03. Build and Publish EL9 RPM
 
