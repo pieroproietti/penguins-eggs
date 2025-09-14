@@ -63,23 +63,25 @@ jobs:
       # Lo step "Checkout gh-pages" e' stato rimosso.
       # Costruiamo la struttura localmente in una cartella temporanea.
       
-      - name: 1. Create directory structure and download artifacts
+      - name: 1. Create directory structure
         run: |
           # Creiamo la struttura completa del repository in una cartella temporanea
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
           mkdir -p repo-to-publish/deb/pool/main
+
+      - name: 2. Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
           # Scarichiamo i pacchetti nella cartella 'pool'
           path: repo-to-publish/deb/pool/main
 
-      - name: 2. Install Tools and Import GPG Key
+      - name: 3. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 3. Update and Sign APT Repository
+      - name: 4. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
@@ -100,7 +102,7 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
           
-      - name: 4. Deploy to GitHub Pages
+      - name: 5. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
