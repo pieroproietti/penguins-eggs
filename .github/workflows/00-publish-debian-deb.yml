@@ -1,3 +1,4 @@
+# tutto con strunenti standard
 # Nome del workflow, specifico per Debian e derivate
 name: 00. Build and Publish Debian Repository
 
@@ -64,13 +65,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: gh-pages
-      
+          
       - name: 2. Create directory structure
-        run: |
-          mkdir -p deb/dists/stable/main/binary-amd64
-          mkdir -p deb/pool/main
+        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
 
-      - name: 3. Download artifacts
+      - name: 3. Download .deb artifacts
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
@@ -86,23 +85,22 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./deb
           
-          # Il file .deb e' gia' nel posto giusto, quindi procediamo direttamente
-          
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
           gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
           xz -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.xz
           
-          # Usiamo apt-ftparchive per creare un file Release corretto e completo
-          apt-ftparchive release dists/stable > dists/stable/Release
+          # SOLUZIONE FINALE: Usiamo apt-ftparchive per creare un file Release impeccabile
+          apt-ftparchive release -c ../.github/workflows/apt-release.conf dists/stable > dists/stable/Release
           
           # Firmiamo il file Release
+          cd dists/stable
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o dists/stable/InRelease dists/stable/Release
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o dists/stable/Release.gpg dists/stable/Release
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg Release
           
       - name: 6. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
