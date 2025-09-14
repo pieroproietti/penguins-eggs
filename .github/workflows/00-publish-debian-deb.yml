@@ -1,4 +1,4 @@
-# tutto con strunenti standard
+# tutto con strunenti standard corretto
 # Nome del workflow, specifico per Debian e derivate
 name: 00. Build and Publish Debian Repository
 
@@ -90,8 +90,21 @@ jobs:
           gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
           xz -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.xz
           
-          # SOLUZIONE FINALE: Usiamo apt-ftparchive per creare un file Release impeccabile
-          apt-ftparchive release -c ../.github/workflows/apt-release.conf dists/stable > dists/stable/Release
+          # SOLUZIONE: Creiamo il file di configurazione "al volo" qui
+          cat > apt-release.conf <<EOF
+          APT::FTPArchive::Release {
+            Origin "Piero Proietti";
+            Label "penguins-eggs";
+            Suite "stable";
+            Codename "stable";
+            Architectures "amd64";
+            Components "main";
+            Description "penguins-eggs Debian/Ubuntu repository";
+          };
+          EOF
+
+          # Usiamo il file appena creato per generare il file Release
+          apt-ftparchive release -c apt-release.conf dists/stable > dists/stable/Release
           
           # Firmiamo il file Release
           cd dists/stable
