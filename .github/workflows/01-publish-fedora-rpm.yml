@@ -11,12 +11,8 @@ on:
   push:
     branches: [ main ]
 
-# --- SEZIONE AGGIUNTA ---
-# Definiamo le variabili globali del workflow qui
-# Quando devi aggiornare, ti bastera' cambiare solo questa riga.
 env:
   BOOTLOADERS_VERSION: v25.9.8
-# --- FINE SEZIONE AGGIUNTA ---
 
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
