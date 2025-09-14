@@ -1,4 +1,4 @@
-# tutto con strunenti standard corretto
+# con creazione della struttura gh-pages
 # Nome del workflow, specifico per Debian e derivate
 name: 00. Build and Publish Debian Repository
 
@@ -61,50 +61,37 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 1. Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          
-      - name: 2. Create directory structure
-        run: mkdir -p deb/dists/stable/main/binary-amd64 deb/pool/main
-
-      - name: 3. Download .deb artifacts
+      # Lo step "Checkout gh-pages" e' stato rimosso.
+      # Costruiamo la struttura localmente e poi la pubblichiamo.
+      
+      - name: 1. Create directory structure and download artifacts
+        run: |
+          # Creiamo la struttura completa del repository
+          mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
+          mkdir -p repo-to-publish/deb/pool/main
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
-          path: deb/pool/main
+          # Scarichiamo i pacchetti nella cartella 'pool'
+          path: repo-to-publish/deb/pool/main
 
-      - name: 4. Install Tools and Import GPG Key
+      - name: 2. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 5. Update and Sign APT Repository (The Right Way)
+      - name: 3. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
-          cd ./deb
+          cd ./repo-to-publish/deb
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/binary-amd64/Packages
           gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
           xz -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.xz
           
-          # SOLUZIONE: Creiamo il file di configurazione "al volo" qui
-          cat > apt-release.conf <<EOF
-          APT::FTPArchive::Release {
-            Origin "Piero Proietti";
-            Label "penguins-eggs";
-            Suite "stable";
-            Codename "stable";
-            Architectures "amd64";
-            Components "main";
-            Description "penguins-eggs Debian/Ubuntu repository";
-          };
-          EOF
-
-          # Usiamo il file appena creato per generare il file Release
-          apt-ftparchive release -c apt-release.conf dists/stable > dists/stable/Release
+          # Usiamo apt-ftparchive per creare un file Release corretto e completo
+          apt-ftparchive release dists/stable > dists/stable/Release
           
           # Firmiamo il file Release
           cd dists/stable
@@ -113,13 +100,14 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg Release
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback -abs -o Release.gpg Release.gpg
           
-      - name: 6. Commit and Deploy to GitHub Pages
+      - name: 4. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
+          # Pubblichiamo la cartella che abbiamo preparato
+          publish_dir: ./repo-to-publish
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
