@@ -26,35 +26,43 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 2. Get Package Version
-        id: version
-        run: echo "version=$(grep -m 1 '^Version:' packaging/rpm/penguins-eggs.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
-
-      - name: 3. Install Build Dependencies
+      - name: 2. Install Build Dependencies (with jq)
         run: |
-          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign
+          # Aggiunto 'jq' per leggere il file package.json
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign jq
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
             dnf install -y "$package"
           done
 
-      - name: 4. Import GPG Key and Configure RPM
+      - name: 3. Get Package Version from package.json
+        id: version
+        # Leggiamo la versione direttamente dal file package.json
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: 4. Update Version in .spec File
+        run: |
+          # Usiamo 'sed' per sostituire la versione nel file .spec
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+
+      - name: 5. Import GPG Key and Configure RPM
         run: |
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
-      - name: 5. Prepare RPM Sources
+      - name: 6. Prepare RPM Sources
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
+          # Ora questo comando usa la versione letta da package.json
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
             --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
             --exclude=.git --exclude=.github .
-          # --- RIGA CORRETTA ---
-          # Ora usiamo la variabile definita in cima al file
+          # Usiamo la variabile definita in cima al file per i bootloaders
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 6. Build and Sign RPM package
+      - name: 7. Build and Sign RPM package
         id: build
         run: |
           mkdir -p ~/.gnupg
@@ -62,11 +70,12 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          # Ora rpmbuild lavora sul file .spec modificato "al volo"
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 7. Upload RPM Artifact for publishing
+      - name: 8. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
