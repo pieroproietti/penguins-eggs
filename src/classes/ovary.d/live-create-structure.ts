@@ -36,23 +36,23 @@ export async function liveCreateStructure(this: Ovary) {
     Utils.warning(`creating egg in ${this.settings.config.snapshot_dir}`)
 
     let cmd=''
-    cmd = ``
+    cmd = `# create nest\n`
     cmd += `mkdir -p ${this.settings.config.snapshot_dir}\n`
-    cmd += `\n`
+    cmd += `# README.md\n`
     cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md\n`
-    cmd += `\n`
+    cmd += `# ovarium\n`
     cmd += `rm -rf ${this.settings.work_dir.ovarium}\n`
     cmd += `mkdir -p ${this.settings.work_dir.ovarium}\n`
-    cmd += `\n`
+    cmd += `# lowerdir\n`
     cmd += `rm -rf ${this.settings.work_dir.lowerdir}\n`
     cmd += `mkdir -p ${this.settings.work_dir.lowerdir}\n`
-    cmd += `\n`
+    cmd += `# upperdir\n`
     cmd += `rm -rf ${this.settings.work_dir.upperdir}\n`
     cmd += `mkdir -p ${this.settings.work_dir.upperdir}\n`
-    cmd += `\n`
+    cmd += `# workdir\n`
     cmd += `rm -rf ${this.settings.work_dir.workdir}\n`
     cmd += `mkdir -p ${this.settings.work_dir.workdir}\n`
-    cmd += `\n`
+    cmd += `# merged\n`
     cmd += `rm -rf ${this.settings.work_dir.merged}\n`
     cmd += `mkdir -p ${this.settings.work_dir.merged}\n`
     cmd += `\n`
