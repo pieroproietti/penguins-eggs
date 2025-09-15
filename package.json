@@ -57,7 +57,7 @@
         "glob": "^11.0.3",
         "mocha": "^11.7.2",
         "oclif": "^4.22.22",
-        "perrisbrewery": "^25.9.15",
+        "perrisbrewery": "^25.9.16",
         "prettier": "^3.6.2",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
