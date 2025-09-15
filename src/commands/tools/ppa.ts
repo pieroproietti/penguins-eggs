@@ -8,8 +8,7 @@
 
 /**
  * Debian 13 trixe, Ubuntu 24.04 noble usano il formato deb822
- * 
- * esiste un comando per modernizzare le sorgenti:
+ * * esiste un comando per modernizzare le sorgenti:
  * sudo apt modernize-sources
  */
 
@@ -23,11 +22,9 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKey = '/usr/share/keyrings/penguins-eggs-ppa.gpg'
-//             '/etc/apt/trusted.gpg.d/penguins-eggs-key.gpg'
-const ppaName = `/etc/apt/sources.list.d/penguins-eggs-ppa`
-const ppaList = ppaName + '.list'
-const ppaSources = ppaName + '.sources'
+const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs/key.asc'
+const ppaKeyPath = '/usr/share/keyrings/penguins-eggs.gpg'
+const ppaSourcesPath = '/etc/apt/sources.list.d/penguins-eggs' // Base path without extension
 
 /**
  *
@@ -52,11 +49,6 @@ export default class Ppa extends Command {
     const { flags } = await this.parse(Ppa)
     Utils.titles(this.id + ' ' + this.argv)
 
-    let verbose = false
-    if (flags.verbose) {
-      verbose = true
-    }
-
     const { nointeractive } = flags
 
     if (Utils.isRoot()) {
@@ -80,18 +72,18 @@ export default class Ppa extends Command {
          * Debian
          */
         if (flags.add) {
-          Utils.warning(`Are you sure to add source ${path.basename(ppaName)} to your repositories?`)
+          Utils.warning(`Are you sure to add source ${path.basename(ppaSourcesPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
-            // remove old penguins-eggs-ppa.list
-            debianRemove()
+            // Rimuove sempre le vecchie configurazioni per uno stato pulito
+            await debianRemove()
             if (await is822()) {
-              debianAdd822()
+              await debianAdd822()
             } else {
               await debianAdd()
             }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove source ${path.basename(ppaName)} to your repositories?`)
+          Utils.warning(`Are you sure to remove source ${path.basename(ppaSourcesPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             await debianRemove()
           }
@@ -103,7 +95,7 @@ export default class Ppa extends Command {
          * Alle the others
          */
       } else {
-        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs-ppa nor chaotic-aur!`)
+        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs-repo nor chaotic-aur!`)
       }
     }
   }
@@ -141,8 +133,7 @@ async function archRemove() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
   const mirrorlist = 'chaotic-mirrorlist.pkg.tar.zst'
-  const echo = Utils.setEcho(true)
-
+  
   if (fs.existsSync(path + keyring) && fs.existsSync(path + mirrorlist)) {
     console.log('to remove chaotic-aur:\n')
     console.log(`sudo rm ${path}${keyring}`)
@@ -155,58 +146,57 @@ async function archRemove() {
 }
 
 /**
- * debianAdd822
+ * debianAdd822 - For modern Debian/Ubuntu with .sources files
  */
 async function debianAdd822() {
+  // --- FIX: Correct GPG key URL ---
+  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
   
-  // await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
-  await exec(`curl -fsSL https://pieroproietti.github.io/penguins-eggs/penguins-eggs.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-keyring.gpg > /dev/null`)
   let content = ''
   content += 'Types: deb\n'
-  content += 'URIs: https://pieroproietti.github.io/penguins-eggs-ppa\n'
-  content += 'Suites: ./\n'
-  content += 'Signed-By: /usr/share/keyrings/penguins-eggs-ppa.gpg\n'
-  fs.writeFileSync(ppaSources, content)
+  content += 'URIs: https://pieroproietti.github.io/penguins-eggs/deb\n' // Correct URI for packages
+  content += 'Suites: stable\n' // It's better to be specific
+  content += 'Components: main\n'
+  content += `Signed-By: ${ppaKeyPath}\n`
+  
+  // --- IMPROVEMENT: Use the standard .sources extension ---
+  fs.writeFileSync(`${ppaSourcesPath}.sources`, content)
 
-  // crea un penguins-eggs-ppa.list vuoto
-  await exec(`touch ${ppaList}`)
+  // --- IMPROVEMENT: Removed unnecessary `touch` command ---
 }
 
 /**
- * debianAdd
+ * debianAdd - For traditional Debian/Ubuntu with .list files
  */
 async function debianAdd() {
-  await exec (`sudo rm -f /usr/share/keyrings/penguins-eggs-keyring.gpg`)
-  await exec(`curl -fsSL https://pieroproietti.github.io/penguins-eggs/penguins-eggs.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-keyring.gpg > /dev/null`)
-  const content ="deb [signed-by=/usr/share/keyrings/penguins-eggs-keyring.gpg] https://pieroproietti.github.io/penguins-eggs/deb stable main\n"
-  fs.writeFileSync(ppaList, content)
+  // --- FIX: Correct GPG key URL and remove redundant sudo ---
+  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
+
+  const content = `deb [signed-by=${ppaKeyPath}] https://pieroproietti.github.io/penguins-eggs/deb stable main\n`
+  fs.writeFileSync(`${ppaSourcesPath}.list`, content)
 }
 
 /**
- * is822 (usa lo standard deb822 per le sorgenti)
+ * is822 (checks if the system uses the deb822 format)
  */
 async function is822(): Promise<boolean> {
-  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
-
   let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
-  const is822 = (await exec(test, { capture: true, echo: false, ignore: false }))
-  if (is822.code === 0) {
-    if (is822.data.trim() === '1') {
+  const is822Result = (await exec(test, { capture: true, echo: false }))
+  if (is822Result.code === 0) {
+    if (is822Result.data.trim() === '1') {
       retval = true
     }
   }
-  return false
+  return retval
 }
 
 
 /**
- * debianRemove
+ * debianRemove - Cleans up all related PPA files
  */
 async function debianRemove() {
-  await exec(`rm -f ${ppaKey}`)
-  await exec(`rm -f ${ppaList}`)
-  await exec(`rm -f ${ppaSources}`)
+  // The script runs as root, so sudo inside exec is not needed here
+  await exec(`rm -f ${ppaKeyPath}`)
+  await exec(`rm -f ${ppaSourcesPath}*`)
 }
-
-
