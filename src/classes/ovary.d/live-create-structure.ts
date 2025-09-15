@@ -35,7 +35,7 @@ export async function liveCreateStructure(this: Ovary) {
 
     Utils.warning(`creating egg in ${this.settings.config.snapshot_dir}`)
 
-    let cmd
+    let cmd=''
     if (!fs.existsSync(this.settings.config.snapshot_dir)) {
         cmd = `mkdir -p ${this.settings.config.snapshot_dir}`
         tryCatch(cmd, this.verbose)
@@ -48,27 +48,32 @@ export async function liveCreateStructure(this: Ovary) {
 
     // Ovarium
     if (!fs.existsSync(this.settings.work_dir.ovarium)) {
-        cmd = `mkdir -p ${this.settings.work_dir.ovarium}`
+        cmd = `rm -ff ${this.settings.work_dir.ovarium}`
+        cmd += `mkdir -p ${this.settings.work_dir.ovarium}`
         tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.lowerdir)) {
-        cmd = `mkdir -p ${this.settings.work_dir.lowerdir}`
+        cmd = `rm -rf ${this.settings.work_dir.lowerdir}`
+        cmd += `mkdir -p ${this.settings.work_dir.lowerdir}`
         tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.upperdir)) {
-        cmd = `mkdir -p ${this.settings.work_dir.upperdir}`
+        cmd = `rm -rf ${this.settings.work_dir.upperdir}`
+        cmd += `mkdir -p ${this.settings.work_dir.upperdir}`
         tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.workdir)) {
-        cmd = `mkdir -p ${this.settings.work_dir.workdir}`
+        cmd = `rm -rf ${this.settings.work_dir.workdir}`
+        cmd += `mkdir -p ${this.settings.work_dir.workdir}`
         tryCatch(cmd, this.verbose)
     }
 
     if (!fs.existsSync(this.settings.work_dir.merged)) {
-        cmd = `mkdir -p ${this.settings.work_dir.merged}`
+        cmd = `rm -rf ${this.settings.work_dir.merged}`
+        cmd += `mkdir -p ${this.settings.work_dir.merged}`
         tryCatch(cmd, this.verbose)
     }
 
@@ -76,17 +81,20 @@ export async function liveCreateStructure(this: Ovary) {
      * Creo le directory di destinazione per boot, efi, isolinux e live
      */
     if (!fs.existsSync(this.settings.iso_work)) {
-        cmd = `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}`
+        cmd = `rm -rf ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}`
+        cmd += `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}`
         tryCatch(cmd, this.verbose)
 
-        cmd = `mkdir -p ${this.settings.iso_work}isolinux`
+        cmd = `rm -rf ${this.settings.iso_work}isolinux`
+        cmd += `mkdir -p ${this.settings.iso_work}isolinux`
         tryCatch(cmd, this.verbose)
 
-        cmd = `mkdir -p ${this.settings.iso_work}live`
+        cmd = `rm -rf ${this.settings.iso_work}live`
+        cmd += `mkdir -p ${this.settings.iso_work}live`
         tryCatch(cmd, this.verbose)
     }
 
-    // ln iso sempre fresco
+    // ln iso, sempre diverso
     cmd = `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso`
     tryCatch(cmd, this.verbose)
 
@@ -95,11 +103,10 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
     tryCatch(cmd, this.verbose)
 
-    // we MUST delete /etc and /boot who are copied
+    // we MUST delete /etc and /boot, they are copied
     cmd = `rm -rf ${this.settings.config.snapshot_dir}/livefs/etc`
     cmd += `rm -rf ${this.settings.config.snapshot_dir}/livefs/boot`
     tryCatch(cmd, this.verbose)
-
 }
 
 
