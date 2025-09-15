@@ -33,47 +33,50 @@ export async function liveCreateStructure(this: Ovary) {
         console.log('Ovary: liveCreateStructure')
     }
 
-    Utils.warning(`creating egg in ${this.settings.config.snapshot_dir}`)
+    const nest = this.settings.config.snapshot_dir
+    const dotMnt = this.settings.iso_work
+    const dotOverlay = this.settings.work_dir
+    Utils.warning(`creating egg in ${nest}`)
 
     let cmd=''
     cmd = `# create nest\n`
-    cmd += `mkdir -p ${this.settings.config.snapshot_dir}\n`
+    cmd += `mkdir -p ${nest}\n`
     cmd += `# README.md\n`
-    cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.settings.config.snapshot_dir}README.md\n`
+    cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${nest}README.md\n`
     cmd += `# ovarium\n`
-    cmd += `rm -rf ${this.settings.work_dir.ovarium}\n`
-    cmd += `mkdir -p ${this.settings.work_dir.ovarium}\n`
+    cmd += `rm -rf ${dotOverlay.ovarium}\n`
+    cmd += `mkdir -p ${dotOverlay.ovarium}\n`
     cmd += `# lowerdir\n`
-    cmd += `rm -rf ${this.settings.work_dir.lowerdir}\n`
-    cmd += `mkdir -p ${this.settings.work_dir.lowerdir}\n`
+    cmd += `rm -rf ${dotOverlay.lowerdir}\n`
+    cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
     cmd += `# upperdir\n`
-    cmd += `rm -rf ${this.settings.work_dir.upperdir}\n`
-    cmd += `mkdir -p ${this.settings.work_dir.upperdir}\n`
+    cmd += `rm -rf ${dotOverlay.upperdir}\n`
+    cmd += `mkdir -p ${dotOverlay.upperdir}\n`
     cmd += `# workdir\n`
-    cmd += `rm -rf ${this.settings.work_dir.workdir}\n`
-    cmd += `mkdir -p ${this.settings.work_dir.workdir}\n`
+    cmd += `rm -rf ${dotOverlay.workdir}\n`
+    cmd += `mkdir -p ${dotOverlay.workdir}\n`
     cmd += `# merged\n`
-    cmd += `rm -rf ${this.settings.work_dir.merged}\n`
-    cmd += `mkdir -p ${this.settings.work_dir.merged}\n`
+    cmd += `rm -rf ${dotOverlay.merged}\n`
+    cmd += `mkdir -p ${dotOverlay.merged}\n`
     cmd += `\n`
-    cmd += `rm -rf ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}\n`
-    cmd += `mkdir -p ${this.settings.iso_work}boot/grub/${Utils.uefiFormat()}\n`
+    cmd += `rm -rf ${dotMnt}boot/grub/${Utils.uefiFormat()}\n`
+    cmd += `mkdir -p ${dotMnt}boot/grub/${Utils.uefiFormat()}\n`
     cmd += `\n`
-    cmd += `rm -rf ${this.settings.iso_work}isolinux\n`
-    cmd += `mkdir -p ${this.settings.iso_work}isolinux\n`
-    cmd += `\n`
-    cmd += `rm -rf ${this.settings.iso_work}live\n`
-    cmd += `mkdir -p ${this.settings.iso_work}live\n`
+    cmd += `rm -rf ${dotMnt}isolinux\n`
+    cmd += `mkdir -p ${dotMnt}isolinux\n`
+    cmd += `# Arch/Manjaro hardlinks\n`
+    cmd += `rm -rf ${dotMnt}arch\n`
+    cmd += `rm -rf ${dotMnt}manjaro\n`
+    cmd += `# ${dotMnt}live\n`
+    cmd += `rm -rf ${dotMnt}live\n`
+    cmd += `mkdir -p ${dotMnt}live\n`
     cmd += `\n`
     cmd += `# Link ad iso\n`
-    cmd += `rm -f ${this.settings.config.snapshot_dir}/iso\n`
-    cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
+    cmd += `rm -f ${nest}/iso\n`
+    cmd += `ln -s ${dotMnt} ${nest}/iso\n`
     cmd += `# Link a livefs\n`
-    cmd += `rm -f ${this.settings.config.snapshot_dir}/livefs\n`
-    cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs\n`
-    cmd += `# Arch/Manjaro halink\n`
-    cmd += `rm -f ${this.settings.iso_work}/arch/x86_64/airootfs.sfs\n`
-    cmd += `rm -f ${this.settings.iso_work}/manjaro/x86_64/livefs.sfs\n`
+    cmd += `rm -f ${nest}/livefs\n`
+    cmd += `ln -s ${dotOverlay.merged} ${nest}/livefs\n`
     tryCatch(cmd, true)
 }
 
