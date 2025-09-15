@@ -4,6 +4,8 @@
 /yarn.lock
 dist
 /lib
+/build
+/releases
 # remove all in 
 manpages/doc/man/*
 # ... but not these files...
