@@ -34,7 +34,7 @@ export async function liveCreateStructure(this: Ovary) {
     }
 
     const nest = this.settings.config.snapshot_dir
-    const dotMnt = this.settings.iso_work
+    const dotIso = this.settings.iso_work
     const dotOverlay = this.settings.work_dir
     Utils.warning(`creating egg in ${nest}`)
 
@@ -43,38 +43,27 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `mkdir -p ${nest}\n`
     cmd += `# README.md\n`
     cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${nest}README.md\n`
+
+    cmd += `# remove .overlay\n`
+    cmd += `rm -rf ${dotOverlay}`
+    cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
+    cmd += `mkdir -p ${dotOverlay.upperdir}\n`
+    cmd += `mkdir -p ${dotOverlay.workdir}\n`
+    cmd += `mkdir -p ${dotOverlay.merged}\n`
+
+    cmd += `# remove dotIso\n`
+    cmd += `rm -rf ${dotIso}\n`
+    cmd += `mkdir -p ${dotIso}boot/grub/${Utils.uefiFormat()}\n`
+    cmd += `mkdir -p ${dotIso}isolinux\n`
+    cmd += `mkdir -p ${dotIso}live\n`
+
     cmd += `# ovarium\n`
     cmd += `rm -rf ${dotOverlay.ovarium}\n`
     cmd += `mkdir -p ${dotOverlay.ovarium}\n`
-    cmd += `# lowerdir\n`
-    cmd += `rm -rf ${dotOverlay.lowerdir}\n`
-    cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
-    cmd += `# upperdir\n`
-    cmd += `rm -rf ${dotOverlay.upperdir}\n`
-    cmd += `mkdir -p ${dotOverlay.upperdir}\n`
-    cmd += `# workdir\n`
-    cmd += `rm -rf ${dotOverlay.workdir}\n`
-    cmd += `mkdir -p ${dotOverlay.workdir}\n`
-    cmd += `# merged\n`
-    cmd += `rm -rf ${dotOverlay.merged}\n`
-    cmd += `mkdir -p ${dotOverlay.merged}\n`
-    cmd += `\n`
-    cmd += `rm -rf ${dotMnt}boot/grub/${Utils.uefiFormat()}\n`
-    cmd += `mkdir -p ${dotMnt}boot/grub/${Utils.uefiFormat()}\n`
-    cmd += `\n`
-    cmd += `rm -rf ${dotMnt}isolinux\n`
-    cmd += `mkdir -p ${dotMnt}isolinux\n`
-    cmd += `# Arch/Manjaro hardlinks\n`
-    cmd += `rm -rf ${dotMnt}arch\n`
-    cmd += `rm -rf ${dotMnt}manjaro\n`
-    cmd += `# ${dotMnt}live\n`
-    cmd += `rm -rf ${dotMnt}live\n`
-    cmd += `mkdir -p ${dotMnt}live\n`
-    cmd += `\n`
-    cmd += `# Link ad iso\n`
+
+    cmd += `# Links\n`
     cmd += `rm -f ${nest}/iso\n`
-    cmd += `ln -s ${dotMnt} ${nest}/iso\n`
-    cmd += `# Link a livefs\n`
+    cmd += `ln -s ${dotIso} ${nest}/iso\n`
     cmd += `rm -f ${nest}/livefs\n`
     cmd += `ln -s ${dotOverlay.merged} ${nest}/livefs\n`
     tryCatch(cmd, true)
