@@ -87,8 +87,8 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
           
-          # "Appiattiamo" la struttura dei file scaricati
-          find pool/main -name "*.deb" -exec mv -t pool/main/ {} +
+          # "Appiattiamo" la struttura dei file scaricati NON SERVE e da errore
+          # find pool/main -name "*.deb" -exec mv -t pool/main/ {} + 
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/Packages
