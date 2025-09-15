@@ -35,7 +35,6 @@ jobs:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
         with:
-          # Scarica l'intera cronologia, necessaria per 'git archive'
           fetch-depth: 0
 
       - name: 2. Prepare Build Environment
@@ -89,7 +88,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package-for-repo
-          path: ${{ steps.build_pkg.outputs.pkg_path }}
+          # Il percorso deve essere relativo al workspace, non allo step
+          path: ./packaging/arch/*.pkg.tar.zst
 
   # --- JOB 2: PUBBLICA IL REPOSITORY SU GITHUB PAGES ---
   publish:
@@ -125,13 +125,16 @@ jobs:
           cd ./arch/x86_64
           REPO_NAME="penguins-eggs"
           
-          # Sposta il pacchetto dalla sottocartella creata da download-artifact
-          find . -name "*.pkg.tar.zst" -exec mv -t . {} +
-
-          # Aggiunge il pacchetto al database del repository (creandolo se non esiste)
-          # --sign: Firma il database dopo averlo aggiornato
-          # --key: Specifica la chiave da usare
+          # Aggiunge il pacchetto al database e firma il database stesso
+          # Inneschiamo prima l'agente GPG per la firma non interattiva
           echo "Updating repository database..."
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+          # Ora repo-add potra' usare la chiave sbloccata per firmare
           repo-add --sign --key ${{ secrets.GPG_KEY_ID }} ${REPO_NAME}.db.tar.gz *.pkg.tar.zst
 
       - name: 6. Deploy to GitHub Pages
