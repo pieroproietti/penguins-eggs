@@ -24,7 +24,7 @@ jobs:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necessario per git-archive
+          fetch-depth: 0
 
       - name: 2. Prepare Build Environment and Dependencies
         run: |
@@ -45,24 +45,26 @@ jobs:
 
       - name: 5. Update Version in PKGBUILD File
         run: |
-          # Usiamo 'sed' per sostituire la versione nel file PKGBUILD
           echo "Updating PKGBUILD file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(pkgver=\).*/\1${{ steps.version.outputs.version }}/" PKGBUILD
         working-directory: ./packaging/arch
 
       - name: 6. Import GPG Key
+        # La sintassi qui e' stata corretta. 'shell' e 'stdin' sono
+        # proprieta' dello step, allo stesso livello di 'name' e 'run'.
+        name: Import GPG Key
         run: sudo -u builder gpg --import -
         shell: bash
         stdin: ${{ secrets.GPG_SIGNING_KEY }}
 
       - name: 7. Build and Sign The Package as Non-Root User
         id: build
+        # Anche qui, 'working-directory' e' stato spostato al livello corretto.
+        working-directory: ./packaging/arch
         run: |
-          # "Inneschiamo" l'agente GPG con la passphrase
-          # makepkg non usa gpg-agent, quindi passiamo la passphrase direttamente
+          # Passiamo la passphrase a makepkg in modo non interattivo
           sudo -u builder makepkg -s --sign --key ${{ secrets.GPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
           echo "pkg_path=$(find . -name '*.pkg.tar.zst')" >> $GITHUB_OUTPUT
-        working-directory: ./packaging/arch
         
       - name: 8. Upload Package Artifact
         uses: actions/upload-artifact@v4
@@ -82,7 +84,6 @@ jobs:
       - name: 1. Install Prerequisite Tools
         run: |
           pacman -Syu --noconfirm
-          # 'repo-add' si trova nel pacchetto 'pacman-contrib'
           pacman -S --noconfirm git pacman-contrib gnupg
 
       - name: 2. Checkout gh-pages branch
