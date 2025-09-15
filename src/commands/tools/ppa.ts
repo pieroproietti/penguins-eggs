@@ -22,7 +22,7 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs/key.asc'
+const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs/deb/key.asc'
 const ppaKeyPath = '/usr/share/keyrings/penguins-eggs.gpg'
 const ppaSourcesPath = '/etc/apt/sources.list.d/penguins-eggs' // Base path without extension
 
