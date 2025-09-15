@@ -29,7 +29,6 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          # Aggiungiamo gnupg per la firma e jq per leggere package.json
           pacman -S --noconfirm base-devel git pnpm gnupg jq
 
       - name: 3. Create Build User and Set Permissions
@@ -50,19 +49,16 @@ jobs:
           sed -i "s/^\(pkgver=\).*/\1${{ steps.version.outputs.version }}/" PKGBUILD
 
       - name: 6. Import GPG Key
-        # La sintassi qui e' stata corretta. 'shell' e 'stdin' sono
-        # proprieta' dello step, allo stesso livello di 'name' e 'run'.
         run: sudo -u builder gpg --import -
         shell: bash
         stdin: ${{ secrets.GPG_SIGNING_KEY }}
 
       - name: 7. Build and Sign The Package as Non-Root User
         id: build
-        # Anche qui, 'working-directory' e' stato spostato al livello corretto.
         working-directory: ./packaging/arch
         run: |
           # Passiamo la passphrase a makepkg in modo non interattivo
-          sudo -u builder makepkg -s --sign --key ${{ secrets.GPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
+          sudo -u builder makepkg -s --sign --key ${{ secrets.GGPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
           echo "pkg_path=$(find . -name '*.pkg.tar.zst')" >> $GITHUB_OUTPUT
         
       - name: 8. Upload Package Artifact
