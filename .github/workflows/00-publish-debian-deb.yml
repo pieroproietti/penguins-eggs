@@ -1,5 +1,5 @@
-# Nome del workflow, specifico per Debian e derivate
-name: 00. Build and Publish Debian Repository
+# Nome del workflow, ora per multi-architettura
+name: 00. Build and Publish Debian Multi-Arch Repository
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
@@ -15,28 +15,21 @@ jobs:
   # --- JOB 1: COSTRUISCE I PACCHETTI .deb PER TUTTE LE ARCHITETTURE ---
   build-deb:
     runs-on: ubuntu-latest
+    # Torniamo a un container Debian pulito, non serve Ubuntu
     container:
-      # Usiamo l'immagine di Ubuntu 22.04, piu' stabile per il multi-arch
-      image: ubuntu:22.04
+      image: debian:12
     steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
-      - name: 2. Install Dependencies and Enable Multi-Arch
+      - name: 2. Install Dependencies
+        # Non abilitiamo il multi-arch. Installiamo solo cio' che serve.
         run: |
-          # Aggiungiamo il supporto per le architetture i386 e arm64
-          dpkg --add-architecture i386
-          dpkg --add-architecture arm64
           apt-get update
-          
-          # Installiamo gli strumenti di base
           apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils
-          
-          # Aggiungiamo il repository di Node.js
           mkdir -p /etc/apt/keyrings
           curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
           echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-          
           apt-get update
           apt-get install -y nodejs
           npm install -g pnpm
@@ -48,14 +41,13 @@ jobs:
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          # Corretto errore di battitura GPG_PASSPHRASE
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-      - name: 4. Build .deb packages (all architectures)
+      - name: 4. Build .deb packages for all architectures
         run: |
           export GPG_TTY=$(tty)
           pnpm install
-          # Usiamo il flag corretto per il build multi-architettura
+          # MODIFICA 1: Usiamo il flag '-a' per il build multi-architettura
           pnpm deb -a
 
       - name: 5. Upload .deb Artifact for publishing
@@ -71,26 +63,24 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 1. Create directory structure
+      - name: 1. Create directory structure and download artifacts
         run: |
-          # Creiamo la struttura completa, inclusa la nuova architettura
+          # MODIFICA 2: Creiamo la struttura completa, incluse le nuove architetture
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-i386
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-arm64
           mkdir -p repo-to-publish/deb/pool/main
-
-      - name: 2. Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
           path: repo-to-publish/deb/pool/main
 
-      - name: 3. Install Tools and Import GPG Key
+      - name: 2. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 4. Update and Sign APT Repository
+      - name: 3. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
@@ -108,8 +98,21 @@ jobs:
           cp dists/stable/main/Packages* dists/stable/main/binary-i386/
           cp dists/stable/main/Packages* dists/stable/main/binary-arm64/
           
+          # Creiamo il file di configurazione per apt-ftparchive "al volo"
+          cat > apt-release.conf <<EOF
+          APT::FTPArchive::Release {
+            Origin "Piero Proietti";
+            Label "penguins-eggs";
+            Suite "stable";
+            Codename "stable";
+            Architectures "amd64 i386 arm64";
+            Components "main";
+            Description "penguins-eggs Debian/Ubuntu repository";
+          };
+          EOF
+          
           # Usiamo apt-ftparchive per creare un file Release corretto e completo
-          apt-ftparchive release dists/stable > dists/stable/Release
+          apt-ftparchive release -c apt-release.conf dists/stable > dists/stable/Release
           
           # Firmiamo il file Release
           cd dists/stable
@@ -119,7 +122,7 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
           
-      - name: 5. Deploy to GitHub Pages
+      - name: 4. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -127,5 +130,3 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
-
-          
