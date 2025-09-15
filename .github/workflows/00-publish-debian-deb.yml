@@ -47,7 +47,7 @@ jobs:
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          echo "${{ secrets.GGPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
       - name: 4. Build .deb packages (all architectures)
         run: |
@@ -93,15 +93,14 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
           
-          # "Appiattiamo" la struttura dei file scaricati
-          find pool/main -name "*.deb" -exec mv -t pool/main/ {} +
+          # Il comando 'find' e' stato rimosso perche' non necessario
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/Packages
           gzip -9c dists/stable/main/Packages > dists/stable/main/Packages.gz
           xz -9c dists/stable/main/Packages > dists/stable/main/Packages.xz
           
-          # Copiamo gli indici per ogni architettura (un repository semplice le condivide)
+          # Copiamo gli indici per ogni architettura
           cp dists/stable/main/Packages* dists/stable/main/binary-amd64/
           cp dists/stable/main/Packages* dists/stable/main/binary-i386/
           cp dists/stable/main/Packages* dists/stable/main/binary-arm64/
