@@ -40,19 +40,18 @@ jobs:
 
       - name: 4. Get Package Version from package.json
         id: version
-        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
         working-directory: ${{ github.workspace }}
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
       - name: 5. Update Version in PKGBUILD File
+        working-directory: ./packaging/arch
         run: |
           echo "Updating PKGBUILD file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(pkgver=\).*/\1${{ steps.version.outputs.version }}/" PKGBUILD
-        working-directory: ./packaging/arch
 
       - name: 6. Import GPG Key
         # La sintassi qui e' stata corretta. 'shell' e 'stdin' sono
         # proprieta' dello step, allo stesso livello di 'name' e 'run'.
-        name: Import GPG Key
         run: sudo -u builder gpg --import -
         shell: bash
         stdin: ${{ secrets.GPG_SIGNING_KEY }}
