@@ -62,10 +62,23 @@ export default class Ppa extends Command {
     if (Utils.isRoot()) {
       const distro = new Distro()
 
-      /**
-       * Debian
-       */
-      if (distro.familyId === 'debian') {
+      if (distro.familyId === 'archlinux' && !Diversions.isManjaroBased(distro.distroId)) {
+        if (flags.add) {
+          Utils.warning(`Are you sure to add Chaotic-AUR to your repositories?`)
+          if (await Utils.customConfirm('Select yes to continue...')) {
+            await archAdd()
+          }
+        } else if (flags.remove) {
+          Utils.warning(`Are you sure to remove Chaotic-AUR to your repositories?`)
+          if (await Utils.customConfirm('Select yes to continue...')) {
+            await archRemove()
+          }
+        }
+
+      } else if (distro.familyId === 'debian') {
+        /**
+         * Debian
+         */
         if (flags.add) {
           Utils.warning(`Are you sure to add source ${path.basename(ppaName)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
@@ -87,23 +100,6 @@ export default class Ppa extends Command {
 
 
         /**
-         * Arch and only Arch!  no Manjaro...
-         */
-      } else if (distro.familyId === 'archlinux' && !Diversions.isManjaroBased(distro.distroId)) {
-        if (flags.add) {
-          Utils.warning(`Are you sure to add Chaotic-AUR to your repositories?`)
-          if (await Utils.customConfirm('Select yes to continue...')) {
-            await archAdd()
-          }
-        } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove Chaotic-AUR to your repositories?`)
-          if (await Utils.customConfirm('Select yes to continue...')) {
-            await archRemove()
-          }
-        }
-
-
-        /**
          * Alle the others
          */
       } else {
@@ -112,6 +108,7 @@ export default class Ppa extends Command {
     }
   }
 }
+
 
 /**
  * archAdd
@@ -161,7 +158,9 @@ async function archRemove() {
  * debianAdd822
  */
 async function debianAdd822() {
-  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
+  
+  // await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
+  await exec(`curl -fsSL https://pieroproietti.github.io/penguins-eggs/penguins-eggs.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-keyring.gpg > /dev/null`)
   let content = ''
   content += 'Types: deb\n'
   content += 'URIs: https://pieroproietti.github.io/penguins-eggs-ppa\n'
@@ -177,15 +176,16 @@ async function debianAdd822() {
  * debianAdd
  */
 async function debianAdd() {
-  await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
-  const content = `deb [signed-by=${ppaKey}] https://pieroproietti.github.io/penguins-eggs-ppa ./\n`
+  await exec (`sudo rm -f /usr/share/keyrings/penguins-eggs-keyring.gpg`)
+  await exec(`curl -fsSL https://pieroproietti.github.io/penguins-eggs/penguins-eggs.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-keyring.gpg > /dev/null`)
+  const content ="deb [signed-by=/usr/share/keyrings/penguins-eggs-keyring.gpg] https://pieroproietti.github.io/penguins-eggs/deb stable main\n"
   fs.writeFileSync(ppaList, content)
 }
 
 /**
  * is822 (usa lo standard deb822 per le sorgenti)
  */
-async function is822(): Promise <boolean> {
+async function is822(): Promise<boolean> {
   await exec(`curl -sS https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg| gpg --dearmor | sudo tee ${ppaKey} > /dev/null`)
 
   let retval = false
@@ -196,7 +196,7 @@ async function is822(): Promise <boolean> {
       retval = true
     }
   }
-  return retval
+  return false
 }
 
 
