@@ -86,21 +86,28 @@ export async function liveCreateStructure(this: Ovary) {
         tryCatch(cmd, this.verbose)
     }
 
-    // ln iso
+    // ln iso sempre fresco
     cmd = `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso`
     tryCatch(cmd, this.verbose)
 
-    // ln livefs
-    cmd = `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
+    // ln livefs we MUST delete it before!
+    cmd = `rm -f ${this.settings.config.snapshot_dir}/livefs`
+    cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs`
     tryCatch(cmd, this.verbose)
+
+    // we MUST delete /etc and /boot who are copied
+    cmd = `rm -rf ${this.settings.config.snapshot_dir}/livefs/etc`
+    cmd += `rm -rf ${this.settings.config.snapshot_dir}/livefs/boot`
+    tryCatch(cmd, this.verbose)
+
 }
 
 
-  /**
-   *
-   * @param cmd
-   */
-  async function tryCatch(cmd = '', verbose=false) {
+/**
+ *
+ * @param cmd
+ */
+async function tryCatch(cmd = '', verbose = false) {
     try {
         let echo = Utils.setEcho(verbose)
         if (verbose) {
