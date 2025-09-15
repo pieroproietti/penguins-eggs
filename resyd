@@ -7,7 +7,7 @@ sudo rm /var/local/yolk.saved -rf
 sudo mv /var/local/yolk /var/local/yolk.saved
 # removing eggs
 sudo apt purge penguins-eggs -y
-sudo dpkg -i dist/penguins-eggs_*_amd64.deb
+sudo dpkg -i releases/penguins-eggs_*_amd64.deb
 # yolk-restore
 sudo rm /var/local/yolk -rf
 sudo mv /var/local/yolk.saved /var/local/yolk
