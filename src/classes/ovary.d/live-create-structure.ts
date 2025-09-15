@@ -64,12 +64,16 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `\n`
     cmd += `rm -rf ${this.settings.iso_work}live\n`
     cmd += `mkdir -p ${this.settings.iso_work}live\n`
-    //cmd += `# Link ad iso\n`
-    //cmd += `rm -f ${this.settings.config.snapshot_dir}/iso\n`
-    //cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
-    //cmd += `# Link a livefs\n`
-    //cmd += `rm -f ${this.settings.config.snapshot_dir}/livefs\n`
-    //cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs\n`
+    cmd += `\n`
+    cmd += `# Link ad iso\n`
+    cmd += `rm -f ${this.settings.config.snapshot_dir}/iso\n`
+    cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
+    cmd += `# Link a livefs\n`
+    cmd += `rm -f ${this.settings.config.snapshot_dir}/livefs\n`
+    cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs\n`
+    cmd += `# Arch/Manjaro halink\n`
+    cmd += `rm -f ${this.settings.iso_work}/arch/x86_64/airootfs.sfs\n`
+    cmd += `rm -f ${this.settings.iso_work}/manjaro/x86_64/livefs.sfs\n`
     tryCatch(cmd, true)
 }
 
