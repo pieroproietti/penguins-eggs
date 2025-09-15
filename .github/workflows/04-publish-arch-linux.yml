@@ -58,7 +58,7 @@ jobs:
         working-directory: ./packaging/arch
         run: |
           # Passiamo la passphrase a makepkg in modo non interattivo
-          sudo -u builder makepkg -s --sign --key ${{ secrets.GGPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
+          sudo -u builder makepkg -s --sign --key ${{ secrets.GPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
           echo "pkg_path=$(find . -name '*.pkg.tar.zst')" >> $GITHUB_OUTPUT
         
       - name: 8. Upload Package Artifact
@@ -100,9 +100,8 @@ jobs:
           cd ./arch/x86_64
           REPO_NAME="penguins-eggs"
           
-          # Spostiamo il pacchetto dalla sottocartella creata da download-artifact
-          find . -name "*.pkg.tar.zst" -exec mv -t . {} +
-
+          # Il pacchetto e' gia' nel posto giusto, non serve piu' spostarlo
+          
           # Aggiungiamo il nuovo pacchetto al database del repository
           repo-add ${REPO_NAME}.db.tar.gz *.pkg.tar.zst
           
