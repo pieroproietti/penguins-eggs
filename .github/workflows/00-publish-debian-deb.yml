@@ -16,7 +16,8 @@ jobs:
   build-deb:
     runs-on: ubuntu-latest
     container:
-      image: debian:12
+      # Usiamo l'immagine di Ubuntu 22.04, piu' stabile per il multi-arch
+      image: ubuntu:22.04
     steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
@@ -47,7 +48,8 @@ jobs:
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GGPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          # Corretto errore di battitura GPG_PASSPHRASE
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
       - name: 4. Build .deb packages (all architectures)
         run: |
@@ -93,7 +95,8 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
           
-          # Il comando 'find' e' stato rimosso perche' non necessario
+          # "Appiattiamo" la struttura dei file scaricati
+          find pool/main -name "*.deb" -exec mv -t pool/main/ {} +
           
           # Creiamo l'indice Packages in tutti i formati
           dpkg-scanpackages pool/ > dists/stable/main/Packages
@@ -124,3 +127,5 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
 
+
+          
