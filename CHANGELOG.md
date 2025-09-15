@@ -19,6 +19,51 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.13
+Thanks to JT Burchett, I think we definitely solved the error:
+```
+Error: ENOENT: no such file or directory, stat '/filesystem.squashfs'
+Code: ENOENT 
+```
+I never understood why this error occurred, even though users reported it to me several times. I generally thought it was a configuration error in the reporting system, but finally JT Burchett, whom I thank, suggested the reason to me.
+
+I normally always use `eggs love` for my tests, often with the option `eggs love -n`, creating an ISO is more a way for me to test eggs than to actually create the ISO. but `eggs love` includes `eggs kill`, so I always started from a clean slate. 
+
+The error occurs, however, when giving multiple consecutive `sudo eggs produce` commands.
+
+### Changelog: Build & Distribution Infrastructure
+This update overhauls the packaging process, moving from manual builds to a fully automated, secure, multi-distro CI/CD pipeline using GitHub Actions.
+
+✨ Key Features & Improvements
+1. Full Automation
+Automated Builds: Dedicated workflows automatically build packages for RPM (Fedora, openSUSE, EL9), DEB (Debian/Ubuntu), and Arch Linux families.
+
+Automated Publishing: Built packages are published to signed repositories hosted on GitHub Pages.
+
+Safe Concurrent Deployments: Implemented a concurrency lock to prevent race conditions when deploying to the gh-pages branch.
+
+2. Dynamic & Centralized Versioning
+Single Source of Truth: package.json is now the sole source for the software version.
+
+Dynamic Package Updates: Build files (.spec, PKGBUILD) are updated on-the-fly during the CI process, ensuring version consistency and reducing manual errors.
+
+3. Signed Repositories for Enhanced Security
+GPG Signing: All packages and repository metadata are now digitally signed, ensuring authenticity and integrity for end-users.
+
+Secure CI Integration: The pipeline uses GitHub Secrets to handle GPG keys and passphrases securely in a non-interactive environment.
+
+4. Structured Multi-Distro Support
+RPM Repository: A full-featured, signed RPM repository is available, with packages organized by distribution and version (e.g., /rpm/fedora/42/).
+
+DEB Repository: A standard, signed APT repository is available, following Debian conventions for maximum client compatibility.
+
+**Try the new repos** for [Debian/Devuan/Ubuntu](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md), [Fedora](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md), [Enterprise linux](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md) and [OpenSUSE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-OPENSUSE.md).
+
+> [!NOTE]
+> * Alpine, Arch, and Manjaro are not immediately transitioning to the new repositories.
+> * changes and adjustments are expected in the coming days, but distribution via penguins-eggs-ppa, get-eggs, and aur will still be ensured.
+
+
 ## v25.9.8
 * `eggs export pkg` fixed on Almalinux/Rocky;
 * `eggs update` revision.
