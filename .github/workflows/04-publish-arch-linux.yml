@@ -1,7 +1,17 @@
-# Nome del workflow, specifico per Arch Linux
+# ==============================================================================
+# WORKFLOW PER LA COSTRUZIONE E PUBBLICAZIONE DEL REPOSITORY ARCH LINUX
+#
+# Strategia:
+# 1. JOB 'build': Costruisce il pacchetto in un ambiente Arch pulito,
+#    legge la versione da package.json, aggiorna il PKGBUILD,
+#    firma il pacchetto e lo carica come artefatto.
+# 2. JOB 'publish': Parte dopo il successo del build. Prepara un
+#    repository Arch, aggiunge il nuovo pacchetto, aggiorna e firma
+#    l'indice del repository, e lo pubblica su GitHub Pages.
+# ==============================================================================
 name: 04. Build and Publish Arch Linux Repository
 
-# Controllo per evitare conflitti di scrittura su gh-pages
+# Evita che più esecuzioni si sovrappongano scrivendo sul branch gh-pages
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -12,11 +22,12 @@ on:
     branches: [ main ]
 
 env:
+  # Definiamo la versione dei bootloaders in un unico posto
   BOOTLOADERS_VERSION: v25.9.8
 
 jobs:
-  # --- JOB 1: COSTRUISCE IL PACCHETTO PER ARCH LINUX ---
-  build-arch:
+  # --- JOB 1: COSTRUISCE IL PACCHETTO .pkg.tar.zst ---
+  build:
     runs-on: ubuntu-latest
     container:
       image: archlinux
@@ -24,95 +35,109 @@ jobs:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
         with:
+          # Scarica l'intera cronologia, necessaria per 'git archive'
           fetch-depth: 0
 
-      - name: 2. Prepare Build Environment and Dependencies
+      - name: 2. Prepare Build Environment
         run: |
+          # Aggiorna il sistema e installa gli strumenti essenziali
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm gnupg jq
 
-      - name: 3. Create Build User and Set Permissions
+      - name: 3. Create Build User
         run: |
+          # makepkg richiede di essere eseguito da un utente non-root
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 4. Get Package Version from package.json
+      - name: 4. Get Version from package.json
         id: version
         working-directory: ${{ github.workspace }}
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
-      - name: 5. Update Version in PKGBUILD File
+      - name: 5. Update PKGBUILD
         working-directory: ./packaging/arch
         run: |
-          echo "Updating PKGBUILD file to version ${{ steps.version.outputs.version }}"
+          # Aggiorna dinamicamente la versione nel file PKGBUILD
+          echo "Updating PKGBUILD to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(pkgver=\).*/\1${{ steps.version.outputs.version }}/" PKGBUILD
 
       - name: 6. Import GPG Key
+        # Importa la chiave GPG come utente 'builder'
         run: sudo -u builder gpg --import -
         shell: bash
         stdin: ${{ secrets.GPG_SIGNING_KEY }}
 
-      - name: 7. Build and Sign The Package as Non-Root User
-        id: build
+      - name: 7. Build and Sign Package
+        id: build_pkg
         working-directory: ./packaging/arch
+        shell: bash # Obbligatorio per usare <(...)
         run: |
-          # Passiamo la passphrase a makepkg in modo non interattivo
+          # Eseguiamo makepkg come 'builder'
+          # -s: Installa le dipendenze mancanti
+          # --sign: Firma il pacchetto dopo la creazione
+          # --key: Specifica quale chiave usare
+          # --noconfirm: Non fare domande
+          # --passphrase-file: Passa la passphrase in modo non interattivo
           sudo -u builder makepkg -s --sign --key ${{ secrets.GPG_KEY_ID }} --noconfirm --passphrase-file <(echo "${{ secrets.GPG_PASSPHRASE }}")
+          
+          # Salva il percorso del pacchetto creato per lo step successivo
           echo "pkg_path=$(find . -name '*.pkg.tar.zst')" >> $GITHUB_OUTPUT
         
-      - name: 8. Upload Package Artifact
+      - name: 8. Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: archlinux-package-for-repo
-          path: ./packaging/arch/*.pkg.tar.zst
+          path: ${{ steps.build_pkg.outputs.pkg_path }}
 
-  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
-  publish-repo:
-    needs: build-arch
+  # --- JOB 2: PUBBLICA IL REPOSITORY SU GITHUB PAGES ---
+  publish:
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     container:
       image: archlinux
     steps:
-      - name: 1. Install Prerequisite Tools
+      - name: 1. Install Tools
         run: |
           pacman -Syu --noconfirm
+          # 'repo-add' si trova in 'pacman-contrib'
           pacman -S --noconfirm git pacman-contrib gnupg
 
-      - name: 2. Checkout gh-pages branch
+      - name: 2. Checkout gh-pages Branch
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           
-      - name: 3. Create directory structure
+      - name: 3. Prepare Repository Structure
         run: mkdir -p arch/x86_64
 
-      - name: 4. Download Arch package artifact
+      - name: 4. Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: archlinux-package-for-repo
           path: ./arch/x86_64
 
-      - name: 5. Update and Sign Arch Repository
+      - name: 5. Update and Sign Repository
         run: |
           cd ./arch/x86_64
           REPO_NAME="penguins-eggs"
           
-          # Il pacchetto e' gia' nel posto giusto, non serve piu' spostarlo
-          
-          # Aggiungiamo il nuovo pacchetto al database del repository
-          repo-add ${REPO_NAME}.db.tar.gz *.pkg.tar.zst
-          
-          # Firmiamo il database del repository
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} ${REPO_NAME}.db.tar.gz
+          # Sposta il pacchetto dalla sottocartella creata da download-artifact
+          find . -name "*.pkg.tar.zst" -exec mv -t . {} +
 
-      - name: 6. Commit and Deploy to GitHub Pages
+          # Aggiunge il pacchetto al database del repository (creandolo se non esiste)
+          # --sign: Firma il database dopo averlo aggiornato
+          # --key: Specifica la chiave da usare
+          echo "Updating repository database..."
+          repo-add --sign --key ${{ secrets.GPG_KEY_ID }} ${REPO_NAME}.db.tar.gz *.pkg.tar.zst
+
+      - name: 6. Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # Usiamo un PAT perche' il container Arch non ha un ambiente git pre-configurato
+          # Usiamo un PAT per garantire i permessi di scrittura
           personal_token: ${{ secrets.GH_PAT }}
           publish_dir: .
           user_name: 'github-actions[bot]'
