@@ -64,16 +64,13 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `\n`
     cmd += `rm -rf ${this.settings.iso_work}live\n`
     cmd += `mkdir -p ${this.settings.iso_work}live\n`
-    cmd += `\n`
-    cmd += `rm -rf ${this.settings.iso_work}\n`
-    cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
-    cmd += `\n`
-    cmd += `rm ${this.settings.config.snapshot_dir}/iso\n`
-    cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
-    cmd += `\n`
-    cmd += `rm -f ${this.settings.config.snapshot_dir}/livefs\n`
-    cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs\n`
-    tryCatch(cmd, this.verbose)
+    //cmd += `# Link ad iso\n`
+    //cmd += `rm -f ${this.settings.config.snapshot_dir}/iso\n`
+    //cmd += `ln -s ${this.settings.iso_work} ${this.settings.config.snapshot_dir}/iso\n`
+    //cmd += `# Link a livefs\n`
+    //cmd += `rm -f ${this.settings.config.snapshot_dir}/livefs\n`
+    //cmd += `ln -s ${this.settings.work_dir.merged} ${this.settings.config.snapshot_dir}/livefs\n`
+    tryCatch(cmd, true)
 }
 
 
