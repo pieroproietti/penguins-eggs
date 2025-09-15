@@ -1,5 +1,5 @@
 # Nome del workflow, specifico per Debian e derivate
-name: 00. amd64 Build and Publish Debian Repository
+name: 00. AMD64 Build and Publish Debian Repository
 
 # Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
