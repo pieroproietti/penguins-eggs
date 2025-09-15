@@ -54,9 +54,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-packages-for-repo
-          path: dist/*.deb
+          path: releases/*
 
-  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+          # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-deb
     runs-on: ubuntu-latest
