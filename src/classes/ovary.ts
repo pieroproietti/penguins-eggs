@@ -18,7 +18,7 @@ import path from 'node:path'
 import shx from 'shelljs'
 
 // interfaces
-import { IAddons, IExcludes } from '../interfaces/index.js'
+import { IAddons, IExcludes, IWorkDir } from '../interfaces/index.js'
 
 // libraries
 import { exec } from '../lib/utils.js'
@@ -84,8 +84,6 @@ export default class Ovary {
 
   incubator = {} as Incubator
 
-  nest = ''
-
   settings = {} as Settings
 
   snapshot_basename = ''
@@ -107,6 +105,16 @@ export default class Ovary {
   initrd = ''
 
   vmlinuz = ''
+
+  nest = ''
+
+  dotMnt = ''
+
+  dotOverlay = {} as IWorkDir
+
+  dotLivefs = ''
+
+
 
   // I put all methods on ovary.d
   public fertilization = fertilization
