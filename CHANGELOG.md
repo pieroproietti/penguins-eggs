@@ -19,7 +19,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-## v25.9.13
+## v25.9.14
 Thanks to JT Burchett, I think we definitely solved the error:
 ```
 Error: ENOENT: no such file or directory, stat '/filesystem.squashfs'
