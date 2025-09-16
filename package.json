@@ -30,7 +30,7 @@
         "react": "^18.3.1",
         "read": "^4.1.0",
         "shelljs": "^0.10.0",
-        "systeminformation": "^5.27.9",
+        "systeminformation": "^5.27.10",
         "tftp": "^0.1.2",
         "ws": "^8.18.3"
     },
