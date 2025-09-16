@@ -44,29 +44,30 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `# README.md\n`
     cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${nest}README.md\n`
 
-    cmd += `# remove .overlay\n`
-    cmd += `rm -rf ${dotOverlay}`
+    cmd += `rm -rf ${nest}.mnt/efi\n`
+    cmd += `rm -rf ${nest}.mnt/filesystem.squashfs\n`
+    cmd += `rm -rf ${nest}.mnt/iso\n`
+    cmd += `mkdir -p ${nest}.mnt/iso/boot/grub/${Utils.uefiFormat()}\n`
+    cmd += `mkdir -p ${nest}.mnt/iso/isolinux\n`
+    cmd += `mkdir -p ${nest}.mnt/iso/live\n`
+
+    cmd += `# recreate  .overlay\n`
+    cmd += `rm -rf ${nest}.overlay\n`
     cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
     cmd += `mkdir -p ${dotOverlay.upperdir}\n`
     cmd += `mkdir -p ${dotOverlay.workdir}\n`
     cmd += `mkdir -p ${dotOverlay.merged}\n`
 
-    cmd += `# remove dotIso\n`
-    cmd += `rm -rf ${dotIso}\n`
-    cmd += `mkdir -p ${dotIso}boot/grub/${Utils.uefiFormat()}\n`
-    cmd += `mkdir -p ${dotIso}isolinux\n`
-    cmd += `mkdir -p ${dotIso}live\n`
-
-    cmd += `# ovarium\n`
+    cmd += `# recreate nest ovarium\n`
     cmd += `rm -rf ${dotOverlay.ovarium}\n`
     cmd += `mkdir -p ${dotOverlay.ovarium}\n`
 
-    cmd += `# Links\n`
+    cmd += `# recreate nest links\n`
     cmd += `rm -f ${nest}/iso\n`
     cmd += `ln -s ${dotIso} ${nest}/iso\n`
     cmd += `rm -f ${nest}/livefs\n`
     cmd += `ln -s ${dotOverlay.merged} ${nest}/livefs\n`
-    tryCatch(cmd, true)
+    tryCatch(cmd, this.verbose)
 }
 
 
@@ -77,7 +78,7 @@ export async function liveCreateStructure(this: Ovary) {
 async function tryCatch(cmd = '', verbose = false) {
     try {
         let echo = Utils.setEcho(verbose)
-
+        // console.log(cmd)
         await exec(cmd, echo)
     } catch (error) {
         console.log(`Error: ${error}`)
