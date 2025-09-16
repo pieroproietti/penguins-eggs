@@ -36,6 +36,7 @@ export async function liveCreateStructure(this: Ovary) {
     const nest = this.settings.config.snapshot_dir
     const dotIso = this.settings.iso_work
     const dotOverlay = this.settings.work_dir
+    const dotLivefs = this.settings.work_dir.merged
     Utils.warning(`creating egg in ${nest}`)
 
     let cmd=''
@@ -44,6 +45,7 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `# README.md\n`
     cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${nest}README.md\n`
 
+    cmd += `# cleaning nest\n`
     cmd += `rm -rf ${nest}.mnt/efi\n`
     cmd += `rm -rf ${nest}.mnt/filesystem.squashfs\n`
     cmd += `rm -rf ${nest}.mnt/iso\n`
@@ -51,22 +53,29 @@ export async function liveCreateStructure(this: Ovary) {
     cmd += `mkdir -p ${nest}.mnt/iso/isolinux\n`
     cmd += `mkdir -p ${nest}.mnt/iso/live\n`
 
-    cmd += `# recreate  .overlay\n`
+    cmd += `# cleaning (nest).overlay\n`
+    cmd += `umount ${dotLivefs}/*\n`
+    cmd += `umount ${dotOverlay.lowerdir}/*\n`
+    cmd += `umount ${dotOverlay.upperdir}/*\n`
+    cmd += `umount ${dotOverlay.workdir}/*\n`
     cmd += `rm -rf ${nest}.overlay\n`
     cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
     cmd += `mkdir -p ${dotOverlay.upperdir}\n`
     cmd += `mkdir -p ${dotOverlay.workdir}\n`
-    cmd += `mkdir -p ${dotOverlay.merged}\n`
+    cmd += `sleep 1\n`
+    cmd += `# cleaning dotLivefs\n`
+    cmd += `rm -rf ${dotLivefs}\n`
+    cmd += `mkdir -p ${dotLivefs}\n`
 
-    cmd += `# recreate nest ovarium\n`
-    cmd += `rm -rf ${dotOverlay.ovarium}\n`
-    cmd += `mkdir -p ${dotOverlay.ovarium}\n`
+    cmd += `# cleaning (nest)/ovarium\n`
+    cmd += `rm -rf ${nest}ovarium}\n`
+    cmd += `mkdir -p ${nest}ovarium}\n`
 
-    cmd += `# recreate nest links\n`
+    cmd += `# cleaning (nest)/links\n`
     cmd += `rm -f ${nest}/iso\n`
     cmd += `ln -s ${dotIso} ${nest}/iso\n`
     cmd += `rm -f ${nest}/livefs\n`
-    cmd += `ln -s ${dotOverlay.merged} ${nest}/livefs\n`
+    cmd += `ln -s ${dotLivefs} ${nest}/livefs\n`
     tryCatch(cmd, this.verbose)
 }
 
