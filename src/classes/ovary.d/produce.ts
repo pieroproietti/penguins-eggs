@@ -63,6 +63,12 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
     const luksFile = `/tmp/${luksName}`
 
+    this.nest = this.settings.config.snapshot_dir
+    this.dotMnt = `${this.nest}.mnt`
+    this.dotOverlay = this.settings.work_dir
+    this.dotLivefs = this.settings.work_dir.merged
+
+
     /**
      * define kernel
      */

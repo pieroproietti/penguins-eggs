@@ -33,49 +33,45 @@ export async function liveCreateStructure(this: Ovary) {
         console.log('Ovary: liveCreateStructure')
     }
 
-    const nest = this.settings.config.snapshot_dir
-    const dotIso = this.settings.iso_work
-    const dotOverlay = this.settings.work_dir
-    const dotLivefs = this.settings.work_dir.merged
-    Utils.warning(`creating egg in ${nest}`)
+    Utils.warning(`creating egg in ${this.nest}`)
 
     let cmd=''
     cmd = `# create nest\n`
-    cmd += `mkdir -p ${nest}\n`
+    cmd += `mkdir -p ${this.nest}\n`
     cmd += `# README.md\n`
-    cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${nest}README.md\n`
+    cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.nest}README.md\n`
 
-    cmd += `# cleaning nest\n`
-    cmd += `rm -rf ${nest}.mnt/efi\n`
-    cmd += `rm -rf ${nest}.mnt/filesystem.squashfs\n`
-    cmd += `rm -rf ${nest}.mnt/iso\n`
-    cmd += `mkdir -p ${nest}.mnt/iso/boot/grub/${Utils.uefiFormat()}\n`
-    cmd += `mkdir -p ${nest}.mnt/iso/isolinux\n`
-    cmd += `mkdir -p ${nest}.mnt/iso/live\n`
+    cmd += `# cleaning dotMnt\n`
+    cmd += `rm -rf ${this.dotMnt}efi\n`
+    cmd += `rm -rf ${this.dotMnt}filesystem.squashfs\n`
+    cmd += `rm -rf ${this.dotMnt}/iso\n`
+    cmd += `mkdir -p ${this.dotMnt}/iso/live\n`
+    cmd += `mkdir -p ${this.dotMnt}/iso/boot/grub/${Utils.uefiFormat()}\n`
+    cmd += `mkdir -p ${this.dotMnt}/iso/isolinux\n`
 
     cmd += `# cleaning (nest).overlay\n`
-    cmd += `umount ${dotLivefs}/*\n`
-    cmd += `umount ${dotOverlay.lowerdir}/*\n`
-    cmd += `umount ${dotOverlay.upperdir}/*\n`
-    cmd += `umount ${dotOverlay.workdir}/*\n`
-    cmd += `rm -rf ${nest}.overlay\n`
-    cmd += `mkdir -p ${dotOverlay.lowerdir}\n`
-    cmd += `mkdir -p ${dotOverlay.upperdir}\n`
-    cmd += `mkdir -p ${dotOverlay.workdir}\n`
+    cmd += `umount ${this.dotLivefs}/* > /dev/null 2>&1\n`
+    cmd += `umount ${this.dotOverlay.lowerdir}/* > /dev/null 2>&1\n`
+    cmd += `umount ${this.dotOverlay.upperdir}/* > /dev/null 2>&1\n`
+    cmd += `umount ${this.dotOverlay.workdir}/* > /dev/null 2>&1\n`
+    cmd += `rm -rf ${this.nest}.overlay\n`
+    cmd += `mkdir -p ${this.dotOverlay.lowerdir}\n`
+    cmd += `mkdir -p ${this.dotOverlay.upperdir}\n`
+    cmd += `mkdir -p ${this.dotOverlay.workdir}\n`
     cmd += `sleep 1\n`
     cmd += `# cleaning dotLivefs\n`
-    cmd += `rm -rf ${dotLivefs}\n`
-    cmd += `mkdir -p ${dotLivefs}\n`
+    cmd += `rm -rf ${this.dotLivefs}\n`
+    cmd += `mkdir -p ${this.dotLivefs}\n`
 
     cmd += `# cleaning (nest)/ovarium\n`
-    cmd += `rm -rf ${nest}ovarium}\n`
-    cmd += `mkdir -p ${nest}ovarium}\n`
+    cmd += `rm -rf ${this.nest}ovarium\n`
+    cmd += `mkdir -p ${this.nest}ovarium\n`
 
     cmd += `# cleaning (nest)/links\n`
-    cmd += `rm -f ${nest}/iso\n`
-    cmd += `ln -s ${dotIso} ${nest}/iso\n`
-    cmd += `rm -f ${nest}/livefs\n`
-    cmd += `ln -s ${dotLivefs} ${nest}/livefs\n`
+    cmd += `rm -f ${this.nest}iso\n`
+    cmd += `ln -s ${this.nest}.mnt/iso ${this.nest}/iso\n`
+    cmd += `rm -f ${this.nest}livefs\n`
+    cmd += `ln -s ${this.dotLivefs} ${this.nest}livefs\n`
     tryCatch(cmd, this.verbose)
 }
 
