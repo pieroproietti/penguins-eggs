@@ -22,9 +22,10 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs/deb/key.asc'
+const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs/key.asc'
 const ppaKeyPath = '/usr/share/keyrings/penguins-eggs.gpg'
-const ppaSourcesPath = '/etc/apt/sources.list.d/penguins-eggs' // Base path without extension
+const ppaUrl= `https://pieroproietti.github.io/penguins-eggs`
+const ppaPath = '/etc/apt/sources.list.d/penguins-eggs' // Base path without extension
 
 /**
  *
@@ -72,7 +73,7 @@ export default class Ppa extends Command {
          * Debian
          */
         if (flags.add) {
-          Utils.warning(`Are you sure to add source ${path.basename(ppaSourcesPath)} to your repositories?`)
+          Utils.warning(`Are you sure to add source ${path.basename(ppaPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             // Rimuove sempre le vecchie configurazioni per uno stato pulito
             await debianRemove()
@@ -83,7 +84,7 @@ export default class Ppa extends Command {
             }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove source ${path.basename(ppaSourcesPath)} to your repositories?`)
+          Utils.warning(`Are you sure to remove source ${path.basename(ppaPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             await debianRemove()
           }
@@ -149,31 +150,26 @@ async function archRemove() {
  * debianAdd822 - For modern Debian/Ubuntu with .sources files
  */
 async function debianAdd822() {
-  // --- FIX: Correct GPG key URL ---
   await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
   
   let content = ''
-  content += 'Types: deb\n'
-  content += 'URIs: https://pieroproietti.github.io/penguins-eggs/deb\n' // Correct URI for packages
-  content += 'Suites: stable\n' // It's better to be specific
-  content += 'Components: main\n'
+  content += `Types: deb\n`
+  content += `URIs: ${ppaUrl}/deb\n` // Correct URI for packages
+  content += `Suites: stable\n` // It's better to be specific
+  content += `Components: main\n`
   content += `Signed-By: ${ppaKeyPath}\n`
   
-  // --- IMPROVEMENT: Use the standard .sources extension ---
-  fs.writeFileSync(`${ppaSourcesPath}.sources`, content)
-
-  // --- IMPROVEMENT: Removed unnecessary `touch` command ---
+  fs.writeFileSync(`${ppaPath}.sources`, content)
 }
 
 /**
  * debianAdd - For traditional Debian/Ubuntu with .list files
  */
 async function debianAdd() {
-  // --- FIX: Correct GPG key URL and remove redundant sudo ---
   await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
 
-  const content = `deb [signed-by=${ppaKeyPath}] https://pieroproietti.github.io/penguins-eggs/deb stable main\n`
-  fs.writeFileSync(`${ppaSourcesPath}.list`, content)
+  const content = `deb [signed-by=${ppaKeyPath}] ${ppaUrl}/deb stable main\n`
+  fs.writeFileSync(`${ppaPath}.list`, content)
 }
 
 /**
@@ -198,5 +194,5 @@ async function is822(): Promise<boolean> {
 async function debianRemove() {
   // The script runs as root, so sudo inside exec is not needed here
   await exec(`rm -f ${ppaKeyPath}`)
-  await exec(`rm -f ${ppaSourcesPath}*`)
+  await exec(`rm -f ${ppaPath}*`)
 }
