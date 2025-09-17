@@ -56,16 +56,13 @@ jobs:
           name: deb-packages-for-repo
           path: releases/*
 
-          # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-deb
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: 1. Create directory structure
         run: |
-          # Creiamo la struttura completa, incluse le nuove architetture
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-amd64
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-i386
           mkdir -p repo-to-publish/deb/dists/stable/main/binary-arm64
@@ -82,7 +79,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 4. Update and Sign APT Repository
+      - name: 4. Update and Sign APT Repository (Robust Method)
         run: |
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
@@ -90,21 +87,18 @@ jobs:
           for arch in amd64 i386 arm64; do
             echo "Generating Packages index for $arch..."
             
-            TARGET_DIR="dists/stable/main/binary-$arch"
-            TEMP_DIR="temp-pool/$arch"
-
-            mkdir -p "$TEMP_DIR"
+            TEMP_REPO_DIR="temp-repo-for-$arch"
+            mkdir -p "$TEMP_REPO_DIR/pool/main"
             
-            find pool/main -maxdepth 1 -type f -name "*_${arch}.deb" -exec cp {} "$TEMP_DIR/" \;
+            find pool/main -maxdepth 1 -type f -name "*_${arch}.deb" -exec cp {} "$TEMP_REPO_DIR/pool/main/" \;
 
-            # --- RIGA CORRETTA QUI ---
-            dpkg-scanpackages "$TEMP_DIR" /dev/null "pool/main/" > "$TARGET_DIR/Packages"
+            (cd "$TEMP_REPO_DIR" && apt-ftparchive packages .) > "dists/stable/main/binary-$arch/Packages"
 
-            gzip -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.gz"
-            xz -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.xz"
+            gzip -9c "dists/stable/main/binary-$arch/Packages" > "dists/stable/main/binary-$arch/Packages.gz"
+            xz -9c "dists/stable/main/binary-$arch/Packages" > "dists/stable/main/binary-$arch/Packages.xz"
+
+            rm -rf "$TEMP_REPO_DIR"
           done
-          
-          rm -rf temp-pool
           
           cat > apt-release.conf <<EOF
           APT::FTPArchive::Release {
@@ -126,12 +120,12 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
-
+          
       - name: 5. Deploy to external repository (penguins-eggs-repo)
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          external_repository: pieroproietti/penguins-eggs-repo # Assicurati che il nome utente/organizzazione sia corretto
+          external_repository: pieroproietti/penguins-eggs-repo
           publish_dir: ./repo-to-publish
           publish_branch: main 
           user_name: 'github-actions[bot]'
