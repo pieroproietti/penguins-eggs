@@ -1,28 +1,26 @@
-# Come Installare penguins-eggs su Debian, Ubuntu e derivate
+# How to Install penguins-eggs on Debian, Ubuntu, and derivatives
+To easily install penguins-eggs on your system and receive automatic updates, you can add our official APT repository.
 
-Per installare penguins-eggs sul tuo sistema in modo semplice e per ricevere aggiornamenti automatici, puoi aggiungere il nostro repository APT ufficiale.
+This process, based on modern security practices, requires just a few simple terminal commands.
 
-Questo processo, basato sulle moderne pratiche di sicurezza, richiede pochi semplici comandi da terminale.
+## Step 1: Add the Repository GPG Key
+First, we need to teach your system to trust our repository. We do this by importing the public GPG key that the packages are signed with. This ensures that the software you install is authentic and has not been modified.
 
-## Passaggio 1: Aggiungere la Chiave GPG del Repository
-Per prima cosa, dobbiamo insegnare al tuo sistema a fidarsi del nostro repository. Lo facciamo importando la chiave GPG pubblica con cui sono firmati i pacchetti. Questo garantisce che il software che installi sia autentico e non sia stato modificato.
-
-Esegui questo comando per scaricare e installare la chiave in modo sicuro:
+Run this command to download and securely install the key:
 ```
 curl -fsSL https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-repo.gpg
 ```
 
-## Passaggio 2: Aggiungere il Repository alla Lista delle Sorgenti
-Ora, dobbiamo dire ad apt (il gestore di pacchetti) dove trovare i nostri pacchetti. Creeremo un nuovo file di configurazione che punta al nostro repository.
-
+## Step 2: Add the Repository to the Sources List
+Now, we need to tell apt (the package manager) where to find our packages. We will create a new configuration file that points to our repository.
 ```
 echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-repo.gpg] https://pieroproietti.github.io/penguins-eggs-repo/deb stable main" | sudo tee /etc/apt/sources.list.d/penguins-eggs-repo.list > /dev/null
 ```
-## Passaggio 3: Installare penguins-eggs
-Il tuo sistema ora conosce il nostro repository ed è in grado di verificarne l'autenticità. Per installare il pacchetto, aggiorna la cache dei pacchetti e installa penguins-eggs con i seguenti comandi:
 
+## Step 3: Install penguins-eggs
+Your system now knows about our repository and can verify its authenticity. To install the package, update the package cache and install penguins-eggs with the following commands:
 ```
 sudo apt-get update
 sudo apt-get install penguins-eggs
 ```
-Fatto! penguins-eggs è ora installato sul tuo sistema. Ogni volta che eseguirai un aggiornamento di sistema (sudo apt-get upgrade), riceverai automaticamente la versione più recente di penguins-eggs.
+Done! penguins-eggs is now installed on your system. Whenever you perform a system update (sudo apt-get upgrade), you will automatically receive the latest version of penguins-eggs.

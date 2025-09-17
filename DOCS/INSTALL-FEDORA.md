@@ -1,41 +1,38 @@
-# Come Installare penguins-eggs su Fedora (e sistemi derivati)
+# How to Install penguins-eggs on Fedora
+To install penguins-eggs on your Fedora system or any other dnf/yum-based distribution, you can add our official RPM repository. This will ensure a simple installation and automatic updates.
 
-Per installare penguins-eggs sul tuo sistema Fedora o qualsiasi altra distribuzione basata su dnf/yum, puoi aggiungere il nostro repository RPM ufficiale. Questo ti garantirà un'installazione semplice e aggiornamenti automatici.
+The process requires just a few terminal commands.
 
-Il processo richiede pochi comandi da terminale.
+## Step 1: Import the Repository GPG Key
+First, we need to import the GPG key that the packages are signed with. This assures your system that the software you install is authentic and has not been modified.
 
-## Passaggio 1: Importare la Chiave GPG del Repository
-Per prima cosa, dobbiamo importare la chiave GPG con cui sono firmati i pacchetti. Questo garantisce al tuo sistema che il software che installi è autentico e non è stato modificato.
-
-Esegui questo comando per importare la chiave:
+Run this command to import the key:
 ```
 sudo rpm --import https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
 ```
+## Step 2: Add the penguins-eggs Repository
+Now, we need to tell dnf where to find our packages. We will create a new repository configuration file.
 
-## Passaggio 2: Aggiungere il Repository di penguins-eggs
-Ora, dobbiamo dire a dnf dove trovare i nostri pacchetti. Creeremo un nuovo file di configurazione per il repository.
-
-Esegui questo comando per creare e aprire il file con l'editor nano:
+Run this command to create and open the file with the nano editor:
 ```
 sudo nano /etc/yum.repos.d/penguins-eggs.repo
 ```
-Incolla il seguente testo all'interno dell'editor:
+Paste the following text inside the editor:
 ```
 [penguins-eggs]
-name=Penguins-eggs-repo
+name=penguins-eggs-repo
 baseurl=https://pieroproietti.github.io/penguins-eggs-repo/rpm/fedora/42/
 enabled=1
 gpgcheck=1
 gpgkey=https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
 ```
-Nota per gli utenti non-Fedora: Puoi sostituire fedora/42 con la cartella appropriata per il tuo sistema (es. el/9 per AlmaLinux/Rocky 9).
 
-Salva il file e chiudi l'editor (in nano, premi Ctrl+X, poi Y e Invio).
+Save the file and close the editor (in nano, press Ctrl+X, then Y and Enter).
 
-## Passaggio 3: Installare penguins-eggs
-Il tuo sistema ora conosce il nostro repository. Per installare il pacchetto, aggiorna la cache dei pacchetti e installa penguins-eggs con i seguenti comandi:
+## Step 3: Install penguins-eggs
+Your system now knows about our repository. To install the package, update the package cache and install penguins-eggs with the following commands:
 ```
 sudo dnf makecache
 sudo dnf install penguins-eggs
 ```
-Fatto! penguins-eggs è ora installato sul tuo sistema. Ogni volta che eseguirai un aggiornamento di sistema (sudo dnf upgrade), riceverai automaticamente la versione più recente di penguins-eggs.
+Done! penguins-eggs is now installed on your system. Whenever you perform a system update (sudo dnf upgrade), you will automatically receive the latest version of penguins-eggs.
