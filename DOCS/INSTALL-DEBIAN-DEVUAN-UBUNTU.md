@@ -9,14 +9,14 @@ Per prima cosa, dobbiamo insegnare al tuo sistema a fidarsi del nostro repositor
 
 Esegui questo comando per scaricare e installare la chiave in modo sicuro:
 ```
-curl -fsSL https://pieroproietti.github.io/penguins-eggs/penguins-eggs.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-keyring.gpg
+curl -fsSL https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc | sudo gpg --dearmor -o /usr/share/keyrings/penguins-eggs-repo.gpg
 ```
 
 ## Passaggio 2: Aggiungere il Repository alla Lista delle Sorgenti
 Ora, dobbiamo dire ad apt (il gestore di pacchetti) dove trovare i nostri pacchetti. Creeremo un nuovo file di configurazione che punta al nostro repository.
 
 ```
-echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-keyring.gpg] https://pieroproietti.github.io/penguins-eggs/deb stable main" | sudo tee /etc/apt/sources.list.d/penguins-eggs.list > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/penguins-eggs-repo.gpg] https://pieroproietti.github.io/penguins-eggs-repo/deb stable main" | sudo tee /etc/apt/sources.list.d/penguins-eggs-repo.list > /dev/null
 ```
 ## Passaggio 3: Installare penguins-eggs
 Il tuo sistema ora conosce il nostro repository ed è in grado di verificarne l'autenticità. Per installare il pacchetto, aggiorna la cache dei pacchetti e installa penguins-eggs con i seguenti comandi:
