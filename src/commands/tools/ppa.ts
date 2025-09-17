@@ -24,8 +24,8 @@ import Diversions from '../../classes/diversions.js'
 
 const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc'
 const ppaKeyPath = '/usr/share/keyrings/penguins-eggs-repo.gpg'
-const ppaUrl= `https://pieroproietti.github.io/penguins-eggs-repo`
-const ppaPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
+const ppaUrl = `https://pieroproietti.github.io/penguins-eggs-repo`
+let ppaPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
 
 /**
  *
@@ -91,9 +91,23 @@ export default class Ppa extends Command {
         }
         await exec('apt-get update')
 
+      } else if (distro.familyId === 'fedora') {
+        if (distro.distroId !== 'Fedora') {
+          console.log("You can find the step-by-step instructions at this link:")
+          console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTR.md")
+          console.log()
+        } else {
+          console.log("You can find the step-by-step instructions at this link:")
+          console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md")
+          console.log()
+        }
+      } else if (distro.familyId === 'opensuse') {
+        console.log("You can find the step-by-step instructions at this link:")
+        console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md")
+        console.log()
 
         /**
-         * Alle the others
+         * All the others
          */
       } else {
         Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs-repo nor chaotic-aur!`)
@@ -104,8 +118,9 @@ export default class Ppa extends Command {
 
 
 /**
- * archAdd
+ * ARCH
  */
+// archAdd
 async function archAdd() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
@@ -127,14 +142,12 @@ async function archAdd() {
   fs.appendFileSync('/etc/pacman.conf', chaoticAppend)
 }
 
-/**
- * archRemove
- */
+// archRemove
 async function archRemove() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
   const mirrorlist = 'chaotic-mirrorlist.pkg.tar.zst'
-  
+
   if (fs.existsSync(path + keyring) && fs.existsSync(path + mirrorlist)) {
     console.log('to remove chaotic-aur:\n')
     console.log(`sudo rm ${path}${keyring}`)
@@ -146,35 +159,11 @@ async function archRemove() {
   }
 }
 
-/**
- * debianAdd822 - For modern Debian/Ubuntu with .sources files
- */
-async function debianAdd822() {
-  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
-  
-  let content = ''
-  content += `Types: deb\n`
-  content += `URIs: ${ppaUrl}/deb\n` // Correct URI for packages
-  content += `Suites: stable\n` // It's better to be specific
-  content += `Components: main\n`
-  content += `Signed-By: ${ppaKeyPath}\n`
-  
-  fs.writeFileSync(`${ppaPath}.sources`, content)
-}
 
 /**
- * debianAdd - For traditional Debian/Ubuntu with .list files
+ * DEBIAN
  */
-async function debianAdd() {
-  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
-
-  const content = `deb [signed-by=${ppaKeyPath}] ${ppaUrl}/deb stable main\n`
-  fs.writeFileSync(`${ppaPath}.list`, content)
-}
-
-/**
- * is822 (checks if the system uses the deb822 format)
- */
+// is822
 async function is822(): Promise<boolean> {
   let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
@@ -187,12 +176,33 @@ async function is822(): Promise<boolean> {
   return retval
 }
 
+// debianAdd822
+async function debianAdd822() {
+  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
 
-/**
- * debianRemove - Cleans up all related PPA files
- */
+  let content = ''
+  content += `Types: deb\n`
+  content += `URIs: ${ppaUrl}/deb\n` // Correct URI for packages
+  content += `Suites: stable\n` // It's better to be specific
+  content += `Components: main\n`
+  content += `Signed-By: ${ppaKeyPath}\n`
+
+  fs.writeFileSync(`${ppaPath}.sources`, content)
+}
+
+// debianAdd
+async function debianAdd() {
+  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
+
+  const content = `deb [signed-by=${ppaKeyPath}] ${ppaUrl}/deb stable main\n`
+  fs.writeFileSync(`${ppaPath}.list`, content)
+}
+
+//  debianRemove
 async function debianRemove() {
   // The script runs as root, so sudo inside exec is not needed here
   await exec(`rm -f ${ppaKeyPath}`)
   await exec(`rm -f ${ppaPath}*`)
 }
+
+
