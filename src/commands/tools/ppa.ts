@@ -22,8 +22,8 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs.repo/key.asc'
-const ppaKeyPath = '/usr/share/keyrings/penguins-eggs.repo.gpg'
+const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc'
+const ppaKeyPath = '/usr/share/keyrings/penguins-eggs-repo.gpg'
 const ppaUrl= `https://pieroproietti.github.io/penguins-eggs-repo`
 const ppaPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
 
