@@ -1,0 +1,128 @@
+# Nome del workflow, specifico per Fedora
+name: 01. Build and Publish Fedora RPM
+
+# Controllo per evitare conflitti di scrittura su gh-pages
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+env:
+  BOOTLOADERS_VERSION: v25.9.8
+
+jobs:
+  # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
+  build-fedora:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:42
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Install Build Dependencies (with jq)
+        run: |
+          # Aggiunto 'jq' per leggere il file package.json
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign jq
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
+            dnf install -y "$package"
+          done
+
+      - name: 3. Get Package Version from package.json
+        id: version
+        # Leggiamo la versione direttamente dal file package.json
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: 4. Update Version in .spec File
+        run: |
+          # Usiamo 'sed' per sostituire la versione nel file .spec
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+
+      - name: 5. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+
+      - name: 6. Prepare RPM Sources
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          # Ora questo comando usa la versione letta da package.json
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
+            --exclude=.git --exclude=.github .
+          # Usiamo la variabile definita in cima al file per i bootloaders
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+
+      - name: 7. Build and Sign RPM package
+        id: build
+        run: |
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          # Ora rpmbuild lavora sul file .spec modificato "al volo"
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+
+      - name: 8. Upload RPM Artifact for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: fedora-42-rpm-for-repo
+          path: ${{ steps.build.outputs.rpm_path }}
+
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+  publish-repo:
+    needs: build-fedora
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 1. Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          
+      - name: 2. Create directory structure
+        run: mkdir -p rpm/fedora/42
+
+      - name: 3. Download Fedora RPM artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fedora-42-rpm-for-repo
+          path: ./rpm/fedora/42
+
+      - name: 4. Install Tools and Import GPG Key
+        run: |
+          sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+
+      - name: 5. Update and Sign Repository for Fedora 42
+        run: |
+          cd ./rpm/fedora/42
+          createrepo_c .
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
+
+      - name: 6. Commit and Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo
+          publish_dir: .
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+
