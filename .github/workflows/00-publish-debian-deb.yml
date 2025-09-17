@@ -124,12 +124,12 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
           
-      - name: 5. Deploy to GitHub Pages
+      - name: 5. Deploy to external repository (penguins-eggs-repo)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.PUBLISH_TOKEN }}
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo # Assicurati che il nome utente/organizzazione sia corretto
           publish_dir: ./repo-to-publish
-          external_repository: pieroproietti/penguins-eggs-repo
+          publish_branch: main 
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-
