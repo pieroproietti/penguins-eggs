@@ -1,4 +1,30 @@
-# Nome del workflow, ora per multi-architettura
+# =========================================================================================
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY APT MULTI-ARCHITETTURA
+#
+# Scopo:
+#   Questo workflow automatizza l'intero processo di creazione e pubblicazione 
+#   dei pacchetti .deb di penguins-eggs per le architetture amd64, i386 e arm64.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
+# Struttura:
+#   1. Job 'build-deb': Compila i pacchetti .deb per tutte le architetture 
+#      utilizzando un container Debian 12 pulito.
+#   2. Job 'publish-repo': Scarica i pacchetti compilati, genera la struttura
+#      del repository APT (indici Packages, file Release), firma crittograficamente
+#      il repository con una chiave GPG e infine lo pubblica sul repository 
+#      dedicato 'penguins-eggs-repo'.
+#
+# Prerequisiti (GitHub Secrets):
+#   - GPG_SIGNING_KEY: La chiave GPG privata per firmare il repository.
+#   - GPG_PASSPHRASE: La passphrase della chiave GPG.
+#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
+#     sul repository 'penguins-eggs-repo'.
+# =========================================================================================
+
+
 name: 00. Build and Publish Debian Multi-Arch Repository
 
 # Controllo per evitare conflitti di scrittura su gh-pages
