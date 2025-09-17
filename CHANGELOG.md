@@ -19,6 +19,14 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.17
+I am mainly consolidating the move to the new repositories specific to each supported distribution: [Debian/Devuan/Ubuntu](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md), [Fedora](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md), [Enterprise Linux](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md), [OpenSUSE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-OPENSUSE.md).
+
+On Manjaro, we are already on the **community repository** and hope to progress to the next stage. Alpine and Arch will be moved to the new repositories later, as will Openmamba. 
+
+For a while I will continue to release on [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa) for Debian/Devuan/Ubuntu and on [Chaotic-AUR](https://aur.chaotic.cx/) for Arch and finally on [fresh-eggs](https://github.com/pieroproietti/fresh-eggs) for all.
+
+
 ## v25.9.14
 Thanks to JT Burchett, I think we definitely solved the error:
 ```
