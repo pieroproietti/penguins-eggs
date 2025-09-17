@@ -108,13 +108,28 @@ jobs:
         env:
           GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          cd ./rpm/fedora/42
-          createrepo_c .
+          # Definiamo la directory di destinazione in una variabile per chiarezza
+          REPO_DIR="./rpm/fedora/42"
+          
+          # Eseguiamo createrepo_c sulla directory specifica
+          createrepo_c "$REPO_DIR"
+          
+          # Aggiungiamo un controllo per verificare che il file sia stato creato
+          if [ ! -f "$REPO_DIR/repodata/repomd.xml" ]; then
+            echo "::error::File repomd.xml non trovato dopo l'esecuzione di createrepo_c!"
+            echo "Contenuto della directory:"
+            ls -lR "$REPO_DIR"
+            exit 1
+          fi
+          
+          # Configuriamo gpg-agent come prima
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomod.xml
+          
+          # Firmiamo il file usando il percorso completo e sicuro
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} "$REPO_DIR/repodata/repomd.xml"
 
       # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
       - name: 5. Deploy to penguins-eggs-repo
