@@ -149,7 +149,8 @@ jobs:
       - name: 6. Commit and Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo
           publish_dir: .
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
