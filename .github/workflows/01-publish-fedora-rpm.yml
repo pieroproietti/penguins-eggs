@@ -16,6 +16,7 @@ env:
 
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
+# --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
   build-fedora:
     runs-on: ubuntu-latest
     container:
@@ -42,10 +43,14 @@ jobs:
           echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
 
-      # NOTA: Ho rimosso lo step 5 errato che era qui.
-      # I prossimi step sono stati rinumerati per coerenza.
+      # --- STEP MANCANTE REINSERITO QUI ---
+      - name: 5. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
 
-      - name: 5. Prepare RPM Sources
+      - name: 6. Prepare RPM Sources
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
@@ -54,9 +59,9 @@ jobs:
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 6. Build and Sign RPM package
+      - name: 7. Build and Sign RPM package
         id: build
-        env: # Aggiunto ENV qui per sicurezza
+        env:
           GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg
@@ -68,12 +73,11 @@ jobs:
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 7. Upload RPM Artifact for publishing
+      - name: 8. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
-
   # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-fedora
