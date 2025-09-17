@@ -1,42 +1,40 @@
-# Come Installare penguins-eggs su openSUSE (Leap)
+# How to Install penguins-eggs on openSUSE (Leap)
+To easily install penguins-eggs on your openSUSE system and receive automatic updates, you can add our official RPM repository.
 
-Per installare penguins-eggs sul tuo sistema openSUSE in modo semplice e per ricevere aggiornamenti automatici, puoi aggiungere il nostro repository RPM ufficiale.
+The process requires just a few simple terminal commands.
 
-Il processo richiede pochi semplici comandi da terminale.
+## Step 1: Import the Repository GPG Key
+First, we need to import the GPG key that the packages are signed with. This ensures your system that the software you install is authentic and secure.
 
-## Passaggio 1: Importare la Chiave GPG del Repository
-Per prima cosa, dobbiamo importare la chiave GPG con cui sono firmati i pacchetti. Questo garantisce al tuo sistema che il software che installi è autentico e sicuro.
-
-Esegui questo comando per importare la chiave:
-
+Run this command to import the key:
 ```
-sudo rpm --import https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
+sudo rpm --import https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
 ```
 
-## Passaggio 2: Aggiungere il Repository di penguins-eggs
-Ora, dobbiamo dire a zypper (il gestore di pacchetti di openSUSE) dove trovare i nostri pacchetti. Creeremo un nuovo file di configurazione per il repository.
+## Step 2: Add the penguins-eggs Repository
+Now, we need to tell zypper (the openSUSE package manager) where to find our packages. We will create a new repository configuration file.
 
-Esegui questo comando per aprire un editor di testo e creare il file:
+Run this command to open a text editor and create the file:
 ```
 sudo nano /etc/zypp/repos.d/penguins-eggs.repo
 ```
-Incolla il seguente testo all'interno dell'editor:
+Paste the following text inside the editor:
 ```
 [penguins-eggs]
-name=Penguins-eggs Repository
+name=penguins-eggs-repo
 baseurl=https://pieroproietti.github.io/penguins-eggs/rpm/opensuse/leap/
 enabled=1
 gpgcheck=1
-gpgkey=https://pieroproietti.github.io/penguins-eggs/rpm/RPM-GPG-KEY-penguins-eggs
+gpgkey=https://pieroproietti.github.io/penguins-eggs/KEY.asc
 autorefresh=1
 type=rpm-md
 ```
-Salva il file e chiudi l'editor (in nano, premi Ctrl+X, poi Y e Invio).
+Save the file and close the editor (in nano, press Ctrl+X, then Y, and Enter).
 
-## Passaggio 3: Installare penguins-eggs
-Il tuo sistema ora conosce il nostro repository. Per installare il pacchetto, aggiorna la cache dei pacchetti e installa penguins-eggs con i seguenti comandi:
+## Step 3: Install penguins-eggs
+Your system now knows about our repository. To install the package, refresh the package cache and install penguins-eggs with the following commands:
 ```
-    sudo zypper refresh
-    sudo zypper install penguins-eggs
+sudo zypper refresh
+sudo zypper install penguins-eggs
 ```
-Fatto! penguins-eggs è ora installato sul tuo sistema. Ogni volta che eseguirai un aggiornamento di sistema (sudo zypper up), riceverai automaticamente la versione più recente di penguins-eggs.
+Done! penguins-eggs is now installed on your system. Whenever you perform a system update (sudo zypper up), you will automatically receive the latest version of penguins-eggs.
