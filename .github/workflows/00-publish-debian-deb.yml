@@ -87,23 +87,31 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
           
-          # "Appiattiamo" la struttura dei file scaricati NON SERVE e da errore
-          # find pool/main -name "*.deb" -exec mv -t pool/main/ {} + 
-          
           # Per ogni architettura, creiamo un indice Packages specifico
           for arch in amd64 i386 arm64; do
             echo "Generating Packages index for $arch..."
             
-            # Definiamo la directory di destinazione
+            # Directory di destinazione per gli indici
             TARGET_DIR="dists/stable/main/binary-$arch"
+            # Directory temporanea per i pacchetti filtrati
+            TEMP_DIR="temp-pool/$arch"
+
+            mkdir -p "$TEMP_DIR"
             
-            # Usiamo apt-ftparchive per scansionare solo i pacchetti dell'architettura corrente
-            apt-ftparchive packages --architecture "$arch" pool/ > "$TARGET_DIR/Packages"
-            
+            # Copiamo i pacchetti di questa architettura nella directory temporanea
+            find pool/main -maxdepth 1 -type f -name "*_${arch}.deb" -exec cp {} "$TEMP_DIR/" \;
+
+            # Scansioniamo la directory temporanea ma diciamo a apt che i file si troveranno in "pool/main"
+            dpkg-scanpackages "$TEMP_DIR" /dev/null "pool/main" > "$TARGET_DIR/Packages"
+
             # Comprimiamo il file Packages generato
             gzip -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.gz"
             xz -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.xz"
           done
+          
+          # Puliamo le directory temporanee
+          rm -rf temp-pool
+          # --- FINE BLOCCO MODIFICATO ---
 
           # Creiamo il file di configurazione per apt-ftparchive "al volo"
           cat > apt-release.conf <<EOF
@@ -128,7 +136,7 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
-          
+
       - name: 5. Deploy to external repository (penguins-eggs-repo)
         uses: peaceiris/actions-gh-pages@v4
         with:
