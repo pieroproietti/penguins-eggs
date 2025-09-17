@@ -90,16 +90,21 @@ jobs:
           # "Appiattiamo" la struttura dei file scaricati NON SERVE e da errore
           # find pool/main -name "*.deb" -exec mv -t pool/main/ {} + 
           
-          # Creiamo l'indice Packages in tutti i formati
-          dpkg-scanpackages pool/ > dists/stable/main/Packages
-          gzip -9c dists/stable/main/Packages > dists/stable/main/Packages.gz
-          xz -9c dists/stable/main/Packages > dists/stable/main/Packages.xz
-          
-          # Copiamo gli indici per ogni architettura
-          cp dists/stable/main/Packages* dists/stable/main/binary-amd64/
-          cp dists/stable/main/Packages* dists/stable/main/binary-i386/
-          cp dists/stable/main/Packages* dists/stable/main/binary-arm64/
-          
+          # Per ogni architettura, creiamo un indice Packages specifico
+          for arch in amd64 i386 arm64; do
+            echo "Generating Packages index for $arch..."
+            
+            # Definiamo la directory di destinazione
+            TARGET_DIR="dists/stable/main/binary-$arch"
+            
+            # Usiamo apt-ftparchive per scansionare solo i pacchetti dell'architettura corrente
+            apt-ftparchive packages --architecture "$arch" pool/ > "$TARGET_DIR/Packages"
+            
+            # Comprimiamo il file Packages generato
+            gzip -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.gz"
+            xz -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.xz"
+          done
+
           # Creiamo il file di configurazione per apt-ftparchive "al volo"
           cat > apt-release.conf <<EOF
           APT::FTPArchive::Release {
