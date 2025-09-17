@@ -42,21 +42,10 @@ jobs:
           echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
 
-      - name: 5. Update and Sign Repository for Fedora 42
-          # Aggiungiamo 'env' per passare il secret in modo sicuro
-          env:
-          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
-          run: |
-            cd ./rpm/fedora/42
-            createrepo_c .
-            mkdir -p ~/.gnupg
-            echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
-            echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-            gpg-connect-agent reloadagent /bye
-            # Usiamo la variabile d'ambiente invece della sostituzione diretta
-            echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml          
+      # NOTA: Ho rimosso lo step 5 errato che era qui.
+      # I prossimi step sono stati rinumerati per coerenza.
 
-      - name: 6. Prepare RPM Sources
+      - name: 5. Prepare RPM Sources
         run: |
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
@@ -65,19 +54,21 @@ jobs:
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
 
-      - name: 7. Build and Sign RPM package
+      - name: 6. Build and Sign RPM package
         id: build
+        env: # Aggiunto ENV qui per sicurezza
+          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           rpmbuild -ba packaging/rpm/penguins-eggs.spec
           rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
 
-      - name: 8. Upload RPM Artifact for publishing
+      - name: 7. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
@@ -88,33 +79,30 @@ jobs:
     needs: build-fedora
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Fa il checkout del repository di destinazione (penguins-eggs-repo)
-      # in modo da avere una base di lavoro che include già i file Debian.
       - name: 1. Checkout penguins-eggs-repo branch
         uses: actions/checkout@v4
         with:
           repository: pieroproietti/penguins-eggs-repo
           token: ${{ secrets.PUBLISH_TOKEN }}
       
-      # Step 2: Crea la struttura di cartelle per i nuovi RPM, se non esiste già.
       - name: 2. Create directory structure
         run: mkdir -p rpm/fedora/42
 
-      # Step 3: Scarica l'artefatto RPM e lo posiziona nella cartella appena creata.
       - name: 3. Download Fedora RPM artifact
         uses: actions/download-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
           path: ./rpm/fedora/42
 
-      # Step 4: Installa gli strumenti necessari sul runner Ubuntu.
       - name: 4. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      # Step 5: Aggiorna i metadati del repository RPM e li firma.
+      # QUI è dove la correzione con 'env:' va applicata
       - name: 5. Update and Sign Repository for Fedora 42
+        env:
+          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           cd ./rpm/fedora/42
           createrepo_c .
@@ -122,10 +110,8 @@ jobs:
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
 
-      # Step 6: Fa il commit delle modifiche (i nuovi RPM e i metadati aggiornati)
-      # e le pubblica sul repository.
       - name: 6. Commit and Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
