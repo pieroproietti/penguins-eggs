@@ -98,47 +98,70 @@ jobs:
           name: el9-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
-  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-el9
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: 1. Checkout gh-pages branch
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          
-      - name: 2. Create directory structure
+      # Step 1: Crea la struttura di cartelle in un workspace vuoto.
+      - name: 1. Create directory structure
         run: mkdir -p rpm/el/9
 
-      - name: 3. Download EL9 RPM artifact
+      # Step 2: Scarica l'artefatto RPM e lo posiziona nella struttura creata.
+      - name: 2. Download EL9 RPM artifact
         uses: actions/download-artifact@v4
         with:
           name: el9-rpm-for-repo
           path: ./rpm/el/9
 
-      - name: 4. Install Tools and Import GPG Key
+      # Step 3: Installa gli strumenti necessari sul runner Ubuntu.
+      - name: 3. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      - name: 5. Update and Sign Repository for EL9
+      # Step 4: Aggiorna i metadati del repository e li firma.
+      - name: 4. Update and Sign Repository for EL9
+        env:
+          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          cd ./rpm/el/9
-          createrepo_c .
+          # Definiamo la directory di destinazione in una variabile per chiarezza
+          REPO_DIR="./rpm/el/9"
+          
+          # Eseguiamo createrepo_c sulla directory specifica
+          createrepo_c "$REPO_DIR"
+          
+          # Aggiungiamo un controllo per verificare che il file sia stato creato
+          if [ ! -f "$REPO_DIR/repodata/repomd.xml" ]; then
+            echo "::error::File repomd.xml non trovato dopo l'esecuzione di createrepo_c!"
+            echo "Contenuto della directory:"
+            ls -lR "$REPO_DIR"
+            exit 1
+          fi
+          
+          # Configuriamo gpg-agent come prima
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
+          
+          # Firmiamo il file usando il percorso completo e sicuro
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} "$REPO_DIR/repodata/repomd.xml"
 
-      - name: 6. Commit and Deploy to GitHub Pages
+      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
+      - name: 5. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Token con i permessi per scrivere sul repo esterno
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          # Il repository di destinazione
+          external_repository: pieroproietti/penguins-eggs-repo
+          # Il branch di destinazione
+          publish_branch: main
+          # La cartella da pubblicare (l'intera area di lavoro)
           publish_dir: .
+          # ISTRUZIONE CHIAVE: Non cancellare i file esistenti
+          keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-
+          commit_message: "Update EL9 RPM repository"

@@ -1,5 +1,31 @@
+# =========================================================================================
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY RPM PER OPENSUSE
+#
+# Scopo:
+#   Questo workflow automatizza la creazione e la pubblicazione del pacchetto .rpm 
+#   di penguins-eggs per openSUSE Leap. Il pacchetto viene pubblicato sul repository 
+#   YUM/DNF dedicato 'penguins-eggs-repo'.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
+# Struttura:
+#   1. Job 'build-opensuse': Compila il pacchetto .rpm utilizzando un 
+#      container openSUSE Leap pulito.
+#   2. Job 'publish-repo': Scarica l'artefatto .rpm, lo aggiunge alla struttura
+#      del repository, aggiorna i metadati con 'createrepo_c', firma i metadati
+#      con GPG e pubblica in modo non distruttivo (opzione 'keep_files: true')
+#      sul branch 'main' del repository 'penguins-eggs-repo'.
+#
+# Prerequisiti (GitHub Secrets):
+#   - GPG_SIGNING_KEY: La chiave GPG privata per firmare il repository.
+#   - GPG_KEY_ID: L'identificativo breve della chiave GPG.
+#   - GPG_PASSPHRASE: La passphrase della chiave GPG.
+#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
+#     sul repository 'penguins-eggs-repo'.
+# =========================================================================================
 
-# Nome del workflow, specifico per openSUSE
 name: 02. Build and Publish openSUSE RPM
 
 # Controllo per evitare conflitti di scrittura su gh-pages
