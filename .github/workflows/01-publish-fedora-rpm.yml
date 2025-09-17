@@ -17,6 +17,7 @@ env:
 jobs:
   # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
 # --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
+# --- JOB 1: COSTRUISCE IL PACCHETTO PER FEDORA ---
   build-fedora:
     runs-on: ubuntu-latest
     container:
@@ -43,7 +44,7 @@ jobs:
           echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
 
-      # --- STEP MANCANTE REINSERITO QUI ---
+      # --- STEP FONDAMENTALE MANCANTE REINSERITO QUI ---
       - name: 5. Import GPG Key and Configure RPM
         run: |
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
@@ -78,7 +79,8 @@ jobs:
         with:
           name: fedora-42-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
-  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+
+# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-fedora
     runs-on: ubuntu-latest
