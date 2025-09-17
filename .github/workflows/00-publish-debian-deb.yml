@@ -87,33 +87,25 @@ jobs:
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
           
-          # Per ogni architettura, creiamo un indice Packages specifico
           for arch in amd64 i386 arm64; do
             echo "Generating Packages index for $arch..."
             
-            # Directory di destinazione per gli indici
             TARGET_DIR="dists/stable/main/binary-$arch"
-            # Directory temporanea per i pacchetti filtrati
             TEMP_DIR="temp-pool/$arch"
 
             mkdir -p "$TEMP_DIR"
             
-            # Copiamo i pacchetti di questa architettura nella directory temporanea
             find pool/main -maxdepth 1 -type f -name "*_${arch}.deb" -exec cp {} "$TEMP_DIR/" \;
 
-            # Scansioniamo la directory temporanea ma diciamo a apt che i file si troveranno in "pool/main"
-            dpkg-scanpackages "$TEMP_DIR" /dev/null "pool/main" > "$TARGET_DIR/Packages"
+            # --- RIGA CORRETTA QUI ---
+            dpkg-scanpackages "$TEMP_DIR" /dev/null "pool/main/" > "$TARGET_DIR/Packages"
 
-            # Comprimiamo il file Packages generato
             gzip -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.gz"
             xz -9c "$TARGET_DIR/Packages" > "$TARGET_DIR/Packages.xz"
           done
           
-          # Puliamo le directory temporanee
           rm -rf temp-pool
-          # --- FINE BLOCCO MODIFICATO ---
-
-          # Creiamo il file di configurazione per apt-ftparchive "al volo"
+          
           cat > apt-release.conf <<EOF
           APT::FTPArchive::Release {
             Origin "Piero Proietti";
@@ -126,10 +118,8 @@ jobs:
           };
           EOF
           
-          # Usiamo apt-ftparchive per creare un file Release corretto e completo
           apt-ftparchive release -c apt-release.conf dists/stable > dists/stable/Release
           
-          # Firmiamo il file Release
           cd dists/stable
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
