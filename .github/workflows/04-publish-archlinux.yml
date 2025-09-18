@@ -1,15 +1,5 @@
 # =========================================================================================
 # WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
-#
-# Scopo:
-#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
-#   e la sua pubblicazione in un repository Pacman dedicato all'interno del
-#   repository 'penguins-eggs-repo'.
-#
-# Trigger:
-#   - Push sul branch 'main'.
-#   - Avvio manuale tramite 'workflow_dispatch'.
-#
 # Struttura:
 #   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst utilizzando un
 #      container Arch Linux pulito e un utente non-root, come da best practice.
@@ -87,25 +77,22 @@ jobs:
           sudo apt-get update && sudo apt-get install -y pacman gnupg2
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
 
-      # Step 4: Aggiorna e firma il database del repository Arch.
+      # Step 4: Aggiorna e firma il repository Arch (eseguito in un container Arch)
       - name: 4. Update and Sign Arch Linux Repository
-        env:
-          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          cd ./arch
+        uses: add-manga/docker-action@v1
+        with:
+          # Usiamo l'immagine ufficiale di Arch Linux
+          image: archlinux
+          # Condividiamo la cartella del workflow con il container
+          options: -v ${{ github.workspace }}:/work
+          # Passiamo i secret GPG in modo sicuro come variabili d'ambiente
+          secrets: |
+            GPG_SIGNING_KEY
+            GPG_KEY_ID
+            GPG_PASSPHRASE
+          # Script da eseguire DENTRO il container Arch
+          script: |      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
           
-          # Configuriamo gpg-agent per permettere a repo-add di firmare senza interazione
-          mkdir -p ~/.gnupg
-          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
-          echo "allow-loopback-penentry" > ~/.gnupg/gpg-agent.conf
-          gpg-connect-agent reloadagent /bye
-          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-
-          # Crea/aggiorna il database del repository e lo firma
-          # Il file del database si chiamerà 'penguins-eggs.db.tar.gz'
-          repo-add --sign --key ${{ secrets.GPG_KEY_ID }} penguins-eggs.db.tar.gz *.pkg.tar.zst
-
-      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
       - name: 5. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
