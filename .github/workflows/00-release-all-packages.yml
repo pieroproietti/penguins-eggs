@@ -1,55 +1,61 @@
-# ---------------------------------------------------------------- #
-#                  WORKFLOW ORCHESTRATORE GLOBALE                  #
-# ---------------------------------------------------------------- #
+# ================================================================= #
+#                WORKFLOW ORCHESTRATORE DI RILASCIO                 #
+# ================================================================= #
 #
-# Scopo: Avviare tutti i workflow di pubblicazione con un solo click.
+# Questo workflow ha un unico scopo: avviare tutti gli altri workflow
+# di pubblicazione con un solo click manuale.
 #
-# Come funziona:
-# 1. Si attiva solo manualmente tramite il pulsante "Run workflow".
-# 2. Fa il checkout del codice per dare contesto alla GitHub CLI.
-# 3. Usa la GitHub CLI (gh) per avviare in sequenza tutti gli
-#    altri workflow specificati, eseguendoli sul branch 'master'.
+# Include il passaggio 'actions/checkout' per risolvere l'errore
+# "fatal: not a git repository".
 #
-# ---------------------------------------------------------------- #
+# ----------------------------------------------------------------- #
 
-name: '🚀 Rilascio Globale: Avvia Tutto'
+name: '🚀 Avvia Tutti i Rilasci'
 
-# Trigger: si avvia solo quando clicchi il pulsante "Run workflow"
+# Questo trigger abilita l'avvio manuale dalla tab "Actions" di GitHub.
 on:
   workflow_dispatch:
 
 jobs:
-  # L'unico job di questo file è fare da "dispatcher"
+  # Definiamo un unico job che farà da "direttore d'orchestra".
   trigger-all-releases:
-    name: Avvia tutti i rilasci
+    name: Trigger di Rilascio Globale
     runs-on: ubuntu-latest
 
-    # Permessi: è OBBLIGATORIO dare al workflow il permesso di avviarne altri.
+    # È obbligatorio concedere i permessi per permettere a questo
+    # workflow di avviarne altri.
     permissions:
       actions: write
 
     steps:
-      # Step 1: Scarica il codice del repository nel runner.
-      # Questo passaggio è FONDAMENTALE perché il comando 'gh' ha bisogno
-      # di sapere in quale repository si trova per funzionare.
-      - name: Checkout del repository
+      # --- PASSO 1: FONDAMENTALE ---
+      # Scarica il codice del repository. Senza questo passaggio,
+      # il runner non sa in quale repository si trova, causando
+      # l'errore "not a git repository" quando si usa la CLI 'gh'.
+      - name: Checkout del codice del repository
         uses: actions/checkout@v4
 
-      # Step 2: Esegui lo script che avvia tutti gli altri workflow.
+      # --- PASSO 2: ESECUZIONE ---
+      # Avvia tutti gli altri workflow usando la GitHub CLI.
       - name: Avvia i workflow di pubblicazione
         env:
+          # Il token è necessario per autenticare le chiamate della CLI.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Inizio a chiamare i singoli workflow..."
-          echo "Tutti i workflow verranno eseguiti sul branch 'master'."
+          echo "Tutti i rilasci verranno eseguiti usando il codice dal branch 'master'."
 
-          # Per ogni workflow, eseguiamo 'gh workflow run' specificando:
-          # - Il nome del file del workflow da avviare
-          # - Il branch su cui deve girare (--ref)
+          # Nota: Il flag '--ref master' forza ogni workflow a girare
+          # sull'ultima versione del branch 'master'.
+          # Se preferisci usare il branch da cui avvii questo workflow,
+          # puoi sostituire 'master' con '${{ github.ref }}'.
           gh workflow run 00-publish-debian-deb.yml --ref master
           gh workflow run 01-publish-fedora-rpm.yml --ref master
           gh workflow run 02-publish-opensuse-rpm.yml --ref master
           gh workflow run 03-publish-enterprise-linux.yml --ref master
           gh workflow run 04-publish-archlinux.yml --ref master
           gh workflow run 05-publish-manjaro.yml --ref master
-          gh workflow run 06-publish-alpine
+          gh workflow run 06-publish-alpine.yml --ref master
+
+          echo "✅ Processo completato. Tutti i workflow sono stati avviati."
+          echo "Controlla il loro stato nella tab 'Actions'."
