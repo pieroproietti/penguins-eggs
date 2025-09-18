@@ -7,14 +7,12 @@ assignees: ''
 
 ---
 
-## The Bug and how to reproduce it
+# The Bug and how to reproduce it
 
-<!-- Provide details on the bug and the steps that must be taken to reproduce it. -->
+## Penguins' Eggs Version: ``
 
-## The version of Penguins Eggs
+## Linux Distribution: ``
 
-<!-- Provide the version number of penguins-eggs that you are using. Example: 10.0.59-1 -->
+## Distribution Version: ``
 
 ## Any other notes
-
-<!-- Provide notes, screenshots, and other details that may not fit the above categories. -->
