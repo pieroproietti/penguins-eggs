@@ -4,30 +4,30 @@
 # Scopo:
 #   Questo workflow automatizza la creazione del pacchetto .apk di penguins-eggs
 #   e la sua pubblicazione in un repository dedicato su 'penguins-eggs-repo'.
+#   La versione del pacchetto viene letta automaticamente da 'package.json'.
 #
 # Trigger:
 #   - Push sul branch 'main'.
 #   - Avvio manuale tramite 'workflow_dispatch'.
 #
 # Struttura:
-#   1. Job 'build-apk': Compila il pacchetto .apk in un container Alpine pulito.
-#      Questo job genera una chiave di build temporanea, ma non viene usata
-#      per firmare il repository finale.
-#   2. Job 'publish-repo': Eseguito in un container Alpine separato.
+#   1. Job 'build-apk':
+#      - Legge la versione da 'package.json'.
+#      - Aggiorna dinamicamente il file 'APKBUILD' con la versione corretta.
+#      - Compila il pacchetto .apk in un container Alpine pulito.
+#   2. Job 'publish-repo':
 #      - Fa il checkout del repository 'penguins-eggs-repo'.
 #      - Scarica l'artefatto (.apk) dal job precedente.
-#      - Aggiunge il nuovo pacchetto alla sottodirectory 'alpine/x86_64/'.
-#      - Crea l'indice del repository con 'apk index'.
-#      - Firma l'indice usando la chiave privata fornita tramite secret.
-#      - Esegue il commit e il push delle modifiche sul branch 'main' del repository.
+#      - Aggiunge la chiave pubblica e firma l'indice del repository.
+#      - Esegue il commit e il push delle modifiche.
 #
 # Prerequisiti (GitHub Secrets):
-#   - ALPINE_SIGNING_KEY: La chiave privata in formato PEM per firmare l'indice del repository.
-#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
-#     sul repository 'penguins-eggs-repo'.
+#   - ALPINE_SIGNING_KEY: La chiave privata PEM per la firma.
+#   - ALPINE_PUBLIC_KEY: La chiave pubblica corrispondente.
+#   - PUBLISH_TOKEN: Un PAT con permessi di scrittura su 'penguins-eggs-repo'.
 # =========================================================================================
 
-name: 06. Build and publish Alpine Linux Package
+name: 06. Build Alpine Linux Package
 
 on:
   workflow_dispatch:
@@ -46,31 +46,38 @@ jobs:
       - name: 2. Prepare Build Environment
         run: |
           apk update
-          apk add alpine-sdk git nodejs npm sudo device-mapper
+          apk add alpine-sdk git nodejs npm sudo device-mapper jq
 
       - name: 3. Install PNPM
         run: npm install -g pnpm
 
       - name: 4. Create Build User, Keys, and Fix Environment
         run: |
-          # Creiamo i link simbolici necessari per le librerie
           ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
           ln -s /lib/ld-musl-x86_64.so.1 /lib/libdl.so.2
-          
-          # Creiamo l'utente e generiamo una chiave di build temporanea
           adduser -D builder
           addgroup builder abuild
           echo | sudo -u builder abuild-keygen -a
           cp /home/builder/.abuild/*.pub /etc/apk/keys/
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 5. Build The Package as Non-Root User
+      - name: 5. Update APKBUILD version from package.json
+        run: |
+          # Estrae la versione da package.json
+          VERSION=$(jq -r .version package.json)
+          echo "Building version: $VERSION"
+          
+          # Sostituisce la versione nel file APKBUILD e resetta pkgrel a 1
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/alpine/APKBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=1/" ./packaging/alpine/APKBUILD
+
+      - name: 6. Build The Package as Non-Root User
         run: |
           sudo -u builder abuild checksum
           sudo -u builder abuild -r
         working-directory: ./packaging/alpine
       
-      - name: 6. Upload Package Artifact
+      - name: 7. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: alpine-package
@@ -92,36 +99,29 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: alpine-package
-          # I repository Alpine sono strutturati per architettura
           path: repo-dir/alpine/x86_64/
 
-      - name: 3. Update and Sign Alpine Repository
+      - name: 3. Add public key to the repository
+        run: |
+          echo "$ALPINE_PUBLIC_KEY" > repo-dir/alpine/piero.proietti@gmail.com-68452915.rsa.pub
+        env:
+          ALPINE_PUBLIC_KEY: ${{ secrets.ALPINE_PUBLIC_KEY }}
+
+      - name: 4. Update and Sign Alpine Repository
         run: |
           set -e
-          
-          # Entriamo nella directory del repository
           cd repo-dir/alpine/x86_64
-          
-          # Installiamo gli strumenti necessari
           apk update
           apk add alpine-sdk git
-          
-          # Scriviamo la chiave privata per la firma dal secret
           echo "$ALPINE_SIGNING_KEY" > /tmp/signer.pem
-          
-          # Creiamo l'indice del repository
           apk index -o APKINDEX.tar.gz *.apk
-          
-          # Firmiamo il nuovo indice del repository
           abuild-sign -k /tmp/signer.pem APKINDEX.tar.gz
-          
-          # Rimuoviamo la chiave privata per sicurezza
           rm /tmp/signer.pem
         env:
           ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }}
         working-directory: ${{ github.workspace }}
 
-      - name: 4. Deploy to penguins-eggs-repo
+      - name: 5. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
@@ -132,3 +132,4 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Alpine Linux repository"
+
