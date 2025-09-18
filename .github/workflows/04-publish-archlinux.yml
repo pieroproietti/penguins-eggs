@@ -91,16 +91,24 @@ jobs:
             GPG_KEY_ID
             GPG_PASSPHRASE
           # Script da eseguire DENTRO il container Arch
-          script: |      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
-          
-      - name: 5. Deploy to penguins-eggs-repo
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          external_repository: pieroproietti/penguins-eggs-repo
-          publish_branch: main
-          publish_dir: .
-          keep_files: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update Arch Linux repository"
+          script: |
+            # Spostiamoci nella cartella di lavoro che contiene i pacchetti
+            cd /work/arch
+
+            # Aggiorniamo i pacchetti e installiamo le dipendenze per la firma
+            pacman -Syu --noconfirm
+            pacman -S --noconfirm base-devel
+
+            # Importiamo la chiave GPG passata come secret
+            echo "$GPG_SIGNING_KEY" | gpg --import --batch
+
+            # Configuriamo gpg-agent per la firma non interattiva
+            mkdir -p ~/.gnupg
+            echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+            echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+            gpg-connect-agent reloadagent /bye
+            echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+            # Creiamo/aggiorniamo il database del repository e lo firmiamo
+            # Il file del database si chiamerà 'penguins-eggs.db.tar.gz'
+            repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
