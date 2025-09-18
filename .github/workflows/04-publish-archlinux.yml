@@ -60,10 +60,10 @@ jobs:
         with:
           image: archlinux
           dockerOptions: -v ${{ github.workspace }}/repo-dir:/work # Monta la cartella del repo
-          env:
-            GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-            GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-            GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           run: |
             set -e
             cd /work/arch
