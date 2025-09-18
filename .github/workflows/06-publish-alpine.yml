@@ -27,7 +27,7 @@
 #     sul repository 'penguins-eggs-repo'.
 # =========================================================================================
 
-name: 06. Build Alpine Linux Package
+name: 06. Build and publish Alpine Linux Package
 
 on:
   workflow_dispatch:

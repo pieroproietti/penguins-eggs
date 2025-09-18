@@ -27,7 +27,7 @@
 #     sul repository 'penguins-eggs-repo'.
 # =========================================================================================
 
-name: 05. Build Manjaro Package
+name: 05. Build and publish Manjaro Package
 
 on:
   workflow_dispatch:
