@@ -1,5 +1,5 @@
 # Nome del workflow che apparirà nella UI di GitHub
-name: 🚀 Inizia Rilascio Globale
+name: 000 - Orchestratore
 
 # Trigger manuale con il pulsante "Run workflow"
 on:
