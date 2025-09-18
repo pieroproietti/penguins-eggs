@@ -57,10 +57,6 @@ jobs:
         with:
           image: archlinux
           dockerOptions: -v ${{ github.workspace }}/repo-dir:/work
-          env:
-            GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-            GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-            GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           run: |
             set -e
             cd /work/arch
@@ -73,6 +69,10 @@ jobs:
             gpg-connect-agent reloadagent /bye
             echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
             repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: 4. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
