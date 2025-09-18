@@ -1,16 +1,9 @@
 # Nome del workflow che apparirà nella UI di GitHub
-name: 000 - Orchestratore
+name: 000 - Release all
 
 # Trigger manuale con il pulsante "Run workflow"
 on:
   workflow_dispatch:
-    # (Opzionale) Puoi aggiungere dei campi di input qui.
-    # Ad esempio, per specificare una versione da rilasciare.
-    inputs:
-      version:
-        description: 'Tag della versione da rilasciare (es. v1.2.3)'
-        required: true
-        default: 'v'
 
 jobs:
   # L'unico job di questo file è "chiamare" gli altri.
