@@ -1,5 +1,15 @@
 # =========================================================================================
 # WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
+#
+# Scopo:
+#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
+#   e la sua pubblicazione in un repository Pacman dedicato all'interno del
+#   repository 'penguins-eggs-repo'.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
 # Struttura:
 #   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst utilizzando un
 #      container Arch Linux pulito e un utente non-root, come da best practice.
@@ -60,28 +70,6 @@ jobs:
     needs: build-arch
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Crea la struttura di cartelle in un workspace vuoto.
-      - name: 1. Create directory structure
-        run: mkdir -p arch
-
-      # Step 2: Scarica l'artefatto e lo posiziona nella struttura creata.
-      - name: 2. Download Arch Linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: archlinux-package
-          path: ./arch
-
-      # Step 3: Installa gli strumenti necessari sul runner Ubuntu (pacman per repo-add).
-      - name: 3. Install Tools and Import GPG Key
-        run: |
-          sudo apt-get update && sudo apt-get install -y pacman gnupg2
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-
-# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
-  publish-repo:
-    needs: build-arch
-    runs-on: ubuntu-latest
-    steps:
       - name: 1. Create directory structure
         run: mkdir -p arch
 
@@ -103,6 +91,7 @@ jobs:
             GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
             GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
             GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          # <<< CORREZIONE: 'run' è allineato con 'image', 'env', etc.
           run: |
             set -e
             cd /work/arch
