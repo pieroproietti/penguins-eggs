@@ -1,39 +1,55 @@
-# Nome del workflow che apparirà nella UI di GitHub
-name: 000 - Release all
+# ---------------------------------------------------------------- #
+#                  WORKFLOW ORCHESTRATORE GLOBALE                  #
+# ---------------------------------------------------------------- #
+#
+# Scopo: Avviare tutti i workflow di pubblicazione con un solo click.
+#
+# Come funziona:
+# 1. Si attiva solo manualmente tramite il pulsante "Run workflow".
+# 2. Fa il checkout del codice per dare contesto alla GitHub CLI.
+# 3. Usa la GitHub CLI (gh) per avviare in sequenza tutti gli
+#    altri workflow specificati, eseguendoli sul branch 'master'.
+#
+# ---------------------------------------------------------------- #
 
-# Trigger manuale con il pulsante "Run workflow"
+name: '🚀 Rilascio Globale: Avvia Tutto'
+
+# Trigger: si avvia solo quando clicchi il pulsante "Run workflow"
 on:
   workflow_dispatch:
 
 jobs:
-  # L'unico job di questo file è "chiamare" gli altri.
+  # L'unico job di questo file è fare da "dispatcher"
   trigger-all-releases:
+    name: Avvia tutti i rilasci
     runs-on: ubuntu-latest
-    
-    # IMPORTANTE: Devi dare al workflow il permesso di avviarne altri.
-    # Per motivi di sicurezza, non è un'impostazione predefinita.
+
+    # Permessi: è OBBLIGATORIO dare al workflow il permesso di avviarne altri.
     permissions:
       actions: write
 
     steps:
-      - name: Avvio di tutti i workflow di pubblicazione
-        # Usiamo la GitHub CLI (gh), che è preinstallata sui runner di GitHub
+      # Step 1: Scarica il codice del repository nel runner.
+      # Questo passaggio è FONDAMENTALE perché il comando 'gh' ha bisogno
+      # di sapere in quale repository si trova per funzionare.
+      - name: Checkout del repository
+        uses: actions/checkout@v4
+
+      # Step 2: Esegui lo script che avvia tutti gli altri workflow.
+      - name: Avvia i workflow di pubblicazione
         env:
-          # Il token è necessario per autenticare la CLI e permetterle
-          # di eseguire azioni a nome tuo nel repository.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Inizio a chiamare i singoli workflow sulla versione ${{ inputs.version }}..."
+          echo "Inizio a chiamare i singoli workflow..."
+          echo "Tutti i workflow verranno eseguiti sul branch 'master'."
 
-          # Per ogni workflow, eseguiamo il comando 'gh workflow run'
-          # specificando il nome del file .yml.
-          # '--ref' indica su quale branch/tag eseguire il workflow (in questo caso, quello specificato nell'input).
-          gh workflow run 00-publish-debian-deb.yml --ref ${{ github.ref }}
-          gh workflow run 01-publish-fedora-rpm.yml --ref ${{ github.ref }}
-          gh workflow run 02-publish-opensuse-rpm.yml --ref ${{ github.ref }}
-          gh workflow run 03-publish-enterprise-linux.yml --ref ${{ github.ref }}
-          gh workflow run 04-publish-archlinux.yml --ref ${{ github.ref }}
-          gh workflow run 05-publish-manjaro.yml --ref ${{ github.ref }}
-          gh workflow run 06-publish-alpine.yml --ref ${{ github.ref }}
-          
-          echo "✅ Tutti i workflow sono stati avviati!"
+          # Per ogni workflow, eseguiamo 'gh workflow run' specificando:
+          # - Il nome del file del workflow da avviare
+          # - Il branch su cui deve girare (--ref)
+          gh workflow run 00-publish-debian-deb.yml --ref master
+          gh workflow run 01-publish-fedora-rpm.yml --ref master
+          gh workflow run 02-publish-opensuse-rpm.yml --ref master
+          gh workflow run 03-publish-enterprise-linux.yml --ref master
+          gh workflow run 04-publish-archlinux.yml --ref master
+          gh workflow run 05-publish-manjaro.yml --ref master
+          gh workflow run 06-publish-alpine
