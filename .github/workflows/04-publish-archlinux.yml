@@ -1,3 +1,32 @@
+# =========================================================================================
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
+#
+# Scopo:
+#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
+#   e la sua pubblicazione nel repository Pacman 'penguins-eggs-repo'.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
+# Struttura:
+#   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst in un container Arch Linux
+#      pulito e usando un utente non-root, come da best practice.
+#   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
+#      - Fa il checkout del repository 'penguins-eggs-repo'.
+#      - Scarica l'artefatto (il pacchetto .pkg.tar.zst) dal job precedente.
+#      - Aggiunge il nuovo pacchetto ai file del repository esistenti.
+#      - Rigenera e firma il database del repository con 'repo-add --sign'.
+#      - Esegue il commit e il push delle modifiche sul branch 'main' del repository.
+#
+# Prerequisiti (GitHub Secrets):
+#   - GPG_SIGNING_KEY: La chiave GPG privata per firmare il repository.
+#   - GPG_KEY_ID: L'identificativo breve della chiave GPG (usato da repo-add).
+#   - GPG_PASSPHRASE: La passphrase della chiave GPG.
+#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
+#     sul repository 'penguins-eggs-repo'.
+# =========================================================================================
+
 name: 04. Build Arch Linux Package
 
 on:
