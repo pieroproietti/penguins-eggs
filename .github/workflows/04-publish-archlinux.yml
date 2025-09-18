@@ -6,7 +6,6 @@ on:
     branches: [ main ]
 
 jobs:
-  # --- JOB 1: COSTRUISCE IL PACCHETTO PER ARCH LINUX ---
   build-arch:
     runs-on: ubuntu-latest
     container:
@@ -36,7 +35,6 @@ jobs:
           name: archlinux-package
           path: ./packaging/arch/*.pkg.tar.zst
 
-  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-arch
     runs-on: ubuntu-latest
@@ -60,25 +58,20 @@ jobs:
           image: archlinux
           dockerOptions: -v ${{ github.workspace }}/repo-dir:/work
           env:
-
             GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
             GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
             GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           run: |
             set -e
             cd /work/arch
-            
             pacman -Syu --noconfirm
             pacman -S --noconfirm base-devel
-
             echo "$GPG_SIGNING_KEY" | gpg --import --batch
             mkdir -p ~/.gnupg
             echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
             echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
             gpg-connect-agent reloadagent /bye
-            
             echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-            
             repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
 
       - name: 4. Deploy to penguins-eggs-repo
