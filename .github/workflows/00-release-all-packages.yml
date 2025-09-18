@@ -23,7 +23,7 @@ jobs:
       actions: write
 
     steps:
-      - name: 📢 Avvio di tutti i workflow di pubblicazione
+      - name: Avvio di tutti i workflow di pubblicazione
         # Usiamo la GitHub CLI (gh), che è preinstallata sui runner di GitHub
         env:
           # Il token è necessario per autenticare la CLI e permetterle
