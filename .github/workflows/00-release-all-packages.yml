@@ -1,0 +1,47 @@
+# Nome del workflow che apparirà nella UI di GitHub
+name: 🚀 Inizia Rilascio Globale
+
+# Trigger manuale con il pulsante "Run workflow"
+on:
+  workflow_dispatch:
+    # (Opzionale) Puoi aggiungere dei campi di input qui.
+    # Ad esempio, per specificare una versione da rilasciare.
+    inputs:
+      version:
+        description: 'Tag della versione da rilasciare (es. v1.2.3)'
+        required: true
+        default: 'v'
+
+jobs:
+  # L'unico job di questo file è "chiamare" gli altri.
+  trigger-all-releases:
+    runs-on: ubuntu-latest
+    
+    # IMPORTANTE: Devi dare al workflow il permesso di avviarne altri.
+    # Per motivi di sicurezza, non è un'impostazione predefinita.
+    permissions:
+      actions: write
+
+    steps:
+      - name: 📢 Avvio di tutti i workflow di pubblicazione
+        # Usiamo la GitHub CLI (gh), che è preinstallata sui runner di GitHub
+        env:
+          # Il token è necessario per autenticare la CLI e permetterle
+          # di eseguire azioni a nome tuo nel repository.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Inizio a chiamare i singoli workflow sulla versione ${{ inputs.version }}..."
+
+          # Per ogni workflow, eseguiamo il comando 'gh workflow run'
+          # specificando il nome del file .yml.
+          # '--ref' indica su quale branch/tag eseguire il workflow (in questo caso, quello specificato nell'input).
+          
+          gh workflow run 00-publish-debian-deb.yml --ref ${{ inputs.version }}
+          gh workflow run 01-publish-fedora-rpm.yml --ref ${{ inputs.version }}
+          gh workflow run 02-publish-opensuse-rpm.yml --ref ${{ inputs.version }}
+          gh workflow run 03-publish-enterprise-linux.yml --ref ${{ inputs.version }}
+          gh workflow run 04-publish-archlinux.yml --ref ${{ inputs.version }}
+          gh workflow run 05-publish-manjaro.yml --ref ${{ inputs.version }}
+          gh workflow run 06-publish-alpine.yml --ref ${{ inputs.version }}
+          
+          echo "✅ Tutti i workflow sono stati avviati!"
