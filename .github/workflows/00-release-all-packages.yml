@@ -10,7 +10,7 @@
 #
 # ----------------------------------------------------------------- #
 
-name: '🚀 Avvia Tutti i Rilasci'
+name: '... Release all ...'
 
 # Questo trigger abilita l'avvio manuale dalla tab "Actions" di GitHub.
 on:
