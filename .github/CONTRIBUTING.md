@@ -1,6 +1,6 @@
-# Contributing to [Project Name]
+# Contributing to penguins-eggs
 
-First off, thank you for considering contributing to [Project Name]! It's people like you that make this project great.
+First off, thank you for considering contributing to penguins-eggs! It's people like you that make this project great.
 
 Following these guidelines helps to communicate that you respect the time of the developers managing and developing this open source project. In return, they should reciprocate that respect in addressing your issue, assessing changes, and helping you finalize your pull requests.
 
@@ -26,7 +26,7 @@ Ready to contribute? Here's how to set up your environment and submit your first
 
 2.  **Clone your fork** locally:
     ```bash
-    git clone [https://github.com/your-username/](https://github.com/your-username/)[project-name].git
+    git clone https://github.com/pieroproietti/penguins-eggs
     ```
 
 3.  **Create a new branch** for your changes. Please use a descriptive name.
@@ -39,14 +39,15 @@ Ready to contribute? Here's how to set up your environment and submit your first
 
 4.  **Set up the development environment.**
     ```bash
-    npm install
+    pnpm install
     ```
 
 5.  **Make your changes** to the code.
 
-6.  **Run tests** to ensure that your changes do not break anything.
+6.  **Tests eggs from sources**.
     ```bash
-    npm test
+    pnpm build
+    ./eggs
     ```
 
 7.  **Commit your changes.** Please follow our commit message conventions.
