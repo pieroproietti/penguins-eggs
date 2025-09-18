@@ -11,12 +11,10 @@ This project and everyone participating in it is governed by the [Code of Conduc
 ## How Can I Contribute?
 
 ### Reporting Bugs
-Bugs are tracked as GitHub issues. Before opening a new issue, please perform a **search** to see if the problem has already been reported. If it has and the issue is still open, add a comment to the existing issue instead of opening a new one.
-
-When you are creating a bug report, please include as many details as possible by filling out the **Bug Report template** we provide.
+Bugs are tracked as GitHub issues. Please use our **Bug Report template** to provide all the necessary details.
 
 ### Suggesting Enhancements
-Enhancement suggestions are tracked as GitHub issues. Please provide a clear and detailed explanation of the feature you are suggesting by filling out our **Feature Request template**.
+Enhancement suggestions are also tracked as GitHub issues. Please use our **Feature Request template**.
 
 ## Your First Code Contribution
 
@@ -38,6 +36,7 @@ Ready to contribute? Here's how to set up your environment and submit your first
     ```
 
 4.  **Set up the development environment.**
+    You need to install nodejs, pnpm, your favourite editor. A short way to start is to download one of mine **colibri** ISOs and install it in a VM.
     ```bash
     pnpm install
     ```
