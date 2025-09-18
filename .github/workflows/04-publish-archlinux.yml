@@ -66,6 +66,7 @@ jobs:
           path: ./packaging/arch/*.pkg.tar.zst
 
   # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-arch
     runs-on: ubuntu-latest
@@ -83,8 +84,6 @@ jobs:
         run: echo "Workspace prepared for container execution."
 
       - name: 4. Update and Sign Arch Linux Repository
-        # 'uses' e 'run' sono fratelli, allo stesso livello di indentazione.
-        # 'uses' prepara il container, 'run' esegue lo script al suo interno.
         uses: container-actions/run-in-container@v1
         with:
           image: archlinux
@@ -93,6 +92,7 @@ jobs:
             GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
             GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
             GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        # L'indentazione di questo 'run:' è stata corretta.
         run: |
           set -e
           cd /work/arch
