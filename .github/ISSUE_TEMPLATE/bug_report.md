@@ -9,12 +9,11 @@ assignees: ''
 
 ### Description
 ### Steps to Reproduce
-1. Go to '...'
-2. Click on '....'
-3. See error
+1. Commands used: '...'
+2. See error
 
 ### Expected Behavior
 ### Actual Behavior
 ### Environment
-- **Software Version:** [e.g., 1.0.0]
-- **OS:** [e.g., Windows 11, macOS Sonoma]
+- **penguins-eggs Version:** [e.g., v25.9.16]
+- **Distro/:** [e.g., Debian 13, Fedora 42, etc]
