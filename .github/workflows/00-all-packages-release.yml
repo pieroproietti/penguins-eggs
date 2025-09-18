@@ -10,7 +10,7 @@
 #
 # ----------------------------------------------------------------- #
 
-name: '... Release all ...'
+name: '00 - all packages release'
 
 # Questo trigger abilita l'avvio manuale dalla tab "Actions" di GitHub.
 on:
