@@ -13,6 +13,7 @@ jobs:
       image: archlinux
 
     steps:
+      # Ogni step (che inizia con '-') deve essere perfettamente allineato.
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
@@ -31,6 +32,8 @@ jobs:
         run: sudo -u builder makepkg -s --noconfirm
         working-directory: ./packaging/arch
       
+      # ATTENZIONE: Questo step DEVE essere allineato con lo step precedente.
+      # Un'indentazione errata qui è una causa comune di fallimento.
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -58,6 +61,8 @@ jobs:
       - name: 3. Update and Sign Arch Linux Repository
         uses: container-actions/run-in-container@v1
         with:
+          # ATTENZIONE: 'image', 'dockerOptions', 'env', e 'run'
+          # devono essere tutti "figli" di 'with:' e perfettamente allineati tra loro.
           image: archlinux
           dockerOptions: -v ${{ github.workspace }}/repo-dir:/work # Monta la cartella del repo
           env:
@@ -96,3 +101,4 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Arch Linux repository"
+
