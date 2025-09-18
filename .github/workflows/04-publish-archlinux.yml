@@ -1,0 +1,119 @@
+# =========================================================================================
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
+#
+# Scopo:
+#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
+#   e la sua pubblicazione in un repository Pacman dedicato all'interno del
+#   repository 'penguins-eggs-repo'.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
+# Struttura:
+#   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst utilizzando un
+#      container Arch Linux pulito e un utente non-root, come da best practice.
+#   2. Job 'publish-repo': Scarica l'artefatto, lo aggiunge alla cartella 'arch/',
+#      crea e firma il database del repository con 'repo-add --sign', e infine
+#      pubblica in modo non distruttivo (opzione 'keep_files: true')
+#      sul branch 'main' del repository 'penguins-eggs-repo'.
+#
+# Prerequisiti (GitHub Secrets):
+#   - GPG_SIGNING_KEY: La chiave GPG privata per firmare il repository.
+#   - GPG_KEY_ID: L'identificativo breve della chiave GPG (usato da repo-add).
+#   - GPG_PASSPHRASE: La passphrase della chiave GPG.
+#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
+#     sul repository 'penguins-eggs-repo'.
+# =========================================================================================
+
+name: 04. Build Arch Linux Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  # --- JOB 1: COSTRUISCE IL PACCHETTO PER ARCH LINUX ---
+  build-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
+
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Prepare Build Environment and Dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git pnpm
+
+      - name: 3. Create Build User and Set Permissions
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: 4. Build The Package as Non-Root User
+        run: sudo -u builder makepkg -s --noconfirm
+        working-directory: ./packaging/arch
+      
+      - name: 5. Upload Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: archlinux-package
+          path: ./packaging/arch/*.pkg.tar.zst
+
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+  publish-repo:
+    needs: build-arch
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Crea la struttura di cartelle in un workspace vuoto.
+      - name: 1. Create directory structure
+        run: mkdir -p arch
+
+      # Step 2: Scarica l'artefatto e lo posiziona nella struttura creata.
+      - name: 2. Download Arch Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: archlinux-package
+          path: ./arch
+
+      # Step 3: Installa gli strumenti necessari sul runner Ubuntu (pacman per repo-add).
+      - name: 3. Install Tools and Import GPG Key
+        run: |
+          sudo apt-get update && sudo apt-get install -y pacman gnupg2
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+
+      # Step 4: Aggiorna e firma il database del repository Arch.
+      - name: 4. Update and Sign Arch Linux Repository
+        env:
+          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          cd ./arch
+          
+          # Configuriamo gpg-agent per permettere a repo-add di firmare senza interazione
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-penentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+          # Crea/aggiorna il database del repository e lo firma
+          # Il file del database si chiamerà 'penguins-eggs.db.tar.gz'
+          repo-add --sign --key ${{ secrets.GPG_KEY_ID }} penguins-eggs.db.tar.gz *.pkg.tar.zst
+
+      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
+      - name: 5. Deploy to penguins-eggs-repo
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo
+          publish_branch: main
+          publish_dir: .
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Update Arch Linux repository"
