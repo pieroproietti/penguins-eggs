@@ -1,0 +1,134 @@
+# =========================================================================================
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ALPINE LINUX
+#
+# Scopo:
+#   Questo workflow automatizza la creazione del pacchetto .apk di penguins-eggs
+#   e la sua pubblicazione in un repository dedicato su 'penguins-eggs-repo'.
+#
+# Trigger:
+#   - Push sul branch 'main'.
+#   - Avvio manuale tramite 'workflow_dispatch'.
+#
+# Struttura:
+#   1. Job 'build-apk': Compila il pacchetto .apk in un container Alpine pulito.
+#      Questo job genera una chiave di build temporanea, ma non viene usata
+#      per firmare il repository finale.
+#   2. Job 'publish-repo': Eseguito in un container Alpine separato.
+#      - Fa il checkout del repository 'penguins-eggs-repo'.
+#      - Scarica l'artefatto (.apk) dal job precedente.
+#      - Aggiunge il nuovo pacchetto alla sottodirectory 'alpine/x86_64/'.
+#      - Crea l'indice del repository con 'apk index'.
+#      - Firma l'indice usando la chiave privata fornita tramite secret.
+#      - Esegue il commit e il push delle modifiche sul branch 'main' del repository.
+#
+# Prerequisiti (GitHub Secrets):
+#   - ALPINE_SIGNING_KEY: La chiave privata in formato PEM per firmare l'indice del repository.
+#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
+#     sul repository 'penguins-eggs-repo'.
+# =========================================================================================
+
+name: 06. Build Alpine Linux Package
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:latest
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Prepare Build Environment
+        run: |
+          apk update
+          apk add alpine-sdk git nodejs npm sudo device-mapper
+
+      - name: 3. Install PNPM
+        run: npm install -g pnpm
+
+      - name: 4. Create Build User, Keys, and Fix Environment
+        run: |
+          # Creiamo i link simbolici necessari per le librerie
+          ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
+          ln -s /lib/ld-musl-x86_64.so.1 /lib/libdl.so.2
+          
+          # Creiamo l'utente e generiamo una chiave di build temporanea
+          adduser -D builder
+          addgroup builder abuild
+          echo | sudo -u builder abuild-keygen -a
+          cp /home/builder/.abuild/*.pub /etc/apk/keys/
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+
+      - name: 5. Build The Package as Non-Root User
+        run: |
+          sudo -u builder abuild checksum
+          sudo -u builder abuild -r
+        working-directory: ./packaging/alpine
+      
+      - name: 6. Upload Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpine-package
+          path: /home/builder/packages/**/*.apk
+
+  publish-repo:
+    needs: build-apk
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: 1. Checkout existing repo
+        uses: actions/checkout@v4
+        with:
+          repository: pieroproietti/penguins-eggs-repo
+          token: ${{ secrets.PUBLISH_TOKEN }}
+          path: repo-dir
+
+      - name: 2. Download Alpine artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: alpine-package
+          # I repository Alpine sono strutturati per architettura
+          path: repo-dir/alpine/x86_64/
+
+      - name: 3. Update and Sign Alpine Repository
+        run: |
+          set -e
+          
+          # Entriamo nella directory del repository
+          cd repo-dir/alpine/x86_64
+          
+          # Installiamo gli strumenti necessari
+          apk update
+          apk add alpine-sdk git
+          
+          # Scriviamo la chiave privata per la firma dal secret
+          echo "$ALPINE_SIGNING_KEY" > /tmp/signer.pem
+          
+          # Creiamo l'indice del repository
+          apk index -o APKINDEX.tar.gz *.apk
+          
+          # Firmiamo il nuovo indice del repository
+          abuild-sign -k /tmp/signer.pem APKINDEX.tar.gz
+          
+          # Rimuoviamo la chiave privata per sicurezza
+          rm /tmp/signer.pem
+        env:
+          ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }}
+        working-directory: ${{ github.workspace }}
+
+      - name: 4. Deploy to penguins-eggs-repo
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo
+          publish_branch: main
+          publish_dir: ./repo-dir
+          keep_files: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Update Alpine Linux repository"
