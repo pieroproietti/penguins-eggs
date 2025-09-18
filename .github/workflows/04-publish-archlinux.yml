@@ -27,7 +27,7 @@
 #     sul repository 'penguins-eggs-repo'.
 # =========================================================================================
 
-name: 04. Build Arch Linux Package
+name: 04. Build and publish Arch Linux pkgs
 
 on:
   workflow_dispatch:
