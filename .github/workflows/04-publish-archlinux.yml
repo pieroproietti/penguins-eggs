@@ -58,7 +58,7 @@ jobs:
           set -e
           cd repo-dir/arch
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel
+          pacman -S --noconfirm base-devel git
           echo "$GPG_SIGNING_KEY" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
