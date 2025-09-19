@@ -16,6 +16,7 @@
 
 %global app_name penguins-eggs
 %global nodejs_prefix %{_prefix}/lib/%{app_name}
+%define pkglibdir %{nodejs_prefix}
 
 # Non generare il pacchetto di debug, che causa problemi con i binari pre-compilati
 %global debug_package %{nil}
@@ -124,7 +125,7 @@ cp -r \
     eui \
     node_modules \
     scripts \
-    %{buildroot}%{nodejs_prefix}/
+    %{buildroot}%{nodejs_prefix}
 
 # La cartella si trova NELLA stessa cartella in obs
 cp -r bootloaders %{buildroot}%{nodejs_prefix}/
@@ -136,10 +137,10 @@ ln -s ../lib/penguins-eggs/bin/run.js %{buildroot}%{_bindir}/eggs
 
 # Install shell completions
 install -d -m 755 %{buildroot}%{_datadir}/bash-completion/completions
-ln -s ../../../../%{pkglibdir}/scripts/eggs.bash %{buildroot}%{_datadir}/bash-completion/completions/eggs
+ln -s ../../../%{pkglibdir}/scripts/eggs.bash %{buildroot}%{_datadir}/bash-completion/completions/eggs
 
 install -d -m 755 %{buildroot}%{_datadir}/zsh/site-functions
-ln -s ../../../../%{pkglibdir}/scripts/_eggs %{buildroot}%{_datadir}/zsh/site-functions/_eggs
+ln -s ../../../%{pkglibdir}/scripts/_eggs %{buildroot}%{_datadir}/zsh/site-functions/_eggs
 
 # Install man page
 install -d -m 755 %{buildroot}%{_mandir}/man1
