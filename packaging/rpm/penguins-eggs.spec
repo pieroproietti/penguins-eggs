@@ -132,14 +132,14 @@ cp -r bootloaders %{buildroot}%{nodejs_prefix}/
 
 # Install executable symlink
 install -d -m 755 %{buildroot}%{_bindir}
-%ln_s ../lib/penguins-eggs/bin/run.js %{_bindir}/eggs
+ln -s ../lib/penguins-eggs/bin/run.js %{buildroot}%{_bindir}/eggs
 
 # Install shell completions
 install -d -m 755 %{buildroot}%{_datadir}/bash-completion/completions
-%ln_s ../../../%{pkglibdir}/scripts/eggs.bash %{_datadir}/bash-completion/completions/eggs
+ln -s ../../../%{pkglibdir}/scripts/eggs.bash %{buildroot}%{_datadir}/bash-completion/completions/eggs
 
 install -d -m 755 %{buildroot}%{_datadir}/zsh/site-functions
-%ln_s ../../../%{pkglibdir}/scripts/_eggs %{_datadir}/zsh/site-functions/_eggs
+ln -s ../../../%{pkglibdir}/scripts/_eggs %{buildroot}%{_datadir}/zsh/site-functions/_eggs
 
 # Install man page
 install -d -m 755 %{buildroot}%{_mandir}/man1
