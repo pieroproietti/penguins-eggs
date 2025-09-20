@@ -38,7 +38,7 @@
   ids:
     - lory    # Parrot lory
     - orchid  # VanillaOS
-    - gigi    #LMDE 7
+    - gigi    # LMDE 7
 
 # forky
 - id: forky
@@ -115,7 +115,7 @@
   distroLike: Ubuntu
   family: debian
   ids:
-    - oracular # Ubuntu oracular 24.10
+    - oracular # Ubuntu 24.10 
     - plucky # Ubuntu 25.04
     - questing # Ubuntu 25.10
     # others
