@@ -1,5 +1,0 @@
----
-dontChroot: false
-timeout: 10800
-script:
-    - /usr/libexec/fixconkeys-part2

@@ -1,8 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
 ---
-region: "America"
-zone: "New_York"
-localeGenPath: "/etc/locale.gen"
 geoip:
-    style: "xml"
-    url:   "https://geoip.ubuntu.com/lookup"
-    selector: "TimeZone"
+    style:    "json"
+    url:      "https://geoip.kde.org/v1/calamares"
+    selector: ""

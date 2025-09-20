@@ -1,25 +1,27 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2020 Harald Sitter <sitter@kde.org>
+# SPDX-FileCopyrightText: 2015-2016 Rohan Garg <rohan@kde.org>
 ---
 doAutologin: false
 setRootPassword: false
 sudoersGroup: sudo
-userGroup: users # glenn
 defaultGroups:
-    - adm
-    - cdrom
-    - dip
-    - lpadmin
-    - plugdev
+    - name: adm
+      must_exist: true
+    - name: cdrom
+      must_exist: true
+    - name: dip
+      must_exist: true
+    - name: lpadmin
+      must_exist: true
+    - name: plugdev
+      must_exist: true
     - name: sambashare
-      must_exist: false
       system: true
-    - sudo
-    # www-data
+    - name: sudo
+      must_exist: true
+# Explicitly set the shell instead of defering to calamares. We have a platform
+# expectation derived from ubuntu here.
+userShell: /bin/bash
 passwordRequirements:
-    minLength: 1
-    maxLength: -1
-# Explicitly set the shell instead of deferring to Calamares. We have a platform
-# expectation derived from Ubuntu here.
-user:
-  shell: /bin/bash
-  forbidden_names: [ root ]
-allowActiveDirectory: true
+    nonempty: true

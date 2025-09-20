@@ -1,17 +1,12 @@
-update_db: true
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
+# SPDX-FileCopyrightText: 2014-2016 Rohan Garg <rohan@kde.org>
+
 backend: apt
+
 operations:
   - remove:
-      - "^live-*"
-      - calamares-settings-lubuntu
       - calamares
-      - zram-config
-      - cifs-utils
-      - lubuntu-installer-prompt
-  - try_install:
-      - language-pack-$LOCALE
-      - language-pack-gnome-$LOCALE
-      - language-pack-kde-$LOCALE
-      - hunspell-$LOCALE
-      - libreoffice-help-$LOCALE
-      - libreoffice-l10n-$LOCALE
+      - neon-live
+      - casper
+      - '^live-*'

@@ -1,21 +1,6 @@
-efiSystemPartition: "/boot/efi"
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2019-2020 Harald Sitter <sitter@kde.org>
+# SPDX-FileCopyrightText: 2016 Rohan Garg <rohan@kde.org>
+
 enableLuksAutomatedPartitioning: true
-luksGeneration: luks2
-userSwapChoices:
-    - none
-    - file
 initialSwapChoice: file
-drawNestedPartitions: true
-defaultFileSystemType: "ext4"
-availableFileSystemTypes: ["ext4","btrfs","xfs"]
-partitionLayout:
-    - name: "ubuntu_boot"
-      filesystem: ext4
-      noEncrypt: true
-      onlyPresentWithEncryption: true
-      mountPoint: "/boot"
-      size: 4G
-    - name: "ubuntu_root"
-      filesystem: unknown
-      mountPoint: "/"
-      size: 100%

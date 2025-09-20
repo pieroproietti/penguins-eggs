@@ -1,4 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
 ---
-# Setting emergency to true will make it so this module is still run
-# when a prior module fails
-emergency: true
+srcLog:      "/root/.cache/Calamares/Calamares/Calamares.log"
+destLog:     "/var/log/Calamares.log"
