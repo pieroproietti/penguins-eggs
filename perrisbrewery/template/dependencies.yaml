@@ -11,6 +11,7 @@ common:
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe
+  - gpg # eggs
   - jq # mom
   - live-boot # eggs
   - live-boot-doc # eggs
