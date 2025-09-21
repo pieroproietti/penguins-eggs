@@ -1,9 +1,0 @@
----
-dontChroot: true
-timeout: 10800
-"packages.elementButton":
-    true: "snap-seed-glue --seed ${ROOT}/var/lib/snapd/seed element-desktop"
-"packages.kritaButton":
-    true: "snap-seed-glue --seed ${ROOT}/var/lib/snapd/seed krita"
-"packages.thunderbirdButton":
-    true: "snap-seed-glue --seed ${ROOT}/var/lib/snapd/seed thunderbird"

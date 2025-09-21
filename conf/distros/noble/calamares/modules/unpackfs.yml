@@ -1,5 +1,6 @@
+# Ubuntu/noble
 ---
 unpack:
-    -   source: "/cdrom/casper/filesystem.squashfs"
+    -   source: {{source}}
         sourcefs: "squashfs"
         destination: ""

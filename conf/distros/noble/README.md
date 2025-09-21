@@ -1,3 +1,3 @@
 # Ubuntu 24.04 noble
 
-It take all configuration from Ubuntu focal
+Completely renewd, but the problem of crypted persist!

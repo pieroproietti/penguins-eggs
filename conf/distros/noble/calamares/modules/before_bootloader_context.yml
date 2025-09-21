@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+#
+# Make sure the correct bootloader package is installed for efi.
+# Also pull in the shim so secureboot has a chance at working.
+---
+firmwareType:
+    efi:
+    - command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-amd64-signed
+      timeout: 300
+    - command: apt install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
+      timeout: 300

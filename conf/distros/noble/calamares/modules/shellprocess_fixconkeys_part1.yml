@@ -1,5 +1,0 @@
----
-dontChroot: true
-timeout: 30
-script:
-    - /usr/libexec/fixconkeys-part1 ${ROOT}

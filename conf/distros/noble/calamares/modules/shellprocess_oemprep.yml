@@ -1,5 +1,0 @@
----
-dontChroot: true
-timeout: 120
-script:
-    - "/usr/libexec/calamares-oemprep.sh ${ROOT}"

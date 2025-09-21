@@ -1,0 +1,21 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2021 Harald Sitter <sitter@kde.org>
+#
+# Configure one or more display managers (e.g. SDDM)
+# with a "best effort" approach.
+---
+displaymanagers:
+  - sddm
+
+# Force plasma as default session. calamares doesn't necessarily do a good job at picking
+# a "smart" default. Whatever smart means anyway.
+defaultDesktopEnvironment:
+    executable: "/bin/true"
+    desktopFile: "/usr/share/xsessions/xfce.desktop"
+    #desktopFile: "/usr/share/wayland-sessions/plasma.desktop"
+
+# Only for distros where the sddm package isn't self sufficient.
+basicSetup: false
+
+# Only relevant on suse.
+sysconfigSetup: false

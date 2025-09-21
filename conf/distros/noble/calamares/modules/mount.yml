@@ -1,4 +1,21 @@
-# Ubuntu noble 24.04
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
+#
+# Mount filesystems in the target (generally, before treating the
+# target as a usable chroot / "live" system). Filesystems are
+# automatically mounted from the partitioning module. Filesystems
+# listed here are **extra**. The filesystems listed in *extraMounts*
+# are mounted in all target systems. The filesystems listed in
+# *extraMountsEfi* are mounted in the target system **only** if
+# the host machine uses UEFI.
+---
+# Extra filesystems to mount. The key's value is a list of entries; each
+# entry has four keys:
+#   - device    The device node to mount
+#   - fs        The filesystem type to use
+#   - mountPoint Where to mount the filesystem
+#   - options (optional) Extra options to pass to mount(8)
+#
 extraMounts:
     - device: proc
       fs: proc
@@ -15,25 +32,10 @@ extraMounts:
     - device: /run/udev
       mountPoint: /run/udev
       options: [ bind ]
+    - device: /run/systemd
+      mountPoint: /run/systemd
+      options: [ bind ]
     - device: efivarfs
       fs: efivarfs
       mountPoint: /sys/firmware/efi/efivars
       efi: true
-    - device: /run/systemd/resolve
-      mountPoint: /run/systemd/resolve
-      options: [ bind ]
-
-mountOptions:
-    - filesystem: default
-      options: [ defaults ]
-    - filesystem: btrfs
-      options: [ defaults, noatime, autodefrag ]
-      ssdOptions: [ discard, compress=lzo ]
-    - filesystem: ext4
-      ssdOptions: [ discard ]
-    - filesystem: jfs
-      ssdOptions: [ discard ]
-    - filesystem: xfs
-      ssdOptions: [ discard ]
-    - filesystem: swap
-      ssdOptions: [ discard ]
