@@ -46,13 +46,13 @@ sequence:
     - partition
     - mount
     - unpackfs
-    - machineid
+    {{hasSystemd}}machineid
     - locale
     - keyboard
     - localecfg
     - luksbootkeyfile
-    - users
-    - displaymanager
+    {{createUsers}}users
+    {{hasDisplaymanager}}displaymanager
     - networkcfg
     - hwclock
     - shellprocess@boot_deploy
@@ -68,15 +68,15 @@ sequence:
     - shellprocess@aptsources
     - shellprocess@install_translations
     - packages
-    - neon-fs-cleanup
+    - cleanup
+    # neon-fs-cleanup
     - shellprocess@logs
     - umount
 
   - show:
     - finished
 
-
-branding: neon
+branding: {{branding}}
 prompt-install: false
 dont-chroot: false
 oem-setup: false

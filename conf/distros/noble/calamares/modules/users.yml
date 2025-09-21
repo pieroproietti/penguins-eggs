@@ -12,8 +12,8 @@ defaultGroups:
       must_exist: true
     - name: dip
       must_exist: true
-    - name: lpadmin
-      must_exist: true
+    #- name: lpadmin
+    #  must_exist: true
     - name: plugdev
       must_exist: true
     - name: sambashare

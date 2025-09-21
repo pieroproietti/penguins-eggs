@@ -1,12 +1,6 @@
-# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
-# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
-# SPDX-FileCopyrightText: 2014-2016 Rohan Garg <rohan@kde.org>
-
+# Debian/Buster et others
+# packages
+---
 backend: apt
 
-operations:
-  - remove:
-      - calamares
-      - neon-live
-      - casper
-      - '^live-*'
+{{operations}}

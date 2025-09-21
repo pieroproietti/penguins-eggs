@@ -57,7 +57,6 @@ export class Noble {
    */
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
-
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('welcome')

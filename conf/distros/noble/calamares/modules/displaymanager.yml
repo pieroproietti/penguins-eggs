@@ -10,15 +10,9 @@ displaymanagers:
 # Force plasma as default session. calamares doesn't necessarily do a good job at picking
 # a "smart" default. Whatever smart means anyway.
 defaultDesktopEnvironment:
-    # executable this is entirely pointless for sddm specifically, and in general
-    # counterproductive https://github.com/calamares/calamares/issues/1248
-    # We therefore set it to /bin/true to ensure forwards/backwards
-    # compatibility. Ideally of course the issue should get solved and we'd
-    # be able to rely on TryExec being checked by calamares.
     executable: "/bin/true"
-    # NB: this may be changed by our casper script on the live ISO.
-    #   Depending on the neon edition we may opt to use wayland instead.
-    desktopFile: "/usr/share/wayland-sessions/plasma.desktop"
+    desktopFile: "/usr/share/xsessions/xfce.desktop"
+    #desktopFile: "/usr/share/wayland-sessions/plasma.desktop"
 
 # Only for distros where the sddm package isn't self sufficient.
 basicSetup: false
