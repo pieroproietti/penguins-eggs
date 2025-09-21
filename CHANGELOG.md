@@ -19,6 +19,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.18
+Numerous corrections and improvements to the Calamares configuration for Ubuntu Noble and derivatives. 
+
+Unfortunately, so far, I have not been able to resolve the issue of installing with Calamares on encrypted file systems; the problem persists: the installed system is unable to boot up.
+
+Note: using `sudo eggs install`, it is possible to install on encrypted systems and boot up correctly
+
 ## v25.9.17
 I am mainly consolidating the move to the new repositories specific to each supported distribution: [Debian/Devuan/Ubuntu](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md), [Fedora](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md), [Enterprise Linux](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md), [OpenSUSE](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-OPENSUSE.md).
 
