@@ -1,2 +1,11 @@
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
 crypttabOptions: luks,keyscript=/bin/cat
 efiMountOptions: umask=0077
+tmpOptions:
+    default:
+        tmpfs: false
+        options: ""
+    ssd:
+        tmpfs: true
+        options: "defaults,noatime,mode=1777"

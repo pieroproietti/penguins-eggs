@@ -2,13 +2,14 @@
 set -Eeuo pipefail
 clear
 echo "Re-onstall Eggs Saving Yolk... Developer"
+sudo rm -rf /etc/penguins-eggs.d 
 # yolk-restore
-sudo rm /var/local/yolk.saved -rf
+sudo rm -rf /var/local/yolk.saved 
 sudo mv /var/local/yolk /var/local/yolk.saved
 # removing eggs
 sudo apt purge penguins-eggs -y
 sudo dpkg -i releases/penguins-eggs_*_amd64.deb
 # yolk-restore
-sudo rm /var/local/yolk -rf
+sudo rm -rf /var/local/yolk 
 sudo mv /var/local/yolk.saved /var/local/yolk
 sudo eggs dad -d
