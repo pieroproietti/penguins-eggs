@@ -50,8 +50,8 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          # Aggiunto jq per parsare il file package.json
-          pacman -S --noconfirm base-devel git pnpm jq
+          # Aggiunto jq e pacman-contrib (che contiene updpkgsums)
+          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
 
       - name: 2a. Update PKGBUILD with version from package.json
         run: |
