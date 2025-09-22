@@ -1,4 +1,4 @@
-# Debian/bookworm
+# Debian/bullseye e successivi
 ---
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [ local ]
@@ -58,29 +58,30 @@ sequence:
   # view module jobs should be enqueued. Job modules are
   # also allowed.
   - exec:
-      - partition
-      - mount
-      - unpackfs
-      - dpkg-unsafe-io
-      - sources-yolk
-      {{hasSystemd}}machineid
-      - fstab
-      - locale
-      - keyboard
+  - exec:
+      - partition                 # Prepara le partizioni e il contenitore LUKS
+      - mount                     # Monta il nuovo sistema
+      - unpackfs                  # Installa i file di base
+      - dpkg-unsafe-io            # Ottimizzazione per dpkg
+      - sources-yolk              # Configura le sorgenti apt
+      {{hasSystemd}}machineid     # Imposta l'ID della macchina
+      - fstab                     # SCRIVE LA MAPPA DEI DISCHI (anticipato)
+      - locale                    # Configura la lingua
+      - keyboard                  # Configura la tastiera
       - localecfg
       {{createUsers}}users
-      {{hasDisplaymanager}}displaymanager 
+      {{hasDisplaymanager}}displaymanager
       - networkcfg
       - hwclock
-      {{hasSystemd}}services-systemd 
-      - bootloader-config
+      {{hasSystemd}}services-systemd
+      - luksbootkeyfile           # Prepara la keyfile per LUKS
+      - initramfscfg              # PREPARA la configurazione per l'initramfs (/etc/crypttab)
+      - bootloader-config         # PREPARA la configurazione per il bootloader
       - grubcfg
-      - bootloader
-      - packages
-      - luksbootkeyfile
+      - bootloader                # INSTALLA GRUB con i parametri corretti
+      - initramfs                 # ORA COSTRUISCE L'INITRAMFS con la configurazione finale
       - plymouthcfg
-      - initramfscfg
-      - initramfs
+      - packages                  # Installa pacchetti aggiuntivi
       - dpkg-unsafe-io-undo
       - removeuser
       - sources-yolk-undo
