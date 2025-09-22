@@ -1,0 +1,29 @@
+- exec:
+      - partition                 # Prepara le partizioni e il contenitore LUKS
+      - mount                     # Monta il nuovo sistema
+      - unpackfs                  # Installa i file di base
+      - machineid                 # Imposta l'ID della macchina
+      - fstab                     # SCRIVE LA MAPPA DEI DISCHI (SPOSTATO IN ALTO)
+      - locale                    # Configura la lingua
+      - keyboard                  # Configura la tastiera
+      - localecfg
+      - luksbootkeyfile           # Prepara la keyfile per LUKS
+      - users                     # Crea gli utenti
+      - displaymanager
+      - networkcfg
+      - hwclock
+      - shellprocess@boot_deploy
+      - initramfscfg              # PREPARA la configurazione per l'initramfs (/etc/crypttab)
+      - grubcfg                   # PREPARA la configurazione per GRUB (SPOSTATO IN ALTO)
+      - contextualprocess@before_bootloader
+      - bootloader                # INSTALLA GRUB con i parametri corretti (SPOSTATO IN ALTO)
+      - contextualprocess@after_bootloader
+      - initramfs                 # ORA COSTRUISCE L'INITRAMFS con la configurazione finale
+      - shellprocess@boot_reconfigure # Esegui riconfigurazioni post-bootloader
+      - shellprocess@nomodeset
+      - shellprocess@aptsources
+      - shellprocess@install_translations
+      - packages                  # Installa pacchetti aggiuntivi
+      - cleanup                   # Pulisce il sistema
+      - shellprocess@logs
+      - umount                    # Smonta tutto alla fine
