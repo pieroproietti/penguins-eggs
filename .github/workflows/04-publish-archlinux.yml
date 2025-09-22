@@ -13,7 +13,7 @@
 #   1. Job 'build-arch':
 #      - Estrae la versione da package.json.
 #      - Aggiorna dinamicamente il file PKGBUILD con la nuova versione.
-#      - Aggiorna i checksum dei sorgenti nel PKGBUILD.
+#      - Aggiorna i checksum dei sorgenti nel PKGBUILD (come utente non-root).
 #      - Compila il pacchetto .pkg.tar.zst in un container Arch Linux pulito e
 #        usando un utente non-root, come da best practice.
 #   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
@@ -69,18 +69,16 @@ jobs:
           echo "PKGBUILD updated:"
           grep -E "^(pkgver|pkgrel)=" ./packaging/arch/PKGBUILD
       
-      - name: 2b. Update PKGBUILD checksums
-        run: updpkgsums
-        working-directory: ./packaging/arch
-
       - name: 3. Create Build User and Set Permissions
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 4. Build The Package as Non-Root User
-        run: sudo -u builder makepkg -s --noconfirm
+      - name: 4. Update Checksums and Build Package as Non-Root User
+        run: |
+          sudo -u builder updpkgsums
+          sudo -u builder makepkg -s --noconfirm
         working-directory: ./packaging/arch
       
       - name: 5. Upload Package Artifact
