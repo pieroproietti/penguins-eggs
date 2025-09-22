@@ -6,37 +6,29 @@
 modules-search: [ local, /usr/share/calamares/modules ]
 
 instances:
-instances:
 - id:       initramfs_custom
   module:   shellprocess
   config:   shellprocess_initramfs_custom.conf
-
 - id:       install_translations
   module:   shellprocess
   config:   shellprocess_install_translations.conf
-
 - id:       before_bootloader
   module:   contextualprocess
   config:   before_bootloader_context.conf
-
 - id:       after_bootloader
   module:   contextualprocess
   config:   after_bootloader_context.conf
-
 - id: logs
   module: shellprocess
   config: shellprocess_logs.conf
-
 - id: boot_deploy
   module: shellprocess
   config: shellprocess@boot_deploy.conf
-
 - id: boot_reconfigure
   module: shellprocess
   config: shellprocess@boot_reconfigure.conf
 # NB: nomodeset is not forwared for OEM mode. An OEM shouldn't use this
 #   kind of hack for OEM installations!
-
 - id: nomodeset
   module: shellprocess
   config: shellprocess@nomodeset.conf
@@ -74,7 +66,7 @@ sequence:
     - contextualprocess@before_bootloader
     - bootloader
     - contextualprocess@after_bootloader
-    - initramfs_custom
+    - shellprocess@initramfs_custom
     - shellprocess@boot_reconfigure
     - shellprocess@nomodeset
     - shellprocess@aptsources
