@@ -1,8 +1,8 @@
 # =========================================================================================
-# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER MANJARO
+# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
 #
 # Scopo:
-#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Manjaro
+#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
 #   e la sua pubblicazione nel repository Pacman 'penguins-eggs-repo'.
 #
 # Trigger:
@@ -10,16 +10,12 @@
 #   - Avvio manuale tramite 'workflow_dispatch'.
 #
 # Struttura:
-#   1. Job 'build-manjaro':
-#      - Estrae la versione da package.json.
-#      - Aggiorna dinamicamente il file PKGBUILD con la nuova versione.
-#      - Aggiorna i checksum dei sorgenti nel PKGBUILD (come utente non-root).
-#      - Compila il pacchetto .pkg.tar.zst in un container Manjaro pulito e
-#        usando un utente non-root, come da best practice.
-#   2. Job 'publish-repo': Eseguito in un container Manjaro separato.
+#   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst in un container Arch Linux
+#      pulito e usando un utente non-root, come da best practice.
+#   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
 #      - Fa il checkout del repository 'penguins-eggs-repo'.
 #      - Scarica l'artefatto (il pacchetto .pkg.tar.zst) dal job precedente.
-#      - Aggiunge il nuovo pacchetto alla sottodirectory 'manjaro/'.
+#      - Aggiunge il nuovo pacchetto ai file del repository esistenti.
 #      - Rigenera e firma il database del repository con 'repo-add --sign'.
 #      - Esegue il commit e il push delle modifiche sul branch 'main' del repository.
 #
@@ -31,7 +27,7 @@
 #     sul repository 'penguins-eggs-repo'.
 # =========================================================================================
 
-name: 05. Build and publish Manjaro Package
+name: 04. Build and publish Arch Linux pkgs
 
 on:
   workflow_dispatch:
@@ -39,10 +35,10 @@ on:
     branches: [ main ]
 
 jobs:
-  build-manjaro:
+  build-arch:
     runs-on: ubuntu-latest
     container:
-      image: manjarolinux/base
+      image: archlinux
     steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
@@ -50,48 +46,28 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          # Aggiunto jq (per leggere package.json) e pacman-contrib (per updpkgsums)
-          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
+          pacman -S --noconfirm base-devel git pnpm
 
-      - name: 2a. Update PKGBUILD with version from package.json
+      - name: 3. Create Build User and Set Permissions
         run: |
-          # Estrai la versione dal file package.json
-          VERSION=$(jq -r .version package.json)
-          echo "Updating Manjaro PKGBUILD to version: $VERSION"
-
-          # Aggiorna la variabile pkgver nel file PKGBUILD specifico per Manjaro
-          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/manjaro/PKGBUILD
-
-          # Resetta pkgrel a 1
-          sed -i 's/^pkgrel=.*/pkgrel=1/' ./packaging/manjaro/PKGBUILD
-
-          # Mostra le righe modificate per verifica
-          echo "PKGBUILD updated:"
-          grep -E "^(pkgver|pkgrel)=" ./packaging/manjaro/PKGBUILD
-
-      - name: 3. Prepare Build User
-        run: |
-          # L'utente 'builder' esiste gia' nell'immagine di Manjaro.
-          # Ci assicuriamo solo che abbia i permessi sudo e la proprieta' dei file.
+          useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 4. Update Checksums and Build Package as Non-Root User
-        run: |
-          sudo -u builder updpkgsums
-          sudo -u builder makepkg -s --noconfirm
-        working-directory: ./packaging/manjaro
+      - name: 4. Build The Package as Non-Root User
+        run: sudo -u builder makepkg -s --noconfirm
+        working-directory: ./packaging/arch
       
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: manjaro-package
-          path: ./packaging/manjaro/*.pkg.tar.zst
+          name: archlinux-package
+          path: ./packaging/arch/*.pkg.tar.zst
 
   publish-repo:
-    needs: build-manjaro
+    needs: build-arch
     runs-on: ubuntu-latest
-    container: manjarolinux/base
+    container: archlinux
     steps:
       - name: 1. Checkout existing repo
         uses: actions/checkout@v4
@@ -100,18 +76,16 @@ jobs:
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
 
-      - name: 2. Download Manjaro artifact
+      - name: 2. Download Arch Linux artifact
         uses: actions/download-artifact@v4
         with:
-          name: manjaro-package
-          path: repo-dir/manjaro/
+          name: archlinux-package
+          path: repo-dir/arch/
 
-      - name: 3. Update and Sign Manjaro Repository
+      - name: 3. Update and Sign Arch Linux Repository
         run: |
           set -e
-          # Assicurati che la directory esista prima di entrarci
-          mkdir -p repo-dir/manjaro
-          cd repo-dir/manjaro
+          cd repo-dir/arch
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git
           echo "$GPG_SIGNING_KEY" | gpg --import --batch
@@ -120,7 +94,6 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-          # Crea/aggiorna il database del repo nella cartella manjaro
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
@@ -138,4 +111,5 @@ jobs:
           keep_files: false
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update Manjaro repository"
+          commit_message: "Update Arch Linux repository"
+
