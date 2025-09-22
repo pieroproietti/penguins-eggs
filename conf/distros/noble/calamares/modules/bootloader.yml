@@ -32,4 +32,4 @@ grubCfg: "/boot/grub/grub.cfg"
 # setting the option here, take care to use only valid directory
 # names since no sanitizing is done.
 #
-efiBootloaderId: "neon"
+efiBootloaderId: "ubuntu"

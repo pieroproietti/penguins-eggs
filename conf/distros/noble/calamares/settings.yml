@@ -43,33 +43,32 @@ sequence:
     - users
 
   - exec:
-    - partition
-    - mount
-    - unpackfs
-    {{hasSystemd}}machineid
-    - locale
-    - keyboard
-    - localecfg
-    - luksbootkeyfile
-    {{createUsers}}users
-    {{hasDisplaymanager}}displaymanager
-    - networkcfg
-    - hwclock
-    - shellprocess@boot_deploy
-    - shellprocess@boot_reconfigure
-    - initramfscfg
-    - initramfs
-    - fstab
-    - grubcfg
-    - contextualprocess@before_bootloader
-    - bootloader
-    - contextualprocess@after_bootloader
+    - partition               # OK
+    - mount                   # OK
+    - unpackfs                # OK
+    {{hasSystemd}}machineid   # OK
+    - fstab                   # OK
+    - locale                  # OK
+    - keyboard                # OK
+    - localecfg               # OK
+    - luksbootkeyfile         # OK
+    {{createUsers}}users      # OKD
+    {{hasDisplaymanager}}displaymanager # OK
+    - networkcfg              # OK
+    - hwclock                 # OK
+    - shellprocess@boot_deploy # OK
+    - initramfscfg            # OK
+    - grubcfg                 # OK
+    - contextualprocess@before_bootloader # OK
+    - bootloader              # OK
+    - contextualprocess@after_bootloader # OK
+    - initramfs               # OK
+    - shellprocess@boot_reconfigure # OK
     - shellprocess@nomodeset
     - shellprocess@aptsources
     - shellprocess@install_translations
     - packages
     - cleanup
-    # neon-fs-cleanup
     - shellprocess@logs
     - umount
 
@@ -84,3 +83,5 @@ disable-cancel: false
 disable-cancel-during-exec: false
 hide-back-and-next-during-exec: false
 quit-at-end: false
+
+
