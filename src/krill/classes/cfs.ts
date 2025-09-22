@@ -19,6 +19,9 @@ export default class CFS {
    */
   async steps(): Promise<string[]> {
     let configRoot = '/etc/penguins-eggs.d/krill/';
+    return []
+    /*
+
     if (Pacman.calamaresExists()) { // Assumiamo che questo metodo esista
       configRoot = '/etc/calamares/';
     }
@@ -28,6 +31,7 @@ export default class CFS {
     if (!fs.existsSync(settingsPath)) {
       return []; // Ritorna un array vuoto se il file non esiste
     }
+
 
     try {
       const settingsVar: string = fs.readFileSync(settingsPath, 'utf8');
@@ -48,5 +52,6 @@ export default class CFS {
     }
 
     return []; // Ritorna un array vuoto se il blocco 'exec' non viene trovato
+    */
   }
 }
