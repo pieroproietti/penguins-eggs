@@ -10,11 +10,8 @@
 #   - Avvio manuale tramite 'workflow_dispatch'.
 #
 # Struttura:
-#   1. Job 'build-arch':
-#      - Estrae la versione da package.json.
-#      - Aggiorna dinamicamente il file PKGBUILD con la nuova versione.
-#      - Compila il pacchetto .pkg.tar.zst in un container Arch Linux pulito e
-#        usando un utente non-root, come da best practice.
+#   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst in un container Arch Linux
+#      pulito e usando un utente non-root, come da best practice.
 #   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
 #      - Fa il checkout del repository 'penguins-eggs-repo'.
 #      - Scarica l'artefatto (il pacchetto .pkg.tar.zst) dal job precedente.
@@ -49,24 +46,7 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          # Aggiunto jq per parsare il file package.json
-          pacman -S --noconfirm base-devel git pnpm jq
-
-      - name: 2a. Update PKGBUILD with version from package.json
-        run: |
-          # Estrai la versione dal file package.json
-          VERSION=$(jq -r .version package.json)
-          echo "Updating PKGBUILD to version: $VERSION"
-
-          # Aggiorna la variabile pkgver nel file PKGBUILD
-          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/arch/PKGBUILD
-
-          # Resetta pkgrel a 1, come da best practice quando pkgver cambia
-          sed -i 's/^pkgrel=.*/pkgrel=1/' ./packaging/arch/PKGBUILD
-
-          # Mostra le righe modificate per verifica
-          echo "PKGBUILD updated:"
-          grep -E "^(pkgver|pkgrel)=" ./packaging/arch/PKGBUILD
+          pacman -S --noconfirm base-devel git pnpm
 
       - name: 3. Create Build User and Set Permissions
         run: |
@@ -132,3 +112,4 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Arch Linux repository"
+
