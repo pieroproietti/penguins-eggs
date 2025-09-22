@@ -8,38 +8,45 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-
 import { ISettings } from '../../interfaces/i-settings.js'
 import Pacman from '../../classes/pacman.js'
 
-/**
- * cfs
- */
+
 export default class CFS {
   /**
-   * steps
-   * @returns
+   * Cerca i passaggi 'cfs-' nella sequenza exec di Calamares.
+   * @returns Un array di stringhe contenente i passaggi trovati.
    */
   async steps(): Promise<string[]> {
-    const cfs: string[] = []
-    let configRoot = '/etc/penguins-eggs.d/krill/'
-    if (Pacman.calamaresExists()) {
-      configRoot = '/etc/calamares/'
+    let configRoot = '/etc/penguins-eggs.d/krill/';
+    if (Pacman.calamaresExists()) { // Assumiamo che questo metodo esista
+      configRoot = '/etc/calamares/';
+    }
+    
+    const settingsPath = `${configRoot}settings.conf`;
+
+    if (!fs.existsSync(settingsPath)) {
+      return []; // Ritorna un array vuoto se il file non esiste
     }
 
-    // solo se esiste settings.conf  CALAMARES
-    if (fs.existsSync(`${configRoot}settings.conf`)) {
-      const settingsVar: string = fs.readFileSync(`${configRoot}settings.conf`, 'utf8')
-      const settingsYaml = yaml.load(settingsVar) as ISettings
-      const execSequence = settingsYaml.sequence[1]
-      const steps = execSequence.exec
-      for (const step of steps) {
-        if (step.includes('cfs-')) {
-          cfs.push(step)
-        }
+    try {
+      const settingsVar: string = fs.readFileSync(settingsPath, 'utf8');
+      const settingsYaml = yaml.load(settingsVar) as ISettings;
+
+      const execSequence = settingsYaml.sequence?.find(seq => seq.hasOwnProperty('exec'));
+
+      if (execSequence && 'exec' in execSequence) {
+        // Usa filter per un codice più pulito e sicuro
+        return execSequence.exec.filter((step): step is string => 
+          typeof step === 'string' && step.includes('cfs-')
+        );
       }
+    } catch (error) {
+      console.error(`Errore durante la lettura o il parsing di ${settingsPath}:`, error);
+      // In caso di errore, ritorna un array vuoto per non bloccare l'esecuzione
+      return [];
     }
 
-    return cfs
+    return []; // Ritorna un array vuoto se il blocco 'exec' non viene trovato
   }
 }
