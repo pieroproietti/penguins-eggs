@@ -6,29 +6,41 @@
 modules-search: [ local, /usr/share/calamares/modules ]
 
 instances:
+instances:
+- id:       initramfs_custom
+  module:   shellprocess
+  config:   shellprocess_initramfs_custom.conf
+
 - id:       install_translations
   module:   shellprocess
   config:   shellprocess_install_translations.conf
+
 - id:       before_bootloader
   module:   contextualprocess
   config:   before_bootloader_context.conf
+
 - id:       after_bootloader
   module:   contextualprocess
   config:   after_bootloader_context.conf
+
 - id: logs
   module: shellprocess
   config: shellprocess_logs.conf
+
 - id: boot_deploy
   module: shellprocess
   config: shellprocess@boot_deploy.conf
+
 - id: boot_reconfigure
   module: shellprocess
   config: shellprocess@boot_reconfigure.conf
 # NB: nomodeset is not forwared for OEM mode. An OEM shouldn't use this
 #   kind of hack for OEM installations!
+
 - id: nomodeset
   module: shellprocess
   config: shellprocess@nomodeset.conf
+
 - id: aptsources
   module: shellprocess
   config: shellprocess@aptsources.conf
@@ -43,27 +55,27 @@ sequence:
     - users
 
   - exec:
-    - partition               # OK
-    - mount                   # OK
-    - unpackfs                # OK
-    {{hasSystemd}}machineid   # OK
-    - fstab                   # OK
-    - locale                  # OK
-    - keyboard                # OK
-    - localecfg               # OK
-    - luksbootkeyfile         # OK
-    {{createUsers}}users      # OKD
-    {{hasDisplaymanager}}displaymanager # OK
-    - networkcfg              # OK
-    - hwclock                 # OK
-    - shellprocess@boot_deploy # OK
-    - initramfscfg            # OK
-    - grubcfg                 # OK
-    - contextualprocess@before_bootloader # OK
-    - bootloader              # OK
-    - contextualprocess@after_bootloader # OK
-    - initramfs               # OK
-    - shellprocess@boot_reconfigure # OK
+    - partition
+    - mount
+    - unpackfs
+    {{hasSystemd}}machineid
+    - fstab
+    - locale
+    - keyboard
+    - localecfg
+    - luksbootkeyfile
+    {{createUsers}}users
+    {{hasDisplaymanager}}displaymanager
+    - networkcfg
+    - hwclock
+    - shellprocess@boot_deploy
+    - initramfscfg
+    - grubcfg
+    - contextualprocess@before_bootloader
+    - bootloader
+    - contextualprocess@after_bootloader
+    - initramfs_custom
+    - shellprocess@boot_reconfigure
     - shellprocess@nomodeset
     - shellprocess@aptsources
     - shellprocess@install_translations
