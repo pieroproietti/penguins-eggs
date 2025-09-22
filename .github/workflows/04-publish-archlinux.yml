@@ -10,8 +10,12 @@
 #   - Avvio manuale tramite 'workflow_dispatch'.
 #
 # Struttura:
-#   1. Job 'build-arch': Compila il pacchetto .pkg.tar.zst in un container Arch Linux
-#      pulito e usando un utente non-root, come da best practice.
+#   1. Job 'build-arch':
+#      - Estrae la versione da package.json.
+#      - Aggiorna dinamicamente il file PKGBUILD con la nuova versione.
+#      - Aggiorna i checksum dei sorgenti nel PKGBUILD (come utente non-root).
+#      - Compila il pacchetto .pkg.tar.zst in un container Arch Linux pulito e
+#        usando un utente non-root, come da best practice.
 #   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
 #      - Fa il checkout del repository 'penguins-eggs-repo'.
 #      - Scarica l'artefatto (il pacchetto .pkg.tar.zst) dal job precedente.
@@ -46,16 +50,35 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git pnpm
+          # Aggiunto jq e pacman-contrib (che contiene updpkgsums)
+          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
 
+      - name: 2a. Update PKGBUILD with version from package.json
+        run: |
+          # Estrai la versione dal file package.json
+          VERSION=$(jq -r .version package.json)
+          echo "Updating PKGBUILD to version: $VERSION"
+
+          # Aggiorna la variabile pkgver nel file PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/arch/PKGBUILD
+
+          # Resetta pkgrel a 1, come da best practice quando pkgver cambia
+          sed -i 's/^pkgrel=.*/pkgrel=1/' ./packaging/arch/PKGBUILD
+
+          # Mostra le righe modificate per verifica
+          echo "PKGBUILD updated:"
+          grep -E "^(pkgver|pkgrel)=" ./packaging/arch/PKGBUILD
+      
       - name: 3. Create Build User and Set Permissions
         run: |
           useradd -m builder
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      - name: 4. Build The Package as Non-Root User
-        run: sudo -u builder makepkg -s --noconfirm
+      - name: 4. Update Checksums and Build Package as Non-Root User
+        run: |
+          sudo -u builder updpkgsums
+          sudo -u builder makepkg -s --noconfirm
         working-directory: ./packaging/arch
       
       - name: 5. Upload Package Artifact
