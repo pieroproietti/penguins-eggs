@@ -1,6 +1,6 @@
 # Ubuntu 24.04 noble
 
-Completely renewd, but the problem of crypted persist!
+Completely renewed, but the problem of crypted persist!
 
 ## Modules
 * partition
