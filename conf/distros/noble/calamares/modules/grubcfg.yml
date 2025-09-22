@@ -1,6 +1,11 @@
 # SPDX-FileCopyrightText: no
 # SPDX-License-Identifier: CC0-1.0
 
+# Imposta le opzioni di default fix rootdelay=10
+default_kernel_options: "quiet splash rootdelay=10"
+
+# Imposta variabili specifiche nel file /etc/default/grub.
+# Manteniamo la tua impostazione originale per il supporto ai dischi cifrati da GRUB.
 overwrite: false
 defaults:
     GRUB_ENABLE_CRYPTODISK: true
