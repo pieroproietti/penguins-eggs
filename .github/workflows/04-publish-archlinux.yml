@@ -13,6 +13,7 @@
 #   1. Job 'build-arch':
 #      - Estrae la versione da package.json.
 #      - Aggiorna dinamicamente il file PKGBUILD con la nuova versione.
+#      - Aggiorna i checksum dei sorgenti nel PKGBUILD.
 #      - Compila il pacchetto .pkg.tar.zst in un container Arch Linux pulito e
 #        usando un utente non-root, come da best practice.
 #   2. Job 'publish-repo': Eseguito in un container Arch Linux separato.
@@ -67,6 +68,10 @@ jobs:
           # Mostra le righe modificate per verifica
           echo "PKGBUILD updated:"
           grep -E "^(pkgver|pkgrel)=" ./packaging/arch/PKGBUILD
+      
+      - name: 2b. Update PKGBUILD checksums
+        run: updpkgsums
+        working-directory: ./packaging/arch
 
       - name: 3. Create Build User and Set Permissions
         run: |
@@ -132,3 +137,4 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Arch Linux repository"
+
