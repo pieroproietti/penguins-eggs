@@ -4,4 +4,4 @@
 dontChroot: false
 timeout: 1800
 script:
-    - "/usr/bin/calamares-l10n-helper"
+    - "/usr/bin/calamares-l10n-helper.sh"
