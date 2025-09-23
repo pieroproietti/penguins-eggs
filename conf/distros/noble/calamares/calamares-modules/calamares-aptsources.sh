@@ -10,6 +10,6 @@ echo "Reinstalling neon-keyring"
 
 ls /etc/apt/sources.list.d/
 
-apt-get install --reinstall neon-keyring
+apt-get install --reinstall ubuntu-keyring
 
 ls /etc/apt/sources.list.d/
