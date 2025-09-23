@@ -4,4 +4,4 @@
 dontChroot: true
 timeout: 30
 script:
-    - "/usr/bin/calamares-logs-helper ${ROOT}"
+    - "/usr/bin/calamares-logs-helper.sh ${ROOT}"
