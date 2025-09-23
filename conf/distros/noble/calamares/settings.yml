@@ -8,27 +8,34 @@ modules-search: [ local, /usr/share/calamares/modules ]
 instances:
 - id:       initramfs_custom
   module:   shellprocess
-  config:   shellprocess_initramfs_custom.conf
+  config:   shellprocess@initramfs_custom.conf
+
 - id:       install_translations
   module:   shellprocess
-  config:   shellprocess_install_translations.conf
+  config:   shellprocess@install_translations.conf
+
 - id:       before_bootloader
   module:   contextualprocess
   config:   before_bootloader_context.conf
+
 - id:       after_bootloader
   module:   contextualprocess
   config:   after_bootloader_context.conf
+
 - id: logs
   module: shellprocess
-  config: shellprocess_logs.conf
+  config: shellprocess@logs.conf
+
 - id: boot_deploy
   module: shellprocess
   config: shellprocess@boot_deploy.conf
+
 - id: boot_reconfigure
   module: shellprocess
   config: shellprocess@boot_reconfigure.conf
 # NB: nomodeset is not forwared for OEM mode. An OEM shouldn't use this
 #   kind of hack for OEM installations!
+
 - id: nomodeset
   module: shellprocess
   config: shellprocess@nomodeset.conf
@@ -44,20 +51,20 @@ sequence:
     - locale
     - keyboard
     - partition
-    - users
+    - users     # OPTIONAL
 
   - exec:
     - partition
     - mount
     - unpackfs
-    {{hasSystemd}}machineid
+    - machineid
     - fstab
     - locale
     - keyboard
     - localecfg
     - luksbootkeyfile
-    {{createUsers}}users
-    {{hasDisplaymanager}}displaymanager
+    - users           # OPTIONAL
+    - displaymanager
     - networkcfg
     - hwclock
     - shellprocess@boot_deploy
@@ -87,5 +94,3 @@ disable-cancel: false
 disable-cancel-during-exec: false
 hide-back-and-next-during-exec: false
 quit-at-end: false
-
-

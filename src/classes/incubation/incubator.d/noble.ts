@@ -74,19 +74,28 @@ export class Noble {
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    await fisherman.contextualprocess('before_bootloader_mkdirs')
-    await fisherman.shellprocess('bug-LP#1829805')
     await fisherman.buildModule('initramfs')
     await fisherman.buildModule('grubcfg')
-    await fisherman.contextualprocess('before_bootloader')
     await fisherman.buildModule('bootloader')
-    await fisherman.contextualprocess('after_bootloader')
-    await fisherman.shellprocess('add386arch')
     await fisherman.modulePackages(this.distro, this.release) //
     await fisherman.moduleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk', false)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
+
+    // contextualprocess
+    await fisherman.contextualprocess('before_bootloader_context')
+    await fisherman.contextualprocess('after_bootloader_context')
+
+    // shellprocess
+    await fisherman.shellprocess('initramfs_custom')
+    await fisherman.shellprocess('aptsources')
+    await fisherman.shellprocess('boot_deploy')
+    await fisherman.shellprocess('boot_reconfigure')
+    await fisherman.shellprocess('install_translations')
+    await fisherman.shellprocess('logs')
+    await fisherman.shellprocess('nomodeset')
+
 
     /**
      * cfs: custom final steps

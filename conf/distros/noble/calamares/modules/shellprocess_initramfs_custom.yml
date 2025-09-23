@@ -1,4 +1,0 @@
-# shellprocess_initramfs_custom.conf
-dontChroot: false
-script:
-    - "/usr/bin/run-initramfs.sh" # Usa il percorso correttoshellprocess_initramfs_custom.conf 
