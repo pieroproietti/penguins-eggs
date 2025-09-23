@@ -102,7 +102,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: todo
+branding: default
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to

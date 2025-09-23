@@ -11,21 +11,21 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{createUsers}}users
+      - users
       - summary
   - exec:
       - partition
       - mount
       - unpackfs
       - sources-yolk
-      {{hasSystemd}}machineid
+      - machineid
       - fstab
       - locale
       - keyboard
       - localecfg
       - luksbootkeyfile
-      {{createUsers}}users
-      {{hasDisplaymanager}}displaymanager
+      - users
+      - displaymanager
       - networkcfg
       - hwclock
       #- before-bootloader-mkdirs
@@ -44,7 +44,7 @@ sequence:
       - umount
   - show:
       - finished
-branding: {{branding}}
+branding: default
 prompt-install: true
 dont-chroot: false
 oem-setup: false

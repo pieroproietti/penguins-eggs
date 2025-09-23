@@ -6,13 +6,13 @@ sequence:
   - locale
   - keyboard
   - partition
-  {{createUsers}}users
+  - users
   - summary
 - exec:
   - partition
   - mount
   - unpackfs
-  {{hasSystemd}}machineid
+  - machineid
   - fstab
   - locale
   - keyboard
@@ -20,11 +20,11 @@ sequence:
   - plymouthcfg
   - luksbootkeyfile
   - dracutlukscfg
-  {{createUsers}}users
-  {{hasDisplaymanager}}displaymanager 
+  - users
+  - displaymanager 
   - networkcfg
   - hwclock
-  {{hasSystemd}}services-systemd 
+  - services-systemd 
   - dracut
   - bootloaderspecification
   - grubcfg
@@ -34,6 +34,6 @@ sequence:
   - umount
 - show:
   - finished
-branding: {{branding}}
+branding: default
 prompt-install: true
 dont-chroot: false

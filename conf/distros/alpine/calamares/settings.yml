@@ -47,7 +47,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{createUsers}}users
+      - users
       - summary
 
   # Phase 2 - install.
@@ -64,8 +64,8 @@ sequence:
     - fstab
     - locale
     - keyboard
-    {{createUsers}}users
-    {{hasDisplaymanager}}displaymanager
+    - users
+    - displaymanager
     - networkcfg
     - hwclock
     - services-openrc
@@ -91,7 +91,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: {{branding}}
+branding: default
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
