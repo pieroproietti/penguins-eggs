@@ -85,6 +85,12 @@ export class Buster {
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 
+    // contextualprocess
+    // await fisherman.contextualprocess('before_bootloader_context')
+
+    // shellprocess
+    await fisherman.shellprocess('initramfs_custom')    
+    
     /**
      * cfs: custom final steps
      */

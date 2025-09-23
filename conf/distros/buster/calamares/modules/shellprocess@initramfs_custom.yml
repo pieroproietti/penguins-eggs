@@ -1,0 +1,4 @@
+# shellprocess_initramfs_custom.conf
+dontChroot: false
+script:
+    - "/usr/bin/calamares-initramfs.sh" # Usa il percorso correttoshellprocess_initramfs_custom.conf 
