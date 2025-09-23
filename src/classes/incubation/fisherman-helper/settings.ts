@@ -21,6 +21,26 @@ import Utils from '../../utils.js'
 import { installer } from '../installer.js'
 import { displaymanager } from './displaymanager.js'
 
+
+interface SequenceItem {
+  show?: string[];
+  exec?: string[];
+}
+
+// Definisce la struttura dell'intero file di configurazione
+interface CalamaresConfig {
+  'modules-search': string[];
+  'oem-setup': boolean;
+  'disable-cancel': boolean;
+  'disable-cancel-during-exec': boolean;
+  'quit-at-end': boolean;
+  sequence: SequenceItem[];
+  branding: string;
+  'prompt-install': boolean;
+  'dont-chroot': boolean;
+}
+
+
 /**
  *
  * @param src
@@ -36,6 +56,45 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   }
 
   const settingsDest = dest + 'settings.conf'
+  const contentSrc = fs.readFileSync(settingsSrc, "utf-8")
+  const yamlDest = yaml.load(contentSrc) as CalamaresConfig
+
+  // Trova gli elementi in modo sicuro
+  const showSequenceItem = yamlDest.sequence.find(item => item.show);
+  const execSequenceItem = yamlDest.sequence.find(item => item.exec);
+
+  if (!showSequenceItem || !execSequenceItem) {
+    throw new Error("Impossibile trovare le sezioni 'show' o 'exec' nel file settings.yml");
+  }
+  
+  // Il '!' dice a TS: "sono sicuro che non è undefined"
+  let showModules = showSequenceItem.show!; 
+  let execModules = execSequenceItem.exec!;
+
+  // Filtra la lista (ora con type safety)
+  if (!Utils.isSystemd()) {
+    execModules = execModules.filter(module => module !== 'machineid' && module !== 'services-systemd')
+  }
+
+  // if (displaymanager()) {
+  //   execModules = execModules.filter(module => module !== 'displaymanager')
+  // }
+
+  if (isClone) {
+    execModules = execModules.filter(module => module !== 'users')
+    showModules = showModules.filter(module => module !== 'users')
+  }
+
+  // Riassegna gli array
+  showSequenceItem.show = showModules
+  execSequenceItem.exec = execModules
+  yamlDest.branding = branding
+
+  const contentDeest = yaml.dump(yamlDest);
+  fs.writeFileSync(settingsDest, contentDeest)
+
+
+  /*
   shx.cp(settingsSrc, settingsDest)
   let hasSystemd = '# '
   if (Utils.isSystemd()) {
@@ -57,6 +116,7 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   shx.sed('-i', '{{branding}}', branding, settingsDest)
   shx.sed('-i', '{{createUsers}}', createUsers, settingsDest)
 
+  */
   /**
    * cfsAppend
    */
