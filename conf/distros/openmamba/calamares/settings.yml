@@ -118,7 +118,7 @@ sequence:
   - locale
   - keyboard
   - partition
-  {{createUsers}}users
+  - users
   - summary
 - exec:
   - partition
@@ -133,8 +133,8 @@ sequence:
   - luksopenswaphookcfg
   - dracutlukscfg
   - plymouthcfg
-  {{createUsers}}users
-  {{hasDisplaymanager}}displaymanager 
+  - users
+  - displaymanager 
   - networkcfg
   - hwclock
   - services-systemd
@@ -158,7 +158,7 @@ sequence:
 # here, Calamares then takes care of finding it and loading the contents.
 #
 # YAML: string.
-branding: {{branding}}
+branding: default
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
