@@ -48,7 +48,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{createUsers}}users
+      - users
       - summary
 
   # Phase 2 - install.
@@ -58,30 +58,29 @@ sequence:
   # view module jobs should be enqueued. Job modules are
   # also allowed.
   - exec:
-  - exec:
-      - partition                 # Prepara le partizioni e il contenitore LUKS
-      - mount                     # Monta il nuovo sistema
-      - unpackfs                  # Installa i file di base
-      - dpkg-unsafe-io            # Ottimizzazione per dpkg
-      - sources-yolk              # Configura le sorgenti apt
-      {{hasSystemd}}machineid     # Imposta l'ID della macchina
-      - fstab                     # SCRIVE LA MAPPA DEI DISCHI (anticipato)
-      - locale                    # Configura la lingua
-      - keyboard                  # Configura la tastiera
+      - partition
+      - mount
+      - unpackfs
+      - dpkg-unsafe-io
+      - sources-yolk
+      - machineid
+      - fstab
+      - locale
+      - keyboard
       - localecfg
-      {{createUsers}}users
-      {{hasDisplaymanager}}displaymanager
+      - users
+      - displaymanager
       - networkcfg
       - hwclock
-      {{hasSystemd}}services-systemd
-      - luksbootkeyfile           # Prepara la keyfile per LUKS
-      - initramfscfg              # PREPARA la configurazione per l'initramfs (/etc/crypttab)
-      - bootloader-config         # PREPARA la configurazione per il bootloader
+      - services-systemd
+      - luksbootkeyfile
+      - initramfscfg
+      - bootloader-config
       - grubcfg
-      - bootloader                # INSTALLA GRUB con i parametri corretti
-      - initramfs                 # ORA COSTRUISCE L'INITRAMFS con la configurazione finale
+      - bootloader
+      - initramfs
       - plymouthcfg
-      - packages                  # Installa pacchetti aggiuntivi
+      - packages
       - dpkg-unsafe-io-undo
       - removeuser
       - sources-yolk-undo
@@ -103,7 +102,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: {{branding}}
+branding: todo
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
