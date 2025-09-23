@@ -8,4 +8,4 @@
 dontChroot: false
 timeout: 60
 script:
-    - "/usr/bin/calamares-aptsources.sh"
+    - "/usr/libexec/calamares/calamares-aptsources.sh"
