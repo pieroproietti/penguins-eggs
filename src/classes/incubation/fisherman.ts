@@ -184,8 +184,8 @@ export default class Fisherman {
    * @param name
    */
   async shellprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess_' + name + '.yml')
-    const moduleDest = this.installer.modules + 'shellprocess_' + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yml')
+    const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'shellprocess', moduleDest)
       shx.cp(moduleSource, moduleDest)
