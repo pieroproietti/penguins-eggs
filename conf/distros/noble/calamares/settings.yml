@@ -74,6 +74,7 @@ sequence:
     - bootloader
     - contextualprocess@after_bootloader
     - shellprocess@initramfs_custom
+    # initramfs
     - shellprocess@boot_reconfigure
     - shellprocess@nomodeset
     - shellprocess@aptsources
@@ -86,7 +87,7 @@ sequence:
   - show:
     - finished
 
-branding: {{branding}}
+branding: default
 prompt-install: false
 dont-chroot: false
 oem-setup: false
