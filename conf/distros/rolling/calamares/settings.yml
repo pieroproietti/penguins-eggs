@@ -18,7 +18,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{createUsers}}users
+      - users
       - summary
 
   # Phase 2 - install.
