@@ -9,6 +9,12 @@
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
 import Fisherman from '../fisherman.js'
+import path from 'path'
+// libraries
+import { exec } from '../../../lib/utils.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 interface IReplaces {
   replace: string
@@ -88,7 +94,8 @@ export class Noble {
     await fisherman.contextualprocess('after_bootloader_context')
 
     // shellprocess
-    await fisherman.shellprocess('initramfs_custom')
+    //const spSrc = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yml')
+    await fisherman.shellprocess('mkinitramfs')
     await fisherman.shellprocess('aptsources')
     await fisherman.shellprocess('boot_deploy')
     await fisherman.shellprocess('boot_reconfigure')
@@ -96,6 +103,11 @@ export class Noble {
     await fisherman.shellprocess('logs')
     await fisherman.shellprocess('nomodeset')
 
+    // libexec recreate
+    await exec (`rm -rf /usr/libexec/calamares`)
+    await exec (`mkdir -p /usr/libexec/calamares`)
+    const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
+    await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
 
     /**
      * cfs: custom final steps

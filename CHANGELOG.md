@@ -19,6 +19,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.24
+`calamares`: complete rewrite of the calamares/krill configuration for Ubuntu and Debian. It is now possible to perform encrypted installation correctly on both Ubuntu noble and Debian bookworm. On Debian trixe, however, we must wait for the next fixes.
+
 ## v25.9.18
 Numerous corrections and improvements to the Calamares configuration for Ubuntu Noble and derivatives. 
 

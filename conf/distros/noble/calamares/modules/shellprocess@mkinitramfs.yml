@@ -1,0 +1,4 @@
+# shellprocess_mkinitramfs.conf
+dontChroot: false
+script:
+    - "mkinitramfs -o /boot/initrd.img-$(uname -r)"
