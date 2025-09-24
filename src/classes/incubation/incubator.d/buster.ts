@@ -95,11 +95,13 @@ export class Buster {
     // await fisherman.contextualprocess('before_bootloader_context')
 
     // shellprocess
-    await fisherman.shellprocess('mkinitramfs')    
+    await fisherman.shellprocess('mkinitramfs')
+    await fisherman.shellprocess('boot_deploy')
+    await fisherman.shellprocess('boot_reconfigure')
     
     // libexec recreate
-    await exec (`rm -rf /usr/libexec/calamares/calamares/`)
-    await exec (`mkdir /usr/libexec/calamares/calamares -p`)
+    await exec (`rm -rf /usr/libexec/calamares`)
+    await exec (`mkdir -p /usr/libexec/calamares`)
     const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
     await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
 
