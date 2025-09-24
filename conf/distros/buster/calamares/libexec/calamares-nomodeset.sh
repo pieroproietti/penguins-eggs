@@ -12,7 +12,7 @@ fi
 
 echo "Forwarding nomodeset to installed system"
 
-cat > /etc/default/grub.d/ubuntu-installation-nomodeset.cfg << 'EOF'
+cat > /etc/default/grub.d/debian-installation-nomodeset.cfg << 'EOF'
 GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nomodeset"
 EOF
 

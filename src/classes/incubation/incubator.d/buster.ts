@@ -9,6 +9,12 @@
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
 import Fisherman from '../fisherman.js'
+import path from 'path'
+// libraries
+import { exec } from '../../../lib/utils.js'
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
  *
@@ -91,6 +97,13 @@ export class Buster {
     // shellprocess
     await fisherman.shellprocess('mkinitramfs')    
     
+    // libexec recreate
+    await exec (`rm -rf /usr/libexec/calamares/calamares/`)
+    await exec (`mkdir /usr/libexec/calamares/calamares -p`)
+    const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
+    await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
+
+
     /**
      * cfs: custom final steps
      */
