@@ -89,7 +89,7 @@ export class Buster {
     // await fisherman.contextualprocess('before_bootloader_context')
 
     // shellprocess
-    await fisherman.shellprocess('initramfs_custom')    
+    await fisherman.shellprocess('mkinitramfs')    
     
     /**
      * cfs: custom final steps

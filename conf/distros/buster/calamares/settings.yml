@@ -38,9 +38,9 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 instances:
-- id:       initramfs_custom
+- id:       mkinitramfs
   module:   shellprocess
-  config:   shellprocess@initramfs_custom.conf
+  config:   shellprocess@mkinitramfs.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -82,8 +82,7 @@ sequence:
       - bootloader-config
       - grubcfg
       - bootloader
-      # initramfs
-      - shellprocess@initramfs_custom
+      - shellprocess@mkinitramfs
       - plymouthcfg
       - packages
       - dpkg-unsafe-io-undo
