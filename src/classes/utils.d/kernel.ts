@@ -26,6 +26,7 @@ export default class Kernel {
 
     if (!Utils.isContainer()) {
       vmlinuz = this.vmlinuzFromUname()
+
       if (vmlinuz === '') {
         vmlinuz = this.vmlinuzFromCmdline()
         if (vmlinuz === '') {
@@ -180,11 +181,8 @@ export default class Kernel {
     const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
 
     if (distro.familyId === 'archlinux') {
-      cmdline.forEach(cmd => {
-        if (cmd.includes('initrd.img')) {
-          vmlinuz += cmd.substring(cmd.indexOf('initrd.img') + 10)
-        }
-      })
+      const command = "awk -F'[= ]' '{print $2}' /proc/cmdline"
+      vmlinuz = execSync(command, { encoding: 'utf-8' }).trim()
     } else {
       cmdline.forEach(cmd => {
         if (cmd.includes('BOOT_IMAGE')) {
