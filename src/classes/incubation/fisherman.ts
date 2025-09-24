@@ -104,7 +104,10 @@ export default class Fisherman {
    */
   async buildModule(name: string, vendor = 'eggs') {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
-
+    if (this.distro.codenameLikeId === 'boolworm') {
+      moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '3.2.yml')
+    }
+    
     /**
      * We need vendor here to have possibility to load custom modules for calamares
      * the custom modules live in: /addons/vendor/theme/calamares/modules
@@ -132,7 +135,7 @@ export default class Fisherman {
       }
     }
 
-    const moduleDest = this.installer.modules + name + '.conf'
+    let moduleDest = this.installer.modules + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) {
         this.show(name, 'module', moduleDest)
