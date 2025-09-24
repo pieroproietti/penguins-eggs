@@ -104,8 +104,12 @@ export default class Fisherman {
    */
   async buildModule(name: string, vendor = 'eggs') {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
-    if (this.distro.codenameLikeId === 'boolworm') {
-      moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '3.2.yml')
+
+    if (name === 'mount') {
+      const calamaresVersion = (await exec('calamares --version', { capture: true, echo: false, ignore: false })).data.trim().slice(10, 13)
+      if (calamaresVersion === '3.2') {
+        moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.3.2.yml')
+      }
     }
     
     /**
@@ -137,26 +141,14 @@ export default class Fisherman {
 
     let moduleDest = this.installer.modules + name + '.conf'
     if (fs.existsSync(moduleSource)) {
+      shx.cp(moduleSource, moduleDest)
       if (this.verbose) {
         this.show(name, 'module', moduleDest)
-      }
-
-      // We need to adapt just mount.conf
-      if (name === 'mount') {
-        const calamaresVersion = (await exec('calamares --version', { capture: true, echo: false, ignore: false })).data.trim().slice(10, 13)
-        let options = '[ bind ]'
-        if (calamaresVersion === '3.2') {
-          options = 'bind'
-        }
-        const view = { options }
-        const moduleSourceTemplate = fs.readFileSync(moduleSource, 'utf8')
-        fs.writeFileSync(moduleDest, mustache.render(moduleSourceTemplate, view))
-      } else {
-        shx.cp(moduleSource, moduleDest)
       }
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
     }
+
   }
 
   /**
