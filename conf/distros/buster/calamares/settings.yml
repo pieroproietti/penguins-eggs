@@ -38,10 +38,21 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 instances:
-- id:       initramfs_custom
+- id:       mkinitramfs
   module:   shellprocess
-  config:   shellprocess@initramfs_custom.conf
+  config:   shellprocess@mkinitramfs.conf
 
+- id: boot_deploy
+  module: shellprocess
+  config: shellprocess@boot_deploy.conf
+
+- id: boot_reconfigure
+  module: shellprocess
+  config: shellprocess@boot_reconfigure.conf
+
+#
+# SEQUENCE
+#
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -78,12 +89,13 @@ sequence:
       - hwclock
       - services-systemd
       - luksbootkeyfile
+      - shellprocess@boot_deploy      
       - initramfscfg
       - bootloader-config
       - grubcfg
       - bootloader
-      # initramfs
-      - shellprocess@initramfs_custom
+      - shellprocess@mkinitramfs
+      - shellprocess@boot_reconfigure
       - plymouthcfg
       - packages
       - dpkg-unsafe-io-undo

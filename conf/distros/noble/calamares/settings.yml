@@ -6,9 +6,9 @@
 modules-search: [ local, /usr/share/calamares/modules ]
 
 instances:
-- id:       initramfs_custom
+- id:       mkinitramfs
   module:   shellprocess
-  config:   shellprocess@initramfs_custom.conf
+  config:   shellprocess@mkinitramfs.conf
 
 - id:       install_translations
   module:   shellprocess
@@ -73,7 +73,7 @@ sequence:
     - contextualprocess@before_bootloader
     - bootloader
     - contextualprocess@after_bootloader
-    - shellprocess@initramfs_custom
+    - shellprocess@mkinitramfs
     # initramfs
     - shellprocess@boot_reconfigure
     - shellprocess@nomodeset

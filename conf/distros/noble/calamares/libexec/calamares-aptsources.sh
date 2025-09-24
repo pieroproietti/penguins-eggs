@@ -6,7 +6,7 @@
 
 set -ex
 
-echo "Reinstalling neon-keyring"
+echo "Reinstalling ubuntu-keyring"
 
 ls /etc/apt/sources.list.d/
 
