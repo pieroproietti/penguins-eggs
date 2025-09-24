@@ -52,7 +52,7 @@ sequence:
       - locale
       - keyboard
       - partition
-      {{createUsers}}users
+      - users
       - summary
 
   # Phase 2 - install.
@@ -67,16 +67,16 @@ sequence:
       - unpackfs
       # dpkg-unsafe-io
       - sources-yolk
-      {{hasSystemd}}machineid
+      - machineid
       - fstab
       - locale
       - keyboard
       - localecfg
-      {{createUsers}}users
-      {{hasDisplaymanager}}displaymanager 
+      - users
+      - displaymanager 
       - networkcfg
       - hwclock
-      {{hasSystemd}}services-systemd 
+      - services-systemd 
       - bootloader-config
       - grubcfg
       - bootloader
@@ -106,7 +106,7 @@ sequence:
 # Only the name of the branding component (directory) should be
 # specified here, Calamares then takes care of finding it and
 # loading the contents.
-branding: {{branding}}
+branding: default
 
 # If this is set to true, Calamares will show an "Are you sure?" prompt right
 # before each execution phase, i.e. at points of no return. If this is set to
