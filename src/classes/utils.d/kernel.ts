@@ -40,7 +40,7 @@ export default class Kernel {
     }
 
     if (!fs.existsSync(vmlinuz)) {
-      console.log(`file ${vmlinuz} does not exist!`)
+      console.log(`vmlinuz: ${vmlinuz} does not exist!`)
       process.exit(1)
     }
     return vmlinuz
@@ -159,14 +159,35 @@ export default class Kernel {
    * most of the distros:
    * debian, fedora, opensuse, rasberry
    */
-  private static vmlinuzFromUname() {
-    const kernelVersion = execSync('uname -r').toString().trim()
-    let kernelPath = `/boot/vmlinuz-${kernelVersion}`
-    if (fs.existsSync(kernelPath)) {
-      return kernelPath
-    } else {
-      return ''
+  private static vmlinuzFromUname(): string  {
+    const kernelVersion = execSync('uname -r').toString().trim();
+
+    // Tempt1: path standard (es. Debian, Ubuntu, Fedora)
+    let standardPath = `/boot/vmlinuz-${kernelVersion}`;
+    if (fs.existsSync(standardPath)) {
+      return standardPath;
     }
+
+    // Tempt2: Arch Linux
+    let archPath = ''; // Inizializza una stringa vuota
+    if (kernelVersion.includes("-lts")) {
+      archPath = `/boot/vmlinuz-linux-lts`;
+    } else if (kernelVersion.includes("-zen")) {
+      archPath = `/boot/vmlinuz-linux-zen`;
+    } else if (kernelVersion.includes("-hardened")) {
+      archPath = `/boot/vmlinuz-linux-hardened`;
+    } else if (kernelVersion.includes("-arch")) {
+      archPath = `/boot/vmlinuz-linux`;
+    }
+
+    // Se abbiamo trovato un percorso per Arch e il file esiste, lo ritorniamo
+    if (archPath && fs.existsSync(archPath)) {
+      return archPath;
+    }
+
+    // Fallback: se nessun file è stato trovato, lancia un errore.
+    // Questo garantisce che la funzione non ritorni mai 'undefined'.
+    throw new Error(`Impossibile trovare un file vmlinuz valido per il kernel: ${kernelVersion}`);
   }
 
   /**
@@ -181,9 +202,10 @@ export default class Kernel {
     const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
 
     if (distro.familyId === 'archlinux') {
-      const command = "awk -F'[= ]' '{print $2}' /proc/cmdline"
-      vmlinuz = execSync(command, { encoding: 'utf-8' }).trim()
+      // const command = "awk -F'[= ]' '{print $2}' /proc/cmdline"
+      // vmlinuz = execSync(command, { encoding: 'utf-8' }).trim()
     } else {
+
       cmdline.forEach(cmd => {
         if (cmd.includes('BOOT_IMAGE')) {
           vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
