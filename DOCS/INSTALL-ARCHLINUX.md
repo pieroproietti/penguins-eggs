@@ -12,8 +12,8 @@ sudo nano /etc/pacman.conf
 Scroll to the bottom of the file and add the following lines:
 ```
 [penguins-eggs]
-SigLevel = Required DatabaseOptional
-Server = [https://pieroproietti.github.io/penguins-eggs-repo/arch/$arch](https://pieroproietti.github.io/penguins-eggs-repo/arch/$arch)
+SigLevel = Optional TrustAll
+Server = https://pieroproietti.github.io/penguins-eggs-repo/arch
 ```
 
 ## Step 2: Import the GPG Key
@@ -23,7 +23,7 @@ Replace YOUR_GPG_KEY_ID in the commands below with the actual ID of the key you 
 
 Receive the key from a keyserver:
 ```
-sudo pacman-key --recv-keys YOUR_GPG_KEY_ID
+sudo pacman-key --recv-keys F6773EA7D2F309BA3E5DE08A45B10F271525403F
 ```
 
 Locally sign the key to establish trust:
