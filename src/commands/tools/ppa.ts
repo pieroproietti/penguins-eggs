@@ -62,7 +62,7 @@ export default class Ppa extends Command {
             await penguinsRepoAdd()
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove Chaotic-AUR to your repositories?`)
+          Utils.warning(`Are you sure to remove penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
             await penguinsRepoRemove()
           }
