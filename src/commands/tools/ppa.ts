@@ -103,7 +103,7 @@ export default class Ppa extends Command {
         }
       } else if (distro.familyId === 'opensuse') {
         console.log("You can find the step-by-step instructions at this link:")
-        console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md")
+        console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-OPENSUSE.md")
         console.log()
 
         /**
