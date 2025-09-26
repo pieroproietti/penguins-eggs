@@ -26,17 +26,12 @@ export default class Archlinux {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
       const cal_eggs = 'calamares-eggs-3.4.0-1-x86_64.pkg.tar.zst' // 25.9.25
-    let cmd = `wget -O /tmp/${cal_eggs} https://penguins-eggs.net/basket/packages/aur/${cal_eggs}`// 21/12/2024
+    // let cmd = `wget -O /tmp/${cal_eggs} https://penguins-eggs.net/basket/packages/aur/${cal_eggs}`// 21/12/2024
+    let cmd = `pacman -S ${cal_eggs}`
     try {
       await exec(cmd, echo)
-      cmd = `pacman -U /tmp/${cal_eggs}`
-      try {
-        await exec(cmd, echo)
-      } catch {
-        Utils.error(`Cannot install /tmp/${cal_eggs}`) // + e.error)
-      }
     } catch {
-      Utils.error(`Cannot download ${cal_eggs}`) // + e.error)
+      Utils.error(`Cannot install ${cal_eggs}`) // + e.error)
     }
   }
 
