@@ -159,25 +159,25 @@ export default class Kernel {
    * most of the distros:
    * debian, fedora, opensuse, rasberry
    */
-  private static vmlinuzFromUname(): string  {
+  private static vmlinuzFromUname(): string {
     const kernelVersion = execSync('uname -r').toString().trim();
 
-    // Tempt1: path standard (es. Debian, Ubuntu, Fedora)
+    // Try 1: path standard (es. Debian, Ubuntu, Fedora)
     let standardPath = `/boot/vmlinuz-${kernelVersion}`;
     if (fs.existsSync(standardPath)) {
       return standardPath;
     }
 
-    // Tempt2: Arch Linux
-    let archPath = ''; // Inizializza una stringa vuota
+    // Try 2: Arch Linux
+    let archPath = ''
     if (kernelVersion.includes("-lts")) {
-      archPath = `/boot/vmlinuz-linux-lts`;
+      archPath = `/boot/vmlinuz-linux-lts`
     } else if (kernelVersion.includes("-zen")) {
-      archPath = `/boot/vmlinuz-linux-zen`;
+      archPath = `/boot/vmlinuz-linux-zen`
     } else if (kernelVersion.includes("-hardened")) {
-      archPath = `/boot/vmlinuz-linux-hardened`;
+      archPath = `/boot/vmlinuz-linux-hardened`
     } else if (kernelVersion.includes("-arch")) {
-      archPath = `/boot/vmlinuz-linux`;
+      archPath = `/boot/vmlinuz-linux`
     }
 
     // Se abbiamo trovato un percorso per Arch e il file esiste, lo ritorniamo
@@ -192,41 +192,33 @@ export default class Kernel {
 
   /**
    * vmlinuxFromCmdline
-   * raspbery /proc/cmdline dont contain it
+   * raspberry /proc/cmdline dont contain it
    */
   private static vmlinuzFromCmdline() {
     let distro = new Distro()
     let vmlinuz = ''
 
-    // Find vmlinuz in /proc/cmdline
     const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
 
-    if (distro.familyId === 'archlinux') {
-      // const command = "awk -F'[= ]' '{print $2}' /proc/cmdline"
-      // vmlinuz = execSync(command, { encoding: 'utf-8' }).trim()
-    } else {
+    cmdline.forEach(cmd => {
+      if (cmd.includes('BOOT_IMAGE')) {
+        vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
 
-      cmdline.forEach(cmd => {
-        if (cmd.includes('BOOT_IMAGE')) {
-          vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
-
-          // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
-          if (vmlinuz.includes(")")) {
-            vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
-          }
-          if (!fs.existsSync(vmlinuz)) {
-            if (fs.existsSync(`/boot/${vmlinuz}`)) {
-              vmlinuz = `/boot/${vmlinuz}`
-            }
+        // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
+        if (vmlinuz.includes(")")) {
+          vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
+        }
+        if (!fs.existsSync(vmlinuz)) {
+          if (fs.existsSync(`/boot/${vmlinuz}`)) {
+            vmlinuz = `/boot/${vmlinuz}`
           }
         }
-      })
-      // btrfs: eg: /@root/boot/vmlinuz
-      if (vmlinuz.includes('@')) {
-        let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
-        vmlinuz = vmlinuz.substring(subvolumeEnd)
       }
-
+    })
+    // btrfs: eg: /@root/boot/vmlinuz
+    if (vmlinuz.includes('@')) {
+      let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
+      vmlinuz = vmlinuz.substring(subvolumeEnd)
     }
 
 
