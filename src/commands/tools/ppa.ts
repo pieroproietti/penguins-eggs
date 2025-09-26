@@ -57,14 +57,14 @@ export default class Ppa extends Command {
 
       if (distro.familyId === 'archlinux' && !Diversions.isManjaroBased(distro.distroId)) {
         if (flags.add) {
-          Utils.warning(`Are you sure to add Chaotic-AUR to your repositories?`)
+          Utils.warning(`Are you sure to add penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await archAdd()
+            await penguinsRepoAdd()
           }
         } else if (flags.remove) {
           Utils.warning(`Are you sure to remove Chaotic-AUR to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await archRemove()
+            await penguinsRepoRemove()
           }
         }
 
@@ -117,6 +117,77 @@ export default class Ppa extends Command {
 }
 
 
+/**
+ * PENGUINS-EGGS-REPO (ARCH)
+ */
+async function penguinsRepoAdd() {
+  const repoBlockIdentifier = '# Penguins-eggs repository';
+  const repoName = '[penguins-eggs]'
+  const keyId = 'F6773EA7D2F309BA3E5DE08A45B10F271525403F'
+  const serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  const pacmanConfPath = '/etc/pacman.conf'
+  const echo = Utils.setEcho(true)
+
+  // 1. Controlla se il repository è già configurato
+  const pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
+  if (pacmanConfContent.includes(repoName)) {
+    console.log(`Il repository ${repoName} è già presente in ${pacmanConfPath}!`);
+    // Qui potresti voler uscire o chiamare una funzione di rimozione, come nel tuo esempio.
+    return;
+  }
+
+  // 2. Importa e firma la chiave GPG del repository
+  console.log(`Importazione della chiave GPG: ${keyId}...`);
+  await exec(`pacman-key --recv-key ${keyId} --keyserver keyserver.ubuntu.com`, echo);
+  await exec(`pacman-key --lsign-key ${keyId}`, echo);
+
+  let repoBlock = ``
+  repoBlock += repoBlockIdentifier + `\n`
+  repoBlock += `${repoName}\n`
+  repoBlock += `SigLevel = Optional TrustAll\n`
+  repoBlock += `Server = ${serverUrl}\n`
+  fs.appendFileSync(pacmanConfPath, repoBlock);
+}
+
+/**
+ * Rimuove il repository penguins-eggs da /etc/pacman.conf
+ */
+async function penguinsRepoRemove() {
+  // --- Configurazione del repository da rimuovere ---
+  const repoBlockIdentifier = '# Penguins-eggs repository'
+  const repoName = '[penguins-eggs]'
+  const serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  const serverLine = 'Server = https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  const pacmanConfPath = '/etc/pacman.conf'
+
+  let pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
+
+  // Controlla se il repository è effettivamente presente
+  if (pacmanConfContent.includes(repoName)) {
+    console.log(`Rimozione del repository ${repoName} in corso...`);
+
+    // Costruisce la stringa esatta del blocco da rimuovere
+    let repoBlock = ``
+    repoBlock += repoBlockIdentifier + `\n`
+    repoBlock += `${repoName}\n`
+    repoBlock += `SigLevel = Optional TrustAll\n`
+    repoBlock += `Server = ${serverUrl}\n`
+
+
+    // Sostituisce il blocco del repository con una stringa vuota
+    pacmanConfContent = pacmanConfContent.replace(repoBlock, '');
+
+    // Riscrive il file con il contenuto aggiornato, usando trim() per
+    // rimuovere eventuali spazi o righe vuote all'inizio o alla fine.
+    fs.writeFileSync(pacmanConfPath, pacmanConfContent.trim());
+
+    console.log('Repository rimosso con successo!');
+    console.log('Esegui "sudo pacman -Syyu" per aggiornare i database.');
+
+  } else {
+    console.log('Il repository non era presente in /etc/pacman.conf.');
+  }
+}
 /**
  * ARCH
  */
