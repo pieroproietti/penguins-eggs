@@ -25,7 +25,7 @@ export default class Openmamba {
     try {
       await exec('dnf install calamares -y', echo)
     } catch {
-      Utils.error(`openmamba.calamaresInstall()`)
+      Utils.error(`cannot install calamares`)
     }
   }
 
@@ -43,14 +43,18 @@ export default class Openmamba {
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
-
-    const retVal = false
-    if (fs.existsSync('/etc/calamares')) {
-      await exec('rm /etc/calamares -rf', echo)
+    let success = false
+    try {
+      await exec('dnf -y remove calamares', echo)
+      success=true
+    } catch {
+      Utils.error(`Cannot remove calamares`)
     }
 
-    await exec('dnf remove calamares', echo)
-    return retVal
+    if (success && fs.existsSync('/etc/calamares')) {
+      await exec('rm /etc/calamares -rf', echo)
+    }
+    return success
   }
 
   /**
