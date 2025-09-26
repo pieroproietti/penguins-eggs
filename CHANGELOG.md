@@ -19,6 +19,10 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.9.25
+* fixed a bug regarding kernel name determination, which occurred in Arch Linux on installations using [systemd-boot](https://wiki.archlinux.org/title/Systemd-boot). issue: [629](https://github.com/pieroproietti/penguins-eggs/issues/629), thanks to [2kpr](https://github.com/2kpr) ;
+* the command `eggs tools ppa` on Arch Linux now adds or removes the new repository `https://github.com/pieroproietti/penguins-eggs-repo`.
+
 ## v25.9.24
 `calamares`: complete rewrite of the calamares/krill configuration for Ubuntu and Debian. It is now possible to perform encrypted installation correctly on both Ubuntu noble and Debian bookworm. On Debian trixe, however, we must wait for the next fixes.
 
