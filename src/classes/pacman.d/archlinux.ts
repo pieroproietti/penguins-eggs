@@ -25,18 +25,11 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
-      const cal_eggs = 'calamares-eggs-3.4.0-1-x86_64.pkg.tar.zst' // 25.9.25
-    let cmd = `wget -O /tmp/${cal_eggs} https://penguins-eggs.net/basket/packages/aur/${cal_eggs}`// 21/12/2024
+    let cmd = `pacman -S calamares-eggs --noconfirm`
     try {
       await exec(cmd, echo)
-      cmd = `pacman -U /tmp/${cal_eggs}`
-      try {
-        await exec(cmd, echo)
-      } catch {
-        Utils.error(`Cannot install /tmp/${cal_eggs}`) // + e.error)
-      }
     } catch {
-      Utils.error(`Cannot download ${cal_eggs}`) // + e.error)
+      Utils.error(`Cannot install calamares-eggs`)
     }
   }
 
@@ -55,22 +48,20 @@ export default class Archlinux {
   static async calamaresRemove(verbose = true): Promise<boolean> {
     verbose = true // serve per pacman
 
-    let removed = false
+    let success = false
     const echo = Utils.setEcho(verbose)
-
-    const calPKGs = ['calamares', 'calamares-eggs']
-    for (const calPKG of calPKGs) {
-      if (await this.packagePacmanAvailable(calPKG)) {
-        await exec(`pacman -R ${calPKG}`, echo)
-        removed = true
-      }
+    try {
+      await exec('pacman -R calamares calamares-eggs --noconfirm', echo)
+      success=true
+    } catch {
+      Utils.error(`Cannot remove calamares-eggs`)
     }
 
-    if (removed && fs.existsSync('/etc/calamares')) {
+    if (success && fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    return removed
+    return success
   }
 
   /**

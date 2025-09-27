@@ -24,11 +24,11 @@ export default class Opensuse {
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(true)
-    console.log("installazione calamares SuSE")
+    console.log("Install calamares-eggs from penguins-eggs-repo")
     try {
-      await exec(`zypper install calamares`, echo)
+      await exec(`zypper install -y calamares-eggs`, echo)
     } catch {
-      Utils.error(`Opensuse.calamaresInstall()`)
+      Utils.error(`Cannot install calamares-eggs`)
     }
   }
 
@@ -46,15 +46,20 @@ export default class Opensuse {
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
+    let success=false
     const echo = Utils.setEcho(verbose)
+    try {
+      await exec('zypper remove -y calamares calamares-eggs', echo)
+      success=true
+    } catch {
+      Utils.error(`Cannot remove calamares-eggs`)
+    }
 
-    const retVal = false
-    if (fs.existsSync('/etc/calamares')) {
+    if (success && fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    await exec('zypper remove calamares', echo)
-    return retVal
+    return success
   }
 
   /**

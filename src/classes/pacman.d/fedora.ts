@@ -25,9 +25,9 @@ export default class Fedora {
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(verbose)
     try {
-      await exec(`dnf install -y ${this.packs4calamares.join(' ')}`, echo)
+      await exec(`dnf install -y calamares`, echo)
     } catch {
-      Utils.error(`fedora.calamaresInstall()`)
+      Utils.error(`cannot install calamares`)
     }
   }
 
@@ -45,14 +45,19 @@ export default class Fedora {
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
     const echo = Utils.setEcho(verbose)
+    let success = false
+    try {
+      await exec('dnf -y remove calamares', echo)
+      success=true
+    } catch {
+      Utils.error(`Cannot remove calamares`)
+    }
 
-    const retVal = false
-    if (fs.existsSync('/etc/calamares')) {
+    if (success && fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
 
-    await exec('dnf remove calamares', echo)
-    return retVal
+    return success
   }
 
   /**
