@@ -160,10 +160,12 @@ export default class Kernel {
    * debian, fedora, opensuse, rasberry
    */
   private static vmlinuzFromUname(): string {
-    const kernelVersion = execSync('uname -r').toString().trim();
+    let kernelVersion = execSync('uname -r').toString().trim()
+    // Rimuove il suffisso -MANJARO
+    kernelVersion = kernelVersion.replace('-MANJARO', '');
 
     // Try 1: path standard (es. Debian, Ubuntu, Fedora)
-    let standardPath = `/boot/vmlinuz-${kernelVersion}`;
+    let standardPath = `/boot/vmlinuz-${kernelVersion}`
     if (fs.existsSync(standardPath)) {
       return standardPath;
     }
