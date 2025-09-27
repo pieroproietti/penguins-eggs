@@ -419,6 +419,10 @@ async function partitionCustomize() {
   // detect filesystem type
   let test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
   partition.defaultFileSystemType = test.data.trim()
+
+  /**
+   * Determino i filesystem disponibili
+   */
   partition.availableFileSystemTypes = ['ext4']
 
   if (Pacman.packageIsInstalled('btrfs-progs') ||
@@ -435,6 +439,7 @@ async function partitionCustomize() {
   }
 
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
+  
 }
 
 
