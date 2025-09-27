@@ -1,5 +1,12 @@
-# Arch
-# calamares 3.3
+# calamares 3.4
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
+#
+# Mount filesystems in the target (generally, before treating the
+# target as a usable chroot / "live" system). Filesystems are
+# automatically mounted from the partitioning module. Filesystems
+# listed here are **extra**. The filesystems listed in *extraMounts*
+# are mounted in all target systems.
 ---
 # Extra filesystems to mount. The key's value is a list of entries; each
 # entry has five keys:
@@ -46,7 +53,7 @@ btrfsSubvolumes:
       subvolume: /@
       # As an alternative:
       #
-      # subvolume: "" 
+      # subvolume: ""
     - mountPoint: /home
       subvolume: /@home
     - mountPoint: /var/cache
@@ -89,9 +96,9 @@ btrfsSwapSubvol: /@swap
 #    - filesystem: efi
 #      options: [ defaults, umask=0077 ]
 #    - filesystem: ext4
-#      options: [ defaults, noatime ]
+#      options: [ defaults ]
 #    - filesystem: btrfs
-#      options: [ defaults, noatime, compress=zstd:1 ]
+#      options: [ defaults, compress=zstd:1 ]
 #      ssdOptions: [ discard=async ]
 #      hddOptions: [ autodefrag ]
 #    - filesystem: btrfs_swap
@@ -102,14 +109,18 @@ btrfsSwapSubvol: /@swap
 #
 # mountOptions:
 #    - filesystem: default
-#      options: [ defaults, noatime ]
+#      options: [ defaults ]
 #
 mountOptions:
     - filesystem: default
-      options: [ defaults, noatime ]
+      options: [ defaults ]
     - filesystem: efi
       options: [ defaults, umask=0077 ]
     - filesystem: btrfs
-      options: [ defaults, noatime, compress=lzo ]
+      options: [ defaults, compress=zstd:1 ]
     - filesystem: btrfs_swap
       options: [ defaults, noatime ]
+
+
+
+
