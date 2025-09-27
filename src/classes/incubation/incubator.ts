@@ -18,7 +18,7 @@ import path from 'node:path'
 import shx from 'shelljs'
 import { exec } from '../../lib/utils.js'
 
-import { ICalamaresPartition } from '../../interfaces/i-calamares-partition.js'
+import { CalamaresPartitionConfig } from '../../interfaces/i-calamares-partition.js'
 import { IInstaller } from '../../interfaces/i-installer.js'
 import { IDistro, IRemix } from '../../interfaces/index.js'
 import Pacman from '../pacman.js'
@@ -414,7 +414,7 @@ function write(file: string, content: string, verbose = false) {
  */
 async function partitionCustomize() {
   const filePartition = '/etc/calamares/modules/partition.conf'
-  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as ICalamaresPartition
+  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as CalamaresPartitionConfig
 
   // detect filesystem type
   let test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
