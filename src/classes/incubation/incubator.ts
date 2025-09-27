@@ -16,15 +16,15 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
-import { exec } from '../../lib/utils.js'
 
-import { CalamaresPartitionConfig } from '../../interfaces/i-calamares-partition.js'
 import { IInstaller } from '../../interfaces/i-installer.js'
 import { IDistro, IRemix } from '../../interfaces/index.js'
 import Pacman from '../pacman.js'
 import Utils from '../utils.js'
 import { installer } from './installer.js'
 import { branding } from './branding.js'
+
+import {customizePartitions} from './customize/customize-partitions.js'
 
 // incubator.d
 import { Alpine } from './incubator.d/alpine.js'
@@ -202,7 +202,7 @@ export default class Incubator {
 
 
     if (Pacman.calamaresExists()) {
-      await partitionCustomize()
+      await customizePartitions()
     }
 
     Utils.warning(`cleanup ${installer().name} configuration files`)
@@ -408,38 +408,4 @@ function write(file: string, content: string, verbose = false) {
 
   fs.writeFileSync(file, content, 'utf8')
 }
-
-/**
- *
- */
-async function partitionCustomize() {
-  const filePartition = '/etc/calamares/modules/partition.conf'
-  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as CalamaresPartitionConfig
-
-  // detect filesystem type
-  let test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
-  partition.defaultFileSystemType = test.data.trim()
-
-  /**
-   * Determino i filesystem disponibili
-   */
-  partition.availableFileSystemTypes = ['ext4']
-
-  if (Pacman.packageIsInstalled('btrfs-progs') ||
-    Pacman.packageIsInstalled('btrfsprogs')) {
-    partition.availableFileSystemTypes.push('btrfs')
-  }
-
-  if (Pacman.packageIsInstalled('xfsprogs')) {
-    partition.availableFileSystemTypes.push('xfs')
-  }
-
-  if (Pacman.packageIsInstalled('f2fs-tools')) {
-    partition.availableFileSystemTypes.push('f2fs')
-  }
-
-  fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
-  
-}
-
 
