@@ -161,8 +161,6 @@ export default class Kernel {
    */
   private static vmlinuzFromUname(): string {
     let kernelVersion = execSync('uname -r').toString().trim()
-    // Rimuove il suffisso -MANJARO
-    kernelVersion = kernelVersion.replace('-MANJARO', '');
 
     // Try 1: path standard (es. Debian, Ubuntu, Fedora)
     let standardPath = `/boot/vmlinuz-${kernelVersion}`
@@ -184,17 +182,17 @@ export default class Kernel {
 
     // Se abbiamo trovato un percorso per Arch e il file esiste, lo ritorniamo
     if (archPath && fs.existsSync(archPath)) {
-      return archPath;
+      return archPath
     }
 
-    // Fallback: se nessun file è stato trovato, lancia un errore.
-    // Questo garantisce che la funzione non ritorni mai 'undefined'.
-    throw new Error(`Impossibile trovare un file vmlinuz valido per il kernel: ${kernelVersion}`);
+    // return an empty string: manjaro
+    return ''
   }
 
   /**
    * vmlinuxFromCmdline
-   * raspberry /proc/cmdline dont contain it
+   * 
+   * It's used mostly on Manjaro
    */
   private static vmlinuzFromCmdline() {
     let distro = new Distro()
