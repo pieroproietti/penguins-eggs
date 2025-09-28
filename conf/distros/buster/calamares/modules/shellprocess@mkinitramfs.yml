@@ -1,4 +1,5 @@
 # shellprocess_mkinitramfs.conf
 dontChroot: false
+timeout: 300
 script:
     - "mkinitramfs -o /boot/initrd.img-$(uname -r)"
