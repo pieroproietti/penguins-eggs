@@ -1,4 +1,4 @@
-# Ubuntu/noble
+# Debian/bookworm
 ---
 unpack:
     -   source: {{source}}

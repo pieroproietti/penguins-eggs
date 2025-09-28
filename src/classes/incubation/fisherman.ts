@@ -20,8 +20,8 @@ import { settings } from './fisherman-helper/settings.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 
-import {ICalamaresDisplaymanager} from '../../interfaces/i-calamares-displaymanager.js'
-import {ICalamaresFinished} from '../../interfaces/i-calamares-finished.js'
+import {ICalamaresDisplaymanager} from '../../interfaces/calamares/i-calamares-displaymanager.js'
+import {ICalamaresFinished} from '../../interfaces/calamares/i-calamares-finished.js'
 
 // pjson
 import { createRequire } from 'node:module'

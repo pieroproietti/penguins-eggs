@@ -2,15 +2,16 @@ import fs from 'node:fs'
 import Pacman from '../../pacman.js'
 import yaml from 'js-yaml'
 import { exec } from '../../../lib/utils.js'
-import { CalamaresPartitionConfig } from '../../../interfaces/i-calamares-partition.js'
+import { ICalamaresPartitions } from '../../../interfaces/calamares/i-calamares-partitions.js'
 
 /**
  *
  */
 export async function customizePartitions() {
   const filePartition = '/etc/calamares/modules/partition.conf'
-  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as CalamaresPartitionConfig
+  const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as ICalamaresPartitions
 
+  
   // detect filesystem type
   let test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
   partition.defaultFileSystemType = test.data.trim()
@@ -36,5 +37,3 @@ export async function customizePartitions() {
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
   
 }
-
-

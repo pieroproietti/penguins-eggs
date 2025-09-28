@@ -10,7 +10,7 @@ export { IAddons } from './i-addons.js'
 export { IApp } from './i-app.js'
 
 // Per krill
-export { IBranding } from './i-branding.js'
+export { IBranding } from './calamares/i-branding.js'
 export { IDevice, IDevices } from './i-devices.js'
 // export { IDriveList } from './i-drive-list'
 export { IDistro } from './i-distro.js'
