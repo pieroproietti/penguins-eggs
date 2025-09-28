@@ -91,10 +91,10 @@ sequence:
       - luksbootkeyfile
       - shellprocess@boot_deploy      
       - initramfscfg
+      - shellprocess@mkinitramfs
       - bootloader-config
       - grubcfg
       - bootloader
-      - shellprocess@mkinitramfs
       - shellprocess@boot_reconfigure
       - plymouthcfg
       - packages
