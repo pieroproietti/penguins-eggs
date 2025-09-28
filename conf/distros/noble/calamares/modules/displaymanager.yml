@@ -1,21 +1,22 @@
-# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
-# SPDX-FileCopyrightText: 2018-2021 Harald Sitter <sitter@kde.org>
-#
+# Debian/bookworm
 # Configure one or more display managers (e.g. SDDM)
 # with a "best effort" approach.
 ---
-displaymanagers:
-  - sddm
+#The DM module attempts to set up all the DMs found in this list, in that precise order.
+#It also sets up autologin, if the feature is enabled in globalstorage.
+#The displaymanagers list can also be set in globalstorage, and in that case it overrides anything set up here.
+displaymanagers: none
 
-# Force plasma as default session. calamares doesn't necessarily do a good job at picking
-# a "smart" default. Whatever smart means anyway.
-defaultDesktopEnvironment:
-    executable: "/bin/true"
-    desktopFile: "/usr/share/xsessions/xfce.desktop"
-    #desktopFile: "/usr/share/wayland-sessions/plasma.desktop"
+#Enable the following settings to force a desktop environment in your displaymanager configuration file:
+#defaultDesktopEnvironment:
+#    executable: "startkde"
+#    desktopFile: "plasma"
 
-# Only for distros where the sddm package isn't self sufficient.
+#If true, try to ensure that the user, group, /var directory etc. for the
+#display manager are set up correctly. This is normally done by the distribution
+#packages, and best left to them. Therefore, it is disabled by default.
 basicSetup: false
 
-# Only relevant on suse.
+#If true, setup autologin for openSUSE. This only makes sense on openSUSE
+#derivatives or other systems where /etc/sysconfig/displaymanager exists.
 sysconfigSetup: false
