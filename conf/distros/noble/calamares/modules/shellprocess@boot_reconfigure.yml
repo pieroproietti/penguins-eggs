@@ -4,6 +4,7 @@
 # Follow up to boot_deploy. This is inside chroot!
 # Make sure everything is configured properly by reconfiguring the package.
 ---
+jobTitle: "Final reconfiguration of the kernel and bootloader..."
 dontChroot: false
 timeout: 300
 script:

@@ -7,6 +7,7 @@
 #
 # NB: initrd is handled by the initramfs module.
 ---
+jobTitle: "Preparing the boot environment..."
 dontChroot: true
 timeout: 300
 script:
