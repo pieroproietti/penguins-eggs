@@ -41,6 +41,7 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
       const efiName = shx.exec(efiDetectCmd).stdout.trim()
       if (efiName) {
         this.devices.efi.name = efiName
+        this.devices.efi.mountPoint = '/boot/efi'
       } else {
         this.devices.efi.name = 'none'
       }
