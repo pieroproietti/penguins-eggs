@@ -10,6 +10,8 @@ import { Command, Flags, flush } from '@oclif/core'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
+import shx from 'shelljs'
+
 
 import Utils from '../classes/utils.js'
 import Krill from '../krill/classes/prepare.js'
@@ -41,9 +43,10 @@ export default class Install extends Command {
     none: Flags.boolean({ char: 'N', description: 'Swap none: 256M' }),
     pve: Flags.boolean({ char: 'p', description: 'Proxmox VE install' }),
     random: Flags.boolean({ char: 'r', description: 'Add random to hostname, eg: colibri-ay412dt' }),
+    replace: Flags.string({ char: `R`, description: `Replace partition. eg: --replace /dev/sda3` }),
     small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
     suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
-    testing: Flags.boolean({char: 't', description: "Just testing krill"}),
+    testing: Flags.boolean({ char: 't', description: "Just testing krill" }),
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
@@ -60,7 +63,7 @@ export default class Install extends Command {
 
     // krillConfig
     let krillConfig = {} as IKrillConfig
-    
+
     const content = fs.readFileSync('/etc/penguins-eggs.d/krill.yaml', 'utf8')
     krillConfig = yaml.load(content) as IKrillConfig
 
@@ -76,6 +79,30 @@ export default class Install extends Command {
 
     // chroot before to end
     const { chroot } = flags
+
+    // eg: eggs install --replace /dev/sda3
+    let replace = ''
+    if (flags.replace) {
+      replace = flags.replace
+
+      // Definiamo la dimensione minima richiesta in bytes (1 GB = 1024*1024*1024 bytes)
+      const minSizeBytes = 1024 * 1024 * 1024;
+
+      try {
+        const sizeInBytesString = shx.exec(`lsblk -b -n -o SIZE ${replace}`).stdout.trim();
+        const partitionSize = parseInt(sizeInBytesString, 10);
+
+        if (partitionSize < minSizeBytes) {
+          console.log(`partition to replace ${replace}, is too little`)
+          process.exit()
+        }
+
+      } catch (error) {
+        console.log(`partition ${replace} does not exists!`)
+        process.exit()
+      }
+    }
+    Utils.pressKeyToExit()
 
     let domain = ''
     if (flags.domain) {
@@ -94,12 +121,12 @@ export default class Install extends Command {
       crypted = false
     }
 
-    const {testing} = flags
+    const { testing } = flags
 
     const { verbose } = flags
 
-    if (Utils.isRoot()|| testing) {
-      if (Utils.isLive()|| testing) {
+    if (Utils.isRoot() || testing) {
+      if (Utils.isLive() || testing) {
         const krill = new Krill(unattended, nointeractive, halt, chroot)
         await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, testing, verbose)
       } else {

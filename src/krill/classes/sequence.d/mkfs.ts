@@ -8,6 +8,7 @@
  */
 
 import { exec } from '../../../lib/utils.js'
+import shx from "shelljs"
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../../classes/sequence.js'
 import Utils from '../../../classes/utils.js'
@@ -35,25 +36,15 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     this.devices.swap.name = 'file' // OK
     this.devices.efi.name='none'
     if (this.efi) {
-      const efiDetecCmd = `fdisk -l | grep 'EFI System' | awk '{print $1}'`
-      const efiDetect = (await exec(efiDetecCmd))
-      console.log(`efiDetecCmd: `, efiDetecCmd )
-      console.log("efiDetect.code:", efiDetect.code)
-      console.log("efiDetect.name:", efiDetect.code)
-      if (efiDetect.code == 0) {
-        const efiName = efiDetect.data.trim()
-        console.log("efiName:", efiName)
-        if (efiName) {
-          this.devices.efi.name = efiName
-        } else {
-          this.devices.efi.name = 'none'
-        }
+      // usare shx.exec qui
+      const efiDetectCmd = `fdisk -l | grep 'EFI System' | awk '{print $1}'`
+      const efiName = shx.exec(efiDetectCmd).stdout.trim()
+      if (efiName) {
+        this.devices.efi.name = efiName
       } else {
-        console.log("Errore ricerca efiName")
+        this.devices.efi.name = 'none'
       }
     }
-    console.log("this.devices.efi:", this.devices.efi)
-    await Utils.pressKeyToExit()
   }
 
 
