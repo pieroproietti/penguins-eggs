@@ -82,27 +82,25 @@ export default class Install extends Command {
 
     // eg: eggs install --replace /dev/sda3
     let replace = ''
+    let replaceExit = false
     if (flags.replace) {
       replace = flags.replace
-
       // Definiamo la dimensione minima richiesta in bytes (1 GB = 1024*1024*1024 bytes)
-      const minSizeBytes = 1024 * 1024 * 1024;
-
+      const minSizeBytes = 1024 * 1024 * 1024
       try {
         const sizeInBytesString = shx.exec(`lsblk -b -n -o SIZE ${replace}`).stdout.trim();
         const partitionSize = parseInt(sizeInBytesString, 10);
 
         if (partitionSize < minSizeBytes) {
           console.log(`partition to replace ${replace}, is too little`)
-          process.exit()
+          replaceExit = true
         }
 
       } catch (error) {
         console.log(`partition ${replace} does not exists!`)
-        process.exit()
+        replaceExit = true
       }
     }
-    Utils.pressKeyToExit()
 
     let domain = ''
     if (flags.domain) {
@@ -128,7 +126,7 @@ export default class Install extends Command {
     if (Utils.isRoot() || testing) {
       if (Utils.isLive() || testing) {
         const krill = new Krill(unattended, nointeractive, halt, chroot)
-        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, testing, verbose)
+        await krill.prepare(krillConfig, ip, random, domain, suspend, small, none, crypted, pve, flags.btrfs, replace, testing, verbose)
       } else {
         Utils.warning('You are in an installed system!')
       }

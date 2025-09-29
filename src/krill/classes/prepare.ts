@@ -83,6 +83,7 @@ export default class Krill {
     crypted = false,
     pve = false,
     btrfs = false,
+    replace = '',
     testing = false,
     verbose = false
   ) {
@@ -102,7 +103,7 @@ export default class Krill {
       
       // Interactive or unattended mode
       const finalConfigs = this.unattended 
-        ? this.applyUnattendedOptions(configs, crypted, pve, btrfs)
+        ? this.applyUnattendedOptions(configs, crypted, pve, btrfs, replace)
         : await this.runInteractiveMode(crypted, pve, btrfs)
       
       // Install
@@ -263,11 +264,17 @@ export default class Krill {
   /**
    * Apply options for unattended installation
    */
-  private applyUnattendedOptions(configs: any, crypted: boolean, pve: boolean, btrfs: boolean) {
+  private applyUnattendedOptions(configs: any, crypted: boolean, pve: boolean, btrfs: boolean, replace = '') {
     const { oPartitions, oUsers } = configs
 
     // Set defaults for unattended
     oPartitions.installationMode = InstallationMode.EraseDisk
+    if (replace!='') {
+      oPartitions.installationMode = InstallationMode.Replace
+      oPartitions.replacedPartition = replace
+      oPartitions.filesystemType = 'ext4'
+    }
+    
 
     // Apply options
     if (btrfs) oPartitions.filesystemType = FsType.btrfs
