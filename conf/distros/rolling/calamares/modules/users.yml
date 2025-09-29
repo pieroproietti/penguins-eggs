@@ -14,6 +14,7 @@ defaultGroups:
   # lpadmin
   # scanner
   # bluetooth
+doAutologin: true
 autologinGroup: autologin
 sudoersGroup: wheel
 setRootPassword: true
