@@ -406,6 +406,14 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "replace": {
+          "char": "R",
+          "description": "Replace partition. eg: --replace /dev/sda3",
+          "name": "replace",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "small": {
           "char": "s",
           "description": "Swap small: RAM",
