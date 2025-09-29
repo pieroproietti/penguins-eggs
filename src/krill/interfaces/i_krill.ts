@@ -33,6 +33,7 @@ export interface IPartitions {
   replacedPartition: string
 }
 
+
 export interface IUsers {
   autologin: boolean
   fullname: string

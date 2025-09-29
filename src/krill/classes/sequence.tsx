@@ -115,10 +115,11 @@ export default class Sequence {
   settings = {} as Settings
   remix = {} as IRemix
   distro = {} as IDistro
-  luksName = 'luks-volume'
-  luksFile = ``
-  luksDevice = `/dev/mapper/${this.luksName}`
-  luksMountpoint = `/mnt`
+  luksName = 'luks-volume'                    // encrypted ISOs
+  luksFile = ``                               // encrypted ISOs
+  luksDevice = `/dev/mapper/${this.luksName}` // encrypted ISOs
+  luksMountpoint = `/mnt`                     // encrypted ISOs
+  luksRootName = ''                           // installation encrypted
   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
   is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
   unattended = false
@@ -150,6 +151,8 @@ export default class Sequence {
     this.distro = new Distro()
     this.efi = fs.existsSync('/sys/firmware/efi/efivars');
     this.luksFile = `${this.distro.liveMediumPath}live/${this.luksName}`
+    this.luksRootName = `${this.distro.distroLike}_root`   
+    this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }
 
   /**
@@ -292,7 +295,7 @@ export default class Sequence {
 
       // Locale configuration
       if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
-        await this.executeStep("Locale Configuration", 72, async () => {
+        await this.executeStep("Locale configuration", 72, async () => {
           await this.localeCfg()
           await exec("chroot " + this.installTarget + " locale-gen" + this.toNull)
         })
@@ -319,6 +322,10 @@ export default class Sequence {
     // 10. Always remove CLI autologin
     await this.executeStep("Remove autologin CLI", 80, () => this.cliAutologin.remove(this.installTarget))
 
+    // 10. mkinitramfs
+    await this.executeStep("initramfs configure", 86, () => this.initramfsCfg(this.partitions.installationDevice))
+    await this.executeStep("initramfs", 87, () => this.initramfs())
+
     // 11. Bootloader configuration
     await this.executeStep("bootloader-config", 81, () => this.bootloaderConfig())
     await this.executeStep("grubcfg", 82, () => this.grubcfg())
@@ -330,8 +337,6 @@ export default class Sequence {
     }
 
     await this.executeStep("Add/remove packages", 85, () => this.packages())
-    await this.executeStep("initramfs configure", 86, () => this.initramfsCfg(this.partitions.installationDevice))
-    await this.executeStep("initramfs", 87, () => this.initramfs())
     await this.executeStep("Remove GUI installer link", 88, () => this.removeInstallerLink())
 
     await this.executeStep("Cleanup", 89, async () => {

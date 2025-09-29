@@ -39,7 +39,7 @@ export default async function biosLuks(this: Sequence, installDevice = "", p = "
     // disabilito spinner per introduzione passphrase
     let message = "Creating partitions"
     await redraw(<Install message={ message } percent = { 0} />)
-    const passphrase = await getLuksPassphrase('3volution', '3volution') // It'd just a default to test, it's ok
+    const passphrase = await getLuksPassphrase('evolution', 'evolution') // It's just a default
     await redraw(<Install message={ message } percent = { 0} spinner = { this.spinner } />)
 
     // Aggiungi parametri di sicurezza espliciti
@@ -63,7 +63,7 @@ export default async function biosLuks(this: Sequence, installDevice = "", p = "
     // this.devices.boot.name = DEFINED`
     this.devices.data.name = 'none'
     this.devices.efi.name = 'none'
-    this.devices.root.name = '/dev/mapper/root_crypted'
+    this.devices.root.name = `/dev/mapper/${this.luksRootName}`
     this.devices.root.cryptedFrom = `${installDevice}${p}2`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'
