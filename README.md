@@ -804,25 +804,27 @@ krill: the CLI system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs install [-b] [-c] [-k] [-d <value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-t] [-u] [-v]
+  $ eggs install [-b] [-c] [-k] [-d <value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R <value>] [-s] [-S] [-t]
+    [-u] [-v]
 
 FLAGS
-  -H, --halt            Halt the system after installation
-  -N, --none            Swap none: 256M
-  -S, --suspend         Swap suspend: RAM x 2
-  -b, --btrfs           Format btrfs
-  -c, --chroot          chroot before to end
-  -d, --domain=<value>  Domain name, defult: .local
-  -h, --help            Show CLI help.
-  -i, --ip              hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted         Crypted CLI installation
-  -n, --nointeractive   no user interaction
-  -p, --pve             Proxmox VE install
-  -r, --random          Add random to hostname, eg: colibri-ay412dt
-  -s, --small           Swap small: RAM
-  -t, --testing         Just testing krill
-  -u, --unattended      Unattended installation
-  -v, --verbose         Verbose
+  -H, --halt             Halt the system after installation
+  -N, --none             Swap none: 256M
+  -R, --replace=<value>  Replace partition. eg: --replace /dev/sda3
+  -S, --suspend          Swap suspend: RAM x 2
+  -b, --btrfs            Format btrfs
+  -c, --chroot           chroot before to end
+  -d, --domain=<value>   Domain name, defult: .local
+  -h, --help             Show CLI help.
+  -i, --ip               hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted          Crypted CLI installation
+  -n, --nointeractive    no user interaction
+  -p, --pve              Proxmox VE install
+  -r, --random           Add random to hostname, eg: colibri-ay412dt
+  -s, --small            Swap small: RAM
+  -t, --testing          Just testing krill
+  -u, --unattended       Unattended installation
+  -v, --verbose          Verbose
 
 DESCRIPTION
   krill: the CLI system installer - the egg became a penguin!
@@ -869,25 +871,27 @@ krill: the CLI system installer - the egg became a penguin!
 
 ```
 USAGE
-  $ eggs krill [-b] [-c] [-k] [-d <value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-s] [-S] [-t] [-u] [-v]
+  $ eggs krill [-b] [-c] [-k] [-d <value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R <value>] [-s] [-S] [-t]
+    [-u] [-v]
 
 FLAGS
-  -H, --halt            Halt the system after installation
-  -N, --none            Swap none: 256M
-  -S, --suspend         Swap suspend: RAM x 2
-  -b, --btrfs           Format btrfs
-  -c, --chroot          chroot before to end
-  -d, --domain=<value>  Domain name, defult: .local
-  -h, --help            Show CLI help.
-  -i, --ip              hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted         Crypted CLI installation
-  -n, --nointeractive   no user interaction
-  -p, --pve             Proxmox VE install
-  -r, --random          Add random to hostname, eg: colibri-ay412dt
-  -s, --small           Swap small: RAM
-  -t, --testing         Just testing krill
-  -u, --unattended      Unattended installation
-  -v, --verbose         Verbose
+  -H, --halt             Halt the system after installation
+  -N, --none             Swap none: 256M
+  -R, --replace=<value>  Replace partition. eg: --replace /dev/sda3
+  -S, --suspend          Swap suspend: RAM x 2
+  -b, --btrfs            Format btrfs
+  -c, --chroot           chroot before to end
+  -d, --domain=<value>   Domain name, defult: .local
+  -h, --help             Show CLI help.
+  -i, --ip               hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted          Crypted CLI installation
+  -n, --nointeractive    no user interaction
+  -p, --pve              Proxmox VE install
+  -r, --random           Add random to hostname, eg: colibri-ay412dt
+  -s, --small            Swap small: RAM
+  -t, --testing          Just testing krill
+  -u, --unattended       Unattended installation
+  -v, --verbose          Verbose
 
 DESCRIPTION
   krill: the CLI system installer - the egg became a penguin!
