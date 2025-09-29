@@ -76,12 +76,10 @@
         "/dist",
         "/dracut",
         "/eui",
-        "/maker",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
         "/perrisbrewery",
-        "/pods",
         "/scripts"
     ],
     "homepage": "https://penguins-eggs.net",
