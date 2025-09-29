@@ -104,7 +104,7 @@ export default class Krill {
       // Interactive or unattended mode
       const finalConfigs = this.unattended 
         ? this.applyUnattendedOptions(configs, crypted, pve, btrfs, replace)
-        : await this.runInteractiveMode(crypted, pve, btrfs)
+        : await this.runInteractiveMode(crypted, pve, btrfs, replace)
       
       // Install
       await this.performInstallation(finalConfigs, domain, testing, verbose)
@@ -296,11 +296,11 @@ export default class Krill {
   /**
    * Run interactive mode with UI
    */
-  private async runInteractiveMode(crypted: boolean, pve: boolean, btrfs: boolean) {
+  private async runInteractiveMode(crypted: boolean, pve: boolean, btrfs: boolean, replace: string) {
     const oWelcome = await this.welcome()
     const oLocation = await this.location(oWelcome.language)
     const oKeyboard = await this.keyboard()
-    const oPartitions = await this.partitions(this.krillConfig.installationDevice, crypted, pve, btrfs)
+    const oPartitions = await this.partitions(this.krillConfig.installationDevice, crypted, pve, btrfs, replace)
     const oUsers = await this.users()
     const oNetwork = await this.network()
 

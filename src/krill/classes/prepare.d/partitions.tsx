@@ -27,7 +27,7 @@ import selectInstallationMode from '../../lib/select_installation_mode.js'
 /**
  * PARTITIONS
  */
-export async function partitions(this: Prepare, installationDevice = "", crypted = false, pve = false, btrfs = false): Promise<IPartitions> {
+export async function partitions(this: Prepare, installationDevice = "", crypted = false, pve = false, btrfs = false, replace=''): Promise<IPartitions> {
 
     // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
