@@ -22,7 +22,8 @@ The version is based on the year, month, day, and release number. They are liste
 ## v25.9.27
 - krill: added `--replace` to replace a partition with the new installation, usefull for peoples wit many installation on a disk. Eg: `sudo eggs install -R /dev/sda3 -u` 
 - krill: revised the way LUKS encryption is created, now more standard. Eg: `ubuntu_root`, mappend on `/dev/mapper/ubuntu_root` for Ubuntu.
-- persist problems on Manjaro/Biglinux, use [v25.9.17](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Fmanjaro%2Fold&view=penguins-eggs-25.9.17-1-any.pkg.tar.zst) for now.
+- calamares: bugfix on modules for arch. After the upgrade will be necessary to remove and recreate `/etc/penguins-eggs.d`;
+- probably problems on on Manjaro/Biglinux will persist, use [v25.9.17](https://penguins-eggs.net/basket/index.php/packages/?p=packages%2Fmanjaro%2Fold&view=penguins-eggs-25.9.17-1-any.pkg.tar.zst) for now.
 
 ## v25.9.25
 * fixed a bug regarding kernel name determination, which occurred in Arch Linux on installations using [systemd-boot](https://wiki.archlinux.org/title/Systemd-boot). issue: [629](https://github.com/pieroproietti/penguins-eggs/issues/629), thanks to [2kpr](https://github.com/2kpr) ;

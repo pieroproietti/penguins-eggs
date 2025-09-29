@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="readme">README</h1>
+<h1 id="penguins-eggs-are-generated-and-new-birds-are-ready-to-fly">Penguin's eggs are generated and new birds are ready to fly...</h1>
+<p><a href="https://github.com/pieroproietti/penguins-eggs"><img src="https://img.shields.io/badge/github-sources-cyan" alt="sources"></a>
+<a href="https://penguins-eggs.net"><img src="https://img.shields.io/badge/www-blog-cyan" alt="www"></a>
+<a href="https://t.me/penguins_eggs"><img src="https://img.shields.io/badge/telegram-group-cyan" alt="telegram"></a>
+<a href="https://penguins-eggs.net/basket/"><img src="https://img.shields.io/badge/basket-naked-blue" alt="basket"></a>
+<a href="https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY"><img src="https://img.shields.io/badge/gdrive-all-blue" alt="gdrive"></a>
+<a href="https://sourceforge.net/projects/penguins-eggs/files/"><img src="https://img.shields.io/badge/sourceforge-all-blue" alt="sourceforge"></a>
+<a href="https://npmjs.org/package/penguins-eggs"><img src="https://img.shields.io/npm/v/penguins-eggs.svg" alt="ver"></a></p>
+<a href="https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY">
+  <img src="https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/images/penguins-eggs-300x300.png" width="280" height="300" alt="CD-ROM">
+</a>
+<p>It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.</p>
+<p><a href="https://paypal.me/penguinseggs"><img src="https://img.shields.io/badge/Donate-00457C?style=for-the-badge&amp;logo=paypal&amp;logoColor=white" alt="donate"></a></p>
+<h2 id="index">Index</h2>
+<!-- toc -->
+<ul>
+<li><a href="#readme">README</a></li>
+<li><a href="#penguin39s-eggs-are-generated-and-new-birds-are-ready-to-fly">Penguin's eggs are generated and new birds are ready to fly...</a></li>
+<li><a href="#presentation">Presentation</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#technology">Technology</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#packages">Packages</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#commands">Commands</a></li>
+<li><a href="#gui">GUI</a></li>
+<li><a href="#book">Book</a></li>
+<li><a href="#copyright-and-licenses">Copyright and licenses</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="https://penguins-eggs.net/blog">Blog</a></li>
+<li><a href="https://penguins-eggs.net/docs/Tutorial/eggs5">Cook eggs in 5 minutes!</a></li>
+<li><a href="https://penguins-eggs.net/docs/Tutorial/eggs-users-guide">Users guide</a></li>
+<li><a href="https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide">Wardrobe users' guide</a></li>
+<li><a href="https://penguins-eggs.net/docs/faq">FAQ</a></li>
+<li><a href="https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog">Changelog</a></li>
+</ul>
+<h1 id="presentation">Presentation</h1>
+<p><strong>penguins-eggs</strong> is a system cloning and distribution remastering tool primarily designed for Linux distributions.</p>
+<p>It’s often used to create customized live ISO images or backups of a Linux system, allowing users to replicate or share their setup easily. Think of it as a way to &quot;hatch&quot; a new system from an existing one—hence the funny name.</p>
+<p>Here’s a breakdown of what it’s used for:</p>
+<ul>
+<li>
+<p>Distribution Remastering: If you’re into crafting your own Linux distro (or a spin of an existing one), <code>penguins-eggs</code> simplifies the process. You can tweak an existing system, strip out or add components, and then package it as a new ISO for distribution.</p>
+</li>
+<li>
+<p>Creating Custom Live ISOs: It lets you generate a bootable live ISO from your system. You can share this ISO with others or use it to boot your setup on different hardware. It’s like creating your own personalized Linux distro without starting from scratch.</p>
+</li>
+<li>
+<p>System Backup and Cloning: You can use penguins-eggs to create a snapshot of your current Linux system, including installed packages, configurations, and user data (if you choose). This can be handy for disaster recovery or migrating to a new machine.</p>
+</li>
+</ul>
+<p>Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu, Arch, Fedora, Almalinux, Rocky, OpenSuSE and Alpine derivativesso you’re not locked into one ecosystem. Please consult the complete list of <a href="https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md">SUPPORTED-DISTROS</a> to get more informations.</p>
+<h1 id="installation">Installation</h1>
+<p><strong>Try the new repos</strong> for <a href="https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md">Debian/Devuan/Ubuntu</a><a href="https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md">Fedora</a>, <a href="https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md">Enterprise linux</a> and <a href="https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-OPENSUSE.md">OpenSUSE</a>.</p>
+<h2 id="penguins-eggs-257x-installation">penguins-eggs-25.7.x installation</h2>
+<p><code>penguins-eggs-25.7.x</code> depends on <code>nodejs &gt;18</code>, which is not directly available on all distros. We can rely on <a href="https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions">nodesource</a> for adding them.</p>
+<h3 id="using-fresh-eggs">using fresh-eggs</h3>
+<p>It's the most pratical way and is suitable for all <a href="https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md">supported distros</a>.</p>
+<p><a href="https://github.com/pieroproietti/fresh-eggs">fresh-eggs</a> configure automatically <code>nodesource</code> when need, and install the right package for your distro. Copy and paste, the follow commands:</p>
+<pre class="hljs"><code><div>git clone https://github.com/pieroproietti/fresh-eggs
+cd fresh-eggs
+sudo ./fresh-eggs.sh
+</div></code></pre>
+<p>And follow instructions.</p>
+<h3 id="manual-installation">Manual installation</h3>
+<h3 id="almalinux-rockylinux">AlmaLinux, RockyLinux</h3>
+<p>Since penguins-eggs-25.7.14 rpm packages for Enterprise Linux <a href="https://penguins-eggs.net/basket/index.php/packages/el9">el9</a> are availables.</p>
+<h3 id="alpinelinux">AlpineLinux</h3>
+<p>I created and maintain a package for Alpine. Its repository is <a href="https://github.com/pieroproietti/penguins-alpine">penguins-alpine</a> and related packages can be downloaded from  <a href="https://penguins-eggs.net/basket/index.php/packages/alpine">penguins-eggs.net</a> or the <a href="https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/">sourceforge page</a>.</p>
+<h3 id="arch">Arch</h3>
+<p>Just download and install penguins-eggs-25.x.x using <a href="https://github.com/pieroproietti/fresh-eggs">fresh-eggs</a>.</p>
+<h3 id="debian-devuan-ubuntu">Debian, Devuan, Ubuntu</h3>
+<p>Just download and install penguins-eggs-25.x.x using <a href="https://github.com/pieroproietti/fresh-eggs">fresh-eggs</a>.</p>
+<h4 id="debian-10-buster-debian-11-bullseye">Debian 10 Buster, Debian 11 Bullseye</h4>
+<p>Before to install <code>penguins-eggs-25.x.x</code>, add the repos from <code>nodesource</code>. Follow these <a href="https://github.com/pieroproietti/penguins-eggs/issues/368">instructions</a> to get <code>nodejs&gt;18</code> available.</p>
+<h4 id="debian-9-stretch-ubuntu-1804-bionic">Debian 9 Stretch, Ubuntu 18.04 Bionic</h4>
+<p>Use the package <code>penguins-eggs-25.x.x-bionic-x</code>, which is compiled against node16. Follow these <a href="https://github.com/pieroproietti/penguins-eggs/issues/368#issuecomment-2169961955">instructions</a> to get <code>nodejs&gt;16</code> available.</p>
+<h3 id="fedora">Fedora</h3>
+<p>Since penguins-eggs-25.7.14 rpm packages for <a href="https://penguins-eggs.net/basket/index.php/packages/fedora">fedora42</a> are availables.</p>
+<h3 id="manjaro">Manjaro</h3>
+<p>penguins-eggs is on Manjaro community repo, so just: <code>sudo pamac install penguins-eggs</code>.</p>
+<h3 id="openmanba">Openmanba</h3>
+<p>Openmamba is an italian distribution based on rpm and using dnf as package manager, it is really up-to-date, penguins-eggs is available as rpm package.</p>
+<h3 id="opensuse">OpenSUSE</h3>
+<p>Since penguins-eggs-25.7.14 rpm packages for <a href="https://penguins-eggs.net/basket/index.php/packages/opensuse">OpenSUSE</a> are availables.</p>
+<h1 id="introduction">Introduction</h1>
+<p><code>penguins-eggs</code> is the package name of <code>eggs</code> a console tool, under continuous development, that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.</p>
+<p>The concept behind Penguins’ Eggs stems from the idea of “reproduction” and “population selection” applied to operating systems. During the era of popular remastering programs like Remastersys and Systemback, both of which experienced maintenance issues and were eventually abandoned, the need for a new, modern tool became evident.</p>
+<p>The inspiration for Penguins’ Eggs led to the development of a new tool written in a modern, cross-distribution language, utilizing its own packaging system.</p>
+<p>Initially built with javascript and then switched to Typescript as the main development language, the design of the tool resembles an egg production process, consisting of operations such as produce to create the eggs and hatch to install them (I changed a bit later: from hatch to install, then to krill as a tribute to calamares tribes).</p>
+<p>Other commands follow: like <code>kill</code> for removing produced ISOs, <code>calamares</code> for configuring the graphical installer, <code>mom</code> as interactive help, <code>dad</code> to configure eggs, <code>status</code>, <code>tools</code>, etc.</p>
+<p>Considered a work-in-progress, the ultimate goal of Penguins Eggs is to allow the creation of live ISOs from an installed system and their use for system installations.  It can be used both to create images on USB devices - even <a href="https://www.ventoy.net/en/index.html">Ventoy</a> - and as a PXE server to distribute the image itself over a local network. Inspired by the behavior of the cuckoo bird, which depends on others to hatch its eggs.</p>
+<p>Written primarily in TypeScript, Penguins’ Eggs is designed to be compatible with various Linux distributions, despite differences in package managers, file paths, and more.</p>
+<p>The tool currently supports Debian, Devuan, Ubuntu, Arch, Manjaro, and their derivatives, across multiple architectures including amd64, i386, and arm64.</p>
+<p>From the release of version 9.6.x, Penguins’ Eggs is available as a <a href="https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs">Debian package</a>, then was extended to Arch Linux creating the relative <a href="https://aur.archlinux.org/packages/penguins-eggs">PKGBUILD</a>. Nowadays, eggs can remaster AlmaLinux, Fedora, openmamba, openSuSE, and  RockyLinux too.</p>
+<p>Penguins Eggs caters to a wide range of systems including PCs, older machines, and single-board ARM systems like the Raspberry Pi, across amd64, i386, and arm64 architectures.</p>
+<p>For more information and updates, visit the <a href="https://penguins-eggs.net">Penguins Eggs' official website</a>.</p>
+<blockquote>
+<p>[!TIP]
+<code>eggs</code> is an actively developed console tool designed to help you customize and distribute your system as live images on USB sticks or through PXE. By using this tool, you can remaster your system according to your preferences.</p>
+</blockquote>
+<blockquote>
+<p>[!TIP]
+By default, <code>eggs</code> completely removes the system's data and users. However, it also offers the option to remaster the system while including the data and accounts of existing users. This can be done using the <code>--clone</code> flag. Additionally, you can preserve the users and files by storing them in an encrypted LUKS file within the resulting ISO file, which can be achieved with the <code>--cryptedclone</code> flag.</p>
+</blockquote>
+<blockquote>
+<p>[!TIP]
+The resulting live system can be easily installed using either the calamares installer or the internal TUI krill installer. Furthermore, using <code>krill</code>, you can easily get an unattended installation, utilizing <code>--unattended</code> and various <a href="#eggs-krill">krill</a> flags.</p>
+</blockquote>
+<blockquote>
+<p>[!TIP]
+One interesting feature of <code>eggs</code> is its integration with the <code>penguins-wardrobe</code> This allows you to create or utilize scripts to switch between different configurations. For example, you can start with a bare version of the system, featuring only a command-line interface (CLI), and then easily transition to a full graphical user interface (GUI) or server configurations.</p>
+</blockquote>
+<blockquote>
+<p>[!NOTE]
+For more information and customization options, you can explore <code>penguins-wardrobe</code>. a related project. You can fork it and adapt it to meet your specific needs.</p>
+</blockquote>
+<p>See <a href="https://github.com/pieroproietti/penguins-wardrobe">penguins-wardrobe</a>, fork it, and adapt it to your needs.</p>
+<h1 id="technology">Technology</h1>
+<p><code>eggs</code> is primarily written in TypeScript and is designed to be compatible with various Linux distributions. While there may be differences in package managers, paths, and other aspects, the underlying programs used to build the live system are generally the same.</p>
+<p>Currently, <code>eggs</code> supports several Linux distributions, including <a href="https://almalinux.org/">AlmaLinux</a>, <a href="https://archlinux.org/">Arch</a>, <a href="https://www.debian.org/">Debian</a>, <a href="https://www.devuan.org/">Devuan</a>, <a href="https://www.linuxmint.com/">LinuxMint</a>, <a href="https://manjaro.org/">Manjaro</a>, <a href="https://openmamba.org/">openmamba</a>, <a href="https://www.opensuse.org/">openSuSE</a>, <a href="https://ubuntu.com/">Ubuntu</a>, <a href="https://rockylinux.org/">RockyLinux</a> and <a href="./conf/derivatives.yaml">derivatives</a>.</p>
+<p>It also caters to different architectures, namely <code>amd64</code>, <code>i386</code>, and <code>arm64</code>.</p>
+<p>Starting from version 9.6.x, <code>penguins-eggs</code> is released as a Debian package, available for amd64, i386, and arm64 architectures. This allows it to support a wide range of PCs, including older machines, as well as single-board ARM systems like the Raspberry Pi. You can learn more about this release in the article titled Triple Somersault! <a href="https://penguins-eggs.net/blog/triple-somersault">Triple somersault!</a>.</p>
+<p>For more information on the supported distributions and architectures, you can visit the blog <a href="https://penguins-eggs.net/blog/distros-that-can-be-remastered-with-eggs">blog</a>.</p>
+<p>Additionally, you can find examples of remastered ISO images created with <code>eggs</code> on the project's SourceForge page <a href="https://sourceforge.net/projects/penguins-eggs/files/ISOS/">sourceforge page of the project</a>.</p>
+<h1 id="features">Features</h1>
+<p>Penguins-eggs is a versatile tool that offers an array of features and benefits for Linux users. Whether you want to create an installable ISO from your current Linux system or explore various customization options,</p>
+<p>Penguins-eggs has got you covered. To get started with Penguins-eggs, you'll need to install it on your Linux distribution. The tool supports a wide range of Linux distributions and their major derivatives, including Arch, Debian, Devuan, Manjaro, Ubuntu, and more. Additionally, you can easily add support for additional derivatives, expanding the tool's capabilities even further.</p>
+<ol>
+<li>
+<p>Fast and Efficient
+Penguins-eggs is designed to be fast and efficient. Unlike traditional methods that involve copying the entire file system, Penguins-eggs utilizes livefs, which allows for instant acquisition of the live system. By default, the tool.</p>
+</li>
+<li>
+<p>Supports Compression Algorithm
+Employs the zstd compression algorithm, significantly reducing the time required for the process, often up to 10 times faster. When creating an installable ISO.</p>
+</li>
+<li>
+<p>Supports Clone
+Penguins-eggs provides various options to suit your needs. With the --clone flag, you can preserve the data and accounts of unencrypted users, ensuring a seamless experience for users accessing the live system. Moreover, you can opt for a crypted clone, where user data and accounts are saved in an encrypted LUKS volume within the ISO image, enhancing security and privacy.</p>
+</li>
+<li>
+<p>Cuckoo and PXE boot
+In addition to ISO creation, Penguins-eggs offers a unique feature called Cuckoo. By starting Cuckoo from the live system, you can set up a PXE boot server, making it accessible to all computers on the network. This functionality opens up possibilities for network booting and streamlined deployment. Penguins Eggs Linux ushers in a new era of innovation and convenience with its groundbreaking default feature, Cuckoo live network boot, which transforms any computer running Penguins Eggs into a PXE (Preboot eXecution Environment) boot server. This revolutionary paradigm of network booting and seamless deployment underscores Penguins Eggs Linux’s commitment to redefining the parameters of accessibility and efficiency within the realm of Linux distributions.</p>
+</li>
+<li>
+<p>Supports Both TUI/GUI Installer
+To simplify the installation process, Penguins-eggs provides its own system installer called krill. This installer is particularly useful when a GUI (Graphical User Interface) is not available, allowing for installation in various situations. However, if you are using a desktop system, Penguins-eggs recommends and configures the calamares GUI installer, ensuring a seamless and user-friendly experience.
+Penguins Eggs Linux spearheads a transformative revolution in the realm of system installation with the incorporation of its TUI (Text-based User Interface) / GUI (Graphical User Interface) installer, setting a new standard of versatility and accessibility within the landscape of Linux distributions.</p>
+</li>
+<li>
+<p>Repository Lists
+One of the key advantages of Penguins-eggs is its commitment to utilizing only the original distro's packages. This means that no modifications are made to your repository lists, ensuring a safe and reliable environment. Penguins-eggs prioritizes maintaining the integrity and authenticity of your Linux distribution.</p>
+</li>
+<li>
+<p>Wardrobe
+To enhance customization options, Penguins-eggs introduces the concept of Wardrobe. With Wardrobe and its various components, such as costumes, you can easily organize and manage your customizations, samples, and more. This feature enables a streamlined and efficient workflow, allowing you to tailor your Linux system to your preferences.</p>
+</li>
+<li>
+<p>Supporting Multiple Distributions
+Eggs supporting multiple distributions and their derivatives
+Supports: Alpine, Arch, Debian, Fedora, Devuan, Manjaro, Ubuntu,
+and major derivatives like: Linuxmint, KDE neon, EndeavourOS, Garuda, etc. You can easily add more derivatives.</p>
+</li>
+<li>
+<p>Supports Hardware Architectures
+supports a wide range of hardware architectures.
+Supports: i386, amd64 and arm64 architecture, from old PCs, and common PCs to single board computers like Raspberry Pi 4/5</p>
+</li>
+<li>
+<p>Supports privacy and security
+Safe: only use the original distro's packages, without any modification in your repository lists. Penguins Eggs Linux embarks on a steadfast commitment to user security and system integrity through its default practice of exclusively utilizing original distributions’ packages without any modifications in the repository lists. This resolute dedication to maintaining the pristine authenticity of packages reinforces Penguins Eggs’ fundamental ethos of safety and reliability, fostering an environment characterized by unwavering trust in the integrity of the software ecosystem.</p>
+</li>
+</ol>
+<h2 id="wardrobe-themes-and-addons">Wardrobe, Themes, and Addons</h2>
+<p>In April 2022, the <code>wardrobe</code> command was introduced to <code>eggs</code>. This addition serves as a comprehensive tool to assist and streamline the process of creating a customized version of Linux, starting from a command-line interface (CLI) system. I have embraced wardrobe for all my editions to enhance convenience, enabling me to better organize, consolidate, and manage my work effectively.
+To add a unique touch to my customizations, I have assigned bird names to each edition. Except for the &quot;naked&quot; edition, there are various options available, including &quot;Colibri,&quot; &quot;eagle,&quot; &quot;duck,&quot; &quot;owl,&quot; and &quot;chicks&quot; under the bookworm and plastilinux distributions. <a href="https://sourceforge.net/projects/penguins-eggs/files/ISOS/debian/bookworm/">bookworm</a>  and <a href="https://sourceforge.net/projects/penguins-eggs/files/ISOS/plastilinux/">plastilinux</a>.Furthermore, under Waydroid on the eggs' SourceForge page, you can find &quot;wagtail&quot; and &quot;warbier.&quot;
+I have high hopes that people will take an interest in wardrobe and consider forking the main repository to incorporate their own customizations. By collaborating, we can achieve significant progress that would be challenging for a single developer to accomplish. If you would like to delve deeper into the wardrobe, I recommend reading the <a href="https://penguins-eggs.net/blog/wardrobe-colibri-duck-eagle-and-owl/">Penguins Eggs' blog</a>. post titled Wardrobe: Colibri, Duck, Eagle, and Owl, which provides further insights into its features and benefits.
+Furthermore, addons, predominantly themes, have been organized under the vendor's folder in the penguin's wardrobe. I encourage utilizing your wardrobe for all your customization needs to maintain consistency and organization throughout your work.</p>
+<blockquote>
+<p>[!NOTE]
+For detailed instructions on using a wardrobe, please consult the wardrobe users' guide  <a href="https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide">wardrobe users' guide</a>.</p>
+</blockquote>
+<h2 id="clonecryptedclone">Clone/Cryptedclone</h2>
+<p>When creating a live distribution of your system, you have different options to consider: the default mode, clone, and cryptedclone.
+•	The default mode, achieved by using the command <code>eggs produce</code>, completely removes user data from the live distribution. This ensures that no private data remains in the live system.</p>
+<p>•	The <code>eggs produce --clone</code> command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the
+user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable if you have sensitive information on your system.</p>
+<p>•	On the other hand, the <code>eggs produce --cryptedclone</code> command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the &quot;krill&quot; installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.</p>
+<p>To summarize the available options:</p>
+<p>•	<code>eggs produce</code> (default): All private data is removed from the live system.</p>
+<p>•	<code>eggs produce --clone</code>: All user data is included unencrypted directly in the live system.</p>
+<p>•	<code>eggs produce --cryptedclone</code>: All user data is included encrypted within a LUKS volume inside the ISO.</p>
+<blockquote>
+<p>[!TIP]
+During the installation process, you can use the &quot;krill&quot; installer to restore your crypted data automatically. By running the command &quot;sudo eggs install&quot; with the &quot;krill&quot; installer, your encrypted data will be securely transferred and made available in the installed system.</p>
+</blockquote>
+<h2 id="calamares-and-krill">Calamares and krill</h2>
+<p>Calamares and Krill are powerful tools in the Eggs project, <a href="https://calamares.io">calamares</a>, offering versatile installation options for Linux systems. The Eggs project was specifically designed to utilize Calamares as the default system installer, providing users with the flexibility to customize their installations using themes. However, Eggs goes beyond Calamares by introducing its own installer called Krill, which focuses on command-line interface (CLI) installations, particularly for server environments.</p>
+<p>Krill adopts a TUI interface that closely resembles Calamares, ensuring a consistent user experience. Leveraging the same configuration files created by Eggs for Calamares, Krill maintains compatibility and allows for seamless transitions between desktop and server installations. By simply adding the flag during installation, Krill enables unattended installations, streamlining the process for system administrators. Fine-tuning installation parameters becomes effortless as the configuration values can be modified in the <code>/etc/penguins-eggs.d/krill.yaml</code> file, facilitating automated deployments.</p>
+<blockquote>
+<p>[!TIP]
+Thanks to the Eggs project's integration of Calamares and the introduction of Krill, users can enjoy a comprehensive installation toolkit. Whether one prefers the graphical interface of Calamares or the command-line efficiency of Krill, Eggs caters to diverse installation needs, making Linux setup a breeze.</p>
+</blockquote>
+<h2 id="cuckoo">Cuckoo</h2>
+<p>Just like the cuckoo bird lays its eggs in the nests of other birds, the Eggs project introduces a similar concept in the form of a self-configuring PXE service. This service allows you to boot and install your ISO on networked computers that are not originally configured for your specific ISO.
+With the command <code>cuckoo</code> you can deploy a newly created ISO on an already installed system, or you can live to boot the ISO itself. This means that you can either install your ISO on existing systems or directly run the ISO without the need for a permanent installation.</p>
+<blockquote>
+<p>[!TIP]
+By leveraging the cuckoo command, the Eggs project provides a convenient method for deploying and testing your ISO on a variety of networked computers, expanding the possibilities for system installations and evaluations.</p>
+</blockquote>
+<h2 id="mom-and-dad">Mom and Dad</h2>
+<p>I have introduced two helpful built-in assistants: Mom and Dad. Mom, based on the easybashgui <a href="https://github.com/BashGui/easybashgui">easybashgui</a> script, serves as a comprehensive guide, providing explanations of various commands and documentation. This ensures that users have access to clear instructions and information as they navigate through Eggs' functionalities.
+On the other hand, Dad serves as a convenient shortcut for properly configuring Eggs. By simply typing <code>sudo eggs dad</code> and following the straightforward instructions, users can quickly configure Eggs to meet their specific requirements. For even faster configuration, utilizing the command <code>sudo eggs dad -d</code> allows for a complete reset of the configuration, loading default settings, and deleting any created ISOs.
+Once Eggs is properly configured, generating your live environment becomes a breeze. Just type <code>sudo eggs produce</code> to effortlessly generate your live ISO. With this streamlined workflow, Eggs empowers users to efficiently create customized live environments tailored to their needs. Whether you rely on Mom's guidance or Dad's configuration shortcuts, Eggs offers a user-friendly experience for ISO creation and customization.</p>
+<h2 id="yolk">Yolk</h2>
+<p>Yolk is a local repository that is bundled within the LiveCD of Eggs. This repository contains a carefully curated selection of essential packages required for installation. Yolk serves as a valuable resource, as it allows you to install your system confidently, even without an active internet connection.
+By including Yolk in the LiveCD, Eggs ensures that all the necessary packages are readily available during the installation process. This eliminates the dependency on an internet connection, making it possible to install your system in offline environments or situations where internet access is limited or unavailable.
+Yolk acts as a safety net, providing the minimum set of indispensable packages required for a successful installation. This guarantees a smooth and reliable installation experience, regardless of the availability of an internet connection. With Yolk by your side, you can confidently proceed with system installations, knowing that the essential packages are at your disposal.</p>
+<h1 id="packages">Packages</h1>
+<p>Eggs offers support for a variety of packages. Specifically, for Debian, Devuan, and Ubuntu, Eggs utilizes .deb packages that are compatible with both amd_64 and i386 architectures. This ensures seamless integration with these distributions, allowing users to easily install and utilize Eggs' features.
+On the other hand, Arch and ManjaroLinux have their own packaging system known as PKGBUILDs. Eggs is designed to work harmoniously with these distributions, leveraging the specific packaging structure provided by PKGBUILDs. This ensures that Eggs can seamlessly integrate into Arch and ManjaroLinux environments, providing users with a consistent and optimized experience.
+By adapting to the packaging systems used by different distributions, Eggs ensures compatibility and ease of use across a wide range of Linux environments. Whether you're using Debian, Devuan, Ubuntu, Arch, or ManjaroLinux, Eggs is equipped to support your preferred distribution, enabling you to make the most of its features and functionalities.</p>
+<h2 id="debian-families">Debian families</h2>
+<p>Eggs caters to the Debian family of distributions, offering a seamless installation experience through deb packages.</p>
+<p>These deb packages are available for multiple architectures, including amd64, i386, and arm64.</p>
+<p>The availability of <code>penguins-eggs</code> as a deb package simplifies the installation process for users of Debian-based distributions. Whether you are running a 64-bit (amd64) or 32-bit (i386) architecture, or even an arm64 architecture, Eggs has you covered. This ensures that users across a wide range of Debian-based systems can easily download, install, and utilize Eggs' features.</p>
+<p>By providing deb packages for various architectures, Eggs promotes accessibility and inclusivity, allowing users on different hardware platforms to benefit from its functionality. Whether you're using a traditional desktop computer or an ARM-based device, Eggs ensures compatibility and a consistent experience across the Debian family of distributions.</p>
+<p>The packages can be installed on Debian, Devuan, or Ubuntu-based distributions without the need to worry about the specific version. Whether you're using Buster, Bullseye, Bookworm, Trixie, Chimaera, Daedalus, Focal, Jammy or Noble, <code>eggs</code> is reported to work across these versions. However, it's important to ensure compatibility with the respective processor architecture.</p>
+<p>Ubuntu bionic cannot install nodejs &gt;16, so I packaged a specific version for bionic, still largely used.</p>
+<p>The packages <code>penguins-eggs</code> provided include standard scripts for <code>preinst</code>, <code>postinst</code>, <code>prerm</code>, and <code>postrm</code>. These scripts play a crucial role in the installation and management of the packages. The preinst script is executed before the package is installed, allowing for any necessary preparations or configurations. The postinst script is executed after the package installation, enabling additional setup or customization. Similarly, the prerm script is executed before the package is removed, while the postrm script is executed after the package removal.</p>
+<p>In addition to the scripts, <code>penguins-eggs</code> package also include man pages, bash-completion and other.</p>
+<p>man pages serve as documentation for the installed packages, providing detailed information on their usage, configuration options, and other relevant details. The inclusion of man pages ensures that users have access to comprehensive documentation, enabling them to effectively utilize and manage the Eggs packages.</p>
+<p>Overall, Eggs' packages offer a comprehensive and user-friendly experience, with standard scripts and detailed documentation, making installation and management hassle-free on Debian, Devuan, and Ubuntu-based distributions.</p>
+<h3 id="install-eggs">Install eggs</h3>
+<p>There are multiple methods available, lately I prefer <code>fresh-eggs</code> way, working for all the supported distros: Arch, Debian, Devuan, Manjaro, Ubuntu and derivatives.:</p>
+<pre class="hljs"><code><div>git clone https://github.com/pieroproietti/fresh-eggs
+cd fresh-eggs
+sudo ./fresh-eggs.sh
+</div></code></pre>
+<p><code>fresh-eggs</code> on Debian families add automatically the <code>penguins-eggs-ppa</code> repository and, when need, add <code>nodesource</code> repository. On Arch, <code>chaotic-aur</code> repo will be added.</p>
+<p>This let to install, update, remove <code>penguins-eggs</code> like a native package.</p>
+<h4 id="debian-families">Debian families</h4>
+<p><code>penguins-eggs-25.x.x</code> depend on <code>nodejs &gt;18</code>, not directly available in all the distros. We can rely on <a href="https://github.com/nodesource/distributions?tab=readme-ov-file#debian-and-ubuntu-based-distributions">nodesource</a> adding them.</p>
+<h5 id="download-and-install-penguins-eggs-packages">Download and install penguins-eggs packages</h5>
+<p>To install Eggs, the simplest method is to download the package <code>penguins-eggs</code> from the project's SourceForge page  <a href="https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs">package eggs</a> and install it on your system.</p>
+<p>After downloading the appropriate package, based on your system's architecture, you can proceed with the installation. If you are using an amd64 system, run the following command in the terminal:</p>
+<p><code>sudo dpkg -i penguins_eggs_25.x.x-1_amd64.deb</code></p>
+<p>For i386 systems, the command would be:
+<code>sudo dpkg -i penguins_eggs_25.x.x-1_i386.deb</code></p>
+<p>Executing these commands will initiate the installation process and install Eggs on your system.
+Once Eggs is successfully installed, you have the option to enhance its functionality by adding the penguins-eggs-ppa repository. This repository provides additional tools and features for Eggs. To add the penguins-eggs-ppa repository, run the following command in the terminal:
+<code>sudo eggs tools ppa --install</code>
+This command will add the penguins-eggs-ppa repository to your system, allowing you to access updated versions of Eggs and additional tools provided by the repository.
+By following these steps, you can easily install Eggs, add the penguins-eggs-ppa repository, <a href="https://pieroproietti.github.io/penguins-eggs-ppa">penguins-eggs-ppa</a>, and unlock further capabilities and enhancements for your Eggs installation.</p>
+<h5 id="using-penguins-eggs-ppa">Using penguins-eggs-ppa</h5>
+<p>For derivatives of Debian, Devuan, and Ubuntu, such as Linuxmint, LMDE, etc., <code>fresh-eggs</code> will typically work as well. However, if needed, you can manually add the penguins-eggs-ppa repository by copying and pasting the following two lines into a terminal:</p>
+<pre class="hljs"><code><div>curl -fsSL https://pieroproietti.github.io/penguins-eggs-ppa/KEY.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/penguins-eggs.gpg
+echo &quot;deb [arch=$(dpkg --print-architecture)] https://pieroproietti.github.io/penguins-eggs-ppa ./&quot; | sudo tee /etc/apt/sources.list.d/penguins-eggs.list &gt; /dev/null
+</div></code></pre>
+<p>After adding the repository, update your package repositories and install Eggs by running the following command:</p>
+<pre class="hljs"><code><div>sudo apt update &amp;&amp; sudo apt install penguins_eggs
+</div></code></pre>
+<p>Executing these commands will update your package sources and install Eggs on your system.</p>
+<h4 id="upgrade-eggs">Upgrade eggs</h4>
+<p>To upgrade Eggs, the process will vary depending on whether you are using the penguins-eggs-ppa repository or not. Here's how you can upgrade Eggs with both approaches:
+If you have already added the penguins-eggs-ppa repository, you can upgrade Eggs alongside other packages on your system by running the following command:</p>
+<pre class="hljs"><code><div>sudo apt upgrade
+</div></code></pre>
+<blockquote>
+<p>[!TIP]
+This command will check for updates for all installed packages, including Eggs, and upgrade them to their latest versions if available.</p>
+</blockquote>
+<blockquote>
+<p>[!NOTE]
+On the other hand, if you have not added the <code>penguins-eggs-ppa</code> repository, you can manually upgrade Eggs by downloading the new version from the SourceForge page <a href="https://penguins-eggs.net/basket/index.php?p=packages%2Fdebs">here</a>. Once you have downloaded the appropriate package for your system architecture, follow these steps:</p>
+</blockquote>
+<ol>
+<li>Install the package using the <code>gdebi</code> command (assuming you have <code>gdebi</code> installed):</li>
+</ol>
+<pre class="hljs"><code><div>sudo gdebi penguins_eggs_25.x.x-1_amd64.deb
+</div></code></pre>
+<p>or for i386 systems:</p>
+<pre class="hljs"><code><div>sudo dpkg -i penguins_eggs_25.x.x-1_i386.deb
+</div></code></pre>
+<ol start="2">
+<li>In case of any missing dependencies, you can resolve them by running the following command:</li>
+</ol>
+<pre class="hljs"><code><div>sudo apt install -f
+</div></code></pre>
+<p>This will automatically install any required dependencies for Eggs.</p>
+<blockquote>
+<p>[!TIP]
+By following these instructions, you can upgrade Eggs either through the penguins-eggs-ppa repository or by manually downloading and installing the latest version from the SourceForge page. Ensure that you choose the appropriate method based on your current setup to keep Eggs up to date with the latest enhancements and bug fixes.</p>
+</blockquote>
+<h2 id="arch-families">Arch families</h2>
+<p>Eggs has been available in the Arch User Repository (AUR) for quite some time, thanks to the support of the Arch Linux community. Although I was initially unaware of its presence, I am now directly maintaining the AUR version of <a href="https://aur.archlinux.org/packages/penguins-eggs">penguins-eggs</a>. Additionally, I am actively participating in the Manjaro Community Repository, specifically for the <a href="https://gitlab.manjaro.org/packages/community/penguins-eggs">penguins-eggs</a> package.</p>
+<p>Being present in the AUR signifies that Eggs is available for Arch Linux users to easily install and manage through their package managers. The AUR is a community-driven repository that allows users to contribute and maintain packages that are not officially supported by Arch Linux. By maintaining the AUR version of penguins-eggs, I can ensure that Arch Linux users have access to the latest updates and improvements for Eggs.</p>
+<blockquote>
+<p>[!TIP]
+Furthermore, my participation in the Manjaro Community Repository demonstrates my commitment to providing support for Eggs on the Manjaro distribution. Manjaro is a popular Arch-based Linux distribution known for its user-friendly approach and community-driven development. By actively contributing to the Manjaro Community Repository, I can ensure that Eggs remains compatible and well-integrated with the Manjaro ecosystem.</p>
+</blockquote>
+<blockquote>
+<p>[!TIP]
+In summary, Eggs is available in the AUR and is directly maintained by me. Additionally, I am actively involved in the Manjaro Community Repository to provide support for Eggs on the Manjaro distribution. This ensures that users of Arch Linux and its derivatives, such as Manjaro, can easily access and benefit from using Eggs in their systems.</p>
+</blockquote>
+<h3 id="arch">Arch</h3>
+<p>To install penguins-eggs on Arch Linux, there are multiple methods available. One option is to install it directly from the Arch User Repository (AUR) by adding the <code>chaotic-AUR</code> repository. Here's how you can do it:</p>
+<ol>
+<li>
+<p>Add the Chaotic-AUR repository to your system. You can find the repository at <a href="https://aur.chaotic.cx/">https://aur.chaotic.cx/</a>.</p>
+</li>
+<li>
+<p>After adding the Chaotic-AUR repository, open a terminal and run the following command to install penguins-eggs using <code>pacman</code>:</p>
+</li>
+</ol>
+<pre class="hljs"><code><div>sudo pacman -Sy penguins-eggs
+</div></code></pre>
+<p>This command will synchronize the package databases and install penguins-eggs on your system.</p>
+<p>Alternatively, you can use a utility called <code>fresh-eggs</code>. This script will add the AUR repository and install penguins-eggs on your system.</p>
+<p>It's possible too to use the popular AUR helper tool called <code>yay</code>. Simply run the following command:</p>
+<pre class="hljs"><code><div>yay penguins-eggs
+</div></code></pre>
+<p><code>yay</code> will handle the installation process for you, including any necessary dependencies.</p>
+<p>If you prefer to build from source, you can download the sources from the AUR repository. Here are the steps:</p>
+<ol>
+<li>Clone the <code>penguins-eggs</code> repository from the AUR:</li>
+</ol>
+<pre class="hljs"><code><div>git clone https://aur.archlinux.org/packages/penguins-eggs
+</div></code></pre>
+<ol start="2">
+<li>Change to the <code>penguins-eggs</code> directory:</li>
+</ol>
+<pre class="hljs"><code><div>cd penguins-eggs
+</div></code></pre>
+<ol start="3">
+<li>Build and install the package using <code>makepkg</code>:</li>
+</ol>
+<pre class="hljs"><code><div>makepkg -srcCi
+</div></code></pre>
+<blockquote>
+<p>[!TIP]
+This command will compile the source code, create a package, and install it on your system.
+These methods provide various ways to install penguins-eggs on Arch Linux, allowing you to choose the one that suits your preferences and workflow.</p>
+</blockquote>
+<h3 id="manjaro">Manjaro</h3>
+<p>Starting from version 9.4.3, penguins-eggs is now included in the Manjaro community repository, making it even easier to install on Manjaro Linux. To install penguins-eggs on Manjaro, you can use the <code>pamac</code> package manager with the following command:</p>
+<pre class="hljs"><code><div>pamac install penguins-eggs
+</div></code></pre>
+<p>This command will fetch the package from the Manjaro community repository and install it on your system.</p>
+<p>Alternatively, if you prefer to manually manage the installation process, you can clone the penguins-eggs package from the Manjaro community repository and build it from source. Here are the steps:</p>
+<ol>
+<li>Clone the penguins-eggs package from the Manjaro community repository:</li>
+</ol>
+<pre class="hljs"><code><div>git clone https://gitlab.manjaro.org/packages/community/penguins-eggs/
+</div></code></pre>
+<ol start="2">
+<li>Change to the penguins-eggs directory:</li>
+</ol>
+<pre class="hljs"><code><div>cd penguins-eggs
+</div></code></pre>
+<ol start="3">
+<li>Build and install the package using <code>makepkg</code>:</li>
+</ol>
+<pre class="hljs"><code><div>makepkg -srcCi
+</div></code></pre>
+<blockquote>
+<p>[!TIP]
+This command will compile the source code, create a package, and install it on your system.</p>
+</blockquote>
+<p>By including penguins-eggs in the Manjaro community repository, Manjaro Linux users can easily access and install the package using their preferred package manager. The Manjaro community repository is specifically dedicated to packages that are supported by the Manjaro community, ensuring that penguins-eggs is well-integrated and compatible with the Manjaro distribution.</p>
+<blockquote>
+<p>[!TIP]
+Whether you choose to install penguins-eggs using <code>pamac</code> or by manually building it from source, you can enjoy the benefits of this package on your Manjaro Linux system.</p>
+</blockquote>
+<h1 id="usage">Usage</h1>
+<p>Once the package has been installed, you can have the new <code>eggs</code> command. Typing <code>eggs</code> will get the list of commands, and typing <code>eggs produce --help</code> will get the eggs produce command help screen. You can also use the command autocomplete with the TABS key, you will get the possible choices for each command. In addition, there is a man page, so by typing <code>man eggs</code> you will get that help as well. You can also use the <code>eggs mom</code> command that interactively allows you to consult the help for all commands and online documentation.</p>
+<h2 id="examples">Examples</h2>
+<p>Here are some examples of how to use penguins-eggs to create live systems with different configurations:</p>
+<ol>
+<li>To create a live system without user data, run the following command with <code>sudo</code>:</li>
+</ol>
+<pre class="hljs"><code><div>sudo eggs produce
+</div></code></pre>
+<p>This command will generate a live system without any user data included.</p>
+<ol start="2">
+<li>To create a live system with user data that is not encrypted, use the <code>--clone</code> flag:</li>
+</ol>
+<pre class="hljs"><code><div>sudo eggs produce --clone
+</div></code></pre>
+<p>This command will produce a live system that includes user data without encryption.</p>
+<ol start="3">
+<li>If you want to create a live system with encrypted user data, use the <code>--cryptedclone</code> flag:</li>
+</ol>
+<pre class="hljs"><code><div>sudo eggs produce --cryptedclone
+</div></code></pre>
+<p>This command will generate a live system with encrypted user data.</p>
+<h2 id="compression">Compression</h2>
+<p>By default, penguins-eggs uses fasted compression <code>zstd level 3</code> for efficiency during the creation process. However, if you want a more compressed ISO file, you can chooce <code>--pendrive</code> flag <code>zstd level 15</code> optimized for pendrives, <code>--standard</code> flag, use  <code>xz</code>, or <code>--max</code> flag using <code>xz -Xbcj</code> to get the maximun level of compression. For example:</p>
+<pre class="hljs"><code><div>sudo eggs produce 
+sudo eggs produce --pendrive
+sudo eggs produce --standard
+sudo eggs produce --max
+</div></code></pre>
+<blockquote>
+<p>[!TIP]
+This command will apply differents compression to the ISO file, resulting in a smaller file size or in a longer process. Consult <a href="https://penguins-eggs.net/docs/Tutorial/eggs-users-guide">Penguins Eggs' official guide</a> for more detailed informations.</p>
+</blockquote>
+<h1 id="commands">Commands</h1>
+<!-- commands -->
+<ul>
+<li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
+<li><a href="#eggs-analyze"><code>eggs analyze</code></a></li>
+<li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
+<li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
+<li><a href="#eggs-config"><code>eggs config</code></a></li>
+<li><a href="#eggs-cuckoo"><code>eggs cuckoo</code></a></li>
+<li><a href="#eggs-dad"><code>eggs dad</code></a></li>
+<li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
+<li><a href="#eggs-export-pkg"><code>eggs export pkg</code></a></li>
+<li><a href="#eggs-export-tarballs"><code>eggs export tarballs</code></a></li>
+<li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
+<li><a href="#eggs-install"><code>eggs install</code></a></li>
+<li><a href="#eggs-kill"><code>eggs kill</code></a></li>
+<li><a href="#eggs-krill"><code>eggs krill</code></a></li>
+<li><a href="#eggs-love"><code>eggs love</code></a></li>
+<li><a href="#eggs-mom"><code>eggs mom</code></a></li>
+<li><a href="#eggs-pods-distro"><code>eggs pods [DISTRO]</code></a></li>
+<li><a href="#eggs-produce"><code>eggs produce</code></a></li>
+<li><a href="#eggs-status"><code>eggs status</code></a></li>
+<li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
+<li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
+<li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
+<li><a href="#eggs-tools-ppa"><code>eggs tools ppa</code></a></li>
+<li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
+<li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
+<li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
+<li><a href="#eggs-update"><code>eggs update</code></a></li>
+<li><a href="#eggs-version"><code>eggs version</code></a></li>
+<li><a href="#eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></a></li>
+<li><a href="#eggs-wardrobe-list-repo"><code>eggs wardrobe list [REPO]</code></a></li>
+<li><a href="#eggs-wardrobe-show-repo"><code>eggs wardrobe show [REPO]</code></a></li>
+<li><a href="#eggs-wardrobe-wear-repo"><code>eggs wardrobe wear [REPO]</code></a></li>
+</ul>
+<h2 id="eggs-adapt"><code>eggs adapt</code></h2>
+<p>adapt monitor resolution for VM only</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs adapt [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  adapt monitor resolution for VM only
+
+EXAMPLES
+  $ eggs adapt
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/adapt.ts">src/commands/adapt.ts</a></em></p>
+<h2 id="eggs-analyze"><code>eggs analyze</code></h2>
+<p>analyze for syncto</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs analyze [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  analyze for syncto
+
+EXAMPLES
+  sudo eggs analyze
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/analyze.ts">src/commands/analyze.ts</a></em></p>
+<h2 id="eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></h2>
+<p>Display autocomplete installation instructions.</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs autocomplete [SHELL] [-r]
+
+ARGUMENTS
+  SHELL  (zsh|bash|powershell) Shell type
+
+FLAGS
+  -r, --refresh-cache  Refresh cache (ignores displaying instructions)
+
+DESCRIPTION
+  Display autocomplete installation instructions.
+
+EXAMPLES
+  $ eggs autocomplete
+
+  $ eggs autocomplete bash
+
+  $ eggs autocomplete zsh
+
+  $ eggs autocomplete powershell
+
+  $ eggs autocomplete --refresh-cache
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/oclif/plugin-autocomplete/blob/v3.2.35/src/commands/autocomplete/index.ts">@oclif/plugin-autocomplete</a></em></p>
+<h2 id="eggs-calamares"><code>eggs calamares</code></h2>
+<p>configure calamares or install or configure it</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs calamares [-h] [-i] [-n] [-p] [-r] [--remove] [--theme &lt;value&gt;] [-v]
+
+FLAGS
+  -h, --help           Show CLI help.
+  -i, --install        install calamares and its dependencies
+  -n, --nointeractive  no user interaction
+  -p, --policies       configure calamares policies
+  -r, --release        release: remove calamares and all its dependencies after the installation
+  -v, --verbose
+      --remove         remove calamares and its dependencies
+      --theme=&lt;value&gt;  theme/branding for eggs and calamares
+
+DESCRIPTION
+  configure calamares or install or configure it
+
+EXAMPLES
+  sudo eggs calamares
+
+  sudo eggs calamares --install
+
+  sudo eggs calamares --install --theme=/path/to/theme
+
+  sudo eggs calamares --remove
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/calamares.ts">src/commands/calamares.ts</a></em></p>
+<h2 id="eggs-config"><code>eggs config</code></h2>
+<p>Configure eggs to run it</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs config [-c] [-h] [-n] [-v]
+
+FLAGS
+  -c, --clean          remove old configuration before to create new one
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
+
+DESCRIPTION
+  Configure eggs to run it
+
+EXAMPLES
+  sudo eggs config
+
+  sudo eggs config --clean
+
+  sudo eggs config --clean --nointeractive
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/config.ts">src/commands/config.ts</a></em></p>
+<h2 id="eggs-cuckoo"><code>eggs cuckoo</code></h2>
+<p>PXE start with proxy-dhcp</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs cuckoo [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  PXE start with proxy-dhcp
+
+EXAMPLES
+  sudo eggs cuckoo
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/cuckoo.ts">src/commands/cuckoo.ts</a></em></p>
+<h2 id="eggs-dad"><code>eggs dad</code></h2>
+<p>ask help from daddy - TUI configuration helper</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs dad [-c] [-d] [-f &lt;value&gt;] [-n] [-h] [-v]
+
+FLAGS
+  -c, --clean          remove old configuration before to create
+  -d, --default        reset to default values
+  -f, --file=&lt;value&gt;   use a file configuration custom
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose
+
+DESCRIPTION
+  ask help from daddy - TUI configuration helper
+
+EXAMPLES
+  sudo dad
+
+  sudo dad --clean
+
+  sudo dad --default
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/dad.ts">src/commands/dad.ts</a></em></p>
+<h2 id="eggs-export-iso"><code>eggs export iso</code></h2>
+<p>export iso in the destination host</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs export iso [-C] [-c] [-h] [-v]
+
+FLAGS
+  -C, --checksum  export checksums md5 and sha256
+  -c, --clean     delete old ISOs before to copy
+  -h, --help      Show CLI help.
+  -v, --verbose   verbose
+
+DESCRIPTION
+  export iso in the destination host
+
+EXAMPLES
+  $ eggs export iso
+
+  $ eggs export iso --clean
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/export/iso.ts">src/commands/export/iso.ts</a></em></p>
+<h2 id="eggs-export-pkg"><code>eggs export pkg</code></h2>
+<p>export pkg/iso to the destination host</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs export pkg [-a] [-c] [-h] [-v]
+
+FLAGS
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export pkg/iso to the destination host
+
+EXAMPLES
+  $ eggs export pkg
+
+  $ eggs export pkg --clean
+
+  $ eggs export pkg --all
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/export/pkg.ts">src/commands/export/pkg.ts</a></em></p>
+<h2 id="eggs-export-tarballs"><code>eggs export tarballs</code></h2>
+<p>export pkg/iso/tarballs to the destination host</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs export tarballs [-c] [-h] [-v]
+
+FLAGS
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export pkg/iso/tarballs to the destination host
+
+EXAMPLES
+  $ eggs export tarballs
+
+  $ eggs export tarballs --clean
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/export/tarballs.ts">src/commands/export/tarballs.ts</a></em></p>
+<h2 id="eggs-help-command"><code>eggs help [COMMAND]</code></h2>
+<p>Display help for eggs.</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs help [COMMAND...] [-n]
+
+ARGUMENTS
+  COMMAND...  Command to show help for.
+
+FLAGS
+  -n, --nested-commands  Include all nested commands in the output.
+
+DESCRIPTION
+  Display help for eggs.
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/oclif/plugin-help/blob/v6.2.33/src/commands/help.ts">@oclif/plugin-help</a></em></p>
+<h2 id="eggs-install"><code>eggs install</code></h2>
+<p>krill: the CLI system installer - the egg became a penguin!</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs install [-b] [-c] [-k] [-d &lt;value&gt;] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R &lt;value&gt;] [-s] [-S] [-t]
+    [-u] [-v]
+
+FLAGS
+  -H, --halt             Halt the system after installation
+  -N, --none             Swap none: 256M
+  -R, --replace=&lt;value&gt;  Replace partition. eg: --replace /dev/sda3
+  -S, --suspend          Swap suspend: RAM x 2
+  -b, --btrfs            Format btrfs
+  -c, --chroot           chroot before to end
+  -d, --domain=&lt;value&gt;   Domain name, defult: .local
+  -h, --help             Show CLI help.
+  -i, --ip               hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted          Crypted CLI installation
+  -n, --nointeractive    no user interaction
+  -p, --pve              Proxmox VE install
+  -r, --random           Add random to hostname, eg: colibri-ay412dt
+  -s, --small            Swap small: RAM
+  -t, --testing          Just testing krill
+  -u, --unattended       Unattended installation
+  -v, --verbose          Verbose
+
+DESCRIPTION
+  krill: the CLI system installer - the egg became a penguin!
+
+ALIASES
+  $ eggs krill
+
+EXAMPLES
+  sudo eggs install
+
+  sudo eggs install --unattended --halt
+
+  sudo eggs install --chroot
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/install.ts">src/commands/install.ts</a></em></p>
+<h2 id="eggs-kill"><code>eggs kill</code></h2>
+<p>kill the eggs/free the nest</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs kill [-h] [-i] [-n] [-v]
+
+FLAGS
+  -h, --help           Show CLI help.
+  -i, --isos           erase all ISOs on remote mount
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
+
+DESCRIPTION
+  kill the eggs/free the nest
+
+EXAMPLES
+  sudo eggs kill
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/kill.ts">src/commands/kill.ts</a></em></p>
+<h2 id="eggs-krill"><code>eggs krill</code></h2>
+<p>krill: the CLI system installer - the egg became a penguin!</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs krill [-b] [-c] [-k] [-d &lt;value&gt;] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R &lt;value&gt;] [-s] [-S] [-t]
+    [-u] [-v]
+
+FLAGS
+  -H, --halt             Halt the system after installation
+  -N, --none             Swap none: 256M
+  -R, --replace=&lt;value&gt;  Replace partition. eg: --replace /dev/sda3
+  -S, --suspend          Swap suspend: RAM x 2
+  -b, --btrfs            Format btrfs
+  -c, --chroot           chroot before to end
+  -d, --domain=&lt;value&gt;   Domain name, defult: .local
+  -h, --help             Show CLI help.
+  -i, --ip               hostname as ip, eg: ip-192-168-1-33
+  -k, --crypted          Crypted CLI installation
+  -n, --nointeractive    no user interaction
+  -p, --pve              Proxmox VE install
+  -r, --random           Add random to hostname, eg: colibri-ay412dt
+  -s, --small            Swap small: RAM
+  -t, --testing          Just testing krill
+  -u, --unattended       Unattended installation
+  -v, --verbose          Verbose
+
+DESCRIPTION
+  krill: the CLI system installer - the egg became a penguin!
+
+ALIASES
+  $ eggs krill
+
+EXAMPLES
+  sudo eggs install
+
+  sudo eggs install --unattended --halt
+
+  sudo eggs install --chroot
+</div></code></pre>
+<h2 id="eggs-love"><code>eggs love</code></h2>
+<p>the simplest way to get an egg!</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs love [-h] [-v] [-n]
+
+FLAGS
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose
+
+DESCRIPTION
+  the simplest way to get an egg!
+
+EXAMPLES
+  $ eggs auto
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/love.ts">src/commands/love.ts</a></em></p>
+<h2 id="eggs-mom"><code>eggs mom</code></h2>
+<p>ask help from mommy - TUI helper</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs mom [-h]
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  ask help from mommy - TUI helper
+
+EXAMPLES
+  $ eggs mom
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/mom.ts">src/commands/mom.ts</a></em></p>
+<h2 id="eggs-pods-distro"><code>eggs pods [DISTRO]</code></h2>
+<p>eggs pods: build ISOs from containers</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs pods [DISTRO] [-h]
+
+ARGUMENTS
+  DISTRO  distro to build
+
+FLAGS
+  -h, --help  Show CLI help.
+
+DESCRIPTION
+  eggs pods: build ISOs from containers
+
+EXAMPLES
+  $ eggs pods archlinux
+
+  $ eggs pods debian
+
+  $ eggs pods ubuntu
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/pods.ts">src/commands/pods.ts</a></em></p>
+<h2 id="eggs-produce"><code>eggs produce</code></h2>
+<p>produce a live image from your system whithout your data</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs produce [--addons &lt;value&gt;...] [--basename &lt;value&gt;] [-c] [-C] [--excludes &lt;value&gt;...] [-h] [-k
+    &lt;value&gt;] [--links &lt;value&gt;...] [-m] [-N] [-n] [-p] [-P &lt;value&gt;] [--release] [-s] [-S] [--theme &lt;value&gt;] [-u] [-v]
+    [-y]
+
+FLAGS
+  -C, --cryptedclone         crypted clone
+  -N, --noicon               no icon eggs on desktop
+  -P, --prefix=&lt;value&gt;       prefix
+  -S, --standard             standard compression: xz -b 1M
+  -c, --clone                clone
+  -h, --help                 Show CLI help.
+  -k, --kernel=&lt;value&gt;       kernel version
+  -m, --max                  max compression: xz -Xbcj ...
+  -n, --nointeractive        no user interaction
+  -p, --pendrive             optimized for pendrive: zstd -b 1M -Xcompression-level 15
+  -s, --script               script mode. Generate scripts to manage iso build
+  -u, --unsecure             /root contents are included on live
+  -v, --verbose              verbose
+  -y, --yolk                 force yolk renew
+      --addons=&lt;value&gt;...    addons to be used: adapt, pve, rsupport
+      --basename=&lt;value&gt;     basename
+      --excludes=&lt;value&gt;...  use: static, homes, home
+      --links=&lt;value&gt;...     desktop links
+      --release              release: remove penguins-eggs, calamares and dependencies after installation
+      --theme=&lt;value&gt;        theme for livecd, calamares branding and partitions
+
+DESCRIPTION
+  produce a live image from your system whithout your data
+
+EXAMPLES
+  sudo eggs produce                    # zstd fast compression
+
+  sudo eggs produce --standard         # xz compression
+
+  sudo eggs produce --max              # xz max compression
+
+  sudo eggs produce --pendrive         # zstd compression optimized pendrive
+
+  sudo eggs produce --clone            # clone
+
+  sudo eggs produce --cryptedclone     # crypted clone
+
+  sudo eggs produce --basename=colibri
+
+  sudo eggs produce --theme lastos
+
+  sudo eggs produce --excludes static  # you can customize it
+
+  sudo eggs produce --excludes homes   # exclude /home/*
+
+  sudo eggs produce --excludes home    # exclude ~/*
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/produce.ts">src/commands/produce.ts</a></em></p>
+<h2 id="eggs-status"><code>eggs status</code></h2>
+<p>informations about eggs status</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs status [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  informations about eggs status
+
+EXAMPLES
+  $ eggs status
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/status.ts">src/commands/status.ts</a></em></p>
+<h2 id="eggs-syncfrom"><code>eggs syncfrom</code></h2>
+<p>restore users and user data from a LUKS volumes</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs syncfrom [--delete &lt;value&gt;] [-f &lt;value&gt;] [-h] [-r &lt;value&gt;] [-v]
+
+FLAGS
+  -f, --file=&lt;value&gt;     file containing luks-volume encrypted
+  -h, --help             Show CLI help.
+  -r, --rootdir=&lt;value&gt;  rootdir of the installed system, when used from live
+  -v, --verbose          verbose
+      --delete=&lt;value&gt;   rsync --delete delete extraneous files from dest dirs
+
+DESCRIPTION
+  restore users and user data from a LUKS volumes
+
+EXAMPLES
+  sudo eggs syncfrom
+
+  sudo eggs syncfrom --file /path/to/luks-volume
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/syncfrom.ts">src/commands/syncfrom.ts</a></em></p>
+<h2 id="eggs-syncto"><code>eggs syncto</code></h2>
+<p>Save users and users' data ENCRYPTED</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs syncto [-e] [-f &lt;value&gt;] [-h] [-v]
+
+FLAGS
+  -e, --excludes      use: exclude.list.d/home.list
+  -f, --file=&lt;value&gt;  file luks-volume encrypted
+  -h, --help          Show CLI help.
+  -v, --verbose       verbose
+
+DESCRIPTION
+  Save users and users' data ENCRYPTED
+
+EXAMPLES
+  sudo eggs syncto
+
+  sudo eggs syncto --file /path/to/luks-volume
+
+  sudo eggs syncto --excludes
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/syncto.ts">src/commands/syncto.ts</a></em></p>
+<h2 id="eggs-tools-clean"><code>eggs tools clean</code></h2>
+<p>clean system log, apt, etc</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs tools clean [-h] [-n] [-v]
+
+FLAGS
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
+
+DESCRIPTION
+  clean system log, apt, etc
+
+EXAMPLES
+  sudo eggs tools clean
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/tools/clean.ts">src/commands/tools/clean.ts</a></em></p>
+<h2 id="eggs-tools-ppa"><code>eggs tools ppa</code></h2>
+<p>add/remove repo</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
+
+FLAGS
+  -a, --add            add penguins-eggs PPA repository
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -r, --remove         remove penguins-eggs PPA repository
+  -v, --verbose        verbose
+
+DESCRIPTION
+  add/remove repo
+
+EXAMPLES
+  sudo eggs tools ppa --add
+
+  sudo eggs tools ppa --remove
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/tools/ppa.ts">src/commands/tools/ppa.ts</a></em></p>
+<h2 id="eggs-tools-skel"><code>eggs tools skel</code></h2>
+<p>update skel from home configuration</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs tools skel [-h] [-u &lt;value&gt;] [-v]
+
+FLAGS
+  -h, --help          Show CLI help.
+  -u, --user=&lt;value&gt;  user to be used
+  -v, --verbose
+
+DESCRIPTION
+  update skel from home configuration
+
+EXAMPLES
+  sudo eggs tools skel
+
+  sudo eggs tools skel --user user-to-be-copied
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/tools/skel.ts">src/commands/tools/skel.ts</a></em></p>
+<h2 id="eggs-tools-stat"><code>eggs tools stat</code></h2>
+<p>get statistics from sourceforge</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs tools stat [-h] [-m] [-y]
+
+FLAGS
+  -h, --help   Show CLI help.
+  -m, --month  current month
+  -y, --year   current year
+
+DESCRIPTION
+  get statistics from sourceforge
+
+EXAMPLES
+  $ eggs tools stat
+
+  $ eggs tools stat --month
+
+  $ eggs tools stat --year
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/tools/stat.ts">src/commands/tools/stat.ts</a></em></p>
+<h2 id="eggs-tools-yolk"><code>eggs tools yolk</code></h2>
+<p>configure eggs to install without internet</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs tools yolk [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  configure eggs to install without internet
+
+EXAMPLES
+  sudo eggs tools yolk
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/tools/yolk.ts">src/commands/tools/yolk.ts</a></em></p>
+<h2 id="eggs-update"><code>eggs update</code></h2>
+<p>update the Penguins' eggs tool</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs update [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  update the Penguins' eggs tool
+
+EXAMPLES
+  $ eggs update
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/update.ts">src/commands/update.ts</a></em></p>
+<h2 id="eggs-version"><code>eggs version</code></h2>
+<pre class="hljs"><code><div>USAGE
+  $ eggs version [--json] [--verbose]
+
+FLAGS
+  --verbose  Show additional information about the CLI.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+FLAG DESCRIPTIONS
+  --verbose  Show additional information about the CLI.
+
+    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/oclif/plugin-version/blob/v2.2.33/src/commands/version.ts">@oclif/plugin-version</a></em></p>
+<h2 id="eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></h2>
+<p>get warorobe</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs wardrobe get [REPO] [-h] [-v]
+
+ARGUMENTS
+  REPO  repository to get
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  get warorobe
+
+EXAMPLES
+  $ eggs wardrobe get
+
+  $ eggs wardrobe get your-wardrobe
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/wardrobe/get.ts">src/commands/wardrobe/get.ts</a></em></p>
+<h2 id="eggs-wardrobe-list-repo"><code>eggs wardrobe list [REPO]</code></h2>
+<p>list costumes and accessoires in wardrobe</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs wardrobe list [REPO] [-d &lt;value&gt;] [-h] [-v]
+
+ARGUMENTS
+  REPO  wardrobe to get
+
+FLAGS
+  -d, --distro=&lt;value&gt;  distro
+  -h, --help            Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list costumes and accessoires in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe list
+
+  $ eggs wardrobe list your-wardrobe
+
+  $ eggs wardrobe list --distro arch
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/wardrobe/list.ts">src/commands/wardrobe/list.ts</a></em></p>
+<h2 id="eggs-wardrobe-show-repo"><code>eggs wardrobe show [REPO]</code></h2>
+<p>show costumes/accessories in wardrobe</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs wardrobe show [REPO] [-h] [-j] [-v] [-w &lt;value&gt;]
+
+ARGUMENTS
+  REPO  costume to show
+
+FLAGS
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+  -w, --wardrobe=&lt;value&gt;  wardrobe
+
+DESCRIPTION
+  show costumes/accessories in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe show colibri
+
+  $ eggs wardrobe show accessories/firmwares
+
+  $ eggs wardrobe show accessories/
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/wardrobe/show.ts">src/commands/wardrobe/show.ts</a></em></p>
+<h2 id="eggs-wardrobe-wear-repo"><code>eggs wardrobe wear [REPO]</code></h2>
+<p>wear costume/accessories from wardrobe</p>
+<pre class="hljs"><code><div>USAGE
+  $ eggs wardrobe wear [REPO] [-h] [-a] [-f] [-v] [-w &lt;value&gt;]
+
+ARGUMENTS
+  REPO  costume to wear
+
+FLAGS
+  -a, --no_accessories    not install accessories
+  -f, --no_firmwares      not install firmwares
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=&lt;value&gt;  wardrobe
+
+DESCRIPTION
+  wear costume/accessories from wardrobe
+
+EXAMPLES
+  sudo eggs wardrobe wear duck
+
+  sudo eggs wardrobe wear accessories/firmwares
+
+  sudo eggs wardrobe wear wagtail/waydroid
+</div></code></pre>
+<p><em>See code: <a href="https://github.com/pieroproietti/penguins-eggs/blob/v25.9.27/src/commands/wardrobe/wear.ts">src/commands/wardrobe/wear.ts</a></em></p>
+<!-- commandsstop -->
+<h1 id="gui">GUI</h1>
+<p>There are two GUIs for penguins-eggs at the moment: eggsmaker and penGUI.</p>
+<h2 id="eggsmaker">eggsmaker</h2>
+<h3 id="a-project-by-jorge-luis-endres">A project by <a href="https://github.com/jlendres/eggsmaker">Jorge Luis Endres</a>.</h3>
+<p><img src="https://github.com/jlendres/eggsmaker/raw/main/images/eggsmaker-running.png" alt="eggsmaker"></p>
+<p>eggsmaker is a graphical interface for penguins-eggs.</p>
+<p>Written by my friend Jorge Luis Endres, it is essential and functional. It doesn’t cover all the possibilities of penguins-eggs, but in the end, a GUI should be simple and intuitive.</p>
+<p>I like it, I hope you like it too, and I thank Jorge for his daring.</p>
+<p>eggsmaker packages are available on <a href="https://drive.google.com/drive/folders/1hK8OB3e5sM2M9Z_vy1uR3_X7gPdNFYdO">Jorge gdrive</a>.</p>
+<h1 id="book">Book</h1>
+<p>My friend <a href="https://predator-store.com/about-us/">Hosein Seilany</a>  founder of <a href="https://predator-os.ir/">predator-os</a>, has written a book on Penguins's eggs, with my partecipation. It's a remarkable work - even in size and weight - so it's a great honor to <a href="https://predator-store.com/product/penguins-eggs-tool">announce</a> it here!</p>
+<p><a href="https://predator-store.com/product/penguins-eggs-tool/"><img src="https://predator-store.com/wp-content/uploads/2025/05/final1-copy-2-1450x2048.jpg?raw=true" alt="book"></a></p>
+<h2 id="thats-all-folks">That's all, Folks!</h2>
+<p>One of the standout features of Penguins Eggs' is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins Eggs' lies within - no additional setup required!</p>
+<h2 id="more-information">More Information</h2>
+<p>In addition to the official guide, there are other resources available for Penguins Eggs' users, particularly developers. These resources can be found in the <a href="https://github.com/pieroproietti/penguins-eggs">penguins-eggs repository</a> under the <a href="https://github.com/pieroproietti/penguins-eggs/tree/master/documents">documents</a> section.</p>
+<p>Some noteworthy documents include:</p>
+<ul>
+<li><a href="https://github.com/pieroproietti/penguins-eggs/blob/master//hens-different-species.md">Hens: Different Species</a>: A brief guide on using Penguins Eggs' in Debian, Arch, and Manjaro.</li>
+<li><a href="https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html">Arch-naked</a>: A blog post detailing how to create an Arch naked live, install it, and customize the resulting system into a graphics development station.</li>
+</ul>
+<p>If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my <a href="https://penguins-eggs.net">blog</a> or connecting with me on , <a href="https://t.me/penguins_eggs">Telegram</a>, <a href="https://social.treehouse.systems/@artisan">Mastodom</a>, <a href="https://www.facebook.com/groups/128861437762355/">Facebook</a>, <a href="https://github.com/pieroproietti/penguins-krill">GitHub</a>, <a href="https://meet.jit.si/PenguinsEggsMeeting">Jitsi</a>, <a href="https://www.reddit.com/user/Artisan61">Reddit</a> or <a href="https://twitter.com/pieroproietti">Twitter</a>,
+<a href="https://social.treehouse.systems/@artisan">Mastodom</a>.</p>
+<h2 id="a-word-of-thanks">A word of thanks</h2>
+<ul>
+<li>This README would not be so well cared for if not for the work of <a href="https://github.com/hosseinseilani">Hosein Seilain</a> who spent his time revising and supplementing the text;</li>
+<li>The eggs icon was designed by <a href="https://github.com/quirinux-so">Charlie Martinez</a>;</li>
+<li>and a word of thanks to all of you who are using it and providing feedback and motivation to continue it.</li>
+</ul>
+<p>Thank you!</p>
+<h2 id="star-history">Star History</h2>
+<p>This project collects stars, look to the sky... contribute!</p>
+<p><a href="https://star-history.com/#pieroproietti/penguins-eggs&amp;Date"><img src="https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&amp;type=Date" alt="Star History Chart"></a></p>
+<h1 id="copyright-and-licenses">Copyright and licenses</h1>
+<p>Copyright (c) 2017, 2025 <a href="https://penguins-eggs.net/about-me.html">Piero Proietti</a>, dual licensed under the MIT or GPL Version 2 licenses.</p>
+
+</body>
+</html>
