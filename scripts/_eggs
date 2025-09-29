@@ -201,9 +201,9 @@ _eggs() {
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
+"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
 "version[]" \
-"help[Display help for eggs.]" \
 
     ;;
     args)
@@ -252,7 +252,7 @@ _arguments -S \
 cuckoo)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-v --verbose)"{-v,--verbose}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 dad)
@@ -278,6 +278,7 @@ _arguments -S \
 "(-N --none)"{-N,--none}"[Swap none: 256M]" \
 "(-p --pve)"{-p,--pve}"[Proxmox VE install]" \
 "(-r --random)"{-r,--random}"[Add random to hostname, eg: colibri-ay412dt]" \
+"(-R --replace)"{-R,--replace}"[Replace partition. eg: --replace /dev/sda3]:file:_files" \
 "(-s --small)"{-s,--small}"[Swap small: RAM]" \
 "(-S --suspend)"{-S,--suspend}"[Swap suspend: RAM x 2]" \
 "(-t --testing)"{-t,--testing}"[Just testing krill]" \
@@ -298,6 +299,7 @@ _arguments -S \
 "(-N --none)"{-N,--none}"[Swap none: 256M]" \
 "(-p --pve)"{-p,--pve}"[Proxmox VE install]" \
 "(-r --random)"{-r,--random}"[Add random to hostname, eg: colibri-ay412dt]" \
+"(-R --replace)"{-R,--replace}"[Replace partition. eg: --replace /dev/sda3]:file:_files" \
 "(-s --small)"{-s,--small}"[Swap small: RAM]" \
 "(-S --suspend)"{-S,--suspend}"[Swap suspend: RAM x 2]" \
 "(-t --testing)"{-t,--testing}"[Just testing krill]" \
@@ -383,6 +385,11 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 autocomplete)
 _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
@@ -392,11 +399,6 @@ version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac
