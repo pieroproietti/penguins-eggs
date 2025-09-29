@@ -46,7 +46,7 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
     // disabilito spinner per introduzione passphrase
     let message = "Creating partitions"
     await redraw(<Install message={message} percent={0} />)
-    const passphrase = await getLuksPassphrase('3volution', '3volution')
+    const passphrase = await getLuksPassphrase('evolution', 'evolution')
     await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
 
     // Aggiungi parametri di sicurezza espliciti
@@ -61,7 +61,7 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
       process.exit(1)
     }
 
-    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 root_crypted`, this.echo)
+    const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 ${this.luksRootName}`, this.echo)
     if (cryptoRootOpen.code !== 0) {
       Utils.warning(`Error: ${cryptoRootOpen.code} ${cryptoRootOpen.data}`)
       process.exit(1)
@@ -69,8 +69,7 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
 
     // this.devices.boot.name = DEFINED
     this.devices.data.name = 'none'
-    // this.devices.efi.name = DEFINED
-    this.devices.root.name = '/dev/mapper/root_crypted'
+    this.devices.root.name = `/dev/mapper/${this.luksRootName}`
     this.devices.root.cryptedFrom = `${installDevice}${p}3`
     this.devices.root.fsType = 'ext4'
     this.devices.root.mountPoint = '/'

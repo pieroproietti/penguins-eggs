@@ -26,19 +26,23 @@ import { InstallationMode } from '../krill_enums.js'
 export async function summary(this: Prepare, location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
     let summaryElem: JSX.Element
 
-    let message = `Double check: data on disk: ${partitions.installationDevice} will be completely erased!`
-    let erase = `Disk ${partitions.installationDevice} will be formatted as: ${partitions.filesystemType}`
+    let message = `Double check: data on disk ${partitions.installationDevice} will be completely erased!`
+    let erase = `On disk ${partitions.installationDevice} will be created a root partition formatted: ${partitions.filesystemType}`
     if (partitions.installationMode === InstallationMode.Replace) {
         message = `Double check: data on partition ${partitions.replacedPartition} will be completely erased!`
-        erase = `Partition ${partitions.replacedPartition} will be formatted as: ${partitions.filesystemType}`
+        erase = `Partition root on ${partitions.replacedPartition} will be formatted ${partitions.filesystemType}`
+    } else if (partitions.installationMode === InstallationMode.Luks) {
+        erase = `On disk ${partitions.installationDevice} will be created a LUKS encrypted volume`
     }
 
     if (this.unattended && this.nointeractive) {
         message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
     }
+    
 
 
     while (true) {
+
         summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} erase={erase} />
         if (this.unattended && this.nointeractive) {
             redraw(summaryElem)

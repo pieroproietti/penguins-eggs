@@ -11,6 +11,8 @@ import { exec } from '../../../lib/utils.js'
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../../classes/sequence.js'
 import Utils from '../../../classes/utils.js'
+import { execFileSync } from 'node:child_process'
+
 
 /**
  * mkfs
@@ -31,7 +33,27 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
     this.devices.data.name = 'none' // OK
     this.partitions.userSwapChoice = SwapChoice.File
     this.devices.swap.name = 'file' // OK
-    this.devices.efi.name = 'none'  // Trovare il modo
+    this.devices.efi.name='none'
+    if (this.efi) {
+      const efiDetecCmd = `fdisk -l | grep 'EFI System' | awk '{print $1}'`
+      const efiDetect = (await exec(efiDetecCmd))
+      console.log(`efiDetecCmd: `, efiDetecCmd )
+      console.log("efiDetect.code:", efiDetect.code)
+      console.log("efiDetect.name:", efiDetect.code)
+      if (efiDetect.code == 0) {
+        const efiName = efiDetect.data.trim()
+        console.log("efiName:", efiName)
+        if (efiName) {
+          this.devices.efi.name = efiName
+        } else {
+          this.devices.efi.name = 'none'
+        }
+      } else {
+        console.log("Errore ricerca efiName")
+      }
+    }
+    console.log("this.devices.efi:", this.devices.efi)
+    await Utils.pressKeyToExit()
   }
 
 

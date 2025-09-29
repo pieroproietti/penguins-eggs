@@ -40,8 +40,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += '#       for resume support.\n'
     text += '#\n'
     text += '# <name>               <device>                         <password> <options>\n'
-    text += `#root_crypted was ${this.devices.root.cryptedFrom}\n`
-    text += `root_crypted UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,discard\n`
+    text += `# ${this.luksRootName} was ${this.devices.root.cryptedFrom}\n`
+    text += `${this.luksRootName} UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,discard\n`
     Utils.write(crypttab, text)
   }
 
@@ -111,7 +111,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
       text += `\n`
     }
 
-
     if (this.efi) {
       /**
        * efi must to be defined
@@ -161,8 +160,8 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
      * btrfs
      */
   } else if (this.partitions.filesystemType === 'btrfs') {
-    const rootMountPoint=this.devices.root.mountPoint
-    const rootUuid=Utils.uuid(this.devices.root.name)
+    const rootMountPoint = this.devices.root.mountPoint
+    const rootUuid = Utils.uuid(this.devices.root.name)
 
     text += `# ${this.devices.root.name}  btrfs ${rootMountPoint} subvol\n`
     text += `UUID=${rootUuid} /               btrfs       subvol=/@,defaults 0 0\n`

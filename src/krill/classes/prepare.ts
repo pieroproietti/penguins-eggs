@@ -13,7 +13,7 @@ import shx from 'shelljs'
 import axios from 'axios'
 
 import { IKrillConfig } from '../interfaces/i_krill_config.js'
-import { INet } from '../../interfaces/index.js'
+import { IDevices, INet } from '../../interfaces/index.js'
 import { IWelcome, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i_krill.js'
 import { SwapChoice, InstallationMode, FsType } from './krill_enums.js'
 
@@ -48,7 +48,7 @@ export default class Krill {
   network = network
   summary = summary
 
-  // Configuration
+    // Configuration
   krillConfig = {} as IKrillConfig
   locales = new Locales()
   keyboards = new Keyboards()
