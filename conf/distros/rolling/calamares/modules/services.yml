@@ -51,7 +51,7 @@
 #     # because it is not specified
 
 # By default, no changes are made.
-units: []
+# units: []
 
 # Manjaro settings
 
