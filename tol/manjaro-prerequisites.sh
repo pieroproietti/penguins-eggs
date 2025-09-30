@@ -24,5 +24,5 @@ pacman -S \
     rsync \
     squashfs-tools \
     sshfs \
-    get \
+    git \
     xdg-utils 
