@@ -69,15 +69,16 @@ export class Rolling {
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    // await fisherman.buildModule('services-systemd')
-    // await fisherman.buildCalamaresModule('bootloader-config', true)
+    await fisherman.buildModule('services')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.moduleRemoveuser(this.user_opt)
+    
     await fisherman.shellprocess('sync')
+    await fisherman.shellprocess('aptsources')
     
     /**
      * cfs: custom final steps

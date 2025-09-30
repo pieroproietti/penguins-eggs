@@ -3,11 +3,6 @@
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
-instances:
-- id: sync
-  module: shellprocess
-  config: shellprocess_sync.conf
-
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -32,19 +27,22 @@ sequence:
       - mount
       - unpackfs
       - machineid
-      - fstab
       - locale
       - keyboard
       - localecfg
+      - luksbootkeyfile
+      - luksopenswaphookcfg
+      - fstab
+      - initcpiocfg         # new check /etc/mkinitcpio.d/linux.preset presence
+      - initcpio            # new
       - users
       - displaymanager 
-      - networkcfg
-      - hwclock
-      - shellprocess@sync        # Richiama l'istanza con id: sync
+      # mhwdcfg             # new only manjaro
+      - hwclock             # new only manjaro
+      - services            # new
+      - grubcfg             # mew
       - bootloader
-      - packages
-      - luksbootkeyfile
-      - plymouthcfg
+      # postcfg             # new only manjaro
       - removeuser
       - umount
 

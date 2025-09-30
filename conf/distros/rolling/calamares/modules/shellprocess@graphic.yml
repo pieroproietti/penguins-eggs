@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.0
+#
+# Esegue comandi shell per configurare il sistema.
+---
+# Abilita il graphical target creando il symlink manualmente
+# Questo è il modo corretto di farlo in un ambiente chroot
+- command: "ln -sf /usr/lib/systemd/system/graphical.target /etc/systemd/system/default.target"
