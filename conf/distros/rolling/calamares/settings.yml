@@ -37,12 +37,12 @@ sequence:
       - initcpio            # new
       - users
       - displaymanager 
-      - mhwdcfg             # new only manjaro
+      # mhwdcfg             # new only manjaro
       - hwclock             # new only manjaro
       - services            # new
       - grubcfg             # mew
       - bootloader
-      - postcfg             # new only manjaro
+      # postcfg             # new only manjaro
       - removeuser
       - umount
 
