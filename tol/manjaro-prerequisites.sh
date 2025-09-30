@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "ln -s ../bootloaders/ bootloaders"
 pacman -S \
     arch-install-scripts \
     dosfstools \
