@@ -2,7 +2,7 @@
 
 Questo processo crea la configurazione dell'installer krill/calamares.
 
-Tutto si basa sul metodo config di Incubator, che decide in base al valore di `codenameLikeId` 
+Tutto si basa sul metodo config di Incubator, che decide in base al valore di `distroUniqueId` 
 quale configurazione è necessaria.
 
 Viene quindi chiamato il metodo `create` della distribuzione in uso che configura `settings.conf` ed 

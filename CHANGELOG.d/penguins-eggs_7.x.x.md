@@ -50,7 +50,7 @@
 * added .disk folder in iso with info, mkiso, etc. added version in calamares, isGui, and others
 
 ### eggs-7.8.31
-* bugfixes: check the presence of vmlinuz and initrd_img else stop, codenameLikeId in rootTemplate of calamares (deprecated)
+* bugfixes: check the presence of vmlinuz and initrd_img else stop, distroUniqueId in rootTemplate of calamares (deprecated)
 
 ### eggs-7.8.30
 * rewrite of distros.ts class: cleanup and reorganization
