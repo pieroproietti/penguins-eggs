@@ -26,6 +26,7 @@ sequence:
       - partition
       - mount
       - unpackfs
+      - networkcfg
       - machineid
       - locale
       - keyboard
@@ -34,15 +35,15 @@ sequence:
       - luksopenswaphookcfg
       - fstab
       - initcpiocfg         # new check /etc/mkinitcpio.d/linux.preset presence
-      - initcpio            # new
+      - initcpio
       - users
       - displaymanager 
-      # mhwdcfg             # new only manjaro
-      - hwclock             # new only manjaro
-      - services            # new
-      - grubcfg             # mew
+      - mhwdcfg
+      - hwclock
+      - services
+      - grubcfg
       - bootloader
-      # postcfg             # new only manjaro
+      - postcfg
       - removeuser
       - umount
 
