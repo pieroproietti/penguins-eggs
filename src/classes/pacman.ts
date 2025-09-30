@@ -368,7 +368,7 @@ export default class Pacman {
       /***********************************************************************************
        * Manjaro
        **********************************************************************************/
-    } else if (distroUniqueId === 'mangiaro') {
+    } else if (distroUniqueId === 'manjaro') {
       const dest = '/etc/penguins-eggs.d/distros/manjaro/'
       const manjaro = `${rootPen}/conf/distros/manjaro/*`
       await exec(`cp -r ${manjaro} ${dest}`, echo)
