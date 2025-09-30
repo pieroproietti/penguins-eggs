@@ -40,7 +40,9 @@ sequence:
       - displaymanager 
       - networkcfg
       - hwclock
-      - shellprocess@sync        # Richiama l'istanza con id: sync
+      - shellprocess@sync   # Richiama l'istanza con id: sync
+      - services            # new
+      - grubcfg             # mew
       - bootloader
       - packages
       - luksbootkeyfile
