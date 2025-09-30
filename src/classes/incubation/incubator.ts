@@ -16,6 +16,7 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
 import shx from 'shelljs'
+import Diversions from '../diversions.js'
 
 import { IInstaller } from '../../interfaces/i-installer.js'
 import { IDistro, IRemix } from '../../interfaces/index.js'
@@ -35,7 +36,8 @@ import { Fedora } from './incubator.d/fedora.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
-import { Rolling } from './incubator.d/rolling.js'
+import { Arch } from './incubator.d/arch.js'
+import { Manjaro } from './incubator.d/manjaro.js'
 import e from 'express'
 
 // _dirname
@@ -104,12 +106,18 @@ export default class Incubator {
 
 
         /**
-         * Arch 
+         * Arch ex rolling
          */
-      } else if (codenameLikeId === 'rolling') {
-        const rolling = new Rolling(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await rolling.create()
+      } else if (codenameLikeId === 'arch' && !Diversions.isManjaroBased(this.distro.distroId)) {
+        const arch = new Arch(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await arch.create()
 
+        /**
+         * Manjaro ex rolling
+         */
+      } else if (codenameLikeId === 'arch' && Diversions.isManjaroBased(this.distro.distroId)) { // Era rolling
+        const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await manjaro.create()
 
         /**
          * Debian

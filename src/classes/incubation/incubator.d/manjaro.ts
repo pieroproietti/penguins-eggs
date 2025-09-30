@@ -14,7 +14,7 @@ import Fisherman from '../fisherman.js'
 /**
  *
  */
-export class Rolling {
+export class Manjaro {
   distro: IDistro
 
   installer = {} as IInstaller

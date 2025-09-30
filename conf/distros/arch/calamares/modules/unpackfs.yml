@@ -1,0 +1,7 @@
+# Arch 
+# calamares-3.3
+---
+unpack:
+    -   source: {{source}}
+        sourcefs: "squashfs"
+        destination: ""

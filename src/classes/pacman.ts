@@ -360,10 +360,18 @@ export default class Pacman {
       /***********************************************************************************
        * Arch Linux
        **********************************************************************************/
-    } else if (codenameLikeId === 'rolling') {
-      const dest = '/etc/penguins-eggs.d/distros/rolling/'
-      const rolling = `${rootPen}/conf/distros/rolling/*`
-      await exec(`cp -r ${rolling} ${dest}`, echo)
+    } else if (codenameLikeId === 'arch') {
+      const dest = '/etc/penguins-eggs.d/distros/arch/'
+      const arch = `${rootPen}/conf/distros/arch/*`
+      await exec(`cp -r ${arch} ${dest}`, echo)
+
+      /***********************************************************************************
+       * Manjaro
+       **********************************************************************************/
+    } else if (codenameLikeId === 'mangiaro') {
+      const dest = '/etc/penguins-eggs.d/distros/manjaro/'
+      const manjaro = `${rootPen}/conf/distros/manjaro/*`
+      await exec(`cp -r ${manjaro} ${dest}`, echo)
 
       /***********************************************************************************
        * Debian

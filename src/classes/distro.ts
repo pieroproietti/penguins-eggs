@@ -172,7 +172,7 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
-        this.codenameLikeId = 'rolling'
+        this.codenameLikeId = 'arch' // 'rolling'
         this.liveMediumPath = '/run/archiso/bootmnt/'
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
@@ -389,6 +389,7 @@ class Distro implements IDistro {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
       this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
+      this.codenameLikeId = 'manjaro' // Non era settato
     }
 
     /**
