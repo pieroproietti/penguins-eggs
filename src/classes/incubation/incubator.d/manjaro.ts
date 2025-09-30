@@ -57,6 +57,7 @@ export class Manjaro {
 
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
+    /*
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
@@ -69,7 +70,6 @@ export class Manjaro {
     await fisherman.moduleDisplaymanager()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    await fisherman.buildModule('services')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.modulePackages(this.distro, this.release)
@@ -77,9 +77,10 @@ export class Manjaro {
     await fisherman.buildModule('plymouthcfg')
     await fisherman.moduleRemoveuser(this.user_opt)
     
+    // services
     await fisherman.shellprocess('sync')
-    await fisherman.shellprocess('aptsources')
-    
+    */
+   
     /**
      * cfs: custom final steps
      */
