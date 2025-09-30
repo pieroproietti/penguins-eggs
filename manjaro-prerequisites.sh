@@ -1,3 +1,4 @@
+#!/bin/bash
 pacman -S \
     arch-install-scripts \
     dosfstools \
