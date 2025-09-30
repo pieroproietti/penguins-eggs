@@ -63,9 +63,9 @@ units:
   - name: "org.cups.cupsd"
     action: "enable"
 
-  #- name: "graphical"
-  #  action: "enable"
-  #  mandatory: true
+  - name: "graphical"
+    action: "enable"
+    mandatory: true
 
   - name: "pacman-init"
     action: "mask"
