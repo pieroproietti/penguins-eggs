@@ -4,9 +4,12 @@
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
+- id: graphic
+  module: shellprocess
+  config: shellprocess@graphic.conf
 - id: sync
   module: shellprocess
-  config: shellprocess_sync.conf
+  config: shellprocess@sync.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -44,7 +47,8 @@ sequence:
       - displaymanager 
       - networkcfg
       - hwclock
-      - shellprocess@sync   # Richiama l'istanza con id: sync
+      - shellprocess@sync    # Richiama l'istanza con id: sync
+      - shellprocess@graphic # Richiama l'istanza con id: sync
       - services            # new
       - grubcfg             # mew
       - bootloader
