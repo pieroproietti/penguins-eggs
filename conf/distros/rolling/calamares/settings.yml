@@ -3,14 +3,6 @@
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
-instances:
-- id: graphic
-  module: shellprocess
-  config: shellprocess@graphic.conf
-- id: sync
-  module: shellprocess
-  config: shellprocess@sync.conf
-
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -45,15 +37,12 @@ sequence:
       - initcpio            # new
       - users
       - displaymanager 
-      - networkcfg
-      - hwclock
-      - shellprocess@sync    # Richiama l'istanza con id: sync
-      - shellprocess@graphic # Richiama l'istanza con id: sync
+      - mhwdcfg             # new only manjaro
+      - hwclock             # new only manjaro
       - services            # new
       - grubcfg             # mew
       - bootloader
-      - packages
-      - plymouthcfg
+      - postcfg             # new only manjaro
       - removeuser
       - umount
 
