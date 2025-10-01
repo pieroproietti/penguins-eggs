@@ -17,14 +17,12 @@ import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
-import Aldos from './pacman.d/aldos.js'
 import Alpine from './pacman.d/alpine.js'
 import Archlinux from './pacman.d/archlinux.js'
 import Debian from './pacman.d/debian.js'
 import Fedora from './pacman.d/fedora.js'
 import Openmamba from './pacman.d/openmamba.js'
 import Opensuse from './pacman.d/opensuse.js'
-import Voidlinux from './pacman.d/voidlinux.js'
 
 
 import Settings from './settings.js'
@@ -88,8 +86,6 @@ export default class Pacman {
         await Openmamba.calamaresInstall(verbose)
       } else if (familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
-      } else if (familyId === 'voidlinux') {
-        await Voidlinux.calamaresInstall(verbose)
       }
     }
   }
@@ -111,8 +107,6 @@ export default class Pacman {
       await Openmamba.calamaresPolicies(verbose)
     } else if (familyId === 'opensuse') {
       await Opensuse.calamaresPolicies(verbose)
-    } else if (familyId === 'voidlinux') {
-      await Voidlinux.calamaresPolicies(verbose)
     }
   }
 
@@ -124,9 +118,7 @@ export default class Pacman {
     let retVal = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      retVal = await Aldos.calamaresRemove(verbose)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       retVal = await Alpine.calamaresRemove(verbose)
     } else if (familyId === 'archlinux') {
       retVal = await Archlinux.calamaresRemove(verbose)
@@ -138,8 +130,6 @@ export default class Pacman {
       retVal = await Openmamba.calamaresRemove(verbose)
     } else if (familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
-    } else if (familyId === 'voidlinux') {
-      retVal = await Voidlinux.calamaresRemove(verbose)
     }
 
     return retVal
@@ -504,14 +494,6 @@ export default class Pacman {
       await exec(`cp -r ${noble}/* ${dest}`, echo)
       await partialFromBuster(dest, echo)
 
-      /***********************************************************************************
-      * voidlinux
-      **********************************************************************************/
-    } else if (distroUniqueId === 'voidlinux') {
-      const dest = '/etc/penguins-eggs.d/distros/voidlinux/'
-      const voidLinux = `${rootPen}/conf/distros/voidlinux/*`
-      await exec(`cp -r ${voidLinux} ${dest}`, echo)
-    }
   }
 
   /**
@@ -543,11 +525,7 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('wayland')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xwayland*')) {
         installed = true
       }
@@ -571,10 +549,6 @@ export default class Pacman {
       if (Opensuse.packageIsInstalled('wayland')) {
         installed = true
       }
-    } else if (familyId === 'voidlinux') {
-      if (Voidlinux.packageIsInstalled('wayland')) {
-        installed = true
-      }
     }
 
     return installed
@@ -588,11 +562,7 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xorg-server')) {
         installed = true
       }
@@ -710,9 +680,7 @@ export default class Pacman {
     let retVal = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      retVal = await Aldos.packageInstall(packageName)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
     } else if (familyId === 'archlinux') {
       retVal = await Archlinux.packageInstall(packageName)
@@ -724,8 +692,6 @@ export default class Pacman {
       retVal = await Openmamba.packageInstall(packageName)
     } else if (familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
-    } else if (familyId === 'voidlinux') {
-      retVal = await Voidlinux.packageInstall(packageName)
     }
     return retVal
   }
@@ -750,8 +716,6 @@ export default class Pacman {
       installed = Openmamba.packageIsInstalled(packageName)
     } else if (familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
-    } else if (familyId === 'voidlinux') {
-      installed = Voidlinux.packageIsInstalled(packageName)
     }
     return installed
   }
