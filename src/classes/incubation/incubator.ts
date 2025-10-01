@@ -108,14 +108,14 @@ export default class Incubator {
         /**
          * Arch ex rolling
          */
-      } else if (distroUniqueId === 'arch' && !Diversions.isManjaroBased(this.distro.distroId)) {
+      } else if (distroUniqueId === 'arch') {
         const arch = new Arch(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await arch.create()
 
         /**
          * Manjaro ex rolling
          */
-      } else if (distroUniqueId === 'arch' && Diversions.isManjaroBased(this.distro.distroId)) { // Era rolling
+      } else if (distroUniqueId === 'manjaro') {
         const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await manjaro.create()
 
