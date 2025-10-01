@@ -1,0 +1,4 @@
+# Ubuntu jammy 22.04
+---
+restartNowMode: user-checked
+restartNowCommand: "systemctl -i reboot"

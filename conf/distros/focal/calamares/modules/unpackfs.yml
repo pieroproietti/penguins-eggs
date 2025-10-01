@@ -1,0 +1,7 @@
+# Ubuntu jammy 22.04 - correct
+---
+
+unpack:
+    -   source: {{source}}
+        sourcefs: "squashfs"
+        destination: ""

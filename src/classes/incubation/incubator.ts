@@ -32,6 +32,7 @@ import { Alpine } from './incubator.d/alpine.js'
 import { Buster } from './incubator.d/buster.js'
 import { Trixie } from './incubator.d/trixie.js'
 import { Fedora } from './incubator.d/fedora.js'
+import { Focal } from './incubator.d/focal.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
@@ -178,10 +179,10 @@ export default class Incubator {
          * Ubuntu
          */
       } else if (distroUniqueId === 'focal') {
-        const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const focal = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await focal.create()
       } else if (distroUniqueId === 'jammy') {
-        const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const jammy = new Focal(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await jammy.create()
       } else if (distroUniqueId === 'noble') {
         const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)

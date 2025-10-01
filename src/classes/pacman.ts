@@ -465,23 +465,23 @@ export default class Pacman {
        **********************************************************************************/
 
       /**
-       * Ubuntu focal: eredita da noble e buster
+       * Ubuntu focal: eredita da focal e buster
        */
     } else if (distroUniqueId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
+      await exec(`cp ${focal}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
       await partialFromBuster(dest, echo)
 
       /**
-       * Ubuntu 22.04 jammy: eredita da noble e buster
+       * Ubuntu 22.04 jammy: eredita da focal e buster
        */
     } else if (distroUniqueId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
+      await exec(`cp ${focal}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
       await partialFromBuster(dest, echo)
 
       /**
