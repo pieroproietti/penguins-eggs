@@ -493,6 +493,7 @@ export default class Pacman {
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
       await partialFromBuster(dest, echo)
+    }
 
   }
 
