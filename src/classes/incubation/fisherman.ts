@@ -279,6 +279,7 @@ export default class Fisherman {
       operations = 'operations:\n' + yamlRemove + yamlInstall
     }
 
+    // Qua dovremmo usare mustache
     shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
   }
 
