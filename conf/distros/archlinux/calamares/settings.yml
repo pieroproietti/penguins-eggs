@@ -31,21 +31,26 @@ sequence:
       - partition
       - mount
       - unpackfs
+      - networkcfg
       - machineid
-      - fstab
       - locale
       - keyboard
       - localecfg
+      - luksbootkeyfile
+      - luksopenswaphookcfg
+      - fstab
+      - initcpiocfg         # new check /etc/mkinitcpio.d/linux.preset presence
+      - initcpio
       - users
       - displaymanager 
-      - networkcfg
       - hwclock
-      - shellprocess@sync        # Richiama l'istanza con id: sync
+      - services
+      - shellprocess@sync
+      - grubcfg
       - bootloader
       - packages
-      - luksbootkeyfile
-      - plymouthcfg
       - removeuser
+      - plymouthcfg
       - umount
 
   # Phase 3 - postinstall.
