@@ -29,9 +29,8 @@ import {customizePartitions} from './customize/customize-partitions.js'
 
 // incubator.d
 import { Alpine } from './incubator.d/alpine.js'
-import { Bionic } from './incubator.d/bionic.js'
 import { Buster } from './incubator.d/buster.js'
-import { Jessie } from './incubator.d/jessie.js'
+import { Trixie } from './incubator.d/trixie.js'
 import { Fedora } from './incubator.d/fedora.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
@@ -122,12 +121,6 @@ export default class Incubator {
         /**
          * Debian
          */
-      } else if (distroUniqueId === 'jessie') {
-        const jessie = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await jessie.create()
-      } else if (distroUniqueId === 'stretch') {
-        const stretch = new Jessie(this.installer, this.remix, this.distro, this.user_opt, release, this.verbose)
-        await stretch.create()
       } else if (distroUniqueId === 'buster') {
         const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await buster.create()
@@ -138,10 +131,10 @@ export default class Incubator {
         const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await bookworm.create()
       } else if (distroUniqueId === 'trixie') {
-        const trixie = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const trixie = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await trixie.create()
       } else if (distroUniqueId === 'forky') {
-        const forky = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const forky = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await forky.create()
 
         /**
@@ -157,7 +150,7 @@ export default class Incubator {
         const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await daedalus.create()
       } else if (distroUniqueId === 'excalibur') {
-        const excalibur = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        const excalibur = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await excalibur.create()
 
         /**
@@ -184,9 +177,6 @@ export default class Incubator {
         /**
          * Ubuntu
          */
-      } else if (distroUniqueId === 'bionic') {
-        const bionic = new Bionic(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await bionic.create()
       } else if (distroUniqueId === 'focal') {
         const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await focal.create()

@@ -329,29 +329,20 @@ export default class Pacman {
     const rootPen = Utils.rootPenguin()
     await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().distroUniqueId}`)
 
+
+
     /**
-     * Debian 10 - Buster: è il master per tutte le distro
+     * Debian 10 - Buster: è il master per tutte le altre 
      */
     const buster = `${rootPen}/conf/distros/buster`
+    const trixie = `${rootPen}/conf/distros/trixie`
 
-
-    /**
-     * Debian 8 jessie:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
-     */
     const distroUniqueId = this.distro().distroUniqueId
 
     /***********************************************************************************
-    * aldos
-    **********************************************************************************/
-    if (distroUniqueId === 'aldos') {
-      const dest = '/etc/penguins-eggs.d/distros/aldos/'
-      const aldos = `${rootPen}/conf/distros/aldos/*`
-      await exec(`cp -r ${aldos} ${dest}`, echo)
-
-      /***********************************************************************************
        * Alpine
        **********************************************************************************/
-    } else if (distroUniqueId === 'alpine') {
+    if (distroUniqueId === 'alpine') {
       // eredita solo da alpine
       const dest = '/etc/penguins-eggs.d/distros/alpine/'
       const alpine = `${rootPen}/conf/distros/alpine/`
@@ -377,19 +368,6 @@ export default class Pacman {
        * Debian
        **********************************************************************************/
 
-      /**
-       * Debian 8 jessie
-       */
-    } else if (distroUniqueId === 'jessie') {
-      const dest = '/etc/penguins-eggs.d/distros/jessie'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
-
-      /**
-       * Debian 9 stretch:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
-       */
-    } else if (distroUniqueId === 'stretch') {
-      const dest = '/etc/penguins-eggs.d/distros/stretch'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
 
       /**
        * Debian 10 buster: eredita tutto da buster
@@ -417,14 +395,14 @@ export default class Pacman {
        */
     } else if (distroUniqueId === 'trixie') {
       const dest = '/etc/penguins-eggs.d/distros/trixie'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /**
        * Debian 14 forky eredita tutto da buster
        */
     } else if (distroUniqueId === 'forky') {
       const dest = '/etc/penguins-eggs.d/distros/forky'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
        * Devuan
@@ -451,11 +429,11 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
       /**
-       * Devuan excalibur: eredita tutto da buster
+       * Devuan excalibur: eredita tutto da trixie
        */
     } else if (distroUniqueId === 'excalibur') {
       const dest = '/etc/penguins-eggs.d/distros/excalibur'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
        * Fedora
@@ -485,16 +463,6 @@ export default class Pacman {
       /***********************************************************************************
        * Ubuntu
        **********************************************************************************/
-
-      /**
-       * Ubuntu 10.04 bionic: eredita da bionic, focal grub ed isolinux, da buster i seguenti
-       */
-    } else if (distroUniqueId === 'bionic') {
-      const dest = '/etc/penguins-eggs.d/distros/bionic'
-
-      const bionic = `${rootPen}/conf/distros/bionic`
-      await exec(`cp -r ${bionic}/* ${dest}`, echo)
-      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu focal: eredita da noble e buster

@@ -1,0 +1,6 @@
+# Debian/Buster et others
+# packages
+---
+backend: apt
+
+{{operations}}
