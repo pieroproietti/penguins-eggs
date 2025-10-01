@@ -87,17 +87,11 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'Aldus') {
-      this.familyId = 'aldus'
-      this.distroLike = this.distroId
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/'
-
+    if (this.distroId === 'Alpine') {
       /**
        * Alpine compatible
        */
-    } else if (this.distroId === 'Alpine') {
+
       this.familyId = 'alpine'
       this.distroLike = this.distroId
       this.codenameId = 'rolling' // viene rimosso dal nome
@@ -105,23 +99,13 @@ class Distro implements IDistro {
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
       /**
-       * Fedora/RHEL compatible
+       * Fedora family: Almalinux, Fedora, Nobara. Rocky
        */
-    //} else if (this.distroId === 'Fedora') {
-    }  else if (this.distroId === 'Almalinux' ||
-        this.distroId === 'Fedora' ||
-        this.distroId === 'Nobara' ||
-        this.distroId === 'Rocky') {
-
-          /**
-         * Almalinux temp notes:
-         * install nodejs 18
-         * curl -fsSL https://rpm.nodesource.com/setup_18.x -o nodesource_setup.sh
-         * sudo bash nodesource_setup.sh
-         * 
-         * install shasum
-         * sudo dnf install -y perl-Digest-SHA
-         */
+    } else if (
+      this.distroId === 'Almalinux' ||
+      this.distroId === 'Fedora' ||
+      this.distroId === 'Nobara' ||
+      this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
@@ -149,16 +133,6 @@ class Distro implements IDistro {
       this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // check
 
-      /**
-       * voidlinux compatible
-       */
-    } else if (this.distroId === 'Voidlinux') {
-      this.familyId = 'voidlinux'
-      this.distroLike = this.distroId
-      this.codenameId = 'rolling'
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/' // we must discover
-
     } else {
 
       /**
@@ -172,7 +146,7 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
-        this.distroUniqueId = 'arch' // 'rolling'
+        this.distroUniqueId = 'archlinux'
         this.liveMediumPath = '/run/archiso/bootmnt/'
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
@@ -221,7 +195,7 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
-        this.liveMediumPath ='/run/live/medium/'
+        this.liveMediumPath = '/run/live/medium/'
 
         /**
          * Debian 14 forky
