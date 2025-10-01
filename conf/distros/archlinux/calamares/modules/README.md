@@ -6,6 +6,7 @@ Must have this modules untouched:
 - shellprocess_sync.yml
 
 and this templates:
+- initcpio.mustache
 - packages.mustache
 - removeuser.mustache
 - unpackfs.mustache

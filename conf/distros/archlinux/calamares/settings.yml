@@ -44,7 +44,6 @@ sequence:
       - users
       - displaymanager 
       - hwclock
-      - services
       - shellprocess@sync
       - grubcfg
       - bootloader
