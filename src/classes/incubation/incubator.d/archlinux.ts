@@ -14,7 +14,7 @@ import Fisherman from '../fisherman.js'
 /**
  *
  */
-export class Arch {
+export class Archlinux {
   distro: IDistro
 
   installer = {} as IInstaller

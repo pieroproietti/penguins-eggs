@@ -29,6 +29,7 @@ import {customizePartitions} from './customize/customize-partitions.js'
 
 // incubator.d
 import { Alpine } from './incubator.d/alpine.js'
+import { Archlinux } from './incubator.d/archlinux.js'
 import { Buster } from './incubator.d/buster.js'
 import { Trixie } from './incubator.d/trixie.js'
 import { Fedora } from './incubator.d/fedora.js'
@@ -36,9 +37,7 @@ import { Focal } from './incubator.d/focal.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
-import { Arch } from './incubator.d/arch.js'
 import { Manjaro } from './incubator.d/manjaro.js'
-import e from 'express'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -106,11 +105,11 @@ export default class Incubator {
 
 
         /**
-         * Arch ex rolling
+         * Archòomix
          */
-      } else if (distroUniqueId === 'arch') {
-        const arch = new Arch(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await arch.create()
+      } else if (distroUniqueId === 'archlinux') {
+        const archlinux = new Archlinux(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await archlinux.create()
 
         /**
          * Manjaro ex rolling

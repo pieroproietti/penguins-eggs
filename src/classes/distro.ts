@@ -357,7 +357,7 @@ class Distro implements IDistro {
     }
 
     /**
-     * Manjarolinux e derivate
+     * Manjarolinux e derivate (biglinux)
      */
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'

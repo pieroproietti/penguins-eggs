@@ -107,7 +107,6 @@ export default class Fisherman {
     if (!fs.existsSync(moduleSource)) {
       moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
     }
-
    
     /**
      * We need vendor here to have possibility to load custom modules for calamares

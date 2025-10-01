@@ -341,9 +341,9 @@ export default class Pacman {
       /***********************************************************************************
        * Arch Linux
        **********************************************************************************/
-    } else if (distroUniqueId === 'arch') {
-      const dest = '/etc/penguins-eggs.d/distros/arch/'
-      const arch = `${rootPen}/conf/distros/arch/*`
+    } else if (distroUniqueId === 'archlinux') {
+      const dest = '/etc/penguins-eggs.d/distros/archlinux/'
+      const arch = `${rootPen}/conf/distros/archlinux/*`
       await exec(`cp -r ${arch} ${dest}`, echo)
 
       /***********************************************************************************
