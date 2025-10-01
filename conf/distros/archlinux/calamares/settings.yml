@@ -6,7 +6,7 @@ modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 instances:
 - id: sync
   module: shellprocess
-  config: shellprocess_sync.conf
+  config: shellprocess@sync.conf
 
 sequence:
   # Phase 1 - prepare.

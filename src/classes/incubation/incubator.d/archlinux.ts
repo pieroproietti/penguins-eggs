@@ -78,7 +78,7 @@ export class Archlinux {
     await fisherman.moduleRemoveuser(this.user_opt)
     
     await fisherman.shellprocess('sync')
-    await fisherman.shellprocess('aptsources')
+    // await fisherman.shellprocess('aptsources')
     
     /**
      * cfs: custom final steps
