@@ -77,6 +77,8 @@ export class Manjaro {
     await fisherman.buildModule('services')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
+    await fisherman.buildModule('packages')
+    await fisherman.buildModule('removeuser')
     await fisherman.buildModule('postcfg')
     await fisherman.buildModule('umount')
   

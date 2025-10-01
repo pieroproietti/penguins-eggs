@@ -43,8 +43,9 @@ sequence:
       - services
       - grubcfg
       - bootloader
-      - postcfg
+      - packages
       - removeuser
+      - postcfg
       - umount
 
   # Phase 3 - postinstall.
