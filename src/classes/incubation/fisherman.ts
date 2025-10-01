@@ -104,7 +104,7 @@ export default class Fisherman {
    */
   async buildModule(name: string, vendor = 'eggs') {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    if (!fs.existsSync(moduleSource) {
+    if (!fs.existsSync(moduleSource)) {
       moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
     }
 
