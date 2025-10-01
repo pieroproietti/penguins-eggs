@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: no
 # SPDX-License-Identifier: CC0-1.0
 #
----
 
 # Options for EFI system partition.
 #
@@ -216,7 +215,7 @@ initialSwapChoice: none
 # If nothing is specified, Calamares defaults to "ext4".
 #
 # Names are case-sensitive and defined by KPMCore.
-defaultFileSystemType:  "btrfs"
+defaultFileSystemType:  "ext4"
 
 # Selectable filesystem type, used when "erase" is done.
 #
@@ -230,7 +229,7 @@ defaultFileSystemType:  "btrfs"
 #
 # If not specified at all, uses *defaultFileSystemType* without a
 # warning (this matches traditional no-choice-available behavior best).
-availableFileSystemTypes:  ["ext4","btrfs"]
+# availableFileSystemTypes:  ["ext4","f2fs"]
 
 # Per-directory filesystem restrictions.
 #
