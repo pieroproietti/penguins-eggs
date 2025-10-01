@@ -291,6 +291,7 @@ export default class Fisherman {
     shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
   }
 
+
   /**
    * unpackFs
    */
