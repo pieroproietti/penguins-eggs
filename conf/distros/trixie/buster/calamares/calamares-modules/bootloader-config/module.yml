@@ -1,9 +1,0 @@
-# Debian Buster
-# bootloader-config
----
-type: "job"
-name: "bootloader-config"
-interface: "process"
-command: "/usr/sbin/bootloader-config.sh"
-timeout: 1000
-# just long timeout: 600
