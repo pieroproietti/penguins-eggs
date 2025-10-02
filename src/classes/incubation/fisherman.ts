@@ -265,11 +265,19 @@ export default class Fisherman {
    * buildModulePackages
    */
   async buildModulePackages(distro: IDistro, release = false) {
-    const name = 'packages'
-    this.buildModule(name)
+    let backend = 'apt'
+    if (distro.familyId === 'alpine') {
+      backend = 'apk'
+    } else  if (distro.familyId === 'archlinux') {
+      backend = 'pacman'
+    } else if (distro.familyId === 'fedora') {
+      backend = 'dnf'
+    } else if (distro.familyId === 'fedora') {
+      backend = 'zypper'
+    }
 
     const yamlInstall = tryInstall(distro)
-    let yamlRemove = ''
+    let yamlRemove=''
     if (release) {
       yamlRemove = removePackages(distro)
     }
@@ -279,8 +287,16 @@ export default class Fisherman {
       operations = 'operations:\n' + yamlRemove + yamlInstall
     }
 
-    // Qua dovremmo usare mustache
-    shx.sed('-i', '{{operations}}', operations, this.installer.modules + name + '.conf')
+    const name = 'packages'
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    let moduleDest = this.installer.modules + name + '.conf'
+    let template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { 
+      backend: backend,
+      operations: operations 
+    }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+  
   }
 
   /**
