@@ -1,1 +1,1 @@
-g4taghead v25.10.1
+g4taghead v25.10.2
