@@ -2,7 +2,7 @@
 ---
 module: shellprocess
 
-runLocation: host
+dontChroot: true
 
 script:
     - "partprobe ${installDevice}"
