@@ -4,7 +4,7 @@ import { access } from 'fs/promises';
 
 const execAsync = promisify(exec);
 
-async function initcpio(): Promise<string> {
+export async function initcpio(): Promise<string> {
   try {
     // Ottieni la versione del kernel
     const { stdout: kernelVersion } = await execAsync('uname -r');

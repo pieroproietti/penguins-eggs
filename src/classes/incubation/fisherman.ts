@@ -20,14 +20,13 @@ import { settings } from './fisherman-helper/settings.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 
-import {ICalamaresFinished} from '../../interfaces/calamares/i-calamares-finished.js'
+import { ICalamaresFinished } from '../../interfaces/calamares/i-calamares-finished.js'
 
 // pjson
 import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const pjson = require('../../../package.json')
 
-// import { displaymanager } from './fisherman-helper/displaymanager.js'
 import { remove, remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
 interface IReplaces {
@@ -106,7 +105,7 @@ export default class Fisherman {
     if (!fs.existsSync(moduleSource)) {
       moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
     }
-   
+
     /**
      * We need vendor here to have possibility to load custom modules for calamares
      * the custom modules live in: /addons/vendor/theme/calamares/modules
@@ -218,36 +217,35 @@ export default class Fisherman {
     }
   }
 
-    /**
-   * ====================================================================================
-   * M O D U L E S
-   * ====================================================================================
-   */
-
   /**
-   * Al momento rimane con la vecchia configurazione
-   */
-  /*
-  async moduleDisplaymanager() {
-    const name = 'displaymanager'
-    this.buildModule(name)
-    let file = this.installer.modules + name + '.conf'
-    let fileContent = fs.readFileSync(file, 'utf8')
-    let values = yaml.load(fileContent) as ICalamaresDisplaymanager
-    values.displaymanagers = displaymanager()
-    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
-    destContent += '---\n'
-    destContent += yaml.dump(values)
-    fs.writeFileSync(file, destContent, 'utf8')
-  }
+  * ====================================================================================
+  * buildModule...
+  * ====================================================================================
   */
 
   /**
-   * buildModule[name]
+   * buildModuleDracut
    */
+  async buildModuleDracut(initrd: string) {
+    const name = 'dracut'
+    this.buildModule(name)
+    shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')
+  }
+
+  async buildModuleInitcpio() {
+    const { initcpio } = await import('./fisherman-helper/initcpio.js');
+    const preset = await initcpio()
+
+    const name = 'initcpio'
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    let moduleDest = this.installer.modules + name + '.conf'
+    let template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { preset: preset }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+  }
 
   /**
-   * Al momento rimane con la vecchia configurazione
+   * buildModuleFinished
    */
   async buildModuleFinished() {
     const name = 'finished'
@@ -255,7 +253,7 @@ export default class Fisherman {
     let file = this.installer.modules + name + '.conf'
     let fileContent = fs.readFileSync(file, 'utf8')
     let values = yaml.load(fileContent) as ICalamaresFinished
-    values.restartNowCommand='reboot'
+    values.restartNowCommand = 'reboot'
     let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
     destContent += yaml.dump(values)
@@ -264,15 +262,13 @@ export default class Fisherman {
 
 
   /**
-   * packages
+   * buildModulePackages
    */
   async buildModulePackages(distro: IDistro, release = false) {
-
     const name = 'packages'
     this.buildModule(name)
 
     const yamlInstall = tryInstall(distro)
-
     let yamlRemove = ''
     if (release) {
       yamlRemove = removePackages(distro)
@@ -288,7 +284,7 @@ export default class Fisherman {
   }
 
   /**
-   * Al momento rimane con la vecchia configurazione
+   * buildModuleRemoveuser
    */
   async buildModuleRemoveuser(username: string) {
     const name = 'removeuser'
@@ -298,21 +294,12 @@ export default class Fisherman {
 
 
   /**
-   * unpackFs
+   * buildModuleUnpackfs
    */
   async buildModuleUnpackfs() {
     const name = 'unpackfs'
     this.buildModule(name)
     shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
-  }
-
-  /**
-   * dracut
-   */
-  async buildModuleDracut(initrd: string) {
-    const name = 'dracut'
-    this.buildModule(name)
-    shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')
   }
 
 }
