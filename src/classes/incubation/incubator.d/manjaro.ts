@@ -58,6 +58,7 @@ export class Manjaro {
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('partition', this.theme)
+    await fisherman.shellprocess('partprobe')
     await fisherman.buildModule('mount')
     await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('networkcfg')
