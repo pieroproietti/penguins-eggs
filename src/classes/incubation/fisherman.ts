@@ -242,9 +242,13 @@ export default class Fisherman {
   }
 
   /**
+   * buildModule[name]
+   */
+
+  /**
    * Al momento rimane con la vecchia configurazione
    */
-  async moduleFinished() {
+  async buildModuleFinished() {
     const name = 'finished'
     await this.buildModule(name)
     let file = this.installer.modules + name + '.conf'
@@ -261,7 +265,7 @@ export default class Fisherman {
   /**
    * packages
    */
-  async modulePackages(distro: IDistro, release = false) {
+  async buildModulePackages(distro: IDistro, release = false) {
 
     const name = 'packages'
     this.buildModule(name)
@@ -285,7 +289,7 @@ export default class Fisherman {
   /**
    * Al momento rimane con la vecchia configurazione
    */
-  async moduleRemoveuser(username: string) {
+  async buildModuleRemoveuser(username: string) {
     const name = 'removeuser'
     this.buildModule(name)
     shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
@@ -295,7 +299,7 @@ export default class Fisherman {
   /**
    * unpackFs
    */
-  async moduleUnpackfs() {
+  async buildModuleUnpackfs() {
     const name = 'unpackfs'
     this.buildModule(name)
     shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
@@ -304,7 +308,7 @@ export default class Fisherman {
   /**
    * dracut
    */
-  async moduleDracut(initrd: string) {
+  async buildModuleDracut(initrd: string) {
     const name = 'dracut'
     this.buildModule(name)
     shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')

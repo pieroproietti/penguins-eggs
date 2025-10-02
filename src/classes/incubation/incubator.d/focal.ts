@@ -63,7 +63,7 @@ export class Focal {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
@@ -72,7 +72,7 @@ export class Focal {
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('users', this.theme)
-    await fisherman.moduleDisplaymanager()
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.contextualprocess('before_bootloader_mkdirs')
@@ -83,8 +83,8 @@ export class Focal {
     await fisherman.buildModule('bootloader')
     await fisherman.contextualprocess('after_bootloader')
     await fisherman.shellprocess('add386arch')
-    await fisherman.modulePackages(this.distro, this.release) //
-    await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.buildModulePackages(this.distro, this.release) //
+    await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk', false)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)

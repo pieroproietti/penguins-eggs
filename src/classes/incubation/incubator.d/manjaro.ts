@@ -59,7 +59,7 @@ export class Manjaro {
 
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('locale', this.theme)
@@ -77,8 +77,8 @@ export class Manjaro {
     await fisherman.buildModule('services')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
-    await fisherman.modulePackages(this.distro, this.release) //
-    await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.buildModulePackages(this.distro, this.release) //
+    await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildModule('postcfg')
     await fisherman.buildModule('umount')
   
@@ -94,6 +94,6 @@ export class Manjaro {
     }
 
     await fisherman.buildModule('umount')
-    await fisherman.moduleFinished()
+    await fisherman.buildModuleFinished()
   }
 }
