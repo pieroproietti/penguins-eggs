@@ -3,6 +3,12 @@
 # "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
+instances:
+- id: modprove
+  module: shellprocess
+  config: shellprocess@modprobe.conf
+
+
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
