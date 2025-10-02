@@ -69,7 +69,7 @@ export class Manjaro {
     await fisherman.buildModule('luksopenswaphookcfg')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('initcpiocfg')
-    await fisherman.buildModule('initcpio')
+    await fisherman.buildModuleInitcpio()
     await fisherman.buildModule('users', this.theme)
     await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('mhwdcfg')
