@@ -1,0 +1,12 @@
+# File: /etc/calamares/modules/partprobe_fix.conf
+#
+# Esegue partprobe sul disco di installazione rilevato dinamicamente.
+---
+module: shellprocess
+
+script:
+    - "partprobe ${installDevice}"
+    - "udevadm settle"
+
+i18n:
+    name: "partprobe..."

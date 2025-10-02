@@ -24,6 +24,7 @@ sequence:
   # also allowed.
   - exec:
       - partition
+      - shellprocess@partprobe
       - mount
       - unpackfs
       - networkcfg
