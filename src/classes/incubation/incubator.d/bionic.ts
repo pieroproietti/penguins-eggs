@@ -63,7 +63,7 @@ export class Bionic {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.remix.branding)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs() //
+    await fisherman.buildModuleUnpackfs() //
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale', this.remix.branding)
@@ -71,7 +71,7 @@ export class Bionic {
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('users', this.remix.branding)
-    await fisherman.moduleDisplaymanager() //
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildCalamaresModule('sources-yolk', true)
@@ -82,8 +82,8 @@ export class Bionic {
     await fisherman.buildModule('bootloader')
     await fisherman.buildCalamaresModule('after-bootloader')
     await fisherman.buildCalamaresModule('add386arch', false)
-    await fisherman.modulePackages(this.distro, this.release) //
-    await fisherman.moduleRemoveuser(this.user_opt) //
+    await fisherman.buildModulePackages(this.distro, this.release) //
+    await fisherman.buildModuleRemoveuser(this.user_opt) //
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 

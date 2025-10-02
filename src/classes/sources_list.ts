@@ -63,7 +63,7 @@ export default class SourcesList {
     const distro = new Distro()
 
     for (const distribution of distributions) {
-      if (distribution.includes(distro.codenameLikeId)) {
+      if (distribution.includes(distro.distroUniqueId)) {
         checked = true
       }
     }

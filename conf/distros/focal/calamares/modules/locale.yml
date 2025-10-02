@@ -1,0 +1,9 @@
+# Ubuntu jammy 22.04
+---
+region: "America"
+zone: "New_York"
+localeGenPath: "/etc/locale.gen"
+geoip:
+    style: "xml"
+    url:   "https://geoip.ubuntu.com/lookup"
+    selector: "TimeZone"

@@ -1,0 +1,5 @@
+# Ubuntu jammy 22.04
+---
+overwrite: false
+defaults:
+    GRUB_ENABLE_CRYPTODISK: true

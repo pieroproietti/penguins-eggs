@@ -9,7 +9,7 @@
 export interface IDistro {
   bugReportUrl: string
   codenameId: string
-  codenameLikeId: string
+  distroUniqueId: string
   distroId: string
   distroLike: string
   familyId: string

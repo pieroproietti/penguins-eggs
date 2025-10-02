@@ -17,14 +17,12 @@ import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
-import Aldos from './pacman.d/aldos.js'
 import Alpine from './pacman.d/alpine.js'
 import Archlinux from './pacman.d/archlinux.js'
 import Debian from './pacman.d/debian.js'
 import Fedora from './pacman.d/fedora.js'
 import Openmamba from './pacman.d/openmamba.js'
 import Opensuse from './pacman.d/opensuse.js'
-import Voidlinux from './pacman.d/voidlinux.js'
 
 
 import Settings from './settings.js'
@@ -88,8 +86,6 @@ export default class Pacman {
         await Openmamba.calamaresInstall(verbose)
       } else if (familyId === 'opensuse') {
         await Opensuse.calamaresInstall(verbose)
-      } else if (familyId === 'voidlinux') {
-        await Voidlinux.calamaresInstall(verbose)
       }
     }
   }
@@ -111,8 +107,6 @@ export default class Pacman {
       await Openmamba.calamaresPolicies(verbose)
     } else if (familyId === 'opensuse') {
       await Opensuse.calamaresPolicies(verbose)
-    } else if (familyId === 'voidlinux') {
-      await Voidlinux.calamaresPolicies(verbose)
     }
   }
 
@@ -124,9 +118,7 @@ export default class Pacman {
     let retVal = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      retVal = await Aldos.calamaresRemove(verbose)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       retVal = await Alpine.calamaresRemove(verbose)
     } else if (familyId === 'archlinux') {
       retVal = await Archlinux.calamaresRemove(verbose)
@@ -138,8 +130,6 @@ export default class Pacman {
       retVal = await Openmamba.calamaresRemove(verbose)
     } else if (familyId === 'opensuse') {
       retVal = await Opensuse.calamaresRemove(verbose)
-    } else if (familyId === 'voidlinux') {
-      retVal = await Voidlinux.calamaresRemove(verbose)
     }
 
     return retVal
@@ -311,9 +301,9 @@ export default class Pacman {
    * distroTemplateCheck
    */
   static distroTemplateCheck(): boolean {
-    const { codenameLikeId } = this.distro()
-    // console.log(codenameLikeId)
-    return fs.existsSync(`/etc/penguins-eggs.d/distros/${codenameLikeId}`)
+    const { distroUniqueId } = this.distro()
+    // console.log(distroUniqueId)
+    return fs.existsSync(`/etc/penguins-eggs.d/distros/${distroUniqueId}`)
   }
 
   /**
@@ -327,31 +317,22 @@ export default class Pacman {
     const echo = Utils.setEcho(verbose)
 
     const rootPen = Utils.rootPenguin()
-    await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().codenameLikeId}`)
+    await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().distroUniqueId}`)
+
+
 
     /**
-     * Debian 10 - Buster: è il master per tutte le distro
+     * Debian 10 - Buster: è il master per tutte le altre 
      */
     const buster = `${rootPen}/conf/distros/buster`
+    const trixie = `${rootPen}/conf/distros/trixie`
 
-
-    /**
-     * Debian 8 jessie:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
-     */
-    const codenameLikeId = this.distro().codenameLikeId
+    const distroUniqueId = this.distro().distroUniqueId
 
     /***********************************************************************************
-    * aldos
-    **********************************************************************************/
-    if (codenameLikeId === 'aldos') {
-      const dest = '/etc/penguins-eggs.d/distros/aldos/'
-      const aldos = `${rootPen}/conf/distros/aldos/*`
-      await exec(`cp -r ${aldos} ${dest}`, echo)
-
-      /***********************************************************************************
        * Alpine
        **********************************************************************************/
-    } else if (codenameLikeId === 'alpine') {
+    if (distroUniqueId === 'alpine') {
       // eredita solo da alpine
       const dest = '/etc/penguins-eggs.d/distros/alpine/'
       const alpine = `${rootPen}/conf/distros/alpine/`
@@ -360,63 +341,58 @@ export default class Pacman {
       /***********************************************************************************
        * Arch Linux
        **********************************************************************************/
-    } else if (codenameLikeId === 'rolling') {
-      const dest = '/etc/penguins-eggs.d/distros/rolling/'
-      const rolling = `${rootPen}/conf/distros/rolling/*`
-      await exec(`cp -r ${rolling} ${dest}`, echo)
+    } else if (distroUniqueId === 'archlinux') {
+      const dest = '/etc/penguins-eggs.d/distros/archlinux/'
+      const arch = `${rootPen}/conf/distros/archlinux/*`
+      await exec(`cp -r ${arch} ${dest}`, echo)
+
+      /***********************************************************************************
+       * Manjaro
+       **********************************************************************************/
+    } else if (distroUniqueId === 'manjaro') {
+      const dest = '/etc/penguins-eggs.d/distros/manjaro/'
+      const manjaro = `${rootPen}/conf/distros/manjaro/*`
+      await exec(`cp -r ${manjaro} ${dest}`, echo)
 
       /***********************************************************************************
        * Debian
        **********************************************************************************/
 
-      /**
-       * Debian 8 jessie
-       */
-    } else if (codenameLikeId === 'jessie') {
-      const dest = '/etc/penguins-eggs.d/distros/jessie'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
-
-      /**
-       * Debian 9 stretch:  eredita grub, isolinux e locales da buster, contiene krill al posto di calamares
-       */
-    } else if (codenameLikeId === 'stretch') {
-      const dest = '/etc/penguins-eggs.d/distros/stretch'
-      await exec(`cp -r ${rootPen}/conf/distros/jessie/krill ${dest}/calamares`, echo)
 
       /**
        * Debian 10 buster: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'buster') {
+    } else if (distroUniqueId === 'buster') {
       const dest = '/etc/penguins-eggs.d/distros/buster'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
        * Debian 11 bullseye: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'bullseye') {
+    } else if (distroUniqueId === 'bullseye') {
       const dest = '/etc/penguins-eggs.d/distros/bullseye'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
        * Debian 12 bookworm: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'bookworm') {
+    } else if (distroUniqueId === 'bookworm') {
       const dest = '/etc/penguins-eggs.d/distros/bookworm'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
        * Debian 13 trixie: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'trixie') {
+    } else if (distroUniqueId === 'trixie') {
       const dest = '/etc/penguins-eggs.d/distros/trixie'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /**
        * Debian 14 forky eredita tutto da buster
        */
-    } else if (codenameLikeId === 'forky') {
+    } else if (distroUniqueId === 'forky') {
       const dest = '/etc/penguins-eggs.d/distros/forky'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
        * Devuan
@@ -425,34 +401,34 @@ export default class Pacman {
       /**
        * Devuan beowulf: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'beowulf') {
+    } else if (distroUniqueId === 'beowulf') {
       const dest = '/etc/penguins-eggs.d/distros/beowulf'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
        * Devuan chimaera: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'chimaera') {
+    } else if (distroUniqueId === 'chimaera') {
       const dest = '/etc/penguins-eggs.d/distros/chimaera'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
        * Devuan daedalus: eredita tutto da buster
        */
-    } else if (codenameLikeId === 'daedalus') {
+    } else if (distroUniqueId === 'daedalus') {
       const dest = '/etc/penguins-eggs.d/distros/daedalus'
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
       /**
-       * Devuan excalibur: eredita tutto da buster
+       * Devuan excalibur: eredita tutto da trixie
        */
-    } else if (codenameLikeId === 'excalibur') {
+    } else if (distroUniqueId === 'excalibur') {
       const dest = '/etc/penguins-eggs.d/distros/excalibur'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /***********************************************************************************
        * Fedora
        **********************************************************************************/
-    } else if (codenameLikeId === 'fedora') {
+    } else if (distroUniqueId === 'fedora') {
       const dest = '/etc/penguins-eggs.d/distros/fedora/'
       const fedora = `${rootPen}/conf/distros/fedora/*`
       await exec(`cp -r ${fedora} ${dest}`, echo)
@@ -460,7 +436,7 @@ export default class Pacman {
       /***********************************************************************************
       * openmamba
       **********************************************************************************/
-    } else if (codenameLikeId === 'openmamba') {
+    } else if (distroUniqueId === 'openmamba') {
       // eredita solo da openmamba
       const dest = '/etc/penguins-eggs.d/distros/openmamba/'
       const mamba = `${rootPen}/conf/distros/openmamba/*`
@@ -469,7 +445,7 @@ export default class Pacman {
       /***********************************************************************************
       * opensuse
       **********************************************************************************/
-    } else if (codenameLikeId === 'opensuse') {
+    } else if (distroUniqueId === 'opensuse') {
       const dest = '/etc/penguins-eggs.d/distros/opensuse/'
       const suse = `${rootPen}/conf/distros/opensuse/*`
       await exec(`cp -r ${suse} ${dest}`, echo)
@@ -479,40 +455,30 @@ export default class Pacman {
        **********************************************************************************/
 
       /**
-       * Ubuntu 10.04 bionic: eredita da bionic, focal grub ed isolinux, da buster i seguenti
+       * Ubuntu focal: eredita da focal e buster
        */
-    } else if (codenameLikeId === 'bionic') {
-      const dest = '/etc/penguins-eggs.d/distros/bionic'
-
-      const bionic = `${rootPen}/conf/distros/bionic`
-      await exec(`cp -r ${bionic}/* ${dest}`, echo)
-      await partialFromBuster(dest, echo)
-
-      /**
-       * Ubuntu focal: eredita da noble e buster
-       */
-    } else if (codenameLikeId === 'focal') {
+    } else if (distroUniqueId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
+      await exec(`cp ${focal}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
       await partialFromBuster(dest, echo)
 
       /**
-       * Ubuntu 22.04 jammy: eredita da noble e buster
+       * Ubuntu 22.04 jammy: eredita da focal e buster
        */
-    } else if (codenameLikeId === 'jammy') {
+    } else if (distroUniqueId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-      await exec(`cp ${noble}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
+      await exec(`cp ${focal}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
       await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu noble: e la nuova baseline per ubuntu
        *
        */
-    } else if (this.distro().codenameLikeId === 'noble') {
+    } else if (this.distro().distroUniqueId === 'noble') {
       const dest = '/etc/penguins-eggs.d/distros/noble'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
@@ -522,20 +488,13 @@ export default class Pacman {
        * Ubuntu rhino: eredita da noble e buster
        *
        */
-    } else if (codenameLikeId === 'devel') {
+    } else if (distroUniqueId === 'devel') {
       const dest = '/etc/penguins-eggs.d/distros/devel'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
       await partialFromBuster(dest, echo)
-
-      /***********************************************************************************
-      * voidlinux
-      **********************************************************************************/
-    } else if (codenameLikeId === 'voidlinux') {
-      const dest = '/etc/penguins-eggs.d/distros/voidlinux/'
-      const voidLinux = `${rootPen}/conf/distros/voidlinux/*`
-      await exec(`cp -r ${voidLinux} ${dest}`, echo)
     }
+
   }
 
   /**
@@ -567,11 +526,7 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('wayland')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xwayland*')) {
         installed = true
       }
@@ -595,10 +550,6 @@ export default class Pacman {
       if (Opensuse.packageIsInstalled('wayland')) {
         installed = true
       }
-    } else if (familyId === 'voidlinux') {
-      if (Voidlinux.packageIsInstalled('wayland')) {
-        installed = true
-      }
     }
 
     return installed
@@ -612,11 +563,7 @@ export default class Pacman {
     let installed = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      if (Aldos.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       if (Alpine.packageIsInstalled('xorg-server')) {
         installed = true
       }
@@ -734,9 +681,7 @@ export default class Pacman {
     let retVal = false
 
     const familyId = this.distro().familyId
-    if (familyId === 'aldos') {
-      retVal = await Aldos.packageInstall(packageName)
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       retVal = await Alpine.packageInstall(packageName)
     } else if (familyId === 'archlinux') {
       retVal = await Archlinux.packageInstall(packageName)
@@ -748,8 +693,6 @@ export default class Pacman {
       retVal = await Openmamba.packageInstall(packageName)
     } else if (familyId === 'opensuse') {
       retVal = await Opensuse.packageInstall(packageName)
-    } else if (familyId === 'voidlinux') {
-      retVal = await Voidlinux.packageInstall(packageName)
     }
     return retVal
   }
@@ -774,8 +717,6 @@ export default class Pacman {
       installed = Openmamba.packageIsInstalled(packageName)
     } else if (familyId === 'opensuse') {
       installed = Opensuse.packageIsInstalled(packageName)
-    } else if (familyId === 'voidlinux') {
-      installed = Voidlinux.packageIsInstalled(packageName)
     }
     return installed
   }

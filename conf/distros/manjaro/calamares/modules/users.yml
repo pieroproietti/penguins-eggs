@@ -1,0 +1,22 @@
+---
+defaultGroups:
+    - lp
+    - network
+    - power
+    - sys
+    - wheel
+autologinGroup:  autologin
+doAutologin:     false
+displayAutologin:   true
+sudoersGroup:    wheel
+passwordRequirements:
+    nonempty: true
+setRootPassword: true
+doReusePassword: false
+availableShells: /bin/bash, /bin/zsh
+avatarFilePath:  ~/.face
+userShell:       /usr/bin/zsh
+user:
+  shell: /usr/bin/zsh
+  forbidden_names: [ root ]
+  home_permissions: "o700"

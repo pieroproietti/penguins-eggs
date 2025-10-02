@@ -1,8 +1,0 @@
-# Ubuntu bionic
-# add386arch
----
-dontChroot: false
-type: job
-name: add386arch
-interface: process
-command: /usr/bin/dpkg --add-architecture i386

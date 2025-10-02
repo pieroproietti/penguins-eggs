@@ -24,7 +24,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 class Distro implements IDistro {
   bugReportUrl: string
   codenameId: string
-  codenameLikeId: string
+  distroUniqueId: string
   distroId: string
   distroLike: string
   familyId: string
@@ -45,7 +45,7 @@ class Distro implements IDistro {
     // Tutti i default sono per Debian
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
-    this.codenameLikeId = ''
+    this.distroUniqueId = ''
     this.distroId = ''
     this.distroLike = ''
     this.familyId = 'debian'
@@ -87,46 +87,30 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'Aldus') {
-      this.familyId = 'aldus'
-      this.distroLike = this.distroId
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.codenameLikeId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/'
-
+    if (this.distroId === 'Alpine') {
       /**
        * Alpine compatible
        */
-    } else if (this.distroId === 'Alpine') {
+
       this.familyId = 'alpine'
       this.distroLike = this.distroId
       this.codenameId = 'rolling' // viene rimosso dal nome
-      this.codenameLikeId = this.familyId // per krill
+      this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
       /**
-       * Fedora/RHEL compatible
+       * Fedora family: Almalinux, Fedora, Nobara. Rocky
        */
-    //} else if (this.distroId === 'Fedora') {
-    }  else if (this.distroId === 'Almalinux' ||
-        this.distroId === 'Fedora' ||
-        this.distroId === 'Nobara' ||
-        this.distroId === 'Rocky') {
-
-          /**
-         * Almalinux temp notes:
-         * install nodejs 18
-         * curl -fsSL https://rpm.nodesource.com/setup_18.x -o nodesource_setup.sh
-         * sudo bash nodesource_setup.sh
-         * 
-         * install shasum
-         * sudo dnf install -y perl-Digest-SHA
-         */
+    } else if (
+      this.distroId === 'Almalinux' ||
+      this.distroId === 'Fedora' ||
+      this.distroId === 'Nobara' ||
+      this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
       this.codenameId = 'rolling' // viene rimosso dal nome
-      this.codenameLikeId = this.familyId // per krill
+      this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'
 
       /**
@@ -136,7 +120,7 @@ class Distro implements IDistro {
       this.familyId = 'openmamba'
       this.distroLike = 'openmamba'
       this.codenameId = 'rolling' // viene rimosso dal nome
-      this.codenameLikeId = this.familyId // per krill
+      this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'
 
       /**
@@ -146,18 +130,8 @@ class Distro implements IDistro {
       this.familyId = 'opensuse'
       this.distroLike = 'Opensuse' // this.distroId
       this.codenameId = 'rolling' // sistemare non 
-      this.codenameLikeId = this.familyId // per krill
+      this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/' // check
-
-      /**
-       * voidlinux compatible
-       */
-    } else if (this.distroId === 'Voidlinux') {
-      this.familyId = 'voidlinux'
-      this.distroLike = this.distroId
-      this.codenameId = 'rolling'
-      this.codenameLikeId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/' // we must discover
 
     } else {
 
@@ -172,7 +146,7 @@ class Distro implements IDistro {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
-        this.codenameLikeId = 'rolling'
+        this.distroUniqueId = 'archlinux'
         this.liveMediumPath = '/run/archiso/bootmnt/'
         this.squashfs = `arch/x86_64/airootfs.sfs`
 
@@ -181,7 +155,7 @@ class Distro implements IDistro {
          */
       } else if (this.codenameId === 'jessie') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'jessie'
+        this.distroUniqueId = 'jessie'
         this.liveMediumPath = '/lib/live/mount/medium/'
         this.isCalamaresAvailable = false
 
@@ -190,7 +164,7 @@ class Distro implements IDistro {
          */
       } else if (this.codenameId === 'stretch') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'stretch'
+        this.distroUniqueId = 'stretch'
         this.liveMediumPath = '/lib/live/mount/medium/'
         this.isCalamaresAvailable = false
 
@@ -199,71 +173,71 @@ class Distro implements IDistro {
          */
       } else if (this.codenameId === 'buster') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'buster'
+        this.distroUniqueId = 'buster'
 
         /**
          * Debian 11 bullseye
          */
       } else if (this.codenameId === 'bullseye') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'bullseye'
+        this.distroUniqueId = 'bullseye'
 
         /**
          * Debian 12 bookworm
          */
       } else if (this.codenameId === 'bookworm') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'bookworm'
+        this.distroUniqueId = 'bookworm'
 
         /**
          * Debian 13 trixie
          */
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'trixie'
-        this.liveMediumPath ='/run/live/medium/'
+        this.distroUniqueId = 'trixie'
+        this.liveMediumPath = '/run/live/medium/'
 
         /**
          * Debian 14 forky
          */
       } else if (this.codenameId === 'forky') {
         this.distroLike = 'Debian'
-        this.codenameLikeId = 'forky'
+        this.distroUniqueId = 'forky'
 
         /**
          * Devuan beowulf
          */
       } else if (this.codenameId === 'beowulf') {
         this.distroLike = 'Devuan'
-        this.codenameLikeId = 'beowulf'
+        this.distroUniqueId = 'beowulf'
 
         /**
          * Devuan chimaera
          */
       } else if (this.codenameId === 'chimaera') {
         this.distroLike = 'Devuan'
-        this.codenameLikeId = 'chimaera'
+        this.distroUniqueId = 'chimaera'
 
         /**
          * Devuan daedalus
          */
       } else if (this.codenameId === 'daedalus') {
         this.distroLike = 'Devuan'
-        this.codenameLikeId = 'daedalus'
+        this.distroUniqueId = 'daedalus'
 
         /**
          * Devuan excalibur
          */
       } else if (this.codenameId === 'excalibur') {
         this.distroLike = 'Devuan'
-        this.codenameLikeId = 'excalibur'
+        this.distroUniqueId = 'excalibur'
 
         /**
          * Ubuntu bionic
          */
       } else if (this.codenameId === 'bionic') {
         this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'bionic'
+        this.distroUniqueId = 'bionic'
         this.liveMediumPath = '/lib/live/mount/medium/'
 
         /**
@@ -271,28 +245,28 @@ class Distro implements IDistro {
          */
       } else if (this.codenameId === 'focal') {
         this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'focal'
+        this.distroUniqueId = 'focal'
 
         /**
          * Ubuntu jammy
          */
       } else if (this.codenameId === 'jammy') {
         this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'jammy'
+        this.distroUniqueId = 'jammy'
 
         /**
          * Ubuntu noble
          */
       } else if (this.codenameId === 'noble') {
         this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'noble'
+        this.distroUniqueId = 'noble'
 
         /**
          * Ubuntu devel
          */
       } else if (this.codenameId === 'devel') {
         this.distroLike = 'Ubuntu'
-        this.codenameLikeId = 'devel'
+        this.distroUniqueId = 'devel'
 
       } else {
         /**
@@ -325,7 +299,7 @@ class Distro implements IDistro {
               if (this.codenameId === distro.ids[n]) {
                 found = true
                 this.distroLike = distro.distroLike
-                this.codenameLikeId = distro.id
+                this.distroUniqueId = distro.id
                 this.familyId = distro.family
                 found = true
               }
@@ -348,7 +322,7 @@ class Distro implements IDistro {
             this.familyId = 'fedora'
             this.distroLike = 'Fedora'
             this.codenameId = 'rolling'
-            this.codenameLikeId = this.familyId
+            this.distroUniqueId = this.familyId
             this.liveMediumPath = '/run/initramfs/live/'
             found = true
           }
@@ -383,12 +357,13 @@ class Distro implements IDistro {
     }
 
     /**
-     * Manjarolinux e derivate
+     * Manjarolinux e derivate (biglinux)
      */
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
       this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
+      this.distroUniqueId = 'manjaro'
     }
 
     /**

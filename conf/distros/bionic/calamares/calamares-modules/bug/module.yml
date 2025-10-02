@@ -1,8 +1,0 @@
-# Ubuntu bionic
-# bug
----
-dontChroot: false
-type: job
-name: bug
-interface: process
-command: /usr/sbin/bug.sh
