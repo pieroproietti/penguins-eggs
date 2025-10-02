@@ -101,10 +101,7 @@ export default class Fisherman {
    * @param replaces [['search','replace']]
    */
   async buildModule(name: string, vendor = 'eggs') {
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    if (!fs.existsSync(moduleSource)) {
-      moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
-    }
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
 
     /**
      * We need vendor here to have possibility to load custom modules for calamares
@@ -317,8 +314,12 @@ export default class Fisherman {
    */
   async buildModuleUnpackfs() {
     const name = 'unpackfs'
-    this.buildModule(name)
-    shx.sed('-i', '{{source}}', this.distro.liveMediumPath + this.distro.squashfs, this.installer.modules + name + '.conf')
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    let moduleDest = this.installer.modules + name + '.conf'
+    let template = fs.readFileSync(moduleSource, 'utf8')
+    let source = path.join(this.distro.liveMediumPath, this.distro.squashfs)
+    const view = { source: source }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
   }
 
 }
