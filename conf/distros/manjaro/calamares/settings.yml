@@ -4,7 +4,7 @@
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
-- id: modprove
+- id: modprobe
   module: shellprocess
   config: shellprocess@modprobe.conf
 
