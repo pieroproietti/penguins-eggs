@@ -18,6 +18,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
+## v25.10.1
+* Debian: calamares install on ext4, btrfs on Debian trixie, Debian bookworm to test Debian bullseye; Not tested encrypted installation;
+* Ubuntu: calamares install on ext4, btrfs on Ubuntu noble.. ; calamares install on encrypted LUKS volume;
 
 ## v25.9.27
 - krill: added `--replace` to replace a partition with the new installation, usefull for peoples wit many installation on a disk. Eg: `sudo eggs install -R /dev/sda3 -u` 

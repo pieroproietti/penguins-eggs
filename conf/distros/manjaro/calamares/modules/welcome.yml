@@ -1,0 +1,23 @@
+---
+showSupportUrl:         true
+showKnownIssuesUrl:     true
+showReleaseNotesUrl:    true
+
+requirements:
+    requiredStorage:    7.9
+    requiredRam:        1.0
+    internetCheckUrl:   https://manjaro.org
+    check:
+      - storage
+      - ram
+      - power
+      - internet
+      - root
+    required:
+      - storage
+      - ram
+      - root
+geoip:
+    style:  "json"
+    url:    "https://ipapi.co/json"
+    selector: "country"

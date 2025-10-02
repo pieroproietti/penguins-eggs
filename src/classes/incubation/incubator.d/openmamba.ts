@@ -57,7 +57,7 @@ export class Openmamba {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale', this.theme)
@@ -66,16 +66,16 @@ export class Openmamba {
     await fisherman.buildModule('luksopenswaphookcfg')
     await fisherman.buildModule('dracutcfg')
     await fisherman.buildModule('users', this.theme)
-    await fisherman.moduleDisplaymanager()
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-systemd')
     await fisherman.buildModule('dracut')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
-    await fisherman.modulePackages(this.distro, this.release)
+    await fisherman.buildModulePackages(this.distro, this.release)
     await fisherman.buildModule('plymouthcfg')
-    await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
     // await fisherman.buildModule('penmamba-postinstall')
     // await fisherman.buildCalamaresModule('cleanup', true)
 
@@ -91,6 +91,6 @@ export class Openmamba {
     }
 
     await fisherman.buildModule('umount')
-    await fisherman.moduleFinished()
+    await fisherman.buildModuleFinished()
   }
 }

@@ -59,7 +59,7 @@ export class Fedora {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('machineid')
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('services-systemd')
@@ -70,15 +70,15 @@ export class Fedora {
     // await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('dracutlukscfg')
     await fisherman.buildModule('users', this.theme)
-    await fisherman.moduleDisplaymanager()
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    await fisherman.moduleDracut('/boot/initramfs-6.15.5-200.fc42.x86_64.img')
+    await fisherman.buildModuleDracut('/boot/initramfs-6.15.5-200.fc42.x86_64.img')
     await fisherman.buildCalamaresModule('bootloaderspecification')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloaderspecification')
-    await fisherman.moduleRemoveuser(this.user_opt)
-    await fisherman.modulePackages(this.distro, this.release)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
+    await fisherman.buildModulePackages(this.distro, this.release)
 
     /**
      * cfs: custom final steps
@@ -90,8 +90,7 @@ export class Fedora {
         await fisherman.buildCalamaresModule(step, true, this.theme)
       }
     }
-
     await fisherman.buildModule('umount')
-    await fisherman.moduleFinished()
+    await fisherman.buildModuleFinished()
   }
 }

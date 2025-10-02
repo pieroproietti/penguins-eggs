@@ -1,0 +1,19 @@
+# Ubuntu jammy 22.04
+# Workaround from ubiquity. Ubuntu's grub will want to look in EFI/ubuntu, so
+# let's make sure it can find something there.
+# This only copies the cfg and doesn't overwrite, this is specifically so
+# this doesn't interfere with an Ubuntu installed on the system already.
+---
+dontChroot: false
+timeout: 120
+firmwareType:
+    efi:
+    # grub hack
+    - -mkdir /boot/efi/EFI/ubuntu
+    - -cp /boot/efi/EFI/neon/grub.cfg /boot/efi/EFI/ubuntu/
+    - command: -apt-get update
+      timeout: 60
+
+    bios:
+    - command: -apt-get update
+      timeout: 60

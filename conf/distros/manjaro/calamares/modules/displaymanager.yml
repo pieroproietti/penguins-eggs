@@ -1,0 +1,12 @@
+---
+displaymanagers:
+  - lightdm
+  - gdm
+  - mdm
+  - sddm
+  - lxdm
+  - slim
+
+basicSetup: false
+sddm:
+  configuration_file: "/etc/sddm.conf"

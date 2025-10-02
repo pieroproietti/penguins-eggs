@@ -1,0 +1,71 @@
+---
+
+units:
+    - name: avahi-daemon.service
+      action: "enable"
+      mandatory: false
+
+    - name: bluetooth.service
+      action: "enable"
+      mandatory: false
+
+    - name: cronie.service
+      action: "enable"
+      mandatory: false
+
+    - name: ModemManager.service
+      action: "enable"
+      mandatory: false
+
+    - name: NetworkManager.service
+      action: "enable"
+      mandatory: false
+
+    - name: cups.service
+      action: "enable"
+      mandatory: false
+
+    - name: haveged.service
+      action: "enable"
+      mandatory: false
+
+    - name: ufw.service
+      action: "enable"
+      mandatory: false
+
+    - name: apparmor.service
+      action: "enable"
+      mandatory: false
+
+    - name: snapd.apparmor.service
+      action: "enable"
+      mandatory: false
+
+    - name: snapd.service
+      action: "enable"
+      mandatory: false
+
+    - name: systemd-timesyncd.service
+      action: "enable"
+      mandatory: false
+
+    - name: lightdm.service
+      action: "enable"
+      mandatory: false
+
+    - name: fstrim.timer
+      action: "enable"
+      mandatory: false
+
+    - name: pacman-filesdb-refresh.timer
+      action: "enable"
+      mandatory: false
+
+    - name: "graphical.target"
+      action: "set-default"
+      mandatory: true
+
+    - name: pacman-init.service
+      action: "disable"
+      mandatory: false
+

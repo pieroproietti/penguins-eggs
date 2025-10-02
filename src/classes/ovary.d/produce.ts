@@ -20,7 +20,7 @@ import { IAddons, IExcludes } from '../../interfaces/index.js'
 // libraries
 import { exec } from '../../lib/utils.js'
 import Bleach from './../bleach.js'
-import { displaymanager } from './../incubation/fisherman-helper/displaymanager.js'
+// import { displaymanager } from './../incubation/fisherman-helper/displaymanager.js'
 import Incubator from './../incubation/incubator.js'
 import Pacman from './../pacman.js'
 import Diversions from './../diversions.js'
@@ -273,10 +273,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
                     /**
                      * GUI installed but NOT Desktop Manager: just create motd and issue
                      */
-                    if (displaymanager().length > 0) {
-                        this.cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-                        this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-                    }
+                    // if (displaymanager().length > 0) {
+                    //     this.cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+                    //     this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+                    // }
                 } else {
                     this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
                 }

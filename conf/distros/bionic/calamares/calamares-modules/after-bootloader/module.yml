@@ -1,8 +1,0 @@
-# Ubuntu bionic
-# after-bootloader
----
-dontChroot: true
-type: job
-name: after-bootloader
-interface: process
-command: /usr/sbin/after-bootloader.sh

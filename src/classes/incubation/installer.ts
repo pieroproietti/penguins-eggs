@@ -14,7 +14,7 @@
  * modules = configuration + 'modules/'
  * modulesMultiarch = '/usr/lib/' + arch-linux-gnu + '/' + installer + '/'
  *
- * template = '/etc/penguins-eggs/' + .distro.codenameLikeId + '/' + installer + '/'
+ * template = '/etc/penguins-eggs/' + .distro.distroUniqueId + '/' + installer + '/'
  * templateModules = template + '/modules/'
  * templateMultiarch = template + installer + '-modules/'
  *
@@ -49,7 +49,7 @@ export function installer(): IInstaller {
    * 
    */
   const distro = new Distro()
-  installer.template = `/etc/penguins-eggs.d/distros/${distro.codenameLikeId}/calamares/`
+  installer.template = `/etc/penguins-eggs.d/distros/${distro.distroUniqueId}/calamares/`
   installer.templateModules =  `${installer.template}modules/`
   installer.templateMultiarch = `${installer.template}calamares-modules/`
 

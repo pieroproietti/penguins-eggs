@@ -59,24 +59,24 @@ export class Alpine {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildCalamaresModule('machineid-openrc', true)
     await fisherman.buildModule('fstab')
     await fisherman.buildModule('locale', this.theme)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('users', this.theme)
-    await fisherman.moduleDisplaymanager()
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-openrc')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
-    await fisherman.modulePackages(this.distro, this.release)
+    await fisherman.buildModulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.buildModule('mkinitfs')
-    await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
 
     /**
      * cfs: custom final steps
@@ -90,6 +90,6 @@ export class Alpine {
     }
 
     await fisherman.buildModule('umount')
-    await fisherman.moduleFinished()
+    await fisherman.buildModuleFinished()
   }
 }

@@ -1,0 +1,15 @@
+---
+efiBootLoader: "grub"
+kernel: "/vmlinuz-6.12-x86_64"
+img: "/initramfs-6.12-x86_64.img"
+fallback: "/initramfs-6.12-x86_64-fallback.img"
+timeout: "10"
+kernelLine: ", with linux612"
+fallbackKernelLine: ", with linux612 (fallback initramfs)"
+grubInstall: "grub-install"
+grubMkconfig: "grub-mkconfig"
+grubCfg: "/boot/grub/grub.cfg"
+grubProbe: "grub-probe"
+efiBootMgr: "efibootmgr"
+#efiBootloaderId: "dirname"
+installEFIFallback: true

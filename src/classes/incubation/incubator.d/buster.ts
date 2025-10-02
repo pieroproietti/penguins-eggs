@@ -65,7 +65,7 @@ export class Buster {
     await fisherman.buildModule('welcome')
     await fisherman.buildModule('partition', this.theme)
     await fisherman.buildModule('mount')
-    await fisherman.moduleUnpackfs()
+    await fisherman.buildModuleUnpackfs()
     await fisherman.buildCalamaresModule('dpkg-unsafe-io', true)
     await fisherman.buildCalamaresModule('sources-yolk', true)
     await fisherman.buildModule('machineid')
@@ -74,20 +74,20 @@ export class Buster {
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('users', this.theme)
-    await fisherman.moduleDisplaymanager()
+    await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-systemd')
     await fisherman.buildCalamaresModule('bootloader-config', true)
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
-    await fisherman.modulePackages(this.distro, this.release)
+    await fisherman.buildModulePackages(this.distro, this.release)
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.buildModule('initramfscfg')
     await fisherman.buildModule('initramfs')
     await fisherman.buildCalamaresModule('dpkg-unsafe-io-undo', false)
-    await fisherman.moduleRemoveuser(this.user_opt)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
 
@@ -118,6 +118,6 @@ export class Buster {
     }
 
     await fisherman.buildModule('umount')
-    await fisherman.moduleFinished()
+    await fisherman.buildModuleFinished()
   }
 }

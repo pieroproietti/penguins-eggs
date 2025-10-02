@@ -1,0 +1,14 @@
+---
+efiSystemPartition:     "/boot/efi"
+userSwapChoices:
+    - none      # Create no swap, use no swap
+    - small     # Up to 4GB
+    - suspend   # At least main memory size
+    - file      # To swap file instead of partition
+alwaysShowPartitionLabels: true
+# There are four options: erase, replace, alongside, manual),
+# the default is "none".
+initialPartitioningChoice: erase
+initialSwapChoice: none
+defaultFileSystemType:  "btrfs"
+availableFileSystemTypes:  ["btrfs","ext4","f2fs","xfs"]

@@ -1,6 +1,0 @@
-# Openmamba
-# packages
----
-backend: dnf
-
-{{operations}}

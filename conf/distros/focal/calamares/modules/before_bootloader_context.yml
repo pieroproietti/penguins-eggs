@@ -1,0 +1,19 @@
+# Ubuntu jammy 22.04
+# Make sure the correct bootloader package is installed for EFI.
+# Also pull in shim so secureboot has a chance at working.
+# Because of edge cases, we ignore BIOS, and do the same
+# procedure for all EFI types.
+---
+firmwareType:
+    bios:    "-/bin/true"
+    "*":
+        #-    command: apt-cdrom add -m -d=/media/cdrom/
+        #     timeout: 10
+        #-    command: sed -i '/deb http/d' /etc/apt/sources.list
+        #     timeout: 10
+        -    command: apt-get update
+             timeout: 120
+        -    command: apt-get install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict grub-efi-$(if grep -q 64 /sys/firmware/efi/fw_platform_size; then echo amd64-signed; else echo ia32; fi)
+             timeout: 300
+        -    command: apt-get install -y --no-upgrade -o Acquire::gpgv::Options::=--ignore-time-conflict shim-signed
+             timeout: 300
