@@ -293,7 +293,7 @@ export default class Fisherman {
     let template = fs.readFileSync(moduleSource, 'utf8')
     const view = { 
       backend: backend,
-      operations: operations 
+      operations: operations
     }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
   
@@ -304,8 +304,11 @@ export default class Fisherman {
    */
   async buildModuleRemoveuser(username: string) {
     const name = 'removeuser'
-    this.buildModule(name)
-    shx.sed('-i', '{{username}}', username, this.installer.modules + name + '.conf')
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    let moduleDest = this.installer.modules + name + '.conf'
+    let template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { username: username }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
   }
 
 
