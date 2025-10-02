@@ -20,7 +20,6 @@ import { settings } from './fisherman-helper/settings.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 
-import {ICalamaresDisplaymanager} from '../../interfaces/calamares/i-calamares-displaymanager.js'
 import {ICalamaresFinished} from '../../interfaces/calamares/i-calamares-finished.js'
 
 // pjson
@@ -28,7 +27,7 @@ import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const pjson = require('../../../package.json')
 
-import { displaymanager } from './fisherman-helper/displaymanager.js'
+// import { displaymanager } from './fisherman-helper/displaymanager.js'
 import { remove, remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
 interface IReplaces {
@@ -228,6 +227,7 @@ export default class Fisherman {
   /**
    * Al momento rimane con la vecchia configurazione
    */
+  /*
   async moduleDisplaymanager() {
     const name = 'displaymanager'
     this.buildModule(name)
@@ -240,6 +240,7 @@ export default class Fisherman {
     destContent += yaml.dump(values)
     fs.writeFileSync(file, destContent, 'utf8')
   }
+  */
 
   /**
    * buildModule[name]

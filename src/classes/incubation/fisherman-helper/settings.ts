@@ -19,7 +19,7 @@ import shx from 'shelljs'
 import { ISettings } from '../../../interfaces/i-settings.js'
 import Utils from '../../utils.js'
 import { installer } from '../installer.js'
-import { displaymanager } from './displaymanager.js'
+
 
 
 interface SequenceItem {
