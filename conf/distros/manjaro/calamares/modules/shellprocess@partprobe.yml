@@ -1,8 +1,8 @@
-# File: /etc/calamares/modules/partprobe_fix.conf
-#
-# Esegue partprobe sul disco di installazione rilevato dinamicamente.
+# Running after partition, detect new uuiid on the installDevice
 ---
 module: shellprocess
+
+runLocation: host
 
 script:
     - "partprobe ${installDevice}"
