@@ -55,14 +55,14 @@
         "eslint-config-oclif": "^6.0.106",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^11.0.3",
-        "mocha": "^11.7.2",
+        "mocha": "^11.7.4",
         "oclif": "^4.22.27",
         "perrisbrewery": "^25.9.16",
         "prettier": "^3.6.2",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
-        "typescript": "^5.9.2"
+        "typescript": "^5.9.3"
     },
     "engines": {
         "node": ">=16.0.0"
