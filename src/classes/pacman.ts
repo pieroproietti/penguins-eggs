@@ -720,6 +720,5 @@ export default class Pacman {
   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
     return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
   }
-
 }
 
