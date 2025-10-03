@@ -1,61 +1,63 @@
-# ================================================================= #
-#                WORKFLOW ORCHESTRATORE DI RILASCIO                 #
-# ================================================================= #
-#
-# Questo workflow ha un unico scopo: avviare tutti gli altri workflow
-# di pubblicazione con un solo click manuale.
-#
-# Include il passaggio 'actions/checkout' per risolvere l'errore
-# "fatal: not a git repository".
-#
-# ----------------------------------------------------------------- #
-
 name: '00 - all packages release'
 
-# Questo trigger abilita l'avvio manuale dalla tab "Actions" di GitHub.
 on:
   workflow_dispatch:
 
 jobs:
-  # Definiamo un unico job che farà da "direttore d'orchestra".
   trigger-all-releases:
     name: Trigger di Rilascio Globale
     runs-on: ubuntu-latest
-
-    # È obbligatorio concedere i permessi per permettere a questo
-    # workflow di avviarne altri.
     permissions:
       actions: write
+      contents: read # Necessario per gh run list
 
     steps:
-      # --- PASSO 1: FONDAMENTALE ---
-      # Scarica il codice del repository. Senza questo passaggio,
-      # il runner non sa in quale repository si trova, causando
-      # l'errore "not a git repository" quando si usa la CLI 'gh'.
       - name: Checkout del codice del repository
         uses: actions/checkout@v4
 
-      # --- PASSO 2: ESECUZIONE ---
-      # Avvia tutti gli altri workflow usando la GitHub CLI.
-      - name: Avvia i workflow di pubblicazione
+      - name: Avvia i workflow di pubblicazione in sequenza
         env:
-          # Il token è necessario per autenticare le chiamate della CLI.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Inizio a chiamare i singoli workflow..."
+          echo "Inizio a chiamare i singoli workflow in modo sequenziale..."
           echo "Tutti i rilasci verranno eseguiti usando il codice dal branch 'master'."
 
-          # Nota: Il flag '--ref master' forza ogni workflow a girare
-          # sull'ultima versione del branch 'master'.
-          # Se preferisci usare il branch da cui avvii questo workflow,
-          # puoi sostituire 'master' con '${{ github.ref }}'.
-          gh workflow run 00-publish-debian-deb.yml --ref master
-          gh workflow run 01-publish-fedora-rpm.yml --ref master
-          gh workflow run 02-publish-opensuse-rpm.yml --ref master
-          gh workflow run 03-publish-enterprise-linux.yml --ref master
-          gh workflow run 04-publish-archlinux.yml --ref master
-          gh workflow run 05-publish-manjaro.yml --ref master
-          gh workflow run 06-publish-alpine.yml --ref master
+          # Lista dei workflow da eseguire in ordine
+          WORKFLOWS=(
+            "00-publish-debian-deb.yml"
+            "01-publish-fedora-rpm.yml"
+            "02-publish-opensuse-rpm.yml"
+            "03-publish-enterprise-linux.yml"
+            "04-publish-archlinux.yml"
+            "05-publish-manjaro.yml"
+            "06-publish-alpine.yml"
+          )
 
-          echo "✅ Processo completato. Tutti i workflow sono stati avviati."
-          echo "Controlla il loro stato nella tab 'Actions'."
+          for workflow_file in "${WORKFLOWS[@]}"; do
+            echo "------------------------------------------------------"
+            echo "🚀 Avvio del workflow: ${workflow_file}"
+            gh workflow run "${workflow_file}" --ref master
+
+            # Attende un istante per dare tempo a GitHub di registrare l'esecuzione.
+            sleep 5 
+
+            # Recupera l'ID dell'ultima esecuzione avviata per quel workflow sul branch master.
+            echo "🔍 Recupero l'ID dell'esecuzione..."
+            RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --limit=1 --json databaseId -q '.[0].databaseId')
+
+            if [ -z "$RUN_ID" ]; then
+              echo "❌ Impossibile trovare l'ID dell'esecuzione per ${workflow_file}. Annullamento."
+              exit 1
+            fi
+            
+            echo "⏳ Attendo il completamento dell'esecuzione con ID: ${RUN_ID}..."
+            
+            # Si mette in ascolto e attende che la run termini. 
+            # Il comando esce con un codice di errore se la run fallisce.
+            gh run watch "${RUN_ID}" --exit-status
+            
+            echo "✅ Workflow ${workflow_file} completato con successo."
+          done
+
+          echo "------------------------------------------------------"
+          echo "🎉 Processo completato. Tutti i workflow sono stati eseguiti in sequenza."
