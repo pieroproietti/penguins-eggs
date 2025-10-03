@@ -22,11 +22,11 @@ The version is based on the year, month, day, and release number. They are liste
 ## v25.10.3
 * Ubuntu noble: calamares install on ext4, btrfs and LUKS;
 * Fedora: fail to install on bootloader;
-* Opensuse: calamares is not configurated yet, but it's available;
+* Opensuse: calamares is not configurated yet, but it's available in our [repo](https://github.com/pieroproietti/penguins-eggs-repo/tree/main/rpm/opensuse/leap);
 * Debian trixie: calamares install on ext4, btrfs on Debian trixie;
+* Manjaro/Biglinux: calamares install on ext4 and on btrfs;
+* Arch: calamares install on ext4, btrfs installation fail to bootloader installation, we will solve soon;
 * Almalinux, Rocky 9: calamares is not available yet;
-* Manjaro/Biglinux: calamares install on ext4, btrfs installation fail to bootloader installation;
-* Arch: calamares install on ext4, btrfs installation fail to bootloader installation;
 * Debian bookworm/Debian bullseye; calamares install on ex4. btrfs not available;
 
 I did tons of tests, but I'm just me and a machine (seven years old)... so, I think it's time to release trying to explicit problems.
