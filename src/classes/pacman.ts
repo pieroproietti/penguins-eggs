@@ -381,14 +381,14 @@ export default class Pacman {
       await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
 
       /**
-       * Debian 13 trixie: eredita tutto da buster
+       * Debian 13 trixie: eredita tutto da trixie
        */
     } else if (distroUniqueId === 'trixie') {
       const dest = '/etc/penguins-eggs.d/distros/trixie'
       await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
 
       /**
-       * Debian 14 forky eredita tutto da buster
+       * Debian 14 forky eredita tutto da trixie
        */
     } else if (distroUniqueId === 'forky') {
       const dest = '/etc/penguins-eggs.d/distros/forky'
@@ -472,7 +472,7 @@ export default class Pacman {
       const focal = `${rootPen}/conf/distros/focal`
       await exec(`cp -r ${focal}/* ${dest}`, echo)
       await exec(`cp ${focal}/calamares/modules/focal-jammy/* ${dest}/calamares/modules/`, echo)
-      await partialFromBuster(dest, echo)
+      await partialFromBuster(dest, echo) // Serve?
 
       /**
        * Ubuntu noble: e la nuova baseline per ubuntu
@@ -482,7 +482,6 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/noble'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
-      await partialFromBuster(dest, echo)
 
       /**
        * Ubuntu rhino: eredita da noble e buster
