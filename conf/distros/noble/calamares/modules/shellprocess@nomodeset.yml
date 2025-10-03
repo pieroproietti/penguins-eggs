@@ -5,6 +5,7 @@
 # Carries nomodeset into the installed system iff the live system is running
 # with it.
 ---
+message: "nomodeset"
 dontChroot: false
 timeout: 60
 script:

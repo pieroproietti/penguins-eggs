@@ -225,8 +225,12 @@ export default class Fisherman {
    */
   async buildModuleDracut(initrd: string) {
     const name = 'dracut'
-    this.buildModule(name)
-    shx.sed('-i', '{{initrd}}', initrd, this.installer.modules + name + '.conf')
+
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    let moduleDest = this.installer.modules + name + '.conf'
+    let template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { initrd: initrd }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
   }
 
   async buildModuleInitcpio() {

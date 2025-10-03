@@ -1,5 +1,5 @@
 ---
-jobTitle: Disable grub-btrfs temporarily
+message: Disable grub-btrfs temporarily
 dontchroot: false
 script:
   - command: /bin/sh -c "if [ -x /usr/bin/grub-btrfs ]; then chmod -x /usr/bin/grub-btrfs; fi"
