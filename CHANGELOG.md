@@ -18,9 +18,19 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
-## v25.10.1
-* Debian: calamares install on ext4, btrfs on Debian trixie, Debian bookworm to test Debian bullseye; Not tested encrypted installation;
-* Ubuntu: calamares install on ext4, btrfs on Ubuntu noble.. ; calamares install on encrypted LUKS volume;
+
+## v25.10.3
+* Ubuntu noble: calamares install on ext4, btrfs and LUKS;
+* Fedora: fail to install on bootloader;
+* Opensuse: calamares is not configurated yet, but it's available;
+* Debian trixie: calamares install on ext4, btrfs on Debian trixie;
+* Almalinux, Rocky 9: calamares is not available yet;
+* Manjaro/Biglinux: calamares install on ext4, btrfs installation fail to bootloader installation;
+* Arch: calamares install on ext4, btrfs installation fail to bootloader installation;
+* Debian bookworm/Debian bullseye; calamares install on ex4. btrfs not available;
+
+I did tons of tests, but I'm just me and a machine (seven years old)... so, I think it's time to release trying to explicit problems.
+
 
 ## v25.9.27
 - krill: added `--replace` to replace a partition with the new installation, usefull for peoples wit many installation on a disk. Eg: `sudo eggs install -R /dev/sda3 -u` 
