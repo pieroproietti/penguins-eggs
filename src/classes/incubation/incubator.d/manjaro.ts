@@ -58,7 +58,6 @@ export class Manjaro {
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('partition', this.theme)
-    await fisherman.shellprocess('uuids')
     await fisherman.buildModule('mount')
     await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('networkcfg')
@@ -76,6 +75,7 @@ export class Manjaro {
     await fisherman.buildModule('mhwdcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services')
+    await fisherman.shellprocess('disable-grub-btrfs')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.buildModulePackages(this.distro, this.release) //
