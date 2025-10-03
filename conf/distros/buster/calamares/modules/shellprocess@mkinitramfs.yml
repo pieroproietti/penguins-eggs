@@ -1,5 +1,5 @@
 # shellprocess_mkinitramfs.conf
-jobTitle: "Creating the boot image (initramfs)..."
+message: "Creating the boot image (initramfs)..."
 dontChroot: false
 timeout: 300
 script:
