@@ -4,6 +4,9 @@
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
+- id: disable-grub-btrfs
+  module: shellprocess
+  config: shellprocess@disable-grub-btrfs.conf
 - id: sync
   module: shellprocess
   config: shellprocess@sync.conf
@@ -39,11 +42,12 @@ sequence:
       - luksbootkeyfile
       - luksopenswaphookcfg
       - fstab
-      - initcpiocfg         # new check /etc/mkinitcpio.d/linux.preset presence
+      - initcpiocfg
       - initcpio
       - users
       - displaymanager 
       - hwclock
+      - shellprocess@disable-grub-btrfs      
       - shellprocess@sync
       - grubcfg
       - bootloader
