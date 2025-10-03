@@ -9,6 +9,7 @@
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
 import Fisherman from '../fisherman.js'
+import Kernel from '../../utils.d/kernel.js'
 
 /**
  *
@@ -54,6 +55,7 @@ export class Fedora {
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
+    
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('welcome')
@@ -73,7 +75,7 @@ export class Fedora {
     await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    await fisherman.buildModuleDracut('/boot/initramfs-6.15.5-200.fc42.x86_64.img')
+    await fisherman.buildModuleDracut(Kernel.initramfs())
     await fisherman.buildCalamaresModule('bootloaderspecification')
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloaderspecification')
