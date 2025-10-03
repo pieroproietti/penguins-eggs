@@ -4,9 +4,9 @@
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
-- id: modprobe
+- id: partprobe
   module: shellprocess
-  config: shellprocess@modprobe.conf
+  config: shellprocess@partprobe.conf
 
 
 sequence:
