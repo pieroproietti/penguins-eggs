@@ -75,6 +75,7 @@ export class Archlinux {
     await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('hwclock')
     await fisherman.shellprocess('sync')
+    await fisherman.shellprocess('disable-grub-btrfs')    
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
     await fisherman.buildModulePackages(this.distro, this.release)
