@@ -1,0 +1,7 @@
+# shellprocess_uuids.conf
+---
+jobTitle: "refresh uuids"
+dontchroot: false
+script:
+  - "udevadm trigger"
+  - "udevadm settle"

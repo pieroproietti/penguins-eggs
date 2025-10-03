@@ -4,9 +4,9 @@
 modules-search: [local, /usr/lib/calamares/modules, /usr/share/calamares]
 
 instances:
-- id: partprobe
+- id: uuids
   module: shellprocess
-  config: shellprocess@partprobe.conf
+  config: shellprocess@uuids.conf
 
 
 sequence:
@@ -30,7 +30,7 @@ sequence:
   # also allowed.
   - exec:
       - partition
-      - shellprocess@partprobe
+      - shellprocess@uuids
       - mount
       - unpackfs
       - networkcfg
