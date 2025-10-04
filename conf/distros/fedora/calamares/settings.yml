@@ -86,7 +86,7 @@ sequence:
       - dracut
       #- bootloaderspecification  # replaced by shellprocess@grubinstall.conf
       #- grubcfg                  # replaced by shellprocess@grubinstall.conf
-      - grubinstall.conf
+      - shellprocess@grubinstall
       #- bootloader               # replaced by shellprocess@grubinstall.conf
       - packages
       - removeuser

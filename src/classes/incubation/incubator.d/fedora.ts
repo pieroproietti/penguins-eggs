@@ -76,7 +76,7 @@ export class Fedora {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModuleDracut(Kernel.initramfs())
-    await fisherman.buildModule('grubcfg')
+    // await fisherman.buildModule('grubcfg')
     await fisherman.shellprocess('grubinstall')
     // await fisherman.buildModule('bootloader')
     await fisherman.buildModule('packages')
