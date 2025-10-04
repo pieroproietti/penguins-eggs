@@ -85,7 +85,6 @@ sequence:
       - dracut
       - bootloaderspecification
       - grubcfg
-      - shellprocess@fixbootloader
       - bootloader
       - packages
       - removeuser

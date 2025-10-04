@@ -69,7 +69,7 @@ export class Fedora {
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('plymouthcfg')
-    // await fisherman.buildModule('luksbootkeyfile')
+    await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('dracutlukscfg')
     await fisherman.buildModule('users', this.theme)
     await fisherman.buildModule('displaymanager')
