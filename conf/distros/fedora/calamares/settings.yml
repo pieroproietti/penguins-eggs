@@ -39,9 +39,10 @@ quit-at-end: false
 
 
 instances:
-  - id: fixbootloader
+  - id: grubinstall
     module: shellprocess
-    config: shellprocess@fixbootloader.conf
+    config: shellprocess@grubinstall.conf
+
 
 
 #
@@ -85,7 +86,8 @@ sequence:
       - dracut
       - bootloaderspecification
       - grubcfg
-      - bootloader
+      - shellprocess@grubinstall.conf
+      #- bootloader # replaced by shellprocess@grubinstall.conf
       - packages
       - removeuser
       - umount
