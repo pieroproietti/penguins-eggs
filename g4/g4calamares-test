@@ -1,0 +1,5 @@
+#!/bin/bash
+source /etc/os-release
+sudo calamares -d > calamares.${ID}.log.txt 2>&1
+scp calamares.${ID}.log.txt artisan@192.168.1.2:/home/calamares/${ID}
+scp -r /etc/calamares/* artisan@192.168.1.2:/home/calamares/${ID}
