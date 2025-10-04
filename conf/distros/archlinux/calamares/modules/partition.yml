@@ -1,3 +1,4 @@
+# This come from manjaro
 ---
 efiSystemPartition:     "/boot/efi"
 userSwapChoices:
