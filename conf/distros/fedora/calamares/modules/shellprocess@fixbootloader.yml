@@ -1,0 +1,5 @@
+# A shellprocess fixbootloader for fedora
+---
+dontChroot: false
+command:
+    - mkdir -p /boot/efi/EFI/fedora

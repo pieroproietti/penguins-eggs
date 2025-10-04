@@ -78,6 +78,7 @@ export class Fedora {
     await fisherman.buildModuleDracut(Kernel.initramfs())
     await fisherman.buildCalamaresModule('bootloaderspecification')
     await fisherman.buildModule('grubcfg')
+    await fisherman.shellprocess('fixbootloader')
     await fisherman.buildModule('bootloaderspecification')
     await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildModulePackages(this.distro, this.release)

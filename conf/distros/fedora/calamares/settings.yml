@@ -29,6 +29,12 @@ disable-cancel: false
 # YAML: boolean.
 disable-cancel-during-exec: false
 
+instances:
+  - id: fixbootloader
+    module: shellprocess
+    config: shellprocess@fixbootloader.conf
+
+
 # If this is set to true, then once the end of the sequence has
 # been reached, the quit (done) button is clicked automatically
 # and Calamares will close. Default is false: the user will see
@@ -75,6 +81,7 @@ sequence:
       - dracut
       - bootloaderspecification
       - grubcfg
+      - shellprocess@fixbootloader
       - bootloader
       - packages
       - removeuser
