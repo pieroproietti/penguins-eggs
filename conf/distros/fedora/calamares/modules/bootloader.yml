@@ -41,7 +41,8 @@ kernelParams: [ "quiet" ]
 # GRUB functionality (notably grub-probe) to work. As needed, you may use
 # complete paths like `/usr/bin/efibootmgr` for the executables.
 #
-grubInstall: "grub2-install"
+grubInstall: "grub2-install --modules='btrfs part_gpt fat'"
+# grubInstall: "grub2-install"
 grubMkconfig: "grub2-mkconfig"
 grubCfg: "/boot/grub2/grub.cfg"
 grubProbe: "grub2-probe"
@@ -85,10 +86,3 @@ installEFIFallback: true
 # Optionally install both BIOS and UEFI GRUB bootloaders.
 installHybridGRUB: false
 
-#
-# Forzo aggiunta btrfs in grubx64.efi
-#
-grubModules:
-  - "btrfs"
-  - "part_gpt"
-  - "fat"
