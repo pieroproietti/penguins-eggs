@@ -79,7 +79,8 @@ sequence:
       - services-systemd 
       - dracut
       - bootloader
-      - grubfix
+      - bootloaderspecification
+      - grubcfg
       - packages
       - removeuser
       - umount
