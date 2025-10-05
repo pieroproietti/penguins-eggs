@@ -26,7 +26,7 @@ BLS_FILE="/boot/loader/entries/${MACHINE_ID}-${KERNEL_VERSION}.conf"
 
 # Scrivi il contenuto nel file usando un "Here Document" (cat << EOF)
 cat > "${BLS_FILE}" << EOF
-title OpenSUSE Linux ($KERNEL_VERSION)
+title Fedora Linux ($KERNEL_VERSION)
 version $KERNEL_VERSION
 linux /boot/vmlinuz-${KERNEL_VERSION}
 initrd /boot/initramfs-${KERNEL_VERSION}.img
