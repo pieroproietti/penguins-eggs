@@ -37,6 +37,11 @@ disable-cancel-during-exec: false
 #
 quit-at-end: false
 
+
+
+#
+# SEQUENCE
+#
 sequence:
   # Phase 1 - prepare.
   # View modules are shown as UI pages, jobs from job modules
@@ -73,9 +78,8 @@ sequence:
       - hwclock
       - services-systemd 
       - dracut
-      - bootloaderspecification
-      - grubcfg
       - bootloader
+      - grubfix
       - packages
       - removeuser
       - umount

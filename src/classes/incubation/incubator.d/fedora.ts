@@ -69,18 +69,17 @@ export class Fedora {
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg')
     await fisherman.buildModule('plymouthcfg')
-    // await fisherman.buildModule('luksbootkeyfile')
+    await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('dracutlukscfg')
     await fisherman.buildModule('users', this.theme)
     await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModuleDracut(Kernel.initramfs())
-    await fisherman.buildCalamaresModule('bootloaderspecification')
-    await fisherman.buildModule('grubcfg')
-    await fisherman.buildModule('bootloaderspecification')
-    await fisherman.buildModuleRemoveuser(this.user_opt)
+    await fisherman.buildModule('bootloader')
+    await fisherman.buildModule('grubfix')
     await fisherman.buildModulePackages(this.distro, this.release)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
 
     /**
      * cfs: custom final steps

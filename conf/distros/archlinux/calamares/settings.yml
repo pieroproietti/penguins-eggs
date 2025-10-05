@@ -7,9 +7,6 @@ instances:
 - id: disable-grub-btrfs
   module: shellprocess
   config: shellprocess@disable-grub-btrfs.conf
-- id: sync
-  module: shellprocess
-  config: shellprocess@sync.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -48,7 +45,6 @@ sequence:
       - displaymanager 
       - hwclock
       - shellprocess@disable-grub-btrfs      
-      - shellprocess@sync
       - grubcfg
       - bootloader
       - packages

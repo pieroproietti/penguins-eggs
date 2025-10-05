@@ -6,34 +6,34 @@
  * license: MIT
  */
 export interface ICalamaresPartitions {
-  efiSystemPartition: string; 
-  efiSystemPartitionSize?: string; // 300M
-  userSwapChoices: string[];
-  swapPartitionName?: string;
-  drawNestedPartitions: boolean;
-  alwaysShowPartitionLabels: boolean;
-  initialPartitioningChoice: string;
-  initialSwapChoice: string;
-  defaultFileSystemType: string;
-  availableFileSystemTypes: string[];
-  requiredStorage: number;
-  ensureSuspendToDisk?: boolean;
-  neverCreateSwap?: boolean;
-  defaultPartitionTableType?: string;
-  requiredPartitionTableType?: string | string[];
+  efiSystemPartition?: string;
+  efiSystemPartitionSize?: string;
+  efiSystemPartitionName?: string;
+  efi?: {
+    recommendedSize?: string;
+    minimumSize?: string;
+    label?: string;
+    mountPoint?: string;
+  };
+  lvm?: {
+    enable?: boolean;
+  };
+  userSwapChoices: ("none" | "reuse" | "small" | "suspend" | "file")[];
+  armInstall?: boolean;
+  allowZfsEncryption?: boolean;
+  drawNestedPartitions?: boolean;
+  alwaysShowPartitionLabels?: boolean;
+  defaultFileSystemType?: string;
+  availableFileSystemTypes?: string[];
+  mountpointFilesystemRestrictions?: unknown[];
+  luksGeneration?: "luks1" | "luks2";
   enableLuksAutomatedPartitioning?: boolean;
-  partitionLayout?: PartitionLayout[];
-}
-
-export interface PartitionLayout {
-  name: string;
-  type?: string;
-  uuid?: string;
-  attributes?: string;
-  filesystem?: string;
-  mountPoint?: string;
-  size: string;
-  minSize?: string;
-  maxSize?: string;
-  features?: { [key: string]: boolean | number | string };
+  preCheckEncryption?: boolean;
+  essentialMounts?: string[];
+  allowManualPartitioning?: boolean;
+  showNotEncryptedBootMessage?: boolean;
+  partitionLayout?: unknown[];
+  initialPartitioningChoice?: "none" | "erase" | "replace" | "alongside" | "manual";
+  initialSwapChoice?: "none" | "small" | "suspend" | "reuse" | "file";
+  requiredStorage?: number;
 }
