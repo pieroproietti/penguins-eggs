@@ -50,6 +50,9 @@ extraMounts:
 btrfsSubvolumes:
     - mountPoint: /
       subvolume: /@
+      # As an alternative:
+      #
+      # subvolume: ""
     - mountPoint: /home
       subvolume: /@home
     - mountPoint: /var/cache
@@ -116,3 +119,5 @@ mountOptions:
       options: [ defaults, compress=zstd:1 ]
     - filesystem: btrfs_swap
       options: [ defaults, noatime ]
+
+

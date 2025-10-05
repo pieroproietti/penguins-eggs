@@ -9,6 +9,7 @@
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
 import Fisherman from '../fisherman.js'
+import Kernel from '../../utils.d/kernel.js'
 
 /**
  *
@@ -73,7 +74,7 @@ export class Opensuse {
     await fisherman.buildModule('displaymanager')
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
-    await fisherman.buildModuleDracut('/boot/initramfs-6.15.5-200.fc42.x86_64.img')
+    await fisherman.buildModuleDracut(Kernel.initramfs())
     await fisherman.buildModule('bootloader')
     await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildModulePackages(this.distro, this.release)
