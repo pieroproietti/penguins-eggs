@@ -78,8 +78,8 @@ sequence:
       - hwclock
       - services-systemd 
       - dracut
-      - grubcfg
       - bootloader
+      - grubcfg
       - packages
       - removeuser
       - umount
