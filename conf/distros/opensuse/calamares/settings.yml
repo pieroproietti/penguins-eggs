@@ -9,7 +9,7 @@ sequence:
   - users
   - summary
 - exec:
-  # partition 
+  - partition 
   - mount
   - unpackfs
   - machineid
