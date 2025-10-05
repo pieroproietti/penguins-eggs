@@ -22,7 +22,7 @@ The version is based on the year, month, day, and release number. They are liste
 ## v25.10.4
 * Ubuntu noble: calamares install on ext4, btrfs and LUKS;
 * Fedora: calamares install on ext4, btrfs installation work but resulting system is not bootable (grub);
-* Opensuse: calamares is not configurated yet, but it's available in our [repo](https://github.com/pieroproietti/penguins-eggs-repo/tree/main/rpm/opensuse/leap);
+* Opensuse: install with krill. When compiling Calamares, partition and bootloader medules are not created, so Calamares remain unusable, is, however, present in our repository [penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo/tree/main/rpm/opensuse/leap).
 * Debian trixie: calamares install on ext4, btrfs on Debian trixie;
 * Manjaro/Biglinux: calamares install on ext4 and on btrfs;
 * Arch: calamares install on ext4, btrfs installation fail to bootloader installation, we will solve soon;
