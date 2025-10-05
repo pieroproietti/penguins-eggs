@@ -24,11 +24,11 @@ export default class Opensuse {
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(true)
-    console.log("Install calamares-eggs from penguins-eggs-repo")
+    console.log("Install calamares from penguins-eggs-repo")
     try {
-      await exec(`zypper install -y calamares-eggs`, echo)
+      await exec(`zypper install -y calamares`, echo)
     } catch {
-      Utils.error(`Cannot install calamares-eggs`)
+      Utils.error(`Cannot install calamares`)
     }
   }
 

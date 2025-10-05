@@ -1,9 +1,0 @@
----
-dontChroot: false
-timeout: 120
-script:
-  - command: "sync"
-  - command: "sleep 3"
-  - command: "ls -lh /boot/vmlinuz* /boot/initramfs* || echo 'No kernel found'"
-  - command: "grub2-mkconfig -o /boot/grub2/grub.cfg"
-  - command: "grep -c menuentry /boot/grub2/grub.cfg || echo '0 entries'"

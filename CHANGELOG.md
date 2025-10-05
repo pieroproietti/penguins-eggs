@@ -19,6 +19,17 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.4
+* Ubuntu noble: calamares install on ext4, btrfs and LUKS;
+* Fedora: calamares install on ext4, btrfs installation work but resulting system is not bootable (grub);
+* Opensuse: calamares is not configurated yet, but it's available in our [repo](https://github.com/pieroproietti/penguins-eggs-repo/tree/main/rpm/opensuse/leap);
+* Debian trixie: calamares install on ext4, btrfs on Debian trixie;
+* Manjaro/Biglinux: calamares install on ext4 and on btrfs;
+* Arch: calamares install on ext4, btrfs installation fail to bootloader installation, we will solve soon;
+* Almalinux, Rocky 9: calamares is not available yet;
+* Debian bookworm/Debian bullseye; calamares install on ex4. btrfs not available;
+
+
 ## v25.10.3
 * Ubuntu noble: calamares install on ext4, btrfs and LUKS;
 * Fedora: fail to install on bootloader;
