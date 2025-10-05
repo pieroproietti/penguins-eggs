@@ -84,10 +84,8 @@ sequence:
       - hwclock
       - services-systemd 
       - dracut
-      #- bootloaderspecification  # replaced by shellprocess@grubinstall.conf
-      #- grubcfg                  # replaced by shellprocess@grubinstall.conf
-      - shellprocess@grubinstall
-      #- bootloader               # replaced by shellprocess@grubinstall.conf
+      - grubcfg
+      - bootloader
       - packages
       - removeuser
       - umount

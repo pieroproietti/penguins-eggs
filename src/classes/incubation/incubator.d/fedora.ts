@@ -76,12 +76,10 @@ export class Fedora {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModuleDracut(Kernel.initramfs())
-    // await fisherman.buildModule('grubcfg')
-    await fisherman.shellprocess('grubinstall')
-    // await fisherman.buildModule('bootloader')
-    await fisherman.buildModule('packages')
-    await fisherman.buildModuleRemoveuser(this.user_opt)
+    await fisherman.buildModule('grubcfg')
+    await fisherman.buildModule('bootloader')
     await fisherman.buildModulePackages(this.distro, this.release)
+    await fisherman.buildModuleRemoveuser(this.user_opt)
 
     /**
      * cfs: custom final steps
