@@ -38,12 +38,6 @@ disable-cancel-during-exec: false
 quit-at-end: false
 
 
-instances:
-  - id: grubinstall
-    module: shellprocess
-    config: shellprocess@grubinstall.conf
-
-
 
 #
 # SEQUENCE
