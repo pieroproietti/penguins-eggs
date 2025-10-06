@@ -53,6 +53,13 @@ export async function initrdArch(this: Ovary) {
             dirConf = 'biglinux'
         }
     }
+    if (Diversions.isCachyosBased(this.distroId)) {
+        dirConf = 'cachyos'
+        // tool = 'miso'
+        // hookSrc = `/etc/initcpio/hooks/miso_pxe_http`
+        // hookDest = hookSrc
+        /// edit = `sed -i 's/copytoram="y"/# copytoram="y"/' ${hookDest}`
+    }
 
     const restore = fs.existsSync(hookDest)
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}`)
