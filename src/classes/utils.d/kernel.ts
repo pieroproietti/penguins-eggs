@@ -131,6 +131,11 @@ export default class Kernel {
       'initramfs-linux-lts.img',      // Arch Linux LTS
       'initramfs-linux-zen.img',      // Arch Linux Zen
       'initramfs-linux-hardened.img', // Arch Linux hardened
+      // --- Cacky Linux ---
+      'initramfs-linux.cachyos.img',
+      'initramfs-linux-cachyos-lts.img',
+      'initramfs-linux-cachyos-zen.img',
+      'initramfs-linux-cachyos-hardened.img',
     ];
 
 
