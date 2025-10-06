@@ -19,6 +19,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.6
+* successfull tested on cackyos, linuxmint zara cinnamon, 
+
 ## v25.10.4
 * Ubuntu noble: calamares install on ext4, btrfs and LUKS;
 * Fedora: calamares install on ext4, btrfs installation work but resulting system is not bootable (grub);
