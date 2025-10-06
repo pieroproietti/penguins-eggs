@@ -5,3 +5,4 @@ script:
     - mount --bind /proc "${ROOT}/proc"
     - mount --bind /sys "${ROOT}/sys"
     - mount --bind /dev "${ROOT}/dev"
+      - mount --bind /sys/firmware/efi/efivars "${ROOT}/sys/firmware/efi/efivars"
