@@ -126,6 +126,7 @@ export default class Diversions {
     return new Distro()
   }
 
+
   /**
   * isManjaroBased
   */

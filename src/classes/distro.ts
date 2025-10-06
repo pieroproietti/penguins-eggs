@@ -18,7 +18,7 @@ import Diversions from './diversions.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-/**
+/** 
  * Classe
  */
 class Distro implements IDistro {

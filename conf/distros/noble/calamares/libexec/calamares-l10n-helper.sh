@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
 # SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 
+# apt install language-selector-common
+
 # calamares currently has subpar l10n capabilites.
 # this helper is ment to aid in getting very primitive language support
 # of the ground by using a helper from ubuntu's language-selector-common
@@ -31,5 +33,6 @@ without_ext=$(echo $LANG | cut -d. -f1)
 /usr/sbin/locale-gen --keep-existing "$LC_TIME"
 
 apt-get update || true
+# apt-get install language-selector-common || true
 missing=$(check-language-support --language="$without_ext")
 apt-get install -y $missing || true
