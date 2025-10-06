@@ -126,19 +126,6 @@ export default class Diversions {
     return new Distro()
   }
 
-  /**
-  * isCachyosBased
-  * 
-  static isCachyosBased(distro: string): boolean {
-    let found = false
-    if (distro === 'Cachyos') {
-      found = true
-    }
-
-    return found
-  }
-*/
-
 
   /**
   * isManjaroBased
