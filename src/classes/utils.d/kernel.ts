@@ -126,16 +126,18 @@ export default class Kernel {
       'initramfs-virt',       // Kernel per ambienti virtualizzati
       'initramfs-standard',   // Kernel standard (meno comune)
       'initramfs-rpi',        // Kernel per Raspberry Pi
+
       // --- Arch Linux ---
       'initramfs-linux.img',          // Arch Linux standard
       'initramfs-linux-lts.img',      // Arch Linux LTS
       'initramfs-linux-zen.img',      // Arch Linux Zen
       'initramfs-linux-hardened.img', // Arch Linux hardened
+
       // --- Cacky Linux ---
-      'initramfs-linux.cachyos.img',
-      'initramfs-linux-cachyos-lts.img',
-      'initramfs-linux-cachyos-zen.img',
-      'initramfs-linux-cachyos-hardened.img',
+      'initramfs-linux-cachyos.img',          // Cachyos standard
+      'initramfs-linux-cachyos-lts.img',      // Cachyos LTS
+      'initramfs-linux-cachyos-zen.img',      // Cachyos zen
+      'initramfs-linux-cachyos-hardened.img', // Cachyos hardened
     ];
 
 
