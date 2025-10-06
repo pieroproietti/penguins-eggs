@@ -128,7 +128,7 @@ export default class Diversions {
 
   /**
   * isCachyosBased
-  */
+  * 
   static isCachyosBased(distro: string): boolean {
     let found = false
     if (distro === 'Cachyos') {
@@ -137,7 +137,7 @@ export default class Diversions {
 
     return found
   }
-
+*/
 
 
   /**

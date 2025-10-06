@@ -366,13 +366,6 @@ class Distro implements IDistro {
       this.distroUniqueId = 'manjaro'
     }
 
-    if (Diversions.isCachyosBased(this.distroId)) {
-      // this.liveMediumPath = '/run/miso/bootmnt/'
-      // this.squashfs = 'manjaro/x86_64/livefs.sfs'
-      // this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
-      // this.distroUniqueId = 'manjaro'
-    }
-
     /**
      * lettura os_release per i pulsanti
      */
