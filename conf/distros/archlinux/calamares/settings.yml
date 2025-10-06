@@ -7,6 +7,9 @@ instances:
 - id: disable-grub-btrfs
   module: shellprocess
   config: shellprocess@disable-grub-btrfs.conf
+- id: prepare-chroot
+  module: shellprocess
+  config: shellprocess@prepare-chroot.conf
 
 sequence:
   # Phase 1 - prepare.
@@ -39,6 +42,7 @@ sequence:
       - luksbootkeyfile
       - luksopenswaphookcfg
       - fstab
+      - shellprocess@prepare-chroot
       - initcpiocfg
       - initcpio
       - users

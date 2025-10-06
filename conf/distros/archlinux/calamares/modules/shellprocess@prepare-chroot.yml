@@ -1,0 +1,7 @@
+# File: shellprocess@preparechroot.conf
+---
+dontChroot: true
+script:
+    - mount --bind /proc "${ROOT}/proc"
+    - mount --bind /sys "${ROOT}/sys"
+    - mount --bind /dev "${ROOT}/dev"
