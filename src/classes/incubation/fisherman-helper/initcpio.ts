@@ -13,20 +13,40 @@ export async function initcpio(): Promise<string> {
     if (version.includes('MANJARO')) {
       try {
         // Estrai major e minor version. Es: da "6.12.48-1-MANJARO" -> ["6", "12", "48-1-MANJARO"]
-        const parts = version.split('.'); 
+        const parts = version.split('.');
         // Costruisci il nome del preset come "linux" + "6" + "12" -> "linux612"
-        const kernelName = `linux${parts[0]}${parts[1]}`; 
+        const kernelName = `linux${parts[0]}${parts[1]}`;
         const manjaroPreset = `/etc/mkinitcpio.d/${kernelName}.preset`;
-        
+
         await access(manjaroPreset); // Verifica se esiste /etc/mkinitcpio.d/linux612.preset
         return manjaroPreset; // Se esiste, lo restituisce e la funzione termina
       } catch {
         // Se anche questa logica fallisce, lascia che proceda al fallback per Arch
         // console.warn('Logica Manjaro fallita, si tenta il fallback per Arch...');
       }
+    } else if (version.includes('cachyos')) {
+      try {
+        let kernelType = 'linux-cachyos'; // default
+        if (version.includes('lts')) {
+          kernelType = 'linux-cachyos-lts';
+        } else if (version.includes('zen')) {
+          kernelType = 'linux-cachyos-zen';
+        } else if (version.includes('hardened')) {
+          kernelType = 'linux-hardened';
+        }
+        const cachyPreset = `/etc/mkinitcpio.d/${kernelType}.preset`
+        await access(cachyPreset);
+        return cachyPreset;
+      } catch {
+        // Se anche questa logica fallisce, lascia che proceda al fallback per Arch
+        // console.warn('Logica Manjaro fallita, si tenta il fallback per Arch...');
+      }
     }
 
-    // LOGICA DI FALLBACK (per Arch e altri)
+    /**
+     * FALLBACK ARCH
+     */
+
     // Determina il tipo di kernel
     let kernelType = 'linux'; // default
 
