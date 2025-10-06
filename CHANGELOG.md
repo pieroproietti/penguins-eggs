@@ -20,7 +20,8 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.10.6
-* successfull tested on cackyos, linuxmint zara cinnamon, 
+* same little adaptment for CachyOS;
+* successfull tested on CachyOS, Linuxmint zara cinnamon and EndeavourOS.
 
 ## v25.10.4
 * Ubuntu noble: calamares install on ext4, btrfs and LUKS;
