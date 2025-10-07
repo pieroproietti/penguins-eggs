@@ -77,9 +77,8 @@ jobs:
 
       - name: 4. Update Checksums and Build Package as Non-Root User
         run: |
-          # --- FIX DEFINITIVO ---
           # Pulisci ogni pacchetto .pkg.tar.zst preesistente
-          # per garantire che l'artefatto contenga solo quello nuovo.
+          # per garantire che l'artefatto contenga solo il nuovo pacchetto
           rm -f *.pkg.tar.zst
           
           # Il resto dello script rimane invariato
