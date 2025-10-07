@@ -90,7 +90,6 @@ jobs:
   publish-repo:
     needs: build-arch
     runs-on: ubuntu-latest
-    container: archlinux
     steps:
       - name: 1. Checkout existing repo
         uses: actions/checkout@v4
@@ -106,46 +105,56 @@ jobs:
           path: repo-dir/arch/
 
       - name: 3. Update, Sign, and Push Repository
+        # Eseguiamo tutti i comandi dalla cartella radice del repo clonato
+        working-directory: ./repo-dir
         run: |
           set -e # Ferma lo script in caso di errore
           
-          # Entra nella directory del repository dei pacchetti
-          cd repo-dir/arch
+          # Entra nella sottocartella dei pacchetti
+          cd arch
 
           # Installa le dipendenze necessarie nel container
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git gnupg
 
-          # Importa la chiave GPG per la firma
+          # Importa la chiave GPG e configura l'agente
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-
-          # Configura GPG per l'uso senza interazione
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-          # --- COMANDO CHIAVE ---
-          # Aggiorna il database includendo TUTTI i pacchetti presenti
-          # Questo comando rimuoverà automaticamente le voci vecchie e aggiungerà quella nuova
+          # --- FIX LOGICO: IDENTIFICA E AGGIUNGI SOLO IL NUOVO PACCHETTO ---
+          # Trova il file del pacchetto appena scaricato (modificato negli ultimi 5 minuti)
+          # Questo evita il problema dell'ordinamento alfabetico di '*'
+          NEW_PKG_FILE=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -cmin -5)
+          
+          if [ -z "$NEW_PKG_FILE" ]; then
+            echo "Error: No new package file found."
+            exit 1
+          fi
+
+          echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
-          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          
+          # Aggiorna il DB solo con il nuovo pacchetto. repo-add sostituirà la vecchia versione.
+          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # Torna alla radice del repository clonato
+          # Torna alla radice del repository per eseguire i comandi git
           cd ..
 
           # Configura Git per il commit
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Aggiungi TUTTE le modifiche (nuovo pacchetto + database aggiornato)
+          # Aggiungi TUTTE le modifiche
           git add .
 
-          # Esegui il commit solo se ci sono modifiche da committare
+          # Esegui il commit solo se ci sono modifiche
           if ! git diff --staged --quiet; then
-            git commit -m "Update Arch Linux repository with new package"
+            git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
             echo "Pushing changes to repository..."
             git push
           else
