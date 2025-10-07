@@ -77,10 +77,16 @@ jobs:
 
       - name: 4. Update Checksums and Build Package as Non-Root User
         run: |
+          # --- FIX DEFINITIVO ---
+          # Pulisci ogni pacchetto .pkg.tar.zst preesistente
+          # per garantire che l'artefatto contenga solo quello nuovo.
+          rm -f *.pkg.tar.zst
+          
+          # Il resto dello script rimane invariato
           sudo -u builder updpkgsums
           sudo -u builder makepkg -s --noconfirm
-        working-directory: ./packaging/arch
-      
+        working-directory: ./packaging/arch 
+        
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
