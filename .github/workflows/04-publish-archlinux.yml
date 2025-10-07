@@ -106,27 +106,23 @@ jobs:
           path: repo-dir/arch/
 
       - name: 3. Update, Sign, and Push Repository
-        # Eseguiamo tutti i comandi dalla cartella radice del repo clonato
-        working-directory: ./repo-dir
         run: |
           set -e
           
-          # Installiamo le dipendenze
+          # Nota: Eseguiamo tutto dalla radice dello spazio di lavoro
+          
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git gnupg
 
-          # Configurazione GPG
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo "${{ secrets.GGPG_SIGNING_KEY }}" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-          # --- FIX DEFINITIVO: Niente più 'cd', usiamo percorsi espliciti ---
-          
-          # Trova il file più recente nella sottocartella 'arch'
-          NEW_PKG_FILE=$(ls -t arch/*.pkg.tar.zst | head -n 1)
+          # Trova il file più recente, specificando il percorso
+          NEW_PKG_FILE=$(ls -t repo-dir/arch/*.pkg.tar.zst | head -n 1)
           
           if [ -z "$NEW_PKG_FILE" ]; then
             echo "Error: No new package file found."
@@ -136,25 +132,27 @@ jobs:
           echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
           
-          # Specifica il percorso del database e del pacchetto per repo-add
-          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
+          # Aggiorna il DB specificando i percorsi corretti
+          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" repo-dir/arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # I comandi Git vengono eseguiti qui, nella working-directory (./repo-dir),
-          # che è la radice del repository, quindi funzioneranno.
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # --- FIX FINALE PER GIT: USA UNA SUBSHELL ---
+          (
+            cd ./repo-dir
+            
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add .
+            git add .
 
-          if ! git diff --staged --quiet; then
-            # Usa 'basename' per ottenere solo il nome del file per il messaggio di commit
-            git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
-            echo "Pushing changes to repository..."
-            git push
-          else
-            echo "No changes to commit."
-          fi
+            if ! git diff --staged --quiet; then
+              git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
+              echo "Pushing changes..."
+              git push
+            else
+              echo "No changes to commit."
+            fi
+          )
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
