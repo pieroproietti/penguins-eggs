@@ -92,26 +92,31 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux
     steps:
-      - name: 1. Checkout existing repo
-        uses: actions/checkout@v4
-        with:
-          repository: pieroproietti/penguins-eggs-repo
-          token: ${{ secrets.PUBLISH_TOKEN }}
-          path: repo-dir
-
-      - name: 2. Download Arch Linux artifact
+      - name: 1. Download Arch Linux artifact
         uses: actions/download-artifact@v4
         with:
           name: archlinux-package
-          path: repo-dir/arch/
+          # Scarichiamo l'artefatto in una cartella temporanea
+          path: ./artifact
 
-      - name: 3. Update, Sign, and Push Repository
+      - name: 2. Clone Repo, Update Database, and Push
         run: |
           set -e
           
+          # Installiamo le dipendenze
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git gnupg
 
+          # --- FIX DEFINITIVO: CLONE MANUALE ---
+          # Cloniamo manualmente il repository per essere sicuri al 100%
+          # che la cartella .git sia presente.
+          echo "Cloning the repository manually..."
+          git clone "https://x-access-token:${{ secrets.PUBLISH_TOKEN }}@github.com/pieroproietti/penguins-eggs-repo.git" repo-dir
+          
+          # Spostiamo il nuovo pacchetto nella sua destinazione
+          mv ./artifact/*.pkg.tar.zst ./repo-dir/arch/
+
+          # Configurazione GPG
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
@@ -119,44 +124,29 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
+          # Trova il file più recente, ora che il repo è clonato correttamente
           NEW_PKG_FILE=$(ls -t repo-dir/arch/*.pkg.tar.zst | head -n 1)
           
-          if [ -z "$NEW_PKG_FILE" ]; then
-            echo "Error: No new package file found."
-            exit 1
-          fi
-
           echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
           
+          # Aggiorna il DB
           repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" repo-dir/arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # --- BLOCCO DI DEBUG ---
-          # Prima di toccare git, vediamo esattamente dove siamo e cosa vediamo.
-          echo "--- Inizio Debug Filesystem ---"
-          echo "Current directory (pwd):"
-          pwd
-          echo "---"
-          echo "Listing ALL files in current directory (ls -la):"
-          ls -la
-          echo "---"
-          echo "Listing ALL files in target directory ./repo-dir (ls -la ./repo-dir):"
-          ls -la ./repo-dir
-          echo "--- Fine Debug Filesystem ---"
+          # Spostati dentro il repository clonato per il push
+          cd ./repo-dir
+          
+          # Configura utente Git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Blocco Git che sta fallendo
-          echo "Configuring Git user in repository..."
-          git -C ./repo-dir config user.name "github-actions[bot]"
-          git -C ./repo-dir config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          echo "Adding files to commit..."
-          git -C ./repo-dir add .
-
-          if ! git -C ./repo-dir diff --staged --quiet; then
-            git -C ./repo-dir commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
+          # Aggiungi, committa e fai il push
+          git add .
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
             echo "Pushing changes..."
-            git -C ./repo-dir push
+            git push
           else
             echo "No changes to commit."
           fi
