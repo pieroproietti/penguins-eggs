@@ -132,10 +132,20 @@ jobs:
           repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" repo-dir/arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # --- FIX FINALE E FORZATO PER GIT ---
-          # Usiamo l'opzione '-C' per dire a ogni comando git
-          # in quale cartella deve operare, ignorando la posizione corrente.
-          
+          # --- BLOCCO DI DEBUG ---
+          # Prima di toccare git, vediamo esattamente dove siamo e cosa vediamo.
+          echo "--- Inizio Debug Filesystem ---"
+          echo "Current directory (pwd):"
+          pwd
+          echo "---"
+          echo "Listing ALL files in current directory (ls -la):"
+          ls -la
+          echo "---"
+          echo "Listing ALL files in target directory ./repo-dir (ls -la ./repo-dir):"
+          ls -la ./repo-dir
+          echo "--- Fine Debug Filesystem ---"
+
+          # Blocco Git che sta fallendo
           echo "Configuring Git user in repository..."
           git -C ./repo-dir config user.name "github-actions[bot]"
           git -C ./repo-dir config user.email "41898282+github-actions[bot]@users.noreply.github.com"
