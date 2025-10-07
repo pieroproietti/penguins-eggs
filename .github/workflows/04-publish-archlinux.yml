@@ -109,16 +109,13 @@ jobs:
         # Eseguiamo tutti i comandi dalla cartella radice del repo clonato
         working-directory: ./repo-dir
         run: |
-          set -e # Ferma lo script in caso di errore
+          set -e
           
-          # Entra nella sottocartella dei pacchetti
-          cd arch
-
-          # Installa le dipendenze necessarie nel container
+          # Installiamo le dipendenze
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git gnupg
 
-          # Importa la chiave GPG e configura l'agente
+          # Configurazione GPG
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
@@ -126,10 +123,10 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-          # --- FIX LOGICO: IDENTIFICA E AGGIUNGI SOLO IL NUOVO PACCHETTO ---
-          # Trova il file del pacchetto appena scaricato (modificato negli ultimi 5 minuti)
-          # Questo evita il problema dell'ordinamento alfabetico di '*'
-          NEW_PKG_FILE=$(ls -t *.pkg.tar.zst | head -n 1)
+          # --- FIX DEFINITIVO: Niente più 'cd', usiamo percorsi espliciti ---
+          
+          # Trova il file più recente nella sottocartella 'arch'
+          NEW_PKG_FILE=$(ls -t arch/*.pkg.tar.zst | head -n 1)
           
           if [ -z "$NEW_PKG_FILE" ]; then
             echo "Error: No new package file found."
@@ -139,22 +136,19 @@ jobs:
           echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
           
-          # Aggiorna il DB solo con il nuovo pacchetto. repo-add sostituirà la vecchia versione.
-          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
+          # Specifica il percorso del database e del pacchetto per repo-add
+          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # Torna alla radice del repository per eseguire i comandi git
-          cd ..
-
-          # Configura Git per il commit
+          # I comandi Git vengono eseguiti qui, nella working-directory (./repo-dir),
+          # che è la radice del repository, quindi funzioneranno.
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Aggiungi TUTTE le modifiche
           git add .
 
-          # Esegui il commit solo se ci sono modifiche
           if ! git diff --staged --quiet; then
+            # Usa 'basename' per ottenere solo il nome del file per il messaggio di commit
             git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
             echo "Pushing changes to repository..."
             git push
