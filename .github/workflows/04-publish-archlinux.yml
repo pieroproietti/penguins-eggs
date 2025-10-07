@@ -129,7 +129,7 @@ jobs:
           # --- FIX LOGICO: IDENTIFICA E AGGIUNGI SOLO IL NUOVO PACCHETTO ---
           # Trova il file del pacchetto appena scaricato (modificato negli ultimi 5 minuti)
           # Questo evita il problema dell'ordinamento alfabetico di '*'
-          NEW_PKG_FILE=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -cmin -5)
+          NEW_PKG_FILE=$(ls -t *.pkg.tar.zst | head -n 1)
           
           if [ -z "$NEW_PKG_FILE" ]; then
             echo "Error: No new package file found."
