@@ -109,11 +109,9 @@ jobs:
         run: |
           set -e
           
-          # Installiamo le dipendenze
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git gnupg
 
-          # Configurazione GPG (con la variabile corretta)
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
@@ -121,7 +119,6 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-          # Trova il file più recente, specificando il percorso dalla radice
           NEW_PKG_FILE=$(ls -t repo-dir/arch/*.pkg.tar.zst | head -n 1)
           
           if [ -z "$NEW_PKG_FILE" ]; then
@@ -132,24 +129,24 @@ jobs:
           echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
           
-          # Aggiorna il DB specificando i percorsi corretti dalla radice
           repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" repo-dir/arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
           echo "Database updated successfully."
 
-          # --- ESEGUI I COMANDI GIT NEL MODO CORRETTO ---
-          # Spostati nella cartella del repository prima di eseguire i comandi
-          cd ./repo-dir
+          # --- FIX FINALE E FORZATO PER GIT ---
+          # Usiamo l'opzione '-C' per dire a ogni comando git
+          # in quale cartella deve operare, ignorando la posizione corrente.
           
-          # Configura utente Git per questo repository
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "Configuring Git user in repository..."
+          git -C ./repo-dir config user.name "github-actions[bot]"
+          git -C ./repo-dir config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Aggiungi e committa le modifiche
-          git add .
-          if ! git diff --staged --quiet; then
-            git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
+          echo "Adding files to commit..."
+          git -C ./repo-dir add .
+
+          if ! git -C ./repo-dir diff --staged --quiet; then
+            git -C ./repo-dir commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
             echo "Pushing changes..."
-            git push
+            git -C ./repo-dir push
           else
             echo "No changes to commit."
           fi
