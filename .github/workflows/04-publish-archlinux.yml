@@ -130,7 +130,7 @@ jobs:
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
           # Trova il file più recente, ora che il repo è clonato correttamente
-          NEW_PKG_FILE=$(ls -t repo-dir/arch/*.pkg.tar.zst | head -n 1)
+          NEW_PKG_FILE=$(ls -vr repo-dir/arch/penguins-eggs-*.pkg.tar.zst | head -n 1)
           
           echo "Found new package: $NEW_PKG_FILE"
           echo "Updating repository database..."
