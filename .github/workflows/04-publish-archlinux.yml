@@ -90,6 +90,7 @@ jobs:
   publish-repo:
     needs: build-arch
     runs-on: ubuntu-latest
+    container: archlinux
     steps:
       - name: 1. Checkout existing repo
         uses: actions/checkout@v4
