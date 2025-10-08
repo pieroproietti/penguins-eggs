@@ -1,11 +1,4 @@
-# =========================================================================================
-# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ARCH LINUX
-#
-# Scopo:
-#   Questo workflow automatizza la creazione del pacchetto di penguins-eggs per Arch Linux
-#   e la sua pubblicazione nel repository Pacman 'penguins-eggs-repo'.
-#
-# Trigger:
+
 #   - Push sul branch 'main'.
 #   - Avvio manuale tramite 'workflow_dispatch'.
 #
@@ -77,15 +70,10 @@ jobs:
 
       - name: 4. Update Checksums and Build Package as Non-Root User
         run: |
-          # Pulisci ogni pacchetto .pkg.tar.zst preesistente
-          # per garantire che l'artefatto contenga solo il nuovo pacchetto
-          rm -f *.pkg.tar.zst
-          
-          # Il resto dello script rimane invariato
           sudo -u builder updpkgsums
           sudo -u builder makepkg -s --noconfirm
-        working-directory: ./packaging/arch 
-        
+        working-directory: ./packaging/arch
+      
       - name: 5. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -97,65 +85,50 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux
     steps:
-      - name: 1. Download Arch Linux artifact
+      - name: 1. Checkout existing repo
+        uses: actions/checkout@v4
+        with:
+          repository: pieroproietti/penguins-eggs-repo
+          token: ${{ secrets.PUBLISH_TOKEN }}
+          path: repo-dir
+
+      - name: 2. Download Arch Linux artifact
         uses: actions/download-artifact@v4
         with:
           name: archlinux-package
-          # Scarichiamo l'artefatto in una cartella temporanea
-          path: ./artifact
+          path: repo-dir/arch/
 
-      - name: 2. Clone Repo, Update Database, and Push
+      - name: 3. Update and Sign Arch Linux Repository
         run: |
           set -e
-          
-          # Installiamo le dipendenze
+          cd repo-dir/arch
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git gnupg
-
-          # --- FIX DEFINITIVO: CLONE MANUALE ---
-          # Cloniamo manualmente il repository per essere sicuri al 100%
-          # che la cartella .git sia presente.
-          echo "Cloning the repository manually..."
-          git clone "https://x-access-token:${{ secrets.PUBLISH_TOKEN }}@github.com/pieroproietti/penguins-eggs-repo.git" repo-dir
-          
-          # Spostiamo il nuovo pacchetto nella sua destinazione
-          mv ./artifact/*.pkg.tar.zst ./repo-dir/arch/
-
-          # Configurazione GPG
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          pacman -S --noconfirm base-devel git
+          echo "$GPG_SIGNING_KEY" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          
           # Trova il file più recente, ora che il repo è clonato correttamente
           NEW_PKG_FILE=$(ls -vr repo-dir/arch/penguins-eggs-*.pkg.tar.zst | head -n 1)
-          
-          echo "Found new package: $NEW_PKG_FILE"
-          echo "Updating repository database..."
-          
-          # Aggiorna il DB
-          repo-add --sign --key "${{ secrets.GPG_KEY_ID }}" repo-dir/arch/penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
-          echo "Database updated successfully."
-
-          # Spostati dentro il repository clonato per il push
-          cd ./repo-dir
-          
-          # Configura utente Git
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          # Aggiungi, committa e fai il push
-          git add .
-          if ! git diff --staged --quiet; then
-            git commit -m "Update Arch Linux repository with $(basename $NEW_PKG_FILE)"
-            echo "Pushing changes..."
-            git push
-          else
-            echo "No changes to commit."
-          fi
+                    
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz NEW_PKG_FILE
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        working-directory: ${{ github.workspace }}
+
+      - name: 4. Deploy to penguins-eggs-repo
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PUBLISH_TOKEN }}
+          external_repository: pieroproietti/penguins-eggs-repo
+          publish_branch: main
+          publish_dir: ./repo-dir
+          keep_files: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Update Arch Linux repository"
