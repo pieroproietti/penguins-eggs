@@ -121,7 +121,10 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           # Crea/aggiorna il database del repo nella cartella manjaro
-          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          # Trova il file più recente
+          NEW_PKG_FILE=$(ls -vr penguins-eggs-*.pkg.tar.zst | head -n 1)
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
+          # repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
