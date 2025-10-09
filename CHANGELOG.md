@@ -20,7 +20,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.10.9
-* Debian/Devuan/Ubuntu: [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa) is now deprecated in favor of [penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo/deb);
+* variation: `eggs tools ppa` becomes `eggs tools repo` and has also been added for Manjaro. In the future, we will also include it for Fedora, EL9, and Opensuse;
+* Debian/Devuan/Ubuntu: [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa) is now deprecated in favor of [penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo/deb), the command
+`eggs repo --add/remove` installs/remove penguins-eggs repo and not more penguins-eggs-ppa;
+* Arch: with the introduction of the penguins-eggs repo repository for Arch, the command `eggs repo --add/remove` installs/remove this one and no longer [chaoticAUR](https://aur.chaotic.cx/);
+* Manjaro: although penguins-eggs is present in the Extra repository of the Manjaro distribution, the command `eggs repo --add/remove` enables or removes the penguins-eggs repo for Manjaro.
 
 
 ## v25.10.6
