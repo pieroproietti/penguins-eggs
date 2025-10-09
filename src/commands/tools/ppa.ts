@@ -1,4 +1,4 @@
-/**
+  /**
  * ./src/commands/tools/ppa.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
@@ -94,7 +94,7 @@ export default class Ppa extends Command {
       } else if (distro.familyId === 'fedora') {
         if (distro.distroId !== 'Fedora') {
           console.log("You can find the step-by-step instructions at this link:")
-          console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTR.md")
+          console.log("https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md")
           console.log()
         } else {
           console.log("You can find the step-by-step instructions at this link:")
