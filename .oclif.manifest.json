@@ -1203,7 +1203,7 @@
     "tools:repo": {
       "aliases": [],
       "args": {},
-      "description": "add/remove repo",
+      "description": "add/remove penguins-eggs-repo",
       "examples": [
         "sudo eggs tools repo --add",
         "sudo eggs tools repo --remove"

@@ -31,7 +31,7 @@ status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --excludes --file --help --verbose
 tools:clean --help --nointeractive --verbose
-tools:ppa --add --help --nointeractive --remove --verbose
+tools:repo --add --help --nointeractive --remove --verbose
 tools:skel --help --user --verbose
 tools:stat --help --month --year
 tools:yolk --help --verbose
