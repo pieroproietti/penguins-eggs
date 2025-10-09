@@ -59,12 +59,12 @@ export default class Repo extends Command {
         if (flags.add) {
           Utils.warning(`Are you sure to add penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await archlinuxRepoAdd(distro.distroLike)
+            await archlinuxRepoAdd(distro.distroId)
           }
         } else if (flags.remove) {
           Utils.warning(`Are you sure to remove penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await archlinuxRepoRemove(distro.distroLike)
+            await archlinuxRepoRemove(distro.distroId)
           }
         }
 
@@ -118,27 +118,28 @@ export default class Repo extends Command {
 
 
 /**
- * ARCH: archlinuxRepoAdd
+ * ARCH
  */
-async function archlinuxRepoAdd(distroLike = "Arch") {
+// archlinuxRepoAdd
+async function archlinuxRepoAdd(distroId = "Arch") {
+  console.log(`Adding penguins-repo for ${distroId}`)
+
   const repoBlockIdentifier = '# Penguins-eggs repository';
   const repoName = '[penguins-eggs]'
   const keyId = 'F6773EA7D2F309BA3E5DE08A45B10F271525403F'
   let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
-  if (Diversions.isManjaroBased(distroLike)) {
+  if (Diversions.isManjaroBased(distroId)) {
     serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
   const echo = Utils.setEcho(true)
 
-  // 1. Controlla se il repository è già configurato
   const pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
   if (pacmanConfContent.includes(repoName)) {
     console.log(`The repository ${repoName} already exists in ${pacmanConfPath}!`)
     return;
   }
 
-  // 2. Importa e firma la chiave GPG del repository
   console.log(`Importazione della chiave GPG: ${keyId}...`);
   await exec(`pacman-key --recv-key ${keyId} --keyserver keyserver.ubuntu.com`, echo);
   await exec(`pacman-key --lsign-key ${keyId}`, echo);
@@ -148,17 +149,24 @@ async function archlinuxRepoAdd(distroLike = "Arch") {
   repoBlock += `${repoName}\n`
   repoBlock += `SigLevel = Optional TrustAll\n`
   repoBlock += `Server = ${serverUrl}\n`
-  fs.appendFileSync(pacmanConfPath, repoBlock);
+  fs.appendFileSync(pacmanConfPath, repoBlock)
+
+  let message = 'Run “sudo pacman -Syyu” to update pacman databases.'
+  if (Diversions.isManjaroBased(distroId)) {
+    message ='Run “sudo pamac update --force-refresh" to update pacman databases.'
+  }
+  console.log('Repository successfully removed!');
+  console.log(message);
 }
 
-/**
- * ARCH: archlinuxRepoRemove
- */
-async function archlinuxRepoRemove(distroLike = 'Arch') {
+// archlinuxRepoRemove
+async function archlinuxRepoRemove(distroId = 'Arch') {
+  console.log(`Removing penguins-repo for ${distroId}`)
+
   const repoBlockIdentifier = '# Penguins-eggs repository'
   const repoName = '[penguins-eggs]'
   let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
-  if (Diversions.isManjaroBased(distroLike)) {
+  if (Diversions.isManjaroBased(distroId)) {
     serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
@@ -180,8 +188,8 @@ async function archlinuxRepoRemove(distroLike = 'Arch') {
     fs.writeFileSync(pacmanConfPath, pacmanConfContent.trim());
 
     let message = 'Run “sudo pacman -Syyu” to update pacman databases.'
-    if (Diversions.isManjaroBased(distroLike)) {
-      message ='Run “sudo pamac update --force-refresh to update pacman databases.'
+    if (Diversions.isManjaroBased(distroId)) {
+      message ='Run “sudo pamac update --force-refresh" to update pacman databases.'
     }
     console.log('Repository successfully removed!');
     console.log(message);
@@ -191,9 +199,7 @@ async function archlinuxRepoRemove(distroLike = 'Arch') {
   }
 }
 
-/**
- * ARCH: archlinuxAurAdd
- */
+// archlinuxAurAdd
 async function archlinuxAurAdd() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
@@ -215,9 +221,7 @@ async function archlinuxAurAdd() {
   fs.appendFileSync('/etc/pacman.conf', chaoticAppend)
 }
 
-/**
- * ARCH: archlinuxAurRemove
- */
+// archlinuxAurRemove
 async function archlinuxAurRemove() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
@@ -238,6 +242,20 @@ async function archlinuxAurRemove() {
 /**
  * DEBIAN
  */
+// debianAdd
+async function debianAdd() {
+  await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
+
+  const content = `deb [signed-by=${repoKeyPath}] ${repoUrl}/deb stable main\n`
+  fs.writeFileSync(`${repoPath}.list`, content)
+}
+
+//  debianRemove
+async function debianRemove() {
+  await exec(`rm -f ${repoKeyPath}`)
+  await exec(`rm -f ${repoPath}*`)
+}
+
 // is822
 async function is822(): Promise<boolean> {
   let retval = false
@@ -263,19 +281,4 @@ async function debianAdd822() {
   content += `Signed-By: ${repoKeyPath}\n`
 
   fs.writeFileSync(`${repoPath}.sources`, content)
-}
-
-// debianAdd
-async function debianAdd() {
-  await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
-
-  const content = `deb [signed-by=${repoKeyPath}] ${repoUrl}/deb stable main\n`
-  fs.writeFileSync(`${repoPath}.list`, content)
-}
-
-//  debianRemove
-async function debianRemove() {
-  // The script runs as root, so sudo inside exec is not needed here
-  await exec(`rm -f ${repoKeyPath}`)
-  await exec(`rm -f ${repoPath}*`)
 }
