@@ -36,10 +36,10 @@ export default class Ppa extends Command {
   static examples = ['sudo eggs tools ppa --add', 'sudo eggs tools ppa --remove']
 
   static flags = {
-    add: Flags.boolean({ char: 'a', description: 'add penguins-eggs PPA repository' }),
+    add: Flags.boolean({ char: 'a', description: 'add penguins-eggs-repo' }),
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs PPA repository' }),
+    remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs-repo' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -55,18 +55,19 @@ export default class Ppa extends Command {
     if (Utils.isRoot()) {
       const distro = new Distro()
 
-      if (distro.familyId === 'archlinux' && !Diversions.isManjaroBased(distro.distroId)) {
+      if (distro.familyId === 'archlinux') {
         if (flags.add) {
           Utils.warning(`Are you sure to add penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await penguinsRepoAdd()
+            await archlinuxRepoAdd(distro.distroLike)
           }
         } else if (flags.remove) {
           Utils.warning(`Are you sure to remove penguins-eggs-repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
-            await penguinsRepoRemove()
+            await archlinuxRepoRemove(distro.distroLike)
           }
         }
+
 
       } else if (distro.familyId === 'debian') {
         /**
@@ -75,7 +76,6 @@ export default class Ppa extends Command {
         if (flags.add) {
           Utils.warning(`Are you sure to add source ${path.basename(ppaPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
-            // Rimuove sempre le vecchie configurazioni per uno stato pulito
             await debianRemove()
             if (await is822()) {
               await debianAdd822()
@@ -118,21 +118,23 @@ export default class Ppa extends Command {
 
 
 /**
- * PENGUINS-EGGS-REPO (ARCH)
+ * ARCH: archlinuxRepoAdd
  */
-async function penguinsRepoAdd() {
+async function archlinuxRepoAdd(distroLike = "Arch") {
   const repoBlockIdentifier = '# Penguins-eggs repository';
   const repoName = '[penguins-eggs]'
   const keyId = 'F6773EA7D2F309BA3E5DE08A45B10F271525403F'
-  const serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  if (Diversions.isManjaroBased(distroLike)) {
+    serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
+  }
   const pacmanConfPath = '/etc/pacman.conf'
   const echo = Utils.setEcho(true)
 
   // 1. Controlla se il repository è già configurato
   const pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
   if (pacmanConfContent.includes(repoName)) {
-    console.log(`Il repository ${repoName} è già presente in ${pacmanConfPath}!`);
-    // Qui potresti voler uscire o chiamare una funzione di rimozione, come nel tuo esempio.
+    console.log(`The repository ${repoName} already exists in ${pacmanConfPath}!`)
     return;
   }
 
@@ -150,23 +152,22 @@ async function penguinsRepoAdd() {
 }
 
 /**
- * Rimuove il repository penguins-eggs da /etc/pacman.conf
+ * ARCH: archlinuxRepoRemove
  */
-async function penguinsRepoRemove() {
-  // --- Configurazione del repository da rimuovere ---
+async function archlinuxRepoRemove(distroLike = 'Arch') {
   const repoBlockIdentifier = '# Penguins-eggs repository'
   const repoName = '[penguins-eggs]'
-  const serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
-  const serverLine = 'Server = https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  if (Diversions.isManjaroBased(distroLike)) {
+    serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
+  }
   const pacmanConfPath = '/etc/pacman.conf'
 
   let pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
 
-  // Controlla se il repository è effettivamente presente
   if (pacmanConfContent.includes(repoName)) {
-    console.log(`Rimozione del repository ${repoName} in corso...`);
+    console.log(`Removing repository ${repoName} in progress...`);
 
-    // Costruisce la stringa esatta del blocco da rimuovere
     let repoBlock = ``
     repoBlock += repoBlockIdentifier + `\n`
     repoBlock += `${repoName}\n`
@@ -174,25 +175,26 @@ async function penguinsRepoRemove() {
     repoBlock += `Server = ${serverUrl}\n`
 
 
-    // Sostituisce il blocco del repository con una stringa vuota
     pacmanConfContent = pacmanConfContent.replace(repoBlock, '');
 
-    // Riscrive il file con il contenuto aggiornato, usando trim() per
-    // rimuovere eventuali spazi o righe vuote all'inizio o alla fine.
     fs.writeFileSync(pacmanConfPath, pacmanConfContent.trim());
 
-    console.log('Repository rimosso con successo!');
-    console.log('Esegui "sudo pacman -Syyu" per aggiornare i database.');
+    let message = 'Run “sudo pacman -Syyu” to update pacman databases.'
+    if (Diversions.isManjaroBased(distroLike)) {
+      message ='Run “sudo pamac update --force-refresh to update pacman databases.'
+    }
+    console.log('Repository successfully removed!');
+    console.log(message);
 
   } else {
-    console.log('Il repository non era presente in /etc/pacman.conf.');
+    console.log('The repository was not present in /etc/pacman.conf.');
   }
 }
+
 /**
- * ARCH
+ * ARCH: archlinuxAurAdd
  */
-// archAdd
-async function archAdd() {
+async function archlinuxAurAdd() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
   const mirrorlist = 'chaotic-mirrorlist.pkg.tar.zst'
@@ -200,7 +202,7 @@ async function archAdd() {
 
   if (fs.existsSync(path + keyring) && fs.existsSync(path + mirrorlist)) {
     console.log('repository Chaotic-AUR, already present!')
-    await archRemove()
+    await archlinuxAurRemove()
     process.exit()
   }
 
@@ -213,8 +215,10 @@ async function archAdd() {
   fs.appendFileSync('/etc/pacman.conf', chaoticAppend)
 }
 
-// archRemove
-async function archRemove() {
+/**
+ * ARCH: archlinuxAurRemove
+ */
+async function archlinuxAurRemove() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
   const mirrorlist = 'chaotic-mirrorlist.pkg.tar.zst'
@@ -275,5 +279,3 @@ async function debianRemove() {
   await exec(`rm -f ${ppaKeyPath}`)
   await exec(`rm -f ${ppaPath}*`)
 }
-
-
