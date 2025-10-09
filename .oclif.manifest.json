@@ -1200,18 +1200,18 @@
         "clean.js"
       ]
     },
-    "tools:ppa": {
+    "tools:repo": {
       "aliases": [],
       "args": {},
-      "description": "add/remove repo",
+      "description": "add/remove penguins-eggs-repo",
       "examples": [
-        "sudo eggs tools ppa --add",
-        "sudo eggs tools ppa --remove"
+        "sudo eggs tools repo --add",
+        "sudo eggs tools repo --remove"
       ],
       "flags": {
         "add": {
           "char": "a",
-          "description": "add penguins-eggs PPA repository",
+          "description": "add penguins-eggs-repo",
           "name": "add",
           "allowNo": false,
           "type": "boolean"
@@ -1232,7 +1232,7 @@
         },
         "remove": {
           "char": "r",
-          "description": "remove penguins-eggs PPA repository",
+          "description": "remove penguins-eggs-repo",
           "name": "remove",
           "allowNo": false,
           "type": "boolean"
@@ -1247,7 +1247,7 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "tools:ppa",
+      "id": "tools:repo",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1258,7 +1258,7 @@
         "dist",
         "commands",
         "tools",
-        "ppa.js"
+        "repo.js"
       ]
     },
     "tools:skel": {
@@ -1629,5 +1629,5 @@
       ]
     }
   },
-  "version": "25.10.6"
+  "version": "25.10.9"
 }

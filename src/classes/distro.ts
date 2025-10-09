@@ -118,7 +118,7 @@ class Distro implements IDistro {
        */
     } else if (this.distroId === 'Openmamba') {
       this.familyId = 'openmamba'
-      this.distroLike = 'openmamba'
+      this.distroLike = 'Openmamba'
       this.codenameId = 'rolling' // viene rimosso dal nome
       this.distroUniqueId = this.familyId // per krill
       this.liveMediumPath = '/run/initramfs/live/'

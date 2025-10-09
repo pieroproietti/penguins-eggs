@@ -32,7 +32,7 @@ REMOTE_DEST_DIR="/home/${REMOTE_USER}/${ID}"
 
 # 3. Esegui Calamares e crea il log
 echo "INFO: Avvio di Calamares in modalità debug (potrebbe essere richiesta la password sudo)..."
-sudo calamares -d > "${LOG_FILE}" 2>&1
+sudo calamares -d | tee "${LOG_FILE}"
 echo "INFO: Calamares ha terminato. Log salvato in '${LOG_FILE}'."
 
 # 4. Pulisci e ricrea la directory remota (la tua richiesta)

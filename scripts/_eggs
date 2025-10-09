@@ -59,7 +59,7 @@ _eggs_tools() {
     cmds)
 _values "completions" \
 "clean[clean system log, apt, etc]" \
-"ppa[add/remove repo]" \
+"repo[add/remove repo]" \
 "skel[update skel from home configuration]" \
 "stat[get statistics from sourceforge]" \
 "yolk[configure eggs to install without internet]" \
@@ -75,12 +75,12 @@ _values "completions" \
 --help"[Show help for command]" \
 "*: :_files"
         ;;
-        "ppa")
+        "repo")
           _arguments -S \
-"(-a --add)"{-a,--add}"[add penguins-eggs PPA repository]" \
+"(-a --add)"{-a,--add}"[add penguins-eggs-repo]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-r --remove)"{-r,--remove}"[remove penguins-eggs PPA repository]" \
+"(-r --remove)"{-r,--remove}"[remove penguins-eggs-repo]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files"

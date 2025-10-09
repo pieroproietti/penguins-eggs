@@ -19,6 +19,10 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.9
+* Debian/Devuan/Ubuntu: [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa) is now deprecated in favor of [penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo/deb);
+
+
 ## v25.10.6
 * same little adaptment for CachyOS;
 * successfull tested on CachyOS, Linuxmint zara cinnamon and EndeavourOS.
