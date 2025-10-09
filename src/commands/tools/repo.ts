@@ -1,5 +1,5 @@
-  /**
- * ./src/commands/tools/ppa.ts
+/**
+ * ./src/commands/tools/repo.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -22,18 +22,18 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const ppaKeyUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc'
-const ppaKeyPath = '/usr/share/keyrings/penguins-eggs-repo.gpg'
-const ppaUrl = `https://pieroproietti.github.io/penguins-eggs-repo`
-let ppaPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
+const repoKeyUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc'
+const repoKeyPath = '/usr/share/keyrings/penguins-eggs-repo.gpg'
+const repoUrl = `https://pieroproietti.github.io/penguins-eggs-repo`
+let repoPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
 
 /**
  *
  */
-export default class Ppa extends Command {
-  static description = 'add/remove repo'
+export default class Repo extends Command {
+  static description = 'add/remove penguins-eggs-repo'
 
-  static examples = ['sudo eggs tools ppa --add', 'sudo eggs tools ppa --remove']
+  static examples = ['sudo eggs tools repo --add', 'sudo eggs tools repo --remove']
 
   static flags = {
     add: Flags.boolean({ char: 'a', description: 'add penguins-eggs-repo' }),
@@ -47,7 +47,7 @@ export default class Ppa extends Command {
    *
    */
   async run(): Promise<void> {
-    const { flags } = await this.parse(Ppa)
+    const { flags } = await this.parse(Repo)
     Utils.titles(this.id + ' ' + this.argv)
 
     const { nointeractive } = flags
@@ -74,7 +74,7 @@ export default class Ppa extends Command {
          * Debian
          */
         if (flags.add) {
-          Utils.warning(`Are you sure to add source ${path.basename(ppaPath)} to your repositories?`)
+          Utils.warning(`Are you sure to add source ${path.basename(repoPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             await debianRemove()
             if (await is822()) {
@@ -84,7 +84,7 @@ export default class Ppa extends Command {
             }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove source ${path.basename(ppaPath)} to your repositories?`)
+          Utils.warning(`Are you sure to remove source ${path.basename(repoPath)} to your repositories?`)
           if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
             await debianRemove()
           }
@@ -253,29 +253,29 @@ async function is822(): Promise<boolean> {
 
 // debianAdd822
 async function debianAdd822() {
-  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
+  await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
 
   let content = ''
   content += `Types: deb\n`
-  content += `URIs: ${ppaUrl}/deb\n` // Correct URI for packages
+  content += `URIs: ${repoUrl}/deb\n` // Correct URI for packages
   content += `Suites: stable\n` // It's better to be specific
   content += `Components: main\n`
-  content += `Signed-By: ${ppaKeyPath}\n`
+  content += `Signed-By: ${repoKeyPath}\n`
 
-  fs.writeFileSync(`${ppaPath}.sources`, content)
+  fs.writeFileSync(`${repoPath}.sources`, content)
 }
 
 // debianAdd
 async function debianAdd() {
-  await exec(`curl -fsSL ${ppaKeyUrl} | gpg --dearmor -o ${ppaKeyPath}`)
+  await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
 
-  const content = `deb [signed-by=${ppaKeyPath}] ${ppaUrl}/deb stable main\n`
-  fs.writeFileSync(`${ppaPath}.list`, content)
+  const content = `deb [signed-by=${repoKeyPath}] ${repoUrl}/deb stable main\n`
+  fs.writeFileSync(`${repoPath}.list`, content)
 }
 
 //  debianRemove
 async function debianRemove() {
   // The script runs as root, so sudo inside exec is not needed here
-  await exec(`rm -f ${ppaKeyPath}`)
-  await exec(`rm -f ${ppaPath}*`)
+  await exec(`rm -f ${repoKeyPath}`)
+  await exec(`rm -f ${repoPath}*`)
 }
