@@ -57,12 +57,12 @@ export default class Repo extends Command {
 
       if (distro.familyId === 'archlinux') {
         if (flags.add) {
-          Utils.warning(`Are you sure to add penguins-eggs-repo to your repositories?`)
+          Utils.warning(`Are you sure to add penguins-eggs repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
             await archlinuxRepoAdd(distro.distroId)
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove penguins-eggs-repo to your repositories?`)
+          Utils.warning(`Are you sure to remove penguins-eggs repo to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
             await archlinuxRepoRemove(distro.distroId)
           }
@@ -122,7 +122,7 @@ export default class Repo extends Command {
  */
 // archlinuxRepoAdd
 async function archlinuxRepoAdd(distroId = "Arch") {
-  console.log(`Adding penguins-repo for ${distroId}`)
+  console.log(`Adding penguins-eggs repo for ${distroId}`)
 
   const repoBlockIdentifier = '# Penguins-eggs repository';
   const repoName = '[penguins-eggs]'
@@ -161,7 +161,7 @@ async function archlinuxRepoAdd(distroId = "Arch") {
 
 // archlinuxRepoRemove
 async function archlinuxRepoRemove(distroId = 'Arch') {
-  console.log(`Removing penguins-repo for ${distroId}`)
+  console.log(`Removing penguins-eggs repo for ${distroId}`)
 
   const repoBlockIdentifier = '# Penguins-eggs repository'
   const repoName = '[penguins-eggs]'
