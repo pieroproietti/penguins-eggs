@@ -59,7 +59,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
     this.cryptedclone = cryptedclone
 
-    const luksName = 'luks-volume'
+    const luksName = 'fs.luks'
 
     const luksFile = `/tmp/${luksName}`
 
@@ -289,14 +289,8 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
         }
 
         if (cryptedclone) {
-            let synctoCmd = `eggs syncto  -f ${luksFile}`
-            if (excludes.home) {
-                synctoCmd += ' --excludes' // from Marco, usa home.list
-            }
-
-            await exec(synctoCmd, Utils.setEcho(true))
-            Utils.warning(`moving ${luksFile} in ${this.nest}(ISO)/live`)
-            await exec(`mv ${luksFile} ${this.nest}(ISO)/live`, this.echo)
+            await this.encryptLiveFs()
+            await this.initramfsDebianLuks()
         }
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')

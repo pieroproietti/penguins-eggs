@@ -55,7 +55,7 @@ export default class Produce extends Command {
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    includeRoot: Flags.boolean({ char: 'u', description: '/root contents are not included on live' }),
+    includeRoot: Flags.boolean({ char: 'i', description: 'folder /root is included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }

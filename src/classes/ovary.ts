@@ -47,8 +47,11 @@ import { kernelCopy } from './ovary.d/kernel-copy.js'
 import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
+import { encryptLiveFs } from './ovary.d/encrypt-live.fs.js'
+import { initramfsDebianLuks } from './ovary.d/initramfs.js'
+
 // Functions
-import rexec from './ovary.d/rexec.js'
+// import initramfs from '../krill/classes/sequence.d/initramfs.js'
 
 
 // _dirname
@@ -140,5 +143,9 @@ export default class Ovary {
   kernelCopy = kernelCopy
   liveCreateStructure = liveCreateStructure
   finished = finished
+
+  // new
+  encryptLiveFs = encryptLiveFs
+  initramfsDebianLuks = initramfsDebianLuks
 }
 

@@ -26,7 +26,7 @@ kill --help --isos --nointeractive --verbose
 love --help --verbose --nointeractive
 mom --help
 pods --help
-produce --addons --basename --clone --cryptedclone --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --rootExcluded --verbose --yolk
+produce --addons --basename --clone --cryptedclone --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRoot --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --excludes --file --help --verbose
@@ -40,8 +40,8 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-help --nested-commands
 autocomplete --refresh-cache
+help --nested-commands
 version --json --verbose
 "
 
