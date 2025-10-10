@@ -229,26 +229,30 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
             // need syslinux?
             const arch = process.arch
-            if (arch === 'ia32' || arch ==='x64') {
+            if (arch === 'ia32' || arch === 'x64') {
                 await this.syslinux(this.theme)
             }
 
             await this.kernelCopy()
 
             /**
-             * spostare alla fine per dracut
+             * if crytedclone, delay initramfs creation 
              */
-            if (this.familyId === 'alpine') {
-                await this.initrdAlpine()
-            } else if (this.familyId === 'archlinux') {
-                await this.initrdArch()
-            } else if (this.familyId === 'debian') {
-                await this.initrdDebian()
-            } else if (this.familyId === 'fedora' ||
-                this.familyId === 'openmamba' ||
-                this.familyId === 'opensuse' ||
-                this.familyId === 'voidlinux') {
-                await this.initrdDracut()
+            if (this.cryptedclone) {
+                Utils.warning("initramfs creation is delayed...")
+            } else {
+                if (this.familyId === 'alpine') {
+                    await this.initrdAlpine()
+                } else if (this.familyId === 'archlinux') {
+                    await this.initrdArch()
+                } else if (this.familyId === 'debian') {
+                    await this.initrdDebian()
+                } else if (this.familyId === 'fedora' ||
+                    this.familyId === 'openmamba' ||
+                    this.familyId === 'opensuse' ||
+                    this.familyId === 'voidlinux') {
+                    await this.initrdDracut()
+                }
             }
 
             if (this.settings.config.make_efi) {
@@ -256,10 +260,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             await this.bindLiveFs()
-            
+
             // We run them just to have scripts
             await this.bindVfs()
-            await this.ubindVfs() 
+            await this.ubindVfs()
 
             if (!this.clone) {
                 /**
@@ -283,7 +287,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             }
 
             await this.editLiveFs(clone, cryptedclone)
-            
+
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
             await this.uBindLiveFs() // Lo smonto prima della fase di backup
         }
@@ -344,15 +348,15 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             /**
              * patch 4 mksquashfs
              */
-            let fname =`${this.settings.work_dir.ovarium}mksquashfs`
-            let content = fs.readFileSync(fname,'utf8')
+            let fname = `${this.settings.work_dir.ovarium}mksquashfs`
+            let content = fs.readFileSync(fname, 'utf8')
             const patched = '# Arch and Manjaro based distro need this link'
             // not need check, is always clean here... but OK
             if (!content.includes(patched)) {
                 content += patched + '\n'
-                content +=`if [ ! -e "${filesystemName}" ]; then\n`
-                content +=`   ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}\n`
-                content +=`fi\n`
+                content += `if [ ! -e "${filesystemName}" ]; then\n`
+                content += `   ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}\n`
+                content += `fi\n`
                 fs.writeFileSync(fname, content, 'utf8')
             }
         }

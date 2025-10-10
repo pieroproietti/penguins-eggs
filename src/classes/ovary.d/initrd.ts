@@ -1,5 +1,5 @@
 /**
- * ./src/classes/ovary.d/initrd-arch.ts
+ * ./src/classes/ovary.d/initrd.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
