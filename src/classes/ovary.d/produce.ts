@@ -43,10 +43,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param myAddons
  * @param nointeractive
  * @param noicons
- * @param unsecure
+ * @param includeRoot
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, unsecure = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -284,7 +284,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
             await this.editLiveFs(clone, cryptedclone)
             
-            mksquashfsCmd = await this.makeSquashfs(scriptOnly, unsecure)
+            mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
             await this.uBindLiveFs() // Lo smonto prima della fase di backup
         }
 

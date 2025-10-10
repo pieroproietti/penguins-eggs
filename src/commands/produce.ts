@@ -55,7 +55,7 @@ export default class Produce extends Command {
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    unsecure: Flags.boolean({ char: 'u', description: '/root contents are included on live' }),
+    includeRoot: Flags.boolean({ char: 'u', description: '/root contents are not included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }
@@ -172,8 +172,8 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      // if clone or cryptedclone unsecure = true
-      const unsecure = flags.unsecure || clone || cryptedclone
+      // if clone or cryptedclone includeRoot = true
+      const includeRoot = flags.includeRoot || clone || cryptedclone
 
       let { kernel } = flags
       if (kernel === undefined) {
@@ -246,7 +246,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(kernel, clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, unsecure, verbose)
+        await ovary.produce(kernel, clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

@@ -26,7 +26,7 @@ kill --help --isos --nointeractive --verbose
 love --help --verbose --nointeractive
 mom --help
 pods --help
-produce --addons --basename --clone --cryptedclone --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --unsecure --verbose --yolk
+produce --addons --basename --clone --cryptedclone --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --rootExcluded --verbose --yolk
 status --help --verbose
 syncfrom --delete --file --help --rootdir --verbose
 syncto --excludes --file --help --verbose

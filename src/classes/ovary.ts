@@ -25,12 +25,6 @@ import { exec } from '../lib/utils.js'
 import CliAutologin from './cli-autologin.js'
 import Incubator from './incubation/incubator.js'
 import Settings from './settings.js'
-import Users from './users.js'
-import Diversions from './diversions.js'
-
-// classes
-import Utils from './utils.js'
-import Repo from './yolk.js'
 
 // Methods
 import { fertilization } from './ovary.d/fertilization.js'
