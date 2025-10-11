@@ -76,11 +76,13 @@
         "/dist",
         "/dracut",
         "/eui",
+        "/initramfs-crypto",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
         "/perrisbrewery",
         "/scripts"
+        
     ],
     "homepage": "https://penguins-eggs.net",
     "keywords": [

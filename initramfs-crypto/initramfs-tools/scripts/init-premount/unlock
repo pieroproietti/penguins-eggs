@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# Esce se non siamo in una sessione live
+[ "$LIVE_BOOT" = "true" ] || exit 0
+
+echo "Executing custom unlock script..."
+
+# Cerca il file .squashfs criptato su tutti i dispositivi montati
+for mountpoint in /lib/live/mount/*; do
+    if [ -d "$mountpoint/live" ]; then
+        ENCRYPTED_FILE=$(find "$mountpoint/live" -name 'encrypted.filesystem.squashfs' -print -quit)
+        if [ -n "$ENCRYPTED_FILE" ]; then
+            LIVE_MEDIA_PATH="$mountpoint"
+            break
+        fi
+    fi
+done
+
+if [ -z "$ENCRYPTED_FILE" ]; then
+    echo "ERROR: encrypted.filesystem.squashfs not found!"
+    # Termina in una shell di emergenza
+    panic "Encrypted file not found"
+fi
+
+echo "Found encrypted file at: $ENCRYPTED_FILE"
+
+# Chiedi la passphrase (questo aprirà un prompt di testo base)
+cryptsetup open "$ENCRYPTED_FILE" live_decrypted
+
+# Controlla se il comando precedente ha avuto successo
+if [ $? -ne 0 ]; then
+    panic "Failed to open LUKS volume. Wrong passphrase?"
+fi
+
+echo "LUKS volume unlocked successfully!"
+
+# Ora dobbiamo dire a live-boot di usare il nostro filesystem decriptato.
+# Creiamo un filesystem "overlay" in RAM per puntare al file corretto.
+# Questo è il "trucco" per integrare il processo.
+mkdir -p /run/live/decrypted
+mount -t squashfs /dev/mapper/live_decrypted /run/live/decrypted
+
+# Diciamo a live-boot di cercare il filesystem qui
+export root_fs="/run/live/decrypted/filesystem.squashfs"
+
+# Modifichiamo la variabile che live-boot usa per trovare il filesystem.squashfs
+# In questo modo, il resto del processo di boot funzionerà senza modifiche.
+for file in /lib/live/boot/0190-find-squashfs*; do
+    sed -i 's|fs_filename="filesystem.squashfs"|fs_filename="'$root_fs'"|g' "$file"
+done
+
+echo "Live-boot redirected to use decrypted volume."

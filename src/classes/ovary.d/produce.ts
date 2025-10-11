@@ -59,9 +59,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
     this.cryptedclone = cryptedclone
 
-    const luksName = 'fs.luks'
-
-    const luksFile = `/tmp/${luksName}`
+    // new
+    this.luksName = 'encrypted.filesystem.squashfs';
+    this.luksFile = `/tmp/${this.luksName}`
+    this.luksDevice = `/dev/mapper/${this.luksName}`
+    this.luksMountpoint = `/tmp/mnt/${this.luksName}`
 
     this.nest = this.settings.config.snapshot_dir
     this.dotMnt = `${this.nest}.mnt`
@@ -77,16 +79,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             const moduleDirs = fs.readdirSync('/lib/modules')
             this.kernel = moduleDirs[0]
 
-        } else if (this.familyId === 'archlinux') {
+        } else if (this.familyId === 'archlinux') { // arch, manjaro
             const moduleDirs = fs.readdirSync('/usr/lib/modules')
             this.kernel = moduleDirs[0]
-
-            /**
-             * no need more
-             */
-            if (Diversions.isManjaroBased(this.distroId)) {
-                // this.kernel += '-MANJARO'
-            }
 
         } else { // debian, fedora, openmamba, opensuse, voidlinux
             let vmlinuz = path.basename(Utils.vmlinuz())
@@ -146,25 +141,19 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             await bleach.clean(verbose)
         }
 
-        if (cryptedclone) {
-            /**
-             * cryptedclone
-             */
-            console.log("eggs will SAVE users and users' data ENCRYPTED")
+        /**
+         * cryptedclone/clone/standard
+         */
+        if (this.cryptedclone) {
+            Utils.warning("eggs will SAVE users and users' data ENCRYPTED")
 
         } else if (this.clone) {
-            /**
-             * clone
-             */
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
             this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data UNCRYPTED on the live")
 
         } else {
-            /**
-             * normal
-             */
             Utils.warning("eggs will REMOVE users and users' data from live")
         }
 
@@ -239,7 +228,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
              * if crytedclone, delay initramfs creation 
              */
             if (this.cryptedclone) {
-                Utils.warning("initramfs creation is delayed...")
+                await this.initramfsDebianLuks()
             } else {
                 if (this.familyId === 'alpine') {
                     await this.initrdAlpine()
@@ -294,7 +283,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
         if (cryptedclone) {
             await this.encryptLiveFs()
-            await this.initramfsDebianLuks()
         }
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')

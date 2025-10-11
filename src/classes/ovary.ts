@@ -111,6 +111,12 @@ export default class Ovary {
 
   dotLivefs = ''
 
+  // new
+  luksName = ''
+  luksFile = ''
+  luksDevice = ''
+  luksMountpoint = ''
+
 
 
   // I put all methods on ovary.d
