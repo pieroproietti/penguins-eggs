@@ -29,6 +29,8 @@ export default class Love extends Command {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone' }),
+    cryptedclone: Flags.boolean({ char: 'k', description: 'crypted clone' }),
   }
 
   async run(): Promise<void> {
@@ -41,12 +43,28 @@ export default class Love extends Command {
       flagVerbose = '--verbose'
     }
 
+    let cryptedclone = false
+    let flagCryptedclone = ''
+    if (flags.cryptedclone) {
+      flagCryptedclone = '--cryptedclone'
+      cryptedclone = true
+    }
+
+    let clone = false
+    let flagClone = ''
+    if (flags.clone) {
+      flagClone = '--clone'
+      clone = true
+    }
+
     let nointeractive = false
     let flagNointeractive = ''
     if (flags.nointeractive) {
       flagNointeractive = '--nointeractive'
       nointeractive = true
     }
+
+
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
@@ -69,13 +87,22 @@ export default class Love extends Command {
     console.log('The following commands will be executed:')
     console.log()
     for (const cmd of cmds) {
-      console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
+      if (cmd.includes('produce')) {
+        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+      } else {
+        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
+      }
     }
+
 
     console.log()
     if (nointeractive || await Utils.customConfirm()) {
       for (const cmd of cmds) {
-        await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
+        if (cmd.includes('produce')) {
+          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+        } else {
+          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
+        }
       }
     } else {
       console.log('Aborted!')

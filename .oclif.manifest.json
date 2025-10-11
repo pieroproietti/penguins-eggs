@@ -544,6 +544,20 @@
           "name": "nointeractive",
           "allowNo": false,
           "type": "boolean"
+        },
+        "clone": {
+          "char": "c",
+          "description": "clone",
+          "name": "clone",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedclone": {
+          "char": "k",
+          "description": "crypted clone",
+          "name": "cryptedclone",
+          "allowNo": false,
+          "type": "boolean"
         }
       },
       "hasDynamicHelp": false,
@@ -671,7 +685,7 @@
           "type": "boolean"
         },
         "cryptedclone": {
-          "char": "C",
+          "char": "k",
           "description": "crypted clone",
           "name": "cryptedclone",
           "allowNo": false,
@@ -692,7 +706,7 @@
           "type": "boolean"
         },
         "kernel": {
-          "char": "k",
+          "char": "K",
           "description": "kernel version",
           "name": "kernel",
           "hasDynamicHelp": false,

@@ -23,10 +23,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initramfsDebian
  */
 export async function initramfsDebianLuks(this: Ovary, verbose = true) {
-    let confdir = path.join(__dirname, '../../../initramfs-crypto/initramfs-tools')
-
-    Utils.warning(`creating ${this.initrd} using mkinitramfs -c ${confdir} on (ISO)/live`)
-    await exec(`mkinitramfs -c ${confdir} -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} ${this.toNull}`, this.echo)
+    // -c ${confdir}
+    Utils.warning(`creating ${this.initrd} using mkinitramfs  on (ISO)/live`)
+    // await exec(`mkinitramfs -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} ${this.toNull}`, this.echo)
+    await exec(`mkinitramfs -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} -v`)
 
 }
 

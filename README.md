@@ -911,9 +911,10 @@ the simplest way to get an egg!
 
 ```
 USAGE
-  $ eggs love [-h] [-v] [-n]
+  $ eggs love [-h] [-v] [-n] [-K]
 
 FLAGS
+  -K, --cryptedclone   crypted clone
   -h, --help           Show CLI help.
   -n, --nointeractive  no user interaction
   -v, --verbose
@@ -980,12 +981,12 @@ produce a live image from your system whithout your data
 
 ```
 USAGE
-  $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-C] [--excludes <value>...] [-h] [-k
+  $ eggs produce [--addons <value>...] [--basename <value>] [-c] [-K] [--excludes <value>...] [-h] [-k
     <value>] [--links <value>...] [-m] [-N] [-n] [-p] [-P <value>] [--release] [-s] [-S] [--theme <value>] [-i] [-v]
     [-y]
 
 FLAGS
-  -C, --cryptedclone         crypted clone
+  -K, --cryptedclone         crypted clone
   -N, --noicon               no icon eggs on desktop
   -P, --prefix=<value>       prefix
   -S, --standard             standard compression: xz -b 1M
