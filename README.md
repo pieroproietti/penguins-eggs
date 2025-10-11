@@ -505,8 +505,6 @@ sudo eggs produce --max
 * [`eggs pods [DISTRO]`](#eggs-pods-distro)
 * [`eggs produce`](#eggs-produce)
 * [`eggs status`](#eggs-status)
-* [`eggs syncfrom`](#eggs-syncfrom)
-* [`eggs syncto`](#eggs-syncto)
 * [`eggs tools clean`](#eggs-tools-clean)
 * [`eggs tools repo`](#eggs-tools-repo)
 * [`eggs tools skel`](#eggs-tools-skel)
@@ -1057,59 +1055,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.10.11/src/commands/status.ts)_
-
-## `eggs syncfrom`
-
-restore users and user data from a LUKS volumes
-
-```
-USAGE
-  $ eggs syncfrom [--delete <value>] [-f <value>] [-h] [-r <value>] [-v]
-
-FLAGS
-  -f, --file=<value>     file containing luks-volume encrypted
-  -h, --help             Show CLI help.
-  -r, --rootdir=<value>  rootdir of the installed system, when used from live
-  -v, --verbose          verbose
-      --delete=<value>   rsync --delete delete extraneous files from dest dirs
-
-DESCRIPTION
-  restore users and user data from a LUKS volumes
-
-EXAMPLES
-  sudo eggs syncfrom
-
-  sudo eggs syncfrom --file /path/to/luks-volume
-```
-
-_See code: [src/commands/syncfrom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.10.11/src/commands/syncfrom.ts)_
-
-## `eggs syncto`
-
-Save users and users' data ENCRYPTED
-
-```
-USAGE
-  $ eggs syncto [-e] [-f <value>] [-h] [-v]
-
-FLAGS
-  -e, --excludes      use: exclude.list.d/home.list
-  -f, --file=<value>  file luks-volume encrypted
-  -h, --help          Show CLI help.
-  -v, --verbose       verbose
-
-DESCRIPTION
-  Save users and users' data ENCRYPTED
-
-EXAMPLES
-  sudo eggs syncto
-
-  sudo eggs syncto --file /path/to/luks-volume
-
-  sudo eggs syncto --excludes
-```
-
-_See code: [src/commands/syncto.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.10.11/src/commands/syncto.ts)_
 
 ## `eggs tools clean`
 

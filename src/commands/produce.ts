@@ -41,7 +41,7 @@ export default class Produce extends Command {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'C', description: 'crypted clone' }),
+    cryptedclone: Flags.boolean({ char: 'K', description: 'crypted clone' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
     kernel: Flags.string({ char: 'k', description: 'kernel version' }),
