@@ -60,7 +60,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     this.cryptedclone = cryptedclone
 
     // new
-    this.luksName = 'encrypted.filesystem.squashfs';
+    this.luksName = 'filesystem.encrypted';
     this.luksFile = `/tmp/${this.luksName}`
     this.luksDevice = `/dev/mapper/${this.luksName}`
     this.luksMountpoint = `/tmp/mnt/${this.luksName}`

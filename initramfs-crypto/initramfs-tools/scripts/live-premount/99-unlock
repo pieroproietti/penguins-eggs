@@ -6,12 +6,12 @@ if [ ! -e /etc/live/boot.log ]; then
     exit 0
 fi
 
-echo "🚀 Esecuzione script personalizzato per sblocco volume..."
+echo "Esecuzione script personalizzato per sblocco volume..."
 
 # Scansiona tutti i dispositivi alla ricerca del nostro file
 for d in /lib/live/mount/*; do
     if [ -d "${d}/live" ]; then
-        ENCRYPTED_FILE=$(find "${d}/live" -name 'encrypted.filesystem.squashfs' -print -quit)
+        ENCRYPTED_FILE=$(find "${d}/live" -name 'filesystem.encrypted' -print -quit)
         if [ -n "$ENCRYPTED_FILE" ]; then
             break
         fi
@@ -20,7 +20,7 @@ done
 
 # Se non troviamo il file, fermiamo il boot
 if [ -z "$ENCRYPTED_FILE" ]; then
-    echo "❌ ERRORE: encrypted.filesystem.squashfs non trovato!"
+    echo "ERRORE: filesystem.encrypted non trovato!"
     panic "File squashfs criptato non trovato."
 fi
 
