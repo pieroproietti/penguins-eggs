@@ -24,11 +24,13 @@ import { exec } from '../../lib/utils.js'
 export async function encryptLiveFs(this: Ovary, clone = false, cryptedclone = false) {
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
-  // this.luksName = 'encrypted.filesystem.squashfs';
-  // this.luksFile = `/tmp/${luksName}`
-  // this.luksDevice = `/dev/mapper/${luksName}`
-  // this.luksMountpoint = `/tmp/mnt/${luksName}`
-  const luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
+  /**
+   * this.luksName = 'encrypted.filesystem.squashfs';
+   * this.luksFile = `/tmp/${luksName}`
+   * this.luksDevice = `/dev/mapper/${luksName}`
+   * this.luksMountpoint = `/tmp/mnt/${luksName}`
+   * this.luksPassword = 'evolution' 
+   */
 
   try {
     Utils.warning('1. Calculation of space requirements...')
@@ -44,10 +46,10 @@ export async function encryptLiveFs(this: Ovary, clone = false, cryptedclone = f
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], luksPassword)
+    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], this.luksPassword)
 
     Utils.warning(`4. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksName], luksPassword)
+    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksName], this.luksPassword)
     
     Utils.warning("   Please wait for opening...")
     await executeCommand('udevadm', ['settle'])

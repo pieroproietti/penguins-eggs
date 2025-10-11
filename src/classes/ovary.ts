@@ -111,11 +111,15 @@ export default class Ovary {
 
   dotLivefs = ''
 
-  // new
   luksName = ''
+
   luksFile = ''
+
   luksDevice = ''
+
   luksMountpoint = ''
+
+  luksPassword = ''
 
 
 
@@ -124,34 +128,32 @@ export default class Ovary {
   public produce = produce
 
   // called only inside Ovary
+  addExclusion = addExclusion
   bindLiveFs = bindLiveFs
   bindVfs = bindVfs
-  editLiveFs = editLiveFs
-  makeEfi = makeEfi
-  makeSquashfs = makeSquashfs
-  addExclusion = addExclusion
-  xorrisoCommand = xorrisoCommand
-  createXdgAutostart = createXdgAutostart
   copied = copied
-  merged = merged
-  mergedAndOverlay = mergedAndOverlay
-  makeIso = makeIso
+  createXdgAutostart = createXdgAutostart
+  editLiveFs = editLiveFs
+  encryptLiveFs = encryptLiveFs
+  finished = finished
+  initramfsDebianLuks = initramfsDebianLuks
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
   initrdDebian = initrdDebian
   initrdDracut = initrdDracut
-  userCreateLive = userCreateLive
+  kernelCopy = kernelCopy
+  liveCreateStructure = liveCreateStructure
+  makeDotDisk = makeDotDisk
+  makeEfi = makeEfi
+  makeIso = makeIso
+  makeSquashfs = makeSquashfs
+  merged = merged
+  mergedAndOverlay = mergedAndOverlay
   syslinux = syslinux
   uBindLiveFs = uBindLiveFs
   ubindVfs = ubindVfs
+  userCreateLive = userCreateLive
   usersRemove = usersRemove
-  makeDotDisk = makeDotDisk
-  kernelCopy = kernelCopy
-  liveCreateStructure = liveCreateStructure
-  finished = finished
-
-  // new
-  encryptLiveFs = encryptLiveFs
-  initramfsDebianLuks = initramfsDebianLuks
+  xorrisoCommand = xorrisoCommand
 }
 
