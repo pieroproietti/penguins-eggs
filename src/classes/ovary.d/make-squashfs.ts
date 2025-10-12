@@ -23,7 +23,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * squashFs: crea in live filesystem.squashfs
  */
-export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = false): Promise<string> {
+export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRoot = false): Promise<string> {
     if (this.verbose) {
         console.log('Ovary: makeSquashfs')
     }
@@ -68,7 +68,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, unsecure = f
     /**
      * secure
      */
-    if (!unsecure) {
+    if (!includeRoot) {
         this.addExclusion(`root/*`)
         this.addExclusion(`root/.*`)
     }

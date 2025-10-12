@@ -68,7 +68,7 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedclone = fals
         const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
         Utils.write(file, text)
     }
-
+cryptedclone
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.settings.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, this.echo)

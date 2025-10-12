@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Usciamo se non è un boot live. Il test corretto è verificare
+# l'esistenza di /etc/live/boot.log che viene creato dall'hook live.
+if [ ! -e /etc/live/boot.log ]; then
+    exit 0
+fi
+
+echo "Esecuzione script personalizzato per sblocco volume..."
+
+# Scansiona tutti i dispositivi alla ricerca del nostro file
+for d in /lib/live/mount/*; do
+    if [ -d "${d}/live" ]; then
+        ENCRYPTED_FILE=$(find "${d}/live" -name 'filesystem.encrypted' -print -quit)
+        if [ -n "$ENCRYPTED_FILE" ]; then
+            break
+        fi
+    fi
+done
+
+# Se non troviamo il file, fermiamo il boot
+if [ -z "$ENCRYPTED_FILE" ]; then
+    echo "ERRORE: filesystem.encrypted non trovato!"
+    panic "File squashfs criptato non trovato."
+fi
+
+echo "✅ Trovato file criptato in: $ENCRYPTED_FILE"
+
+# Prova a sbloccare il volume LUKS. cryptsetup chiederà la passphrase.
+cryptsetup open "$ENCRYPTED_FILE" live_decrypted
+if [ $? -ne 0 ]; then
+    panic "Sblocco del volume LUKS fallito. Passphrase errata?"
+fi
+
+echo "🔐 Volume LUKS sbloccato con successo in /dev/mapper/live_decrypted"
+
+# --- LA PARTE CHIAVE E CORRETTA ---
+# Invece di montare manualmente e usare sed, sovrascriviamo la variabile
+# che i successivi script di live-boot useranno per trovare il filesystem.
+# Questo è il metodo ufficiale e robusto.
+echo 'LIVE_FS_IMAGES="/dev/mapper/live_decrypted"' > /conf/conf.d/00-decrypted-squashfs.conf
+
+echo "⚙️  Live-boot configurato per usare il volume decriptato. Il boot prosegue..."
+
+exit 0

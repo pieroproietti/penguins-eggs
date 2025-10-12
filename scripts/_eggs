@@ -59,7 +59,7 @@ _eggs_tools() {
     cmds)
 _values "completions" \
 "clean[clean system log, apt, etc]" \
-"repo[add/remove repo]" \
+"repo[add/remove penguins-eggs-repo]" \
 "skel[update skel from home configuration]" \
 "stat[get statistics from sourceforge]" \
 "yolk[configure eggs to install without internet]" \
@@ -201,8 +201,8 @@ _eggs() {
 "syncfrom[restore users and user data from a LUKS volumes]" \
 "syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
-"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
+"help[Display help for eggs.]" \
 "version[]" \
 
     ;;
@@ -351,7 +351,7 @@ _arguments -S \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
 "(-S --standard)"{-S,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
-"(-u --unsecure)"{-u,--unsecure}"[/root contents are included on live]" \
+"(-u --includeRoot)"{-u,--includeRoot}"[/root contents are not included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
@@ -385,14 +385,14 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 autocomplete)
 _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 version)

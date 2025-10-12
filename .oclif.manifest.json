@@ -544,6 +544,20 @@
           "name": "nointeractive",
           "allowNo": false,
           "type": "boolean"
+        },
+        "clone": {
+          "char": "c",
+          "description": "clone",
+          "name": "clone",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedclone": {
+          "char": "k",
+          "description": "crypted clone",
+          "name": "cryptedclone",
+          "allowNo": false,
+          "type": "boolean"
         }
       },
       "hasDynamicHelp": false,
@@ -671,7 +685,7 @@
           "type": "boolean"
         },
         "cryptedclone": {
-          "char": "C",
+          "char": "k",
           "description": "crypted clone",
           "name": "cryptedclone",
           "allowNo": false,
@@ -692,7 +706,7 @@
           "type": "boolean"
         },
         "kernel": {
-          "char": "k",
+          "char": "K",
           "description": "kernel version",
           "name": "kernel",
           "hasDynamicHelp": false,
@@ -769,10 +783,10 @@
           "multiple": false,
           "type": "option"
         },
-        "unsecure": {
-          "char": "u",
-          "description": "/root contents are included on live",
-          "name": "unsecure",
+        "includeRoot": {
+          "char": "i",
+          "description": "folder /root is included on live",
+          "name": "includeRoot",
           "allowNo": false,
           "type": "boolean"
         },
@@ -841,123 +855,6 @@
         "dist",
         "commands",
         "status.js"
-      ]
-    },
-    "syncfrom": {
-      "aliases": [],
-      "args": {},
-      "description": "restore users and user data from a LUKS volumes",
-      "examples": [
-        "sudo eggs syncfrom",
-        "sudo eggs syncfrom --file /path/to/luks-volume"
-      ],
-      "flags": {
-        "delete": {
-          "description": "rsync --delete delete extraneous files from dest dirs",
-          "name": "delete",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "file": {
-          "char": "f",
-          "description": "file containing luks-volume encrypted",
-          "name": "file",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "rootdir": {
-          "char": "r",
-          "description": "rootdir of the installed system, when used from live",
-          "name": "rootdir",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "syncfrom",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "syncfrom.js"
-      ]
-    },
-    "syncto": {
-      "aliases": [],
-      "args": {},
-      "description": "Save users and users' data ENCRYPTED",
-      "examples": [
-        "sudo eggs syncto",
-        "sudo eggs syncto --file /path/to/luks-volume",
-        "sudo eggs syncto --excludes"
-      ],
-      "flags": {
-        "excludes": {
-          "char": "e",
-          "description": "use: exclude.list.d/home.list",
-          "name": "excludes",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "file": {
-          "char": "f",
-          "description": "file luks-volume encrypted",
-          "name": "file",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "syncto",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "syncto.js"
       ]
     },
     "update": {
@@ -1629,5 +1526,5 @@
       ]
     }
   },
-  "version": "25.10.9"
+  "version": "25.10.12"
 }
