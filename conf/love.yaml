@@ -4,5 +4,5 @@
 - eggs kill
 - eggs dad --default
 - eggs tools clean
-- eggs produce --pendrive --addons adapt
+- eggs produce --addons adapt
 

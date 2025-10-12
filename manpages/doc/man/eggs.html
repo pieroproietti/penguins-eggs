@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.9.27</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.10.11</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
@@ -14,30 +14,30 @@
     <pre><code>$ doas apk add penguins-eggs@testing
 </code></pre>
     <p>AlmaLinux/RockyLinux</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.9.27-1_amd64-1rocky9.5..x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1rocky9.5..x86_64.rpm
 
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_25.9.27-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_25.10.11-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_25.9.27-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_25.10.11-1_amd64.deb
 </code></pre>
     <p>Fedora</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.9.27-1_amd64-1fedora.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1fedora.x86_64.rpm
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
 </code></pre>
     <p>OpenMamba</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.9.27-1_amd64-1mamba.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1mamba.x86_64.rpm
 </code></pre>
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/25.9.27  
+penguins-eggs/25.10.11  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -77,10 +77,8 @@ sudo eggs dad
       <li><a href="#eggs-pods-distro"><code>eggs pods [DISTRO]</code></a></li>
       <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
       <li><a href="#eggs-status"><code>eggs status</code></a></li>
-      <li><a href="#eggs-syncfrom"><code>eggs syncfrom</code></a></li>
-      <li><a href="#eggs-syncto"><code>eggs syncto</code></a></li>
       <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
-      <li><a href="#eggs-tools-ppa"><code>eggs tools ppa</code></a></li>
+      <li><a href="#eggs-tools-repo"><code>eggs tools repo</code></a></li>
       <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
       <li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
       <li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
@@ -400,9 +398,10 @@ EXAMPLES
     <h2><code>eggs love</code></h2>
     <p>the simplest way to get an egg!</p>
     <pre><code>USAGE
-  $ eggs love [-h] [-v] [-n]
+  $ eggs love [-h] [-v] [-n] [-K]
 
 FLAGS
+  -K, --cryptedclone   crypted clone
   -h, --help           Show CLI help.
   -n, --nointeractive  no user interaction
   -v, --verbose
@@ -451,23 +450,23 @@ EXAMPLES
     <h2><code>eggs produce</code></h2>
     <p>produce a live image from your system whithout your data</p>
     <pre><code>USAGE
-  $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-C] [--excludes &#x3C;value>...] [-h] [-k
-    &#x3C;value>] [--links &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-S] [--theme &#x3C;value>] [-u] [-v]
+  $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-K] [--excludes &#x3C;value>...] [-h] [-k
+    &#x3C;value>] [--links &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-S] [--theme &#x3C;value>] [-i] [-v]
     [-y]
 
 FLAGS
-  -C, --cryptedclone         crypted clone
+  -K, --cryptedclone         crypted clone
   -N, --noicon               no icon eggs on desktop
   -P, --prefix=&#x3C;value>       prefix
   -S, --standard             standard compression: xz -b 1M
   -c, --clone                clone
   -h, --help                 Show CLI help.
+  -i, --includeRoot          folder /root is included on live
   -k, --kernel=&#x3C;value>       kernel version
   -m, --max                  max compression: xz -Xbcj ...
   -n, --nointeractive        no user interaction
   -p, --pendrive             optimized for pendrive: zstd -b 1M -Xcompression-level 15
   -s, --script               script mode. Generate scripts to manage iso build
-  -u, --unsecure             /root contents are included on live
   -v, --verbose              verbose
   -y, --yolk                 force yolk renew
       --addons=&#x3C;value>...    addons to be used: adapt, pve, rsupport
@@ -518,47 +517,6 @@ DESCRIPTION
 EXAMPLES
   $ eggs status
 </code></pre>
-    <h2><code>eggs syncfrom</code></h2>
-    <p>restore users and user data from a LUKS volumes</p>
-    <pre><code>USAGE
-  $ eggs syncfrom [--delete &#x3C;value>] [-f &#x3C;value>] [-h] [-r &#x3C;value>] [-v]
-
-FLAGS
-  -f, --file=&#x3C;value>     file containing luks-volume encrypted
-  -h, --help             Show CLI help.
-  -r, --rootdir=&#x3C;value>  rootdir of the installed system, when used from live
-  -v, --verbose          verbose
-      --delete=&#x3C;value>   rsync --delete delete extraneous files from dest dirs
-
-DESCRIPTION
-  restore users and user data from a LUKS volumes
-
-EXAMPLES
-  sudo eggs syncfrom
-
-  sudo eggs syncfrom --file /path/to/luks-volume
-</code></pre>
-    <h2><code>eggs syncto</code></h2>
-    <p>Save users and users' data ENCRYPTED</p>
-    <pre><code>USAGE
-  $ eggs syncto [-e] [-f &#x3C;value>] [-h] [-v]
-
-FLAGS
-  -e, --excludes      use: exclude.list.d/home.list
-  -f, --file=&#x3C;value>  file luks-volume encrypted
-  -h, --help          Show CLI help.
-  -v, --verbose       verbose
-
-DESCRIPTION
-  Save users and users' data ENCRYPTED
-
-EXAMPLES
-  sudo eggs syncto
-
-  sudo eggs syncto --file /path/to/luks-volume
-
-  sudo eggs syncto --excludes
-</code></pre>
     <h2><code>eggs tools clean</code></h2>
     <p>clean system log, apt, etc</p>
     <pre><code>USAGE
@@ -575,25 +533,25 @@ DESCRIPTION
 EXAMPLES
   sudo eggs tools clean
 </code></pre>
-    <h2><code>eggs tools ppa</code></h2>
-    <p>add/remove repo</p>
+    <h2><code>eggs tools repo</code></h2>
+    <p>add/remove penguins-eggs-repo</p>
     <pre><code>USAGE
-  $ eggs tools ppa [-a] [-h] [-n] [-r] [-v]
+  $ eggs tools repo [-a] [-h] [-n] [-r] [-v]
 
 FLAGS
-  -a, --add            add penguins-eggs PPA repository
+  -a, --add            add penguins-eggs-repo
   -h, --help           Show CLI help.
   -n, --nointeractive  no user interaction
-  -r, --remove         remove penguins-eggs PPA repository
+  -r, --remove         remove penguins-eggs-repo
   -v, --verbose        verbose
 
 DESCRIPTION
-  add/remove repo
+  add/remove penguins-eggs-repo
 
 EXAMPLES
-  sudo eggs tools ppa --add
+  sudo eggs tools repo --add
 
-  sudo eggs tools ppa --remove
+  sudo eggs tools repo --remove
 </code></pre>
     <h2><code>eggs tools skel</code></h2>
     <p>update skel from home configuration</p>

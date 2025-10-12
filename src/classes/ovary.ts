@@ -25,12 +25,6 @@ import { exec } from '../lib/utils.js'
 import CliAutologin from './cli-autologin.js'
 import Incubator from './incubation/incubator.js'
 import Settings from './settings.js'
-import Users from './users.js'
-import Diversions from './diversions.js'
-
-// classes
-import Utils from './utils.js'
-import Repo from './yolk.js'
 
 // Methods
 import { fertilization } from './ovary.d/fertilization.js'
@@ -53,8 +47,11 @@ import { kernelCopy } from './ovary.d/kernel-copy.js'
 import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
+import { encryptLiveFs } from './ovary.d/encrypt-live.fs.js'
+import { initramfsDebianLuks } from './ovary.d/initramfs.js'
+
 // Functions
-import rexec from './ovary.d/rexec.js'
+// import initramfs from '../krill/classes/sequence.d/initramfs.js'
 
 
 // _dirname
@@ -114,6 +111,16 @@ export default class Ovary {
 
   dotLivefs = ''
 
+  luksName = ''
+
+  luksFile = ''
+
+  luksDevice = ''
+
+  luksMountpoint = ''
+
+  luksPassword = ''
+
 
 
   // I put all methods on ovary.d
@@ -121,30 +128,32 @@ export default class Ovary {
   public produce = produce
 
   // called only inside Ovary
+  addExclusion = addExclusion
   bindLiveFs = bindLiveFs
   bindVfs = bindVfs
-  editLiveFs = editLiveFs
-  makeEfi = makeEfi
-  makeSquashfs = makeSquashfs
-  addExclusion = addExclusion
-  xorrisoCommand = xorrisoCommand
-  createXdgAutostart = createXdgAutostart
   copied = copied
-  merged = merged
-  mergedAndOverlay = mergedAndOverlay
-  makeIso = makeIso
+  createXdgAutostart = createXdgAutostart
+  editLiveFs = editLiveFs
+  encryptLiveFs = encryptLiveFs
+  finished = finished
+  initramfsDebianLuks = initramfsDebianLuks
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
   initrdDebian = initrdDebian
   initrdDracut = initrdDracut
-  userCreateLive = userCreateLive
+  kernelCopy = kernelCopy
+  liveCreateStructure = liveCreateStructure
+  makeDotDisk = makeDotDisk
+  makeEfi = makeEfi
+  makeIso = makeIso
+  makeSquashfs = makeSquashfs
+  merged = merged
+  mergedAndOverlay = mergedAndOverlay
   syslinux = syslinux
   uBindLiveFs = uBindLiveFs
   ubindVfs = ubindVfs
+  userCreateLive = userCreateLive
   usersRemove = usersRemove
-  makeDotDisk = makeDotDisk
-  kernelCopy = kernelCopy
-  liveCreateStructure = liveCreateStructure
-  finished = finished
+  xorrisoCommand = xorrisoCommand
 }
 

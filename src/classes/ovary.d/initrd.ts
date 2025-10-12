@@ -1,5 +1,5 @@
 /**
- * ./src/classes/ovary.d/initrd-arch.ts
+ * ./src/classes/ovary.d/initrd.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -60,7 +60,7 @@ export async function initrdArch(this: Ovary) {
     let hookSaved = `/tmp/${path.basename(hookSrc)}`
     if (hookSrc !== hookDest) {
         await exec(`cp ${hookSrc} ${hookDest}`)
-    } 
+    }
     await exec(`cp ${hookSrc} ${hookSaved}`)
     await exec(edit, this.echo)
     let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
@@ -79,12 +79,18 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     Utils.warning(`creating ${this.initrd} using mkinitramfs on (ISO)/live`)
 
     let isCrypted = false
-
     if (fs.existsSync('/etc/crypttab')) {
         isCrypted = true
         await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
-    await exec(`mkinitramfs -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} ${this.toNull}`, this.echo)
+
+    const prefix = this.settings.config.snapshot_prefix
+    const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
+    const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
+    const cmd = `mkinitramfs -o ${dest} ${this.kernel} ${log}`
+    console.log(cmd)
+    await exec(cmd, this.echo)
+
     if (isCrypted) {
         await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
@@ -98,16 +104,15 @@ export async function initrdDracut(this: Ovary) {
     const prefix = this.settings.config.snapshot_prefix
     const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     // const dracutdir='--dracutdir /opt/penguins-eggs/dracut'
-    const dracutdir=''
-    const dest=`${this.settings.iso_work}live/${path.basename(this.initrd)}`
-    const log=`> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
-    const kmoddir=`--kmoddir /lib/modules/${this.kernel}`
-    const cmd=`dracut --force --debug --no-hostonly ${confdir} ${kmoddir} ${dest} ${this.kernel} ${log}`
-    //const cmd=`ls -la /lib /lib/modules ${log}`
+    const dracutdir = ''
+    const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
+    const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
+    const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
+    const cmd = `dracut --force --debug --no-hostonly ${confdir} ${kmoddir} ${dest} ${this.kernel} ${log}`
     console.log(cmd)
     await exec(cmd, this.echo)
 
     // clean per btrfs
-    let clean=`../../../scripts/99clean ${this.kernel}`
+    let clean = `../../../scripts/99clean ${this.kernel}`
     await exec(clean, this.echo)
 }

@@ -200,6 +200,10 @@ export default class Utils {
       console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg) + '.')
    }
 
+   static success(msg = '') {
+      console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg) + '.')
+   }
+
    static error(msg = '') {
       console.error(pjson.shortName + ' >>> ' + chalk.bgMagentaBright(chalk.whiteBright(msg)) + '.')
    }

@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
-    "version": "25.10.9",
+    "version": "25.10.12",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -76,6 +76,7 @@
         "/dist",
         "/dracut",
         "/eui",
+        "/initramfs-tools",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
