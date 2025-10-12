@@ -97,7 +97,7 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 }
 
 /*
-* initrdDracut) Almalinux/Fedora/Openmamba/Opensuse/Rocky/Voidlinux
+* initrdDracut) Almalinux/Devbian/Fedora/Openmamba/Opensuse/Rocky/
 */
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using dracut on (ISO)/live`)

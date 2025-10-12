@@ -236,7 +236,12 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
                 } else if (this.familyId === 'archlinux') {
                     await this.initrdArch()
                 } else if (this.familyId === 'debian') {
-                    await this.initrdDebian()
+                    if (Pacman.packageIsInstalled('dracut')) {
+                        console.log("using dracut su Debian")
+                        await this.initrdDracut()
+                    } else {
+                        await this.initrdDebian()
+                    }
                 } else if (this.familyId === 'fedora' ||
                     this.familyId === 'openmamba' ||
                     this.familyId === 'opensuse' ||

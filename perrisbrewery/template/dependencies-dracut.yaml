@@ -10,14 +10,10 @@ common:
   - dbus-bin | uuidgen-runtime # uuid-runtime per devuan
   - dosfstools # eggs
   - dpkg-dev  # yolk
+  - dracut
   - git # wardrobe
   - gpg # eggs
   - jq # mom
-  - live-boot | dracut # eggs
-  - live-boot-doc | dracut # eggs
-  - live-boot-initramfs-tools | dracut # eggs
-  - live-config-systemd | live-config-sysvinit | dracut 
-  - live-tools | dracut # eggs
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 

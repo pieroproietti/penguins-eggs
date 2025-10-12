@@ -14,6 +14,7 @@
 import { IDistro } from '../interfaces/index.js'
 import Distro from './distro.js'
 import fs from 'fs'
+import Pacman from './pacman.js'
 
 export default class Diversions {
 
@@ -104,7 +105,11 @@ export default class Diversions {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       }
     } else if (familyId === 'debian') {
-      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      if (Pacman.packageIsInstalled('dracut')) {
+        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`        
+      } else {
+        kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      }
     } else if (familyId === 'fedora') {
       kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
     } else if (familyId === 'openmamba') {
