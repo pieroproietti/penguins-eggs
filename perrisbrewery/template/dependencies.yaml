@@ -13,11 +13,11 @@ common:
   - git # wardrobe
   - gpg # eggs
   - jq # mom
-  - live-boot | dracut # eggs
-  - live-boot-doc | dracut # eggs
-  - live-boot-initramfs-tools | dracut # eggs
+  - live-boot | dracut
+  - live-boot-doc | dracut
+  - live-boot-initramfs-tools | dracut
   - live-config-systemd | live-config-sysvinit | dracut 
-  - live-tools | dracut # eggs
+  - live-tools | dracut-live
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
