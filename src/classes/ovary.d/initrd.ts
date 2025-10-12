@@ -78,17 +78,16 @@ export async function initrdArch(this: Ovary) {
 export async function initrdDebian(this: Ovary, verbose = false) {
     Utils.warning(`creating ${this.initrd} using mkinitramfs on (ISO)/live`)
 
-    const prefix = this.settings.config.snapshot_prefix
-    const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
-    const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
-    const cmd = `mkinitramfs -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} ${log}`
-
     let isCrypted = false
     if (fs.existsSync('/etc/crypttab')) {
         isCrypted = true
         await exec('mv /etc/crypttab /etc/crypttab.saved', this.echo)
     }
 
+    const prefix = this.settings.config.snapshot_prefix
+    const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
+    const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
+    const cmd = `mkinitramfs -o ${dest} ${this.kernel} ${log}`
     console.log(cmd)
     await exec(cmd, this.echo)
 
