@@ -26,8 +26,10 @@ export async function initramfsDebianLuks(this: Ovary, verbose = true) {
     Utils.warning(`creating ${this.initrd} using mkinitramfs  on (ISO)/live`)
 
     // configurazione per bookworm
+    console.log()
     const src = path.join(__dirname, `../../../initramfs-tools/*`)
     const dest = `/etc/initramfs-tools/`
+    console.log(`cp -r ${src} ${dest}`)
     await exec(`cp -r ${src} ${dest}`)
 
     const prefix = this.settings.config.snapshot_prefix
@@ -35,5 +37,7 @@ export async function initramfsDebianLuks(this: Ovary, verbose = true) {
     const cmd=`mkinitramfs -o ${this.settings.iso_work}live/${path.basename(this.initrd)} ${this.kernel} -v ${log}`
     console.log(cmd)
     await exec(cmd, this.echo)
+
+    // await exec(`rm -rf ${dest}`)
 }
 

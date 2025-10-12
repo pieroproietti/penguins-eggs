@@ -76,7 +76,7 @@
         "/dist",
         "/dracut",
         "/eui",
-        "/initramfs-crypto",
+        "/initramfs-tools",
         "/manpages",
         "/mkinitcpio",
         "/mkinitfs",
