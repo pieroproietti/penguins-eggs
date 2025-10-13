@@ -29,11 +29,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
    * Crea la struttura della workdir
    */
 export async function liveCreateStructure(this: Ovary) {
-    if (this.verbose) {
-        console.log('Ovary: liveCreateStructure')
-    }
-
-    Utils.warning(`creating egg in ${this.nest}`)
+    Utils.warning(`creating live structure on ${this.nest}`)
 
     let cmd=''
     cmd = `# create nest\n`
