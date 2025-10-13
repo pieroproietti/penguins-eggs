@@ -109,7 +109,7 @@ export async function initrdDracut(this: Ovary) {
     const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
     const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
     const cmd = `dracut --force --debug --no-hostonly ${confdir} ${kmoddir} ${dest} ${this.kernel} ${log}`
-    console.log(cmd)
+    // console.log(cmd)
     await exec(cmd, this.echo)
 
     // clean per btrfs

@@ -60,10 +60,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     this.cryptedclone = cryptedclone
 
     // new
-    this.luksName = 'filesystem.encrypted';
+    this.luksUuid = ''
+    this.luksName = 'luks.img'
     this.luksFile = `/tmp/${this.luksName}`
+    this.luksMappedName = this.luksName
     this.luksDevice = `/dev/mapper/${this.luksName}`
-    this.luksMountpoint = `/tmp/mnt/${this.luksName}`
     this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
     this.nest = this.settings.config.snapshot_dir
@@ -217,42 +218,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
             await this.incubator.config(release)
 
-            // need syslinux?
-            const arch = process.arch
-            if (arch === 'ia32' || arch === 'x64') {
-                await this.syslinux(this.theme)
-            }
-
-            await this.kernelCopy()
-
             /**
-             * if crytedclone, delay initramfs creation 
+             * kernelCopu
              */
-            if (this.cryptedclone) {
-                await this.initramfsDebianLuks()
-            } else {
-                if (this.familyId === 'alpine') {
-                    await this.initrdAlpine()
-                } else if (this.familyId === 'archlinux') {
-                    await this.initrdArch()
-                } else if (this.familyId === 'debian') {
-                    if (Pacman.packageIsInstalled('dracut')) {
-                        console.log("using dracut su Debian")
-                        await this.initrdDracut()
-                    } else {
-                        await this.initrdDebian()
-                    }
-                } else if (this.familyId === 'fedora' ||
-                    this.familyId === 'openmamba' ||
-                    this.familyId === 'opensuse' ||
-                    this.familyId === 'voidlinux') {
-                    await this.initrdDracut()
-                }
-            }
-
-            if (this.settings.config.make_efi) {
-                await this.makeEfi(this.theme)
-            }
+            await this.kernelCopy()
 
             await this.bindLiveFs()
 
@@ -288,8 +257,45 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
         }
 
         if (cryptedclone) {
-            await this.encryptLiveFs()
+            await this.makeLuks()
         }
+
+        /** 
+         * makeEfi and syslinux was moved
+         * after MakeLuks 
+         * to get luks.uuid
+         */
+        if (this.settings.config.make_efi) {
+            await this.makeEfi(this.theme)
+        }
+
+
+        /**
+         * initrd creation
+         */
+        if (this.familyId === 'alpine') {
+            await this.initrdAlpine()
+        } else if (this.familyId === 'archlinux') {
+            await this.initrdArch()
+        } else if (this.familyId === 'debian') {
+            if (Pacman.packageIsInstalled('dracut')) {
+                await this.initrdDracut()
+            } else {
+                await this.initrdDebian()
+            }
+        } else if (this.familyId === 'fedora' ||
+            this.familyId === 'openmamba' ||
+            this.familyId === 'opensuse' ||
+            this.familyId === 'voidlinux') {
+            await this.initrdDracut()
+        }
+
+        // need syslinux?
+        const arch = process.arch
+        if (arch === 'ia32' || arch === 'x64') {
+            await this.syslinux(this.theme)
+        }
+
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)

@@ -47,8 +47,7 @@ import { kernelCopy } from './ovary.d/kernel-copy.js'
 import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
-import { encryptLiveFs } from './ovary.d/encrypt-live.fs.js'
-import { initramfsDebianLuks } from './ovary.d/initramfs.js'
+import { makeLuks } from './ovary.d/make-luks.js'
 
 // Functions
 // import initramfs from '../krill/classes/sequence.d/initramfs.js'
@@ -111,13 +110,15 @@ export default class Ovary {
 
   dotLivefs = ''
 
+  luksUuid = ''
+  
   luksName = ''
+
+  luksMappedName = ''
 
   luksFile = ''
 
   luksDevice = ''
-
-  luksMountpoint = ''
 
   luksPassword = ''
 
@@ -134,9 +135,9 @@ export default class Ovary {
   copied = copied
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
-  encryptLiveFs = encryptLiveFs
+  makeLuks = makeLuks
   finished = finished
-  initramfsDebianLuks = initramfsDebianLuks
+  // initramfsDebianLuks = initramfsDebianLuks
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
   initrdDebian = initrdDebian
