@@ -28,7 +28,7 @@ import Ovary from './../ovary.js'
    * @param scriptOnly
    */
 export function finished(this: Ovary, scriptOnly = false) {
-    Utils.titles('produce')
+    // Utils.titles('produce')
     if (scriptOnly) {
         const pathOvarium = path.join(this.settings.config.snapshot_dir, 'ovarium')
         console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(pathOvarium) + '.')
