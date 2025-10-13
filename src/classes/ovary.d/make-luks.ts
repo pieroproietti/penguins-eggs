@@ -16,68 +16,59 @@ import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
 
 /**
- * encryptLiveFs()
+ * makeLuks()
  * 
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function encryptLiveFs(this: Ovary, clone = false, cryptedclone = false) {
+export async function makeLuks(this: Ovary, clone = false, cryptedclone = false) {
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
-  /**
-   * this.luksName = 'encrypted.filesystem.squashfs';
-   * this.luksFile = `/tmp/${luksName}`
-   * this.luksDevice = `/dev/mapper/${luksName}`
-   * this.luksMountpoint = `/tmp/mnt/${luksName}`
-   * this.luksPassword = 'evolution' 
-   */
-
+  
   try {
+    /**
+     * this.luksName = 'luks.img';
+     * this.luksFile = `/tmp/${luksName}`
+     * this.luksDevice = `/dev/mapper/${luksName}`
+     * this.luksMappedName = this.luksName
+     * this.luksMountpoint = `/tmp/mnt/${luksName}`
+     * this.luksPassword = 'evolution' 
+     */
+
     Utils.warning('1. Calculation of space requirements...')
     const sizeString = (await exec(`unsquashfs -s ${live_fs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data;
     let size = Number.parseInt(sizeString) // Dimensione in Byte
     
-    // Add overhead 20% (filesystem ext4 and LUKS metadata)
-    const luksSize = Math.ceil(size * 1.2)
+      // Add overhead * 1.05
+    const luksSize = Math.ceil(size * 1.05)
+
     Utils.warning(`  > filesystem.squashfs size: ${bytesToGB(size)}`)
-    Utils.warning(`  > container LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    Utils.warning(`  > partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
     
-    Utils.warning(`2. Creating the container file: ${this.luksFile}`)
+    Utils.warning(`2. Creating partition LUKS: ${this.luksFile}`)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
     await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], this.luksPassword)
 
-    Utils.warning(`4. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksName], this.luksPassword)
-    
-    Utils.warning("   Please wait for opening...")
-    await executeCommand('udevadm', ['settle'])
+    this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}` , { capture: true, echo: false })).data.trim()
+    Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
 
-    Utils.warning(`5. Formatting ${this.luksDevice} with ext4 filesystem...`)
-    await executeCommand('mkfs.ext4', [this.luksDevice])
-    
-    Utils.warning(`6. Creating the mount point: ${this.luksMountpoint}`)
-    if (!fs.existsSync(this.luksMountpoint)) {
-      await executeCommand('mkdir', ['-p', this.luksMountpoint])
-    }
-    
-    Utils.warning(`7. mounting ${this.luksDevice} on ${this.luksMountpoint}`)
-    await executeCommand('mount', [this.luksDevice, this.luksMountpoint])
+    Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
+    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], this.luksPassword)
 
-    Utils.warning(`8. Moving filesystem.squashfs to the encrypted volume...`)
-    await executeCommand('mv', [live_fs, this.luksMountpoint])
+    Utils.warning(`6. Copyng filesystem.squashfs inside the ${this.luksMappedName}`)
+    await exec(`dd if=${`${this.settings.iso_work}live/filesystem.squashfs`} of=${this.luksDevice} bs=1M status=progress`)
 
-    Utils.warning(`9. Unmounting ${this.luksMountpoint}...`)
-    await executeCommand('umount', [this.luksMountpoint])
-    
-    Utils.warning(`10. Closing LUKS volume ${this.luksName}...`)
-    await executeCommand('cryptsetup', ['luksClose', this.luksName])
-    
-    const finalDestination = `${this.settings.iso_work}live/${this.luksName}`
-    Utils.warning(`11. Moving ${this.luksFile} to ${finalDestination}`)
-    await executeCommand('mv', [this.luksFile, finalDestination])
+    Utils.warning(`7. Closing LUKS volume ${this.luksFile}.`)
+    await executeCommand('cryptsetup', ['close', this.luksMappedName])
+
+    Utils.warning(`8. Replace ISO/live/filesystem.squashfs with ${this.luksMappedName}.`)
+    await exec(`rm ${this.settings.iso_work}live/filesystem.squashfs`)
+    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
+
     Utils.success('Encryption process successfully completed!')
+    await Utils.pressKeyToExit()
 
   } catch (error) {
     if (error instanceof Error) {
@@ -86,9 +77,6 @@ export async function encryptLiveFs(this: Ovary, clone = false, cryptedclone = f
         Utils.error(`An unknown error has occurred.`)
     }
     Utils.warning('Cleaning performed following the error...')
-    if (Utils.isMountpoint(this.luksMountpoint)) {
-      await executeCommand('umount', ['-l', this.luksMountpoint]).catch(() => {})
-    }
     if (fs.existsSync(this.luksDevice)) {
        await executeCommand('cryptsetup', ['luksClose', this.luksName]).catch(() => {})
     }

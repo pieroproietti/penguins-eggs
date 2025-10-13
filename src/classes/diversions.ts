@@ -14,6 +14,7 @@
 import { IDistro } from '../interfaces/index.js'
 import Distro from './distro.js'
 import fs from 'fs'
+import Pacman from './pacman.js'
 
 export default class Diversions {
 
@@ -84,27 +85,36 @@ export default class Diversions {
    * @param volid 
    * @returns 
    */
-  static kernelParameters(familyId: string, volid: string): string {
+  static kernelParameters(familyId: string, volid: string, luksUuid = ''): string {
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
 
     let kp = ""
 
-    if (familyId === 'aldos') {
-      kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0 rootfstype=auto rd.locale.LANG=en_US.UTF-8 KEYBOARDTYPE=pc rd.vconsole.keymap=us rootflags=defaults,relatime,commit=60 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM`
-      //     root=live:CDLABEL=ALDOS6420241128 rootfstype=auto ro liveimg quiet rd.locale.LANG=es_MX.UTF-8 KEYBOARDTYPE=pc SYSFONT=latarcyrheb-sun16 rd.vconsole.keymap=es  rootflags=defaults,relatime,commit=60 selinux=0 nmi_watchdog=0 rhgb rd_NO_LUKS rd_NO_MD rd_NO_DM  
-    } else if (familyId === 'alpine') {
+    if (familyId === 'alpine') {
       kp += `alpinelivelabel=${volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
     } else if (familyId === 'archlinux') {
       kp += `boot=live components locales=${process.env.LANG}`
       const distroId = this.distro().distroId
       if (this.isManjaroBased(distroId)) {
         kp += ` misobasedir=manjaro misolabel=${volid}`
-        // shx.exec(`mkdir -p ${this.settings.iso_work}.miso`)
       } else {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       }
     } else if (familyId === 'debian') {
-      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      /**
+       * da rivedere dracut/initramfs
+       */
+      if (Pacman.packageIsInstalled('dracut')) {
+        if (luksUuid !== '') {
+          // dracut rd.luks.uuid
+          kp += `root=:CDLABEL=${volid} rd.luks.uuid=${luksUuid} nomodeset`
+        } else {
+          // dracut: rd.live.squashimg
+          kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
+        }
+      } else {
+          kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      }
     } else if (familyId === 'fedora') {
       kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
     } else if (familyId === 'openmamba') {
