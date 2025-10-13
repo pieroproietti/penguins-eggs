@@ -126,6 +126,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     if (Utils.isLive()) {
         console.log(chalk.red('>>> eggs: This is a live system! An egg cannot be produced from an egg!'))
     } else {
+
         await this.liveCreateStructure()
 
         // Carica calamares solo se le icone sono accettate
@@ -223,6 +224,27 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
              */
             await this.kernelCopy()
 
+            /**
+             * initrd creation
+             */
+            if (this.familyId === 'alpine') {
+                await this.initrdAlpine()
+            } else if (this.familyId === 'archlinux') {
+                await this.initrdArch()
+            } else if (this.familyId === 'debian') {
+                if (Pacman.packageIsInstalled('dracut')) {
+                    await this.initrdDracut()
+                } else {
+                    await this.initrdDebian()
+                }
+            } else if (this.familyId === 'fedora' ||
+                this.familyId === 'openmamba' ||
+                this.familyId === 'opensuse' ||
+                this.familyId === 'voidlinux') {
+                await this.initrdDracut()
+            }
+
+
             await this.bindLiveFs()
 
             // We run them just to have scripts
@@ -269,26 +291,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
             await this.makeEfi(this.theme)
         }
 
-
-        /**
-         * initrd creation
-         */
-        if (this.familyId === 'alpine') {
-            await this.initrdAlpine()
-        } else if (this.familyId === 'archlinux') {
-            await this.initrdArch()
-        } else if (this.familyId === 'debian') {
-            if (Pacman.packageIsInstalled('dracut')) {
-                await this.initrdDracut()
-            } else {
-                await this.initrdDebian()
-            }
-        } else if (this.familyId === 'fedora' ||
-            this.familyId === 'openmamba' ||
-            this.familyId === 'opensuse' ||
-            this.familyId === 'voidlinux') {
-            await this.initrdDracut()
-        }
 
         // need syslinux?
         const arch = process.arch
