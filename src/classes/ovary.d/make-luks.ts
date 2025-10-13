@@ -68,7 +68,7 @@ export async function makeLuks(this: Ovary, clone = false, cryptedclone = false)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
 
     Utils.success('Encryption process successfully completed!')
-    await Utils.pressKeyToExit()
+
 
   } catch (error) {
     if (error instanceof Error) {
@@ -80,6 +80,7 @@ export async function makeLuks(this: Ovary, clone = false, cryptedclone = false)
     if (fs.existsSync(this.luksDevice)) {
        await executeCommand('cryptsetup', ['luksClose', this.luksName]).catch(() => {})
     }
+    await Utils.pressKeyToExit()
     process.exit(1)
   }
 }

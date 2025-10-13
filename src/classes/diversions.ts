@@ -107,7 +107,18 @@ export default class Diversions {
       if (Pacman.packageIsInstalled('dracut')) {
         if (luksUuid !== '') {
           // dracut rd.luks.uuid
-          kp += `root=:CDLABEL=${volid} rd.luks.uuid=${luksUuid} nomodeset`
+          
+          let cmd =`boot=live \
+                root=live:LABEL=${volid} \
+                rd.luks.uuid=${luksUuid} \
+                nomodeset \
+                rd.udev.settle \
+                rd.luks.timeout=180 \
+                rd.debug \
+                rd.shell`
+          
+          kp += cmd.replaceAll(/\s\s+/g, ' ')
+
         } else {
           // dracut: rd.live.squashimg
           kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
