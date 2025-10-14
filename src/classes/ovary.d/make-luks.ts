@@ -91,9 +91,6 @@ export async function makeLuks(this: Ovary, clone = false, cryptedclone = false)
     await exec(`rm ${this.settings.iso_work}live/filesystem.squashfs`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
 
-    Utils.warning(`11. Kernel parameters to use:`)
-    Utils.warning(`boot=live root=live:LABEL=${this.volid} rd.luks.loop=/live/luks.img rd.luks.uuid=${this.luksUuid} rd.live.squashimg=filesystem.squashfs rd.live.overlay.overlayfs=1 rd.debug rd.shell`)
-
     Utils.success('Encryption process successfully completed!')
 
 
