@@ -53,14 +53,14 @@ export async function makeLuks(this: Ovary, clone = false, cryptedclone = false)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', '/live/live.key', this.luksFile]);
+    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile]);
     // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], this.luksPassword)
 
     this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
     Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
 
     Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', '--key-file', '/live/live.key', this.luksFile, this.luksMappedName])
+    await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile, this.luksMappedName])
     // await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], this.luksPassword)
 
     Utils.warning(`5. Formatting ext4`)
