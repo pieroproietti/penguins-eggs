@@ -116,6 +116,8 @@ export default class Ovary {
 
   luksMappedName = ''
 
+  luksMountpoint = ''
+
   luksFile = ''
 
   luksDevice = ''

@@ -102,14 +102,13 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using dracut on (ISO)/live`)
     const prefix = this.settings.config.snapshot_prefix
-    const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
-    // const dracutdir='--dracutdir /opt/penguins-eggs/dracut'
-    const dracutdir = ''
-    const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
+
+    const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
-    const cmd = `dracut --force --debug --no-hostonly ${confdir} ${kmoddir} ${dest} ${this.kernel} ${log}`
-    // console.log(cmd)
+    const initramfs = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
+    const cmd = `dracut --force ${confdir} ${kmoddir} ${initramfs} ${this.kernel} ${log}`
+    console.log(cmd)
     await exec(cmd, this.echo)
 
     // clean per btrfs

@@ -14,6 +14,7 @@ import shell from 'shelljs'
 import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
 import Diversions from './diversions.js'
+import Pacman from './pacman.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -195,7 +196,9 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
-        this.liveMediumPath = '/run/live/medium/'
+        // this.liveMediumPath = '/run/live/medium/'
+        this.liveMediumPath = '/run/initramfs/live/'
+       
 
         /**
          * Debian 14 forky

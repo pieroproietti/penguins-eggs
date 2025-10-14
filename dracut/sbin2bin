@@ -1,0 +1,10 @@
+# Crea i collegamenti simbolici
+sudo ln -s /usr/sbin/cryptsetup /usr/bin/cryptsetup
+sudo ln -s /usr/sbin/losetup /usr/bin/losetup
+#sudo ln -s /usr/sbin/lsblk /usr/bin/lsblk già esiste
+
+# Nota: il log mostra anche altri comandi, potrebbero servire anche questi
+#sudo ln -s /bin/mount /usr/bin/mount # mount potrebbe essere in /bin
+#sudo ln -s /bin/umount /usr/bin/umount # umount potrebbe essere in /bin
+#sudo ln -s /usr/bin/find /usr/bin/find # find è già al posto giusto, di solito
+#sudo ln -s /bin/cat /usr/bin/cat # cat è già al posto giusto, di solito

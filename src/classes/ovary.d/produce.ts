@@ -64,6 +64,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
     this.luksName = 'luks.img'
     this.luksFile = `/tmp/${this.luksName}`
     this.luksMappedName = this.luksName
+    this.luksMountpoint = `/tmp/mnt/${this.luksName}`
     this.luksDevice = `/dev/mapper/${this.luksName}`
     this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 

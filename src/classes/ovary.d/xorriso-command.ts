@@ -94,6 +94,23 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
             uefi_noEmulBoot = '-no-emul-boot'
         }
 
+       // <<< INIZIO BLOCCO AGGIUNTO >>>
+        let luksPartitionParam = '' // Inizializziamo la variabile per il parametro LUKS
+        if (cryptedclone) {
+            // Costruiamo il percorso del file luks.img all'interno della directory di build
+            const luksImagePath = path.join(this.settings.iso_work, 'live', 'luks.img');
+            
+            // Verifichiamo che il file esista prima di aggiungerlo
+            if (fs.existsSync(luksImagePath)) {
+                // Costruiamo il parametro per aggiungere la partizione 3
+                luksPartitionParam = `-append_partition 3 0x80 ${luksImagePath}`;
+            } else {
+                Utils.warning(`Errore: impossibile creare l'ISO criptata, file non trovato: ${luksImagePath}`);
+                process.exit();
+            }
+        }
+        // <<< FINE BLOCCO AGGIUNTO >>>        
+
         command = `xorriso -as mkisofs \
                     -J \
                     -joliet-long \
@@ -112,27 +129,6 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedclone = 
                     ${uefi_isohybridGptBasdat} \
                     ${uefi_noEmulBoot} \
                     -o ${output} ${this.settings.iso_work}`
-
-    } else {
-        this.genisoimage = true
-
-        command = `genisoimage \
-        -iso-level 3 \
-        -allow-limited-size \
-        -joliet-long \
-        -r \
-        -V ${this.volid} \
-        -cache-inodes \
-        -J \
-        -l \
-        -b isolinux/isolinux.bin \
-        -c isolinux/boot.cat \
-        -no-emul-boot \
-        -boot-load-size 4 \
-        -boot-info-table \
-        -eltorito-alt-boot \
-        -e boot/grub/efi.img \
-        -o ${output} ${this.settings.iso_work}`
     }
     return command
 }
