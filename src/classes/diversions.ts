@@ -110,12 +110,12 @@ export default class Diversions {
           let append =`boot=live \
                   root=live:LABEL=${volid} \
                   rd.luks.loop=/live/luks.img \
-                  rd.luks.uuid=${luksUuid} \
+                  eggs.luks.uuid=${luksUuid} \
                   rd.live.squashimg=filesystem.squashfs \
                   rd.live.overlay.overlayfs=1 \
                   nomodeset \
-                  rd.debug \
-                  rd.shell`
+                  startdebug=1`
+                  
 
           kp += append .replaceAll(/\s\s+/g, ' ')
 
