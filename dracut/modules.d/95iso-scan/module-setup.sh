@@ -5,7 +5,6 @@ check() {
 }
 
 depends() {
-    echo "rootfs-block"
     return 0
 }
 
