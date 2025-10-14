@@ -1,6 +1,7 @@
 #!/bin/bash
 
-MODULES_TO_REPLACE=("90block" "90luks-loop")
+MODULES_TO_REPLACE=("90block" "95iso-scan" "95luks"  "95luks-loop")
+
 
 DRACUT_MODULES_DIR="/usr/lib/dracut/modules.d"
 SOURCE_MODULES_DIR="$(dirname "$0")/modules.d"

@@ -5,6 +5,7 @@
 common:
   - coreutils 
   - cryptsetup 
+  - cryptsetup-bin
   - cryptsetup-initramfs
   - curl # wardrobe
   - dbus-bin | uuidgen-runtime # uuid-runtime per devuan
