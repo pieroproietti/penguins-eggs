@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Script per consolidare il contenuto di più directory di configurazione Dracut
+# in un unico file di testo.
+
+# --- Impostazioni ---
+OUTPUT_FILE="dracut-analisys.txt"
+
+# --- Logica dello Script ---
+
+# Controlla se è stato fornito almeno un percorso come argomento
+if [ "$#" -eq 0 ]; then
+  echo "ERRORE: Devi specificare almeno un percorso di directory."
+  echo "Uso: $0 <percorso_dir_1> [<percorso_dir_2> ...]"
+  echo "Esempio: $0 ./modules.d ./dracut.conf.d"
+  exit 1
+fi
+
+# Pulisce il file di output se esiste già e scrive l'intestazione
+echo "--- INIZIO ANALISI CONFIGURAZIONE DRACUT ---" > "$OUTPUT_FILE"
+echo "" >> "$OUTPUT_FILE"
+
+# Itera su tutte le directory passate come argomenti
+for TARGET_DIR in "$@"; do
+  # Controlla se il percorso fornito è una directory valida
+  if [ ! -d "$TARGET_DIR" ]; then
+    echo "ATTENZIONE: '$TARGET_DIR' non è una directory valida o non esiste. Verrà saltata."
+    continue # Salta questo argomento e passa al successivo
+  fi
+
+  # Aggiunge un'intestazione per la directory corrente nel file di output
+  echo "##################################################" >> "$OUTPUT_FILE"
+  echo "### CONTENUTO DIRECTORY: ${TARGET_DIR}" >> "$OUTPUT_FILE"
+  echo "##################################################" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+
+  # Trova tutti i file nella directory corrente e aggiunge il loro contenuto al file
+  find "$TARGET_DIR" -type f | sort | while read -r filepath; do
+    echo "==================================================" >> "$OUTPUT_FILE"
+    echo "### FILE: ${filepath}" >> "$OUTPUT_FILE"
+    echo "==================================================" >> "$OUTPUT_FILE"
+    echo '```' >> "$OUTPUT_FILE"
+    cat "$filepath" >> "$OUTPUT_FILE"
+    echo '```' >> "$OUTPUT_FILE"
+    echo "" >> "$OUTPUT_FILE"
+  done
+done
+
+echo "--- FINE ANALISI CONFIGURAZIONE DRACUT ---" >> "$OUTPUT_FILE"
+
+echo "✅ Fatto! L'analisi combinata è stata salvata nel file: $OUTPUT_FILE"
