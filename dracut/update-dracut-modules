@@ -9,6 +9,9 @@ SOURCE_MODULES_DIR="$(dirname "$0")/modules.d"
 
 # --- FUNZIONE PRINCIPALE ---
 main() {
+    echo "no need more..."
+    exit 1
+
     # 1. Controllo dei permessi
     # Lo script deve essere eseguito come root per poter scrivere in /usr/lib
     if [[ $(id -u) -ne 0 ]]; then
