@@ -3,14 +3,13 @@
 MODULES_TO_REPLACE=("00debug-shell" "90block" "95iso-scan" "95luks" "95luks-loop")
               
 
-DRACUT_MODULES_DIR="/usr/lib/dracut/modules.d"
+DRACUT_MODULES_DIR="/usr/lib/penguins-eggs/dracut/modules.d"
 SOURCE_MODULES_DIR="$(dirname "$0")/modules.d"
 
 
 # --- FUNZIONE PRINCIPALE ---
 main() {
-    echo "no need more..."
-    exit 1
+    echo "ATTENZIONE: adesso aggiorn $DRACUT_MODULES_DIR"
 
     # 1. Controllo dei permessi
     # Lo script deve essere eseguito come root per poter scrivere in /usr/lib
