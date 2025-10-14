@@ -5,7 +5,7 @@ check() {
 }
 
 depends() {
-    echo "rootfs-block"
+    # Nessuna dipendenza - questo è solo un shim
     return 0
 }
 

@@ -53,6 +53,7 @@ main() {
         echo "------------------------------------"
     done
 
+
     echo "Operazione completata."
     echo "Ricorda di rigenerare l'initramfs con 'dracut -f' o un comando simile."
 }
