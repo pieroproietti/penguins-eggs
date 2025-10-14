@@ -1,0 +1,62 @@
+#!/bin/bash
+
+MODULES_TO_REPLACE=("00debug-shell" "90block" "95iso-scan" "95luks" "95luks-loop")
+              
+
+DRACUT_MODULES_DIR="/usr/lib/dracut/modules.d"
+SOURCE_MODULES_DIR="$(dirname "$0")/modules.d"
+
+
+# --- FUNZIONE PRINCIPALE ---
+main() {
+    echo "no need more..."
+    exit 1
+
+    # 1. Controllo dei permessi
+    # Lo script deve essere eseguito come root per poter scrivere in /usr/lib
+    if [[ $(id -u) -ne 0 ]]; then
+       echo "Errore: Questo script deve essere eseguito come root o con sudo." >&2
+       exit 1
+    fi
+
+    # 2. Verifica che la cartella di origine esista
+    if [[ ! -d "$SOURCE_MODULES_DIR" ]]; then
+        echo "Errore: La directory di origine '$SOURCE_MODULES_DIR' non è stata trovata." >&2
+        exit 1
+    fi
+
+    echo "Avvio della sostituzione dei moduli Dracut..."
+
+    # 3. Ciclo for per ogni modulo nell'array
+    for module_name in "${MODULES_TO_REPLACE[@]}"; do
+        local dest_path="$DRACUT_MODULES_DIR/$module_name"
+        local source_path="$SOURCE_MODULES_DIR/$module_name"
+
+        echo "--- Elaborazione del modulo: $module_name ---"
+
+        # Controlla se il modulo di origine esiste prima di procedere
+        if [[ ! -d "$source_path" ]]; then
+            echo "Attenzione: Il modulo '$source_path' non esiste nella cartella di origine. Salto."
+            continue
+        fi
+
+        # Rimuovi la vecchia versione del modulo, se esiste
+        if [[ -d "$dest_path" ]]; then
+            echo "Rimuovendo la vecchia versione: $dest_path"
+            rm -rf "$dest_path"
+        fi
+
+        # Copia la nuova versione del modulo
+        echo "Copiando la nuova versione da: $source_path"
+        cp -r "$source_path" "$DRACUT_MODULES_DIR/"
+
+        echo "Modulo '$module_name' aggiornato con successo."
+        echo "------------------------------------"
+    done
+
+    echo "Operazione completata."
+    echo "Ricorda di rigenerare l'initramfs con 'dracut -f' o un comando simile."
+}
+
+# Esegui la funzione principale
+main
