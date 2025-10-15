@@ -30,7 +30,7 @@ export default class Love extends Command {
     verbose: Flags.boolean({ char: 'v' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'k', description: 'crypted clone' }),
+    cryptedhome: Flags.boolean({ char: 'k', description: 'crypted clone' }),
   }
 
   async run(): Promise<void> {
@@ -43,11 +43,11 @@ export default class Love extends Command {
       flagVerbose = '--verbose'
     }
 
-    let cryptedclone = false
-    let flagCryptedclone = ''
-    if (flags.cryptedclone) {
-      flagCryptedclone = '--cryptedclone'
-      cryptedclone = true
+    let cryptedhome = false
+    let flagcryptedhome = ''
+    if (flags.cryptedhome) {
+      flagcryptedhome = '--cryptedhome'
+      cryptedhome = true
     }
 
     let clone = false
@@ -88,7 +88,7 @@ export default class Love extends Command {
     console.log()
     for (const cmd of cmds) {
       if (cmd.includes('produce')) {
-        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagcryptedhome} ${flagNointeractive}`)
       } else {
         console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
       }
@@ -99,7 +99,7 @@ export default class Love extends Command {
     if (nointeractive || await Utils.customConfirm()) {
       for (const cmd of cmds) {
         if (cmd.includes('produce')) {
-          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagcryptedhome} ${flagNointeractive}`)
         } else {
           await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
         }

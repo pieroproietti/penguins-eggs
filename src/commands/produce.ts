@@ -29,7 +29,7 @@ export default class Produce extends Command {
     'sudo eggs produce --max              # xz max compression',
     'sudo eggs produce --pendrive         # zstd compression optimized pendrive',
     'sudo eggs produce --clone            # clone',
-    'sudo eggs produce --cryptedclone     # crypted clone',
+    'sudo eggs produce --cryptedhome     # crypted clone',
     'sudo eggs produce --basename=colibri',
     'sudo eggs produce --theme lastos',
     'sudo eggs produce --excludes static  # you can customize it',
@@ -41,7 +41,7 @@ export default class Produce extends Command {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'k', description: 'crypted clone' }),
+    cryptedhome: Flags.boolean({ char: 'k', description: 'crypted clone' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
     kernel: Flags.string({ char: 'K', description: 'kernel version' }),
@@ -158,7 +158,7 @@ export default class Produce extends Command {
 
       const { release } = flags
 
-      const { cryptedclone } = flags
+      const { cryptedhome } = flags
 
       const { clone } = flags
 
@@ -172,8 +172,8 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      // if clone or cryptedclone includeRoot = true
-      const includeRoot = flags.includeRoot || clone || cryptedclone
+      // if clone or cryptedhome includeRoot = true
+      const includeRoot = flags.includeRoot || clone || cryptedhome
 
       let { kernel } = flags
       if (kernel === undefined) {
@@ -217,7 +217,7 @@ export default class Produce extends Command {
         }
       }
 
-      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedclone)
+      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedhome)
       if ((i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate)) {
         await Config.install(i, nointeractive, verbose)
       }
@@ -246,7 +246,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(kernel, clone, cryptedclone, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
+        await ovary.produce(kernel, clone, cryptedhome, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

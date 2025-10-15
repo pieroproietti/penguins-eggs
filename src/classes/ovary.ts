@@ -47,7 +47,8 @@ import { kernelCopy } from './ovary.d/kernel-copy.js'
 import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
-import { makeLuks } from './ovary.d/make-luks.js'
+import { luksHome } from './ovary.d/luks-home.js'
+import { luksRoot } from './ovary.d/luks-root.js'
 
 // Functions
 // import initramfs from '../krill/classes/sequence.d/initramfs.js'
@@ -66,7 +67,7 @@ export default class Ovary {
 
   compression = ''
 
-  cryptedclone = false
+  cryptedhome = false
 
   echo = {}
 
@@ -137,7 +138,8 @@ export default class Ovary {
   copied = copied
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
-  makeLuks = makeLuks
+  luksHome = luksHome
+  luksRoot = luksRoot
   finished = finished
   // initramfsDebianLuks = initramfsDebianLuks
   initrdAlpine = initrdAlpine

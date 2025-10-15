@@ -552,10 +552,10 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedclone": {
+        "cryptedhome": {
           "char": "k",
           "description": "crypted clone",
-          "name": "cryptedclone",
+          "name": "cryptedhome",
           "allowNo": false,
           "type": "boolean"
         }
@@ -655,7 +655,7 @@
         "sudo eggs produce --max              # xz max compression",
         "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
         "sudo eggs produce --clone            # clone",
-        "sudo eggs produce --cryptedclone     # crypted clone",
+        "sudo eggs produce --cryptedhome     # crypted clone",
         "sudo eggs produce --basename=colibri",
         "sudo eggs produce --theme lastos",
         "sudo eggs produce --excludes static  # you can customize it",
@@ -684,10 +684,10 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedclone": {
+        "cryptedhome": {
           "char": "k",
           "description": "crypted clone",
-          "name": "cryptedclone",
+          "name": "cryptedhome",
           "allowNo": false,
           "type": "boolean"
         },

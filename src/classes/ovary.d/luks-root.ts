@@ -17,12 +17,12 @@ import { exec } from '../../lib/utils.js'
 import { error } from 'node:console'
 
 /**
- * makeLuks()
+ * luksRoot()
  * 
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function makeLuks(this: Ovary, clone = false, cryptedclone = false) {
+export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) {
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
 
