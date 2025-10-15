@@ -78,26 +78,22 @@ export class Trixie {
     await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('hwclock')
     await fisherman.buildModule('services-systemd')
+    await fisherman.buildModule('luksbootkeyfile')
+    await fisherman.shellprocess('boot_deploy') // contiene this.liveMediumPath
     await fisherman.buildCalamaresModule('bootloader-config', true)
     await fisherman.buildModule('grubcfg')
     await fisherman.buildModule('bootloader')
-    await fisherman.buildModulePackages(this.distro, this.release)
-    await fisherman.buildModule('luksbootkeyfile')
-    await fisherman.buildModule('plymouthcfg')
+    await fisherman.shellprocess('boot_reconfigure')
     await fisherman.buildModule('initramfscfg')
-    await fisherman.buildModule('initramfs')
+    await fisherman.shellprocess('mkinitramfs')
+    await fisherman.buildModule('plymouthcfg')
+    await fisherman.buildModulePackages(this.distro, this.release)
     await fisherman.buildCalamaresModule('dpkg-unsafe-io-undo', false)
     await fisherman.buildModuleRemoveuser(this.user_opt)
     await fisherman.buildCalamaresModule('sources-yolk-undo', false)
     await fisherman.buildCalamaresModule('cleanup', true)
-
-    // contextualprocess
-    // await fisherman.contextualprocess('before_bootloader_context')
-
-    // shellprocess
-    await fisherman.shellprocess('mkinitramfs')
-    await fisherman.shellprocess('boot_deploy')
-    await fisherman.shellprocess('boot_reconfigure')
+    
+    // await fisherman.buildModule('initramfs')
     
     // libexec recreate
     await exec (`rm -rf /usr/libexec/calamares`)
