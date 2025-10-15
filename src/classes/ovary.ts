@@ -63,11 +63,13 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 export default class Ovary {
   cliAutologin = new CliAutologin()
 
-  clone = false
-
   compression = ''
 
+  clone = false
+
   cryptedhome = false
+
+  cryptedfull = false
 
   echo = {}
 

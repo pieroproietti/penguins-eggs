@@ -41,7 +41,8 @@ export default class Produce extends Command {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedhome: Flags.boolean({ char: 'k', description: 'crypted clone' }),
+    cryptedhome: Flags.boolean({ char: 'k', description: 'crypted home' }),
+    cryptedfull: Flags.boolean({ char: 'f', description: 'full crypted root' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
     kernel: Flags.string({ char: 'K', description: 'kernel version' }),
@@ -158,9 +159,11 @@ export default class Produce extends Command {
 
       const { release } = flags
 
+      const { clone } = flags
+
       const { cryptedhome } = flags
 
-      const { clone } = flags
+      const { cryptedfull } = flags
 
       const { verbose } = flags
 
@@ -246,7 +249,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(kernel, clone, cryptedhome, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
+        await ovary.produce(kernel, clone, cryptedhome, cryptedfull, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

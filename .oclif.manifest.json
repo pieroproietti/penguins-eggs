@@ -554,8 +554,15 @@
         },
         "cryptedhome": {
           "char": "k",
-          "description": "crypted clone",
+          "description": "crypted home ",
           "name": "cryptedhome",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedfull": {
+          "char": "f",
+          "description": "crypted root ",
+          "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"
         }
@@ -686,8 +693,15 @@
         },
         "cryptedhome": {
           "char": "k",
-          "description": "crypted clone",
+          "description": "crypted home",
           "name": "cryptedhome",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedfull": {
+          "char": "f",
+          "description": "full crypted root",
+          "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"
         },

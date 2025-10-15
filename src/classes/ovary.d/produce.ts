@@ -46,7 +46,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param includeRoot
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, cryptedhome = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, cryptedhome = false, cryptedfull = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -59,16 +59,21 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
     this.cryptedhome = cryptedhome
 
-    // new
+    this.cryptedfull = cryptedfull
+
+    // Crittoografia
     if (this.cryptedhome) {
-        this.luksUuid = ''
         this.luksName = 'home.img'
-        this.luksFile = `/tmp/${this.luksName}`
-        this.luksMappedName = this.luksName
-        this.luksMountpoint = `/tmp/mnt/${this.luksName}`
-        this.luksDevice = `/dev/mapper/${this.luksName}`
-        this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
+    } else if (this.cryptedfull) {
+        this.luksName = 'root.img'
     }
+    this.luksUuid = ''
+    this.luksFile = `/tmp/${this.luksName}`
+    this.luksMappedName = this.luksName
+    this.luksMountpoint = `/tmp/mnt/${this.luksName}`
+    this.luksDevice = `/dev/mapper/${this.luksName}`
+    this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
+
 
     this.nest = this.settings.config.snapshot_dir
     this.dotMnt = `${this.nest}.mnt`
@@ -283,6 +288,8 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
         if (cryptedhome) {
             await this.luksHome()
+        } else if (cryptedfull) {
+            await this.luksRoot()
         }
 
         /** 
