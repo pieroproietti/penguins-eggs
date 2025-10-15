@@ -1,5 +1,9 @@
 #!/bin/bash
+# iso-scan-fallback.sh
 # Penguins-Eggs: fallback hook to help dmsquash-live on Debian
+
+# CREA la directory se non esiste
+mkdir -p /run/initramfs/cmdline.d
 
 if [ -e /run/initramfs/live.squashfs.path ] && [ -z "$live_squash" ]; then
     live_squash=$(cat /run/initramfs/live.squashfs.path)

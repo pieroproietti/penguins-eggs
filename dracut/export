@@ -1,4 +1,4 @@
-./export-dracut-analisys ./modules.d ./dracut.conf.d
+./export-dracut-analysis /usr/lib/penguins-eggs/dracut/modules.d /usr/lib/penguins-eggs/dracut/dracut.conf.d
 scp dracut-analisys.txt artisan@192.168.1.2:/home/artisan
 scp /home/eggs/iso/egg-of_debian-trixie-* artisan@192.168.1.2:/home/artisan/dracut-log.txt
 rm dracut-analisys.txt
