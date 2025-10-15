@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.10.11</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.10.15</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
@@ -14,30 +14,30 @@
     <pre><code>$ doas apk add penguins-eggs@testing
 </code></pre>
     <p>AlmaLinux/RockyLinux</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1rocky9.5..x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.15-1_amd64-1rocky9.5..x86_64.rpm
 
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_25.10.11-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_25.10.15-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_25.10.11-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_25.10.15-1_amd64.deb
 </code></pre>
     <p>Fedora</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1fedora.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.15-1_amd64-1fedora.x86_64.rpm
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
 </code></pre>
     <p>OpenMamba</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.11-1_amd64-1mamba.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.10.15-1_amd64-1mamba.x86_64.rpm
 </code></pre>
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/25.10.11  
+penguins-eggs/25.10.15  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -58,67 +58,10 @@ sudo eggs dad
     <p>The scope of this project is to implement the process of remastering your version of Linux, generate it as ISO image, to burn on a CD/DVD or copy to a usb key, to boot your system live. Of course, You can easily install your live image using GUI installer (calamares) or CLI installer (krill) always included.</p>
     <h1>COMMANDS</h1>
     <ul>
-      <li><a href="#eggs-adapt"><code>eggs adapt</code></a></li>
-      <li><a href="#eggs-analyze"><code>eggs analyze</code></a></li>
       <li><a href="#eggs-autocomplete-shell"><code>eggs autocomplete [SHELL]</code></a></li>
-      <li><a href="#eggs-calamares"><code>eggs calamares</code></a></li>
-      <li><a href="#eggs-config"><code>eggs config</code></a></li>
-      <li><a href="#eggs-cuckoo"><code>eggs cuckoo</code></a></li>
-      <li><a href="#eggs-dad"><code>eggs dad</code></a></li>
-      <li><a href="#eggs-export-iso"><code>eggs export iso</code></a></li>
-      <li><a href="#eggs-export-pkg"><code>eggs export pkg</code></a></li>
-      <li><a href="#eggs-export-tarballs"><code>eggs export tarballs</code></a></li>
       <li><a href="#eggs-help-command"><code>eggs help [COMMAND]</code></a></li>
-      <li><a href="#eggs-install"><code>eggs install</code></a></li>
-      <li><a href="#eggs-kill"><code>eggs kill</code></a></li>
-      <li><a href="#eggs-krill"><code>eggs krill</code></a></li>
-      <li><a href="#eggs-love"><code>eggs love</code></a></li>
-      <li><a href="#eggs-mom"><code>eggs mom</code></a></li>
-      <li><a href="#eggs-pods-distro"><code>eggs pods [DISTRO]</code></a></li>
-      <li><a href="#eggs-produce"><code>eggs produce</code></a></li>
-      <li><a href="#eggs-status"><code>eggs status</code></a></li>
-      <li><a href="#eggs-tools-clean"><code>eggs tools clean</code></a></li>
-      <li><a href="#eggs-tools-repo"><code>eggs tools repo</code></a></li>
-      <li><a href="#eggs-tools-skel"><code>eggs tools skel</code></a></li>
-      <li><a href="#eggs-tools-stat"><code>eggs tools stat</code></a></li>
-      <li><a href="#eggs-tools-yolk"><code>eggs tools yolk</code></a></li>
-      <li><a href="#eggs-update"><code>eggs update</code></a></li>
       <li><a href="#eggs-version"><code>eggs version</code></a></li>
-      <li><a href="#eggs-wardrobe-get-repo"><code>eggs wardrobe get [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-list-repo"><code>eggs wardrobe list [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-show-repo"><code>eggs wardrobe show [REPO]</code></a></li>
-      <li><a href="#eggs-wardrobe-wear-repo"><code>eggs wardrobe wear [REPO]</code></a></li>
     </ul>
-    <h2><code>eggs adapt</code></h2>
-    <p>adapt monitor resolution for VM only</p>
-    <pre><code>USAGE
-  $ eggs adapt [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  adapt monitor resolution for VM only
-
-EXAMPLES
-  $ eggs adapt
-</code></pre>
-    <h2><code>eggs analyze</code></h2>
-    <p>analyze for syncto</p>
-    <pre><code>USAGE
-  $ eggs analyze [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  analyze for syncto
-
-EXAMPLES
-  sudo eggs analyze
-</code></pre>
     <h2><code>eggs autocomplete [SHELL]</code></h2>
     <p>Display autocomplete installation instructions.</p>
     <pre><code>USAGE
@@ -144,150 +87,6 @@ EXAMPLES
 
   $ eggs autocomplete --refresh-cache
 </code></pre>
-    <h2><code>eggs calamares</code></h2>
-    <p>configure calamares or install or configure it</p>
-    <pre><code>USAGE
-  $ eggs calamares [-h] [-i] [-n] [-p] [-r] [--remove] [--theme &#x3C;value>] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -i, --install        install calamares and its dependencies
-  -n, --nointeractive  no user interaction
-  -p, --policies       configure calamares policies
-  -r, --release        release: remove calamares and all its dependencies after the installation
-  -v, --verbose
-      --remove         remove calamares and its dependencies
-      --theme=&#x3C;value>  theme/branding for eggs and calamares
-
-DESCRIPTION
-  configure calamares or install or configure it
-
-EXAMPLES
-  sudo eggs calamares
-
-  sudo eggs calamares --install
-
-  sudo eggs calamares --install --theme=/path/to/theme
-
-  sudo eggs calamares --remove
-</code></pre>
-    <h2><code>eggs config</code></h2>
-    <p>Configure eggs to run it</p>
-    <pre><code>USAGE
-  $ eggs config [-c] [-h] [-n] [-v]
-
-FLAGS
-  -c, --clean          remove old configuration before to create new one
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  Configure eggs to run it
-
-EXAMPLES
-  sudo eggs config
-
-  sudo eggs config --clean
-
-  sudo eggs config --clean --nointeractive
-</code></pre>
-    <h2><code>eggs cuckoo</code></h2>
-    <p>PXE start with proxy-dhcp</p>
-    <pre><code>USAGE
-  $ eggs cuckoo [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  PXE start with proxy-dhcp
-
-EXAMPLES
-  sudo eggs cuckoo
-</code></pre>
-    <h2><code>eggs dad</code></h2>
-    <p>ask help from daddy - TUI configuration helper</p>
-    <pre><code>USAGE
-  $ eggs dad [-c] [-d] [-f &#x3C;value>] [-n] [-h] [-v]
-
-FLAGS
-  -c, --clean          remove old configuration before to create
-  -d, --default        reset to default values
-  -f, --file=&#x3C;value>   use a file configuration custom
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose
-
-DESCRIPTION
-  ask help from daddy - TUI configuration helper
-
-EXAMPLES
-  sudo dad
-
-  sudo dad --clean
-
-  sudo dad --default
-</code></pre>
-    <h2><code>eggs export iso</code></h2>
-    <p>export iso in the destination host</p>
-    <pre><code>USAGE
-  $ eggs export iso [-C] [-c] [-h] [-v]
-
-FLAGS
-  -C, --checksum  export checksums md5 and sha256
-  -c, --clean     delete old ISOs before to copy
-  -h, --help      Show CLI help.
-  -v, --verbose   verbose
-
-DESCRIPTION
-  export iso in the destination host
-
-EXAMPLES
-  $ eggs export iso
-
-  $ eggs export iso --clean
-</code></pre>
-    <h2><code>eggs export pkg</code></h2>
-    <p>export pkg/iso to the destination host</p>
-    <pre><code>USAGE
-  $ eggs export pkg [-a] [-c] [-h] [-v]
-
-FLAGS
-  -a, --all      export all archs
-  -c, --clean    remove old .deb before to copy
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  export pkg/iso to the destination host
-
-EXAMPLES
-  $ eggs export pkg
-
-  $ eggs export pkg --clean
-
-  $ eggs export pkg --all
-</code></pre>
-    <h2><code>eggs export tarballs</code></h2>
-    <p>export pkg/iso/tarballs to the destination host</p>
-    <pre><code>USAGE
-  $ eggs export tarballs [-c] [-h] [-v]
-
-FLAGS
-  -c, --clean    remove old .deb before to copy
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  export pkg/iso/tarballs to the destination host
-
-EXAMPLES
-  $ eggs export tarballs
-
-  $ eggs export tarballs --clean
-</code></pre>
     <h2><code>eggs help [COMMAND]</code></h2>
     <p>Display help for eggs.</p>
     <pre><code>USAGE
@@ -301,325 +100,6 @@ FLAGS
 
 DESCRIPTION
   Display help for eggs.
-</code></pre>
-    <h2><code>eggs install</code></h2>
-    <p>krill: the CLI system installer - the egg became a penguin!</p>
-    <pre><code>USAGE
-  $ eggs install [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R &#x3C;value>] [-s] [-S] [-t]
-    [-u] [-v]
-
-FLAGS
-  -H, --halt             Halt the system after installation
-  -N, --none             Swap none: 256M
-  -R, --replace=&#x3C;value>  Replace partition. eg: --replace /dev/sda3
-  -S, --suspend          Swap suspend: RAM x 2
-  -b, --btrfs            Format btrfs
-  -c, --chroot           chroot before to end
-  -d, --domain=&#x3C;value>   Domain name, defult: .local
-  -h, --help             Show CLI help.
-  -i, --ip               hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted          Crypted CLI installation
-  -n, --nointeractive    no user interaction
-  -p, --pve              Proxmox VE install
-  -r, --random           Add random to hostname, eg: colibri-ay412dt
-  -s, --small            Swap small: RAM
-  -t, --testing          Just testing krill
-  -u, --unattended       Unattended installation
-  -v, --verbose          Verbose
-
-DESCRIPTION
-  krill: the CLI system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
-
-EXAMPLES
-  sudo eggs install
-
-  sudo eggs install --unattended --halt
-
-  sudo eggs install --chroot
-</code></pre>
-    <h2><code>eggs kill</code></h2>
-    <p>kill the eggs/free the nest</p>
-    <pre><code>USAGE
-  $ eggs kill [-h] [-i] [-n] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -i, --isos           erase all ISOs on remote mount
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  kill the eggs/free the nest
-
-EXAMPLES
-  sudo eggs kill
-</code></pre>
-    <h2><code>eggs krill</code></h2>
-    <p>krill: the CLI system installer - the egg became a penguin!</p>
-    <pre><code>USAGE
-  $ eggs krill [-b] [-c] [-k] [-d &#x3C;value>] [-H] [-h] [-i] [-n] [-N] [-p] [-r] [-R &#x3C;value>] [-s] [-S] [-t]
-    [-u] [-v]
-
-FLAGS
-  -H, --halt             Halt the system after installation
-  -N, --none             Swap none: 256M
-  -R, --replace=&#x3C;value>  Replace partition. eg: --replace /dev/sda3
-  -S, --suspend          Swap suspend: RAM x 2
-  -b, --btrfs            Format btrfs
-  -c, --chroot           chroot before to end
-  -d, --domain=&#x3C;value>   Domain name, defult: .local
-  -h, --help             Show CLI help.
-  -i, --ip               hostname as ip, eg: ip-192-168-1-33
-  -k, --crypted          Crypted CLI installation
-  -n, --nointeractive    no user interaction
-  -p, --pve              Proxmox VE install
-  -r, --random           Add random to hostname, eg: colibri-ay412dt
-  -s, --small            Swap small: RAM
-  -t, --testing          Just testing krill
-  -u, --unattended       Unattended installation
-  -v, --verbose          Verbose
-
-DESCRIPTION
-  krill: the CLI system installer - the egg became a penguin!
-
-ALIASES
-  $ eggs krill
-
-EXAMPLES
-  sudo eggs install
-
-  sudo eggs install --unattended --halt
-
-  sudo eggs install --chroot
-</code></pre>
-    <h2><code>eggs love</code></h2>
-    <p>the simplest way to get an egg!</p>
-    <pre><code>USAGE
-  $ eggs love [-h] [-v] [-n] [-K]
-
-FLAGS
-  -K, --cryptedclone   crypted clone
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose
-
-DESCRIPTION
-  the simplest way to get an egg!
-
-EXAMPLES
-  $ eggs auto
-</code></pre>
-    <h2><code>eggs mom</code></h2>
-    <p>ask help from mommy - TUI helper</p>
-    <pre><code>USAGE
-  $ eggs mom [-h]
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  ask help from mommy - TUI helper
-
-EXAMPLES
-  $ eggs mom
-</code></pre>
-    <h2><code>eggs pods [DISTRO]</code></h2>
-    <p>eggs pods: build ISOs from containers</p>
-    <pre><code>USAGE
-  $ eggs pods [DISTRO] [-h]
-
-ARGUMENTS
-  DISTRO  distro to build
-
-FLAGS
-  -h, --help  Show CLI help.
-
-DESCRIPTION
-  eggs pods: build ISOs from containers
-
-EXAMPLES
-  $ eggs pods archlinux
-
-  $ eggs pods debian
-
-  $ eggs pods ubuntu
-</code></pre>
-    <h2><code>eggs produce</code></h2>
-    <p>produce a live image from your system whithout your data</p>
-    <pre><code>USAGE
-  $ eggs produce [--addons &#x3C;value>...] [--basename &#x3C;value>] [-c] [-K] [--excludes &#x3C;value>...] [-h] [-k
-    &#x3C;value>] [--links &#x3C;value>...] [-m] [-N] [-n] [-p] [-P &#x3C;value>] [--release] [-s] [-S] [--theme &#x3C;value>] [-i] [-v]
-    [-y]
-
-FLAGS
-  -K, --cryptedclone         crypted clone
-  -N, --noicon               no icon eggs on desktop
-  -P, --prefix=&#x3C;value>       prefix
-  -S, --standard             standard compression: xz -b 1M
-  -c, --clone                clone
-  -h, --help                 Show CLI help.
-  -i, --includeRoot          folder /root is included on live
-  -k, --kernel=&#x3C;value>       kernel version
-  -m, --max                  max compression: xz -Xbcj ...
-  -n, --nointeractive        no user interaction
-  -p, --pendrive             optimized for pendrive: zstd -b 1M -Xcompression-level 15
-  -s, --script               script mode. Generate scripts to manage iso build
-  -v, --verbose              verbose
-  -y, --yolk                 force yolk renew
-      --addons=&#x3C;value>...    addons to be used: adapt, pve, rsupport
-      --basename=&#x3C;value>     basename
-      --excludes=&#x3C;value>...  use: static, homes, home
-      --links=&#x3C;value>...     desktop links
-      --release              release: remove penguins-eggs, calamares and dependencies after installation
-      --theme=&#x3C;value>        theme for livecd, calamares branding and partitions
-
-DESCRIPTION
-  produce a live image from your system whithout your data
-
-EXAMPLES
-  sudo eggs produce                    # zstd fast compression
-
-  sudo eggs produce --standard         # xz compression
-
-  sudo eggs produce --max              # xz max compression
-
-  sudo eggs produce --pendrive         # zstd compression optimized pendrive
-
-  sudo eggs produce --clone            # clone
-
-  sudo eggs produce --cryptedclone     # crypted clone
-
-  sudo eggs produce --basename=colibri
-
-  sudo eggs produce --theme lastos
-
-  sudo eggs produce --excludes static  # you can customize it
-
-  sudo eggs produce --excludes homes   # exclude /home/*
-
-  sudo eggs produce --excludes home    # exclude ~/*
-</code></pre>
-    <h2><code>eggs status</code></h2>
-    <p>informations about eggs status</p>
-    <pre><code>USAGE
-  $ eggs status [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  informations about eggs status
-
-EXAMPLES
-  $ eggs status
-</code></pre>
-    <h2><code>eggs tools clean</code></h2>
-    <p>clean system log, apt, etc</p>
-    <pre><code>USAGE
-  $ eggs tools clean [-h] [-n] [-v]
-
-FLAGS
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -v, --verbose        verbose
-
-DESCRIPTION
-  clean system log, apt, etc
-
-EXAMPLES
-  sudo eggs tools clean
-</code></pre>
-    <h2><code>eggs tools repo</code></h2>
-    <p>add/remove penguins-eggs-repo</p>
-    <pre><code>USAGE
-  $ eggs tools repo [-a] [-h] [-n] [-r] [-v]
-
-FLAGS
-  -a, --add            add penguins-eggs-repo
-  -h, --help           Show CLI help.
-  -n, --nointeractive  no user interaction
-  -r, --remove         remove penguins-eggs-repo
-  -v, --verbose        verbose
-
-DESCRIPTION
-  add/remove penguins-eggs-repo
-
-EXAMPLES
-  sudo eggs tools repo --add
-
-  sudo eggs tools repo --remove
-</code></pre>
-    <h2><code>eggs tools skel</code></h2>
-    <p>update skel from home configuration</p>
-    <pre><code>USAGE
-  $ eggs tools skel [-h] [-u &#x3C;value>] [-v]
-
-FLAGS
-  -h, --help          Show CLI help.
-  -u, --user=&#x3C;value>  user to be used
-  -v, --verbose
-
-DESCRIPTION
-  update skel from home configuration
-
-EXAMPLES
-  sudo eggs tools skel
-
-  sudo eggs tools skel --user user-to-be-copied
-</code></pre>
-    <h2><code>eggs tools stat</code></h2>
-    <p>get statistics from sourceforge</p>
-    <pre><code>USAGE
-  $ eggs tools stat [-h] [-m] [-y]
-
-FLAGS
-  -h, --help   Show CLI help.
-  -m, --month  current month
-  -y, --year   current year
-
-DESCRIPTION
-  get statistics from sourceforge
-
-EXAMPLES
-  $ eggs tools stat
-
-  $ eggs tools stat --month
-
-  $ eggs tools stat --year
-</code></pre>
-    <h2><code>eggs tools yolk</code></h2>
-    <p>configure eggs to install without internet</p>
-    <pre><code>USAGE
-  $ eggs tools yolk [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  configure eggs to install without internet
-
-EXAMPLES
-  sudo eggs tools yolk
-</code></pre>
-    <h2><code>eggs update</code></h2>
-    <p>update the Penguins' eggs tool</p>
-    <pre><code>USAGE
-  $ eggs update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose  verbose
-
-DESCRIPTION
-  update the Penguins' eggs tool
-
-EXAMPLES
-  $ eggs update
 </code></pre>
     <h2><code>eggs version</code></h2>
     <pre><code>USAGE
@@ -635,98 +115,6 @@ FLAG DESCRIPTIONS
   --verbose  Show additional information about the CLI.
 
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
-</code></pre>
-    <h2><code>eggs wardrobe get [REPO]</code></h2>
-    <p>get warorobe</p>
-    <pre><code>USAGE
-  $ eggs wardrobe get [REPO] [-h] [-v]
-
-ARGUMENTS
-  REPO  repository to get
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  get warorobe
-
-EXAMPLES
-  $ eggs wardrobe get
-
-  $ eggs wardrobe get your-wardrobe
-</code></pre>
-    <h2><code>eggs wardrobe list [REPO]</code></h2>
-    <p>list costumes and accessoires in wardrobe</p>
-    <pre><code>USAGE
-  $ eggs wardrobe list [REPO] [-d &#x3C;value>] [-h] [-v]
-
-ARGUMENTS
-  REPO  wardrobe to get
-
-FLAGS
-  -d, --distro=&#x3C;value>  distro
-  -h, --help            Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  list costumes and accessoires in wardrobe
-
-EXAMPLES
-  $ eggs wardrobe list
-
-  $ eggs wardrobe list your-wardrobe
-
-  $ eggs wardrobe list --distro arch
-</code></pre>
-    <h2><code>eggs wardrobe show [REPO]</code></h2>
-    <p>show costumes/accessories in wardrobe</p>
-    <pre><code>USAGE
-  $ eggs wardrobe show [REPO] [-h] [-j] [-v] [-w &#x3C;value>]
-
-ARGUMENTS
-  REPO  costume to show
-
-FLAGS
-  -h, --help              Show CLI help.
-  -j, --json              output JSON
-  -v, --verbose
-  -w, --wardrobe=&#x3C;value>  wardrobe
-
-DESCRIPTION
-  show costumes/accessories in wardrobe
-
-EXAMPLES
-  $ eggs wardrobe show colibri
-
-  $ eggs wardrobe show accessories/firmwares
-
-  $ eggs wardrobe show accessories/
-</code></pre>
-    <h2><code>eggs wardrobe wear [REPO]</code></h2>
-    <p>wear costume/accessories from wardrobe</p>
-    <pre><code>USAGE
-  $ eggs wardrobe wear [REPO] [-h] [-a] [-f] [-v] [-w &#x3C;value>]
-
-ARGUMENTS
-  REPO  costume to wear
-
-FLAGS
-  -a, --no_accessories    not install accessories
-  -f, --no_firmwares      not install firmwares
-  -h, --help              Show CLI help.
-  -v, --verbose
-  -w, --wardrobe=&#x3C;value>  wardrobe
-
-DESCRIPTION
-  wear costume/accessories from wardrobe
-
-EXAMPLES
-  sudo eggs wardrobe wear duck
-
-  sudo eggs wardrobe wear accessories/firmwares
-
-  sudo eggs wardrobe wear wagtail/waydroid
 </code></pre>
     <h1>FILES</h1>
     <pre><code>  /etc/penguins-eggs.d

@@ -198,8 +198,6 @@ _eggs() {
 "pods[eggs pods: build ISOs from containers]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
-"syncfrom[restore users and user data from a LUKS volumes]" \
-"syncto[Save users and users' data ENCRYPTED]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
 "help[Display help for eggs.]" \
@@ -320,6 +318,9 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-c --clone)"{-c,--clone}"[clone]" \
+"(-k --cryptedhome)"{-k,--cryptedhome}"[crypted home ]" \
+"(-f --cryptedfull)"{-f,--cryptedfull}"[crypted root ]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 mom)
@@ -337,10 +338,11 @@ _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone]" \
-"(-C --cryptedclone)"{-C,--cryptedclone}"[crypted clone]" \
+"(-k --cryptedhome)"{-k,--cryptedhome}"[crypted home]" \
+"(-f --cryptedfull)"{-f,--cryptedfull}"[full crypted root]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-k --kernel)"{-k,--kernel}"[kernel version]:file:_files" \
+"(-K --kernel)"{-K,--kernel}"[kernel version]:file:_files" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
 "(-N --noicon)"{-N,--noicon}"[no icon eggs on desktop]" \
@@ -351,7 +353,7 @@ _arguments -S \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
 "(-S --standard)"{-S,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
-"(-u --includeRoot)"{-u,--includeRoot}"[/root contents are not included on live]" \
+"(-i --includeRoot)"{-i,--includeRoot}"[folder /root is included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
@@ -360,23 +362,6 @@ status)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-syncfrom)
-_arguments -S \
---delete"[rsync --delete delete extraneous files from dest dirs]:file:_files" \
-"(-f --file)"{-f,--file}"[file containing luks-volume encrypted]:file:_files" \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-r --rootdir)"{-r,--rootdir}"[rootdir of the installed system, when used from live]:file:_files" \
-"(-v --verbose)"{-v,--verbose}"[verbose]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-syncto)
-_arguments -S \
-"(-e --excludes)"{-e,--excludes}"[use: exclude.list.d/home.list]" \
-"(-f --file)"{-f,--file}"[file luks-volume encrypted]:file:_files" \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 update)
