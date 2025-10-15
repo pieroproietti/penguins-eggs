@@ -60,6 +60,28 @@ if cryptsetup open "\${HOME_IMG}" "\${LUKS_NAME}"; then
     
     if mount "/dev/mapper/\${LUKS_NAME}" "\${MOUNT_POINT}"; then
         echo "Home directory mounted successfully"
+
+        # Rimuovi l'utente live temporaneo creato da eggs
+        userdel -r live 2>/dev/null || true
+
+        # Dopo il mount, ripristina gli utenti
+        if [ -d "\${MOUNT_POINT}/.system-backup" ]; then
+            echo "Restoring user accounts..."
+            cat "\${MOUNT_POINT}/.system-backup/passwd" >> /etc/passwd
+            cat "\${MOUNT_POINT}/.system-backup/shadow" >> /etc/shadow
+            cat "\${MOUNT_POINT}/.system-backup/group" >> /etc/group
+            cat "\${MOUNT_POINT}/.system-backup/gshadow" >> /etc/gshadow
+            echo "User accounts restored"
+
+            # Riavvia il display manager per ricaricare gli utenti
+            if systemctl is-active --quiet gdm; then
+                systemctl restart gdm
+            elif systemctl is-active --quiet lightdm; then
+                systemctl restart lightdm
+            elif systemctl is-active --quiet sddm; then
+                systemctl restart sddm
+            fi
+        fi        
         exit 0
     else
         echo "ERROR: Failed to mount decrypted volume"
@@ -76,9 +98,11 @@ fi
   const systemdService = `[Unit]
 Description=Unlock and mount encrypted home.img
 DefaultDependencies=no
-After=systemd-udev-settle.service local-fs-pre.target
+After=systemd-udev-settle.service local-fs-pre.target systemd-tmpfiles-setup.service
+After=live-boot.service
 Before=local-fs.target display-manager.service
-ConditionPathExists=/live/home.img
+ConditionPathExists=${homeImg}
+RequiresMountsFor=/run/live/medium
 
 [Service]
 Type=oneshot
@@ -133,10 +157,7 @@ export function verifyEncryptedHomeSupport(this: Ovary) : boolean {
 
   let allOk = true
   for (const file of checks) {
-    if (fs.existsSync(file)) {
-      console.log(`✓ ${path.relative(squashfsRoot, file)}`)
-    } else {
-      console.error(`✗ ${path.relative(squashfsRoot, file)} NOT FOUND`)
+    if (!fs.existsSync(file)) {
       allOk = false
     }
   }

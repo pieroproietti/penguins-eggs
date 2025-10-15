@@ -37,7 +37,7 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
      */
 
     // Scrive la chiave statica
-    fs.writeFileSync(`${this.settings.iso_work}/live/live.key`, this.luksPassword + '\n');
+    // fs.writeFileSync(`${this.settings.iso_work}/live/home.key`, this.luksPassword + '\n');
 
     console.log()
     console.log('====================================')
@@ -48,23 +48,27 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
+    // const fsOverhead = Math.max(size * 0.1, 100 * 1024 * 1024)
+    // const luksSize = size + fsOverhead + (size * 0.2) // +20% di sicurezza
 
-    const luksSize = Math.ceil(size * 1.5)
-
+    const luksSize = Math.ceil(size * 2)
     Utils.warning(`  > homes size: ${bytesToGB(size)}`)
+    //evUtils.warning(`  > filesystem overhead: ${bytesToGB(fsOverhead)}`)
     Utils.warning(`  > partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 
     Utils.warning(`2. Creating partition LUKS: ${this.luksFile}`)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile]);
+    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
+    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/home.key`, this.luksFile]);
 
     this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
     Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
 
     Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile, this.luksMappedName])
+    //await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/home.key`, this.luksFile, this.luksMappedName])
+    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
     Utils.warning(`5. Formatting ext4`)
     await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`)
@@ -84,6 +88,16 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     Utils.warning(`7. Copying /home on  ${this.luksName}`)
     await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`)
 
+    Utils.warning(`7b. Saving user accounts info...`)
+    // Crea directory per backup system files
+    await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`)
+
+    // Filtra solo utenti con UID >= 1000
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`)
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`)
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/group > ${this.luksMountpoint}/.system-backup/group`)
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/gshadow > ${this.luksMountpoint}/.system-backup/gshadow`)    
+
     Utils.warning(`8. Unmount `)
     await exec(`umount ${this.luksMountpoint}`)
 
@@ -98,7 +112,7 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     /**
      * YOU MUST! unlink the key on production
      */
-    // fs.unlinkSync(`${this.settings.iso_work}/live/live.key`)
+    // fs.unlinkSync(`${this.settings.iso_work}/live/home.key`)
 
 
   } catch (error) {

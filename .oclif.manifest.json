@@ -904,6 +904,162 @@
         "update.js"
       ]
     },
+    "export:iso": {
+      "aliases": [],
+      "args": {},
+      "description": "export iso in the destination host",
+      "examples": [
+        "eggs export iso",
+        "eggs export iso --clean"
+      ],
+      "flags": {
+        "checksum": {
+          "char": "C",
+          "description": "export checksums md5 and sha256",
+          "name": "checksum",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "clean": {
+          "char": "c",
+          "description": "delete old ISOs before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:iso",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "iso.js"
+      ]
+    },
+    "export:pkg": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso to the destination host",
+      "examples": [
+        "eggs export pkg",
+        "eggs export pkg --clean",
+        "eggs export pkg --all"
+      ],
+      "flags": {
+        "all": {
+          "char": "a",
+          "description": "export all archs",
+          "name": "all",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:pkg",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "pkg.js"
+      ]
+    },
+    "export:tarballs": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso/tarballs to the destination host",
+      "examples": [
+        "eggs export tarballs",
+        "eggs export tarballs --clean"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old .deb before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:tarballs",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "tarballs.js"
+      ]
+    },
     "tools:clean": {
       "aliases": [],
       "args": {},
@@ -1376,162 +1532,6 @@
         "commands",
         "wardrobe",
         "wear.js"
-      ]
-    },
-    "export:iso": {
-      "aliases": [],
-      "args": {},
-      "description": "export iso in the destination host",
-      "examples": [
-        "eggs export iso",
-        "eggs export iso --clean"
-      ],
-      "flags": {
-        "checksum": {
-          "char": "C",
-          "description": "export checksums md5 and sha256",
-          "name": "checksum",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "clean": {
-          "char": "c",
-          "description": "delete old ISOs before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "export:iso",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "export",
-        "iso.js"
-      ]
-    },
-    "export:pkg": {
-      "aliases": [],
-      "args": {},
-      "description": "export pkg/iso to the destination host",
-      "examples": [
-        "eggs export pkg",
-        "eggs export pkg --clean",
-        "eggs export pkg --all"
-      ],
-      "flags": {
-        "all": {
-          "char": "a",
-          "description": "export all archs",
-          "name": "all",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "clean": {
-          "char": "c",
-          "description": "remove old .deb before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "export:pkg",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "export",
-        "pkg.js"
-      ]
-    },
-    "export:tarballs": {
-      "aliases": [],
-      "args": {},
-      "description": "export pkg/iso/tarballs to the destination host",
-      "examples": [
-        "eggs export tarballs",
-        "eggs export tarballs --clean"
-      ],
-      "flags": {
-        "clean": {
-          "char": "c",
-          "description": "remove old .deb before to copy",
-          "name": "clean",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "export:tarballs",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "export",
-        "tarballs.js"
       ]
     }
   },
