@@ -547,21 +547,21 @@
         },
         "clone": {
           "char": "c",
-          "description": "clone",
+          "description": "clone (uncrypted)",
           "name": "clone",
           "allowNo": false,
           "type": "boolean"
         },
         "cryptedhome": {
           "char": "k",
-          "description": "crypted home ",
+          "description": "clone crypted home",
           "name": "cryptedhome",
           "allowNo": false,
           "type": "boolean"
         },
         "cryptedfull": {
           "char": "f",
-          "description": "crypted root ",
+          "description": "clone crypted full",
           "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"
@@ -681,21 +681,21 @@
         },
         "clone": {
           "char": "c",
-          "description": "clone",
+          "description": "clone (uncrypted)",
           "name": "clone",
           "allowNo": false,
           "type": "boolean"
         },
         "cryptedhome": {
           "char": "k",
-          "description": "crypted home",
+          "description": "clone crypted home",
           "name": "cryptedhome",
           "allowNo": false,
           "type": "boolean"
         },
         "cryptedfull": {
           "char": "f",
-          "description": "full crypted root",
+          "description": "clone crypted full",
           "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"

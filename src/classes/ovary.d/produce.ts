@@ -309,7 +309,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
         }
 
 
-        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedhome)).replaceAll(/\s\s+/g, ' ')
+        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedhome, cryptedfull)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
         /**
