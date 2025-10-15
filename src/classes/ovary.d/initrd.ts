@@ -88,10 +88,11 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
     const cmd = `mkinitramfs -o ${dest} ${this.kernel} ${log}`
-    console.log(cmd)
+    // console.log(cmd)
     await exec(cmd, this.echo)
 
     if (isCrypted) {
+        Utils.warning("/etc/cryptedtab restored")
         await exec('mv /etc/crypttab.saved /etc/crypttab', this.echo)
     }
 }

@@ -547,15 +547,22 @@
         },
         "clone": {
           "char": "c",
-          "description": "clone",
+          "description": "clone (uncrypted)",
           "name": "clone",
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedclone": {
+        "cryptedhome": {
           "char": "k",
-          "description": "crypted clone",
-          "name": "cryptedclone",
+          "description": "clone crypted home",
+          "name": "cryptedhome",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedfull": {
+          "char": "f",
+          "description": "clone crypted full",
+          "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"
         }
@@ -651,16 +658,11 @@
       "description": "produce a live image from your system whithout your data",
       "examples": [
         "sudo eggs produce                    # zstd fast compression",
-        "sudo eggs produce --standard         # xz compression",
-        "sudo eggs produce --max              # xz max compression",
         "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
-        "sudo eggs produce --clone            # clone",
-        "sudo eggs produce --cryptedclone     # crypted clone",
-        "sudo eggs produce --basename=colibri",
-        "sudo eggs produce --theme lastos",
-        "sudo eggs produce --excludes static  # you can customize it",
-        "sudo eggs produce --excludes homes   # exclude /home/*",
-        "sudo eggs produce --excludes home    # exclude ~/*"
+        "sudo eggs produce --clone            # clear clone (unencrypted)",
+        "sudo eggs produce --cryptedhome      # clone crypted home (all inside /home is cypted)",
+        "sudo eggs produce --cryptedfull      # clone crypted full (entire system is crypted)",
+        "sudo eggs produce --basename=colibri"
       ],
       "flags": {
         "addons": {
@@ -679,15 +681,22 @@
         },
         "clone": {
           "char": "c",
-          "description": "clone",
+          "description": "clone (uncrypted)",
           "name": "clone",
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedclone": {
+        "cryptedhome": {
           "char": "k",
-          "description": "crypted clone",
-          "name": "cryptedclone",
+          "description": "clone crypted home",
+          "name": "cryptedhome",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "cryptedfull": {
+          "char": "f",
+          "description": "clone crypted full",
+          "name": "cryptedfull",
           "allowNo": false,
           "type": "boolean"
         },
@@ -1526,5 +1535,5 @@
       ]
     }
   },
-  "version": "25.10.14"
+  "version": "25.10.15"
 }

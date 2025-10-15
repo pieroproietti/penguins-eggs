@@ -29,8 +29,9 @@ export default class Love extends Command {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    clone: Flags.boolean({ char: 'c', description: 'clone' }),
-    cryptedclone: Flags.boolean({ char: 'k', description: 'crypted clone' }),
+    clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
+    cryptedhome: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
+    cryptedfull: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
   }
 
   async run(): Promise<void> {
@@ -43,18 +44,31 @@ export default class Love extends Command {
       flagVerbose = '--verbose'
     }
 
-    let cryptedclone = false
-    let flagCryptedclone = ''
-    if (flags.cryptedclone) {
-      flagCryptedclone = '--cryptedclone'
-      cryptedclone = true
+    let clone = false
+    if (flags.clone) {
+      clone = true
     }
 
-    let clone = false
+    let cryptedhome = false
+    if (flags.cryptedhome) {
+      clone = false
+      cryptedhome = true
+    }
+
+    let cryptedfull = false
+    if (flags.cryptedfull) {
+      cryptedfull = true
+      clone = false
+      cryptedhome = false
+    }
+
     let flagClone = ''
-    if (flags.clone) {
-      flagClone = '--clone'
-      clone = true
+    if (clone) {
+      flagClone = "--clone"
+    } else if (cryptedhome) {
+      flagClone = "--cryptedhome"
+    } else if (cryptedfull) {
+      flagClone = "--cryptedfull"
     }
 
     let nointeractive = false
@@ -77,10 +91,10 @@ export default class Love extends Command {
     } else if (fs.existsSync('/usr/bin/doas')) {
       cmdSudo = 'doas'
     }
-      
-    let loveConf='/etc/penguins-eggs.d/love.yaml'
+
+    let loveConf = '/etc/penguins-eggs.d/love.yaml'
     if (!fs.existsSync(loveConf)) {
-      loveConf=__dirname + '/../../conf/love.yaml'
+      loveConf = __dirname + '/../../conf/love.yaml'
     }
     const cmds = yaml.load(fs.readFileSync(loveConf, 'utf8')) as string[]
 
@@ -88,7 +102,7 @@ export default class Love extends Command {
     console.log()
     for (const cmd of cmds) {
       if (cmd.includes('produce')) {
-        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+        console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagNointeractive}`)
       } else {
         console.log(`- ${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
       }
@@ -99,7 +113,7 @@ export default class Love extends Command {
     if (nointeractive || await Utils.customConfirm()) {
       for (const cmd of cmds) {
         if (cmd.includes('produce')) {
-          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagCryptedclone} ${flagNointeractive}`)
+          await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagClone} ${flagNointeractive}`)
         } else {
           await exec(`${cmdSudo} ${cmd} ${flagVerbose} ${flagNointeractive}`)
         }

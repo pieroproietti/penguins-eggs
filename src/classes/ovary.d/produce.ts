@@ -36,7 +36,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * produce
  * @param clone
- * @param cryptedclone
+ * @param cryptedhome
  * @param scriptOnly
  * @param yolkRenew
  * @param release
@@ -46,7 +46,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param includeRoot
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, cryptedclone = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, cryptedhome = false, cryptedfull = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -57,16 +57,23 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
     this.clone = clone
 
-    this.cryptedclone = cryptedclone
+    this.cryptedhome = cryptedhome
 
-    // new
+    this.cryptedfull = cryptedfull
+
+    // Crittoografia
+    if (this.cryptedhome) {
+        this.luksName = 'home.img'
+    } else if (this.cryptedfull) {
+        this.luksName = 'root.img'
+    }
     this.luksUuid = ''
-    this.luksName = 'luks.img'
     this.luksFile = `/tmp/${this.luksName}`
     this.luksMappedName = this.luksName
     this.luksMountpoint = `/tmp/mnt/${this.luksName}`
     this.luksDevice = `/dev/mapper/${this.luksName}`
     this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
+
 
     this.nest = this.settings.config.snapshot_dir
     this.dotMnt = `${this.nest}.mnt`
@@ -146,10 +153,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
         }
 
         /**
-         * cryptedclone/clone/standard
+         * cryptedhome/clone/standard
          */
-        if (this.cryptedclone) {
-            Utils.warning("eggs will SAVE users and users' data ENCRYPTED")
+        if (this.cryptedhome) {
+            Utils.warning("eggs will SAVE users' data ENCRYPTED")
 
         } else if (this.clone) {
             this.settings.config.user_opt = 'live' // patch for humans
@@ -254,7 +261,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
 
             if (!this.clone) {
                 /**
-                 * ANCHE per cryptedclone
+                 * SOLO per clone no per cryptedhome
                  */
                 await this.usersRemove()
                 await this.userCreateLive()
@@ -273,19 +280,21 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
                 }
             }
 
-            await this.editLiveFs(clone, cryptedclone)
+            await this.editLiveFs(clone, cryptedhome)
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
             await this.uBindLiveFs() // Lo smonto prima della fase di backup
         }
 
-        if (cryptedclone) {
-            await this.makeLuks()
+        if (cryptedhome) {
+            await this.luksHome()
+        } else if (cryptedfull) {
+            await this.luksRoot()
         }
 
         /** 
          * makeEfi and syslinux was moved
-         * after MakeLuks 
+         * after luksRoot 
          * to get luks.uuid
          */
         if (this.settings.config.make_efi) {
@@ -300,7 +309,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedcl
         }
 
 
-        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedclone)).replaceAll(/\s\s+/g, ' ')
+        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedhome, cryptedfull)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
         /**
