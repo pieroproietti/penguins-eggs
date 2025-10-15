@@ -19,5 +19,5 @@ script:
 
     # INITRAMFS = '/run/live/medium/'
     # DRACUT    = '/run/initramfs/live/'
-    #- cp --preserve=timestamps /run/live/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
-    - cp --preserve=timestamps /run/initramfs/live/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    - cp --preserve=timestamps /run/live/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    #- cp --preserve=timestamps /run/initramfs/live/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
