@@ -23,10 +23,10 @@ export:tarballs --clean --help --verbose
 install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
 kill --help --isos --nointeractive --verbose
-love --help --verbose --nointeractive --clone --cryptedhome
+love --help --verbose --nointeractive --clone --cryptedhome --cryptedfull
 mom --help
 pods --help
-produce --addons --basename --clone --cryptedhome --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRoot --verbose --yolk
+produce --addons --basename --clone --cryptedhome --cryptedfull --excludes --help --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRoot --verbose --yolk
 status --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:repo --add --help --nointeractive --remove --verbose
@@ -38,9 +38,9 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-autocomplete --refresh-cache
 help --nested-commands
 version --json --verbose
+autocomplete --refresh-cache
 "
 
   function __trim_colon_commands()
