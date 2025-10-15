@@ -17,8 +17,7 @@ script:
     # Riconfigureremo il kernel nel modulo boot_reconfigure per garantire che gli hook
     # vengano eseguiti secondo necessità.
 
-    # ubuntu
-    # cp --preserve=timestamps /lib/live/mount/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
-
-    # debian
-    - cp --preserve=timestamps /run/live/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    # INITRAMFS = '/run/live/medium/'
+    # DRACUT    = '/run/initramfs/live/'
+    #- cp --preserve=timestamps /run/live/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    - cp --preserve=timestamps /run/initramfs/live/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`

@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# Script per creare symlink dei moduli Penguins-Eggs in /usr/lib/dracut/modules.d
+# Questo è necessario perché Dracut 106 su Debian non legge dracutmodules_dirs con --confdir
+#
+
+set -e
+
+CUSTOM_DIR="/usr/lib/penguins-eggs/dracut/modules.d"
+SYSTEM_DIR="/usr/lib/dracut/modules.d"
+
+echo "=== Creazione Symlink Moduli Dracut ==="
+echo ""
+
+# Verifica di essere root
+if [ "$EUID" -ne 0 ]; then 
+    echo "ERRORE: Esegui come root (sudo)"
+    exit 1
+fi
+
+# Verifica directory
+if [ ! -d "$CUSTOM_DIR" ]; then
+    echo "ERRORE: $CUSTOM_DIR non esiste"
+    exit 1
+fi
+
+if [ ! -d "$SYSTEM_DIR" ]; then
+    echo "ERRORE: $SYSTEM_DIR non esiste"
+    exit 1
+fi
+
+# Lista moduli
+MODULES=(
+    "00debug-shell"
+    "90block"
+    "95iso-scan"
+    "95luks"
+    "95luks-loop"
+)
+
+echo "Creazione symlink..."
+for module in "${MODULES[@]}"; do
+    SOURCE="$CUSTOM_DIR/$module"
+    TARGET="$SYSTEM_DIR/$module"
+    
+    if [ ! -d "$SOURCE" ]; then
+        echo "  [SKIP] $module - non trovato"
+        continue
+    fi
+    
+    # Rimuovi esistente
+    if [ -e "$TARGET" ] || [ -L "$TARGET" ]; then
+        rm -rf "$TARGET"
+    fi
+    
+    # Crea symlink
+    ln -sf "$SOURCE" "$TARGET"
+    echo "  [OK] $module"
+done
+
+echo ""
+echo "Verifica symlink creati:"
+ls -la "$SYSTEM_DIR" | grep -E "(debug-shell|90block|iso-scan|95luks)"
+
+echo ""
+echo "Test dracut --list-modules:"
+dracut --list-modules 2>&1 | grep -E "(debug-shell|90block|iso-scan|95luks)" || echo "  ATTENZIONE: moduli non ancora visibili"
+
+echo ""
+echo "=== Completato ==="
+

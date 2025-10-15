@@ -114,7 +114,8 @@ export default class Diversions {
                   rd.live.squashimg=filesystem.squashfs \
                   rd.live.overlay.overlayfs=1 \
                   nomodeset \
-                  startdebug=1`
+                  rd.break=pre-mount \
+                  rd.shell`
                   
 
           kp += append .replaceAll(/\s\s+/g, ' ')

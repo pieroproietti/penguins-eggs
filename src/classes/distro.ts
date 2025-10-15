@@ -196,9 +196,15 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
-        // this.liveMediumPath = '/run/live/medium/'
-        this.liveMediumPath = '/run/initramfs/live/'
-       
+        // this.liveMediumPath = '/run/live/medium/'  //initramfs
+        this.liveMediumPath = '/run/initramfs/live/'  // dracut
+        /**
+         * dracut su trixie
+         if (Pacman.packageIsInstalled('dracut')) {
+           this.liveMediumPath = '/run/initramfs/live/'
+         }
+         */
+
 
         /**
          * Debian 14 forky
@@ -348,6 +354,7 @@ class Distro implements IDistro {
     /**
      * Ultimi ritocchi
      */
+
 
     /**
      * Debian: /usr/lib/x86_64-linux-gnu

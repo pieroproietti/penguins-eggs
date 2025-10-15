@@ -4,7 +4,7 @@
 # in un unico file di testo.
 
 # --- Impostazioni ---
-OUTPUT_FILE="dracut-analisys.txt"
+OUTPUT_FILE="dracut-analysis.txt"
 
 # --- Logica dello Script ---
 
