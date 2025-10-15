@@ -1,5 +1,5 @@
 /**
- * ./src/classes/ovary.d/encrypt-live-fs.ts
+ * ./src/classes/ovary.d/luks-home.ts
  * penguins-eggs v.25.10.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -39,13 +39,17 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     // Scrive la chiave statica
     fs.writeFileSync(`${this.settings.iso_work}/live/live.key`, this.luksPassword + '\n');
 
+    console.log()
+    console.log('====================================')
+    console.log(" Creating home.img")
+    console.log('====================================')
+    
     Utils.warning('1. Calculation of space requirements...')
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
-    let size = Number.parseInt(sizeString)
+    let size = Number.parseInt(sizeString, 10)
 
-    // Add overhead * 1.20
-    const luksSize = Math.ceil(size * 1.30)
+    const luksSize = Math.ceil(size * 1.5)
 
     Utils.warning(`  > homes size: ${bytesToGB(size)}`)
     Utils.warning(`  > partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
@@ -90,6 +94,11 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
 
     Utils.success('Encryption process successfully completed!')
+
+    /**
+     * YOU MUST! unlink the key on production
+     */
+    // fs.unlinkSync(`${this.settings.iso_work}/live/live.key`)
 
 
   } catch (error) {

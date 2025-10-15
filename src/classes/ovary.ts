@@ -48,6 +48,8 @@ import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
 import { luksHome } from './ovary.d/luks-home.js'
+import { installEncryptedHomeSupport, verifyEncryptedHomeSupport } from './ovary.d/luks-home-support.js'
+
 import { luksRoot } from './ovary.d/luks-root.js'
 
 // Functions
@@ -78,6 +80,8 @@ export default class Ovary {
   distroId = ''
 
   distroLike = ''
+
+  distroLliveMediumPath = ''
 
   genisoimage = false
 
@@ -141,6 +145,8 @@ export default class Ovary {
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
   luksHome = luksHome
+  installEncryptedHomeSupport = installEncryptedHomeSupport
+  verifyEncryptedHomeSupport = verifyEncryptedHomeSupport
   luksRoot = luksRoot
   finished = finished
   // initramfsDebianLuks = initramfsDebianLuks
