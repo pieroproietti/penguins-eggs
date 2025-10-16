@@ -34,7 +34,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * - Add some basic files to /dev
  * - Clear configs from /etc/network/interfaces, wicd and NetworkManager and netman
  */
-export async function editLiveFs(this: Ovary, clone = false, cryptedhome = false) {
+export async function editLiveFs(this: Ovary, clone = false) {
     if (this.verbose) {
         console.log('Ovary: editLiveFs')
     }
@@ -44,13 +44,6 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedhome = false
      */
     if (clone) {
         await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_clone`, this.echo)
-    }
-
-    /**
-     * /etc/penguins-eggs.d/is_crypted_clone file created on live
-     */
-    if (cryptedhome) {
-        await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_crypted_clone`, this.echo)
     }
 
     /**
@@ -68,7 +61,7 @@ export async function editLiveFs(this: Ovary, clone = false, cryptedhome = false
         const file = '/etc/initramfs-tools/conf.d/eggs-safe-initramfs.conf'
         Utils.write(file, text)
     }
-cryptedhome
+
     // Truncate logs, remove archived logs.
     let cmd = `find ${this.settings.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, this.echo)
