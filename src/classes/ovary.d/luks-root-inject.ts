@@ -40,7 +40,6 @@ export async function injectDecryptScriptInInitramfs(
       await exec(`rm -rf ${workDir}`)
     }
     fs.mkdirSync(workDir, { recursive: true })
-    await Utils.pressKeyToExit('Pulisci directory di lavoro')
 
     // Rileva il formato di compressione
     Utils.warning('Detecting initramfs compression format...')
@@ -66,7 +65,6 @@ export async function injectDecryptScriptInInitramfs(
     // 2. Estrai l'initramfs
     Utils.warning('Extracting initramfs...')
     await exec(`cd ${workDir} && ${decompressCmd} ${initramfsPath} | cpio -idm`)
-    await Utils.pressKeyToExit('Extracting initramfs...')
 
     // 3. Leggi e prepara lo script decrypt-root
     let decryptScript = fs.readFileSync(
@@ -74,19 +72,16 @@ export async function injectDecryptScriptInInitramfs(
       'utf8'
     )
     decryptScript = decryptScript.replace('__ROOT_IMG_PATH__', rootImgPath)
-    await Utils.pressKeyToExit('Leggi e prepara lo script decrypt-root')
 
     // 4. Crea la directory scripts se non esiste
     const scriptsInitramfsDir = path.join(workDir, 'scripts/init-premount')
     fs.mkdirSync(scriptsInitramfsDir, { recursive: true })
-    await Utils.pressKeyToExit('Crea la directory scripts se non esiste')
 
     // 5. Scrivi lo script
     const scriptPath = path.join(scriptsInitramfsDir, 'decrypt-root')
     fs.writeFileSync(scriptPath, decryptScript)
     fs.chmodSync(scriptPath, 0o755)
-    Utils.success(`✓ Script injected: ${scriptPath}`)
-    await Utils.pressKeyToExit('Scrivi lo script')
+    Utils.warning(`✓ Script injected: ${scriptPath}`)
 
     // 6. Verifica che cryptsetup sia presente nell'initramfs
     const cryptsetupPath = path.join(workDir, 'sbin/cryptsetup')
@@ -97,14 +92,12 @@ export async function injectDecryptScriptInInitramfs(
       fs.mkdirSync(path.join(workDir, 'sbin'), { recursive: true })
       await exec(`cp /sbin/cryptsetup ${cryptsetupPath}`)
       fs.chmodSync(cryptsetupPath, 0o755)
-      await Utils.pressKeyToExit('Copia cryptsetup')
-      
+          
       // Copia librerie necessarie (trova con ldd)
       const lddOutput = (await exec('ldd /sbin/cryptsetup', {
         capture: true
       })).data
-      await Utils.pressKeyToExit('Copia librerie necessarie (trova con ldd')
-      
+          
       const libs = lddOutput
         .split('\n')
         .filter(line => line.includes('=>'))
@@ -122,20 +115,18 @@ export async function injectDecryptScriptInInitramfs(
         }
       }
       
-      Utils.success('✓ cryptsetup and dependencies added')
+      Utils.warning('✓ cryptsetup and dependencies added')
     } else {
-      Utils.success('✓ cryptsetup already present in initramfs')
+      Utils.warning('✓ cryptsetup already present in initramfs')
     }
-    await Utils.pressKeyToExit()
 
     // 7. Ricomprimi l'initramfs
     Utils.warning('Recompressing initramfs...')
     await exec(`cd ${workDir} && find . | cpio -o -H newc | gzip > ${initramfsPath}.new`)
-    await Utils.pressKeyToExit('Recompressing initramfs...')
+
     
     // 8. Sostituisci il vecchio initramfs
     await exec(`mv ${initramfsPath}.new ${initramfsPath}`)
-    await Utils.pressKeyToExit('Sostituisci il vecchio initramfs')
     
     Utils.success('✓ Initramfs successfully modified')
 
