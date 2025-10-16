@@ -36,8 +36,12 @@ export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) 
      * this.luksPassword = 'evolution' 
      */
 
-    // Scrive la chiave statica
-    fs.writeFileSync(`${this.settings.iso_work}/live/live.key`, this.luksPassword + '\n');
+    await this.luksGetPassword() // modifica o conferma password
+
+    console.log()
+    console.log('====================================')
+    console.log(` Creating ${this.luksName}`)
+    console.log('====================================')
 
     Utils.warning('1. Calculation of space requirements...')
     const sizeString = (await exec(`unsquashfs -s ${live_fs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data;
@@ -53,15 +57,13 @@ export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) 
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile]);
-    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], this.luksPassword)
+    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
 
     this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
     Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
 
     Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile, this.luksMappedName])
-    // await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], this.luksPassword)
+    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
     Utils.warning(`5. Formatting ext4`)
     await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`)
@@ -78,10 +80,10 @@ export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) 
 
     await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`)
 
-    Utils.warning(`7. Copy `)
-    await exec(`cp  ${this.settings.iso_work}live/filesystem.squashfs /mnt`)
+    Utils.warning(`7. Copy ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`)
+    await exec(`cp  ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`)
 
-    Utils.warning(`8. Unmount `)
+    Utils.warning(`8. Unmount ${this.luksMountpoint} `)
     await exec(`umount ${this.luksMountpoint}`)
 
     Utils.warning(`9. Closing LUKS volume ${this.luksFile}.`)

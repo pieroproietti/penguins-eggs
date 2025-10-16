@@ -13,15 +13,13 @@ import chalk from 'chalk'
 import fs, { Dirent } from 'node:fs'
 import { constants } from 'node:fs'
 // backup
-import { access } from 'node:fs/promises'
 import path from 'node:path'
-import shx from 'shelljs'
+
 
 // interfaces
 import { IAddons, IExcludes, IWorkDir } from '../interfaces/index.js'
 
 // libraries
-import { exec } from '../lib/utils.js'
 import CliAutologin from './cli-autologin.js'
 import Incubator from './incubation/incubator.js'
 import Settings from './settings.js'
@@ -47,6 +45,7 @@ import { kernelCopy } from './ovary.d/kernel-copy.js'
 import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
+import { luksGetPassword } from './ovary.d/luks-get-password.js'
 import { luksHome } from './ovary.d/luks-home.js'
 import { installEncryptedHomeSupport } from './ovary.d/luks-home-support.js'
 
@@ -145,11 +144,10 @@ export default class Ovary {
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
   luksHome = luksHome
+  luksGetPassword = luksGetPassword
   installEncryptedHomeSupport = installEncryptedHomeSupport
-  // verifyEncryptedHomeSupport = verifyEncryptedHomeSupport
   luksRoot = luksRoot
   finished = finished
-  // initramfsDebianLuks = initramfsDebianLuks
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
   initrdDebian = initrdDebian
