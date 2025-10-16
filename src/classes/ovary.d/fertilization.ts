@@ -28,6 +28,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
     this.familyId = distro.familyId
     this.distroId = distro.distroId
     this.distroLike = distro.distroLike
+    this.distroLliveMediumPath = distro.liveMediumPath
 
     this.settings = new Settings()
 
