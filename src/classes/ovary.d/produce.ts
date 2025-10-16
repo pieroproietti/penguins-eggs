@@ -108,7 +108,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
      * define this.initrd
      */
     this.initrd = Utils.initrdImg(this.kernel)
-
+   
 
     /**
      * yolk
@@ -240,16 +240,18 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             } else if (this.familyId === 'archlinux') {
                 await this.initrdArch()
             } else if (this.familyId === 'debian') {
-                if (Pacman.packageIsInstalled('dracut')) {
-                    await this.initrdDracut()
-                } else {
-                    await this.initrdDebian()
-                }
+                await this.initrdDebian()
             } else if (this.familyId === 'fedora' ||
                 this.familyId === 'openmamba' ||
                 this.familyId === 'opensuse' ||
                 this.familyId === 'voidlinux') {
                 await this.initrdDracut()
+            }
+
+            if (cryptedfull) {
+                const initramfsPath= `${this.settings.iso_work}live/${path.basename(this.initrd)}`
+                const rootImgPath= `${this.distroLliveMediumPath}/live/root.img`
+                this.injectDecryptScriptInInitramfs(initramfsPath, rootImgPath)
             }
 
 

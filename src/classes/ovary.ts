@@ -50,7 +50,8 @@ import { luksHome } from './ovary.d/luks-home.js'
 import { installEncryptedHomeSupport } from './ovary.d/luks-home-support.js'
 
 import { luksRoot } from './ovary.d/luks-root.js'
-
+import { installEncryptedRootSupport } from './ovary.d/luks-root-support.js'
+import { injectDecryptScriptInInitramfs } from './ovary.d/luks-root-inject.js'
 // Functions
 // import initramfs from '../krill/classes/sequence.d/initramfs.js'
 
@@ -143,10 +144,16 @@ export default class Ovary {
   copied = copied
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
-  luksHome = luksHome
+  // luks
   luksGetPassword = luksGetPassword
+  // luksHome
+  luksHome = luksHome
   installEncryptedHomeSupport = installEncryptedHomeSupport
+  // luksRoot
   luksRoot = luksRoot
+  installEncryptedRootSupport=installEncryptedRootSupport
+  injectDecryptScriptInInitramfs=injectDecryptScriptInInitramfs
+
   finished = finished
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch

@@ -17,7 +17,7 @@ import { exec } from '../../lib/utils.js'
 
 
 /**
- * luksRoot()
+ * luksHome()
  * 
  * create a container LUKS with the entire 
  * filesystem.squashfs
