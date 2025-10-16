@@ -61,7 +61,7 @@ fi
 log "Found home.img at $HOME_IMG"
 
 # Copia in RAM se è su media read-only
-TEMP_HOME_IMG="/tmp/home.img"
+TEMP_HOME_IMG="/var/tmp/home.img"  # /var/tmp è su overlay, non tmpfs
 log "Copying home.img to RAM..."
 cp "$HOME_IMG" "$TEMP_HOME_IMG"
 HOME_IMG="$TEMP_HOME_IMG"
@@ -92,6 +92,18 @@ echo ""
 echo "Please enter your passphrase to unlock your home directory"
 echo "(Press Ctrl+C to skip and continue with temporary home)"
 echo ""
+
+echo "(Press Ctrl+C to skip and continue with temporary home)"
+echo ""
+
+# Aspetta che il TTY sia completamente inizializzato
+sleep 2
+
+# Prima del while loop dei tentativi
+if [ -e "/dev/mapper/$LUKS_NAME" ]; then
+    log "LUKS device already exists, closing it first..."
+    cryptsetup close "$LUKS_NAME" 2>&1 | tee -a "$LOG_FILE" || true
+fi
 
 # Tentativi multipli per la passphrase
 MAX_ATTEMPTS=3
