@@ -22,10 +22,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
    *
-   * @param cryptedFull
+   * @param fullcrypt
    * @returns cmd 4 mkiso
    */
-export async function xorrisoCommand(this: Ovary, clone = false, cryptedHome=false, cryptedFull = false): Promise<string> {
+export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false, fullcrypt = false): Promise<string> {
     if (this.verbose) {
         console.log('Ovary: xorrisoCommand')
     }
@@ -37,9 +37,9 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedHome=fal
     if (prefix.slice(0, 7) === 'egg-of_') {
         if (clone) {
             typology = '_clone'
-        } else if (cryptedHome) {
+        } else if (homecrypt) {
             typology = '_clone-home-crypted'
-        } else if (cryptedFull) {
+        } else if (fullcrypt) {
             typology = '_clone-full-crypted'
         }
 
@@ -98,7 +98,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, cryptedHome=fal
 
        // <<< INIZIO BLOCCO AGGIUNTO >>>
         let luksPartitionParam = '' // Inizializziamo la variabile per il parametro LUKS
-        if (cryptedFull) {
+        if (fullcrypt) {
             // Costruiamo il percorso del file luks.img all'interno della directory di build
             const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksName)
             

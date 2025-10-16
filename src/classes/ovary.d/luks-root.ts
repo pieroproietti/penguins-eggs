@@ -21,7 +21,7 @@ import { exec } from '../../lib/utils.js'
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) {
+export async function luksRoot(this: Ovary, clone = false, homecrypt = false) {
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
 

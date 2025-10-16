@@ -47,7 +47,7 @@ import { finished } from './ovary.d/finished.js'
 
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
 import { luksHome } from './ovary.d/luks-home.js'
-import { installEncryptedHomeSupport } from './ovary.d/luks-home-support.js'
+import { installEnhomecryptSupport } from './ovary.d/luks-home-support.js'
 
 import { luksRoot } from './ovary.d/luks-root.js'
 import { installEncryptedRootSupport } from './ovary.d/luks-root-support.js'
@@ -69,9 +69,9 @@ export default class Ovary {
 
   clone = false
 
-  cryptedhome = false
+  homecrypt = false
 
-  cryptedfull = false
+  fullcrypt = false
 
   echo = {}
 
@@ -148,7 +148,7 @@ export default class Ovary {
   luksGetPassword = luksGetPassword
   // luksHome
   luksHome = luksHome
-  installEncryptedHomeSupport = installEncryptedHomeSupport
+  installEnhomecryptSupport = installEnhomecryptSupport
   // luksRoot
   luksRoot = luksRoot
   installEncryptedRootSupport=installEncryptedRootSupport

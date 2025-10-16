@@ -22,7 +22,7 @@ import { exec } from '../../lib/utils.js'
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksHome(this: Ovary, clone = false, cryptedhome = false) {
+export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
 
   try {
     /**

@@ -552,17 +552,17 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedhome": {
+        "homecrypt": {
           "char": "k",
           "description": "clone crypted home",
-          "name": "cryptedhome",
+          "name": "homecrypt",
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedfull": {
+        "fullcrypt": {
           "char": "f",
           "description": "clone crypted full",
-          "name": "cryptedfull",
+          "name": "fullcrypt",
           "allowNo": false,
           "type": "boolean"
         }
@@ -660,8 +660,8 @@
         "sudo eggs produce                    # zstd fast compression",
         "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
         "sudo eggs produce --clone            # clear clone (unencrypted)",
-        "sudo eggs produce --cryptedhome      # clone crypted home (all inside /home is cypted)",
-        "sudo eggs produce --cryptedfull      # clone crypted full (entire system is crypted)",
+        "sudo eggs produce --homecrypt      # clone crypted home (all inside /home is cypted)",
+        "sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)",
         "sudo eggs produce --basename=colibri"
       ],
       "flags": {
@@ -686,17 +686,17 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedhome": {
+        "homecrypt": {
           "char": "k",
           "description": "clone crypted home",
-          "name": "cryptedhome",
+          "name": "homecrypt",
           "allowNo": false,
           "type": "boolean"
         },
-        "cryptedfull": {
+        "fullcrypt": {
           "char": "f",
           "description": "clone crypted full",
-          "name": "cryptedfull",
+          "name": "fullcrypt",
           "allowNo": false,
           "type": "boolean"
         },

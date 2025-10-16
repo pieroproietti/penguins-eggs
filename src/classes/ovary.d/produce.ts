@@ -36,7 +36,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * produce
  * @param clone
- * @param cryptedhome
+ * @param homecrypt
  * @param scriptOnly
  * @param yolkRenew
  * @param release
@@ -46,7 +46,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param includeRoot
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, cryptedhome = false, cryptedfull = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, homecrypt = false, fullcrypt = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -57,14 +57,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
     this.clone = clone
 
-    this.cryptedhome = cryptedhome
+    this.homecrypt = homecrypt
 
-    this.cryptedfull = cryptedfull
+    this.fullcrypt = fullcrypt
 
     // Crittoografia
-    if (this.cryptedhome) {
+    if (this.homecrypt) {
         this.luksName = 'home.img'
-    } else if (this.cryptedfull) {
+    } else if (this.fullcrypt) {
         this.luksName = 'root.img'
     }
     this.luksUuid = ''
@@ -153,9 +153,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
         }
 
         /**
-         * cryptedhome/clone/standard
+         * homecrypt/clone/standard
          */
-        if (this.cryptedhome) {
+        if (this.homecrypt) {
             Utils.warning("eggs will SAVE users' data ENCRYPTED")
 
         } else if (this.clone) {
@@ -248,7 +248,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
                 await this.initrdDracut()
             }
 
-            if (cryptedfull) {
+            if (fullcrypt) {
                 const initramfsPath= `${this.settings.iso_work}live/${path.basename(this.initrd)}`
                 const rootImgPath= `${this.distroLliveMediumPath}/live/root.img`
                 this.injectDecryptScriptInInitramfs(initramfsPath, rootImgPath)
@@ -263,7 +263,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
             if (!this.clone) {
                 /**
-                 * SOLO per clone no per cryptedhome
+                 * SOLO per clone no per homecrypt
                  */
                 await this.usersRemove()
                 await this.userCreateLive()
@@ -285,14 +285,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             await this.editLiveFs(clone)
 
             /**
-             * cryptedhome: installa il supporto 
+             * homecrypt: installa il supporto 
              */
-            if (this.cryptedhome) {
+            if (this.homecrypt) {
                 const squashfsRoot = this.settings.work_dir.merged
                 const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
-                this.installEncryptedHomeSupport(squashfsRoot, homeImgPath)
+                this.installEnhomecryptSupport(squashfsRoot, homeImgPath)
                 /*
-                if (!this.verifyEncryptedHomeSupport()) {
+                if (!this.verifyEnhomecryptSupport()) {
                     console.log('Failed to install encrypted home support')
                     process.exit()
                 }
@@ -303,9 +303,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             await this.uBindLiveFs() // Lo smonto prima della fase di backup
         }
 
-        if (cryptedhome) {
+        if (homecrypt) {
             await this.luksHome()
-        } else if (cryptedfull) {
+        } else if (fullcrypt) {
             await this.luksRoot()
         }
 
@@ -326,7 +326,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
         }
 
 
-        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedhome, cryptedfull)).replaceAll(/\s\s+/g, ' ')
+        const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
         /**
