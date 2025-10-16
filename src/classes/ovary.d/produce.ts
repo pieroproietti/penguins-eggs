@@ -286,11 +286,15 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
              * cryptedhome: installa il supporto 
              */
             if (this.cryptedhome) {
-                this.installEncryptedHomeSupport()
+                const squashfsRoot = this.settings.work_dir.merged
+                const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
+                this.installEncryptedHomeSupport(squashfsRoot, homeImgPath)
+                /*
                 if (!this.verifyEncryptedHomeSupport()) {
                     console.log('Failed to install encrypted home support')
                     process.exit()
                 }
+                */
             }
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)

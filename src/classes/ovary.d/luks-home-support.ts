@@ -8,107 +8,45 @@
 
 // packages
 import fs from 'fs'
-import { spawn, StdioOptions } from 'node:child_process'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
 
 // classes
 import Ovary from '../ovary.js'
-import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
-import path from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 /**
  * Installa i file necessari per sbloccare home.img LUKS durante il boot
  */
-export function installEncryptedHomeSupport(this: Ovary): void {
-  Utils.warning('Installing encrypted home support...')
+export function installEncryptedHomeSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
+  console.log('Installing encrypted home support...')
+  console.log("squashfsRoot:", squashfsRoot)
+  console.log("homeImgPath:", homeImgPath)
 
-  const squashfsRoot = this.settings.work_dir.merged
-
-  const homeImg = this.distroLliveMediumPath + `live/home.img`
-
-
-  // Script bash per sbloccare e montare
-  const mountScript = `#!/bin/bash
-# Script per sbloccare e montare home.img LUKS cifrato
-
-set -e
-
-HOME_IMG=${homeImg}
-LUKS_NAME="live-home"
-MOUNT_POINT="/home"
-
-# Verifica se home.img esiste
-if [ ! -f "\${HOME_IMG}" ]; then
-    echo "home.img not found at \${HOME_IMG}"
-    exit 0
-fi
-
-# Verifica se è davvero un volume LUKS
-if ! cryptsetup isLuks "\${HOME_IMG}"; then
-    echo "ERROR: \${HOME_IMG} is not a LUKS volume"
-    exit 1
-fi
-
-echo "Found encrypted home.img"
-echo "Please enter the passphrase to unlock your home directory:"
-
-# Prova a sbloccare il volume LUKS
-if cryptsetup open "\${HOME_IMG}" "\${LUKS_NAME}"; then
-    echo "LUKS volume unlocked successfully"
-    
-    mkdir -p "\${MOUNT_POINT}"
-    
-    if mount "/dev/mapper/\${LUKS_NAME}" "\${MOUNT_POINT}"; then
-        echo "Home directory mounted successfully"
-
-        # Rimuovi l'utente live temporaneo creato da eggs
-        userdel -r live 2>/dev/null || true
-
-        # Dopo il mount, ripristina gli utenti
-        if [ -d "\${MOUNT_POINT}/.system-backup" ]; then
-            echo "Restoring user accounts..."
-            cat "\${MOUNT_POINT}/.system-backup/passwd" >> /etc/passwd
-            cat "\${MOUNT_POINT}/.system-backup/shadow" >> /etc/shadow
-            cat "\${MOUNT_POINT}/.system-backup/group" >> /etc/group
-            cat "\${MOUNT_POINT}/.system-backup/gshadow" >> /etc/gshadow
-            echo "User accounts restored"
-
-            # Riavvia il display manager per ricaricare gli utenti
-            if systemctl is-active --quiet gdm; then
-                systemctl restart gdm
-            elif systemctl is-active --quiet lightdm; then
-                systemctl restart lightdm
-            elif systemctl is-active --quiet sddm; then
-                systemctl restart sddm
-            fi
-        fi        
-        exit 0
-    else
-        echo "ERROR: Failed to mount decrypted volume"
-        cryptsetup close "\${LUKS_NAME}"
-        exit 1
-    fi
-else
-    echo "ERROR: Failed to unlock LUKS volume"
-    exit 1
-fi
-`
+  // Leggi il template bash
+    const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
+  let bashScript = fs.readFileSync(templatePath, 'utf8')
+  
+  // Sostituisci il placeholder con il path reale
+  bashScript = bashScript.replace('__HOME_IMG_PATH__', homeImgPath)
 
   // Systemd service
   const systemdService = `[Unit]
 Description=Unlock and mount encrypted home.img
 DefaultDependencies=no
-After=systemd-udev-settle.service local-fs-pre.target systemd-tmpfiles-setup.service
-After=live-boot.service
+After=systemd-udev-settle.service local-fs-pre.target
 Before=local-fs.target display-manager.service
-ConditionPathExists=${homeImg}
-RequiresMountsFor=/run/live/medium
+ConditionPathExists=${homeImgPath}
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 StandardInput=tty
-StandardOutput=tty
+StandardOutput=journal+console
+StandardError=journal+console
 TTYPath=/dev/console
 TTYReset=yes
 TTYVHangup=yes
@@ -131,36 +69,21 @@ WantedBy=local-fs.target
   fs.mkdirSync(symlinkDir, { recursive: true })
 
   // Scrivi lo script
-  fs.writeFileSync(scriptPath, mountScript)
+  fs.writeFileSync(scriptPath, bashScript)
   fs.chmodSync(scriptPath, 0o755)
+  console.log(`✓ Created: ${scriptPath}`)
 
   // Scrivi il service
   fs.writeFileSync(servicePath, systemdService)
+  console.log(`✓ Created: ${servicePath}`)
 
   // Crea il symlink per abilitare il service
   if (fs.existsSync(symlinkPath)) {
     fs.unlinkSync(symlinkPath)
   }
   fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
-}
+  console.log(`✓ Enabled: mount-encrypted-home.service`)
 
-/**
- * Verifica che i file siano stati installati correttamente
- */
-export function verifyEncryptedHomeSupport(this: Ovary) : boolean {
-  const squashfsRoot = this.settings.work_dir.merged
-  const checks = [
-    path.join(squashfsRoot, 'usr/local/bin/mount-encrypted-home.sh'),
-    path.join(squashfsRoot, 'etc/systemd/system/mount-encrypted-home.service'),
-    path.join(squashfsRoot, 'etc/systemd/system/local-fs.target.wants/mount-encrypted-home.service')
-  ]
-
-  let allOk = true
-  for (const file of checks) {
-    if (!fs.existsSync(file)) {
-      allOk = false
-    }
-  }
-
-  return allOk
+  console.log('Encrypted home support installed successfully')
+  console.log('Logs will be available at: /var/log/mount-encrypted-home.log')
 }

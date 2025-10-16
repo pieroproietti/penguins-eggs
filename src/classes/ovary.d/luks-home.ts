@@ -91,12 +91,15 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     Utils.warning(`7b. Saving user accounts info...`)
     // Crea directory per backup system files
     await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`)
-
+    
     // Filtra solo utenti con UID >= 1000
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`)
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`)
-    await exec(`awk -F: '$3 >= 1000 {print}' /etc/group > ${this.luksMountpoint}/.system-backup/group`)
-    await exec(`awk -F: '$3 >= 1000 {print}' /etc/gshadow > ${this.luksMountpoint}/.system-backup/gshadow`)    
+
+    // Per i gruppi: salva TUTTI (non filtrare per GID)
+    // Gli utenti possono appartenere a gruppi di sistema (sudo, audio, video, etc.)
+    await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`)
+    await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`)
 
     Utils.warning(`8. Unmount `)
     await exec(`umount ${this.luksMountpoint}`)
