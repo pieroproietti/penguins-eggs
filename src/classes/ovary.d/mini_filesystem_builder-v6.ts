@@ -60,6 +60,12 @@ export async function createMiniFilesystem(
       await exec(`ln -sf /bin/busybox ${workDir}/bin/${cmd}`).catch(() => {})
     }
 
+    // Installa kmod (per modprobe vero)
+    Utils.warning('Installing kmod utilities...')
+    await exec(`cp /bin/kmod ${workDir}/sbin/`).catch(() => {})
+    await exec(`ln -sf /sbin/kmod ${workDir}/sbin/modprobe`)
+    await exec(`ln -sf /sbin/kmod ${workDir}/sbin/lsmod`)
+
     // Installa cryptsetup
     Utils.warning('Installing cryptsetup...')
     await exec(`cp /sbin/cryptsetup ${workDir}/sbin/`)
@@ -68,6 +74,7 @@ export async function createMiniFilesystem(
     Utils.warning('Copying libraries...')
     await copyLibraries(workDir, '/sbin/cryptsetup')
     await copyLibraries(workDir, '/bin/busybox')
+    await copyLibraries(workDir, '/bin/kmod')  // ← AGGIUNGI QUESTA RIGA
 
     // Copia i moduli necessari
     const kernelVersion = (await exec('uname -r', { capture: true })).data.trim()
@@ -76,8 +83,8 @@ export async function createMiniFilesystem(
     // Crea lo script init principale
     Utils.warning('Creating init script...')
     const initScript = await generateInitScript()
-    fs.writeFileSync(path.join(workDir, 'init'), initScript)
-    fs.chmodSync(path.join(workDir, 'init'), 0o755)
+    fs.writeFileSync(path.join(workDir, '/sbin/init'), initScript)
+    fs.chmodSync(path.join(workDir, '/sbin/init'), 0o755)
 
     // Crea device nodes essenziali
     Utils.warning('Creating device nodes...')
@@ -90,7 +97,7 @@ export async function createMiniFilesystem(
       fs.unlinkSync(outputSquashfs)
     }
 
-    await exec(`mksquashfs ${workDir} ${outputSquashfs} -comp xz -Xbcj x86`)
+    await exec(`mksquashfs ${workDir} ${outputSquashfs} -comp zstd -b 1M -Xcompression-level 15`)
 
     const stats = fs.statSync(outputSquashfs)
     const sizeMB = (stats.size / 1024 / 1024).toFixed(2)
@@ -150,9 +157,11 @@ async function copyLibraries(
   }
 }
 
-
 /**
- * Copia i moduli kernel necessari nel mini-filesystem
+ * 
+ * @param workDir 
+ * @param kernelVersion 
+ * @returns 
  */
 async function copyKernelModules(
   workDir: string,
@@ -170,23 +179,14 @@ async function copyKernelModules(
   
   fs.mkdirSync(modulesDest, { recursive: true })
   
-  // Copia solo i moduli essenziali per dm e crypto
-  const essentialModules = [
-    'kernel/drivers/md/dm-mod.ko*',
-    'kernel/crypto/dm-crypt.ko*',
-    'modules.order',
-    'modules.builtin'
-  ]
+  // Copia TUTTA la directory dei moduli
+  Utils.warning('Copying all kernel modules...')
+  await exec(`cp -r ${modulesSource}/* ${modulesDest}/`)
   
-  for (const mod of essentialModules) {
-    await exec(`find ${modulesSource} -name "${mod}" -exec cp {} ${modulesDest}/ \\;`).catch(() => {})
-  }
-  
-  // Genera modules.dep
-  await exec(`depmod -b ${workDir} ${kernelVersion}`).catch(() => {
-    Utils.warning('Could not generate modules.dep')
-  })
+  Utils.success(`✓ Kernel modules copied`)
 }
+
+
 /**
  * Genera lo script init che sblocca e passa al vero sistema
  */
@@ -199,6 +199,12 @@ mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 mount -t devtmpfs devtmpfs /dev
 mount -t tmpfs tmpfs /run
+
+# Carica moduli kernel necessari
+echo "Loading kernel modules..."
+modprobe dm_mod 2>/dev/null || echo "Warning: dm_mod not loaded"
+modprobe dm_crypt 2>/dev/null || echo "Warning: dm_crypt not loaded"
+sleep 2
 
 echo ""
 echo "╔════════════════════════════════════════╗"
@@ -243,12 +249,7 @@ echo ""
 echo "Enter passphrase to unlock system (3 attempts):"
 echo ""
 
-# Copia in RAM
-echo "Copying root.img to RAM..."
-mkdir -p /run
-cp "$ROOT_IMG" /run/root.img
-
-# Sblocca
+# Sblocca DIRETTAMENTE dal CD
 MAX_ATTEMPTS=3
 ATTEMPT=1
 UNLOCKED=0
@@ -256,7 +257,8 @@ UNLOCKED=0
 while [ $ATTEMPT -le $MAX_ATTEMPTS ] && [ $UNLOCKED -eq 0 ]; do
     echo "Attempt $ATTEMPT of $MAX_ATTEMPTS:"
     
-    if cryptsetup open /run/root.img live-root; then
+    # Usa direttamente $ROOT_IMG invece di /run/root.img
+    if cryptsetup open "$ROOT_IMG" live-root; then
         UNLOCKED=1
         echo "Unlocked successfully!"
     else
