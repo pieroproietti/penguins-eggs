@@ -14,7 +14,6 @@ import { spawn, StdioOptions } from 'node:child_process'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
-import { error } from 'node:console'
 
 /**
  * luksRoot()
@@ -22,7 +21,7 @@ import { error } from 'node:console'
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) {
+export async function luksRoot(this: Ovary, clone = false, homecrypt = false) {
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
 
@@ -36,62 +35,61 @@ export async function luksRoot(this: Ovary, clone = false, cryptedhome = false) 
      * this.luksPassword = 'evolution' 
      */
 
-    // Scrive la chiave statica
-    fs.writeFileSync(`${this.settings.iso_work}/live/live.key`, this.luksPassword + '\n');
+    await this.luksGetPassword() // modifica o conferma password
 
-    Utils.warning('1. Calculation of space requirements...')
+    console.log()
+    console.log('====================================')
+    console.log(` Creating ${this.luksName}`)
+    console.log('====================================')
+
+    // Utils.warning('1. Calculation of space requirements...')
     const sizeString = (await exec(`unsquashfs -s ${live_fs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data;
     let size = Number.parseInt(sizeString) // Dimensione in Byte
 
     // Add overhead * 1.20
     const luksSize = Math.ceil(size * 1.20)
 
-    Utils.warning(`  > filesystem.squashfs size: ${bytesToGB(size)}`)
-    Utils.warning(`  > partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    Utils.warning(`filesystem.squashfs size: ${bytesToGB(size)}`)
+    Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 
-    Utils.warning(`2. Creating partition LUKS: ${this.luksFile}`)
+    Utils.warning(`creating partition LUKS: ${this.luksFile}`)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
-    Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile]);
-    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], this.luksPassword)
+    Utils.warning(`formatting ${this.luksFile} as a LUKS volume...`)
+    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
 
     this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
-    Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
+    Utils.warning(`LUKS uuid: ${this.luksUuid}`)
 
-    Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/live.key`, this.luksFile, this.luksMappedName])
-    // await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], this.luksPassword)
+    Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
+    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    Utils.warning(`5. Formatting ext4`)
-    await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`)
+    Utils.warning(`formatting ext4`)
+    await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
 
-    Utils.warning(`6. Mount `)
+    Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
       if (!Utils.isMountpoint(this.luksMountpoint)) {
-        await exec(`rm -rf ${this.luksMountpoint}`)
+        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
       } else {
         throw new Error(`${this.luksMountpoint} is already mounted, process will abort!`)
       }
     }
-    await exec(`mkdir -p ${this.luksMountpoint}`)
+    await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
 
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`)
+    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`7. Copy `)
-    await exec(`cp  ${this.settings.iso_work}live/filesystem.squashfs /mnt`)
+    Utils.warning(`moving ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`)
+    await exec(`mv  ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`8. Unmount `)
-    await exec(`umount ${this.luksMountpoint}`)
+    Utils.warning(`unmount ${this.luksMountpoint} `)
+    await exec(`umount ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`9. Closing LUKS volume ${this.luksFile}.`)
+    Utils.warning(`closing LUKS volume ${this.luksFile}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
 
-    Utils.warning(`10. Replace ISO/live/filesystem.squashfs with ${this.luksMappedName}.`)
-    await exec(`rm ${this.settings.iso_work}live/filesystem.squashfs`)
-    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
-
-    Utils.success('Encryption process successfully completed!')
+    Utils.warning(`moving ${this.luksMappedName} on (ISO)/live.`)
+    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
 
   } catch (error) {

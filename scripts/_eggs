@@ -318,9 +318,9 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-c --clone)"{-c,--clone}"[clone]" \
-"(-k --cryptedhome)"{-k,--cryptedhome}"[crypted home ]" \
-"(-f --cryptedfull)"{-f,--cryptedfull}"[crypted root ]" \
+"(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
+"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
+"(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 mom)
@@ -337,9 +337,9 @@ produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
-"(-c --clone)"{-c,--clone}"[clone]" \
-"(-k --cryptedhome)"{-k,--cryptedhome}"[crypted home]" \
-"(-f --cryptedfull)"{-f,--cryptedfull}"[full crypted root]" \
+"(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
+"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
+"(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-K --kernel)"{-K,--kernel}"[kernel version]:file:_files" \

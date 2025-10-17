@@ -27,8 +27,8 @@ export default class Produce extends Command {
     'sudo eggs produce                    # zstd fast compression',
     'sudo eggs produce --pendrive         # zstd compression optimized pendrive',
     'sudo eggs produce --clone            # clear clone (unencrypted)',
-    'sudo eggs produce --cryptedhome      # clone crypted home (all inside /home is cypted)',
-    'sudo eggs produce --cryptedfull      # clone crypted full (entire system is crypted)',
+    'sudo eggs produce --homecrypt      # clone crypted home (all inside /home is cypted)',
+    'sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)',
     'sudo eggs produce --basename=colibri',
   ]
 
@@ -36,8 +36,8 @@ export default class Produce extends Command {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
-    cryptedhome: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
-    cryptedfull: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
+    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
+    fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
     kernel: Flags.string({ char: 'K', description: 'kernel version' }),
@@ -156,9 +156,9 @@ export default class Produce extends Command {
 
       const { clone } = flags
 
-      const { cryptedhome } = flags
+      const { homecrypt } = flags
 
-      const { cryptedfull } = flags
+      const { fullcrypt } = flags
 
       const { verbose } = flags
 
@@ -170,8 +170,8 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      // if clone or cryptedhome includeRoot = true
-      const includeRoot = flags.includeRoot || clone || cryptedhome
+      // if clone or homecrypt includeRoot = true
+      const includeRoot = flags.includeRoot || clone || homecrypt
 
       let { kernel } = flags
       if (kernel === undefined) {
@@ -215,7 +215,7 @@ export default class Produce extends Command {
         }
       }
 
-      const i = await Config.thatWeNeed(nointeractive, verbose, cryptedhome)
+      const i = await Config.thatWeNeed(nointeractive, verbose, homecrypt)
       if ((i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate)) {
         await Config.install(i, nointeractive, verbose)
       }
@@ -244,7 +244,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(kernel, clone, cryptedhome, cryptedfull, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
+        await ovary.produce(kernel, clone, homecrypt, fullcrypt, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
         ovary.finished(scriptOnly)
       }
     } else {
