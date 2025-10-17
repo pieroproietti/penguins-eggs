@@ -278,12 +278,6 @@ mount -t tmpfs tmpfs /tmp
 echo "Loading kernel modules..."
 modprobe dm_mod 2>/dev/null
 modprobe dm_crypt 2>/dev/null
-echo "Attempting to load overlay module..."
-modprobe overlay
-if [ $? -ne 0 ]; then
-    echo "✗ ERROR: Failed to load overlay kernel module. Is it included in the initramfs?"
-    sleep 10
-fi
 sleep 2
 
 clear
@@ -361,7 +355,7 @@ if ! mount -t ext4 -o ro /dev/mapper/live-root /mnt/root-img; then
     exec /bin/bash
 fi
 
-# Monta il vero filesystem (la base read-only)
+# Monta il vero filesystem
 echo "Mounting real filesystem..."
 if ! mount -t squashfs -o ro,loop /mnt/root-img/filesystem.squashfs /mnt/real-root; then
     echo "✗ ERROR: Failed to mount real filesystem"
@@ -371,28 +365,8 @@ if ! mount -t squashfs -o ro,loop /mnt/root-img/filesystem.squashfs /mnt/real-ro
     exec /bin/bash
 fi
 
-# Overlay
-echo "Creating writable overlay..."
-# 1. Crea le directory necessarie per l'overlay su un tmpfs
-mkdir -p /mnt/overlay-work
-mkdir -p /mnt/overlay-upper
-mkdir -p /mnt/writable-root
-
-# 2. Monta il filesystem overlay
-#    - lowerdir: la base read-only (il nostro squashfs)
-#    - upperdir: dove verranno scritte le modifiche (in RAM)
-#    - workdir: una directory di lavoro richiesta da overlayfs
-mount -t overlay overlay -o lowerdir=/mnt/real-root,upperdir=/run/overlay-upper,workdir=/run/overlay-work /mnt/writable-root
-
-if [ $? -ne 0 ]; then
-    echo "✗ ERROR: Failed to mount overlay filesystem"
-    dmesg | tail -n 5 # Aggiunto per un debug più facile
-    echo "Dropping to shell for debugging..."
-    exec /bin/bash
-fi
-
-# Verifica init nella nuova root scrivibile
-if [ ! -x /mnt/writable-root/sbin/init ]; then
+# Verifica init
+if [ ! -x /mnt/real-root/sbin/init ]; then
     echo "✗ ERROR: No init found in real filesystem"
     exec /bin/bash
 fi
@@ -400,14 +374,15 @@ fi
 # Switch root
 echo "✓ Switching to real system..."
 echo ""
+sleep 1
 
-# Monta filesystem nel nuovo root (quello scrivibile!)
-mount --move /dev /mnt/writable-root/dev
-mount --move /proc /mnt/writable-root/proc
-mount --move /sys /mnt/writable-root/sys
-mount --move /run /mnt/writable-root/run
+# Monta filesystem nel nuovo root
+mount --move /dev /mnt/real-root/dev
+mount --move /proc /mnt/real-root/proc
+mount --move /sys /mnt/real-root/sys
+mount --move /run /mnt/real-root/run
 
-# Passa al sistema reale, usando la nuova root scrivibile
-exec switch_root /mnt/writable-root /sbin/init
+# Passa al sistema reale
+exec switch_root /mnt/real-root /sbin/init
 `
 }
