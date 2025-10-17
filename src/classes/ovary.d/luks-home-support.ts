@@ -22,7 +22,7 @@ const __dirname = dirname(__filename)
 /**
  * Installa i file necessari per sbloccare home.img LUKS durante il boot
  */
-export function installEnhomecryptSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
+export function installHomecryptSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
   Utils.warning ('installing encrypted home support...')
   // console.log("squashfsRoot:", squashfsRoot)
   // console.log("homeImgPath:", homeImgPath)

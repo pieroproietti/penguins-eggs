@@ -29,6 +29,7 @@ import Diversions from './../diversions.js'
 import Utils from './../utils.js'
 import Repo from './../yolk.js'
 import Ovary from './../ovary.js'
+import { dot } from 'node:test/reporters'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -249,9 +250,15 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             }
 
             if (fullcrypt) {
-                const initramfsPath= `${this.settings.iso_work}live/${path.basename(this.initrd)}`
-                const rootImgPath= `${this.distroLliveMediumPath}/live/root.img`
-                this.injectDecryptScriptInInitramfs(initramfsPath, rootImgPath)
+                // create additional initramfs
+                const decriptImgPath = `${this.settings.iso_work}live/initrd-decrypt.img`
+                const rootImgPath = `${this.distroLliveMediumPath}/live/root.img`
+                const isoLabel = this.volid
+                await this.createDecryptInitramfs(
+                    decriptImgPath, 
+                    rootImgPath,
+                    isoLabel
+                )
             }
 
 
@@ -263,7 +270,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
 
             if (!this.clone) {
                 /**
-                 * SOLO per clone no per homecrypt
+                 * SOLO per clone no per homecrypt, ne per fullcrypt
                  */
                 await this.usersRemove()
                 await this.userCreateLive()
@@ -290,17 +297,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             if (this.homecrypt) {
                 const squashfsRoot = this.settings.work_dir.merged
                 const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
-                this.installEnhomecryptSupport(squashfsRoot, homeImgPath)
-                /*
-                if (!this.verifyEnhomecryptSupport()) {
-                    console.log('Failed to install encrypted home support')
-                    process.exit()
-                }
-                */
+                this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
-            await this.uBindLiveFs() // Lo smonto prima della fase di backup
+            await this.uBindLiveFs() // smonto tutto prima della fase di backup
         }
 
         if (homecrypt) {
@@ -324,6 +325,19 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         if (arch === 'ia32' || arch === 'x64') {
             await this.syslinux(this.theme)
         }
+
+        if (fullcrypt) {
+            // Modifica isolinux.cfg
+            const isolinuxCfgPath = path.join(this.settings.iso_work, `/isolinux/isolinux.cfg`)
+            const mainInitramfs = path.basename(Utils.initrdImg(this.kernel))
+            const additionalInitramfs = 'initrd-decrypt.img'
+            this.updateIsolinuxForMultipleInitramfs(isolinuxCfgPath, mainInitramfs, additionalInitramfs)
+
+            // Modifica (ISO)/boot/grub/grub.cfg
+            const grubCfgPath = `${this.settings.iso_work}boot/grub/grub.cfg`
+            this.updateGrubForMultipleInitramfs(grubCfgPath, mainInitramfs, additionalInitramfs)
+        }
+
 
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')

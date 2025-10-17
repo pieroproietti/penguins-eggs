@@ -47,11 +47,15 @@ import { finished } from './ovary.d/finished.js'
 
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
 import { luksHome } from './ovary.d/luks-home.js'
-import { installEnhomecryptSupport } from './ovary.d/luks-home-support.js'
+import { installHomecryptSupport } from './ovary.d/luks-home-support.js'
 
 import { luksRoot } from './ovary.d/luks-root.js'
 import { installEncryptedRootSupport } from './ovary.d/luks-root-support.js'
-import { injectDecryptScriptInInitramfs } from './ovary.d/luks-root-inject.js'
+import { 
+    createDecryptInitramfs, 
+    updateIsolinuxForMultipleInitramfs, 
+    updateGrubForMultipleInitramfs 
+  } from './ovary.d/luks-root-additional-initramfs.js'
 // Functions
 // import initramfs from '../krill/classes/sequence.d/initramfs.js'
 
@@ -118,7 +122,7 @@ export default class Ovary {
   dotLivefs = ''
 
   luksUuid = ''
-  
+
   luksName = ''
 
   luksMappedName = ''
@@ -148,11 +152,14 @@ export default class Ovary {
   luksGetPassword = luksGetPassword
   // luksHome
   luksHome = luksHome
-  installEnhomecryptSupport = installEnhomecryptSupport
+  installHomecryptSupport = installHomecryptSupport
   // luksRoot
   luksRoot = luksRoot
-  installEncryptedRootSupport=installEncryptedRootSupport
-  injectDecryptScriptInInitramfs=injectDecryptScriptInInitramfs
+  installEncryptedRootSupport = installEncryptedRootSupport
+  createDecryptInitramfs = createDecryptInitramfs
+  updateIsolinuxForMultipleInitramfs = updateIsolinuxForMultipleInitramfs
+  updateGrubForMultipleInitramfs = updateGrubForMultipleInitramfs
+
 
   finished = finished
   initrdAlpine = initrdAlpine

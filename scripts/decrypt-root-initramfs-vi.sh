@@ -21,22 +21,9 @@ esac
 
 # Configurazione
 ROOT_IMG_PATH="__ROOT_IMG_PATH__"
-LUKS_NAME="live-home"
+LUKS_NAME="live-root"
 TEMP_ROOT_IMG="/run/initramfs/root.img"
 TEMP_MOUNT="/run/initramfs/decrypted"
-
-# Monta il media live usando il label
-log_begin_msg "Mounting live media"
-LIVE_DEV=$(blkid -l -t LABEL="__ISOIMAGE__" -o device)
-if [ -n "$LIVE_DEV" ]; then
-    mkdir -p /run/live/medium
-    mount -o ro "$LIVE_DEV" /run/live/medium
-    log_success_msg "Live media mounted on $LIVE_DEV"
-else
-    log_failure_msg "Live media not found"
-    exit 0
-fi
-log_end_msg
 
 log_begin_msg "Searching for encrypted root image"
 
