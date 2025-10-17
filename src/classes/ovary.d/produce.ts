@@ -387,6 +387,12 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             }
         }
 
+        // add the dummy filesystem.squashfs
+        if (fullcrypt) {
+            let dummyFs =`${this.settings.iso_work}/live/filesystem.squashfs`
+            await this.createMiniFilesystem(dummyFs)
+        }
+
         await this.makeIso(mkIsofsCmd, scriptOnly)
     }
 }

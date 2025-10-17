@@ -21,8 +21,9 @@ import { exec } from '../../lib/utils.js'
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksRoot(this: Ovary, clone = false, homecrypt = false) {
-  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
+export async function luksRoot(this: Ovary) {
+  // filesystem.squashfs.real
+  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
 
 
   try {
@@ -79,8 +80,8 @@ export async function luksRoot(this: Ovary, clone = false, homecrypt = false) {
 
     await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`moving ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`)
-    await exec(`mv  ${this.settings.iso_work}live/filesystem.squashfs ${this.luksMountpoint}`, this.echo)
+    Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`)
+    await exec(`mv  ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo)
 
     Utils.warning(`unmount ${this.luksMountpoint} `)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
