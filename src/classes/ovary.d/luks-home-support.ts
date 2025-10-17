@@ -14,6 +14,7 @@ import { dirname } from 'path'
 
 // classes
 import Ovary from '../ovary.js'
+import Utils from '../utils.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -21,10 +22,10 @@ const __dirname = dirname(__filename)
 /**
  * Installa i file necessari per sbloccare home.img LUKS durante il boot
  */
-export function installEncryptedHomeSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
-  console.log('Installing encrypted home support...')
-  console.log("squashfsRoot:", squashfsRoot)
-  console.log("homeImgPath:", homeImgPath)
+export function installHomecryptSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
+  Utils.warning ('installing encrypted home support...')
+  // console.log("squashfsRoot:", squashfsRoot)
+  // console.log("homeImgPath:", homeImgPath)
 
   // Leggi il template bash
     const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
@@ -71,19 +72,20 @@ WantedBy=local-fs.target
   // Scrivi lo script
   fs.writeFileSync(scriptPath, bashScript)
   fs.chmodSync(scriptPath, 0o755)
-  console.log(`✓ Created: ${scriptPath}`)
+  // console.log(`✓ Created: ${scriptPath}`)
 
   // Scrivi il service
   fs.writeFileSync(servicePath, systemdService)
-  console.log(`✓ Created: ${servicePath}`)
+  // console.log(`✓ Created: ${servicePath}`)
 
   // Crea il symlink per abilitare il service
   if (fs.existsSync(symlinkPath)) {
     fs.unlinkSync(symlinkPath)
   }
   fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
-  console.log(`✓ Enabled: mount-encrypted-home.service`)
+  // console.log(`✓ Enabled: mount-encrypted-home.service`)
 
-  console.log('Encrypted home support installed successfully')
-  console.log('Logs will be available at: /var/log/mount-encrypted-home.log')
+  // console.log('Encrypted home support installed successfully')
+  // console.log('Logs will be available at: /var/log/mount-encrypted-home.log')
 }
+

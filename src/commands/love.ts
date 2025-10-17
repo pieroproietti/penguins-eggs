@@ -30,8 +30,8 @@ export default class Love extends Command {
     verbose: Flags.boolean({ char: 'v' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
-    cryptedhome: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
-    cryptedfull: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
+    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
+    fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
   }
 
   async run(): Promise<void> {
@@ -49,26 +49,26 @@ export default class Love extends Command {
       clone = true
     }
 
-    let cryptedhome = false
-    if (flags.cryptedhome) {
+    let homecrypt = false
+    if (flags.homecrypt) {
       clone = false
-      cryptedhome = true
+      homecrypt = true
     }
 
-    let cryptedfull = false
-    if (flags.cryptedfull) {
-      cryptedfull = true
+    let fullcrypt = false
+    if (flags.fullcrypt) {
+      fullcrypt = true
       clone = false
-      cryptedhome = false
+      homecrypt = false
     }
 
     let flagClone = ''
     if (clone) {
       flagClone = "--clone"
-    } else if (cryptedhome) {
-      flagClone = "--cryptedhome"
-    } else if (cryptedfull) {
-      flagClone = "--cryptedfull"
+    } else if (homecrypt) {
+      flagClone = "--homecrypt"
+    } else if (fullcrypt) {
+      flagClone = "--fullcrypt"
     }
 
     let nointeractive = false

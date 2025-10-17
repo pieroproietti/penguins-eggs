@@ -17,18 +17,16 @@ import { exec } from '../../lib/utils.js'
 
 
 /**
- * luksRoot()
+ * luksHome()
  * 
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksHome(this: Ovary, clone = false, cryptedhome = false) {
-  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
-
+export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
 
   try {
     /**
-     * this.luksName = 'luks.img';
+     * this.luksName = 'home.img';
      * this.luksFile = `/tmp/${luksName}`
      * this.luksDevice = `/dev/mapper/${luksName}`
      * this.luksMappedName = this.luksName
@@ -36,15 +34,14 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
      * this.luksPassword = 'evolution' 
      */
 
-    // Scrive la chiave statica
-    // fs.writeFileSync(`${this.settings.iso_work}/live/home.key`, this.luksPassword + '\n');
+    await this.luksGetPassword() // modifica o conferma password
 
     console.log()
     console.log('====================================')
-    console.log(" Creating home.img")
+    console.log(` Creating ${this.luksName}`)
     console.log('====================================')
     
-    Utils.warning('1. Calculation of space requirements...')
+    // Utils.warning('1. Calculation of space requirements...')
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
@@ -52,65 +49,61 @@ export async function luksHome(this: Ovary, clone = false, cryptedhome = false) 
     // const luksSize = size + fsOverhead + (size * 0.2) // +20% di sicurezza
 
     const luksSize = Math.ceil(size * 2)
-    Utils.warning(`  > homes size: ${bytesToGB(size)}`)
-    //evUtils.warning(`  > filesystem overhead: ${bytesToGB(fsOverhead)}`)
-    Utils.warning(`  > partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    Utils.warning(`homes size: ${bytesToGB(size)}`)
+    Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 
-    Utils.warning(`2. Creating partition LUKS: ${this.luksFile}`)
+    Utils.warning(`creating partition LUKS: ${this.luksFile}`)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
-    Utils.warning(`3. Formatting ${this.luksFile} as a LUKS volume...`)
+    Utils.warning(`formatting ${this.luksFile} as a LUKS volume...`)
     await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
-    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', '--key-file', `${this.settings.iso_work}/live/home.key`, this.luksFile]);
 
     this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
-    Utils.warning(`4. LUKS uuid: ${this.luksUuid}`)
+    Utils.warning(`LUKS uuid: ${this.luksUuid}`)
 
-    Utils.warning(`5. Opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    //await executeCommand('cryptsetup', ['luksOpen', '--key-file', `${this.settings.iso_work}/live/home.key`, this.luksFile, this.luksMappedName])
+    Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    Utils.warning(`5. Formatting ext4`)
-    await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`)
+    Utils.warning(`formatting c ext4 `)
+    await exec(`mkfs.ext4 -L live-home ${this.luksDevice}`,this.echo)
 
-    Utils.warning(`6. Mount `)
+    Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
       if (!Utils.isMountpoint(this.luksMountpoint)) {
-        await exec(`rm -rf ${this.luksMountpoint}`)
+        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
       } else {
         throw new Error(`${this.luksMountpoint} is already mounted, process will abort!`)
       }
     }
-    await exec(`mkdir -p ${this.luksMountpoint}`)
+    await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
+    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
 
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`)
+    Utils.warning(`copying /home on  ${this.luksMountpoint}`)
+    await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`7. Copying /home on  ${this.luksName}`)
-    await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`)
-
-    Utils.warning(`7b. Saving user accounts info...`)
+    Utils.warning(`saving user accounts info...`)
     // Crea directory per backup system files
-    await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`)
+    await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`, this.echo)
     
     // Filtra solo utenti con UID >= 1000
-    await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`)
-    await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`)
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`, this.echo)
+    await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`, this.echo)
 
     // Per i gruppi: salva TUTTI (non filtrare per GID)
     // Gli utenti possono appartenere a gruppi di sistema (sudo, audio, video, etc.)
-    await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`)
-    await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`)
+    await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`, this.echo)
+    await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`, this.echo)
 
-    Utils.warning(`8. Unmount `)
-    await exec(`umount ${this.luksMountpoint}`)
+    Utils.warning(`unmount ${this.luksDevice}`)
+    await exec(`umount ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`9. Closing LUKS volume ${this.luksFile}.`)
+    Utils.warning(`closing LUKS volume ${this.luksMappedName}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
 
-    Utils.warning(`10. Moving ${this.luksName}  to ISO/live/.`)
-    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`)
+    Utils.warning(`moving ${this.luksName}  to (ISO)/live/.`)
+    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
-    Utils.success('Encryption process successfully completed!')
+    Utils.warning('encryption process successfully completed!')
 
     /**
      * YOU MUST! unlink the key on production
@@ -177,4 +170,3 @@ function bytesToGB(bytes: number): string {
   const gigabytes = bytes / (1024 * 1024 * 1024);
   return gigabytes.toFixed(2) + ' GB';
 }
-

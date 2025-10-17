@@ -86,14 +86,14 @@ export default class Config extends Command {
    *
    * @param verbose
    */
-  static async thatWeNeed(nointeractive = false, verbose = false, cryptedhome = false): Promise<IInstall> {
+  static async thatWeNeed(nointeractive = false, verbose = false, homecrypt = false): Promise<IInstall> {
     const i = {} as IInstall
 
     i.distroTemplate = !Pacman.distroTemplateCheck()
 
     i.addEfi = !Pacman.isUefi()
     i.calamares=false
-    if (!cryptedhome && 
+    if (!homecrypt && 
         !Pacman.calamaresExists() && 
         Pacman.isInstalledGui() && 
         Pacman.isCalamaresAvailable()) {

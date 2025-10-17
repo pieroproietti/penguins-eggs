@@ -1,0 +1,35 @@
+#!/bin/sh
+# Hook per initramfs-tools
+# Include cryptsetup e lo script decrypt-root nell'initramfs
+
+PREREQ=""
+
+prereqs()
+{
+    echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+# Copia cryptsetup nell'initramfs
+copy_exec /sbin/cryptsetup /sbin
+
+# Copia le librerie necessarie per cryptsetup
+for lib in $(ldd /sbin/cryptsetup | awk '{print $3}' | grep '^/'); do
+    copy_exec "$lib"
+done
+
+# Copia lo script decrypt-root
+copy_exec /usr/local/bin/decrypt-root.sh /scripts/init-premount/decrypt-root
+
+# Rendi lo script eseguibile
+chmod +x "${DESTDIR}/scripts/init-premount/decrypt-root"
+
+exit 0

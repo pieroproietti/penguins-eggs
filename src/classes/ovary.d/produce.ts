@@ -29,6 +29,7 @@ import Diversions from './../diversions.js'
 import Utils from './../utils.js'
 import Repo from './../yolk.js'
 import Ovary from './../ovary.js'
+import { dot } from 'node:test/reporters'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -36,7 +37,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * produce
  * @param clone
- * @param cryptedhome
+ * @param homecrypt
  * @param scriptOnly
  * @param yolkRenew
  * @param release
@@ -46,7 +47,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param includeRoot
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, cryptedhome = false, cryptedfull = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(this: Ovary, kernel = '', clone = false, homecrypt = false, fullcrypt = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -57,14 +58,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
     this.clone = clone
 
-    this.cryptedhome = cryptedhome
+    this.homecrypt = homecrypt
 
-    this.cryptedfull = cryptedfull
+    this.fullcrypt = fullcrypt
 
     // Crittoografia
-    if (this.cryptedhome) {
+    if (this.homecrypt) {
         this.luksName = 'home.img'
-    } else if (this.cryptedfull) {
+    } else if (this.fullcrypt) {
         this.luksName = 'root.img'
     }
     this.luksUuid = ''
@@ -108,7 +109,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
      * define this.initrd
      */
     this.initrd = Utils.initrdImg(this.kernel)
-
+   
 
     /**
      * yolk
@@ -153,9 +154,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
         }
 
         /**
-         * cryptedhome/clone/standard
+         * homecrypt/clone/standard
          */
-        if (this.cryptedhome) {
+        if (this.homecrypt) {
             Utils.warning("eggs will SAVE users' data ENCRYPTED")
 
         } else if (this.clone) {
@@ -240,16 +241,24 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             } else if (this.familyId === 'archlinux') {
                 await this.initrdArch()
             } else if (this.familyId === 'debian') {
-                if (Pacman.packageIsInstalled('dracut')) {
-                    await this.initrdDracut()
-                } else {
-                    await this.initrdDebian()
-                }
+                await this.initrdDebian()
             } else if (this.familyId === 'fedora' ||
                 this.familyId === 'openmamba' ||
                 this.familyId === 'opensuse' ||
                 this.familyId === 'voidlinux') {
                 await this.initrdDracut()
+            }
+
+            if (fullcrypt) {
+                // create additional initramfs
+                const decriptImgPath = `${this.settings.iso_work}live/initrd-decrypt.img`
+                const rootImgPath = `${this.distroLliveMediumPath}/live/root.img`
+                const isoLabel = this.volid
+                await this.createDecryptInitramfs(
+                    decriptImgPath, 
+                    rootImgPath,
+                    isoLabel
+                )
             }
 
 
@@ -261,7 +270,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
 
             if (!this.clone) {
                 /**
-                 * SOLO per clone no per cryptedhome
+                 * SOLO per clone no per homecrypt, ne per fullcrypt
                  */
                 await this.usersRemove()
                 await this.userCreateLive()
@@ -283,27 +292,21 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             await this.editLiveFs(clone)
 
             /**
-             * cryptedhome: installa il supporto 
+             * homecrypt: installa il supporto 
              */
-            if (this.cryptedhome) {
+            if (this.homecrypt) {
                 const squashfsRoot = this.settings.work_dir.merged
                 const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
-                this.installEncryptedHomeSupport(squashfsRoot, homeImgPath)
-                /*
-                if (!this.verifyEncryptedHomeSupport()) {
-                    console.log('Failed to install encrypted home support')
-                    process.exit()
-                }
-                */
+                this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
-            await this.uBindLiveFs() // Lo smonto prima della fase di backup
+            await this.uBindLiveFs() // smonto tutto prima della fase di backup
         }
 
-        if (cryptedhome) {
+        if (homecrypt) {
             await this.luksHome()
-        } else if (cryptedfull) {
+        } else if (fullcrypt) {
             await this.luksRoot()
         }
 
@@ -323,8 +326,21 @@ export async function produce(this: Ovary, kernel = '', clone = false, cryptedho
             await this.syslinux(this.theme)
         }
 
+        if (fullcrypt) {
+            // Modifica isolinux.cfg
+            const isolinuxCfgPath = path.join(this.settings.iso_work, `/isolinux/isolinux.cfg`)
+            const mainInitramfs = path.basename(Utils.initrdImg(this.kernel))
+            const additionalInitramfs = 'initrd-decrypt.img'
+            this.updateIsolinuxForMultipleInitramfs(isolinuxCfgPath, mainInitramfs, additionalInitramfs)
 
-        const mkIsofsCmd = (await this.xorrisoCommand(clone, cryptedhome, cryptedfull)).replaceAll(/\s\s+/g, ' ')
+            // Modifica (ISO)/boot/grub/grub.cfg
+            const grubCfgPath = `${this.settings.iso_work}boot/grub/grub.cfg`
+            this.updateGrubForMultipleInitramfs(grubCfgPath, mainInitramfs, additionalInitramfs)
+        }
+
+
+
+        const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
         /**
