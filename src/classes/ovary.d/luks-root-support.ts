@@ -1,5 +1,5 @@
 /**
- * ./src/classes/ovary.d/luks-home-support.ts
+ * ./src/classes/ovary.d/luks-root-support.ts
  * penguins-eggs v.25.10.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com

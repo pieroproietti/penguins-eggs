@@ -249,18 +249,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
                 await this.initrdDracut()
             }
 
-            if (fullcrypt) {
-                // create additional initramfs
-                const decriptImgPath = `${this.settings.iso_work}live/initrd-decrypt.img`
-                const rootImgPath = `${this.distroLliveMediumPath}/live/root.img`
-                const isoLabel = this.volid
-                await this.createDecryptInitramfs(
-                    decriptImgPath, 
-                    rootImgPath,
-                    isoLabel
-                )
-            }
-
 
             await this.bindLiveFs()
 
@@ -291,14 +279,22 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
 
             await this.editLiveFs(clone)
 
-            /**
-             * homecrypt: installa il supporto 
-             */
             if (this.homecrypt) {
+                /**
+                 * homecrypt: installa il supporto 
+                 */
                 const squashfsRoot = this.settings.work_dir.merged
                 const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
+            } else if (this.fullcrypt) {
+                /**
+                 * fullcrypt: 
+                 */
+                const squashfsRoot = this.settings.work_dir.merged
+                await this.ensureCryptsetupInLive(squashfsRoot)
+                await this.installLiveBootDecryptHook(squashfsRoot)
             }
+
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
             await this.uBindLiveFs() // smonto tutto prima della fase di backup
@@ -325,19 +321,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         if (arch === 'ia32' || arch === 'x64') {
             await this.syslinux(this.theme)
         }
-
-        if (fullcrypt) {
-            // Modifica isolinux.cfg
-            const isolinuxCfgPath = path.join(this.settings.iso_work, `/isolinux/isolinux.cfg`)
-            const mainInitramfs = path.basename(Utils.initrdImg(this.kernel))
-            const additionalInitramfs = 'initrd-decrypt.img'
-            this.updateIsolinuxForMultipleInitramfs(isolinuxCfgPath, mainInitramfs, additionalInitramfs)
-
-            // Modifica (ISO)/boot/grub/grub.cfg
-            const grubCfgPath = `${this.settings.iso_work}boot/grub/grub.cfg`
-            this.updateGrubForMultipleInitramfs(grubCfgPath, mainInitramfs, additionalInitramfs)
-        }
-
 
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
