@@ -36,8 +36,6 @@ export async function luksRoot(this: Ovary) {
      * this.luksPassword = 'evolution' 
      */
 
-    await this.luksGetPassword() // modifica o conferma password
-
     console.log()
     console.log('====================================')
     console.log(` Creating ${this.luksName}`)

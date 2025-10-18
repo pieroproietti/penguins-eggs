@@ -50,9 +50,7 @@ import { luksHome } from './ovary.d/luks-home.js'
 import { installHomecryptSupport } from './ovary.d/luks-home-support.js'
 
 import { luksRoot } from './ovary.d/luks-root.js'
-import { ensureCryptsetupInLive, installLiveBootDecryptHook } from './ovary.d/luks-root-ensure.js'
-import { installEncryptedRootSupport } from './ovary.d/luks-root-support.js'
-import { createMiniFilesystem } from './ovary.d/mini_filesystem_builder.js'
+import { createBootstrapFilesystem } from './ovary.d/luks-root-bootstrap-builder.js'
 
 // Functions
 // import initramfs from '../krill/classes/sequence.d/initramfs.js'
@@ -153,11 +151,8 @@ export default class Ovary {
   installHomecryptSupport = installHomecryptSupport
   // luksRoot
   luksRoot = luksRoot
-  installEncryptedRootSupport = installEncryptedRootSupport
-  ensureCryptsetupInLive = ensureCryptsetupInLive
-  installLiveBootDecryptHook = installLiveBootDecryptHook
-  createMiniFilesystem = createMiniFilesystem
-  
+  createBootstrapFilesystem = createBootstrapFilesystem
+    
   finished = finished
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
