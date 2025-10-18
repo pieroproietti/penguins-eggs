@@ -1,11 +1,13 @@
 #!/bin/bash
 # luks-root-bootstrap-create.sh
 # Crea un filesystem.squashfs Debian completo per bootstrap
-
 set -e
 
 OUTPUT_SQUASHFS="$1"
 UNLOCK_SCRIPT="$2"
+
+# Usa /root invece di /var/tmp per evitare problemi con mount options
+WORK_DIR="/root/bootstrap-filesystem-$"
 
 if [ -z "$OUTPUT_SQUASHFS" ] || [ -z "$UNLOCK_SCRIPT" ]; then
     echo "Usage: $0 <output.squashfs> <unlock-script.sh>"
@@ -17,7 +19,6 @@ if [ ! -f "$UNLOCK_SCRIPT" ]; then
     exit 1
 fi
 
-WORK_DIR="/var/tmp/bootstrap-filesystem-$$"
 BUILD_SUCCESS=0  # Flag per tracciare il successo
 
 echo "=========================================="
@@ -46,7 +47,6 @@ cleanup() {
         fi
     fi
 }
-
 trap cleanup EXIT
 
 # Crea directory di lavoro
@@ -74,7 +74,6 @@ echo "bootstrap" > "$WORK_DIR/etc/hostname"
 cat > "$WORK_DIR/etc/hosts" <<EOF
 127.0.0.1   localhost
 127.0.1.1   bootstrap
-
 ::1         localhost ip6-localhost ip6-loopback
 ff02::1     ip6-allnodes
 ff02::2     ip6-allrouters
@@ -85,17 +84,31 @@ cat > "$WORK_DIR/etc/fstab" <<EOF
 # Bootstrap filesystem - no persistent mounts
 EOF
 
-# Password root per SSH debug
-echo "root:bootstrap" | chroot "$WORK_DIR" chpasswd
+# Password root
+echo "root:evolution" | chroot "$WORK_DIR" chpasswd
 
-echo "✓ Base system configured"
+# Autologin per root su console
+mkdir -p "$WORK_DIR/etc/systemd/system/getty@tty1.service.d"
+cat > "$WORK_DIR/etc/systemd/system/getty@tty1.service.d/autologin.conf" <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM
+EOF
+
+# Autologin anche su console seriale (se presente)
+mkdir -p "$WORK_DIR/etc/systemd/system/serial-getty@ttyS0.service.d"
+cat > "$WORK_DIR/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf" <<EOF
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --keep-baud 115200,38400,9600 %I \$TERM
+EOF
+
+echo "✓ Base system configured (root password: bootstrap, autologin enabled)"
 
 # 3. Configura networking
 echo ""
 echo "Step 3/8: Configuring networking..."
-
 mkdir -p "$WORK_DIR/etc/systemd/network"
-
 cat > "$WORK_DIR/etc/systemd/network/20-wired.network" <<EOF
 [Match]
 Name=en* eth*
@@ -111,9 +124,7 @@ echo "✓ Networking configured"
 # 4. Configura SSH
 echo ""
 echo "Step 4/8: Configuring SSH..."
-
 mkdir -p "$WORK_DIR/etc/ssh/sshd_config.d"
-
 cat > "$WORK_DIR/etc/ssh/sshd_config.d/bootstrap.conf" <<EOF
 # Bootstrap SSH config for debugging
 PermitRootLogin yes
@@ -123,13 +134,16 @@ EOF
 
 # MOTD informativo
 cat > "$WORK_DIR/etc/motd" <<EOF
-
 ╔════════════════════════════════════════╗
 ║   Bootstrap System - Debug Shell       ║
 ╚════════════════════════════════════════╝
 
 This is the bootstrap environment for unlocking
 the encrypted root filesystem.
+
+Root credentials:
+  Username: root
+  Password: bootstrap
 
 The unlock service should run automatically.
 If you see this prompt, something may have failed.
@@ -146,19 +160,15 @@ echo "✓ SSH configured"
 # 5. Copia script di unlock
 echo ""
 echo "Step 5/8: Installing unlock script..."
-
 mkdir -p "$WORK_DIR/usr/local/sbin"
 cp "$UNLOCK_SCRIPT" "$WORK_DIR/usr/local/sbin/unlock-encrypted-root"
 chmod 755 "$WORK_DIR/usr/local/sbin/unlock-encrypted-root"
-
 echo "✓ Unlock script installed"
 
 # 6. Crea servizio systemd
 echo ""
 echo "Step 6/8: Creating systemd service..."
-
 mkdir -p "$WORK_DIR/etc/systemd/system"
-
 cat > "$WORK_DIR/etc/systemd/system/encrypted-root-unlock.service" <<EOF
 [Unit]
 Description=Unlock Encrypted Root and Switch
@@ -210,7 +220,6 @@ echo "✓ Systemd service created and enabled"
 # 7. Cleanup per ridurre dimensioni
 echo ""
 echo "Step 7/8: Cleaning up to reduce size..."
-
 rm -rf "$WORK_DIR/var/cache/apt/archives/"*
 rm -rf "$WORK_DIR/var/lib/apt/lists/"*
 rm -rf "$WORK_DIR/tmp/"*
@@ -219,13 +228,11 @@ rm -rf "$WORK_DIR/usr/share/doc/"*
 rm -rf "$WORK_DIR/usr/share/man/"*
 rm -rf "$WORK_DIR/usr/share/info/"*
 rm -rf "$WORK_DIR/usr/share/locale/"*
-
 echo "✓ Cleanup completed"
 
 # 8. Crea squashfs
 echo ""
 echo "Step 8/8: Creating squashfs (this takes 2-3 minutes)..."
-
 if [ -f "$OUTPUT_SQUASHFS" ]; then
     rm -f "$OUTPUT_SQUASHFS"
 fi
@@ -274,8 +281,13 @@ echo ""
 echo "Features:"
 echo "  - Full Debian system with systemd"
 echo "  - SSH server (root:bootstrap)"
+echo "  - Console autologin as root"
 echo "  - Automatic encrypted root unlock"
 echo "  - All debugging tools included"
+echo ""
+echo "Login credentials:"
+echo "  Username: root"
+echo "  Password: bootstrap"
 echo ""
 
 # Marca come successo PRIMA del cleanup
