@@ -29,7 +29,6 @@ import Diversions from './../diversions.js'
 import Utils from './../utils.js'
 import Repo from './../yolk.js'
 import Ovary from './../ovary.js'
-import { dot } from 'node:test/reporters'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -55,32 +54,33 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
     }
 
     this.kernel = kernel
-
-    this.clone = clone
-
-    this.homecrypt = homecrypt
-
-    this.fullcrypt = fullcrypt
-
-    // Crittoografia
-    if (this.homecrypt) {
-        this.luksName = 'home.img'
-    } else if (this.fullcrypt) {
-        this.luksName = 'root.img'
-    }
-    this.luksUuid = ''
-    this.luksFile = `/tmp/${this.luksName}`
-    this.luksMappedName = this.luksName
-    this.luksMountpoint = `/tmp/mnt/${this.luksName}`
-    this.luksDevice = `/dev/mapper/${this.luksName}`
-    this.luksPassword = 'evolution' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
-
-
     this.nest = this.settings.config.snapshot_dir
     this.dotMnt = `${this.nest}.mnt`
     this.dotOverlay = this.settings.work_dir
     this.dotLivefs = this.settings.work_dir.merged
 
+    this.clone = clone
+    this.homecrypt = homecrypt
+    this.fullcrypt = fullcrypt
+
+    // Crittografia
+    if (this.homecrypt || this.fullcrypt) {
+        if (this.homecrypt) {
+            this.luksName = 'home.img'
+        } else if (this.fullcrypt) {
+            this.luksName = 'root.img'
+        }
+
+        this.luksUuid = ''
+        this.luksFile = `/tmp/${this.luksName}`
+        this.luksMappedName = this.luksName
+        this.luksMountpoint = `/tmp/mnt/${this.luksName}`
+        this.luksDevice = `/dev/mapper/${this.luksName}`
+        this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
+
+        Utils.warning("You choose an encrypted eggs")
+        await this.luksGetPassword()
+    }
 
     /**
      * define kernel
@@ -109,7 +109,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
      * define this.initrd
      */
     this.initrd = Utils.initrdImg(this.kernel)
-   
+
 
     /**
      * yolk
@@ -249,18 +249,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
                 await this.initrdDracut()
             }
 
-            if (fullcrypt) {
-                // create additional initramfs
-                const decriptImgPath = `${this.settings.iso_work}live/initrd-decrypt.img`
-                const rootImgPath = `${this.distroLliveMediumPath}/live/root.img`
-                const isoLabel = this.volid
-                await this.createDecryptInitramfs(
-                    decriptImgPath, 
-                    rootImgPath,
-                    isoLabel
-                )
-            }
-
 
             await this.bindLiveFs()
 
@@ -291,14 +279,15 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
 
             await this.editLiveFs(clone)
 
-            /**
-             * homecrypt: installa il supporto 
-             */
             if (this.homecrypt) {
+                /**
+                 * homecrypt: installa il supporto 
+                 */
                 const squashfsRoot = this.settings.work_dir.merged
                 const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
+
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
             await this.uBindLiveFs() // smonto tutto prima della fase di backup
@@ -326,19 +315,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.syslinux(this.theme)
         }
 
+        // add the bootstrapt filesystem.squashfs
         if (fullcrypt) {
-            // Modifica isolinux.cfg
-            const isolinuxCfgPath = path.join(this.settings.iso_work, `/isolinux/isolinux.cfg`)
-            const mainInitramfs = path.basename(Utils.initrdImg(this.kernel))
-            const additionalInitramfs = 'initrd-decrypt.img'
-            this.updateIsolinuxForMultipleInitramfs(isolinuxCfgPath, mainInitramfs, additionalInitramfs)
-
-            // Modifica (ISO)/boot/grub/grub.cfg
-            const grubCfgPath = `${this.settings.iso_work}boot/grub/grub.cfg`
-            this.updateGrubForMultipleInitramfs(grubCfgPath, mainInitramfs, additionalInitramfs)
+            let bootstrapSfs = path.join(this.settings.iso_work, '/live/filesystem.squashfs')
+            await this.createBootstrapFilesystem(bootstrapSfs)
         }
-
-
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
