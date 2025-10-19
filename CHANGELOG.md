@@ -19,6 +19,14 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.19
+The possibility of having encrypted ISOs has been introduced, in two versions:
+* `eggs produce --homecrypt` or `eggs love --homecrypt` produces an ISO in which all the contents of `/home/` and user accounts are stored in a LUKS volume within the ISO image `/live/home.img`. If the LUKS passphrase is entered, the volume is mounted and users and data are available on the live system; otherwise, it functions as a standard live system without any user data.
+* `eggs produce --fullcrypt` or `eggs love --fullcrupt` works in the same way, completely removing the `filesystem.squashfs`, which is placed in a LUKS volume of the ISO image called `/live/root.img`. This method ensures that ALL the contents of the system are encrypted. Unfortunately, at the moment, the `--fullcrypt` method is not usable, as 
+I have not yet managed to fix the live boot issues (See [acqua](https://github.com/pieroproietti/acqua)).
+
+Both homecrypt and rootcrypt have been tested exclusively on Debian Trixie.
+
 ## v25.10.9
 * variation: `eggs tools ppa` becomes `eggs tools repo` and has also been added for Manjaro. In the future, we will also include it for Fedora, EL9, and Opensuse;
 * Debian/Devuan/Ubuntu: [penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa) is now deprecated in favor of [penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo/deb), the command
