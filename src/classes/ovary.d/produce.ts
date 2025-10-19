@@ -154,16 +154,19 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         }
 
         /**
-         * homecrypt/clone/standard
+         * homecrypt/fullcrypt/clone/standard
          */
         if (this.homecrypt) {
-            Utils.warning("eggs will SAVE users' data ENCRYPTED")
+            Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
+
+        } else if (this.fullcrypt) {
+            Utils.warning("eggs will SAVE full system ENCRYPTED on the live (ISO)/live/root.img")
 
         } else if (this.clone) {
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
             this.settings.config.root_passwd = 'evolution'
-            Utils.warning("eggs will SAVE users and users' data UNCRYPTED on the live")
+            Utils.warning("eggs will SAVE users and users' data on CLEAR on the live (ISO)/live/filesystem.squashfs")
 
         } else {
             Utils.warning("eggs will REMOVE users and users' data from live")
@@ -318,7 +321,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         // add the bootstrapt filesystem.squashfs
         if (fullcrypt) {
             let bootstrapSfs = path.join(this.settings.iso_work, '/live/filesystem.squashfs')
-            await this.createBootstrapFilesystem(bootstrapSfs)
+            /**
+             * escludo la costruzione di filesystem.squashfs
+             */
+            // await this.createBootstrapFilesystem(bootstrapSfs)
         }
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
