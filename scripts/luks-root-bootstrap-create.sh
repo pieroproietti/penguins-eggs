@@ -6,8 +6,8 @@ set -e
 OUTPUT_SQUASHFS="$1"
 UNLOCK_SCRIPT="$2"
 
-# Usa /root invece di /var/tmp per evitare problemi con mount options
-WORK_DIR="/root/bootstrap-filesystem-$"
+# Usa /root per avere sicuramente spazio
+WORK_DIR="/root/bootstrap-filesystem-$$"
 
 if [ -z "$OUTPUT_SQUASHFS" ] || [ -z "$UNLOCK_SCRIPT" ]; then
     echo "Usage: $0 <output.squashfs> <unlock-script.sh>"
@@ -19,7 +19,8 @@ if [ ! -f "$UNLOCK_SCRIPT" ]; then
     exit 1
 fi
 
-BUILD_SUCCESS=0  # Flag per tracciare il successo
+BUILD_SUCCESS=0
+
 
 echo "=========================================="
 echo "  Creating Bootstrap Filesystem"
@@ -38,7 +39,6 @@ cleanup() {
         umount "$WORK_DIR/dev/pts" 2>/dev/null || true
         umount "$WORK_DIR/dev" 2>/dev/null || true
         
-        # Cancella SOLO se il build è stato completato con successo
         if [ $BUILD_SUCCESS -eq 1 ]; then
             rm -rf "$WORK_DIR"
             echo "Work directory cleaned"
@@ -52,88 +52,83 @@ trap cleanup EXIT
 # Crea directory di lavoro
 mkdir -p "$WORK_DIR"
 
-# 1. Debootstrap - crea sistema Debian minimale
-echo "Step 1/8: Running debootstrap (this takes 5-10 minutes)..."
+# 1. Debootstrap - CON kmod e bash-completion
+echo "Step 1/6: Running debootstrap (this takes 5-10 minutes)..."
 debootstrap \
     --variant=minbase \
-    --include=systemd,systemd-sysv,cryptsetup,openssh-server,nano,curl,less,iputils-ping,iproute2,ca-certificates \
+    --include=systemd,systemd-sysv,cryptsetup,kmod,bash-completion,nano,less,vim-tiny \
     trixie \
     "$WORK_DIR" \
     http://deb.debian.org/debian
 
 echo "✓ Debootstrap completed"
 
+# 1.5. Copia moduli kernel
+echo ""
+echo "Step 1.5/6: Copying kernel modules..."
+
+KERNEL_VERSION=$(uname -r)
+
+if [ -d "/lib/modules/$KERNEL_VERSION" ]; then
+    echo "Copying kernel modules for $KERNEL_VERSION..."
+    
+    # Assicurati che la directory esista
+    mkdir -p "$WORK_DIR/lib/modules"
+    
+    # Copia TUTTO il kernel
+    cp -a "/lib/modules/$KERNEL_VERSION" "$WORK_DIR/lib/modules/"
+    
+    # Verifica che sia stato copiato
+    if [ -d "$WORK_DIR/lib/modules/$KERNEL_VERSION" ]; then
+        echo "✓ Kernel modules copied for $KERNEL_VERSION"
+        echo "  Module directory size: $(du -sh "$WORK_DIR/lib/modules/$KERNEL_VERSION" | cut -f1)"
+    else
+        echo "ERROR: Failed to copy kernel modules!"
+        exit 1
+    fi
+else
+    echo "ERROR: Kernel modules not found at /lib/modules/$KERNEL_VERSION"
+    exit 1
+fi
+
 # 2. Configura sistema base
 echo ""
-echo "Step 2/8: Configuring base system..."
+echo "Step 2/6: Configuring base system..."
 
-# Hostname
 echo "bootstrap" > "$WORK_DIR/etc/hostname"
 
-# Hosts
 cat > "$WORK_DIR/etc/hosts" <<EOF
 127.0.0.1   localhost
 127.0.1.1   bootstrap
+
 ::1         localhost ip6-localhost ip6-loopback
 ff02::1     ip6-allnodes
 ff02::2     ip6-allrouters
 EOF
 
-# Fstab vuoto
 cat > "$WORK_DIR/etc/fstab" <<EOF
 # Bootstrap filesystem - no persistent mounts
 EOF
 
-# Password root
 echo "root:evolution" | chroot "$WORK_DIR" chpasswd
 
-# Autologin per root su console
-mkdir -p "$WORK_DIR/etc/systemd/system/getty@tty1.service.d"
-cat > "$WORK_DIR/etc/systemd/system/getty@tty1.service.d/autologin.conf" <<EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM
+# Abilita bash-completion per root
+cat >> "$WORK_DIR/root/.bashrc" <<'EOF'
+
+# Enable bash completion
+if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+# Useful aliases
+alias ll='ls -lah'
+alias l='ls -lh'
 EOF
 
-# Autologin anche su console seriale (se presente)
-mkdir -p "$WORK_DIR/etc/systemd/system/serial-getty@ttyS0.service.d"
-cat > "$WORK_DIR/etc/systemd/system/serial-getty@ttyS0.service.d/autologin.conf" <<EOF
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty --autologin root --keep-baud 115200,38400,9600 %I \$TERM
-EOF
-
-echo "✓ Base system configured (root password: bootstrap, autologin enabled)"
-
-# 3. Configura networking
-echo ""
-echo "Step 3/8: Configuring networking..."
-mkdir -p "$WORK_DIR/etc/systemd/network"
-cat > "$WORK_DIR/etc/systemd/network/20-wired.network" <<EOF
-[Match]
-Name=en* eth*
-
-[Network]
-DHCP=yes
-DNS=8.8.8.8
-DNS=8.8.4.4
-EOF
-
-echo "✓ Networking configured"
-
-# 4. Configura SSH
-echo ""
-echo "Step 4/8: Configuring SSH..."
-mkdir -p "$WORK_DIR/etc/ssh/sshd_config.d"
-cat > "$WORK_DIR/etc/ssh/sshd_config.d/bootstrap.conf" <<EOF
-# Bootstrap SSH config for debugging
-PermitRootLogin yes
-PasswordAuthentication yes
-PrintMotd no
-EOF
-
-# MOTD informativo
 cat > "$WORK_DIR/etc/motd" <<EOF
+
 ╔════════════════════════════════════════╗
 ║   Bootstrap System - Debug Shell       ║
 ╚════════════════════════════════════════╝
@@ -143,83 +138,39 @@ the encrypted root filesystem.
 
 Root credentials:
   Username: root
-  Password: bootstrap
+  Password: evolution
 
-The unlock service should run automatically.
-If you see this prompt, something may have failed.
-
-Useful commands:
-  - systemctl status encrypted-root-unlock.service
-  - journalctl -u encrypted-root-unlock.service
-  - /usr/local/sbin/unlock-encrypted-root (manual unlock)
+Manual unlock command:
+  unlock-encrypted-root
 
 EOF
 
-echo "✓ SSH configured"
+echo "✓ Base system configured (root password: evolution)"
 
-# 5. Copia script di unlock
+# 3. Copia script di unlock
 echo ""
-echo "Step 5/8: Installing unlock script..."
-mkdir -p "$WORK_DIR/usr/local/sbin"
-cp "$UNLOCK_SCRIPT" "$WORK_DIR/usr/local/sbin/unlock-encrypted-root"
-chmod 755 "$WORK_DIR/usr/local/sbin/unlock-encrypted-root"
-echo "✓ Unlock script installed"
+echo "Step 3/6: Installing unlock script..."
+mkdir -p "$WORK_DIR/usr/local/bin"
+cp "$UNLOCK_SCRIPT" "$WORK_DIR/usr/local/bin/unlock-encrypted-root"
+chmod 755 "$WORK_DIR/usr/local/bin/unlock-encrypted-root"
+echo "✓ Unlock script installed at /usr/local/bin/unlock-encrypted-root"
 
-# 6. Crea servizio systemd
+# 4. Fix console getty per stabilità
 echo ""
-echo "Step 6/8: Creating systemd service..."
-mkdir -p "$WORK_DIR/etc/systemd/system"
-cat > "$WORK_DIR/etc/systemd/system/encrypted-root-unlock.service" <<EOF
-[Unit]
-Description=Unlock Encrypted Root and Switch
-DefaultDependencies=no
-After=systemd-remount-fs.service
-Before=basic.target
+echo "Step 4/6: Configuring stable console..."
 
+mkdir -p "$WORK_DIR/etc/systemd/system/getty@tty1.service.d"
+cat > "$WORK_DIR/etc/systemd/system/getty@tty1.service.d/noclear.conf" <<EOF
 [Service]
-Type=oneshot
-ExecStart=/usr/local/sbin/unlock-encrypted-root
-StandardInput=tty
-StandardOutput=journal+console
-StandardError=journal+console
-TTYPath=/dev/console
-TTYReset=yes
-TTYVHangup=yes
-TTYVTDisallocate=yes
-
-[Install]
-WantedBy=sysinit.target
+# Mantieni la console pulita e stabile
+TTYVTDisallocate=no
 EOF
 
-# Abilita servizi
-echo "Enabling services..."
+echo "✓ Console configuration applied"
 
-# Mount per chroot
-mount --bind /proc "$WORK_DIR/proc"
-mount --bind /sys "$WORK_DIR/sys"
-mount --bind /dev "$WORK_DIR/dev"
-mount --bind /dev/pts "$WORK_DIR/dev/pts"
-
-# Abilita servizi (con gestione errori)
-chroot "$WORK_DIR" systemctl enable systemd-networkd || echo "Warning: Could not enable systemd-networkd"
-chroot "$WORK_DIR" systemctl enable systemd-resolved || echo "Warning: Could not enable systemd-resolved (not critical)"
-chroot "$WORK_DIR" systemctl enable ssh || chroot "$WORK_DIR" systemctl enable sshd || echo "Warning: Could not enable SSH"
-chroot "$WORK_DIR" systemctl enable encrypted-root-unlock.service || {
-    echo "ERROR: Could not enable encrypted-root-unlock.service"
-    exit 1
-}
-
-# Unmount
-umount "$WORK_DIR/dev/pts"
-umount "$WORK_DIR/dev"
-umount "$WORK_DIR/sys"
-umount "$WORK_DIR/proc"
-
-echo "✓ Systemd service created and enabled"
-
-# 7. Cleanup per ridurre dimensioni
+# 5. Cleanup per ridurre dimensioni (ma NON i moduli kernel!)
 echo ""
-echo "Step 7/8: Cleaning up to reduce size..."
+echo "Step 5/6: Cleaning up to reduce size..."
 rm -rf "$WORK_DIR/var/cache/apt/archives/"*
 rm -rf "$WORK_DIR/var/lib/apt/lists/"*
 rm -rf "$WORK_DIR/tmp/"*
@@ -227,48 +178,37 @@ rm -rf "$WORK_DIR/var/tmp/"*
 rm -rf "$WORK_DIR/usr/share/doc/"*
 rm -rf "$WORK_DIR/usr/share/man/"*
 rm -rf "$WORK_DIR/usr/share/info/"*
-rm -rf "$WORK_DIR/usr/share/locale/"*
+
+# NON cancellare tutte le locale, lascia en_US per bash-completion
+rm -rf "$WORK_DIR/usr/share/locale/"[!e]*
+rm -rf "$WORK_DIR/usr/share/locale/en_"[!U]*
+
 echo "✓ Cleanup completed"
 
-# 8. Crea squashfs
+# 6. Crea squashfs
 echo ""
-echo "Step 8/8: Creating squashfs (this takes 2-3 minutes)..."
-if [ -f "$OUTPUT_SQUASHFS" ]; then
-    rm -f "$OUTPUT_SQUASHFS"
-fi
+echo "Step 6/6: Creating squashfs (this takes 2-3 minutes)..."
 
-# CRITICAL: Verifica che WORK_DIR esista prima di mksquashfs!
 if [ ! -d "$WORK_DIR" ]; then
     echo "ERROR: Work directory disappeared!"
     exit 1
 fi
 
-echo "Source directory: $WORK_DIR"
-echo "Output file: $OUTPUT_SQUASHFS"
-ls -lh "$WORK_DIR" | head -5
+if [ -f "$OUTPUT_SQUASHFS" ]; then
+    rm -f "$OUTPUT_SQUASHFS"
+fi
 
 mksquashfs "$WORK_DIR" "$OUTPUT_SQUASHFS" \
     -comp zstd \
     -b 1M \
-    -noappend \
-    -no-progress
+    -noappend
 
-# Verifica che il file sia stato creato
 if [ ! -f "$OUTPUT_SQUASHFS" ]; then
-    echo ""
     echo "ERROR: Failed to create squashfs file"
     exit 1
 fi
 
 SIZE_MB=$(du -m "$OUTPUT_SQUASHFS" | cut -f1)
-
-# Verifica dimensione minima
-if [ $SIZE_MB -lt 30 ]; then
-    echo ""
-    echo "ERROR: Squashfs file is too small ($SIZE_MB MB)"
-    echo "Something went wrong during creation"
-    exit 1
-fi
 
 echo ""
 echo "=========================================="
@@ -279,16 +219,17 @@ echo "  File: $OUTPUT_SQUASHFS"
 echo "  Size: ${SIZE_MB} MB"
 echo ""
 echo "Features:"
-echo "  - Full Debian system with systemd"
-echo "  - SSH server (root:bootstrap)"
-echo "  - Console autologin as root"
-echo "  - Automatic encrypted root unlock"
-echo "  - All debugging tools included"
+echo "  - Minimal Debian system with systemd"
+echo "  - Kernel modules included (dm_mod, dm_crypt)"
+echo "  - kmod (modprobe, lsmod, etc.)"
+echo "  - bash-completion enabled"
+echo "  - Stable console"
+echo "  - Manual unlock at /usr/local/bin/unlock-encrypted-root"
 echo ""
-echo "Login credentials:"
-echo "  Username: root"
-echo "  Password: bootstrap"
+echo "Usage:"
+echo "  1. Boot the system"
+echo "  2. Login as root (password: evolution)"
+echo "  3. Run: unlock-encrypted-root"
 echo ""
 
-# Marca come successo PRIMA del cleanup
 BUILD_SUCCESS=1
