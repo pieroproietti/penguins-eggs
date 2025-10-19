@@ -28,7 +28,10 @@ export async function initrdAlpine(this: Ovary) {
     let initrdImg = Utils.initrdImg()
     initrdImg = initrdImg.slice(Math.max(0, initrdImg.lastIndexOf('/') + 1))
     const pathConf = path.resolve(__dirname, `../../../mkinitfs/live.conf`)
-    await exec(`mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel}`, this.echo)
+    const prefix = this.settings.config.snapshot_prefix
+    const log = `> ${this.settings.iso_work}${prefix}mkinitfs.log.txt 2>&1`
+    const cmd= `mkinitfs -c ${pathConf} -o ${this.settings.iso_work}live/${initrdImg} ${this.kernel} ${log}`
+    await exec(cmd, this.echo)
 }
 
 
@@ -63,7 +66,9 @@ export async function initrdArch(this: Ovary) {
     }
     await exec(`cp ${hookSrc} ${hookSaved}`)
     await exec(edit, this.echo)
-    let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel}`
+    const prefix = this.settings.config.snapshot_prefix
+    const log = `> ${this.settings.iso_work}${prefix}mkinitcpio.log.txt 2>&1`
+    let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel} ${log}`
     await exec(cmd, this.echo)
     await exec(`rm -f ${hookDest}`)
     if (restore) {
@@ -82,12 +87,11 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}mkinitramfs.log.txt 2>&1`
     const cmd = `mkinitramfs -o ${dest} ${this.kernel} ${log}`
-    // console.log(cmd)
     await exec(cmd, this.echo)
 }
 
 /*
-* initrdDracut) Almalinux/Devbian/Fedora/Openmamba/Opensuse/Rocky/
+* initrdDracut) Almalinux/Fedora/Openmamba/Opensuse/Rocky/
 */
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using dracut on (ISO)/live`)
