@@ -26,20 +26,19 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
    * @returns cmd 4 mkiso
    */
 export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false, fullcrypt = false): Promise<string> {
-    if (this.verbose) {
-        console.log('Ovary: xorrisoCommand')
-    }
-
     const prefix = this.settings.config.snapshot_prefix
 
-    let typology = ''
+
     // typology is applied only with standard egg-of
+    let typology = ''
+
     if (prefix.slice(0, 7) === 'egg-of_') {
         if (clone) {
             typology = '_clone'
         } else if (homecrypt) {
             typology = '_clone-home-crypted'
         } else if (fullcrypt) {
+            // filesystem.squashfs.real
             typology = '_clone-full-crypted'
         }
 
@@ -48,10 +47,13 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
         }
     }
 
+    // postfix (data)
     const postfix = Utils.getPostfix()
     this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
-    //
+
+    // node della ISO
     const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
+
 
     let command = ''
     // const appid = `-appid "${this.settings.distro.distroId}" `
