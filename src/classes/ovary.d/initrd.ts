@@ -83,10 +83,27 @@ export async function initrdArch(this: Ovary) {
 export async function initrdDebian(this: Ovary, verbose = false) {
     Utils.warning(`creating ${this.initrd} using mkinitramfs on (ISO)/live`)
 
+const crypttabPath = "/etc/crypttab"; // More descriptive: indicates it's a file path
+
+    /**
+     * Written to /etc during chroot, but
+     * /etc is just a copied directory, 
+     * not the real /etc of the system.
+     * 
+     * It's ncecessary to live-boot to include
+     * cryptosetup
+     */
+
+    let crypttabContent = ""
+    crypttabContent += "# <target name> <source device> <key file> <options>\n"; 
+    crypttabContent += "cryptroot UUID=none none luks,discard\n"
+    
+    fs.writeFileSync(crypttabPath, crypttabContent, 'utf-8');
+
     const prefix = this.settings.config.snapshot_prefix
     const dest = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}mkinitramfs.log.txt 2>&1`
-    const cmd = `mkinitramfs -o ${dest} ${this.kernel} ${log}`
+    const cmd = `mkinitramfs -v -o ${dest} ${this.kernel} ${log}`
     await exec(cmd, this.echo)
 }
 
