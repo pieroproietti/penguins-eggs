@@ -1,128 +1,81 @@
 #!/bin/sh
 # Questo è lo SCRIPT RUNTIME (in live-premount)
+# v21 - No Cleanup, Direct Mount
 
 set -e
 
-# --- INIZIO BLOCCO LOGGING ---
+# --- Logging Setup ---
 LOGFILE="/tmp/eggs-premount.log"
 FIFO="/tmp/eggs-log.fifo"
-
-# Pulisci vecchi file di log/fifo se esistono
 rm -f "$LOGFILE" "$FIFO"
-
-# Crea la named pipe
-if ! mkfifo "$FIFO"; then
-    echo "EGGS: FATALE: Impossibile creare FIFO $FIFO"
-    exit 1 # Non si può loggare
-fi
-
-# Avvia tee in background: legge dalla FIFO e appende sia al log che alla console
+if ! mkfifo "$FIFO"; then echo "EGGS: FATALE: Impossibile creare FIFO $FIFO"; exit 1; fi
 tee -a "$LOGFILE" < "$FIFO" &
 TEE_PID=$!
-
-# Reindirizza tutto lo stdout e stderr futuri dello script alla FIFO
 exec > "$FIFO" 2>&1
-
-# Imposta una trap per pulire la FIFO e terminare tee all'uscita dello script
 trap 'echo "EGGS: Chiusura log e pulizia FIFO..."; rm -f "$FIFO"; kill "$TEE_PID" 2>/dev/null; exit' EXIT INT TERM
-# --- FINE BLOCCO LOGGING ---
-
+# --- Logging End ---
 
 echo "EGGS: LOGGING avviato su $LOGFILE"
-echo "EGGS: script (v20) in live-premount partito."
-echo "EGGS: Assumo che udev e /dev siano pronti..."
-
-# PAUSA AGGIUNTIVA
-echo "EGGS: Attesa extra (5 secondi)..."
+echo "EGGS: script (v21 - No Cleanup, Direct Mount) in live-premount partito."
 sleep 5
 
 # 1. Trova live media
 echo "EGGS: Ricerca live media..."
-mkdir -p /mnt/live-media || echo "EGGS: ERRORE mkdir /mnt/live-media"
-mkdir -p /mnt/ext4 || echo "EGGS: ERRORE mkdir /mnt/ext4"
+mkdir -p /mnt/live-media /mnt/ext4
 LIVE_DEV=""
-MAX_WAIT_DEV=20
-COUNT_DEV=0
+# ... [Codice ricerca live media come prima, magari meno verboso] ...
+MAX_WAIT_DEV=20; COUNT_DEV=0
 while [ -z "$LIVE_DEV" ] && [ $COUNT_DEV -lt $MAX_WAIT_DEV ]; do
-    #echo "---------- INIZIO CICLO RICERCA ($COUNT_DEV/$MAX_WAIT_DEV) ----------"
-    #echo "EGGS: Contenuto attuale di /dev:"
-    ls /dev # L'output ora andrà al log E alla console
-    
+    ls /dev > /dev/null
     for dev in /dev/sr* /dev/sd* /dev/vd* /dev/nvme*n*; do
         if [ ! -b "$dev" ]; then continue; fi
-        # echo "EGGS: Provo $dev..."
         if mount -o ro "$dev" /mnt/live-media 2>/dev/null; then
-            echo "EGGS: Mount $dev OK."
             if [ -f /mnt/live-media/live/root.img ]; then
                 echo "EGGS: Found Live media on $dev"
-                LIVE_DEV=$dev
-                break 2
+                LIVE_DEV=$dev; break 2
             else
-                echo "EGGS: root.img non trovato su $dev."
                 umount /mnt/live-media 2>/dev/null
             fi
-        else
-             echo "EGGS: Mount $dev fallito."
         fi
     done
-    
-    # echo "---------- FINE CICLO RICERCA ($COUNT_DEV/$MAX_WAIT_DEV) ----------"
-    sleep 1
-    COUNT_DEV=$((COUNT_DEV+1))
+    sleep 1; COUNT_DEV=$((COUNT_DEV+1))
 done
-
-if [ -z "$LIVE_DEV" ]; then
-    echo "EGGS: ERRORE FINALE: Impossibile trovare live media dopo $MAX_WAIT_DEV sec."
-    ls /dev
-    exit 1 # NON usare exec /bin/sh, lascia che live-boot gestisca il fallimento
-fi
+if [ -z "$LIVE_DEV" ]; then echo "EGGS: ERRORE FINALE: Impossibile trovare live media dopo $MAX_WAIT_DEV sec."; ls /dev; exit 1; fi
 
 ROOT_IMG_RO="/mnt/live-media/live/root.img"
-ROOT_IMG="/tmp/root.img.rw"
 
 # 2. Sblocca LUKS
 echo "EGGS: In attesa della passphrase per sbloccare $ROOT_IMG_RO..."
-if ! cryptsetup open "$ROOT_IMG_RO" live-root; then
-    echo "EGGS: ERRORE: Sblocco LUKS fallito."
-    exit 1
-fi
+if ! cryptsetup open "$ROOT_IMG_RO" live-root; then echo "EGGS: ERRORE: Sblocco LUKS fallito."; exit 1; fi
 echo "EGGS: LUKS sbloccato. Attesa per /dev/mapper/live-root..."
 
-# Loop di attesa per il device mapper
-MAX_WAIT_MAP=10
-COUNT_MAP=0
+MAX_WAIT_MAP=10; COUNT_MAP=0
 while [ ! -b /dev/mapper/live-root ] && [ $COUNT_MAP -lt $MAX_WAIT_MAP ]; do
-    echo "EGGS: Aspetto /dev/mapper/live-root... ($COUNT_MAP/$MAX_WAIT_MAP)"
-    sleep 1
-    COUNT_MAP=$((COUNT_MAP+1))
+    echo "EGGS: Aspetto /dev/mapper/live-root... ($COUNT_MAP/$MAX_WAIT_MAP)"; sleep 1; COUNT_MAP=$((COUNT_MAP+1))
 done
-
-if [ ! -b /dev/mapper/live-root ]; then
-    echo "EGGS: ERRORE: Device /dev/mapper/live-root non apparso dopo $MAX_WAIT_MAP sec."
-    ls /dev/mapper
-    cryptsetup close live-root || true
-    rm "$ROOT_IMG" || true
-    exit 1
-fi
+if [ ! -b /dev/mapper/live-root ]; then echo "EGGS: ERRORE: Device /dev/mapper/live-root non apparso dopo $MAX_WAIT_MAP sec."; ls /dev/mapper; cryptsetup close live-root || true; exit 1; fi
 echo "EGGS: Device mapper pronto."
 
-# 3. Monta l'ext4 (rw)
-mount -t ext4 -o rw /dev/mapper/live-root /mnt/ext4
+# 3. Monta l'ext4 (ro)
+mount -t ext4 -o ro /dev/mapper/live-root /mnt/ext4
+echo "EGGS: /dev/mapper/live-root montato su /mnt/ext4 (ro)."
 
-# 4. Monta lo squashfs sulla destinazione finale
-echo "EGGS: Montaggio filesystem.squashfs su ${rootmnt}..."
-mount -o loop /mnt/ext4/filesystem.squashfs "${rootmnt}"
+# 4. Monta lo squashfs sulla destinazione finale (ro)
+echo "EGGS: Controllo variabile rootmnt: '${rootmnt}'"
+if [ -z "${rootmnt}" ]; then echo "EGGS: ERRORE: La variabile \$rootmnt non è definita!"; exit 1; fi
+if [ ! -d "${rootmnt}" ]; then echo "EGGS: ERRORE: La directory '${rootmnt}' non esiste!"; ls /; exit 1; fi
+echo "EGGS: Montaggio filesystem.squashfs su ${rootmnt} (ro)..."
+if ! mount -t squashfs -o ro,loop /mnt/ext4/filesystem.squashfs "${rootmnt}"; then
+     echo "EGGS: ERRORE: mount -o ro,loop /mnt/ext4/filesystem.squashfs ${rootmnt} FALLITO!"; exit 1
+fi
+echo "EGGS: SquashFS montato con successo (ro)."
+echo "EGGS: Verifica mount finale:"
+mount | grep "${rootmnt}" # Logga la riga di mount per conferma
 
-# 5. Pulisci
-umount /mnt/ext4
-cryptsetup close live-root
-rm "$ROOT_IMG" # Come nota, questa variabile non sembra usata, il log mostrerà l'errore "file not found"
-umount /mnt/live-media
-
-# 7. Passa il testimone
-export ROOT_MOUNTED=true
+# 5. Passa il testimone a live-boot
+echo "EGGS: Esporto ROOT_MOUNTED=true..."
+export ROOT_MOUNTED=true # Questa variabile potrebbe essere cruciale per live-boot
 echo "EGGS: Fatto. rootfs pronto, avvio del sistema."
 echo "EGGS: Log completo salvato in $LOGFILE (in initramfs)."
 
-# L'uscita pulita attiverà la 'trap' per chiudere il logging
 exit 0
