@@ -101,13 +101,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
     }
 
     /**
-     * define this.vmlinuz
+     * define vmlinuz and initrd fullpath
      */
     this.vmlinuz = Utils.vmlinuz()
-
-    /**
-     * define this.initrd
-     */
     this.initrd = Utils.initrdImg(this.kernel)
 
 
@@ -231,33 +227,41 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
             await this.incubator.config(release)
 
+
+            // Qua inseriamo uno sleep di un minuto
+            await Utils.sleep(5000) // 5 secondo
+
+            await this.bindLiveFs()
+            await this.bindVfs()
+
             /**
-             * kernelCopu
+             * kernelCopy
              */
             await this.kernelCopy()
 
             /**
              * initrd creation
              */
-            if (this.familyId === 'alpine') {
-                await this.initrdAlpine()
-            } else if (this.familyId === 'archlinux') {
-                await this.initrdArch()
-            } else if (this.familyId === 'debian') {
-                await this.initrdDebian()
-            } else if (this.familyId === 'fedora' ||
-                this.familyId === 'openmamba' ||
-                this.familyId === 'opensuse' ||
-                this.familyId === 'voidlinux') {
-                await this.initrdDracut()
+            if (fullcrypt) {
+                await this.initrdDebianLuks()
+            } else {
+                if (this.familyId === 'alpine') {
+                    await this.initrdAlpine()
+                } else if (this.familyId === 'archlinux') {
+                    await this.initrdArch()
+                } else if (this.familyId === 'debian') {
+                    await this.initrdDebian()
+                } else if (this.familyId === 'fedora' ||
+                    this.familyId === 'openmamba' ||
+                    this.familyId === 'opensuse' ||
+                    this.familyId === 'voidlinux') {
+                    await this.initrdDracut()
+                }
             }
 
-
-            await this.bindLiveFs()
-
-            // We run them just to have scripts
-            await this.bindVfs()
+            // We dont' need more
             await this.ubindVfs()
+
 
             if (!this.clone) {
                 /**
@@ -291,11 +295,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
 
-
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
-            await this.uBindLiveFs() // smonto tutto prima della fase di backup
+            await this.uBindLiveFs() // we don't need more
         }
 
+
+        /**
+         * we now work just on ISO and filesystem.squashfs
+         */
         if (homecrypt) {
             await this.luksHome()
         } else if (fullcrypt) {
@@ -318,14 +325,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.syslinux(this.theme)
         }
 
-        // add the bootstrapt filesystem.squashfs
-        if (fullcrypt) {
-            let bootstrapSfs = path.join(this.settings.iso_work, '/live/filesystem.squashfs')
-            /**
-             * escludo la costruzione di filesystem.squashfs
-             */
-            // await this.createBootstrapFilesystem(bootstrapSfs)
-        }
 
         const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
         this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
