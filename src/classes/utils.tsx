@@ -107,7 +107,7 @@ export default class Utils {
       if (!result.endsWith('-')) {
          result += '-'
       }
-         
+
       return result
    }
 
@@ -1064,5 +1064,13 @@ export default class Utils {
       osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
 
       return osInfo
+   }
+
+   /* Funzione helper che crea una pausa non bloccante.
+   * @param ms Millisecondi da attendere
+   */
+   static sleep(ms: number = 60000): Promise<void> {
+      console.log('wait...')
+      return new Promise(resolve => setTimeout(resolve, ms));
    }
 }
