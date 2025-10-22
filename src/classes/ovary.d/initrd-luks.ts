@@ -82,7 +82,10 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
         // --- 2.3 Add hook ---
         await addHook('add-losetup-hook.sh', chrootPath)
         await addHook('add-switchroot-hook.sh', chrootPath)
-
+        await addHook('add-udevadm-hook.sh', chrootPath); 
+        await addHook('add-blkid-hook.sh', chrootPath);
+        await addHook('add-rsync-hook.sh', chrootPath);
+        
         // --- 2.4 Add modules ---
         addModules('overlay', chrootPath)
 
