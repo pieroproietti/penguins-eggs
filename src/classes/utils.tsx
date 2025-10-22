@@ -200,12 +200,16 @@ export default class Utils {
       console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg) + '.')
    }
 
+   static info(msg = '') {
+      console.log(pjson.shortName + ' >>> ' + chalk.white(msg) + '.')
+   }
+
    static success(msg = '') {
       console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg) + '.')
    }
 
    static error(msg = '') {
-      console.error(pjson.shortName + ' >>> ' + chalk.bgMagentaBright(chalk.whiteBright(msg)) + '.')
+      console.error(pjson.shortName + ' >>> ' + chalk.bgRed(chalk.whiteBright(msg)) + '.')
    }
 
 
@@ -1070,7 +1074,7 @@ export default class Utils {
    * @param ms Millisecondi da attendere
    */
    static sleep(ms: number = 60000): Promise<void> {
-      console.log('wait...')
+      // console.log('wait...')
       return new Promise(resolve => setTimeout(resolve, ms));
    }
 }
