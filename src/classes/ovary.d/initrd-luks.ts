@@ -46,22 +46,22 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
         Utils.warning("Preparing chroot environment...");
         Utils.info("Assuming 'live-boot', 'live-boot-initramfs-tools', 'cryptsetup' are installed in chroot.");
 
-        // --- 2.1 Copy zz-eggs-luks-unlock.sh script ---
+        // --- 2.1 Copy boot-encrypted-root.sh
         {
-            const unlockScriptName = 'zz-eggs-luks-unlock.sh'; // Corrected to lowercase zz-
-            const srcUnlockScriptPath = path.join(__dirname, '../../../scripts', unlockScriptName);
-            const chrootUnlockScriptDir = '/etc/initramfs-tools/scripts/live-premount';
-            const chrootUnlockScriptPath = path.join(chrootUnlockScriptDir, unlockScriptName);
-            const hostDestUnlockScriptDir = path.join(chrootPath, chrootUnlockScriptDir);
-            const hostDestUnlockScriptPath = path.join(chrootPath, chrootUnlockScriptPath);
+            const bootEncryptedRootName = 'boot-encrypted-root.sh'; // Corrected to lowercase zz-
+            const srcbootEncryptedRootPath = path.join(__dirname, '../../../scripts', bootEncryptedRootName);
+            const chrootbootEncryptedRootDir = '/etc/initramfs-tools/scripts/live-premount';
+            const chrootbootEncryptedRootPath = path.join(chrootbootEncryptedRootDir, bootEncryptedRootName);
+            const hostDestbootEncryptedRootDir = path.join(chrootPath, chrootbootEncryptedRootDir);
+            const hostDestbootEncryptedRootPath = path.join(chrootPath, chrootbootEncryptedRootPath);
 
-            if (!fs.existsSync(srcUnlockScriptPath)) {
-                throw new Error(`Unlock script source not found: ${srcUnlockScriptPath}`);
+            if (!fs.existsSync(srcbootEncryptedRootPath)) {
+                throw new Error(`Unlock script source not found: ${srcbootEncryptedRootPath}`);
             }
-            await exec(`mkdir -p "${hostDestUnlockScriptDir}"`);
-            await exec(`cp "${srcUnlockScriptPath}" "${hostDestUnlockScriptPath}"`);
-            await exec(`chmod +x "${hostDestUnlockScriptPath}"`);
-            Utils.success(`Copied unlock script to ${chrootUnlockScriptPath}`);
+            await exec(`mkdir -p "${hostDestbootEncryptedRootDir}"`);
+            await exec(`cp "${srcbootEncryptedRootPath}" "${hostDestbootEncryptedRootPath}"`);
+            await exec(`chmod +x "${hostDestbootEncryptedRootPath}"`);
+            Utils.success(`Copied unlock script to ${chrootbootEncryptedRootPath}`);
         }
 
         // --- 2.2 Create dummy /etc/crypttab if needed ---
@@ -79,23 +79,12 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
             }
         }
 
-        // --- 2.3 Add losetup hook ---
-        {
-            const hookScriptName = 'add-losetup-hook.sh';
-            const srcHookPath = path.join(__dirname, '../../../scripts', hookScriptName);
-            const chrootHooksDirPath = '/etc/initramfs-tools/hooks';
-            const hostHooksDirPath = path.join(chrootPath, chrootHooksDirPath);
-            const hostHookPath = path.join(hostHooksDirPath, hookScriptName);
+        // --- 2.3 Add hook ---
+        await addHook('add-losetup-hook.sh', chrootPath)
+        await addHook('add-switchroot-hook.sh', chrootPath)
 
-            Utils.warning(`Adding required losetup hook script to ${hostHooksDirPath}`);
-            if (!fs.existsSync(srcHookPath)) {
-                throw new Error(`Losetup hook script source not found: ${srcHookPath}`);
-            }
-            await exec(`mkdir -p "${hostHooksDirPath}"`);
-            await exec(`cp "${srcHookPath}" "${hostHookPath}"`);
-            await exec(`chmod +x "${hostHookPath}"`);
-            Utils.success(`Copied and set executable hook: ${hostHookPath}`);
-        }
+        // --- 2.4 Add modules ---
+        addModules('overlay', chrootPath)
 
         // --- 3. Execute mkinitramfs INSIDE Chroot ---
         {
@@ -139,3 +128,65 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
 
     Utils.warning(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
 }
+
+
+/**
+ * 
+ * @param module 
+ * @param chrootPath 
+ */
+async function addHook(hookScriptName: string, chrootPath: string) {
+    const srcHookPath = path.join(__dirname, '../../../scripts', hookScriptName);
+    const chrootHooksDirPath = '/etc/initramfs-tools/hooks';
+    const hostHooksDirPath = path.join(chrootPath, chrootHooksDirPath);
+    const hostHookPath = path.join(hostHooksDirPath, hookScriptName);
+
+    Utils.warning(`Adding required ${hookScriptName} hook script to ${hostHooksDirPath}`);
+    if (!fs.existsSync(srcHookPath)) {
+        // Assicurati che il file add-switchroot-hook.sh esista in ../../../scripts
+        throw new Error(`switch_root hook script source not found: ${srcHookPath}`);
+    }
+    // Directory dovrebbe già esistere dal passo precedente, ma mkdir -p è sicuro
+    await exec(`mkdir -p "${hostHooksDirPath}"`);
+    await exec(`cp "${srcHookPath}" "${hostHookPath}"`);
+    await exec(`chmod +x "${hostHookPath}"`);
+    Utils.success(`Copied and set executable hook: ${hostHookPath}`);
+}
+
+/**
+ * 
+ * @param module 
+ * @param chrootPath 
+ */
+function addModules(module: string, chrootPath: string) {
+
+    const chrootModulesFilePath = '/etc/initramfs-tools/modules'; // Relative inside chroot
+    const hostModulesFilePath = path.join(chrootPath, chrootModulesFilePath); // Absolute on host fs
+    let modulesContent = '';
+    let needsUpdate = false;
+
+    if (fs.existsSync(hostModulesFilePath)) {
+        modulesContent = fs.readFileSync(hostModulesFilePath, 'utf-8');
+    } else {
+        Utils.warning(`Creating ${hostModulesFilePath} as it does not exist.`);
+        // Ensure newline at the end if creating from scratch
+        modulesContent = '\n';
+    }
+
+    if (!modulesContent.includes(`\n${module}\n`)) { // Check precisely for the module name on its own line
+        Utils.warning(`Adding '${module}' module to ${hostModulesFilePath}`);
+        // Add to the end, ensuring newline before if needed
+        if (!modulesContent.endsWith('\n')) {
+            modulesContent += '\n';
+        }
+        modulesContent += `${module}\n`;
+        needsUpdate = true;
+    } else {
+        Utils.info(`'${module}' module already listed.`);
+    }
+
+    if (needsUpdate) {
+        fs.writeFileSync(hostModulesFilePath, modulesContent, 'utf-8');
+        Utils.success(`Updated ${hostModulesFilePath} with 'overlay'.`);
+    }
+}    

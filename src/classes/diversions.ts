@@ -85,7 +85,7 @@ export default class Diversions {
    * @param volid 
    * @returns 
    */
-  static kernelParameters(familyId: string, volid: string, luksUuid = ''): string {
+  static kernelParameters(familyId: string, volid: string, luksUuid = '', fullCrypt=false): string {
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
 
     let kp = ""
@@ -101,31 +101,9 @@ export default class Diversions {
         kp += ` archisobasedir=arch archisolabel=${volid}`
       }
     } else if (familyId === 'debian') {
-      /**
-       * da rivedere dracut/initramfs
-       */
-      if (Pacman.packageIsInstalled('dracut')) {
-        if (luksUuid !== '') {
-              
-          let append =`boot=live \
-                  root=live:LABEL=${volid} \
-                  rd.luks.loop=/live/luks.img \
-                  eggs.luks.uuid=${luksUuid} \
-                  rd.live.squashimg=filesystem.squashfs \
-                  rd.live.overlay.overlayfs=1 \
-                  nomodeset \
-                  rd.break=pre-mount \
-                  rd.shell`
-                  
-
-          kp += append .replaceAll(/\s\s+/g, ' ')
-
-        } else {
-          // dracut: rd.live.squashimg
-          kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs`
-        }
-      } else {
-          kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
+      if (fullCrypt){
+        kp += ` live-media=/run/live/medium`
       }
     } else if (familyId === 'fedora') {
       kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
