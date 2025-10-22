@@ -23,7 +23,7 @@ import { exec } from '../../lib/utils.js'
  */
 export async function luksRoot(this: Ovary) {
   // filesystem.squashfs.real
-  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
+  // const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
 
 
   try {
@@ -76,13 +76,29 @@ export async function luksRoot(this: Ovary) {
     }
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
 
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
+    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo);
 
-    Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`)
-    await exec(`mv  ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo)
+    Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`);
+    await exec(`mv ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo);
 
-    Utils.warning(`unmount ${this.luksMountpoint} `)
-    await exec(`umount ${this.luksMountpoint}`, this.echo)
+    // --- AGGIUNTE QUI ---
+    Utils.warning(`Syncing filesystem on ${this.luksMountpoint}...`);
+    await exec('sync', this.echo); // Forza scrittura dati su disco
+
+    Utils.warning(`Attempting unmount ${this.luksMountpoint}...`);
+    try {
+        await exec(`umount ${this.luksMountpoint}`, this.echo);
+        Utils.success(`Unmounted ${this.luksMountpoint} successfully.`);
+    } catch (umountError) {
+        Utils.error(`Failed to unmount ${this.luksMountpoint}! Trying force unmount...`);
+        // Tenta un unmount forzato/lazy come ultima risorsa
+        await exec(`umount -lf ${this.luksMountpoint}`).catch((forceError) => {
+             Utils.error(`Force unmount also failed: ${forceError}`);
+             // Considera se lanciare un errore qui per fermare il processo
+        });
+        // Lancia comunque l'errore originale per segnalare il problema
+        throw umountError;
+    }
 
     Utils.warning(`closing LUKS volume ${this.luksFile}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
@@ -102,7 +118,7 @@ export async function luksRoot(this: Ovary) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['luksClose', this.luksName]).catch(() => { })
+      await executeCommand('cryptsetup', ['close', this.luksName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)

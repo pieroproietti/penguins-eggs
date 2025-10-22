@@ -153,6 +153,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
          * homecrypt/fullcrypt/clone/standard
          */
         if (this.homecrypt) {
+            this.settings.config.user_opt = 'live' // patch for humans
+            this.settings.config.user_opt_passwd = 'evolution'
+            this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
 
         } else if (this.fullcrypt) {
@@ -263,9 +266,13 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.ubindVfs()
 
 
-            if (!this.clone) {
+            const cleanSystem = ! (this.clone || this.fullcrypt)
+            console.log("clone:", this.clone)
+            console.log("fullcrypt:", this.fullcrypt)
+            console.log("cleanSystem:", cleanSystem)
+            if (cleanSystem) {
                 /**
-                 * SOLO per clone no per homecrypt, ne per fullcrypt
+                 * SOLO per homecrypt e standard
                  */
                 await this.usersRemove()
                 await this.userCreateLive()

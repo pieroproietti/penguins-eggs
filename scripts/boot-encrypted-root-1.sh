@@ -75,7 +75,7 @@ LOOP_DEV="$LOOP_DEV_OUTPUT"
 echo "EGGS-BOOT: Loop device associato: $LOOP_DEV"
 
 echo "EGGS-BOOT: Sblocco LUKS $LOOP_DEV..."
-if ! cryptsetup open --readonly "$LOOP_DEV" live-root; then echo "EGGS-BOOT: ERRORE: Sblocco LUKS fallito."; /sbin/losetup -d "$LOOP_DEV" || true; exit 1; fi
+if ! cryptsetup open "$LOOP_DEV" live-root; then echo "EGGS-BOOT: ERRORE: Sblocco LUKS fallito."; /sbin/losetup -d "$LOOP_DEV" || true; exit 1; fi
 echo "EGGS-BOOT: Attesa mapper /dev/mapper/live-root..."
 MAX_WAIT_MAP=10; COUNT_MAP=0; while [ ! -b /dev/mapper/live-root ] && [ $COUNT_MAP -lt $MAX_WAIT_MAP ]; do sleep 1; COUNT_MAP=$((COUNT_MAP+1)); done
 if [ ! -b /dev/mapper/live-root ]; then echo "EGGS-BOOT: ERRORE: Mapper non apparso."; cryptsetup close live-root || true; /sbin/losetup -d "$LOOP_DEV" || true; exit 1; fi
