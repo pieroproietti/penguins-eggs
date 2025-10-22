@@ -267,9 +267,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
 
 
             const cleanSystem = ! (this.clone || this.fullcrypt)
-            console.log("clone:", this.clone)
-            console.log("fullcrypt:", this.fullcrypt)
-            console.log("cleanSystem:", cleanSystem)
             if (cleanSystem) {
                 /**
                  * SOLO per homecrypt e standard

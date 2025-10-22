@@ -23,7 +23,7 @@ import { exec } from '../../lib/utils.js'
  */
 export async function luksRoot(this: Ovary) {
   // filesystem.squashfs.real
-  // const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
+  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
 
 
   try {
@@ -63,8 +63,9 @@ export async function luksRoot(this: Ovary) {
     Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    Utils.warning(`formatting ext4`)
-    await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
+    Utils.warning(`formatting ext4 (without journal)...`);
+    await exec(`mkfs.ext4 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
+    // await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
 
     Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
