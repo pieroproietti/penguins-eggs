@@ -197,19 +197,19 @@ export default class Utils {
     * @param msg
     */
    static warning(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg))
    }
 
    static info(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.white(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.white(msg))
    }
 
    static success(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg) + '.')
+      console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg))
    }
 
    static error(msg = '') {
-      console.error(pjson.shortName + ' >>> ' + chalk.bgRed(chalk.whiteBright(msg)) + '.')
+      console.error(pjson.shortName + ' >>> ' + chalk.bgRed(chalk.whiteBright(msg)))
    }
 
 

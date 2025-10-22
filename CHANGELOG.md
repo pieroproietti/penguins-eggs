@@ -19,6 +19,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.22
+Although the `--fullcrypt` option is not yet ready, it has been hard work that I hope will eventually be resolved—perhaps with some advice.
+
+The current situation is this: after discarding the option of a `filesystem.squashfs` acting as a bootstrap for the encrypted system, I moved on to modifying the initramfs by injecting the necessary modules and scripts. Unfortunately - paradoxical but true — I got as far as starting plymouth, but then the system stopped.
+
+At this point, I will make another attempt to finally get the encrypted system to boot, but without using live-boot. This will obviously require removing and modifying what has already been done, but it seems to be the only way forward.
+
 ## v25.10.19
 The possibility of having encrypted ISOs has been introduced, in two versions:
 * `eggs produce --homecrypt` or `eggs love --homecrypt` produces an ISO in which all the contents of `/home/` and user accounts are stored in a LUKS volume within the ISO image `/live/home.img`. If the LUKS passphrase is entered, the volume is mounted and users and data are available on the live system; otherwise, it functions as a standard live system without any user data.

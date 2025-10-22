@@ -16,6 +16,7 @@ import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
+import Distro from '../classes/distro.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -235,12 +236,24 @@ export default class Produce extends Command {
         }
       }
 
+
       Utils.titles(this.id + ' ' + this.argv)
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (i.calamares) {
         let message = "this is a GUI system, calamares is available, but NOT installed\n"
         Utils.warning(message)
+      }
+
+      if (fullcrypt) {
+        const distro = new Distro()
+        if (distro.familyId === 'debian') {
+          Utils.info("Released just for testing (live is not booting yet). To not be used in production")
+          Utils.sleep(3000)
+        } else{ 
+          Utils.warning("This option is still experimental and can only be tried on Debian.")
+          process.exit(9)
+        }
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
