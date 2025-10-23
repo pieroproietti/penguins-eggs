@@ -9,7 +9,7 @@ LOGFILE="/tmp/eggs-premount-boot.log"; FIFO="/tmp/eggs-boot.fifo"; rm -f "$LOGFI
 # --- Logging End ---
 
 echo "EGGS-BOOT: =========================================="
-echo "EGGS-BOOT: Script Avvio Root Criptato v2.2 (Minimal RAM + Plymouth)"
+echo "EGGS-BOOT: boot from ISO fullcryt  v2.2 (Minimal RAM + Plymouth)"
 echo "EGGS-BOOT: =========================================="
 
 # Moduli necessari
@@ -22,12 +22,12 @@ modprobe ext4 2>/dev/null || true
 modprobe squashfs 2>/dev/null || true
 sleep 2
 
-# 1. Trova live media originale
-echo "EGGS-BOOT: Ricerca live media originale..."
+echo "EGGS-BOOT: Live search for boot media..."
+# 1. Create mountpoint /mnt/live-media
 mkdir -p /mnt/live-media /mnt/ext4
 ORIG_MEDIA_MNT="/mnt/live-media"
 LIVE_DEV=""
-# ... [Codice ricerca live media] ...
+# ... [Live search for boot media] ...
 MAX_WAIT_DEV=20; COUNT_DEV=0
 while [ -z "$LIVE_DEV" ] && [ $COUNT_DEV -lt $MAX_WAIT_DEV ]; do ls /dev > /dev/null; for dev in /dev/sr* /dev/sd* /dev/vd* /dev/nvme*n*; do if [ ! -b "$dev" ]; then continue; fi; if mount -o ro "$dev" "$ORIG_MEDIA_MNT" 2>/dev/null; then if [ -f "${ORIG_MEDIA_MNT}/live/root.img" ]; then echo "EGGS-BOOT: Found Original Live media on $dev"; LIVE_DEV=$dev; break 2; else umount "$ORIG_MEDIA_MNT" 2>/dev/null || true; fi; fi; done; sleep 1; COUNT_DEV=$((COUNT_DEV+1)); done
 if [ -z "$LIVE_DEV" ]; then echo "EGGS-BOOT: ERRORE: Live media originale non trovato!"; ls /dev; exit 1; fi
@@ -35,7 +35,7 @@ if [ -z "$LIVE_DEV" ]; then echo "EGGS-BOOT: ERRORE: Live media originale non tr
 ROOT_IMG_RO="${ORIG_MEDIA_MNT}/live/root.img"
 RAM_MEDIA_MNT="/run/live/medium" # Destinazione finale in RAM
 
-# 2a. Associa loop device (per definire $LOOP_DEV)
+# 2. Associa loop device (per definire $LOOP_DEV)
 echo "EGGS-BOOT: Associazione loop device per $ROOT_IMG_RO..."
 LOOP_DEV_OUTPUT=$(/sbin/losetup -f --show "$ROOT_IMG_RO" 2>/dev/null); LOSETUP_EXIT_STATUS=$?
 if [ $LOSETUP_EXIT_STATUS -ne 0 ] || [ -z "$LOOP_DEV_OUTPUT" ] || ! [ -b "$LOOP_DEV_OUTPUT" ]; then echo "EGGS-BOOT: ERRORE: Associazione loop fallita!"; exit 1; fi
