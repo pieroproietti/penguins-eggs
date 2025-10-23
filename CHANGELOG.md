@@ -19,6 +19,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.23
+The `--fullcrypt` option in eggs is now fully functional. It creates a fully encrypted image in the `/live/root.img` file, which is a LUKS-formatted volume that is opened at startup ONLY after the passphrase has been entered.
+
+Please note that this option is only active for the Debian family (Debian, Devuan, Ubuntu, and derivatives) and should be used with caution.
+
+The idea is that if you lose your USB stick or device, there is no way to trace the contents of the protected system.
+
 ## v25.10.22
 Although the `--fullcrypt` option is not yet ready, it has been hard work that I hope will eventually be resolved—perhaps with some advice.
 

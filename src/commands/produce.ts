@@ -248,7 +248,7 @@ export default class Produce extends Command {
       if (fullcrypt) {
         const distro = new Distro()
         if (distro.familyId === 'debian') {
-          Utils.info("Released as proof of concept, to not be used in production")
+          Utils.info("Use this option and penguins-eggs in general with extreme caution and ALWAYS test them first in test environments.")
           Utils.sleep(3000)
         } else{ 
           Utils.warning("This option is still experimental and can only be tried on Debian.")
