@@ -14,6 +14,7 @@ import path from 'node:path'
 import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
+import { checkPrime } from 'node:crypto'
 
 
 // _dirname
@@ -83,7 +84,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         Utils.warning(`Generating required hook scripts`)
         await addHook('/usr/sbin/losetup', chrootPath);
         await addHook('/sbin/switch_root', chrootPath);
-        await addHook('/sbin/udevadm',     chrootPath); 
+        await addHook('/bin/udevadm',      chrootPath); 
         await addHook('/sbin/blkid',       chrootPath);
         await addHook('/usr/bin/rsync',    chrootPath);        
         
@@ -146,6 +147,11 @@ async function addHook(cmdPath: string, chrootPath: string) {
     const cmd = path.basename(cmdPath); // es. 'losetup'
     const hookScriptName = `add-${cmd}-hook.sh`; // es. 'add-losetup-hook.sh'
     const hostHookPath = path.join(hostHooksDirPath, hookScriptName);
+
+    if (!fs.existsSync(cmdPath)) {
+        Utils.error(`Dont' exists ${cmdPath}`)
+        process.exit()
+    }
 
     let destDir = "/sbin"; // Default a /sbin per i comandi di amministrazione
 

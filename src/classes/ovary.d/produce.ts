@@ -226,7 +226,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             /**
              * installer
              */
-            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
+            this.incubator = new Incubator(
+                this.settings.remix, 
+                this.settings.distro, 
+                this.settings.config.user_opt, 
+                this.theme, 
+                this.clone || this.fullcrypt, 
+                verbose)
+
             await this.incubator.config(release)
 
 
