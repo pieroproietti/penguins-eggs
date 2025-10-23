@@ -45,7 +45,6 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
     try {
         // --- 2. Prepare Chroot Environment ---
         Utils.warning("Preparing chroot environment...");
-        Utils.info("Assuming 'live-boot', 'live-boot-initramfs-tools', 'cryptsetup' are installed in chroot.");
 
         // --- 2.1 Copy boot-encrypted-root.sh
         {
@@ -83,9 +82,6 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         // --- 2.3 Add hook ---
         Utils.warning(`Generating required hook scripts`)
         await addHook('/usr/sbin/losetup', chrootPath);
-        await addHook('/sbin/switch_root', chrootPath);
-        await addHook('/bin/udevadm',      chrootPath); 
-        await addHook('/sbin/blkid',       chrootPath);
         await addHook('/usr/bin/rsync',    chrootPath);        
         
         // --- 2.4 Add modules ---
@@ -125,9 +121,6 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         if (error instanceof Error && error.message.includes('mkinitramfs inside chroot failed')) {
             Utils.warning(`Check mkinitramfs log: ${logFilePath}`);
         }
-        // Cleanup dummy crypttab might still be desirable here if needed
-        // const hostCrypttabPath = path.join(chrootPath, '/etc/crypttab');
-        // if (fs.existsSync(hostCrypttabPath) && ...) { /* rm if dummy */ }
         throw error; // Re-throw error
     }
 

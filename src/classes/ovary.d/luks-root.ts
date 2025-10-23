@@ -22,8 +22,8 @@ import { exec } from '../../lib/utils.js'
  * filesystem.squashfs
  */
 export async function luksRoot(this: Ovary) {
-  // filesystem.squashfs.real
-  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs.real`;
+  // filesystem.squashfs
+  const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
 
   try {
@@ -43,7 +43,7 @@ export async function luksRoot(this: Ovary) {
 
     // Utils.warning('1. Calculation of space requirements...')
     if (!fs.existsSync(live_fs)) {
-        throw new Error(`filesystem.squashfs.real not found at: ${live_fs}`);
+        throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
     }
     const stats = fs.statSync(live_fs);
     let size = stats.size; // Dimensione REALE del file in Byte
