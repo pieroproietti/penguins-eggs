@@ -178,7 +178,7 @@ export async function uBindLiveFs(this: Ovary) {
         }
     }
 
-    if (this.clone) {
+    if (this.clone || this.fullcrypt) {
         cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
     }
 

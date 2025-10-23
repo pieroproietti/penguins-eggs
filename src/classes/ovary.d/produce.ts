@@ -20,7 +20,6 @@ import { IAddons, IExcludes } from '../../interfaces/index.js'
 // libraries
 import { exec } from '../../lib/utils.js'
 import Bleach from './../bleach.js'
-// import { displaymanager } from './../incubation/fisherman-helper/displaymanager.js'
 import Incubator from './../incubation/incubator.js'
 import Pacman from './../pacman.js'
 import Diversions from './../diversions.js'
@@ -153,6 +152,9 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
          * homecrypt/fullcrypt/clone/standard
          */
         if (this.homecrypt) {
+            this.settings.config.user_opt = 'live' // patch for humans
+            this.settings.config.user_opt_passwd = 'evolution'
+            this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
 
         } else if (this.fullcrypt) {
@@ -224,7 +226,14 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             /**
              * installer
              */
-            this.incubator = new Incubator(this.settings.remix, this.settings.distro, this.settings.config.user_opt, this.theme, this.clone, verbose)
+            this.incubator = new Incubator(
+                this.settings.remix, 
+                this.settings.distro, 
+                this.settings.config.user_opt, 
+                this.theme, 
+                this.clone || this.fullcrypt, 
+                verbose)
+
             await this.incubator.config(release)
 
 
@@ -243,7 +252,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
              * initrd creation
              */
             if (fullcrypt) {
-                await this.initrdDebianLuks()
+                await this.luksRootInitrd()
             } else {
                 if (this.familyId === 'alpine') {
                     await this.initrdAlpine()
@@ -263,9 +272,10 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.ubindVfs()
 
 
-            if (!this.clone) {
+            const cleanSystem = ! (this.clone || this.fullcrypt)
+            if (cleanSystem) {
                 /**
-                 * SOLO per clone no per homecrypt, ne per fullcrypt
+                 * SOLO per homecrypt e standard
                  */
                 await this.usersRemove()
                 await this.userCreateLive()

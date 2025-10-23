@@ -42,11 +42,14 @@ export async function luksRoot(this: Ovary) {
     console.log('====================================')
 
     // Utils.warning('1. Calculation of space requirements...')
-    const sizeString = (await exec(`unsquashfs -s ${live_fs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data;
-    let size = Number.parseInt(sizeString) // Dimensione in Byte
+    if (!fs.existsSync(live_fs)) {
+        throw new Error(`filesystem.squashfs.real not found at: ${live_fs}`);
+    }
+    const stats = fs.statSync(live_fs);
+    let size = stats.size; // Dimensione REALE del file in Byte
 
-    // Add overhead * 1.20
-    const luksSize = Math.ceil(size * 1.20)
+    // Add overhead * 1.20 (o 1.25 per più sicurezza con file grandi)
+    const luksSize = Math.ceil(size * 1.25)
 
     Utils.warning(`filesystem.squashfs size: ${bytesToGB(size)}`)
     Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
@@ -63,8 +66,9 @@ export async function luksRoot(this: Ovary) {
     Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    Utils.warning(`formatting ext4`)
-    await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
+    Utils.warning(`formatting ext4 (without journal)...`);
+    await exec(`mkfs.ext4 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
+    // await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
 
     Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
@@ -76,13 +80,29 @@ export async function luksRoot(this: Ovary) {
     }
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
 
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
+    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo);
 
-    Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`)
-    await exec(`mv  ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo)
+    Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`);
+    await exec(`mv ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo);
 
-    Utils.warning(`unmount ${this.luksMountpoint} `)
-    await exec(`umount ${this.luksMountpoint}`, this.echo)
+    // --- AGGIUNTE QUI ---
+    Utils.warning(`Syncing filesystem on ${this.luksMountpoint}...`);
+    await exec('sync', this.echo); // Forza scrittura dati su disco
+
+    Utils.warning(`Attempting unmount ${this.luksMountpoint}...`);
+    try {
+        await exec(`umount ${this.luksMountpoint}`, this.echo);
+        Utils.success(`Unmounted ${this.luksMountpoint} successfully.`);
+    } catch (umountError) {
+        Utils.error(`Failed to unmount ${this.luksMountpoint}! Trying force unmount...`);
+        // Tenta un unmount forzato/lazy come ultima risorsa
+        await exec(`umount -lf ${this.luksMountpoint}`).catch((forceError) => {
+             Utils.error(`Force unmount also failed: ${forceError}`);
+             // Considera se lanciare un errore qui per fermare il processo
+        });
+        // Lancia comunque l'errore originale per segnalare il problema
+        throw umountError;
+    }
 
     Utils.warning(`closing LUKS volume ${this.luksFile}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
@@ -102,7 +122,7 @@ export async function luksRoot(this: Ovary) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['luksClose', this.luksName]).catch(() => { })
+      await executeCommand('cryptsetup', ['close', this.luksName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)
