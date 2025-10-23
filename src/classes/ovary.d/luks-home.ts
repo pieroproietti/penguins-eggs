@@ -120,7 +120,7 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['luksClose', this.luksName]).catch(() => { })
+      await executeCommand('cryptsetup', ['close', this.luksName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)

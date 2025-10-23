@@ -248,7 +248,7 @@ export default class Produce extends Command {
       if (fullcrypt) {
         const distro = new Distro()
         if (distro.familyId === 'debian') {
-          Utils.info("Released just for testing (live is not booting yet). To not be used in production")
+          Utils.info("Released as proof of concept, to not be used in production")
           Utils.sleep(3000)
         } else{ 
           Utils.warning("This option is still experimental and can only be tried on Debian.")

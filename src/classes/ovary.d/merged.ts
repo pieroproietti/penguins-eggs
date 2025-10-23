@@ -65,7 +65,7 @@ export function mergedAndOverlay(this: Ovary, dir: string): boolean {
 export function merged(this: Ovary, dir: string): boolean {
     let merged = true
     if (dir === 'home') {
-        merged = this.clone
+        merged = this.clone || this.fullcrypt
     } else {
         const onlyFolders = [
             'cdrom',

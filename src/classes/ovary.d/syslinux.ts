@@ -77,7 +77,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
         process.exit()
     }
 
-    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.luksUuid)
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.luksUuid, this.fullcrypt)
     const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
         fullname: this.settings.remix.fullname.toUpperCase(),
