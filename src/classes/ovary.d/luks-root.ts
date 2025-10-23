@@ -42,11 +42,14 @@ export async function luksRoot(this: Ovary) {
     console.log('====================================')
 
     // Utils.warning('1. Calculation of space requirements...')
-    const sizeString = (await exec(`unsquashfs -s ${live_fs} | grep "Filesystem size" | sed -e 's/.*size //' -e 's/ .*//'`, { capture: true, echo: false })).data;
-    let size = Number.parseInt(sizeString) // Dimensione in Byte
+    if (!fs.existsSync(live_fs)) {
+        throw new Error(`filesystem.squashfs.real not found at: ${live_fs}`);
+    }
+    const stats = fs.statSync(live_fs);
+    let size = stats.size; // Dimensione REALE del file in Byte
 
-    // Add overhead * 1.20
-    const luksSize = Math.ceil(size * 1.20)
+    // Add overhead * 1.20 (o 1.25 per più sicurezza con file grandi)
+    const luksSize = Math.ceil(size * 1.25)
 
     Utils.warning(`filesystem.squashfs size: ${bytesToGB(size)}`)
     Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)

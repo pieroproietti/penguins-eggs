@@ -28,7 +28,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param this - Ovary instance context
  * @param verbose - Whether to show verbose output
  */
-export async function initrdDebianLuks(this: Ovary, verbose = false) {
+export async function luksRootInitrd(this: Ovary, verbose = false) {
     console.log();
     console.log('===========================================================================');
     console.log(`Creating ${this.initrd} for LUKS using mkinitramfs`);
@@ -80,11 +80,12 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
         }
 
         // --- 2.3 Add hook ---
-        await addHook('add-losetup-hook.sh', chrootPath)
-        await addHook('add-switchroot-hook.sh', chrootPath)
-        await addHook('add-udevadm-hook.sh', chrootPath); 
-        await addHook('add-blkid-hook.sh', chrootPath);
-        await addHook('add-rsync-hook.sh', chrootPath);
+        Utils.warning(`Generating required hook scripts`)
+        await addHook('/usr/sbin/losetup', chrootPath);
+        await addHook('/sbin/switch_root', chrootPath);
+        await addHook('/sbin/udevadm',     chrootPath); 
+        await addHook('/sbin/blkid',       chrootPath);
+        await addHook('/usr/bin/rsync',    chrootPath);        
         
         // --- 2.4 Add modules ---
         addModules('overlay', chrootPath)
@@ -132,29 +133,62 @@ export async function initrdDebianLuks(this: Ovary, verbose = false) {
     Utils.warning(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
 }
 
-
 /**
- * 
- * @param module 
- * @param chrootPath 
+ * Genera e installa uno script hook di initramfs-tools nel chroot.
+ * Copia il comando specificato nella sua directory di destinazione
+ * standard (/bin o /sbin) all'interno dell'initramfs.
+ * @param cmdPath Path assoluto del comando da copiare *nel chroot* (es. '/usr/sbin/losetup')
+ * @param chrootPath Path assoluto alla radice del chroot
  */
-async function addHook(hookScriptName: string, chrootPath: string) {
-    const srcHookPath = path.join(__dirname, '../../../scripts', hookScriptName);
+async function addHook(cmdPath: string, chrootPath: string) {
     const chrootHooksDirPath = '/etc/initramfs-tools/hooks';
     const hostHooksDirPath = path.join(chrootPath, chrootHooksDirPath);
+    const cmd = path.basename(cmdPath); // es. 'losetup'
+    const hookScriptName = `add-${cmd}-hook.sh`; // es. 'add-losetup-hook.sh'
     const hostHookPath = path.join(hostHooksDirPath, hookScriptName);
 
-    Utils.warning(`Adding required ${hookScriptName} hook script to ${hostHooksDirPath}`);
-    if (!fs.existsSync(srcHookPath)) {
-        // Assicurati che il file add-switchroot-hook.sh esista in ../../../scripts
-        throw new Error(`switch_root hook script source not found: ${srcHookPath}`);
+    let destDir = "/sbin"; // Default a /sbin per i comandi di amministrazione
+
+    // Determina la destinazione corretta
+    if (cmdPath.includes('/usr/bin') || cmdPath.includes('/bin')) {
+        destDir = "/bin"; // Comandi utente
+    } else if (cmdPath.includes('/usr/sbin') || cmdPath.includes('/sbin')) {
+        destDir = "/sbin"; // Comandi amministrativi
     }
-    // Directory dovrebbe già esistere dal passo precedente, ma mkdir -p è sicuro
-    await exec(`mkdir -p "${hostHooksDirPath}"`);
-    await exec(`cp "${srcHookPath}" "${hostHookPath}"`);
-    await exec(`chmod +x "${hostHookPath}"`);
-    Utils.success(`Copied and set executable hook: ${hostHookPath}`);
+
+    // Crea la riga di comando per l'hook
+    const copyLine = `copy_exec ${cmdPath} ${destDir} || echo "WARNING: Failed to copy ${cmdPath} to ${destDir}" >&2`;
+
+    // Crea il contenuto boilerplate dello script hook
+    const hookContent = `#!/bin/sh
+# Hook: ${hookScriptName}
+# Generato automaticamente da penguins-eggs
+# Copia ${cmdPath} in ${destDir}
+
+PREREQ=""
+case $1 in prereqs) echo "\${PREREQ}"; exit 0;; esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+echo "EGGS-HOOK: Esecuzione hook ${hookScriptName}..."
+${copyLine}
+
+exit 0
+`;
+
+    try {
+        await exec(`mkdir -p "${hostHooksDirPath}"`);
+        // Scrive il file e lo rende eseguibile (mode 0o755)
+        fs.writeFileSync(hostHookPath, hookContent, { mode: 0o755, encoding: 'utf-8' });
+        // console.log(hookContent)
+        Utils.success(`Generated and set executable hook: ${hookScriptName}`);
+    } catch (err: any) {
+        Utils.error(`Failed to write hook script ${hostHookPath}: ${err.message}`);
+        process.exit(1)
+        throw err; // Lancia l'errore per fermare il processo
+    }
 }
+
 
 /**
  * 

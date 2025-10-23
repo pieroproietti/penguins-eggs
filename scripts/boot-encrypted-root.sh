@@ -23,6 +23,10 @@ sleep 2
 
 echo "EGGS-BOOT: Device mapper pronto."
 
+echo "EGGS-BOOT: --- Inizio Log Kernel (dmesg) post-cryptsetup ---"
+dmesg | tail -n 20
+echo "EGGS-BOOT: --- Fine Log Kernel ---"
+
 echo "EGGS-BOOT: Attesa udev (trigger + settle + probe + sleep)..."
 # Forza udev a processare il nuovo device mapper
 udevadm trigger --subsystem-match=block --action=add

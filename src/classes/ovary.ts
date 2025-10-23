@@ -53,7 +53,7 @@ import { luksHome } from './ovary.d/luks-home.js'
 import { installHomecryptSupport } from './ovary.d/luks-home-support.js'
 
 // fullcrypt
-import { initrdDebianLuks } from './ovary.d/initrd-luks.js'
+import { luksRootInitrd } from './ovary.d/luks-root-initrd.js'
 import { luksRoot } from './ovary.d/luks-root.js'
 
 // _dirname
@@ -158,7 +158,7 @@ export default class Ovary {
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
   initrdDebian = initrdDebian
-  initrdDebianLuks = initrdDebianLuks
+  luksRootInitrd = luksRootInitrd
   initrdDracut = initrdDracut
   kernelCopy = kernelCopy
   liveCreateStructure = liveCreateStructure

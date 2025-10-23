@@ -20,7 +20,6 @@ import { IAddons, IExcludes } from '../../interfaces/index.js'
 // libraries
 import { exec } from '../../lib/utils.js'
 import Bleach from './../bleach.js'
-// import { displaymanager } from './../incubation/fisherman-helper/displaymanager.js'
 import Incubator from './../incubation/incubator.js'
 import Pacman from './../pacman.js'
 import Diversions from './../diversions.js'
@@ -246,7 +245,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
              * initrd creation
              */
             if (fullcrypt) {
-                await this.initrdDebianLuks()
+                await this.luksRootInitrd()
             } else {
                 if (this.familyId === 'alpine') {
                     await this.initrdAlpine()
