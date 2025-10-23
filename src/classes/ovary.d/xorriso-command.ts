@@ -38,7 +38,6 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
         } else if (homecrypt) {
             typology = '_clone-home-crypted'
         } else if (fullcrypt) {
-            // filesystem.squashfs.real
             typology = '_clone-full-crypted'
         }
 
