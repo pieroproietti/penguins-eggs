@@ -43,10 +43,15 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
-    // const fsOverhead = Math.max(size * 0.1, 100 * 1024 * 1024)
-    // const luksSize = size + fsOverhead + (size * 0.2) // +20% di sicurezza
-
     const luksSize = Math.ceil(size * 2)
+
+    /**
+     * E' più precisa ma equivalente grazie 
+     * al truncate
+     */
+    // const fsOverhead = Math.max(size * 0.1, 100 * 1024 * 1024)
+    // const luksSize = size * 1.25 + fsOverhead // +25% 
+
     Utils.warning(`homes size: ${bytesToGB(size)}`)
     Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 

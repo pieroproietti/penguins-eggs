@@ -154,7 +154,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         if (this.homecrypt) {
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
-            this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
 
         } else if (this.fullcrypt) {
