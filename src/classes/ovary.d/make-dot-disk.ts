@@ -40,7 +40,17 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
      * write volid .disk/info 
      * Required
      */
-    let volidContent = this.settings.isoFilename
+    let volidContent = "Linux live"
+    if (this.hidden) {
+        fs.writeFileSync(path.join(dotDisk, 'info'), volidContent, 'utf-8')
+        return
+    }
+
+    /**
+     * write volid .disk/info 
+     * Complete
+     */
+    volidContent = this.settings.isoFilename
     fs.writeFileSync(path.join(dotDisk, 'info'), volidContent, 'utf-8')
 
 

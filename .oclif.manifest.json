@@ -538,6 +538,13 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "hidden": {
+          "char": "H",
+          "description": "stealth mode",
+          "name": "hidden",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "nointeractive": {
           "char": "n",
           "description": "no user interaction",
@@ -714,6 +721,13 @@
           "allowNo": false,
           "type": "boolean"
         },
+        "hidden": {
+          "char": "H",
+          "description": "stealth mode",
+          "name": "hidden",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "kernel": {
           "char": "K",
           "description": "kernel version",
@@ -792,10 +806,10 @@
           "multiple": false,
           "type": "option"
         },
-        "includeRoot": {
+        "includeRootHome": {
           "char": "i",
           "description": "folder /root is included on live",
-          "name": "includeRoot",
+          "name": "includeRootHome",
           "allowNo": false,
           "type": "boolean"
         },
@@ -1535,5 +1549,5 @@
       ]
     }
   },
-  "version": "25.10.23"
+  "version": "25.10.24"
 }

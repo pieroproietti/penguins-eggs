@@ -73,6 +73,8 @@ export default class Ovary {
 
   fullcrypt = false
 
+  hidden = false
+
   echo = {}
 
   familyId = ''
@@ -116,10 +118,6 @@ export default class Ovary {
   dotOverlay = {} as IWorkDir
 
   dotLivefs = ''
-
-  luksUuid = ''
-
-  luksName = ''
 
   luksMappedName = ''
 
