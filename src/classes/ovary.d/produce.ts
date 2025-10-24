@@ -42,10 +42,27 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param myAddons
  * @param nointeractive
  * @param noicons
- * @param includeRoot
+ * @param includeRootHome
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, homecrypt = false, fullcrypt = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(
+    this: Ovary,
+    kernel = '',
+    clone = false,
+    homecrypt = false,
+    fullcrypt = false,
+    hidden = false,
+    scriptOnly = false,
+    yolkRenew = false,
+    release = false,
+    myAddons: IAddons,
+    myLinks: string[],
+    excludes: IExcludes,
+    nointeractive = false,
+    noicons = false,
+    includeRootHome = false,
+    verbose = false) {
+
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -61,6 +78,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
     this.clone = clone
     this.homecrypt = homecrypt
     this.fullcrypt = fullcrypt
+    this.hidden = hidden
 
     // Crittografia
     if (this.homecrypt || this.fullcrypt) {
@@ -225,11 +243,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
              * installer
              */
             this.incubator = new Incubator(
-                this.settings.remix, 
-                this.settings.distro, 
-                this.settings.config.user_opt, 
-                this.theme, 
-                this.clone || this.fullcrypt, 
+                this.settings.remix,
+                this.settings.distro,
+                this.settings.config.user_opt,
+                this.theme,
+                this.clone || this.fullcrypt,
                 verbose)
 
             await this.incubator.config(release)
@@ -270,7 +288,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.ubindVfs()
 
 
-            const cleanSystem = ! (this.clone || this.fullcrypt)
+            const cleanSystem = !(this.clone || this.fullcrypt)
             if (cleanSystem) {
                 /**
                  * SOLO per homecrypt e standard
@@ -303,7 +321,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
 
-            mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
+            mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
             await this.uBindLiveFs() // we don't need more
         }
 

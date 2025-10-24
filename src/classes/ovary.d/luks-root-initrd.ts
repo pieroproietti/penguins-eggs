@@ -17,7 +17,14 @@ import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const noop = () => {}; 
 
+type ConditionalLoggers = {
+    log: (...args: any[]) => void;
+    warning: (msg: string) => void;
+    success: (msg: string) => void;
+    info: (msg: string) => void;
+}
 
 /**
  * Creates a streamlined initrd image for Debian/Ubuntu with LUKS support using mkinitramfs within a temporary chroot.
@@ -28,10 +35,24 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param verbose - Whether to show verbose output
  */
 export async function luksRootInitrd(this: Ovary, verbose = false) {
-    console.log();
-    console.log('===========================================================================');
-    console.log(`Creating ${this.initrd} for LUKS using mkinitramfs`);
-    console.log('===========================================================================');
+    const loggers: ConditionalLoggers = {
+        log: this.hidden ? noop : console.log,
+        warning: this.hidden ? noop : Utils.warning,
+        success: this.hidden ? noop : Utils.success,
+        info: this.hidden ? noop : Utils.info,
+    };    
+
+    const { log, warning, success, info } = loggers;
+
+    if (this.hidden) {
+      Utils.warning("system is working, please wait...")
+    }
+    
+
+    log();
+    log('===========================================================================');
+    log(`Creating ${this.initrd} for LUKS using mkinitramfs`);
+    log('===========================================================================');
 
     // --- Core Paths & Config ---
     const chrootPath = path.join(this.dotMnt, 'filesystem.squashfs');
@@ -42,7 +63,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
 
     try {
         // --- 2. Prepare Chroot Environment ---
-        Utils.warning("Preparing chroot environment...");
+        warning("Preparing chroot environment...");
 
         // --- 2.1 Copy boot-encrypted-root.sh
         {
@@ -59,7 +80,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             await exec(`mkdir -p "${hostDestbootEncryptedRootDir}"`);
             await exec(`cp "${srcbootEncryptedRootPath}" "${hostDestbootEncryptedRootPath}"`);
             await exec(`chmod +x "${hostDestbootEncryptedRootPath}"`);
-            Utils.success(`Copied ${bootEncryptedRootName} script to ${hostDestbootEncryptedRootDir}`);
+            success(`Copied ${bootEncryptedRootName} script to ${hostDestbootEncryptedRootDir}`);
         }
 
         // --- 2.2 Create dummy /etc/crypttab if needed ---
@@ -67,26 +88,25 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             const chrootCrypttabPath = '/etc/crypttab';
             const hostCrypttabPath = path.join(chrootPath, chrootCrypttabPath);
             if (!fs.existsSync(hostCrypttabPath)) {
-                // Utils.warning("Creating dummy /etc/crypttab for mkinitramfs hook...");
                 const crypttabContent = "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n";
                 fs.writeFileSync(hostCrypttabPath, crypttabContent, 'utf-8');
-                Utils.success(`Created crypttab on ${path.dirname(hostCrypttabPath)}`);
+                success(`Created crypttab on ${path.dirname(hostCrypttabPath)}`);
             } else {
-                Utils.info(`${hostCrypttabPath} already exists.`);
+                info(`${hostCrypttabPath} already exists.`);
             }
         }
 
         // --- 2.3 Add hook ---
         // Utils.warning(`Generating required hook scripts`)
-        await addHook('/usr/sbin/losetup', chrootPath);
-        await addHook('/usr/bin/rsync',    chrootPath);        
+        await addHook('/usr/sbin/losetup', chrootPath, loggers);
+        await addHook('/usr/bin/rsync',    chrootPath, loggers);        
         
         // --- 2.4 Add modules ---
         // addModules('overlay', chrootPath)
 
         // --- 3. Execute mkinitramfs INSIDE Chroot ---
         {
-            Utils.warning(`Running mkinitramfs for kernel ${kernelVersion} inside chroot...`);
+            warning(`Running mkinitramfs for kernel ${kernelVersion} inside chroot...`);
             const chrootTmpInitrdPath = `/tmp/${initrdBaseName}`;
             const logFilePath = path.join(this.settings.iso_work, logBaseName);
 
@@ -94,7 +114,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             const chrootCmd = `chroot "${chrootPath}" /bin/bash -c "${mkinitramfsCmd}" > "${logFilePath}" 2>&1`;
 
             await exec(chrootCmd, this.echo);
-            Utils.success(`mkinitramfs completed. Log: ${logFilePath}`);
+            success(`mkinitramfs completed. Log: ${logFilePath}`);
         }
 
         // --- 4. Move Result ---
@@ -103,9 +123,9 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             const hostTmpInitrdPath = path.join(chrootPath, chrootTmpInitrdPath);
 
             if (fs.existsSync(hostTmpInitrdPath)) {
-                Utils.info(`Moving generated initrd to ${finalInitrdDestPath}`);
+                info(`Moving generated initrd to ${finalInitrdDestPath}`);
                 await exec(`mv "${hostTmpInitrdPath}" "${finalInitrdDestPath}"`);
-                Utils.success(`Initrd moved successfully.`);
+                success(`Initrd moved successfully.`);
             } else {
                 Utils.error(`Generated initrd not found at ${hostTmpInitrdPath}. Build failed!`);
                 throw new Error("mkinitramfs did not produce the expected output file.");
@@ -122,7 +142,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         throw error; // Re-throw error
     }
 
-    Utils.success(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
+    success(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
 }
 
 /**
@@ -132,7 +152,9 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
  * @param cmdPath Path assoluto del comando da copiare *nel chroot* (es. '/usr/sbin/losetup')
  * @param chrootPath Path assoluto alla radice del chroot
  */
-async function addHook(cmdPath: string, chrootPath: string) {
+async function addHook(cmdPath: string, chrootPath: string, loggers: ConditionalLoggers) {
+    const { log, warning, success, info } = loggers;
+
     const chrootHooksDirPath = '/etc/initramfs-tools/hooks';
     const hostHooksDirPath = path.join(chrootPath, chrootHooksDirPath);
     const cmd = path.basename(cmdPath); // es. 'losetup'
@@ -178,7 +200,7 @@ exit 0
         // Scrive il file e lo rende eseguibile (mode 0o755)
         fs.writeFileSync(hostHookPath, hookContent, { mode: 0o755, encoding: 'utf-8' });
         // console.log(hookContent)
-        Utils.success(`Generated and set executable hook: ${hookScriptName}`);
+        success(`Generated and set executable hook: ${hookScriptName}`);
     } catch (err: any) {
         Utils.error(`Failed to write hook script ${hostHookPath}: ${err.message}`);
         process.exit(1)
@@ -192,7 +214,8 @@ exit 0
  * @param module 
  * @param chrootPath 
  */
-function addModules(module: string, chrootPath: string) {
+function addModules(module: string, chrootPath: string, loggers: ConditionalLoggers) {
+    const { log, warning, success, info } = loggers;
 
     const chrootModulesFilePath = '/etc/initramfs-tools/modules'; // Relative inside chroot
     const hostModulesFilePath = path.join(chrootPath, chrootModulesFilePath); // Absolute on host fs
@@ -207,9 +230,9 @@ function addModules(module: string, chrootPath: string) {
     }
 
     if (modulesContent.includes(`\n${module}\n`)) {
-        Utils.info(`'${module}' module already present.`);
+        info(`'${module}' module already present.`);
     } else {
-        Utils.info(`Added '${module}' module on ${hostModulesFilePath}`)
+        info(`Added '${module}' module on ${hostModulesFilePath}`)
         if (!modulesContent.endsWith('\n')) {
             modulesContent += '\n';
         }
@@ -219,6 +242,6 @@ function addModules(module: string, chrootPath: string) {
 
     if (needsUpdate) {
         fs.writeFileSync(hostModulesFilePath, modulesContent, 'utf-8');
-        Utils.success(`Updated ${hostModulesFilePath} with 'overlay'.`);
+        success(`Updated ${hostModulesFilePath} with 'overlay'.`);
     }
 }    

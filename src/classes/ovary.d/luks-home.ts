@@ -14,6 +14,13 @@ import { spawn, StdioOptions } from 'node:child_process'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
+const noop = () => {}; 
+type ConditionalLoggers = {
+    log: (...args: any[]) => void;
+    warning: (msg: string) => void;
+    success: (msg: string) => void;
+    info: (msg: string) => void;
+}
 
 
 /**
@@ -22,7 +29,19 @@ import { exec } from '../../lib/utils.js'
  * create a container LUKS with the entire 
  * filesystem.squashfs
  */
-export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
+export async function luksHome(
+  this: Ovary, 
+  clone = false, 
+  homecrypt = false) {
+  const loggers: ConditionalLoggers = {
+      log: this.hidden ? noop : console.log,
+      warning: this.hidden ? noop : Utils.warning,
+      success: this.hidden ? noop : Utils.success,
+      info: this.hidden ? noop : Utils.info,
+  };
+
+  const { log, warning, success, info } = loggers;
+
 
   try {
     /**
@@ -33,10 +52,14 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
      * this.luksPassword = '0' 
      */
 
-    console.log()
-    console.log('====================================')
-    console.log(` Creating ${this.luksMappedName}`)
-    console.log('====================================')
+    if (this.hidden) {
+      Utils.warning("system is working, please wait...")
+    }
+
+    log()
+    log('====================================')
+    log(` Creating ${this.luksMappedName}`)
+    log('====================================')
     
     // Utils.warning('1. Calculation of space requirements...')
 
@@ -51,23 +74,23 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
     // const fsOverhead = Math.max(size * 0.1, 100 * 1024 * 1024)
     // const luksSize = size * 1.25 + fsOverhead // +25% 
 
-    Utils.warning(`homes size: ${bytesToGB(size)}`)
-    Utils.warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    warning(`homes size: ${bytesToGB(size)}`)
+    warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 
-    Utils.warning(`creating partition LUKS: ${this.luksFile}`)
+    warning(`creating partition LUKS: ${this.luksFile}`)
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
-    Utils.warning(`formatting ${this.luksFile} as a LUKS volume...`)
+    warning(`formatting ${this.luksFile} as a LUKS volume...`)
     await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
 
 
-    Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
+    warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    Utils.warning(`formatting c ext4 `)
+    warning(`formatting c ext4 `)
     await exec(`mkfs.ext4 -L live-home ${this.luksDevice}`,this.echo)
 
-    Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
+    warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
       if (!Utils.isMountpoint(this.luksMountpoint)) {
         await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
@@ -78,10 +101,10 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
     await exec(`mount /dev/mapper/${this.luksMappedName} ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`copying /home on  ${this.luksMountpoint}`)
+    warning(`copying /home on  ${this.luksMountpoint}`)
     await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`saving user accounts info...`)
+    warning(`saving user accounts info...`)
     // Crea directory per backup system files
     await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`, this.echo)
     
@@ -94,16 +117,16 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
     await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`, this.echo)
     await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`, this.echo)
 
-    Utils.warning(`unmount ${this.luksDevice}`)
+    warning(`unmount ${this.luksDevice}`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
 
-    Utils.warning(`closing LUKS volume ${this.luksMappedName}.`)
+    warning(`closing LUKS volume ${this.luksMappedName}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
 
-    Utils.warning(`moving ${this.luksMappedName}  to (ISO)/live/.`)
+    warning(`moving ${this.luksMappedName}  to (ISO)/live/.`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
-    Utils.warning('encryption process successfully completed!')
+    warning('encryption process successfully completed!')
 
     /**
      * YOU MUST! unlink the key on production

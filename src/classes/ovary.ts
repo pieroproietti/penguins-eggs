@@ -73,6 +73,8 @@ export default class Ovary {
 
   fullcrypt = false
 
+  hidden = false
+
   echo = {}
 
   familyId = ''
