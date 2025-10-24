@@ -40,14 +40,13 @@ export async function luksRoot(this: Ovary) {
     console.log(` Creating ${this.luksMappedName}`)
     console.log('====================================')
 
-    // Utils.warning('1. Calculation of space requirements...')
     if (!fs.existsSync(live_fs)) {
         throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
     }
     const stats = fs.statSync(live_fs);
     let size = stats.size; // Dimensione REALE del file in Byte
 
-    // Add overhead * 1.20 (o 1.25 per più sicurezza con file grandi)
+    // Add overhead * 1.25 per più sicurezza con file grandi
     const luksSize = Math.ceil(size * 1.25)
 
     Utils.warning(`filesystem.squashfs size: ${bytesToGB(size)}`)
@@ -64,7 +63,6 @@ export async function luksRoot(this: Ovary) {
 
     Utils.warning(`formatting ext4 (without journal)...`);
     await exec(`mkfs.ext4 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
-    // await exec(`mkfs.ext4 -L live-root ${this.luksDevice}`, this.echo)
 
     Utils.warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
@@ -81,7 +79,6 @@ export async function luksRoot(this: Ovary) {
     Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`);
     await exec(`mv ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo);
 
-    // --- AGGIUNTE QUI ---
     Utils.warning(`Syncing filesystem on ${this.luksMountpoint}...`);
     await exec('sync', this.echo); // Forza scrittura dati su disco
 

@@ -14,8 +14,6 @@ import path from 'node:path'
 import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { checkPrime } from 'node:crypto'
-
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -61,7 +59,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             await exec(`mkdir -p "${hostDestbootEncryptedRootDir}"`);
             await exec(`cp "${srcbootEncryptedRootPath}" "${hostDestbootEncryptedRootPath}"`);
             await exec(`chmod +x "${hostDestbootEncryptedRootPath}"`);
-            Utils.success(`Copied unlock script to ${chrootbootEncryptedRootPath}`);
+            Utils.success(`Copied ${bootEncryptedRootName} script to ${hostDestbootEncryptedRootDir}`);
         }
 
         // --- 2.2 Create dummy /etc/crypttab if needed ---
@@ -69,23 +67,22 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             const chrootCrypttabPath = '/etc/crypttab';
             const hostCrypttabPath = path.join(chrootPath, chrootCrypttabPath);
             if (!fs.existsSync(hostCrypttabPath)) {
-                Utils.warning("Creating dummy /etc/crypttab for mkinitramfs hook...");
+                // Utils.warning("Creating dummy /etc/crypttab for mkinitramfs hook...");
                 const crypttabContent = "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n";
                 fs.writeFileSync(hostCrypttabPath, crypttabContent, 'utf-8');
-                // We might still want to clean this up, even if chroot is temp, to avoid side effects if reused
-                // Consider adding a cleanup step outside the try/finally if needed
+                Utils.success(`Created crypttab on ${path.dirname(hostCrypttabPath)}`);
             } else {
-                Utils.info("/etc/crypttab already exists.");
+                Utils.info(`${hostCrypttabPath} already exists.`);
             }
         }
 
         // --- 2.3 Add hook ---
-        Utils.warning(`Generating required hook scripts`)
+        // Utils.warning(`Generating required hook scripts`)
         await addHook('/usr/sbin/losetup', chrootPath);
         await addHook('/usr/bin/rsync',    chrootPath);        
         
         // --- 2.4 Add modules ---
-        addModules('overlay', chrootPath)
+        // addModules('overlay', chrootPath)
 
         // --- 3. Execute mkinitramfs INSIDE Chroot ---
         {
@@ -113,6 +110,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
                 Utils.error(`Generated initrd not found at ${hostTmpInitrdPath}. Build failed!`);
                 throw new Error("mkinitramfs did not produce the expected output file.");
             }
+            // process.exit()
         }
 
     } catch (error) {
@@ -124,7 +122,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         throw error; // Re-throw error
     }
 
-    Utils.warning(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
+    Utils.success(`Finished creating LUKS initrd: ${finalInitrdDestPath}`);
 }
 
 /**
@@ -204,21 +202,19 @@ function addModules(module: string, chrootPath: string) {
     if (fs.existsSync(hostModulesFilePath)) {
         modulesContent = fs.readFileSync(hostModulesFilePath, 'utf-8');
     } else {
-        Utils.warning(`Creating ${hostModulesFilePath} as it does not exist.`);
-        // Ensure newline at the end if creating from scratch
+        // inizializzazione modules
         modulesContent = '\n';
     }
 
-    if (!modulesContent.includes(`\n${module}\n`)) { // Check precisely for the module name on its own line
-        Utils.warning(`Adding '${module}' module to ${hostModulesFilePath}`);
-        // Add to the end, ensuring newline before if needed
+    if (modulesContent.includes(`\n${module}\n`)) {
+        Utils.info(`'${module}' module already present.`);
+    } else {
+        Utils.info(`Added '${module}' module on ${hostModulesFilePath}`)
         if (!modulesContent.endsWith('\n')) {
             modulesContent += '\n';
         }
         modulesContent += `${module}\n`;
         needsUpdate = true;
-    } else {
-        Utils.info(`'${module}' module already listed.`);
     }
 
     if (needsUpdate) {
