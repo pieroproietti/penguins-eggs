@@ -253,7 +253,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         process.exit(1)
     }
 
-    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.luksUuid, this.fullcrypt)
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
     const cfgMain = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 

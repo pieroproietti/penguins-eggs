@@ -70,7 +70,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             this.luksName = 'root.img'
         }
 
-        this.luksUuid = ''
         this.luksFile = `/tmp/${this.luksName}`
         this.luksMappedName = this.luksName
         this.luksMountpoint = `/tmp/mnt/${this.luksName}`

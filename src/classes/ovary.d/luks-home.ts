@@ -61,8 +61,6 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
     Utils.warning(`formatting ${this.luksFile} as a LUKS volume...`)
     await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
 
-    this.luksUuid = (await exec(`cryptsetup luksUUID ${this.luksFile}`, { capture: true, echo: false })).data.trim()
-    Utils.warning(`LUKS uuid: ${this.luksUuid}`)
 
     Utils.warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
