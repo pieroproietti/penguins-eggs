@@ -117,8 +117,6 @@ export default class Ovary {
 
   dotLivefs = ''
 
-  luksName = ''
-
   luksMappedName = ''
 
   luksMountpoint = ''

@@ -26,17 +26,16 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
 
   try {
     /**
-     * this.luksName = 'home.img';
-     * this.luksFile = `/tmp/${luksName}`
-     * this.luksDevice = `/dev/mapper/${luksName}`
-     * this.luksMappedName = this.luksName
-     * this.luksMountpoint = `/tmp/mnt/${luksName}`
-     * this.luksPassword = 'evolution' 
+     * this.luksMappedName = 'home.img';
+     * this.luksFile = `/tmp/${luksMappedName}`
+     * this.luksDevice = `/dev/mapper/${luksMappedName}`
+     * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
+     * this.luksPassword = '0' 
      */
 
     console.log()
     console.log('====================================')
-    console.log(` Creating ${this.luksName}`)
+    console.log(` Creating ${this.luksMappedName}`)
     console.log('====================================')
     
     // Utils.warning('1. Calculation of space requirements...')
@@ -77,7 +76,7 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
       }
     }
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo)
+    await exec(`mount /dev/mapper/${this.luksMappedName} ${this.luksMountpoint}`, this.echo)
 
     Utils.warning(`copying /home on  ${this.luksMountpoint}`)
     await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`, this.echo)
@@ -101,7 +100,7 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
     Utils.warning(`closing LUKS volume ${this.luksMappedName}.`)
     await executeCommand('cryptsetup', ['close', this.luksMappedName])
 
-    Utils.warning(`moving ${this.luksName}  to (ISO)/live/.`)
+    Utils.warning(`moving ${this.luksMappedName}  to (ISO)/live/.`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
     Utils.warning('encryption process successfully completed!')
@@ -123,7 +122,7 @@ export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['close', this.luksName]).catch(() => { })
+      await executeCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)

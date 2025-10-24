@@ -28,17 +28,16 @@ export async function luksRoot(this: Ovary) {
 
   try {
     /**
-     * this.luksName = 'luks.img';
-     * this.luksFile = `/tmp/${luksName}`
-     * this.luksDevice = `/dev/mapper/${luksName}`
-     * this.luksMappedName = this.luksName
-     * this.luksMountpoint = `/tmp/mnt/${luksName}`
-     * this.luksPassword = 'evolution' 
+     * this.luksMappedName = 'luks.img';
+     * this.luksFile = `/tmp/${luksMappedName}`
+     * this.luksDevice = `/dev/mapper/${luksMappedName}`
+     * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
+     * this.luksPassword = '0' 
      */
 
     console.log()
     console.log('====================================')
-    console.log(` Creating ${this.luksName}`)
+    console.log(` Creating ${this.luksMappedName}`)
     console.log('====================================')
 
     // Utils.warning('1. Calculation of space requirements...')
@@ -77,7 +76,7 @@ export async function luksRoot(this: Ovary) {
     }
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
 
-    await exec(`mount /dev/mapper/${this.luksName} ${this.luksMountpoint}`, this.echo);
+    await exec(`mount /dev/mapper/${this.luksMappedName} ${this.luksMountpoint}`, this.echo);
 
     Utils.warning(`moving ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`);
     await exec(`mv ${live_fs} ${this.luksMountpoint}/filesystem.squashfs`, this.echo);
@@ -119,7 +118,7 @@ export async function luksRoot(this: Ovary) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['close', this.luksName]).catch(() => { })
+      await executeCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)

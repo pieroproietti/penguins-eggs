@@ -65,15 +65,15 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
     // Crittografia
     if (this.homecrypt || this.fullcrypt) {
         if (this.homecrypt) {
-            this.luksName = 'home.img'
+            this.luksMappedName = 'home.img'
         } else if (this.fullcrypt) {
-            this.luksName = 'root.img'
+            this.luksMappedName = 'root.img'
         }
 
-        this.luksFile = `/tmp/${this.luksName}`
-        this.luksMappedName = this.luksName
-        this.luksMountpoint = `/tmp/mnt/${this.luksName}`
-        this.luksDevice = `/dev/mapper/${this.luksName}`
+        this.luksFile = `/tmp/${this.luksMappedName}`
+        this.luksMappedName = this.luksMappedName
+        this.luksMountpoint = `/tmp/mnt/${this.luksMappedName}`
+        this.luksDevice = `/dev/mapper/${this.luksMappedName}`
         this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
         Utils.warning("You choose an encrypted eggs")
