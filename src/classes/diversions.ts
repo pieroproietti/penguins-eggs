@@ -85,7 +85,7 @@ export default class Diversions {
    * @param volid 
    * @returns 
    */
-  static kernelParameters(familyId: string, volid: string, luksUuid = '', fullCrypt=false): string {
+  static kernelParameters(familyId: string, volid: string, fullCrypt=false): string {
     // GRUB_CMDLINE_LINUX='ipv6.disable=1'
 
     let kp = ""

@@ -317,6 +317,7 @@ love)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
+"(-H --hidden)"{-H,--hidden}"[stealth mode]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
 "(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
@@ -342,6 +343,7 @@ _arguments -S \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-H --hidden)"{-H,--hidden}"[stealth mode]" \
 "(-K --kernel)"{-K,--kernel}"[kernel version]:file:_files" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
@@ -353,7 +355,7 @@ _arguments -S \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
 "(-S --standard)"{-S,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
-"(-i --includeRoot)"{-i,--includeRoot}"[folder /root is included on live]" \
+"(-i --includeRootHome)"{-i,--includeRootHome}"[folder /root is included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \

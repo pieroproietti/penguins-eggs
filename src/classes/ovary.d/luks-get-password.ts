@@ -13,7 +13,6 @@ import { spawn, StdioOptions } from 'node:child_process'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
 
 
 /**
@@ -62,6 +61,7 @@ export async function luksGetPassword(this: Ovary): Promise<void> {
     if (answers.password === answers.confirm) {
       password = answers.password
       confirmed = true
+      this.hidden = true
       Utils.success('Password confirmed!')
     } else {
       Utils.error('Passwords do not match. Please try again.')

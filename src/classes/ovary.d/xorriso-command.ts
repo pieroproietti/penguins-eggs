@@ -101,7 +101,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
         let luksPartitionParam = '' // Inizializziamo la variabile per il parametro LUKS
         if (fullcrypt) {
             // Costruiamo il percorso del file luks.img all'interno della directory di build
-            const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksName)
+            const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksMappedName)
             
             // Verifichiamo che il file esista prima di aggiungerlo
             if (fs.existsSync(luksImagePath)) {

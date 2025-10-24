@@ -19,6 +19,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.10.24
+Review and check on `--fullcrypt` and `--homecrypt`, addition of the `--hidden` flag, and construction of a generic theme used when `--hidden` is passed.
+
 ## v25.10.23
 The `--fullcrypt` option in eggs is now fully functional. It creates a fully encrypted image in the `/live/root.img` file, which is a LUKS-formatted volume that is opened at startup ONLY after the passphrase has been entered.
 

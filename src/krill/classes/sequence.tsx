@@ -115,9 +115,9 @@ export default class Sequence {
   settings = {} as Settings
   remix = {} as IRemix
   distro = {} as IDistro
-  luksName = 'luks-volume'                    // encrypted ISOs
+  luksMappedName = 'luks-volume'                    // encrypted ISOs
   luksFile = ``                               // encrypted ISOs
-  luksDevice = `/dev/mapper/${this.luksName}` // encrypted ISOs
+  luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
   luksMountpoint = `/mnt`                     // encrypted ISOs
   luksRootName = ''                           // installation encrypted
   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
@@ -150,7 +150,7 @@ export default class Sequence {
     this.devices.swap = {} as IDevice
     this.distro = new Distro()
     this.efi = fs.existsSync('/sys/firmware/efi/efivars');
-    this.luksFile = `${this.distro.liveMediumPath}live/${this.luksName}`
+    this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
     this.luksRootName = `${this.distro.distroLike}_root`   
     this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }

@@ -48,37 +48,66 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     await exec(`cp ${sysPath}/libutil.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${sysPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
+    const splashDest = `${this.settings.iso_work}/isolinux/splash.png`
+    let splashSrc = '' 
+
+    let isolinuxTemplate = ''
+    const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
+
+    let isolinuxThemeSrc = ''
     const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
-    let isolinuxThemeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
-    if (this.theme.includes('/')) {
-        isolinuxThemeSrc = `${theme}/theme/livecd/isolinux.theme.cfg`
-    }
+    if (this.hidden) {
+        splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/generic-splash.png`)
+        isolinuxTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.isolinux.main.cfg')
+        isolinuxThemeSrc = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.isolinux.theme.cfg')
+    } else {
+        isolinuxThemeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/isolinux.theme.cfg`)
+        if (this.theme.includes('/')) {
+            isolinuxThemeSrc = `${theme}/theme/livecd/isolinux.theme.cfg`
+        }
 
-    if (!fs.existsSync(isolinuxThemeSrc)) {
-        Utils.warning('Cannot find: ' + isolinuxThemeSrc)
-        process.exit()
-    }
+        if (!fs.existsSync(isolinuxThemeSrc)) {
+            Utils.warning('Cannot find: ' + isolinuxThemeSrc)
+            process.exit()
+        }
 
+        /**
+         * isolinux.cfg from isolinux.main.cfg
+         */
+        this.settings.iso_work + 'isolinux/isolinux.cfg'
+        isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
+        if (!fs.existsSync(isolinuxTemplate)) {
+            isolinuxTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/isolinux.main.cfg')
+        }
+
+        if (!fs.existsSync(isolinuxTemplate)) {
+            Utils.warning('Cannot find: ' + isolinuxTemplate)
+            process.exit()
+        }
+
+        /**
+         * splash
+         */
+        let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
+        if (this.theme.includes('/')) {
+            splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
+        }
+
+        if (!fs.existsSync(splashSrc)) {
+            Utils.warning('Cannot find: ' + splashSrc)
+            process.exit()
+        }
+    }
+    // Splash
+    fs.copyFileSync(splashSrc, splashDest)
+
+    // isolinux.theme.cfg
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
 
+    // isolinux.main.cfg
+    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
+    let template = fs.readFileSync(isolinuxTemplate, 'utf8')
 
-    /**
-     * isolinux.cfg from isolinux.main.cfg
-     */
-    const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
-    this.settings.iso_work + 'isolinux/isolinux.cfg'
-    let isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
-    if (!fs.existsSync(isolinuxTemplate)) {
-        isolinuxTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/isolinux.main.cfg')
-    }
-
-    if (!fs.existsSync(isolinuxTemplate)) {
-        Utils.warning('Cannot find: ' + isolinuxTemplate)
-        process.exit()
-    }
-
-    const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.luksUuid, this.fullcrypt)
-    const template = fs.readFileSync(isolinuxTemplate, 'utf8')
     const view = {
         fullname: this.settings.remix.fullname.toUpperCase(),
         initrdImg: `/live/${path.basename(this.initrd)}`,
@@ -88,20 +117,5 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     }
     fs.writeFileSync(isolinuxDest, mustache.render(template, view))
 
-    /**
-     * splash
-     */
-    const splashDest = `${this.settings.iso_work}/isolinux/splash.png`
-    let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
-    if (this.theme.includes('/')) {
-        splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
-    }
-
-    if (!fs.existsSync(splashSrc)) {
-        Utils.warning('Cannot find: ' + splashSrc)
-        process.exit()
-    }
-
-    fs.copyFileSync(splashSrc, splashDest)
 }
 

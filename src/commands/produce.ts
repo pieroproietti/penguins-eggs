@@ -41,6 +41,7 @@ export default class Produce extends Command {
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     help: Flags.help({ char: 'h' }),
+    hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
     kernel: Flags.string({ char: 'K', description: 'kernel version' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
@@ -52,7 +53,7 @@ export default class Produce extends Command {
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    includeRoot: Flags.boolean({ char: 'i', description: 'folder /root is included on live' }),
+    includeRootHome: Flags.boolean({ char: 'i', description: 'folder /root is included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }
@@ -159,6 +160,8 @@ export default class Produce extends Command {
 
       const { homecrypt } = flags
 
+      const { hidden } = flags
+
       const { fullcrypt } = flags
 
       const { verbose } = flags
@@ -171,8 +174,8 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      // if clone or homecrypt includeRoot = true
-      const includeRoot = flags.includeRoot || clone || homecrypt
+      // if clone or homecrypt includeRootHome = true
+      const includeRootHome = flags.includeRootHome || clone || homecrypt
 
       let { kernel } = flags
       if (kernel === undefined) {
@@ -257,7 +260,7 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
-        await ovary.produce(kernel, clone, homecrypt, fullcrypt, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRoot, verbose)
+        await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
       }
     } else {

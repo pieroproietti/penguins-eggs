@@ -42,10 +42,27 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param myAddons
  * @param nointeractive
  * @param noicons
- * @param includeRoot
+ * @param includeRootHome
  * @param verbose
  */
-export async function produce(this: Ovary, kernel = '', clone = false, homecrypt = false, fullcrypt = false, scriptOnly = false, yolkRenew = false, release = false, myAddons: IAddons, myLinks: string[], excludes: IExcludes, nointeractive = false, noicons = false, includeRoot = false, verbose = false) {
+export async function produce(
+    this: Ovary,
+    kernel = '',
+    clone = false,
+    homecrypt = false,
+    fullcrypt = false,
+    hidden = false,
+    scriptOnly = false,
+    yolkRenew = false,
+    release = false,
+    myAddons: IAddons,
+    myLinks: string[],
+    excludes: IExcludes,
+    nointeractive = false,
+    noicons = false,
+    includeRootHome = false,
+    verbose = false) {
+
     this.verbose = verbose
     this.echo = Utils.setEcho(verbose)
     if (this.verbose) {
@@ -61,20 +78,20 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
     this.clone = clone
     this.homecrypt = homecrypt
     this.fullcrypt = fullcrypt
+    this.hidden = hidden
 
     // Crittografia
     if (this.homecrypt || this.fullcrypt) {
         if (this.homecrypt) {
-            this.luksName = 'home.img'
+            this.luksMappedName = 'home.img'
         } else if (this.fullcrypt) {
-            this.luksName = 'root.img'
+            this.luksMappedName = 'root.img'
         }
 
-        this.luksUuid = ''
-        this.luksFile = `/tmp/${this.luksName}`
-        this.luksMappedName = this.luksName
-        this.luksMountpoint = `/tmp/mnt/${this.luksName}`
-        this.luksDevice = `/dev/mapper/${this.luksName}`
+        this.luksFile = `/tmp/${this.luksMappedName}`
+        this.luksMappedName = this.luksMappedName
+        this.luksMountpoint = `/tmp/mnt/${this.luksMappedName}`
+        this.luksDevice = `/dev/mapper/${this.luksMappedName}`
         this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
         Utils.warning("You choose an encrypted eggs")
@@ -154,7 +171,6 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
         if (this.homecrypt) {
             this.settings.config.user_opt = 'live' // patch for humans
             this.settings.config.user_opt_passwd = 'evolution'
-            this.settings.config.root_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
 
         } else if (this.fullcrypt) {
@@ -227,11 +243,11 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
              * installer
              */
             this.incubator = new Incubator(
-                this.settings.remix, 
-                this.settings.distro, 
-                this.settings.config.user_opt, 
-                this.theme, 
-                this.clone || this.fullcrypt, 
+                this.settings.remix,
+                this.settings.distro,
+                this.settings.config.user_opt,
+                this.theme,
+                this.clone || this.fullcrypt,
                 verbose)
 
             await this.incubator.config(release)
@@ -272,7 +288,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
             await this.ubindVfs()
 
 
-            const cleanSystem = ! (this.clone || this.fullcrypt)
+            const cleanSystem = !(this.clone || this.fullcrypt)
             if (cleanSystem) {
                 /**
                  * SOLO per homecrypt e standard
@@ -305,7 +321,7 @@ export async function produce(this: Ovary, kernel = '', clone = false, homecrypt
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
             }
 
-            mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRoot)
+            mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
             await this.uBindLiveFs() // we don't need more
         }
 
