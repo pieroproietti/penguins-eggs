@@ -98,12 +98,11 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
             process.exit()
         }
     }
+    // Splash
+    fs.copyFileSync(splashSrc, splashDest)
 
     // isolinux.theme.cfg
     fs.copyFileSync(isolinuxThemeSrc, isolinuxThemeDest)
-
-    // Splash
-    fs.copyFileSync(splashSrc, splashDest)
 
     // isolinux.main.cfg
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
@@ -118,19 +117,5 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     }
     fs.writeFileSync(isolinuxDest, mustache.render(template, view))
 
-    /**
-     * splash
-     */
-    splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
-    if (this.theme.includes('/')) {
-        splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
-    }
-
-    if (!fs.existsSync(splashSrc)) {
-        Utils.warning('Cannot find: ' + splashSrc)
-        process.exit()
-    }
-
-    fs.copyFileSync(splashSrc, splashDest)
 }
 

@@ -40,7 +40,7 @@ export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '
      * write volid .disk/info 
      * Required
      */
-    let volidContent = "Debian Live (Trixie)"
+    let volidContent = "Linux live"
     if (this.hidden) {
         fs.writeFileSync(path.join(dotDisk, 'info'), volidContent, 'utf-8')
         return
