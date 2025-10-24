@@ -54,7 +54,7 @@ export async function luksRoot(this: Ovary) {
      */
 
     if (this.hidden) {
-      Utils.warning("Intentionally blank, system is working. Please wait")
+      Utils.warning("intentionally blank. System is working, please wait")
     }
 
     log()

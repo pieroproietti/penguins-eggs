@@ -45,7 +45,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
     const { log, warning, success, info } = loggers;
 
     if (this.hidden) {
-      Utils.warning("Intentionally blank, system is working. Please wait")
+      Utils.warning("intentionally blank. System is working, please wait")
     }
     
 
@@ -108,7 +108,10 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         {
             warning(`Running mkinitramfs for kernel ${kernelVersion} inside chroot...`);
             const chrootTmpInitrdPath = `/tmp/${initrdBaseName}`;
-            const logFilePath = path.join(this.settings.iso_work, logBaseName);
+            let logFilePath = path.join(this.settings.iso_work, logBaseName);
+            if (this.hidden) {
+                logFilePath = '/dev/null'
+            }
 
             const mkinitramfsCmd = `mkinitramfs -v -o "${chrootTmpInitrdPath}" ${kernelVersion}`;
             const chrootCmd = `chroot "${chrootPath}" /bin/bash -c "${mkinitramfsCmd}" > "${logFilePath}" 2>&1`;

@@ -26,7 +26,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param this 
  * @param theme 
  */
-export async function makeEfi (this:Ovary, theme ='eggs') {
+export async function makeEfi(this: Ovary, theme = 'eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
     /**
@@ -108,7 +108,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * create grub.cfg (bridge) on (ISO)/boot/grub/x86_64-efi/grub.cfg
      */
     Utils.warning(`creating grub.cfg bridge to main. (ISO)/boot/grub/${Utils.uefiFormat()}`)
-    let cfgBridge=`${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    let cfgBridge = `${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
     let cfgBridgeText = `# grub.cfg bridge\n`
     cfgBridgeText += `# created on ${cfgBridge}\n`
     cfgBridgeText += `\n`
@@ -177,7 +177,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
-    await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/boot/grub.cfg`, this.echo) 
+    await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/boot/grub.cfg`, this.echo)
     await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
     await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -186,7 +186,7 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
         process.exit(1)
     }
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     await exec(`umount ${efiImgMnt}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 500))
 
@@ -199,60 +199,77 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
      * creating grub.cfg (4) on (ISO)/boot/grub
      */
     Utils.warning("creating grub.cfg main on (ISO)/boot/grub")
-    
-    // copy splash to efiWorkDir
+    // splash.png
+    let splashSrc = ''
     const splashDest = `${efiWorkDir}/boot/grub/splash.png`
-    let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
-    if (this.theme.includes('/')) {
-        splashSrc = `${theme}/theme/livecd/splash.png`
+
+    let themeSrc = ''
+    const themeDest = `${isoDir}/boot/grub/theme.cfg`
+
+    let grubTemplate = ''
+    if (this.hidden) {
+        splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/generic-splash.png`)
+        grubTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.grub.main.cfg')
+        themeSrc = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.grub.theme.cfg')
+    } else {
+
+        // copy splash to efiWorkDir
+
+        splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
+        if (this.theme.includes('/')) {
+            splashSrc = `${theme}/theme/livecd/splash.png`
+        }
+
+        if (!fs.existsSync(splashSrc)) {
+            Utils.warning(`warning: ${splashSrc} does not exists`)
+            process.exit(1)
+        }
+
+        // select themeSrc
+        themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
+        if (this.theme.includes('/')) {
+            themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
+        }
+
+        // copy theme
+        if (!fs.existsSync(themeSrc)) {
+            Utils.error(`error: ${themeSrc} does not exist`)
+            process.exit(1)
+        }
+
+        // selecting available fonts
+        if (fs.existsSync('/usr/share/grub/font.pf2')) {
+            await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
+            await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
+            await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
+        }
+
+        // Copy workdir files to ISO/boot
+        await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
+
+        /**
+         * prepare main grub.cfg from grub.main.cfg
+         */
+        grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
+        if (!fs.existsSync(grubTemplate)) {
+            grubTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/grub.main.cfg')
+        }
+
+        if (!fs.existsSync(grubTemplate)) {
+            Utils.error(`error: ${grubTemplate} does not exist`)
+            process.exit(1)
+        }
     }
 
-    if (!fs.existsSync(splashSrc)) {
-        Utils.warning(`warning: ${splashSrc} does not exists`)
-        process.exit(1)
-    }
+    // splash.png
     await exec(`cp ${splashSrc} ${splashDest}`, this.echo)
 
-    // select themeSrc
-    let themeSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/grub.theme.cfg`)
-    if (this.theme.includes('/')) {
-        themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
-    }
-
-    // copy theme
-    const themeDest = `${isoDir}/boot/grub/theme.cfg`
-    if (!fs.existsSync(themeSrc)) {
-        Utils.error(`error: ${themeSrc} does not exist`)
-        process.exit(1)
-    }
+    // grub.theme.png
     fs.copyFileSync(themeSrc, themeDest)
 
-    // selecting available fonts
-    if (fs.existsSync('/usr/share/grub/font.pf2')) {
-        await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
-        await exec(`cp /usr/share/grub/unicode.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    } else if (fs.existsSync('/usr/share/grub/ascii.pf2')) {
-        await exec(`cp /usr/share/grub/ascii.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
-    }
-
-    // Copy workdir files to ISO/boot
-    await exec(`rsync -avx  ${efiWorkDir}/boot ${isoDir}/`, this.echo)
-
-
-    /**
-     * prepare main grub.cfg from grub.main.cfg
-     */
-    let grubTemplate = `${theme}/theme/livecd/grub.main.cfg`
-    if (!fs.existsSync(grubTemplate)) {
-        grubTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/grub.main.cfg')
-    }
-
-    if (!fs.existsSync(grubTemplate)) {
-        Utils.error(`error: ${grubTemplate} does not exist`)
-        process.exit(1)
-    }
-
+    // grub.main.png
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
     const cfgMain = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
@@ -266,10 +283,11 @@ export async function makeEfi (this:Ovary, theme ='eggs') {
     }
     let cfgMainText = ''
     cfgMainText += `# grub.cfg (4) main\n`
-    cfgMainText += `# created on ${cfgMain}`
+    if (!this.hidden) {
+        cfgMainText += `# created on ${cfgMain}`
+    }
     cfgMainText += `\n`
     cfgMainText += mustache.render(template, view)
-
     fs.writeFileSync(cfgMain, cfgMainText)
 }
 
