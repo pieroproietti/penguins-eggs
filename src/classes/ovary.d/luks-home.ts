@@ -53,7 +53,7 @@ export async function luksHome(
      */
 
     if (this.hidden) {
-      Utils.warning("system is working, please wait...")
+      Utils.warning("Intentionally blank, system is working. Please wait")
     }
 
     log()

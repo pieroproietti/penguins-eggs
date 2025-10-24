@@ -45,7 +45,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
     const { log, warning, success, info } = loggers;
 
     if (this.hidden) {
-      Utils.warning("system is working, please wait...")
+      Utils.warning("Intentionally blank, system is working. Please wait")
     }
     
 
