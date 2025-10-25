@@ -1,10 +1,12 @@
 #!/bin/bash
-# Script per sbloccare e montare home.img LUKS cifrato
+# This Bash script is used to unlock and mount a LUKS-encrypted home.img 
+# file for use as a /home directory, typically in a “live” 
+# operating system environment (booted from USB or DVD).
 # v1.1 
 
 set -e
 
-# Configurazione
+# configuration
 HOME_IMG="__HOME_IMG_PATH__"
 LUKS_NAME="live-home"
 MOUNT_POINT="/home"
