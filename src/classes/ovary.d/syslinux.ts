@@ -49,13 +49,13 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     await exec(`cp ${sysPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
     const splashDest = `${this.settings.iso_work}/isolinux/splash.png`
-    let splashSrc = '' 
-
-    let isolinuxTemplate = ''
+    const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
     const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
 
+    let splashSrc = '' 
+    let isolinuxTemplate = ''
     let isolinuxThemeSrc = ''
-    const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
+
     if (this.hidden) {
         splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/generic-splash.png`)
         isolinuxTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.isolinux.main.cfg')
@@ -88,7 +88,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
         /**
          * splash
          */
-        let splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
+        splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
         if (this.theme.includes('/')) {
             splashSrc = path.resolve(`${theme}/theme/livecd/splash.png`)
         }
