@@ -1,7 +1,6 @@
 #!/bin/bash
 # Script per sbloccare e montare home.img LUKS cifrato
-# v1.1 - Aggiunto supporto Plymouth
-# Con logging robusto e gestione errori
+# v1.1 
 
 set -e
 
@@ -11,7 +10,7 @@ LUKS_NAME="live-home"
 MOUNT_POINT="/home"
 LOG_FILE="/var/log/mount-encrypted-home.log"
 
-# Funzione di logging
+# logging
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
@@ -29,7 +28,7 @@ cleanup() {
     if [ -e "/dev/mapper/$LUKS_NAME" ]; then
         cryptsetup close "$LUKS_NAME" 2>/dev/null || true
     fi
-    # Se abbiamo copiato in RAM, rimuoviamo la copia
+    # If we copied to RAM, we remove the copy
     if [ "$HOME_IMG" = "/var/tmp/home.img" ]; then
         rm -f /var/tmp/home.img 2>/dev/null || true
         log "Removed temporary home.img from /var/tmp"
@@ -40,7 +39,7 @@ trap cleanup EXIT
 
 log "=== Starting encrypted home mount process (v1.1) ==="
 
-# Verifica memoria disponibile
+# Check available memory
 AVAILABLE_MEM=$(free -m | awk '/^Mem:/{print $7}')
 log "Available memory: ${AVAILABLE_MEM}MB"
 
@@ -49,9 +48,9 @@ if [ "$AVAILABLE_MEM" -lt 1024 ]; then
     log "This might cause issues with LUKS operations"
 fi
 
-# Attendi che il media sia disponibile (max 30 secondi)
+# Wait for the media to become available (max 30 seconds)
 log "Waiting for live media to be available..."
-ORIG_HOME_IMG="$HOME_IMG" # Salva il path originale
+ORIG_HOME_IMG="$HOME_IMG" # Save the original path
 COUNTER=0
 while [ ! -f "$ORIG_HOME_IMG" ] && [ $COUNTER -lt 30 ]; do
     sleep 1
@@ -67,19 +66,19 @@ fi
 
 log "Found home.img at $ORIG_HOME_IMG"
 
-# Copia in RAM se è su media read-only
-# Nota: /var/tmp è su overlay (tmpfs), quindi è in RAM.
+# Copy to RAM if it is on read-only media
+# Note: /var/tmp is on overlay (tmpfs), so it is in RAM.
 TEMP_HOME_IMG="/var/tmp/home.img"
 log "Copying home.img to RAM..."
 cp "$ORIG_HOME_IMG" "$TEMP_HOME_IMG"
 HOME_IMG="$TEMP_HOME_IMG" # Da ora in poi usiamo la copia in RAM
 log "home.img copied to $HOME_IMG"
 
-# Verifica dimensione file
+# Check file size
 IMG_SIZE=$(stat -c %s "$HOME_IMG")
 log "home.img size: $((IMG_SIZE / 1024 / 1024))MB"
 
-# Verifica se è un volume LUKS
+# Check if it is a LUKS volume
 if ! cryptsetup isLuks "$HOME_IMG" 2>&1 | tee -a "$LOG_FILE"; then
     log_error "$HOME_IMG is not a valid LUKS volume"
     exit 1
@@ -87,16 +86,16 @@ fi
 
 log "Verified: home.img is a valid LUKS volume"
 
-# Aspetta che il TTY sia completamente inizializzato
+# Wait until the TTY is fully initialized
 sleep 2
 
-# Pulisci eventuale device mapper precedente
+# Clean up any previous device mappers
 if [ -e "/dev/mapper/$LUKS_NAME" ]; then
     log "LUKS device already exists, closing it first..."
     cryptsetup close "$LUKS_NAME" 2>&1 | tee -a "$LOG_FILE" || true
 fi
 
-# --- LOGICA RICHIESTA PASSWORD (CON PLYMOUTH) ---
+# PASSWORD REQUEST
 MAX_ATTEMPTS=3
 ATTEMPT=1
 UNLOCKED=0 # Flag per sapere se abbiamo sbloccato
@@ -104,11 +103,11 @@ UNLOCKED=0 # Flag per sapere se abbiamo sbloccato
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     log "Unlock attempt $ATTEMPT of $MAX_ATTEMPTS"
     
-    # Controlla se Plymouth è attivo
+    # Check if Plymouth is active
     if plymouth --ping 2>/dev/null; then
         log "Plymouth active. Asking for password via Plymouth..."
         
-        # Chiede a Plymouth, passa la password a cryptsetup via stdin
+        # ask-for-password, get password a cryptsetup via stdin
         if plymouth ask-for-password --prompt="Enter passphrase for /home ($ATTEMPT/$MAX_ATTEMPTS)" | cryptsetup open "$HOME_IMG" "$LUKS_NAME" --key-file - 2>&1 | tee -a "$LOG_FILE"; then
             log "LUKS volume unlocked successfully via Plymouth"
             UNLOCKED=1
@@ -117,14 +116,13 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
             log_error "Failed to unlock LUKS volume via Plymouth (attempt $ATTEMPT)"
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
                  plymouth display-message --text="Incorrect passphrase. Try again..."
-                 sleep 2 # Dà tempo di leggere il messaggio
+                 sleep 2 # Gives time to read the message
             fi
         fi
     else
-        # Fallback: Plymouth non attivo (o fallito)
+        # Fallback: Plymouth not active. asking for password via console
         log "Plymouth not active. Asking for password via console..."
         
-        # Stampa il prompt (già presente nel tuo script originale)
         echo ""
         echo "╔════════════════════════════════════════╗"
         echo "║  Encrypted Home Directory Detected     ║"
@@ -148,10 +146,9 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
 
     ATTEMPT=$((ATTEMPT + 1))
 done
-# --- FINE LOGICA RICHIESTA PASSWORD ---
 
 
-# Controlla se lo sblocco è fallito dopo tutti i tentativi
+# Check if unlocking failed after all attempts
 if [ $UNLOCKED -eq 0 ]; then
     log_error "Maximum attempts reached. Continuing without encrypted home."
     echo ""
@@ -168,10 +165,10 @@ if [ $UNLOCKED -eq 0 ]; then
     fi
     
     sleep 3
-    exit 0 # Esce senza errore, per permettere al sistema di continuare
+    exit 0 # Exits without error, allowing the system to continue
 fi
 
-# Verifica che il device mapper esista
+# Verify that the device mapper exists
 if [ ! -e "/dev/mapper/$LUKS_NAME" ]; then
     log_error "Device /dev/mapper/$LUKS_NAME not found after unlock"
     exit 1
@@ -192,21 +189,21 @@ else
     exit 1
 fi
 
-# Rimuovi la copia in RAM, non serve più
+# Remove the copy in RAM, it is no longer needed
 log "Cleaning up temporary copy: $HOME_IMG"
 rm -f "$HOME_IMG" 2>/dev/null || true
 
-# Ripristina gli utenti se esistono
+# Restore users if they exist
 if [ -d "$MOUNT_POINT/.system-backup" ]; then
     log "Restoring user accounts..."
     
-    # Rimuovi utente live temporaneo
+    # Remove temporary live user
     if id live >/dev/null 2>&1; then
         log "Removing temporary 'live' user"
         userdel -r live 2>&1 | tee -a "$LOG_FILE" || true
     fi
     
-    # Ripristina gli utenti (NOTA: hai duplicato questo blocco nel tuo script originale, l'ho corretto)
+    # Restore users
     if [ -f "$MOUNT_POINT/.system-backup/passwd" ]; then
         cat "$MOUNT_POINT/.system-backup/passwd" >> /etc/passwd
         log "Restored $(wc -l < "$MOUNT_POINT/.system-backup/passwd") user entries"
@@ -216,7 +213,7 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         cat "$MOUNT_POINT/.system-backup/shadow" >> /etc/shadow
     fi
 
-    # Ripristina i gruppi (sostituisci completamente)
+    # Restore groups (replace completely)
     if [ -f "$MOUNT_POINT/.system-backup/group" ]; then
         cp "$MOUNT_POINT/.system-backup/group" /etc/group
         log "Restored group memberships"
@@ -228,7 +225,7 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
 
     log "User accounts restored successfully"
     
-    # Riavvia display manager per ricaricare gli utenti
+    # Restart the display manager to reload users
     log "Restarting display manager..."
     if systemctl is-active --quiet gdm; then
         systemctl restart gdm 2>&1 | tee -a "$LOG_FILE"
@@ -248,12 +245,12 @@ fi
 
 log "=== Encrypted home mount completed successfully ==="
 
-# Notifica a Plymouth (se attivo) che abbiamo finito
+# Notify Plymouth (if active) that we are done
 if plymouth --ping 2>/dev/null; then
     plymouth quit
 fi
 
-# Non fare cleanup al successo
+# Don't clean up success
 trap - EXIT
 
 exit 0
