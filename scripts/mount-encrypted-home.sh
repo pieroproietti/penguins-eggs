@@ -2,8 +2,10 @@
 # This Bash script is used to unlock and mount a LUKS-encrypted home.img
 # file for use as a /home directory, typically in a “live”
 # operating system environment (booted from USB or DVD).
-# v1.3 - Removed RAM copy and implemented OverlayFS for RW /home
+# v1.4 - Fixed 3-attempt loop by checking PIPESTATUS instead of pipe exit code.
+#      - Replaced non-breaking spaces with regular spaces.
 
+# enable echo
 set -e
 
 # configuration
@@ -11,8 +13,8 @@ HOME_IMG="__HOME_IMG_PATH__"
 LUKS_NAME="live-home"
 MOUNT_POINT="/home"
 
-# Definiamo i percorsi per l'OverlayFS
-# Useremo /run che è un tmpfs (in RAM)
+# define path OverlayFS
+# we will use /run che è un tmpfs (in RAM)
 LOWER_DIR="/run/live-home-lower"
 UPPER_DIR="/run/live-home-upper"
 WORK_DIR="/run/live-home-work"
@@ -45,7 +47,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-log "=== Starting encrypted home mount process (v1.3) ==="
+log "=== Starting encrypted home mount process (v1.4) ==="
 
 # Check available memory
 AVAILABLE_MEM=$(free -m | awk '/^Mem:/{print $7}')
@@ -95,6 +97,9 @@ if [ -e "/dev/mapper/$LUKS_NAME" ]; then
 fi
 
 # PASSWORD REQUEST
+# disable 'set -e' to let 3 tempts
+set +e
+
 MAX_ATTEMPTS=3
 ATTEMPT=1
 UNLOCKED=0 # Flag per sapere se abbiamo sbloccato
@@ -106,8 +111,12 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     if plymouth --ping 2>/dev/null; then
         log "Plymouth active. Asking for password via Plymouth..."
         
-        # ask-for-password, get password a cryptsetup via stdin
-        if plymouth ask-for-password --prompt="Enter passphrase for /home ($ATTEMPT/$MAX_ATTEMPTS)" | cryptsetup open "$HOME_IMG" "$LUKS_NAME" --key-file - 2>&1 | tee -a "$LOG_FILE"; then
+        # Execute the command and check PIPESTATUS.
+        plymouth ask-for-password --prompt="Enter passphrase for /home ($ATTEMPT/$MAX_ATTEMPTS)" | cryptsetup open "$HOME_IMG" "$LUKS_NAME" --key-file - 2>&1 | tee -a "$LOG_FILE"
+        
+        # Check the status of cryptsetup (index 1), not tee (index 2)
+        # PIPESTATUS[0] = plymouth, [1] = cryptsetup, [2] = tee
+        if [ ${PIPESTATUS[1]} -eq 0 ]; then
             log "LUKS volume unlocked successfully via Plymouth"
             UNLOCKED=1
             break
@@ -127,11 +136,16 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
         echo "║  Encrypted Home Directory Detected     ║"
         echo "╚════════════════════════════════════════╝"
         echo ""
-        echo "Please enter your passphrase to unlock your home directory ($ATTEMPT/$MAX_ATTEMPTS)"
+        echo "Please enter your passphrase to unlock your data ($ATTEMPT/$MAX_ATTEMPTS)"
         echo "(Press Ctrl+C to skip and continue with temporary home)"
         echo ""
 
-        if cryptsetup open "$HOME_IMG" "$LUKS_NAME" 2>&1 | tee -a "$LOG_FILE"; then
+        # Run the command and check PIPESTATUS
+        cryptsetup open "$HOME_IMG" "$LUKS_NAME" 2>&1 | tee -a "$LOG_FILE"
+        
+        # Check the status of cryptsetup (index 0), not tee (index 1).
+        # PIPESTATUS[0] = cryptsetup, [1] = tee
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
             log "LUKS volume unlocked successfully via console"
             UNLOCKED=1
             break
@@ -148,6 +162,9 @@ done
 
 
 # Check if unlocking failed after all attempts
+# Enable echo
+set -e
+
 if [ $UNLOCKED -eq 0 ]; then
     log_error "Maximum attempts reached. Continuing without encrypted home."
     echo ""
@@ -167,6 +184,7 @@ if [ $UNLOCKED -eq 0 ]; then
     exit 0 # Exits without error, allowing the system to continue
 fi
 
+
 # Verify that the device mapper exists
 if [ ! -e "/dev/mapper/$LUKS_NAME" ]; then
     log_error "Device /dev/mapper/$LUKS_NAME not found after unlock"
@@ -175,12 +193,12 @@ fi
 
 log "LUKS device available at /dev/mapper/$LUKS_NAME"
 
-# Implementazione di OverlayFS
-# 1. Creiamo tutti i punti di mount e le directory necessarie
+# Implementing OverlayFS
+# 1. Create all necessary mount points and directories
 log "Creating overlay directories..."
 mkdir -p "$LOWER_DIR" "$UPPER_DIR" "$WORK_DIR" "$MOUNT_POINT"
 
-# 2. Monta il volume decifrato in read-only come 'lowerdir'
+# 2. Mount the decrypted volume as read-only as 'lowerdir'
 log "Mounting decrypted volume to $LOWER_DIR (read-only base)"
 if ! mount -o ro "/dev/mapper/$LUKS_NAME" "$LOWER_DIR" 2>&1 | tee -a "$LOG_FILE"; then
     log_error "Failed to mount decrypted volume (read-only) to $LOWER_DIR"
@@ -237,14 +255,13 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         cp "$MOUNT_POINT/.system-backup/gshadow" /etc/gshadow
     fi
 
-    # --- INIZIO MODIFICA ---
     # Restore Display Manager configs for autologin
     log "Restoring display manager configurations (for autologin)..."
     
     # GDM (gdm3)
     if [ -d "$MOUNT_POINT/.system-backup/gdm3" ]; then
         log "Restoring GDM3 config..."
-        # Rimuoviamo la configurazione live di default prima di copiare
+        # Remove the default live configuration before copying
         rm -rf /etc/gdm3 2>/dev/null
         cp -a "$MOUNT_POINT/.system-backup/gdm3" /etc/
     fi
@@ -273,8 +290,7 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         rm -rf /etc/sddm.conf.d 2>/dev/null
         cp -a "$MOUNT_POINT/.system-backup/sddm.conf.d" /etc/
     fi
-    # --- FINE MODIFICA ---
-
+    
     log "User accounts and DM configs restored successfully"
     
     # Restart the display manager to reload users

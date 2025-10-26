@@ -15,6 +15,13 @@ import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
 
+import { 
+  getCryptoConfig, 
+  type CryptoConfig, 
+  type ArgonCryptoConfig, 
+  type Pbkdf2CryptoConfig 
+} from './luks-get-crypto-config.js'; // Assicurati che il percorso sia corretto
+
 const noop = () => {}; 
 type ConditionalLoggers = {
     log: (...args: any[]) => void;
@@ -78,7 +85,9 @@ export async function luksRoot(this: Ovary) {
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
-    await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
+    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
+    const luksFormatArgs = buildLuksFormatArgs(this.luksConfig, this.luksFile);
+    await executeCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
 
     warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
@@ -184,4 +193,41 @@ function bytesToGB(bytes: number): string {
   if (bytes === 0) return '0.00 GB';
   const gigabytes = bytes / (1024 * 1024 * 1024);
   return gigabytes.toFixed(2) + ' GB';
+}
+
+
+/**
+ * buildLuksFormatArgs
+ */
+function buildLuksFormatArgs(config: CryptoConfig, luksFile: string): string[] {
+    const args: string[] = [
+        '--batch-mode', // Per saltare la conferma "YES"
+        'luksFormat',
+        '--type', 'luks2',
+        
+        // Parametri base
+        '--cipher', config.cipher,
+        '--key-size', config['key-size'].toString(),
+        '--hash', config.hash,
+        '--sector-size', config['sector-size'].toString(),
+        '--pbkdf', config.pbkdf,
+    ];
+
+    // Aggiungi i parametri condizionali del PBKDF
+    switch (config.pbkdf) {
+        case 'argon2id':
+        case 'argon2i':
+            const argonConfig = config as ArgonCryptoConfig;
+            args.push('--pbkdf-memory', argonConfig['pbkdf-memory (KiB)'].toString());
+            args.push('--pbkdf-parallel', argonConfig['pbkdf-parallel (threads)'].toString());
+            break;
+        case 'pbkdf2':
+            const pbkdf2Config = config as Pbkdf2CryptoConfig;
+            args.push('--iter-time', pbkdf2Config['iter-time (ms)'].toString());
+            break;
+    }
+
+    // Aggiungi il file di destinazione
+    args.push(luksFile);
+    return args;
 }
