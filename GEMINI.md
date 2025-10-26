@@ -47,9 +47,9 @@ Can use two different system installer:
 
 - **[penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo)**: The repository hosting official packages for installation and updating of `eggs` on all the distros supported.
 
-- ** https://aur.archlinux.org/packages/penguins-eggs the PKGBUILD used to create paenguins-eggs package from [Chaos](https://aur.chaotic.cx/)
+- the **[PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs)**  used to create penguins-eggs package from [Chaotic-AUR](https://aur.chaotic.cx/).
 
-- **[websito](https://github.com/pieroproietti/penguins-blog)**: the source code for the official website **[penguins-eggs.net](https://penguins-eggs.net)**, which includes documentation and user guides.
+- **[website](https://github.com/pieroproietti/penguins-blog)**: the source code for the official website **[penguins-eggs.net](https://penguins-eggs.net)**, which includes documentation and user guides.
 
 ## Author
 - **Piero Proietti <piero.proietti@gmail.com>**
