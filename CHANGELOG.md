@@ -18,6 +18,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
+## v25.10.25
+* revision of procedure to produce homecrypt ISOs;
+* added default and interactive LUKS configuration.
 
 ## v25.10.24
 Review and check on `--fullcrypt` and `--homecrypt`, addition of the `--hidden` flag, and construction of a generic theme used when `--hidden` is passed.

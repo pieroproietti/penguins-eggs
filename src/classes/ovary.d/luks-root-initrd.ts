@@ -1,6 +1,6 @@
 /**
  * ./src/classes/ovary.d/initrd-luks.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * penguins-eggs v.25.10.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT

@@ -1,6 +1,6 @@
 /**
- * ./src/classe/ovary.d/luks-buid-cmd.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * ./src/classe/ovary.d/luks-interactive-crypto-config.ts
+ * penguins-eggs v.25.10.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
