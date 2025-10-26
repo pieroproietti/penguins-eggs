@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-`penguins-eggs` is a command-line tool for remastering AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and derivative systems. It allows users to create a live, bootable ISO image of their current system, which can be used for backups, distribution, or creating custom operating system versions. The project is written in TypeScript and built using the oclif framework for CLIs.
+`penguins-eggs` is a command-line tool for remastering AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinux, Ubuntu and derivative systems. It allows users to create a live, bootable ISO image of their current system, with optional LUKS encryption, which can be used for backups, distribution, or creating custom operating system versions. The project is written in TypeScript and built using the oclif framework for CLIs.
 
 Can use two different system installer:
 - **krill**: `sudo eggs install` is a TUI system installer, always included and operational
-- **calamares**: calamares is the GUI system installer.
+- **calamares**: calamares is the GUI system installer used by eggs.
 
 ## Tech Stack
 
@@ -26,7 +26,7 @@ Can use two different system installer:
 - **Run the CLI locally:** `./bin/run [COMMAND]` (e.g., `./bin/run eggs --help`)
 
 ## User Key Commands
-- **eggs love** get your ISO in one command (run: eggs krll, eggs dad -d, eggs tools clean amd and produce)
+- **eggs love** get your ISO in one command (run: eggs krll, eggs dad -d, eggs, tools clean and produce)
 - **eggs kill** remove old createed ISOs
 - **eggs dad** configure eggs
 
@@ -41,15 +41,15 @@ Can use two different system installer:
 - `pnpm-lock.yaml`: Indicates that pnpm is the preferred package manager.
 
 ## Related Repositories (Project Ecosystem)
-- **[fresh-eggs](https://github.com/pieroproietti/fresh-eggs)**: fresh-eggs: install penguins-eggs and configure it on your AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinu, Ubuntu and most derivatives.
-
 - **[penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)**: t is a repository mainly consisting of .yaml files and simple bash scripts used by eggs to create customizations of Linux systems starting from a minimal image - referred to as "naked" - to achieve a complete system.
 
-- **[penguins-eggs-ppa](https://github.com/pieroproietti/penguins-eggs-ppa)**: The repository hosting the **PPA** (Personal Package Archive) for easy installation and updating of `eggs` on Debian, Ubuntu, and derivative systems.
+- **[fresh-eggs](https://github.com/pieroproietti/fresh-eggs)**: fresh-eggs: install penguins-eggs and configure it on your AlmaLinux, AlpineLinux, Arch, Debian, Devuan, Fedora, Manjaro, Openmamba, openSuSE, RockyLinux, Ubuntu and most derivatives.
 
-- ** https://aur.archlinux.org/packages/penguins-eggs the PKGBUILD used to create paenguins-eggs package from [Chaos](https://aur.chaotic.cx/)
+- **[penguins-eggs-repo](https://github.com/pieroproietti/penguins-eggs-repo)**: The repository hosting official packages for installation and updating of `eggs` on all the distros supported.
 
-- **[website](https://github.com/pieroproietti/website)**: Il codice sorgente del sito web ufficiale **[penguins-eggs.net](https://penguins-eggs.net)**, che include la documentazione e le guide per l'utente.
+- the **[PKGBUILD](https://aur.archlinux.org/packages/penguins-eggs)**  used to create penguins-eggs package from [Chaotic-AUR](https://aur.chaotic.cx/).
+
+- **[website](https://github.com/pieroproietti/penguins-blog)**: the source code for the official website **[penguins-eggs.net](https://penguins-eggs.net)**, which includes documentation and user guides.
 
 ## Author
 - **Piero Proietti <piero.proietti@gmail.com>**

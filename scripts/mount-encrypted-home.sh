@@ -1,17 +1,25 @@
 #!/bin/bash
-# Script per sbloccare e montare home.img LUKS cifrato
-# v1.1 - Aggiunto supporto Plymouth
-# Con logging robusto e gestione errori
+# This Bash script is used to unlock and mount a LUKS-encrypted home.img
+# file for use as a /home directory, typically in a “live”
+# operating system environment (booted from USB or DVD).
+# v1.3 - Removed RAM copy and implemented OverlayFS for RW /home
 
 set -e
 
-# Configurazione
+# configuration
 HOME_IMG="__HOME_IMG_PATH__"
 LUKS_NAME="live-home"
 MOUNT_POINT="/home"
+
+# Definiamo i percorsi per l'OverlayFS
+# Useremo /run che è un tmpfs (in RAM)
+LOWER_DIR="/run/live-home-lower"
+UPPER_DIR="/run/live-home-upper"
+WORK_DIR="/run/live-home-work"
+
 LOG_FILE="/var/log/mount-encrypted-home.log"
 
-# Funzione di logging
+# logging
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
@@ -26,21 +34,20 @@ cleanup() {
     if mountpoint -q "$MOUNT_POINT" 2>/dev/null; then
         umount "$MOUNT_POINT" 2>/dev/null || true
     fi
+    if mountpoint -q "$LOWER_DIR" 2>/dev/null; then
+        umount "$LOWER_DIR" 2>/dev/null || true
+    fi
     if [ -e "/dev/mapper/$LUKS_NAME" ]; then
         cryptsetup close "$LUKS_NAME" 2>/dev/null || true
     fi
-    # Se abbiamo copiato in RAM, rimuoviamo la copia
-    if [ "$HOME_IMG" = "/var/tmp/home.img" ]; then
-        rm -f /var/tmp/home.img 2>/dev/null || true
-        log "Removed temporary home.img from /var/tmp"
-    fi
+    rmdir "$LOWER_DIR" "$UPPER_DIR" "$WORK_DIR" 2>/dev/null || true
 }
 
 trap cleanup EXIT
 
-log "=== Starting encrypted home mount process (v1.1) ==="
+log "=== Starting encrypted home mount process (v1.3) ==="
 
-# Verifica memoria disponibile
+# Check available memory
 AVAILABLE_MEM=$(free -m | awk '/^Mem:/{print $7}')
 log "Available memory: ${AVAILABLE_MEM}MB"
 
@@ -49,37 +56,28 @@ if [ "$AVAILABLE_MEM" -lt 1024 ]; then
     log "This might cause issues with LUKS operations"
 fi
 
-# Attendi che il media sia disponibile (max 30 secondi)
+# Wait for the media to become available (max 30 seconds)
 log "Waiting for live media to be available..."
-ORIG_HOME_IMG="$HOME_IMG" # Salva il path originale
 COUNTER=0
-while [ ! -f "$ORIG_HOME_IMG" ] && [ $COUNTER -lt 30 ]; do
+while [ ! -f "$HOME_IMG" ] && [ $COUNTER -lt 30 ]; do
     sleep 1
     COUNTER=$((COUNTER + 1))
 done
 
-if [ ! -f "$ORIG_HOME_IMG" ]; then
-    log_error "home.img not found at $ORIG_HOME_IMG after 30 seconds"
+if [ ! -f "$HOME_IMG" ]; then
+    log_error "home.img not found at $HOME_IMG after 30 seconds"
     log "Available mounts:"
     mount | grep live | tee -a "$LOG_FILE"
     exit 0
 fi
 
-log "Found home.img at $ORIG_HOME_IMG"
+log "Found home.img at $HOME_IMG"
 
-# Copia in RAM se è su media read-only
-# Nota: /var/tmp è su overlay (tmpfs), quindi è in RAM.
-TEMP_HOME_IMG="/var/tmp/home.img"
-log "Copying home.img to RAM..."
-cp "$ORIG_HOME_IMG" "$TEMP_HOME_IMG"
-HOME_IMG="$TEMP_HOME_IMG" # Da ora in poi usiamo la copia in RAM
-log "home.img copied to $HOME_IMG"
-
-# Verifica dimensione file
+# Check file size
 IMG_SIZE=$(stat -c %s "$HOME_IMG")
 log "home.img size: $((IMG_SIZE / 1024 / 1024))MB"
 
-# Verifica se è un volume LUKS
+# Check if it is a LUKS volume
 if ! cryptsetup isLuks "$HOME_IMG" 2>&1 | tee -a "$LOG_FILE"; then
     log_error "$HOME_IMG is not a valid LUKS volume"
     exit 1
@@ -87,16 +85,16 @@ fi
 
 log "Verified: home.img is a valid LUKS volume"
 
-# Aspetta che il TTY sia completamente inizializzato
+# Wait until the TTY is fully initialized
 sleep 2
 
-# Pulisci eventuale device mapper precedente
+# Clean up any previous device mappers
 if [ -e "/dev/mapper/$LUKS_NAME" ]; then
     log "LUKS device already exists, closing it first..."
     cryptsetup close "$LUKS_NAME" 2>&1 | tee -a "$LOG_FILE" || true
 fi
 
-# --- LOGICA RICHIESTA PASSWORD (CON PLYMOUTH) ---
+# PASSWORD REQUEST
 MAX_ATTEMPTS=3
 ATTEMPT=1
 UNLOCKED=0 # Flag per sapere se abbiamo sbloccato
@@ -104,11 +102,11 @@ UNLOCKED=0 # Flag per sapere se abbiamo sbloccato
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     log "Unlock attempt $ATTEMPT of $MAX_ATTEMPTS"
     
-    # Controlla se Plymouth è attivo
+    # Check if Plymouth is active
     if plymouth --ping 2>/dev/null; then
         log "Plymouth active. Asking for password via Plymouth..."
         
-        # Chiede a Plymouth, passa la password a cryptsetup via stdin
+        # ask-for-password, get password a cryptsetup via stdin
         if plymouth ask-for-password --prompt="Enter passphrase for /home ($ATTEMPT/$MAX_ATTEMPTS)" | cryptsetup open "$HOME_IMG" "$LUKS_NAME" --key-file - 2>&1 | tee -a "$LOG_FILE"; then
             log "LUKS volume unlocked successfully via Plymouth"
             UNLOCKED=1
@@ -116,15 +114,14 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
         else
             log_error "Failed to unlock LUKS volume via Plymouth (attempt $ATTEMPT)"
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                 plymouth display-message --text="Incorrect passphrase. Try again..."
-                 sleep 2 # Dà tempo di leggere il messaggio
+                plymouth display-message --text="Incorrect passphrase. Try again..."
+                sleep 2 # Gives time to read the message
             fi
         fi
     else
-        # Fallback: Plymouth non attivo (o fallito)
+        # Fallback: Plymouth not active. asking for password via console
         log "Plymouth not active. Asking for password via console..."
         
-        # Stampa il prompt (già presente nel tuo script originale)
         echo ""
         echo "╔════════════════════════════════════════╗"
         echo "║  Encrypted Home Directory Detected     ║"
@@ -148,10 +145,9 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
 
     ATTEMPT=$((ATTEMPT + 1))
 done
-# --- FINE LOGICA RICHIESTA PASSWORD ---
 
 
-# Controlla se lo sblocco è fallito dopo tutti i tentativi
+# Check if unlocking failed after all attempts
 if [ $UNLOCKED -eq 0 ]; then
     log_error "Maximum attempts reached. Continuing without encrypted home."
     echo ""
@@ -168,10 +164,10 @@ if [ $UNLOCKED -eq 0 ]; then
     fi
     
     sleep 3
-    exit 0 # Esce senza errore, per permettere al sistema di continuare
+    exit 0 # Exits without error, allowing the system to continue
 fi
 
-# Verifica che il device mapper esista
+# Verify that the device mapper exists
 if [ ! -e "/dev/mapper/$LUKS_NAME" ]; then
     log_error "Device /dev/mapper/$LUKS_NAME not found after unlock"
     exit 1
@@ -179,34 +175,49 @@ fi
 
 log "LUKS device available at /dev/mapper/$LUKS_NAME"
 
-# Crea mount point
-mkdir -p "$MOUNT_POINT"
+# Implementazione di OverlayFS
+# 1. Creiamo tutti i punti di mount e le directory necessarie
+log "Creating overlay directories..."
+mkdir -p "$LOWER_DIR" "$UPPER_DIR" "$WORK_DIR" "$MOUNT_POINT"
 
-# Monta il filesystem
-log "Mounting decrypted volume to $MOUNT_POINT"
-if mount "/dev/mapper/$LUKS_NAME" "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
-    log "Home directory mounted successfully"
-else
-    log_error "Failed to mount decrypted volume"
-    # cryptsetup close è gestito dalla trap 'cleanup'
+# 2. Monta il volume decifrato in read-only come 'lowerdir'
+log "Mounting decrypted volume to $LOWER_DIR (read-only base)"
+if ! mount -o ro "/dev/mapper/$LUKS_NAME" "$LOWER_DIR" 2>&1 | tee -a "$LOG_FILE"; then
+    log_error "Failed to mount decrypted volume (read-only) to $LOWER_DIR"
     exit 1
 fi
+log "Read-only base mounted successfully."
 
-# Rimuovi la copia in RAM, non serve più
-log "Cleaning up temporary copy: $HOME_IMG"
-rm -f "$HOME_IMG" 2>/dev/null || true
+# 3. create overlay read-write for /home
+log "Mounting overlay filesystem to $MOUNT_POINT"
+OVERLAY_OPTS="lowerdir=$LOWER_DIR,upperdir=$UPPER_DIR,workdir=$WORK_DIR"
+# Add “index=off” and “metacopy=off” for compatibility
+OVERLAY_OPTS="$OVERLAY_OPTS,index=off,metacopy=off"
 
-# Ripristina gli utenti se esistono
+if ! mount -t overlay -o "$OVERLAY_OPTS" overlay "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
+    log_error "Failed to mount overlay filesystem to $MOUNT_POINT"
+    # Try without extra options if it fails
+    OVERLAY_OPTS="lowerdir=$LOWER_DIR,upperdir=$UPPER_DIR,workdir=$WORK_DIR"
+    log "Retrying overlay mount with basic options..."
+    if ! mount -t overlay -o "$OVERLAY_OPTS" overlay "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
+         log_error "Failed to mount overlay filesystem to $MOUNT_POINT (retry failed)"
+         exit 1
+    fi
+fi
+log "Writable overlay for /home mounted successfully."
+
+
+# Restore users if they exists
 if [ -d "$MOUNT_POINT/.system-backup" ]; then
     log "Restoring user accounts..."
     
-    # Rimuovi utente live temporaneo
+    # Remove temporary live user
     if id live >/dev/null 2>&1; then
         log "Removing temporary 'live' user"
         userdel -r live 2>&1 | tee -a "$LOG_FILE" || true
     fi
     
-    # Ripristina gli utenti (NOTA: hai duplicato questo blocco nel tuo script originale, l'ho corretto)
+    # Restore users
     if [ -f "$MOUNT_POINT/.system-backup/passwd" ]; then
         cat "$MOUNT_POINT/.system-backup/passwd" >> /etc/passwd
         log "Restored $(wc -l < "$MOUNT_POINT/.system-backup/passwd") user entries"
@@ -216,7 +227,7 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         cat "$MOUNT_POINT/.system-backup/shadow" >> /etc/shadow
     fi
 
-    # Ripristina i gruppi (sostituisci completamente)
+    # Restore groups (replace completely)
     if [ -f "$MOUNT_POINT/.system-backup/group" ]; then
         cp "$MOUNT_POINT/.system-backup/group" /etc/group
         log "Restored group memberships"
@@ -226,9 +237,47 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         cp "$MOUNT_POINT/.system-backup/gshadow" /etc/gshadow
     fi
 
-    log "User accounts restored successfully"
+    # --- INIZIO MODIFICA ---
+    # Restore Display Manager configs for autologin
+    log "Restoring display manager configurations (for autologin)..."
     
-    # Riavvia display manager per ricaricare gli utenti
+    # GDM (gdm3)
+    if [ -d "$MOUNT_POINT/.system-backup/gdm3" ]; then
+        log "Restoring GDM3 config..."
+        # Rimuoviamo la configurazione live di default prima di copiare
+        rm -rf /etc/gdm3 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/gdm3" /etc/
+    fi
+
+    # GDM (gdm)
+    if [ -d "$MOUNT_POINT/.system-backup/gdm" ]; then
+        log "Restoring GDM config..."
+        rm -rf /etc/gdm 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/gdm" /etc/
+    fi
+
+    # LightDM
+    if [ -d "$MOUNT_POINT/.system-backup/lightdm" ]; then
+        log "Restoring LightDM config..."
+        rm -rf /etc/lightdm 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/lightdm" /etc/
+    fi
+
+    # SDDM
+    if [ -f "$MOUNT_POINT/.system-backup/sddm.conf" ]; then
+        log "Restoring SDDM config (sddm.conf)..."
+        cp -a "$MOUNT_POINT/.system-backup/sddm.conf" /etc/
+    fi
+    if [ -d "$MOUNT_POINT/.system-backup/sddm.conf.d" ]; then
+        log "Restoring SDDM config (sddm.conf.d)..."
+        rm -rf /etc/sddm.conf.d 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/sddm.conf.d" /etc/
+    fi
+    # --- FINE MODIFICA ---
+
+    log "User accounts and DM configs restored successfully"
+    
+    # Restart the display manager to reload users
     log "Restarting display manager..."
     if systemctl is-active --quiet gdm; then
         systemctl restart gdm 2>&1 | tee -a "$LOG_FILE"
@@ -248,12 +297,12 @@ fi
 
 log "=== Encrypted home mount completed successfully ==="
 
-# Notifica a Plymouth (se attivo) che abbiamo finito
+# Notify Plymouth (if active) that we are done
 if plymouth --ping 2>/dev/null; then
     plymouth quit
 fi
 
-# Non fare cleanup al successo
+# Don't clean up success
 trap - EXIT
 
 exit 0

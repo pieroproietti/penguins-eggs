@@ -1,19 +1,25 @@
 #!/bin/sh
 # /scripts/live-premount/boot-encrypted-root.sh
-# v2.3 - Minimal RAM Copy + Supporto Plymouth + 3 Tentativi
+#
+# This script is designed to Boot Encrypted Linux Live (BELL).
+#
+# Its main purpose is to find an encrypted root image file (root.img) 
+# on a live USB/DVD, ask the user for a passphrase to unlock it, 
+# and then copy the main system filesystem (filesystem.squashfs) 
+# from inside the encrypted image into RAM.
+# 
+# the process continue with standard live-boot 
 
-set -e
+# enable echo
+# set -e
 
-# --- Logging Setup ---
-LOGFILE="/tmp/eggs-premount-boot.log"; FIFO="/tmp/eggs-boot.fifo"; rm -f "$LOGFILE" "$FIFO"; mkfifo "$FIFO" || exit 1; tee -a "$LOGFILE" < "$FIFO" & TEE_PID=$!; exec > "$FIFO" 2>&1; trap 'echo "EGGS-BOOT: Cleanup trap"; rm -f "$FIFO"; kill "$TEE_PID" 2>/dev/null || true; exit' EXIT INT TERM
-# --- Logging End ---
+echo "BELL: Boot Encrypted Linux Live"
 
-echo "EGGS-BOOT: =========================================="
-echo "EGGS-BOOT: Script Avvio Root Criptato v2.3 (3 Tentativi)"
-echo "EGGS-BOOT: =========================================="
+#################################################
+# 1. Setup and Find Media
 
-# Moduli necessari
-echo "EGGS-BOOT: Caricamento moduli..."
+# 1.1 load modules
+echo "BELL: loading modules..."
 modprobe loop 2>/dev/null || true
 modprobe dm_mod 2>/dev/null || true
 modprobe dm_crypt 2>/dev/null || true
@@ -22,65 +28,90 @@ modprobe ext4 2>/dev/null || true
 modprobe squashfs 2>/dev/null || true
 sleep 2
 
-# 1. Trova live media originale
-echo "EGGS-BOOT: Ricerca live media originale..."
+
+# 1.2 find BELL media drive
+echo "BELL: find BELL media drive..."
 mkdir -p /mnt/live-media /mnt/ext4
-ORIG_MEDIA_MNT="/mnt/live-media"
+BELL_MEDIA_MNT="/mnt/live-media"
 LIVE_DEV=""
-# ... [Codice ricerca live media] ...
+
+# find to max 20 devices
 MAX_WAIT_DEV=20; COUNT_DEV=0
-while [ -z "$LIVE_DEV" ] && [ $COUNT_DEV -lt $MAX_WAIT_DEV ]; do ls /dev > /dev/null; for dev in /dev/sr* /dev/sd* /dev/vd* /dev/nvme*n*; do if [ ! -b "$dev" ]; then continue; fi; if mount -o ro "$dev" "$ORIG_MEDIA_MNT" 2>/dev/null; then if [ -f "${ORIG_MEDIA_MNT}/live/root.img" ]; then echo "EGGS-BOOT: Found Original Live media on $dev"; LIVE_DEV=$dev; break 2; else umount "$ORIG_MEDIA_MNT" 2>/dev/null || true; fi; fi; done; sleep 1; COUNT_DEV=$((COUNT_DEV+1)); done
-if [ -z "$LIVE_DEV" ]; then echo "EGGS-BOOT: ERRORE: Live media originale non trovato!"; ls /dev; exit 1; fi
+while [ -z "$LIVE_DEV" ] && [ $COUNT_DEV -lt $MAX_WAIT_DEV ]; do
+    ls /dev > /dev/null
+    for dev in /dev/sr* /dev/sd* /dev/vd* /dev/nvme*n*; do
+        if [ ! -b "$dev" ]; then continue; fi
+        if mount -o ro "$dev" "$BELL_MEDIA_MNT" 2>/dev/null; then
+            if [ -f "${BELL_MEDIA_MNT}/live/root.img" ]; then
+                echo "BELL: Found BELL media on $dev"
+                LIVE_DEV=$dev
+                break 2
+            else
+                umount "$BELL_MEDIA_MNT" 2>/dev/null || true
+            fi
+        fi
+    done
+    sleep 1
+    COUNT_DEV=$((COUNT_DEV+1))
+done
 
-ROOT_IMG_RO="${ORIG_MEDIA_MNT}/live/root.img"
-RAM_MEDIA_MNT="/run/live/medium" # Destinazione finale in RAM
+if [ -z "$LIVE_DEV" ]; then
+    echo "BELL: Error: no live BELL drive found!"
+    ls /dev
+    exit 1
+fi
 
-# 2a. Associa loop device (per definire $LOOP_DEV)
-echo "EGGS-BOOT: Associazione loop device per $ROOT_IMG_RO..."
+ROOT_IMG_RO="${BELL_MEDIA_MNT}/live/root.img"
+RAM_MEDIA_MNT="/run/live/medium" # final destination in RAM
+
+
+#################################################
+# 2. Prepare Encrypted Image
+
+# 2.1 loop device
+echo "BELL: loop device association for $ROOT_IMG_RO..."
 LOOP_DEV_OUTPUT=$(/sbin/losetup -f --show "$ROOT_IMG_RO" 2>/dev/null); LOSETUP_EXIT_STATUS=$?
-if [ $LOSETUP_EXIT_STATUS -ne 0 ] || [ -z "$LOOP_DEV_OUTPUT" ] || ! [ -b "$LOOP_DEV_OUTPUT" ]; then echo "EGGS-BOOT: ERRORE: Associazione loop fallita!"; exit 1; fi
+if [ $LOSETUP_EXIT_STATUS -ne 0 ] || [ -z "$LOOP_DEV_OUTPUT" ] || ! [ -b "$LOOP_DEV_OUTPUT" ]; then
+    echo "BELL: Error: loop association failed!"
+    exit 1
+fi
 LOOP_DEV="$LOOP_DEV_OUTPUT"
-echo "EGGS-BOOT: Loop device associato: $LOOP_DEV"
+echo "BELL: loop device $ROOT_IMG_RO associated to: $LOOP_DEV"
 
-# 2b. Sblocca LUKS (con supporto Plymouth e 3 tentativi)
-echo "EGGS-BOOT: Sblocco LUKS $LOOP_DEV (readonly)..."
 
-# Disabilita 'set -e' temporaneamente per gestire i fallimenti della password
-set +e
+
+#################################################
+# 3. Unlock LUKS (User Interaction)
+
+# disable 'set -e' to let 3 tempts 
+#set +e
 MAX_ATTEMPTS=3
 ATTEMPT=1
 UNLOCKED=0
 
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-    log "EGGS-BOOT: Tentativo sblocco $ATTEMPT di $MAX_ATTEMPTS"
-    
-    # Controlla se Plymouth è attivo
+
+    # check if plymouth is active
     if plymouth --ping 2>/dev/null; then
-        log "EGGS-BOOT: Plymouth attivo. Chiedo password via Plymouth..."
-        
-        # Chiedi la password a Plymouth e passala a cryptsetup via stdin (--key-file -)
+
+        # request the password in plymouth and pass it to cryptsetup via stdin (--key-file -)
         if plymouth ask-for-password --prompt="Enter passphrase ($ATTEMPT/$MAX_ATTEMPTS)" | cryptsetup open --readonly --key-file - "$LOOP_DEV" live-root; then
-            log "EGGS-BOOT: Sblocco LUKS via Plymouth riuscito."
             UNLOCKED=1
             break
         else
-            log "EGGS-BOOT: ERRORE: Sblocco LUKS via Plymouth fallito (Tentativo $ATTEMPT)."
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                 plymouth display-message --text="Incorrect passphrase. Try again..."
-                 sleep 2 # Dà tempo di leggere il messaggio
+                plymouth display-message --text="Incorrect passphrase. Try again..."
+                sleep 2 # wait 2 seconds to read message
             fi
         fi
     else
-        # Fallback: Plymouth non attivo
-        log "EGGS-BOOT: Plymouth non attivo. Chiedo password via console..."
+        # Fallback: Plymouth not active
         echo "Please enter passphrase for $LOOP_DEV ($ATTEMPT/$MAX_ATTEMPTS):"
-        
+
         if cryptsetup open --readonly "$LOOP_DEV" live-root; then
-            log "EGGS-BOOT: Sblocco LUKS (console) riuscito."
             UNLOCKED=1
             break
         else
-            log "EGGS-BOOT: ERRORE: Sblocco LUKS (console) fallito (Tentativo $ATTEMPT)."
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
                 echo "Incorrect passphrase. Please try again."
             fi
@@ -91,12 +122,11 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
     sleep 1
 done
 
-# Riabilita 'set -e'
-set -e
+# Enable echo
+# set -e
 
-# Controlla se tutti i tentativi sono falliti
+# check if all attempts have failed
 if [ $UNLOCKED -eq 0 ]; then
-    log "EGGS-BOOT: ERRORE: Numero massimo tentativi raggiunto."
     if plymouth --ping 2>/dev/null; then
         plymouth display-message --text="LUKS Unlock Failed: Max attempts reached"
         sleep 5
@@ -105,73 +135,86 @@ if [ $UNLOCKED -eq 0 ]; then
     exit 1
 fi
 
-echo "EGGS-BOOT: LUKS sbloccato ($LOOP_DEV -> live-root) [readonly]. Attesa mapper..."
+echo "BELL: LUKS unlocked ($LOOP_DEV -> live-root) [readonly]. Waiting for mapper..."
 
-# ... (Resto dello script v2.1: 2c, 2d, 3, 4, 5, 6, 7 - come prima) ...
-# 2c. Attesa mapper
-MAX_WAIT_MAP=10; COUNT_MAP=0; while [ ! -b /dev/mapper/live-root ] && [ $COUNT_MAP -lt $MAX_WAIT_MAP ]; do sleep 1; COUNT_MAP=$((COUNT_MAP+1)); done
-if [ ! -b /dev/mapper/live-root ]; then echo "EGGS-BOOT: ERRORE: Mapper non apparso."; cryptsetup close live-root || true; /sbin/losetup -d "$LOOP_DEV" || true; exit 1; fi
 
-# 2d. Montaggio ext4
-echo "EGGS-BOOT: Montaggio ext4..."
+#################################################
+# 4. copy System to RAM
+
+# 4.1 waiting mapper
+MAX_WAIT_MAP=10; COUNT_MAP=0
+while [ ! -b /dev/mapper/live-root ] && [ $COUNT_MAP -lt $MAX_WAIT_MAP ]; do
+    sleep 1
+    COUNT_MAP=$((COUNT_MAP+1))
+done
+
+if [ ! -b /dev/mapper/live-root ]; then
+    echo "BELL: Error: mapper did not appear."
+    cryptsetup close live-root || true
+    /sbin/losetup -d "$LOOP_DEV" || true
+    exit 1
+fi
+
+# 4.2 mount ext4 filesystem
+echo "BELL: mounting ext4 filesystem..."
 mount -t ext4 -o ro /dev/mapper/live-root /mnt/ext4
 
 SQFS_SRC="/mnt/ext4/filesystem.squashfs"
-if [ ! -f "$SQFS_SRC" ]; then echo "EGGS-BOOT: ERRORE: $SQFS_SRC non trovato!"; exit 1; fi
+if [ ! -f "$SQFS_SRC" ]; then
+    echo "BELL: error: $SQFS_SRC not found!"
+    exit 1
+fi
 
-# 3. Prepara Destinazione RAM (ORA calcoliamo la dimensione GIUSTA)
-echo "EGGS-BOOT: Preparazione RAM disk ${RAM_MEDIA_MNT}..."
+
+# 4.3. Prepare RAM destination /run
+echo "BELL: preparing RAM disk ${RAM_MEDIA_MNT}..."
 SQFS_SIZE_BYTES=$(stat -c%s "$SQFS_SRC")
-NEEDED_SIZE_MB=$(( $SQFS_SIZE_BYTES / 1024 / 1024 + 500 )) # Aggiunge 500MB buffer
-echo "EGGS-BOOT: Spazio stimato necessario in /run: ${NEEDED_SIZE_MB} MB"
-echo "EGGS-BOOT: Aumento dimensione /run (tmpfs)..."
+NEEDED_SIZE_MB=$(( $SQFS_SIZE_BYTES / 1024 / 1024 + 500 )) # add 500MB buffer
+echo "BELL: Estimated space required in /run: ${NEEDED_SIZE_MB} MB"
+echo "BELL: increase size /run (tmpfs)..."
 if ! mount -o remount,size=${NEEDED_SIZE_MB}M /run; then
-    echo "EGGS-BOOT: WARN: Remount /run fallito, spazio potrebbe essere insufficiente."
+    echo "BELL: WARN: Remount /run failed, space may be insufficient."
     df -h /run
 fi
 mkdir -p "${RAM_MEDIA_MNT}/live"
 
-# 4. Copia SOLO filesystem.squashfs in RAM
+# 4.4 copy ONLY filesystem.squashfs to RAM
 SQFS_DEST="${RAM_MEDIA_MNT}/live/filesystem.squashfs"
-echo "EGGS-BOOT: Copia $SQFS_SRC -> $SQFS_DEST..."
+echo "BELL: copying $SQFS_SRC -> $SQFS_DEST..."
 if command -v rsync >/dev/null; then
     rsync -a --info=progress2 "$SQFS_SRC" "$SQFS_DEST"
 else
     cp "$SQFS_SRC" "$SQFS_DEST"
 fi
 SQFS_SIZE=$(du -h "$SQFS_DEST" | cut -f1)
-echo "EGGS-BOOT: filesystem.squashfs ($SQFS_SIZE) copiato in RAM."
+echo "BELL: filesystem.squashfs ($SQFS_SIZE) copied to RAM."
 
-# 5. Copia i metadati essenziali del medium in RAM
-echo "EGGS-BOOT: Copia metadati (.disk, kernel, initrd) da ${ORIG_MEDIA_MNT}..."
-
-# Copia .disk (essenziale per live-boot)
-if [ -d "${ORIG_MEDIA_MNT}/.disk" ]; then
-    cp -a "${ORIG_MEDIA_MNT}/.disk" "${RAM_MEDIA_MNT}/"
-    echo "EGGS-BOOT: .disk copiato."
+# 4.5 copy .disk
+if [ -d "${BELL_MEDIA_MNT}/.disk" ]; then
+    cp -a "${BELL_MEDIA_MNT}/.disk" "${RAM_MEDIA_MNT}/"
+    echo "BELL: .disk copied."
 else
-    echo "EGGS-BOOT: WARN: Directory .disk non trovata sul media originale."
+    echo "BELL: Warning: .disk not found."
 fi
 
-# Copia kernel e initrd (utili per l'installer)
-echo "EGGS-BOOT: Copia vmlinuz* e initrd*..."
-cp -a "${ORIG_MEDIA_MNT}/live/vmlinuz"* "${RAM_MEDIA_MNT}/live/" 2>/dev/null || true
-cp -a "${ORIG_MEDIA_MNT}/live/initrd"* "${RAM_MEDIA_MNT}/live/" 2>/dev/null || true
-echo "EGGS-BOOT: Copia kernel/initrd tentata (eventuali errori ignorati)."
+# 4.6 Copy vmlinuz and initrd (we need to install the system)
+cp -a "${BELL_MEDIA_MNT}/live/vmlinuz"* "${RAM_MEDIA_MNT}/live/" 2>/dev/null || true
+cp -a "${BELL_MEDIA_MNT}/live/initrd"* "${RAM_MEDIA_MNT}/live/" 2>/dev/null || true
+echo "BELL: Attempted kernel/initrd copy (any errors ignored)."
 
-# 6. Pulizia Mount/Device Intermedi
-echo "EGGS-BOOT: Pulizia mount/device intermedi..."
-umount /mnt/ext4 || echo "EGGS-BOOT: WARN: umount /mnt/ext4 failed ($?)"
-cryptsetup close live-root || echo "EGGS-BOOT: WARN: cryptsetup close live-root failed ($?)"
-/sbin/losetup -d "$LOOP_DEV" || echo "EGGS-BOOT: WARN: losetup -d $LOOP_DEV failed ($?)"
-umount "$ORIG_MEDIA_MNT" || echo "EGGS-BOOT: WARN: umount ${ORIG_MEDIA_MNT} failed ($?)"
-echo "EGGS-BOOT: Pulizia completata."
 
-# 7. Passa il Testimone a live-boot
-echo "EGGS-BOOT: =========================================="
-echo "EGGS-BOOT: Medium live MINIMALE ricostruito in RAM su ${RAM_MEDIA_MNT}"
-ls -l "$RAM_MEDIA_MNT"
-ls -l "${RAM_MEDIA_MNT}/live"
-echo "EGGS-BOOT: Lascio che live-boot continui (con 'live-media=/run/live/medium')..."
-echo "EGGS-BOOT: =========================================="
+#################################################
+# 6. Cleanup and Hand-off
+echo "BELL: cleaning used mounts and devices..."
+umount /mnt/ext4 || echo "BELL: WARN: umount /mnt/ext4 failed ($?)"
+cryptsetup close live-root || echo "BELL: WARN: cryptsetup close live-root failed ($?)"
+/sbin/losetup -d "$LOOP_DEV" || echo "BELL: WARN: losetup -d $LOOP_DEV failed ($?)"
+umount "$BELL_MEDIA_MNT" || echo "BELL: WARN: umount ${BELL_MEDIA_MNT} failed ($?)"
+echo "BELL: cleaning complete."
+
+
+# 6.1 switching to live boot
+echo "BELL: live ISO image built in RAM on ${RAM_MEDIA_MNT}"
+# ls -l "$RAM_MEDIA_MNT"
+# ls -l "${RAM_MEDIA_MNT}/live"
 exit 0

@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
-    "version": "25.10.24",
+    "version": "25.10.25",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -11,8 +11,8 @@
     "dependencies": {
         "@oclif/core": "^4.7.2",
         "@oclif/plugin-autocomplete": "^3.2.37",
-        "@oclif/plugin-help": "^6.2.33",
-        "@oclif/plugin-version": "^2.2.34",
+        "@oclif/plugin-help": "^6.2.34",
+        "@oclif/plugin-version": "^2.2.35",
         "@types/express": "^5.0.4",
         "ansis": "^4.2.0",
         "axios": "^1.12.2",
