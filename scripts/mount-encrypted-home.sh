@@ -1,8 +1,8 @@
 #!/bin/bash
-# This Bash script is used to unlock and mount a LUKS-encrypted home.img 
-# file for use as a /home directory, typically in a “live” 
+# This Bash script is used to unlock and mount a LUKS-encrypted home.img
+# file for use as a /home directory, typically in a “live”
 # operating system environment (booted from USB or DVD).
-# v1.1 
+# v1.3 - Removed RAM copy and implemented OverlayFS for RW /home
 
 set -e
 
@@ -10,6 +10,13 @@ set -e
 HOME_IMG="__HOME_IMG_PATH__"
 LUKS_NAME="live-home"
 MOUNT_POINT="/home"
+
+# Definiamo i percorsi per l'OverlayFS
+# Useremo /run che è un tmpfs (in RAM)
+LOWER_DIR="/run/live-home-lower"
+UPPER_DIR="/run/live-home-upper"
+WORK_DIR="/run/live-home-work"
+
 LOG_FILE="/var/log/mount-encrypted-home.log"
 
 # logging
@@ -27,19 +34,18 @@ cleanup() {
     if mountpoint -q "$MOUNT_POINT" 2>/dev/null; then
         umount "$MOUNT_POINT" 2>/dev/null || true
     fi
+    if mountpoint -q "$LOWER_DIR" 2>/dev/null; then
+        umount "$LOWER_DIR" 2>/dev/null || true
+    fi
     if [ -e "/dev/mapper/$LUKS_NAME" ]; then
         cryptsetup close "$LUKS_NAME" 2>/dev/null || true
     fi
-    # If we copied to RAM, we remove the copy
-    if [ "$HOME_IMG" = "/var/tmp/home.img" ]; then
-        rm -f /var/tmp/home.img 2>/dev/null || true
-        log "Removed temporary home.img from /var/tmp"
-    fi
+    rmdir "$LOWER_DIR" "$UPPER_DIR" "$WORK_DIR" 2>/dev/null || true
 }
 
 trap cleanup EXIT
 
-log "=== Starting encrypted home mount process (v1.1) ==="
+log "=== Starting encrypted home mount process (v1.3) ==="
 
 # Check available memory
 AVAILABLE_MEM=$(free -m | awk '/^Mem:/{print $7}')
@@ -52,29 +58,20 @@ fi
 
 # Wait for the media to become available (max 30 seconds)
 log "Waiting for live media to be available..."
-ORIG_HOME_IMG="$HOME_IMG" # Save the original path
 COUNTER=0
-while [ ! -f "$ORIG_HOME_IMG" ] && [ $COUNTER -lt 30 ]; do
+while [ ! -f "$HOME_IMG" ] && [ $COUNTER -lt 30 ]; do
     sleep 1
     COUNTER=$((COUNTER + 1))
 done
 
-if [ ! -f "$ORIG_HOME_IMG" ]; then
-    log_error "home.img not found at $ORIG_HOME_IMG after 30 seconds"
+if [ ! -f "$HOME_IMG" ]; then
+    log_error "home.img not found at $HOME_IMG after 30 seconds"
     log "Available mounts:"
     mount | grep live | tee -a "$LOG_FILE"
     exit 0
 fi
 
-log "Found home.img at $ORIG_HOME_IMG"
-
-# Copy to RAM if it is on read-only media
-# Note: /var/tmp is on overlay (tmpfs), so it is in RAM.
-TEMP_HOME_IMG="/var/tmp/home.img"
-log "Copying home.img to RAM..."
-cp "$ORIG_HOME_IMG" "$TEMP_HOME_IMG"
-HOME_IMG="$TEMP_HOME_IMG" # Da ora in poi usiamo la copia in RAM
-log "home.img copied to $HOME_IMG"
+log "Found home.img at $HOME_IMG"
 
 # Check file size
 IMG_SIZE=$(stat -c %s "$HOME_IMG")
@@ -117,8 +114,8 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
         else
             log_error "Failed to unlock LUKS volume via Plymouth (attempt $ATTEMPT)"
             if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                 plymouth display-message --text="Incorrect passphrase. Try again..."
-                 sleep 2 # Gives time to read the message
+                plymouth display-message --text="Incorrect passphrase. Try again..."
+                sleep 2 # Gives time to read the message
             fi
         fi
     else
@@ -178,24 +175,39 @@ fi
 
 log "LUKS device available at /dev/mapper/$LUKS_NAME"
 
-# Crea mount point
-mkdir -p "$MOUNT_POINT"
+# Implementazione di OverlayFS
+# 1. Creiamo tutti i punti di mount e le directory necessarie
+log "Creating overlay directories..."
+mkdir -p "$LOWER_DIR" "$UPPER_DIR" "$WORK_DIR" "$MOUNT_POINT"
 
-# Monta il filesystem
-log "Mounting decrypted volume to $MOUNT_POINT"
-if mount "/dev/mapper/$LUKS_NAME" "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
-    log "Home directory mounted successfully"
-else
-    log_error "Failed to mount decrypted volume"
-    # cryptsetup close è gestito dalla trap 'cleanup'
+# 2. Monta il volume decifrato in read-only come 'lowerdir'
+log "Mounting decrypted volume to $LOWER_DIR (read-only base)"
+if ! mount -o ro "/dev/mapper/$LUKS_NAME" "$LOWER_DIR" 2>&1 | tee -a "$LOG_FILE"; then
+    log_error "Failed to mount decrypted volume (read-only) to $LOWER_DIR"
     exit 1
 fi
+log "Read-only base mounted successfully."
 
-# Remove the copy in RAM, it is no longer needed
-log "Cleaning up temporary copy: $HOME_IMG"
-rm -f "$HOME_IMG" 2>/dev/null || true
+# 3. create overlay read-write for /home
+log "Mounting overlay filesystem to $MOUNT_POINT"
+OVERLAY_OPTS="lowerdir=$LOWER_DIR,upperdir=$UPPER_DIR,workdir=$WORK_DIR"
+# Add “index=off” and “metacopy=off” for compatibility
+OVERLAY_OPTS="$OVERLAY_OPTS,index=off,metacopy=off"
 
-# Restore users if they exist
+if ! mount -t overlay -o "$OVERLAY_OPTS" overlay "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
+    log_error "Failed to mount overlay filesystem to $MOUNT_POINT"
+    # Try without extra options if it fails
+    OVERLAY_OPTS="lowerdir=$LOWER_DIR,upperdir=$UPPER_DIR,workdir=$WORK_DIR"
+    log "Retrying overlay mount with basic options..."
+    if ! mount -t overlay -o "$OVERLAY_OPTS" overlay "$MOUNT_POINT" 2>&1 | tee -a "$LOG_FILE"; then
+         log_error "Failed to mount overlay filesystem to $MOUNT_POINT (retry failed)"
+         exit 1
+    fi
+fi
+log "Writable overlay for /home mounted successfully."
+
+
+# Restore users if they exists
 if [ -d "$MOUNT_POINT/.system-backup" ]; then
     log "Restoring user accounts..."
     
@@ -225,7 +237,45 @@ if [ -d "$MOUNT_POINT/.system-backup" ]; then
         cp "$MOUNT_POINT/.system-backup/gshadow" /etc/gshadow
     fi
 
-    log "User accounts restored successfully"
+    # --- INIZIO MODIFICA ---
+    # Restore Display Manager configs for autologin
+    log "Restoring display manager configurations (for autologin)..."
+    
+    # GDM (gdm3)
+    if [ -d "$MOUNT_POINT/.system-backup/gdm3" ]; then
+        log "Restoring GDM3 config..."
+        # Rimuoviamo la configurazione live di default prima di copiare
+        rm -rf /etc/gdm3 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/gdm3" /etc/
+    fi
+
+    # GDM (gdm)
+    if [ -d "$MOUNT_POINT/.system-backup/gdm" ]; then
+        log "Restoring GDM config..."
+        rm -rf /etc/gdm 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/gdm" /etc/
+    fi
+
+    # LightDM
+    if [ -d "$MOUNT_POINT/.system-backup/lightdm" ]; then
+        log "Restoring LightDM config..."
+        rm -rf /etc/lightdm 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/lightdm" /etc/
+    fi
+
+    # SDDM
+    if [ -f "$MOUNT_POINT/.system-backup/sddm.conf" ]; then
+        log "Restoring SDDM config (sddm.conf)..."
+        cp -a "$MOUNT_POINT/.system-backup/sddm.conf" /etc/
+    fi
+    if [ -d "$MOUNT_POINT/.system-backup/sddm.conf.d" ]; then
+        log "Restoring SDDM config (sddm.conf.d)..."
+        rm -rf /etc/sddm.conf.d 2>/dev/null
+        cp -a "$MOUNT_POINT/.system-backup/sddm.conf.d" /etc/
+    fi
+    # --- FINE MODIFICA ---
+
+    log "User accounts and DM configs restored successfully"
     
     # Restart the display manager to reload users
     log "Restarting display manager..."
