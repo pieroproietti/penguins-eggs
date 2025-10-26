@@ -57,7 +57,11 @@ jobs:
             gh run watch "${RUN_ID}" --exit-status
             
             echo "✅ Workflow ${workflow_file} completato con successo."
+
+            echo "⏱ Aggiungo un ritardo di 60 secondi per permettere al repository di destinazione di aggiornarsi..."
+            sleep 60
           done
 
           echo "------------------------------------------------------"
           echo "🎉 Processo completato. Tutti i workflow sono stati eseguiti in sequenza."
+
