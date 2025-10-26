@@ -117,6 +117,18 @@ export async function luksHome(
     await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`, this.echo)
     await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`, this.echo)
 
+    // saving display manager (autologin) configs...
+    warning(`saving display manager configuration...`)
+    // GDM (gdm3 è comune su Debian/Ubuntu)
+    await exec(`[ -e /etc/gdm3 ] && cp -a /etc/gdm3 ${this.luksMountpoint}/.system-backup/`, this.echo)
+    // GDM (altre distro)
+    await exec(`[ -e /etc/gdm ] && cp -a /etc/gdm ${this.luksMountpoint}/.system-backup/`, this.echo)
+    // LightDM
+    await exec(`[ -e /etc/lightdm ] && cp -a /etc/lightdm ${this.luksMountpoint}/.system-backup/`, this.echo)
+    // SDDM (sia file .conf che directory .conf.d)
+    await exec(`[ -e /etc/sddm.conf ] && cp -a /etc/sddm.conf ${this.luksMountpoint}/.system-backup/`, this.echo)
+    await exec(`[ -e /etc/sddm.conf.d ] && cp -a /etc/sddm.conf.d ${this.luksMountpoint}/.system-backup/`, this.echo)
+    
     warning(`unmount ${this.luksDevice}`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
 
@@ -127,11 +139,6 @@ export async function luksHome(
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
     warning('encryption process successfully completed!')
-
-    /**
-     * YOU MUST! unlink the key on production
-     */
-    // fs.unlinkSync(`${this.settings.iso_work}/live/home.key`)
 
 
   } catch (error) {
