@@ -150,7 +150,7 @@ const questions: ReadonlyArray<DistinctQuestion> = [
  * Runs the interactive prompt to configure LUKS encryption settings.
  * @returns A Promise that resolves to the CryptoConfig object.
  */
-export async function getCryptoConfig(this: Ovary): Promise<CryptoConfig> {
+export async function interactiveCryptoConfig(this: Ovary): Promise<CryptoConfig> {
   // Default luksConfig
   const defaultLuksConfig = {
       'cipher': 'aes-xts-plain64',

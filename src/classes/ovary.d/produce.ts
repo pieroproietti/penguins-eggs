@@ -29,7 +29,7 @@ import Utils from './../utils.js'
 import Repo from './../yolk.js'
 import Ovary from './../ovary.js'
 
-import { CryptoConfig } from './luks-get-crypto-config.js'
+import { CryptoConfig } from './luks-interactive-crypto-config.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -96,7 +96,7 @@ export async function produce(
         this.luksDevice = `/dev/mapper/${this.luksMappedName}`
         this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
-        this.luksConfig = await this.getCryptoConfig()
+        this.luksConfig = await this.interactiveCryptoConfig()
 
         Utils.warning("You choose an encrypted eggs")
         await this.luksGetPassword()

@@ -16,11 +16,11 @@ import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
 
 import { 
-  getCryptoConfig, 
+  interactiveCryptoConfig, 
   type CryptoConfig, 
   type ArgonCryptoConfig, 
   type Pbkdf2CryptoConfig 
-} from './luks-get-crypto-config.js'; // Assicurati che il percorso sia corretto
+} from './luks-interactive-crypto-config.js'; // Assicurati che il percorso sia corretto
 
 const noop = () => {}; 
 type ConditionalLoggers = {
