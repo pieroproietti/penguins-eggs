@@ -47,6 +47,7 @@ import { finished } from './ovary.d/finished.js'
 
 // crypt
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
+import { interactiveCryptoConfig, CryptoConfig, ArgonCryptoConfig, Pbkdf2CryptoConfig } from './ovary.d/luks-interactive-crypto-config.js'
 
 // homecrypt
 import { luksHome } from './ovary.d/luks-home.js'
@@ -129,6 +130,8 @@ export default class Ovary {
 
   luksPassword = ''
 
+  luksConfig = {} as CryptoConfig
+
 
 
   // I put all methods on ovary.d
@@ -144,7 +147,8 @@ export default class Ovary {
   editLiveFs = editLiveFs
   // luks
   luksGetPassword = luksGetPassword
-  
+  interactiveCryptoConfig = interactiveCryptoConfig
+
   // luksHome
   luksHome = luksHome
   installHomecryptSupport = installHomecryptSupport
