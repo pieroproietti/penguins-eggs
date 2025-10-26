@@ -96,7 +96,13 @@ export async function produce(
         this.luksDevice = `/dev/mapper/${this.luksMappedName}`
         this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
-        this.luksConfig = await this.interactiveCryptoConfig()
+        /**
+         * Al momento homecrypt resta con default
+         */
+        if (fullcrypt) {
+            this.luksConfig = await this.interactiveCryptoConfig()
+        }
+        
 
         Utils.warning("You choose an encrypted eggs")
         await this.luksGetPassword()
