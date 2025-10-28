@@ -110,7 +110,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
 
     let fullname = this.settings.remix.fullname.toUpperCase() 
     if (this.hidden) {
-        fullname = "LINUX LIVE SYSTEM"
+        fullname = "LINUX LIVE"
     }
 
     const view = {

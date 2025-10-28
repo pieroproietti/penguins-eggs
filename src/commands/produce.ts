@@ -251,10 +251,10 @@ export default class Produce extends Command {
       if (fullcrypt) {
         const distro = new Distro()
         if (distro.familyId === 'debian') {
-          Utils.info("Use this option and penguins-eggs in general with extreme caution and ALWAYS test them first in test environments.")
+          Utils.info("Use penguins-eggs and this option in particular with extreme caution, and ALWAYS first try it out in a test environment.")
           Utils.sleep(3000)
         } else{ 
-          Utils.warning("This option is still experimental and can only be tried on Debian.")
+          Utils.warning("This option is still in the experimental phase and can only be tested on Debian trixie")
           process.exit(9)
         }
       }
