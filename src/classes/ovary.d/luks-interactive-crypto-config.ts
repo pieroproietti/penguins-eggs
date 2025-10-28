@@ -90,7 +90,7 @@ const questions: ReadonlyArray<DistinctQuestion> = [
     name: 'sector-size',
     message: 'Choose the sector size:',
     choices: SECTOR_SIZE_OPTIONS.map(size => ({
-        name: `${size} bytes ${size === 4096 ? '(Modern SSDs/NVMe)' : '(Legacy default)'}`,
+        name: `${size} bytes ${size === 4096 ? '(Modern SSDs/NVMe)' : '(Legacy default/Loop devices'}`,
         value: size,
     })),
     default: 512,
@@ -181,6 +181,10 @@ export async function interactiveCryptoConfig(this: Ovary): Promise<CryptoConfig
 
   // Use the double-cast fix to satisfy TypeScript
   const finalConfig = answers as unknown as CryptoConfig;
+  if (finalConfig['sector-size']=== 4096) {
+    Utils.warning(`in a loop device - regardless of the hardware - the sector_size will be set to 512`)
+    finalConfig['sector-size']= 512
+  }
 
   return finalConfig;
 }
