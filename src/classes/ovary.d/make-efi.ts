@@ -277,7 +277,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     let fullname = this.settings.remix.fullname.toUpperCase() 
     if (this.hidden) {
-        fullname = "LINUX LIVE"
+        fullname = "LINUX"
     }
 
     const view = {
