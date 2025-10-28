@@ -53,7 +53,7 @@ export async function luksRoot(this: Ovary) {
 
   try {
     /**
-     * this.luksMappedName = 'luks.img';
+     * this.luksMappedName = 'root.img';
      * this.luksFile = `/tmp/${luksMappedName}`
      * this.luksDevice = `/dev/mapper/${luksMappedName}`
      * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
@@ -86,6 +86,7 @@ export async function luksRoot(this: Ovary) {
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
     // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
+    console.log(this.luksConfig)
     const luksFormatArgs = buildLuksFormatArgs(this.luksConfig, this.luksFile);
     await executeCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
 
