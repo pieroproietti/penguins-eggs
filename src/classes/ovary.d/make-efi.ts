@@ -108,9 +108,11 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * create grub.cfg (bridge) on (ISO)/boot/grub/x86_64-efi/grub.cfg
      */
     Utils.warning(`creating grub.cfg bridge to main. (ISO)/boot/grub/${Utils.uefiFormat()}`)
-    let cfgBridge = `${isoDir}/boot/grub/${Utils.uefiFormat()}/grub.cfg`
+    let cfgBridge = path.join(isoDir, '/boot/grub/', Utils.uefiFormat(), '/grub.cfg')
     let cfgBridgeText = `# grub.cfg bridge\n`
-    cfgBridgeText += `# created on ${cfgBridge}\n`
+    if (!this.hidden) {
+        cfgBridgeText += `# created on ${cfgBridge}\n`
+    }
     cfgBridgeText += `\n`
     cfgBridgeText += `source /boot/grub/grub.cfg\n`
     fs.writeFileSync(cfgBridge, cfgBridgeText)
@@ -214,7 +216,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     } else {
 
         // copy splash to efiWorkDir
-
         splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
         if (this.theme.includes('/')) {
             splashSrc = `${theme}/theme/livecd/splash.png`
@@ -274,8 +275,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     const cfgMain = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
 
+    let fullname = this.settings.remix.fullname.toUpperCase() 
+    if (this.hidden) {
+        fullname = "LINUX LIVE SYSTEM"
+    }
+
     const view = {
-        fullname: this.settings.remix.fullname.toUpperCase(),
+        fullname: fullname,
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,

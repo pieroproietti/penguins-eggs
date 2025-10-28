@@ -108,8 +108,13 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
     let template = fs.readFileSync(isolinuxTemplate, 'utf8')
 
+    let fullname = this.settings.remix.fullname.toUpperCase() 
+    if (this.hidden) {
+        fullname = "LINUX LIVE SYSTEM"
+    }
+
     const view = {
-        fullname: this.settings.remix.fullname.toUpperCase(),
+        fullname: fullname,
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,
