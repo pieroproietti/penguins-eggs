@@ -85,8 +85,6 @@ export async function luksRoot(this: Ovary) {
     await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
-    // await executeCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
-    console.log(this.luksConfig)
     const luksFormatArgs = buildLuksFormatArgs(this.luksConfig, this.luksFile);
     await executeCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
 
