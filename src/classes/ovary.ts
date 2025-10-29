@@ -46,6 +46,7 @@ import { liveCreateStructure } from './ovary.d/live-create-structure.js'
 import { finished } from './ovary.d/finished.js'
 
 // crypt
+import { luksExecuteCommand, buildLuksFormatArgs } from './ovary.d/luks-helpers.js'
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
 import { interactiveCryptoConfig, CryptoConfig, ArgonCryptoConfig, Pbkdf2CryptoConfig } from './ovary.d/luks-interactive-crypto-config.js'
 
@@ -146,6 +147,8 @@ export default class Ovary {
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
   // luks
+  luksExecuteCommand = luksExecuteCommand
+  buildLuksFormatArgs = buildLuksFormatArgs
   luksGetPassword = luksGetPassword
   interactiveCryptoConfig = interactiveCryptoConfig
 

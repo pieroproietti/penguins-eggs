@@ -21,7 +21,7 @@ export async function customizePartitions() {
    */
   partition.availableFileSystemTypes = ['ext4']
 
-  if (Pacman.packageIsInstalled('btrfs-progs') ||
+  if (Pacman.packageIsInstalled('progs') ||
     Pacman.packageIsInstalled('btrfsprogs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
