@@ -82,14 +82,14 @@ export async function luksRoot(this: Ovary) {
     warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
 
     warning(`creating partition LUKS: ${this.luksFile}`)
-    await executeCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
+    await this.luksExecuteCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
-    const luksFormatArgs = buildLuksFormatArgs(this.luksConfig, this.luksFile);
-    await executeCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
+    const luksFormatArgs = this.buildLuksFormatArgs(this.luksConfig, this.luksFile);
+    await this.luksExecuteCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
 
     warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
-    await executeCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
+    await this.luksExecuteCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
     warning(`formatting ext4 (without journal)...`);
     await exec(`mkfs.ext4 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
@@ -128,7 +128,7 @@ export async function luksRoot(this: Ovary) {
     }
 
     warning(`closing LUKS volume ${this.luksFile}.`)
-    await executeCommand('cryptsetup', ['close', this.luksMappedName])
+    await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
 
     warning(`moving ${this.luksMappedName} on (ISO)/live.`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
@@ -145,45 +145,12 @@ export async function luksRoot(this: Ovary) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
     if (fs.existsSync(this.luksDevice)) {
-      await executeCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
+      await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
     }
     await Utils.pressKeyToExit()
     process.exit(1)
   }
 }
-
-/**
- * Funzione helper per eseguire comandi esterni in modo asincrono,
- * gestendo lo standard input per passare le password.
- * Restituisce una Promise che si risolve al successo o si rigetta in caso di errore.
- */
-function executeCommand(command: string, args: string[], stdinData?: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Se passiamo dati a stdin, dobbiamo usare 'pipe'. Altrimenti, 'inherit'.
-    const stdioConfig: StdioOptions = stdinData ? ['pipe', 'inherit', 'inherit'] : 'inherit';
-
-    const process = spawn(command, args, { stdio: stdioConfig });
-
-    // Se fornito, scriviamo i dati (es. la password) nello stdin del processo.
-    if (stdinData && process.stdin) {
-      process.stdin.write(stdinData);
-      process.stdin.end();
-    }
-
-    process.on('error', (err) => {
-      reject(new Error(`Error starting command "${command}": ${err.message}`));
-    });
-
-    process.on('close', (code) => {
-      if (code === 0) {
-        resolve(); // Success
-      } else {
-        reject(new Error(`Command "${command} ${args.join(' ')}" ended with error code ${code}`));
-      }
-    });
-  });
-}
-
 
 /**
  * Converte bytes in gigabytes per la visualizzazione.
@@ -192,41 +159,4 @@ function bytesToGB(bytes: number): string {
   if (bytes === 0) return '0.00 GB';
   const gigabytes = bytes / (1024 * 1024 * 1024);
   return gigabytes.toFixed(2) + ' GB';
-}
-
-
-/**
- * buildLuksFormatArgs
- */
-function buildLuksFormatArgs(config: CryptoConfig, luksFile: string): string[] {
-    const args: string[] = [
-        '--batch-mode', // Per saltare la conferma "YES"
-        'luksFormat',
-        '--type', 'luks2',
-        
-        // Parametri base
-        '--cipher', config.cipher,
-        '--key-size', config['key-size'].toString(),
-        '--hash', config.hash,
-        '--sector-size', config['sector-size'].toString(),
-        '--pbkdf', config.pbkdf,
-    ];
-
-    // Aggiungi i parametri condizionali del PBKDF
-    switch (config.pbkdf) {
-        case 'argon2id':
-        case 'argon2i':
-            const argonConfig = config as ArgonCryptoConfig;
-            args.push('--pbkdf-memory', argonConfig['pbkdf-memory (KiB)'].toString());
-            args.push('--pbkdf-parallel', argonConfig['pbkdf-parallel (threads)'].toString());
-            break;
-        case 'pbkdf2':
-            const pbkdf2Config = config as Pbkdf2CryptoConfig;
-            args.push('--iter-time', pbkdf2Config['iter-time (ms)'].toString());
-            break;
-    }
-
-    // Aggiungi il file di destinazione
-    args.push(luksFile);
-    return args;
 }

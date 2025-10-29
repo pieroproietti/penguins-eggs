@@ -18,9 +18,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
-## v25.10.27
+## v25.10.28
 * removed all references to ISO production on `--hidden` mode;
-* forced `sector_size = 512` for use with loop devices.
+* forced `sector_size = 512` for use with loop devices;
+* removed suffix `_btrfs` from standard eggs denomination of ISOs;
+- successfull tested on biglinux, installing on ext4.
 
 ## v25.10.26
 * added default and interactive LUKS configuration.
