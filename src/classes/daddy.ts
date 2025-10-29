@@ -143,13 +143,17 @@ export default class Daddy {
       config.compression = 'fast'
 
       if (reset || isCustom) {
+        // add fstype to snapshot_prefix 
         if (config.snapshot_prefix === '') {
           let fstype=((await exec(`findmnt -n -o FSTYPE /`,{capture: true})).data.trim())
-          if (fstype !=='ext4'){
-              fstype +='-'
+          if (fstype ==='ext4'){
+            fstype =''
           } else {
-            fstype =''            
+            // btrfs-, etc
+            fstype +='-'
           }
+          // excluded now
+          fstype =''
           config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId) + fstype
         }
 
