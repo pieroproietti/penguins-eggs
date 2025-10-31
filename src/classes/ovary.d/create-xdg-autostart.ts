@@ -50,14 +50,15 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
      */
     let installerLink = 'install-system.desktop'
     if (Pacman.calamaresExists()) {
-        /**
-         * Replace Exec in install-system.desktop per Biglinux e Bigcommunity
-         */
-        if (this.settings.distro.distroId === 'Biglinux' || this.settings.distro.distroId === 'Bigcommunity') {
-            let installSystemDesktop = path.resolve(__dirname, `../../../addons/${theme}/theme/applications/install-system.desktop`)
-            await exec(`sed -i 's|^Exec=.*|Exec=/usr/bin/calamares_polkit %f|' ${installSystemDesktop}`)
-        }
+        // 1. Copia il lanciatore .desktop STANDARD (quello con pkexec)
         shx.cp(path.resolve(__dirname, `../../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
+        // 2. Copia la TUA policy Polkit per Calamares
+        const policySource = path.resolve(__dirname, '../../../assets/calamares/io.calamares.calamares.pkexec.run.policy') // Adatta questo percorso al tuo file
+        const policyDest = '/usr/share/polkit-1/actions/io.calamares.calamares.pkexec.run.policy'
+        shx.cp(policySource, policyDest)
+        // 3. Modifica la policy per rimuovere la password
+        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)        
+        
     } else if (Pacman.packageIsInstalled('live-installer')) {
         /**
          * LMD£ live-installer

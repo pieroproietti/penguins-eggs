@@ -90,7 +90,7 @@ export default class Incubator {
     Utils.warning(`creating ${installer().name} configuration files on ${installer().configRoot}`)
     this.createInstallerDirs()
     this.createBranding()
-    this.sudoers()
+    // this.sudoers()
 
     const distroUniqueId = this.distro.distroUniqueId
 
@@ -105,7 +105,7 @@ export default class Incubator {
 
 
         /**
-         * Archòomix
+         * Archlinux
          */
       } else if (distroUniqueId === 'archlinux') {
         const archlinux = new Archlinux(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
@@ -346,12 +346,13 @@ export default class Incubator {
       process.exit()
     }
 
+    /**
+     * install-system.png
+     */
     let calamaresIcon = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/artwork/install-system.png`)
     if (this.theme.includes('/')) {
       calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
     }
-
-    // se non esiste non copio la icona
     if (Pacman.calamaresExists()) {
       if (fs.existsSync(calamaresIcon)) {
         shx.cp(calamaresIcon, '/usr/share/icons/')
@@ -361,11 +362,13 @@ export default class Incubator {
       }
     }
 
+    /**
+     * install-system.desktop
+     */
     let calamaresLauncher = path.resolve(__dirname, `../../../addons/${this.remix.branding}/theme/applications/install-system.desktop`)
     if (this.theme.includes('/')) {
       calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
     }
-
     if (fs.existsSync(calamaresLauncher)) {
       shx.cp(calamaresLauncher, '/usr/share/applications/')
     } else {
@@ -373,23 +376,23 @@ export default class Incubator {
       process.exit()
     }
 
-    // script di avvio
+    /**
+     * install-system.sh
+     */
     shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
     shx.chmod('+x', '/usr/sbin/install-system.sh')
   }
 
   /**
    * soluzione tampone from Glenn
+   * 
    */
   private sudoers() {
-    let live = 'live'
-    let content = `${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
-    content = `# ${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares`
+    let live = this.user_opt
+    let content = ''
+    content += `# grants the live user passwordless permission to run /usr/bin/calamare\n`
+    content += `${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares\n`
     let fname = '/etc/sudoers.d/calamares'
-    // su bionic fa un macello
-    if (this.distro.distroUniqueId !== 'bionic') {
-      fs.writeFileSync(fname, content, 'utf-8')
-    }
   }
 }
 

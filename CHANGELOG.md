@@ -18,6 +18,10 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
+## v25.10.30
+* removed the workaround in `sudoers.d` for Calamares.
+* reintroduced dependency on `pkexec` and modified the Calamares launcher.
+
 ## v25.10.28
 * remove all references on the generated ISO image whem produce take `--hidden` mode;
 * always force `sector_size = 512` loop devices compatibility and limit;

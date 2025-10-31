@@ -64,7 +64,7 @@ WantedBy=local-fs.target
   const symlinkDir = path.join(squashfsRoot, 'etc/systemd/system/local-fs.target.wants')
   const symlinkPath = path.join(symlinkDir, 'mount-encrypted-home.service')
 
-  // Crea le directory necessarie
+  // Create dirs
   fs.mkdirSync(path.dirname(scriptPath), { recursive: true })
   fs.mkdirSync(path.dirname(servicePath), { recursive: true })
   fs.mkdirSync(symlinkDir, { recursive: true })
@@ -72,20 +72,14 @@ WantedBy=local-fs.target
   // Scrivi lo script
   fs.writeFileSync(scriptPath, bashScript)
   fs.chmodSync(scriptPath, 0o755)
-  // console.log(`✓ Created: ${scriptPath}`)
 
   // Scrivi il service
   fs.writeFileSync(servicePath, systemdService)
-  // console.log(`✓ Created: ${servicePath}`)
 
   // Crea il symlink per abilitare il service
   if (fs.existsSync(symlinkPath)) {
     fs.unlinkSync(symlinkPath)
   }
   fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
-  // console.log(`✓ Enabled: mount-encrypted-home.service`)
-
-  // console.log('Encrypted home support installed successfully')
-  // console.log('Logs will be available at: /var/log/mount-encrypted-home.log')
 }
 
