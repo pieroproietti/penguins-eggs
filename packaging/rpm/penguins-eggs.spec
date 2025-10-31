@@ -79,6 +79,7 @@ Requires:       lvm2
 Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
+Requires:       polkit
 Requires:       rsync
 Requires:       wget
 Requires:       xdg-utils

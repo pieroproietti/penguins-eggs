@@ -31,6 +31,7 @@ depends=(
  'nodejs'
  'pacman-contrib'
  'parted'
+ 'polkit'
  'procps-ng'
  'pv'
  'python'
