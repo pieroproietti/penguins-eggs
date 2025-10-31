@@ -86,7 +86,6 @@ export async function initrdDebian(this: Ovary, verbose = false) {
     const prefix = this.settings.config.snapshot_prefix
     const destFinal = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}mkinitramfs.log.txt 2>&1`
-    const target = path.join(this.dotMnt, 'filesystem.squashfs')
     const cmd = `mkinitramfs -v -o ${destFinal} ${this.kernel} ${log}`
     await exec(cmd, this.echo)
 
@@ -98,16 +97,14 @@ export async function initrdDebian(this: Ovary, verbose = false) {
 export async function initrdDracut(this: Ovary) {
     Utils.warning(`creating ${path.basename(this.initrd)} using dracut on (ISO)/live`)
     const prefix = this.settings.config.snapshot_prefix
+    const destFinal = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
     const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
-
     const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
-    const initramfs = `${this.settings.iso_work}live/${path.basename(this.initrd)}`
-    const cmd = `dracut --force ${confdir} ${kmoddir} ${initramfs} ${this.kernel} ${log}`
-    console.log(cmd)
+    const cmd = `dracut --force ${confdir} ${kmoddir} ${destFinal} ${this.kernel} ${log}`
     await exec(cmd, this.echo)
 
     // clean per btrfs
-    let clean = `../../../scripts/99clean ${this.kernel}`
-    await exec(clean, this.echo)
+    // let clean = `../../../scripts/99clean ${this.kernel}`
+    // await exec(clean, this.echo)
 }
