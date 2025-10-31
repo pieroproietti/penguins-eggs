@@ -33,6 +33,7 @@ Requires:      mtools
 Requires:      nbd
 Requires:      nodejs
 Requires:      parted
+Requires:      polkit
 Requires:      procps-ng
 Requires:      rsync
 Requires:      squashfs
