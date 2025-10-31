@@ -101,11 +101,6 @@ export async function initrdDracut(this: Ovary) {
     const log = `> ${this.settings.iso_work}${prefix}dracut.log.txt 2>&1`
     const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
-    const cmd = `dracut --force ${confdir} ${kmoddir} ${destFinal} ${this.kernel} ${log}`
-    console.log(cmd)
+    const cmd = `dracut --force -v ${confdir} ${kmoddir} ${destFinal} ${this.kernel} ${log}`
     await exec(cmd, this.echo)
-
-    // clean per btrfs
-    // let clean = `../../../scripts/99clean ${this.kernel}`
-    // await exec(clean, this.echo)
 }
