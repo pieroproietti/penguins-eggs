@@ -1,3 +1,12 @@
+/**
+ * ./src/classes/incubation/customize/customize-partitions.ts
+ * penguins-eggs v.25.7.x / ecmascript 2020
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+
 import fs from 'node:fs'
 import Pacman from '../../pacman.js'
 import yaml from 'js-yaml'
@@ -5,7 +14,8 @@ import { exec } from '../../../lib/utils.js'
 import { ICalamaresPartitions } from '../../../interfaces/calamares/i-calamares-partitions.js'
 
 /**
- *
+ * customize module partition
+ * add/remove filesystem available
  */
 export async function customizePartitions() {
   const filePartition = '/etc/calamares/modules/partition.conf'

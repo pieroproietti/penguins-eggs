@@ -1,12 +1,14 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install system
-GenericName=Live Installer
-Comment=Install the operating system to disk
-Exec=/usr/bin/calamares_polkit %f
+Name=Install System
+GenericName=System Installer
+Keywords=calamares;system;installer;
+TryExec=calamares
+Exec=sh -c "pkexec calamares"
+Comment=Calamares — System Installer
+Icon=install-system.png
 Terminal=false
 StartupNotify=true
-Type=Application
 Categories=Qt;System;
-Icon=install-system.png
+X-AppStream-Ignore=true
