@@ -53,11 +53,10 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         // 1. Copia il lanciatore .desktop STANDARD (quello con pkexec)
         shx.cp(path.resolve(__dirname, `../../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
         // 2. Copia la TUA policy Polkit per Calamares
-        const policySource = path.resolve(__dirname, '../../../assets/calamares/io.calamares.calamares.pkexec.run.policy') // Adatta questo percorso al tuo file
-        const policyDest = '/usr/share/polkit-1/actions/io.calamares.calamares.pkexec.run.policy'
+        const policySource = path.resolve(__dirname, '../../../assets/calamares/io.calamares.calamares.policy')
+        const policyDest = '/usr/share/polkit-1/actions/'
         shx.cp(policySource, policyDest)
-        // 3. Modifica la policy per rimuovere la password
-        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)        
+        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}io.calamares.calamares.policy`)
         
     } else if (Pacman.packageIsInstalled('live-installer')) {
         /**

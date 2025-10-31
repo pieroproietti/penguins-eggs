@@ -91,7 +91,7 @@ export default class Alpine {
    */
   static async calamaresPolicies(verbose = false) {
     const echo = Utils.setEcho(verbose)
-    const policyFile = '/usr/share/polkit-1/actions/com.github.calamares.calamares.policy'
+    const policyFile = '/usr/share/polkit-1/actions/io.calamares.calamares.policy'
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
   }
 
