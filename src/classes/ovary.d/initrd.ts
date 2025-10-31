@@ -102,6 +102,7 @@ export async function initrdDracut(this: Ovary) {
     const confdir = '--confdir ' + path.resolve(__dirname, `../../../dracut/dracut.conf.d`)
     const kmoddir = `--kmoddir /lib/modules/${this.kernel}`
     const cmd = `dracut --force ${confdir} ${kmoddir} ${destFinal} ${this.kernel} ${log}`
+    console.log(cmd)
     await exec(cmd, this.echo)
 
     // clean per btrfs
