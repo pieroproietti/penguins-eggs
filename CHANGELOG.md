@@ -19,8 +19,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 ## v25.10.30
-* removed the workaround in `sudoers.d` for Calamares.
-* reintroduced dependency on `pkexec` and modified the Calamares launcher.
+* a new dependency on the `polkit` package has been introduced for all distributions;
+* calamares launcher has been adapted to use `pkexec` without requiring a password on live;
+* removed previous workaround in `/etc/sudoers.d/calamares`, no need more.
 
 ## v25.10.28
 * remove all references on the generated ISO image whem produce take `--hidden` mode;
