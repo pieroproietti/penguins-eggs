@@ -196,15 +196,6 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'trixie') {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
-        this.liveMediumPath = '/run/live/medium/'  //initramfs
-        // this.liveMediumPath = '/run/initramfs/live/'  // dracut
-        /**
-         * dracut su trixie
-         if (Pacman.packageIsInstalled('dracut')) {
-           this.liveMediumPath = '/run/initramfs/live/'
-         }
-         */
-
 
         /**
          * Debian 14 forky
@@ -255,6 +246,7 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'focal') {
         this.distroLike = 'Ubuntu'
         this.distroUniqueId = 'focal'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         /**
          * Ubuntu jammy
@@ -262,11 +254,17 @@ class Distro implements IDistro {
       } else if (this.codenameId === 'jammy') {
         this.distroLike = 'Ubuntu'
         this.distroUniqueId = 'jammy'
+        this.liveMediumPath = '/lib/live/mount/medium/'
 
         /**
          * Ubuntu noble
          */
       } else if (this.codenameId === 'noble') {
+        this.distroLike = 'Ubuntu'
+        this.distroUniqueId = 'noble'
+        this.liveMediumPath = '/lib/live/mount/medium/'
+
+      } else if (this.codenameId === 'questing') {
         this.distroLike = 'Ubuntu'
         this.distroUniqueId = 'noble'
 
@@ -275,7 +273,7 @@ class Distro implements IDistro {
          */
       } else if (this.codenameId === 'devel') {
         this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'devel'
+        this.distroUniqueId = 'noble'
 
       } else {
         /**

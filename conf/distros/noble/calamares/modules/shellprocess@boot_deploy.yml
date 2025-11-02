@@ -1,19 +1,9 @@
 # SPDX-FileCopyrightText: 2020 Harald Sitter <sitter@kde.org>
 # SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 #
-# This is run outside the chroot!
-# As per at least 20.04+ /boot on the squashfs no longer contains the initrd
-# or vmlinuz, instead we'll first fish the kernel out of the ISO.
-#
-# NB: initrd is handled by the initramfs module.
 ---
 message: "Preparing the boot environment..."
 dontChroot: true
 timeout: 300
 script:
-    # This is a teeny tiny bit hacky but sufficient for 20.04+ as we don't have
-    # to consider signed vs. unsinged anymore, so the below is practically
-    # sufficient. Error handling is a bit on the weak side though.
-    - cp --preserve=timestamps /run/live/mount/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
-    # We'll reconfigure the kernel in the boot_reconfigure module to ensure hooks
-    # are run as needed.
+    - cp --preserve=timestamps __LIVE_MEDIUM_PATH__live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`

@@ -5,4 +5,4 @@ message: "Logs.."
 dontChroot: true
 timeout: 30
 script:
-    - "/usr/libexec/calamares//calamares-logs-helper.sh ${ROOT}"
+    - "/usr/libexec/calamares/calamares-logs-helper.sh ${ROOT}"
