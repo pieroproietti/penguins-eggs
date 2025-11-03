@@ -29,7 +29,7 @@ name: 04. Build and publish Arch Linux pkgs
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-arch:
@@ -80,29 +80,45 @@ jobs:
           name: archlinux-package
           path: ./packaging/arch/*.pkg.tar.zst
 
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-arch
     runs-on: ubuntu-latest
     container: archlinux
     steps:
-      - name: 1. Checkout existing repo
+      # --- PASSO AGGIUNTO ---
+      # 1. Installa le dipendenze (incluso git) PRIMA del checkout
+      - name: 1. Install Dependencies (git)
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git
+
+      # --- PASSO DI CHECKOUT ---
+      - name: 2. Checkout existing repo
         uses: actions/checkout@v4
         with:
           repository: pieroproietti/penguins-eggs-repo
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
+          # Aggiungo 'fetch-depth: 0' per assicurarmi che 'peaceiris/actions-gh-pages'
+          # abbia la cronologia completa per fare il push, anche se 'actions/checkout'
+          # ora userà 'git clone' che non ha il limite di 4GB.
+          fetch-depth: 0 
 
-      - name: 2. Download Arch Linux artifact
+      # --- PASSO DI DOWNLOAD  ---
+      - name: 3. Download Arch Linux artifact
         uses: actions/download-artifact@v4
         with:
           name: archlinux-package
           path: repo-dir/arch/
 
-      - name: 3. Update and Sign Arch Linux Repository
+      # --- PASSO DI FIRMA ---
+      - name: 4. Update and Sign Arch Linux Repository
         run: |
           set -e
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git
+          
+          # I comandi 'pacman' NON sono più necessari qui
+          
           echo "$GPG_SIGNING_KEY" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
@@ -119,8 +135,9 @@ jobs:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         working-directory: ./repo-dir/arch
-        
-      - name: 4. Deploy to penguins-eggs-repo
+
+      # --- PASSO DI DEPLOY (ora 5) ---
+      - name: 5. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
