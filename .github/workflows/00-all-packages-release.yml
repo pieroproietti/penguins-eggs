@@ -58,8 +58,8 @@ jobs:
             
             echo "✅ Workflow ${workflow_file} completato con successo."
 
-            echo "⏱ Aggiungo un ritardo di 180 secondi per permettere al repository di destinazione di aggiornarsi..."
-            sleep 180
+            echo "⏱ Aggiungo un ritardo di 10 secondi per permettere al repository di destinazione di aggiornarsi..."
+            sleep 10
           done
 
           echo "------------------------------------------------------"
