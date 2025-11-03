@@ -22,7 +22,7 @@ common:
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
-  - policykit-1 # calamares
+  - policykit-1 | pkexec # calamares
   - rsync
   - squashfs-tools
   - sshfs # eggs
@@ -42,14 +42,15 @@ arch:
   - grub-efi-amd64-bin
   - isolinux
   - shim-signed
-  - syslinux-common
-
+  - syslinux
+  
+  
   i386:
   - grub-pc-bin
   - isolinux
   - grub-efi-ia32-bin
-  - syslinux-common
-
+  - syslinux
+  
   arm64:
   - grub-efi-arm64-bin
   - shim-signed
