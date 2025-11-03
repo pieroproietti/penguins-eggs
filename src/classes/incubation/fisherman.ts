@@ -324,6 +324,11 @@ export default class Fisherman {
     let source = path.join(this.distro.liveMediumPath, this.distro.squashfs)
     const view = { source: source }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
+    console.log('source:', source)
+    console.log('view:', view)
+    console.log('template:', template)
+    let contentDest = fs.readFileSync(moduleDest, 'utf8')
+    console.log(contentDest)
   }
 
 }
