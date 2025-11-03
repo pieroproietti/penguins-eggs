@@ -18,6 +18,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
+## v25.11.3
+* penguins-eggs now depends on the polkit package (policykit-1 on Debian/Ubuntu) to allow GUI installation without using a password.
+* alpine: it has been realigned with the mainstream distribution of penguins-eggs with changes both within the penguins-eggs package and in the penguins-alpine repository specific to the distribution;
+* ubuntu focal/ubuntu jammy:  thanks also to the suggestion of [Cuphead74832](https://github.com/Cuphead74832), both version 20.04 (focal) and version 22.04 (jammy) are available again. I also updated the nodejs version on fresh-eggs from nodejs18 to nodejs20. I was also able to remove a bunch of specific code, using the version written for Ubuntu Noble;
+* linuxmint: It should be noted that the reintroduction of compatibility for Ubuntu focal and Ubuntu jammy also ensures renewed compatibility for many derivatives and, specifically, many versions of Linuxmint.
+* * Ubuntu questing: thanks to the interest of [Lew-Rockwell-Fan](https://github.com/Lew-Rockwell-Fan), I finally got my hands on Ubuntu 25.10. It was bound to happen sooner or later, but it served as a stimulus and advice.
+
 ## v25.10.30
 * a new dependency on the `polkit` package has been introduced for all distributions;
 * calamares launcher has been adapted to use `pkexec` without requiring a password on live;
