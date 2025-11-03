@@ -22,7 +22,7 @@ common:
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
-  - pkexec # calamares
+  - policykit-1 # calamares
   - rsync
   - squashfs-tools
   - sshfs # eggs
