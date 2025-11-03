@@ -11,8 +11,6 @@ concurrency:
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
 
 jobs:
   # --- JOB 1: COSTRUISCE I PACCHETTI .deb PER TUTTE LE ARCHITETTURE ---

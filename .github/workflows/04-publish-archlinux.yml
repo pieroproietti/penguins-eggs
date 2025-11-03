@@ -28,8 +28,6 @@ name: 04. Build and publish Arch Linux pkgs
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
 
 jobs:
   build-arch:
