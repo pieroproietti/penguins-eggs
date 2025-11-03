@@ -46,15 +46,22 @@ jobs:
             # Tenta per 60 secondi (12 tentativi ogni 5s) di trovare l'ID
             for i in $(seq 1 12); do
             
-              # --- MODIFICA CHIAVE ---
-              # Aggiunto '--status=in_progress,queued' per trovare SOLO 
-              # l'esecuzione che abbiamo appena avviato, ignorando quelle vecchie.
-              RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --status=in_progress,queued --limit=1 --json databaseId -q '.[0].databaseId')
+              # --- MODIFICA CHIAVE CORRETTA ---
+              # Il flag --status accetta un solo valore.
+              # Cerchiamo prima 'in_progress'.
+              RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --status=in_progress --limit=1 --json databaseId -q '.[0].databaseId')
               
+              # Se non trovato, cerchiamo 'queued'.
+              if [ -z "$RUN_ID" ]; then
+                RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --status=queued --limit=1 --json databaseId -q '.[0].databaseId')
+              fi
+              
+              # Se abbiamo trovato un ID (in qualsiasi dei due stati), usciamo dal loop
               if [ -n "$RUN_ID" ]; then
                 echo "🎉 Trovato ID esecuzione attiva: ${RUN_ID}"
                 break
               fi
+              
               echo "...ancora non trovato, attendo 5s..."
               sleep 5
             done
