@@ -19,6 +19,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # --- MODIFICA 1: Aggiunto 'set -e' ---
+          # Interrompe l'intero script se un comando fallisce 
+          # (es. se 'gh run watch' fallisce perché un build è fallito)
+          set -e
+
           echo "Inizio a chiamare i singoli workflow in modo sequenziale..."
           echo "Tutti i rilasci verranno eseguiti usando il codice dal branch 'master'."
 
@@ -38,30 +43,38 @@ jobs:
             echo "🚀 Avvio del workflow: ${workflow_file}"
             gh workflow run "${workflow_file}" --ref master
 
-            # Attende un istante per dare tempo a GitHub di registrare l'esecuzione.
-            sleep 5 
+            # --- MODIFICA 2: Sostituito 'sleep 5' con un loop di tentativi ---
+            echo "🔍 Recupero l'ID dell'esecuzione (riprovo per 60s)..."
+            RUN_ID=""
+            # Tenta per 60 secondi (12 tentativi ogni 5s) di trovare l'ID
+            for i in $(seq 1 12); do
+              RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --limit=1 --json databaseId -q '.[0].databaseId')
+              if [ -n "$RUN_ID" ]; then
+                echo "🎉 Trovato ID esecuzione: ${RUN_ID}"
+                break
+              fi
+              echo "...ancora non trovato, attendo 5s..."
+              sleep 5
+            done
 
-            # Recupera l'ID dell'ultima esecuzione avviata per quel workflow sul branch master.
-            echo "🔍 Recupero l'ID dell'esecuzione..."
-            RUN_ID=$(gh run list --workflow="${workflow_file}" --branch="master" --limit=1 --json databaseId -q '.[0].databaseId')
-
+            # Se dopo 60 secondi l'ID non si trova, esci con errore
             if [ -z "$RUN_ID" ]; then
-              echo "❌ Impossibile trovare l'ID dell'esecuzione per ${workflow_file}. Annullamento."
+              echo "❌ Errore: Impossibile trovare l'ID dell'esecuzione per ${workflow_file} dopo 60 secondi."
               exit 1
             fi
             
-            echo "⏳ Attendo il completamento dell'esecuzione con ID: ${RUN_ID}..."
+            echo "⏳ Attendo il completamento dell'esecuzione ID: ${RUN_ID}..."
             
-            # Si mette in ascolto e attende che la run termini. 
-            # Il comando esce con un codice di errore se la run fallisce.
+            # Questo comando ora bloccherà lo script E fallirà se il build fallisce,
+            # fermando l'intero processo grazie a 'set -e'.
             gh run watch "${RUN_ID}" --exit-status
             
             echo "✅ Workflow ${workflow_file} completato con successo."
 
-            echo "⏱ Aggiungo un ritardo di 10 secondi per permettere al repository di destinazione di aggiornarsi..."
-            sleep 10
+            # --- MODIFICA 3: Rimosso 'sleep 10' ---
+            # Non è necessario, 'gh run watch' garantisce che il push sia completato
+            # e le azioni 'peaceiris' successive gestiranno la sincronizzazione.
           done
 
           echo "------------------------------------------------------"
           echo "🎉 Processo completato. Tutti i workflow sono stati eseguiti in sequenza."
-
