@@ -36,7 +36,7 @@ concurrency:
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
@@ -125,7 +125,7 @@ jobs:
           name: el9-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
-# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
+  # --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-el9
     runs-on: ubuntu-latest

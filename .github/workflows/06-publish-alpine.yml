@@ -32,7 +32,7 @@ name: 06. Build Alpine Linux Package
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-apk:
@@ -83,45 +83,58 @@ jobs:
           name: alpine-package
           path: /home/builder/packages/**/*.apk
 
+  
   publish-repo:
     needs: build-apk
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
-      - name: 1. Checkout existing repo
+      # --- PASSO AGGIUNTO ---
+      # 1. Installa le dipendenze (git e alpine-sdk) PRIMA del checkout
+      - name: 1. Install Dependencies (git, alpine-sdk)
+        run: |
+          apk update
+          apk add alpine-sdk git
+
+      # --- PASSO DI CHECKOUT (ora 2) ---
+      - name: 2. Checkout existing repo
         uses: actions/checkout@v4
         with:
           repository: pieroproietti/penguins-eggs-repo
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
+          fetch-depth: 0 # Obbliga 'git clone' e fornisce la cronologia
 
-      - name: 2. Download Alpine artifact
+      # --- PASSO DI DOWNLOAD (ora 3) ---
+      - name: 3. Download Alpine artifact
         uses: actions/download-artifact@v4
         with:
           name: alpine-package
           path: repo-dir/alpine/x86_64/
 
-      - name: 3. Add public key to the repository
+      # --- PASSO CHIAVE PUBBLICA (ora 4) ---
+      - name: 4. Add public key to the repository
         run: |
           echo "$ALPINE_PUBLIC_KEY" > repo-dir/alpine/piero.proietti@gmail.com-68452915.rsa.pub
         env:
           ALPINE_PUBLIC_KEY: ${{ secrets.ALPINE_PUBLIC_KEY }}
 
-      - name: 4. Update and Sign Alpine Repository
+      # --- PASSO DI FIRMA (ora 5) ---
+      # Pulito: rimossi 'cd', 'apk update', e 'apk add'
+      - name: 5. Update and Sign Alpine Repository
         run: |
           set -e
-          cd repo-dir/alpine/x86_64
-          apk update
-          apk add alpine-sdk git
           echo "$ALPINE_SIGNING_KEY" > /tmp/signer.pem
           apk index -o APKINDEX.tar.gz *.apk
           abuild-sign -k /tmp/signer.pem APKINDEX.tar.gz
           rm /tmp/signer.pem
         env:
           ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }}
-        working-directory: ${{ github.workspace }}
+        # Imposta la directory di lavoro corretta per lo step
+        working-directory: ./repo-dir/alpine/x86_64
 
-      - name: 5. Deploy to penguins-eggs-repo
+      # --- PASSO DI DEPLOY (ora 6) ---
+      - name: 6. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
@@ -132,4 +145,3 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Alpine Linux repository"
-

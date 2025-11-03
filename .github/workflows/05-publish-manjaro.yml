@@ -36,7 +36,7 @@ name: 05. Build and publish Manjaro Package
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build-manjaro:
@@ -93,45 +93,57 @@ jobs:
     runs-on: ubuntu-latest
     container: manjarolinux/base
     steps:
-      - name: 1. Checkout existing repo
+      # --- PASSO AGGIUNTO ---
+      # 1. Installa le dipendenze (incluso git) PRIMA del checkout
+      - name: 1. Install Dependencies (git)
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git
+
+      # --- PASSO DI CHECKOUT (ora 2) ---
+      - name: 2. Checkout existing repo
         uses: actions/checkout@v4
         with:
           repository: pieroproietti/penguins-eggs-repo
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
+          fetch-depth: 0 # Obbliga l'uso di 'git' e fornisce la cronologia per il push
 
-      - name: 2. Download Manjaro artifact
+      # --- PASSO DI DOWNLOAD  ---
+      - name: 3. Download Manjaro artifact
         uses: actions/download-artifact@v4
         with:
           name: manjaro-package
-          path: repo-dir/manjaro/
+          path: repo-dir/manjaro/ # Scarica direttamente nella sottocartella corretta
 
-      - name: 3. Update and Sign Manjaro Repository
+      # --- PASSO DI FIRMA  ---
+      - name: 4. Update and Sign Manjaro Repository
         run: |
           set -e
-          # Assicurati che la directory esista prima di entrarci
-          mkdir -p repo-dir/manjaro
-          cd repo-dir/manjaro
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git
+          
+          # I comandi 'pacman' e 'cd' sono stati rimossi da qui
+          
           echo "$GPG_SIGNING_KEY" | gpg --import --batch
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-          # Crea/aggiorna il database del repo nella cartella manjaro
+          
           # Trova il file più recente
           NEW_PKG_FILE=$(ls -vr penguins-eggs-*.pkg.tar.zst | head -n 1)
+          
+          # Crea/aggiorna il database in questa cartella
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
-          # repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        working-directory: ${{ github.workspace }}
+        # Impostiamo la directory di lavoro per l'intero step
+        working-directory: ./repo-dir/manjaro
 
-      - name: 4. Deploy to penguins-eggs-repo
+      # --- PASSO DI DEPLOY  ---
+      - name: 5. Deploy to penguins-eggs-repo
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}

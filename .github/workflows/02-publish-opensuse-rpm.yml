@@ -36,7 +36,7 @@ concurrency:
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
