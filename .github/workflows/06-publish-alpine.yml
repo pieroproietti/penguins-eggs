@@ -31,8 +31,6 @@ name: 06. Build Alpine Linux Package
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
 
 jobs:
   build-apk:

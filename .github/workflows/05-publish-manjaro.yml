@@ -35,8 +35,6 @@ name: 05. Build and publish Manjaro Package
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
 
 jobs:
   build-manjaro:
