@@ -1,9 +1,0 @@
-# Common
-# cleanup
----
-type: "job"
-name: "cleanup"
-interface: "process"
-chroot: false
-command: "/usr/sbin/cleanup.sh"
-timeout: 8

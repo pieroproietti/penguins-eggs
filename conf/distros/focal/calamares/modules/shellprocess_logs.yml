@@ -1,6 +1,0 @@
-# Ubuntu jammy 22.04
----
-dontChroot: true
-timeout: 30
-script:
-    - calamares-logs-helper ${ROOT}
