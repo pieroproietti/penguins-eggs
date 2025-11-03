@@ -7,17 +7,10 @@
 #
 # NB: initrd is handled by the initramfs module.
 ---
+LIVE_MEDIUM_PATH=$1
 message: "Preparing the boot environment..."
 dontChroot: true
 timeout: 300
 script:
-    # Si tratta di una soluzione un po' improvvisata, ma sufficiente per la versione 20.04+, poiché non è più necessario
-    # considerare la differenza tra firmato e non firmato, quindi quanto riportato di seguito è praticamente
-    # sufficiente. La gestione degli errori è però un po' carente.
-    # Riconfigureremo il kernel nel modulo boot_reconfigure per garantire che gli hook
-    # vengano eseguiti secondo necessità.
-
-    # INITRAMFS = '/run/live/medium/'
-    # DRACUT    = '/run/initramfs/live/'
-    - cp --preserve=timestamps /run/live/medium/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
-    #- cp --preserve=timestamps /run/initramfs/live/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    - cp --preserve=timestamps ${LIVE_MEDIUM_PATH}/live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`
+    

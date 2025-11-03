@@ -173,9 +173,31 @@ export default class Fisherman {
     const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'shellprocess', moduleDest)
-      shx.cp(moduleSource, moduleDest)
+
+      let fileContent = fs.readFileSync(moduleSource, 'utf-8')
+      fileContent = fileContent.replace(/__LIVE_MEDIUM_PATH__/g, this.distro.liveMediumPath)
+      fs.writeFileSync(moduleDest, fileContent, 'utf-8')
+      
     } else if (this.verbose) {
       console.log(`calamares: ${name} shellprocess, nothing to do`)
+    }
+  }
+
+  /**
+   *
+   * @param name
+   */
+  async helper(name: string) {
+    const helperSource = path.resolve(__dirname, this.installer.template + 'libexec/' + name + '.sh')
+    const helperDest = '/usr/libexec/calamares/' + name + '.sh'
+    if (fs.existsSync(helperSource)) {
+      if (this.verbose) this.show(name, 'helper', helperDest)
+
+      let fileContent = fs.readFileSync(helperSource, 'utf-8')
+      fileContent = fileContent.replace(/__LIVE_MEDIUM_PATH__/g, this.distro.liveMediumPath)
+      fs.writeFileSync(helperDest, fileContent, { encoding: 'utf-8', mode: 0o755 })
+    } else if (this.verbose) {
+      console.log(`calamares: ${name} helper, nothing to do`)
     }
   }
 
@@ -269,7 +291,7 @@ export default class Fisherman {
     let backend = 'apt'
     if (distro.familyId === 'alpine') {
       backend = 'apk'
-    } else  if (distro.familyId === 'archlinux') {
+    } else if (distro.familyId === 'archlinux') {
       backend = 'pacman'
     } else if (distro.familyId === 'fedora') {
       backend = 'dnf'
@@ -278,7 +300,7 @@ export default class Fisherman {
     }
 
     const yamlInstall = tryInstall(distro)
-    let yamlRemove=''
+    let yamlRemove = ''
     if (release) {
       yamlRemove = removePackages(distro)
     }
@@ -292,12 +314,12 @@ export default class Fisherman {
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
     let moduleDest = this.installer.modules + name + '.conf'
     let template = fs.readFileSync(moduleSource, 'utf8')
-    const view = { 
+    const view = {
       backend: backend,
       operations: operations
     }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
-  
+
   }
 
   /**

@@ -106,8 +106,13 @@ export class Noble {
     // libexec recreate
     await exec (`rm -rf /usr/libexec/calamares`)
     await exec (`mkdir -p /usr/libexec/calamares`)
-    const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
-    await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
+    // const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
+    // await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
+    await fisherman.helper('calamares-aptsources')
+    await fisherman.helper('calamares-l10n-helper')
+    await fisherman.helper('calamares-logs-helper') // Sostituzione __LIVE_MEDIUM_PATH__
+    await fisherman.helper('calamares-nomodeset')
+
 
     /**
      * cfs: custom final steps

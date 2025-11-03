@@ -18,7 +18,7 @@ else
        echo "WARNING: Cannot find calamares/session.log"
 fi
 
-cp /lib/live/mount/medium/.disk/info $install_dir/media-info
+cp __LIVE_MEDIUM_PATH__.disk/info $install_dir/media-info
 #cp /var/log/casper.log $install_dir/casper.log
 cp /var/log/syslog $install_dir/syslog
 
