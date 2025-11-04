@@ -141,8 +141,8 @@ jobs:
           external_repository: pieroproietti/penguins-eggs-repo
           publish_dir: ./repo-to-publish
           publish_branch: main
-          # QUESTA È LA RIGA FONDAMENTALE CHE RISOLVE IL PROBLEMA
           keep_files: true
+          lfs: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update APT repository with new packages"
