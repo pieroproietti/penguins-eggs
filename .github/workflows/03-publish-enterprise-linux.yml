@@ -185,8 +185,8 @@ jobs:
           publish_branch: main
           # La cartella da pubblicare (l'intera area di lavoro)
           publish_dir: .
-          # ISTRUZIONE CHIAVE: Non cancellare i file esistenti
           keep_files: true
+          lfs: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update EL9 RPM repository"
