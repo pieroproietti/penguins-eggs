@@ -1,9 +1,11 @@
 # =========================================================================================
-# WORKFLOW ALPINE - OTTIMIZZATO PER LFS E PRUNING
+# WORKFLOW ALPINE - CORRETTO PER LFS, PRUNING E SOTTOPACCHETTI
 # =========================================================================================
 name: 06. Build Alpine Linux Package
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
 
 jobs:
   build-apk:
@@ -16,7 +18,7 @@ jobs:
       - name: 2. Prepare Build Environment
         run: |
           apk update
-          apk add alpine-sdk git git-lfs nodejs npm sudo device-mapper jq
+          apk add alpine-sdk git nodejs npm sudo device-mapper jq
       - name: 3. Install PNPM
         run: npm install -g pnpm
       - name: 4. Create Build User, Keys, and Fix Environment
@@ -43,6 +45,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: alpine-package
+          # Carica TUTTI i pacchetti APK generati
           path: /home/builder/packages/**/*.apk
 
   publish-repo:
@@ -50,51 +53,71 @@ jobs:
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
-      - name: 1. Install Dependencies (git, alpine-sdk)
+      - name: 1. Install Dependencies (git, alpine-sdk, git-lfs)
         run: |
           apk update
           apk add alpine-sdk git git-lfs
       - name: 2. Checkout existing repo (penguins-repos)
         uses: actions/checkout@v4
         with:
-          repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          repository: pieroproietti/penguins-repos
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
-          lfs: true # Abilita LFS per il checkout
+          lfs: true
       - name: 3. Download Alpine artifact
         uses: actions/download-artifact@v4
         with:
           name: alpine-package
-          path: repo-dir/alpine/x86_64/
+          # Scarica nel percorso corretto che hai trovato
+          path: repo-dir/alpine/x86_64/packaging/x86_64/
       - name: 3a. Add public key to the repository
         run: |
+          # Aggiunge la chiave al percorso radice di Alpine
           echo "$ALPINE_PUBLIC_KEY" > repo-dir/alpine/piero.proietti@gmail.com-68452915.rsa.pub
         env:
           ALPINE_PUBLIC_KEY: ${{ secrets.ALPINE_PUBLIC_KEY }}
           
-      # --- PASSO DI PULIZIA AGGIUNTO ---
+      # --- PASSO DI PULIZIA AGGIUNTO (CORRETTO) ---
       - name: 3b. Prune old packages (keep 10)
-        run: ls -1 penguins-eggs-*.apk | sort -V | head -n -10 | xargs -r rm
-        working-directory: ./repo-dir/alpine/x86_64
+        run: |
+          # Definisce la directory di lavoro
+          WORKDIR="repo-dir/alpine/x86_64/packaging/x86_64"
+          
+          # Pulisce i pacchetti 'penguins-eggs-'
+          ls -1 $WORKDIR/penguins-eggs-[0-9]*.apk | sort -V | head -n -10 | xargs -r rm
+          
+          # Pulisce i pacchetti 'penguins-eggs-bash-completion-'
+          ls -1 $WORKDIR/penguins-eggs-bash-completion-*.apk | sort -V | head -n -10 | xargs -r rm
+          
+          # Pulisce i pacchetti 'penguins-eggs-doc-'
+          ls -1 $WORKDIR/penguins-eggs-doc-*.apk | sort -V | head -n -10 | xargs -r rm
 
       - name: 4. Update and Sign Alpine Repository
         run: |
           set -e
           echo "$ALPINE_SIGNING_KEY" > /tmp/signer.pem
+          # Genera l'indice basato sui file ora presenti
           apk index -o APKINDEX.tar.gz *.apk
           abuild-sign -k /tmp/signer.pem APKINDEX.tar.gz
           rm /tmp/signer.pem
         env:
           ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }}
-        working-directory: ./repo-dir/alpine/x86_64
-      - name: 5. Deploy to penguins-repos
+        # Esegui i comandi nella cartella che contiene i pacchetti
+        working-directory: ./repo-dir/alpine/x86_64/packaging/x86_64
+        
+      # Aumenta il buffer per il push LFS
+      - name: 5. Increase Git HTTP buffer
+        run: git config --global http.postBuffer 524288000 # 500MB
+
+      - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          external_repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          external_repository: pieroproietti/penguins-repos
           publish_branch: main
           publish_dir: ./repo-dir
-          keep_files: true # Mantiene i file delle altre distro
+          keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Alpine Linux repository"
+
