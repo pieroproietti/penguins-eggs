@@ -1,36 +1,11 @@
 # =========================================================================================
-# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY PER ALPINE LINUX
-#
-# Scopo:
-#   Questo workflow automatizza la creazione del pacchetto .apk di penguins-eggs
-#   e la sua pubblicazione in un repository dedicato su 'penguins-eggs-repo'.
-#   La versione del pacchetto viene letta automaticamente da 'package.json'.
-#
-# Trigger:
-#   - Push sul branch 'main'.
-#   - Avvio manuale tramite 'workflow_dispatch'.
-#
-# Struttura:
-#   1. Job 'build-apk':
-#      - Legge la versione da 'package.json'.
-#      - Aggiorna dinamicamente il file 'APKBUILD' con la versione corretta.
-#      - Compila il pacchetto .apk in un container Alpine pulito.
-#   2. Job 'publish-repo':
-#      - Fa il checkout del repository 'penguins-eggs-repo'.
-#      - Scarica l'artefatto (.apk) dal job precedente.
-#      - Aggiunge la chiave pubblica e firma l'indice del repository.
-#      - Esegue il commit e il push delle modifiche.
-#
-# Prerequisiti (GitHub Secrets):
-#   - ALPINE_SIGNING_KEY: La chiave privata PEM per la firma.
-#   - ALPINE_PUBLIC_KEY: La chiave pubblica corrispondente.
-#   - PUBLISH_TOKEN: Un PAT con permessi di scrittura su 'penguins-eggs-repo'.
+# WORKFLOW ALPINE - OTTIMIZZATO PER LFS E PRUNING
 # =========================================================================================
-
 name: 06. Build Alpine Linux Package
-
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
 
 jobs:
   build-apk:
@@ -40,15 +15,12 @@ jobs:
     steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
-
       - name: 2. Prepare Build Environment
         run: |
           apk update
           apk add alpine-sdk git nodejs npm sudo device-mapper jq
-
       - name: 3. Install PNPM
         run: npm install -g pnpm
-
       - name: 4. Create Build User, Keys, and Fix Environment
         run: |
           ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
@@ -58,68 +30,56 @@ jobs:
           echo | sudo -u builder abuild-keygen -a
           cp /home/builder/.abuild/*.pub /etc/apk/keys/
           chown -R builder:builder "$GITHUB_WORKSPACE"
-
       - name: 5. Update APKBUILD version from package.json
         run: |
-          # Estrae la versione da package.json
           VERSION=$(jq -r .version package.json)
           echo "Building version: $VERSION"
-          
-          # Sostituisce la versione nel file APKBUILD e resetta pkgrel a 1
           sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/alpine/APKBUILD
           sed -i "s/^pkgrel=.*/pkgrel=1/" ./packaging/alpine/APKBUILD
-
       - name: 6. Build The Package as Non-Root User
         run: |
           sudo -u builder abuild checksum
           sudo -u builder abuild -r
         working-directory: ./packaging/alpine
-      
       - name: 7. Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
           name: alpine-package
           path: /home/builder/packages/**/*.apk
 
-  
   publish-repo:
     needs: build-apk
     runs-on: ubuntu-latest
     container: alpine:latest
     steps:
-      # --- PASSO AGGIUNTO ---
-      # 1. Installa le dipendenze (git e alpine-sdk) PRIMA del checkout
       - name: 1. Install Dependencies (git, alpine-sdk)
         run: |
           apk update
           apk add alpine-sdk git
-
-      # --- PASSO DI CHECKOUT (ora 2) ---
-      - name: 2. Checkout existing repo
+      - name: 2. Checkout existing repo (penguins-repos)
         uses: actions/checkout@v4
         with:
-          repository: pieroproietti/penguins-eggs-repo
+          repository: pieroproietti/penguins-repos # Nome repo aggiornato
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-dir
-          fetch-depth: 0 # Obbliga 'git clone' e fornisce la cronologia
-
-      # --- PASSO DI DOWNLOAD (ora 3) ---
+          lfs: true # Abilita LFS per il checkout
       - name: 3. Download Alpine artifact
         uses: actions/download-artifact@v4
         with:
           name: alpine-package
           path: repo-dir/alpine/x86_64/
-
-      # --- PASSO CHIAVE PUBBLICA (ora 4) ---
-      - name: 4. Add public key to the repository
+      - name: 3a. Add public key to the repository
         run: |
           echo "$ALPINE_PUBLIC_KEY" > repo-dir/alpine/piero.proietti@gmail.com-68452915.rsa.pub
         env:
           ALPINE_PUBLIC_KEY: ${{ secrets.ALPINE_PUBLIC_KEY }}
+          
+      # --- PASSO DI PULIZIA AGGIUNTO ---
+      - name: 3b. Prune old packages (keep 10)
+        run: ls -1 penguins-eggs-*.apk | sort -V | head -n -10 | xargs -r rm
+        working-directory: ./repo-dir/alpine/x86_64
 
-      # --- PASSO DI FIRMA (ora 5) ---
-      # Pulito: rimossi 'cd', 'apk update', e 'apk add'
-      - name: 5. Update and Sign Alpine Repository
+      - name: 4. Update and Sign Alpine Repository
         run: |
           set -e
           echo "$ALPINE_SIGNING_KEY" > /tmp/signer.pem
@@ -128,19 +88,16 @@ jobs:
           rm /tmp/signer.pem
         env:
           ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }}
-        # Imposta la directory di lavoro corretta per lo step
         working-directory: ./repo-dir/alpine/x86_64
-
-      # --- PASSO DI DEPLOY (ora 6) ---
-      - name: 6. Deploy to penguins-eggs-repo
+      - name: 5. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          external_repository: pieroproietti/penguins-eggs-repo
+          external_repository: pieroproietti/penguins-repos # Nome repo aggiornato
           publish_branch: main
           publish_dir: ./repo-dir
-          keep_files: true
-          lfs: true
+          keep_files: true # Mantiene i file delle altre distro
+          lfs: true # Abilita LFS per il push
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Alpine Linux repository"

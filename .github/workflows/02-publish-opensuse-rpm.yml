@@ -1,46 +1,19 @@
 # =========================================================================================
-# WORKFLOW DI BUILD E PUBBLICAZIONE DEL REPOSITORY RPM PER OPENSUSE
-#
-# Scopo:
-#   Questo workflow automatizza la creazione e la pubblicazione del pacchetto .rpm 
-#   di penguins-eggs per openSUSE Leap. Il pacchetto viene pubblicato sul repository 
-#   YUM/DNF dedicato 'penguins-eggs-repo'.
-#
-# Trigger:
-#   - Push sul branch 'main'.
-#   - Avvio manuale tramite 'workflow_dispatch'.
-#
-# Struttura:
-#   1. Job 'build-opensuse': Compila il pacchetto .rpm utilizzando un 
-#      container openSUSE Leap pulito.
-#   2. Job 'publish-repo': Scarica l'artefatto .rpm, lo aggiunge alla struttura
-#      del repository, aggiorna i metadati con 'createrepo_c', firma i metadati
-#      con GPG e pubblica in modo non distruttivo (opzione 'keep_files: true')
-#      sul branch 'main' del repository 'penguins-eggs-repo'.
-#
-# Prerequisiti (GitHub Secrets):
-#   - GPG_SIGNING_KEY: La chiave GPG privata per firmare il repository.
-#   - GPG_KEY_ID: L'identificativo breve della chiave GPG.
-#   - GPG_PASSPHRASE: La passphrase della chiave GPG.
-#   - PUBLISH_TOKEN: Un Personal Access Token (PAT) con permessi di scrittura
-#     sul repository 'penguins-eggs-repo'.
+# WORKFLOW OPENSUSE - OTTIMIZZATO PER LFS E PRUNING
 # =========================================================================================
-
 name: 02. Build and Publish openSUSE RPM
-
-# Controllo per evitare conflitti di scrittura su gh-pages
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
 
 jobs:
-  # --- JOB 1: COSTRUISCE IL PACCHETTO PER openSUSE ---
   build-opensuse:
     runs-on: ubuntu-latest
     container:
@@ -50,67 +23,48 @@ jobs:
         run: |
           zypper --non-interactive refresh
           zypper --non-interactive install git tar gzip
-
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: 2. Install Build Dependencies (with jq)
         run: |
-          # Aggiunto 'jq' per leggere il file package.json
           zypper --non-interactive install rpm-build curl gpg2 rsync nodejs-devel jq
           zypper modifyrepo --enable repo-source
           zypper --non-interactive refresh
-          # Installiamo pnpm manualmente dato che non e' un pacchetto RPM su Leap
           npm install -g pnpm
-
       - name: 3. Get Package Version from package.json
         id: version
-        # Leggiamo la versione da package.json, la nostra "unica fonte di verita'"
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
-
       - name: 4. Update .spec and Install Dependencies
         run: |
-          # Aggiorniamo dinamicamente la versione nel file .spec
           echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
           sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
-          
-          # Creiamo una versione semplificata dello .spec per la vecchia versione di rpmbuild
           cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
           sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
-          # Rimuoviamo la riga pnpm perche' lo abbiamo installato manualmente
           sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
-
-          # Ora leggiamo le dipendenze dal file .spec temporaneo e corretto
           echo "Installing RPM build dependencies from simplified spec file..."
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
             echo "Installing $package..."
             zypper --non-interactive install "$package"
           done
-
       - name: 5. Import GPG Key and Configure RPM
         run: |
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
           echo '%_signature gpg' > ~/.rpmmacros
           echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
-
       - name: 6. Prepare RPM Sources
         working-directory: ${{ github.workspace }}
         run: |
           STAGING_DIR="/tmp/staging"
           SOURCE_DIR_NAME="penguins-eggs-${{ steps.version.outputs.version }}"
           mkdir -p "$STAGING_DIR/$SOURCE_DIR_NAME"
-          
           rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/$SOURCE_DIR_NAME/"
-          
           mkdir -p $HOME/rpmbuild/SOURCES
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz -C "$STAGING_DIR" "$SOURCE_DIR_NAME"
-
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
-
       - name: 7. Build and Sign RPM package
         id: build
         run: |
@@ -121,68 +75,62 @@ jobs:
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-          
-          # Lavoriamo sempre sul file .spec.suse, che e' gia' stato creato
           rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
-          # Firma non e' piu' necessaria qui se la facciamo dopo
-          
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
-
       - name: 8. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
-# --- JOB 2: PUBBLICA SUL REPOSITORY (DOPO IL BUILD) ---
   publish-repo:
     needs: build-opensuse
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Crea la struttura di cartelle in un workspace vuoto.
-      - name: 1. Create directory structure
-        run: mkdir -p rpm/opensuse/leap
-
-      # Step 2: Scarica l'artefatto RPM e lo posiziona nella struttura creata.
-      - name: 2. Download openSUSE RPM artifact
+      - name: 1. Checkout existing repository (penguins-repos)
+        uses: actions/checkout@v4
+        with:
+          repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          token: ${{ secrets.PUBLISH_TOKEN }}
+          path: repo-to-publish
+          lfs: true # Abilita LFS per il checkout
+      - name: 2. Create directory structure
+        run: mkdir -p repo-to-publish/rpm/opensuse/leap
+      - name: 3. Download openSUSE RPM artifact
         uses: actions/download-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
-          path: ./rpm/opensuse/leap
-
-      # Step 3: Installa gli strumenti necessari sul runner Ubuntu.
-      - name: 3. Install Tools and Import GPG Key
+          path: ./repo-to-publish/rpm/opensuse/leap
+          
+      # --- PASSO DI PULIZIA AGGIUNTO ---
+      - name: 3a. Prune old packages (keep 10)
+        run: ls -1 penguins-eggs-*.rpm | sort -V | head -n -10 | xargs -r rm
+        working-directory: ./repo-to-publish/rpm/opensuse/leap
+        
+      - name: 4. Install Tools and Import GPG Key
         run: |
           sudo apt-get update && sudo apt-get install -y createrepo-c gnupg2
           echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-
-      # Step 4: Aggiorna i metadati del repository e li firma.
-      - name: 4. Update and Sign Repository for openSUSE
+      - name: 5. Update and Sign Repository for openSUSE
         env:
           GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          cd ./rpm/opensuse/leap
+          cd ./repo-to-publish/rpm/opensuse/leap
           createrepo_c .
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 --detach-sign --armor -u ${{ secrets.GPG_KEY_ID }} repodata/repomd.xml
-
-      # Step 5: Pubblica sul repository esterno in modo NON distruttivo.
-      - name: 5. Deploy to penguins-eggs-repo
+      - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # Token con i permessi per scrivere sul repo esterno
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          # Il repository di destinazione
-          external_repository: pieroproietti/penguins-eggs-repo
-          # Il branch di destinazione
+          external_repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          publish_dir: ./repo-to-publish
           publish_branch: main
-          # La cartella da pubblicare (l'intera area di lavoro)
-          publish_dir: .
           keep_files: true
-          lfs: true
+          lfs: true # Abilita LFS per il push
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update openSUSE Leap RPM repository"
