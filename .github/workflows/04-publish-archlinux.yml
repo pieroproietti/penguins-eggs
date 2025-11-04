@@ -17,7 +17,7 @@ jobs:
       - name: 2. Prepare Build Environment and Dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
+          pacman -S --noconfirm base-devel git git-lfs pnpm jq pacman-contrib
       - name: 2a. Update PKGBUILD with version from package.json
         run: |
           VERSION=$(jq -r .version package.json)
@@ -50,7 +50,7 @@ jobs:
       - name: 1. Install Dependencies (git)
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel git
+          pacman -S --noconfirm base-devel git git-lfs 
       - name: 2. Checkout existing repo (penguins-repos)
         uses: actions/checkout@v4
         with:

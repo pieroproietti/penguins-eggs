@@ -18,7 +18,7 @@ jobs:
       - name: 2. Prepare Build Environment
         run: |
           apk update
-          apk add alpine-sdk git nodejs npm sudo device-mapper jq
+          apk add alpine-sdk git git-lfs nodejs npm sudo device-mapper jq
       - name: 3. Install PNPM
         run: npm install -g pnpm
       - name: 4. Create Build User, Keys, and Fix Environment
@@ -55,7 +55,7 @@ jobs:
       - name: 1. Install Dependencies (git, alpine-sdk)
         run: |
           apk update
-          apk add alpine-sdk git
+          apk add alpine-sdk git git-lfs
       - name: 2. Checkout existing repo (penguins-repos)
         uses: actions/checkout@v4
         with:
