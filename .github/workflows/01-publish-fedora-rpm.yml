@@ -117,7 +117,6 @@ jobs:
           publish_dir: ./repo-to-publish # Pubblica tutto, inclusa la nuova struttura
           publish_branch: main
           keep_files: true # Mantiene i file delle altre distro
-          lfs: true # Abilita LFS per il push
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update Fedora 42 RPM repository"
