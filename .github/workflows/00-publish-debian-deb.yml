@@ -111,7 +111,6 @@ jobs:
           publish_dir: ./repo-to-publish
           publish_branch: main
           keep_files: true
-          lfs: true # Abilita LFS per il push
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update APT repository with new packages"
