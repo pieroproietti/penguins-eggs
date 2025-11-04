@@ -68,6 +68,7 @@ jobs:
         run: ls -1 penguins-eggs-*.pkg.tar.zst | sort -V | head -n -10 | xargs -r rm
         working-directory: ./repo-dir/arch
 
+
       - name: 5. Update and Sign Arch Linux Repository
         run: |
           set -e
@@ -84,6 +85,10 @@ jobs:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         working-directory: ./repo-dir/arch
+
+      - name: Increase Git HTTP buffer
+        run: git config --global http.postBuffer 524288000 # 500MB
+        
       - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
