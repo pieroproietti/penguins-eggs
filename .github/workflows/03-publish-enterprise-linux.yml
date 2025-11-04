@@ -7,8 +7,6 @@ concurrency:
   cancel-in-progress: true
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
