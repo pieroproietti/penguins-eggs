@@ -1,12 +1,12 @@
 # =========================================================================================
-# WORKFLOW DEBIAN - OTTIMIZZATO PER LFS E PRUNING (LOGICA CORRETTA)
+# WORKFLOW DEBIAN - OTTIMIZZATO PER LFS, PRUNING ROBUSTO E OVERWRITE
 # =========================================================================================
 name: 00. Build and Publish Debian Multi-Arch Repository
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 on:
-  workflow_dispatch:
+  workflow_dispatch: # <--- MODIFICATO: Rimosso il trigger 'push'
 
 jobs:
   build-deb:
@@ -43,10 +43,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-packages-for-repo
-          # Carica sia i .deb che i .sha256
           path: |
             releases/*.deb
             releases/*.sha256
+          overwrite: true # <--- CORREZIONE: Permette la sovrascrittura su re-run
 
   publish-repo:
     needs: build-deb
@@ -64,17 +64,16 @@ jobs:
           path: repo-to-publish
           lfs: true
       - name: 3. Download newly built artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           name: deb-packages-for-repo
           path: repo-to-publish/deb/pool/main
           
-      # --- PASSO DI PULIZIA AGGIUNTO (LOGICA ROBUSTA) ---
       - name: 4. Prune old packages (keep 10 versions * 3 arch = 30 files)
         working-directory: ./repo-to-publish/deb/pool/main
         run: |
           # Trova i file .deb da eliminare (tutti tranne gli ultimi 30)
-          FILES_TO_DELETE=$(ls -1 penguins-eggs_*_*.deb | sort -V | head -n -30)
+          FILES_TO_DELETE=$(ls -1 penguins-eggs_*_*.deb 2>/dev/null | sort -V | head -n -30)
           
           if [ -n "$FILES_TO_DELETE" ]; then
             echo "--- File .deb da eliminare: ---"
@@ -140,7 +139,6 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
           
-      # Aumenta il buffer per il push LFS
       - name: 6. Increase Git HTTP buffer
         run: git config --global http.postBuffer 524288000 # 500MB
 
@@ -155,4 +153,5 @@ jobs:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update APT repository with new packages"
+
 
