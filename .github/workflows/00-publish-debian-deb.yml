@@ -1,5 +1,5 @@
 # =========================================================================================
-# WORKFLOW DEBIAN - OTTIMIZZATO PER LFS E PRUNING
+# WORKFLOW DEBIAN - OTTIMIZZATO PER LFS E PRUNING (LOGICA CORRETTA)
 # =========================================================================================
 name: 00. Build and Publish Debian Multi-Arch Repository
 concurrency:
@@ -7,6 +7,8 @@ concurrency:
   cancel-in-progress: true
 on:
   workflow_dispatch:
+  push:
+    branches: [ master ]
 
 jobs:
   build-deb:
@@ -43,48 +45,82 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deb-packages-for-repo
-          path: releases/*
+          # Carica sia i .deb che i .sha256
+          path: |
+            releases/*.deb
+            releases/*.sha256
 
   publish-repo:
     needs: build-deb
     runs-on: ubuntu-latest
     steps:
-      - name: 1. Checkout existing repository (penguins-repos)
+      - name: 1. Install Tools and Import GPG Key
+        run: |
+          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils git git-lfs
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+      - name: 2. Checkout existing repository (penguins-repos)
         uses: actions/checkout@v4
         with:
-          repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          repository: pieroproietti/penguins-repos
           token: ${{ secrets.PUBLISH_TOKEN }}
           path: repo-to-publish
-          lfs: true # Abilita LFS per il checkout
-      - name: 2. Download newly built artifacts
-        uses: actions/download-artifact@v4
+          lfs: true
+      - name: 3. Download newly built artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: deb-packages-for-repo
           path: repo-to-publish/deb/pool/main
-      
-      # --- PASSO DI PULIZIA AGGIUNTO ---
-      - name: 2a. Prune old packages (keep 10)
-        run: ls -1 penguins-eggs_*_*.deb | sort -V | head -n -10 | xargs -r rm
+          
+      # --- PASSO DI PULIZIA AGGIUNTO (LOGICA ROBUSTA) ---
+      - name: 4. Prune old packages (keep 10 versions * 3 arch = 30 files)
         working-directory: ./repo-to-publish/deb/pool/main
-        
-      - name: 3. Install Tools and Import GPG Key
         run: |
-          sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg2 apt-utils xz-utils
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-      - name: 4. Update and Sign APT Repository
+          # Trova i file .deb da eliminare (tutti tranne gli ultimi 30)
+          FILES_TO_DELETE=$(ls -1 penguins-eggs_*_*.deb | sort -V | head -n -30)
+          
+          if [ -n "$FILES_TO_DELETE" ]; then
+            echo "--- File .deb da eliminare: ---"
+            echo "$FILES_TO_DELETE"
+            
+            # Genera la lista dei file .sha256 corrispondenti
+            SHA_FILES_TO_DELETE=$(echo "$FILES_TO_DELETE" | while read f; do echo "${f}.sha256"; done)
+            
+            echo "--- File .sha256 da eliminare: ---"
+            echo "$SHA_FILES_TO_DELETE"
+            
+            # Elimina tutti i file
+            echo "$FILES_TO_DELETE" | xargs -r rm
+            echo "$SHA_FILES_TO_DELETE" | xargs -r rm
+            
+          else
+            echo "Nessun vecchio pacchetto da eliminare."
+          fi
+
+      - name: 5. Update and Sign APT Repository
         run: |
           export GPG_TTY=$(tty)
           cd ./repo-to-publish/deb
+          
           for arch in amd64 i386 arm64; do
             echo "Generating Packages index for $arch..."
+            
             TEMP_REPO_DIR="temp-repo-for-$arch"
             mkdir -p "$TEMP_REPO_DIR/pool/main"
+            
+            # Trova i pacchetti per l'architettura specifica nella pool principale
             find pool/main -maxdepth 1 -type f -name "*_${arch}.deb" -exec cp {} "$TEMP_REPO_DIR/pool/main/" \;
+            
+            # Genera l'indice Packages basato solo sui pacchetti di quella architettura
             (cd "$TEMP_REPO_DIR" && apt-ftparchive packages .) > "dists/stable/main/binary-$arch/Packages"
+            
+            # Comprimi l'indice
             gzip -9c "dists/stable/main/binary-$arch/Packages" > "dists/stable/main/binary-$arch/Packages.gz"
             xz -9c "dists/stable/main/binary-$arch/Packages" > "dists/stable/main/binary-$arch/Packages.xz"
+            
+            # Pulisci la directory temporanea
             rm -rf "$TEMP_REPO_DIR"
           done
+          
           cat > apt-release.conf <<EOF
           APT::FTPArchive::Release {
             Origin "Piero Proietti";
@@ -96,21 +132,29 @@ jobs:
             Description "penguins-eggs Debian/Ubuntu repository";
           };
           EOF
+          
           apt-ftparchive release -c apt-release.conf dists/stable > dists/stable/Release
+          
           cd dists/stable
           mkdir -p ~/.gnupg
           echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback --clearsign -o InRelease Release
-      - name: 5. Deploy to external repository (penguins-repos)
+          
+      # Aumenta il buffer per il push LFS
+      - name: 6. Increase Git HTTP buffer
+        run: git config --global http.postBuffer 524288000 # 500MB
+
+      - name: 7. Deploy to external repository (penguins-repos)
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.PUBLISH_TOKEN }}
-          external_repository: pieroproietti/penguins-repos # Nome repo aggiornato
+          external_repository: pieroproietti/penguins-repos
           publish_dir: ./repo-to-publish
           publish_branch: main
           keep_files: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update APT repository with new packages"
+
