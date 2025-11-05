@@ -22,24 +22,24 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const repoKeyUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc'
-const repoKeyPath = '/usr/share/keyrings/penguins-eggs-repo.gpg'
-const repoUrl = `https://pieroproietti.github.io/penguins-eggs-repo`
-let repoPath = '/etc/apt/sources.list.d/penguins-eggs-repo' // Base path without extension
+const repoKeyUrl = 'https://pieroproietti.github.io/penguins-repos/KEY.asc'
+const repoKeyPath = '/usr/share/keyrings/penguins-repos.gpg'
+const repoUrl = `https://pieroproietti.github.io/penguins-repos`
+let repoPath = '/etc/apt/sources.list.d/penguins-repos' // Base path without extension
 
 /**
  *
  */
 export default class Repo extends Command {
-  static description = 'add/remove penguins-eggs-repo'
+  static description = 'add/remove penguins-repos'
 
   static examples = ['sudo eggs tools repo --add', 'sudo eggs tools repo --remove']
 
   static flags = {
-    add: Flags.boolean({ char: 'a', description: 'add penguins-eggs-repo' }),
+    add: Flags.boolean({ char: 'a', description: 'add penguins-repos' }),
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    remove: Flags.boolean({ char: 'r', description: 'remove penguins-eggs-repo' }),
+    remove: Flags.boolean({ char: 'r', description: 'remove penguins-repos' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
 
@@ -57,12 +57,12 @@ export default class Repo extends Command {
 
       if (distro.familyId === 'archlinux') {
         if (flags.add) {
-          Utils.warning(`Are you sure to add penguins-eggs repo to your repositories?`)
+          Utils.warning(`Are you sure to add penguins-repos to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
             await archlinuxRepoAdd(distro.distroId)
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove penguins-eggs repo to your repositories?`)
+          Utils.warning(`Are you sure to remove penguins-repos to your repositories?`)
           if (await Utils.customConfirm('Select yes to continue...')) {
             await archlinuxRepoRemove(distro.distroId)
           }
@@ -110,7 +110,7 @@ export default class Repo extends Command {
          * All the others
          */
       } else {
-        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs-repo nor chaotic-aur!`)
+        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-repo nor chaotic-aur!`)
       }
     }
   }
@@ -122,14 +122,14 @@ export default class Repo extends Command {
  */
 // archlinuxRepoAdd
 async function archlinuxRepoAdd(distroId = "Arch") {
-  console.log(`Adding penguins-eggs repo for ${distroId}`)
+  console.log(`Adding penguins-repos for ${distroId}`)
 
-  const repoBlockIdentifier = '# Penguins-eggs repository';
+  const repoBlockIdentifier = '# penguins-repos';
   const repoName = '[penguins-eggs]'
   const keyId = 'F6773EA7D2F309BA3E5DE08A45B10F271525403F'
-  let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  let serverUrl = 'https://pieroproietti.github.io/penguins-repos/arch'
   if (Diversions.isManjaroBased(distroId)) {
-    serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
+    serverUrl = 'https://pieroproietti.github.io/penguins-repos/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
   const echo = Utils.setEcho(true)
@@ -161,13 +161,13 @@ async function archlinuxRepoAdd(distroId = "Arch") {
 
 // archlinuxRepoRemove
 async function archlinuxRepoRemove(distroId = 'Arch') {
-  console.log(`Removing penguins-eggs repo for ${distroId}`)
+  console.log(`Removing penguins-repos for ${distroId}`)
 
-  const repoBlockIdentifier = '# Penguins-eggs repository'
+  const repoBlockIdentifier = '# penguins-repos'
   const repoName = '[penguins-eggs]'
-  let serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/arch'
+  let serverUrl = 'https://pieroproietti.github.io/penguins-repos/arch'
   if (Diversions.isManjaroBased(distroId)) {
-    serverUrl = 'https://pieroproietti.github.io/penguins-eggs-repo/manjaro'
+    serverUrl = 'https://pieroproietti.github.io/penguins-repos/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
 
