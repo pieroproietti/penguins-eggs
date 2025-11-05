@@ -23,12 +23,12 @@ jobs:
           echo "Tutti i rilasci verranno eseguiti usando il codice dal branch 'master'."
 
           # Lista dei workflow da eseguire in ordine
+          #  "00-publish-debian-deb.yml"
+          #  "01-publish-fedora-rpm.yml"
+          #  "02-publish-opensuse-rpm.yml"
+          #  "03-publish-enterprise-linux.yml"
+          #  "04-publish-archlinux.yml"
           WORKFLOWS=(
-            "00-publish-debian-deb.yml"
-            "01-publish-fedora-rpm.yml"
-            "02-publish-opensuse-rpm.yml"
-            "03-publish-enterprise-linux.yml"
-            "04-publish-archlinux.yml"
             "05-publish-manjaro.yml"
             "06-publish-alpine.yml"
           )
