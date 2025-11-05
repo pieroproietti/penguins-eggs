@@ -18,8 +18,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
+## v25.11.5
+Starting with this version, we have changed the repository for the [penguins-eggs](https://github.com/pieroproietti/penguins-repos) packages.
+
 ## v25.11.4
-* penguins-eggs now depends on the polkit package (policykit-1 on Debian/Ubuntu) to allow GUI installation without using a password.
+* penguins-eggs now depends on the polkit (pkexec|policykit-1 on Debian/Ubuntu) to allow GUI installation without using a password.
 * alpine: it has been realigned with the mainstream distribution of penguins-eggs with changes both within the penguins-eggs package and in the penguins-alpine repository specific to the distribution;
 * ubuntu focal/ubuntu jammy:  thanks also to the suggestion of [Cuphead74832](https://github.com/Cuphead74832), both version 20.04 (focal) and version 22.04 (jammy) are available again. I also updated the nodejs version on fresh-eggs from nodejs18 to nodejs20. I was also able to remove a bunch of specific code, using the version written for Ubuntu Noble;
 * linuxmint: It should be noted that the reintroduction of compatibility for Ubuntu focal and Ubuntu jammy also ensures renewed compatibility for many derivatives and, specifically, many versions of Linuxmint.
