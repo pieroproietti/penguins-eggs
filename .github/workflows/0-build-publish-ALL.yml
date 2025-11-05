@@ -407,18 +407,18 @@ jobs:
 
       - name: 3. Create Debian Repo Structure
         run: |
-          # Creiamo la struttura che verrà caricata
-          mkdir -p ./repo-dir/pool/main
-          mkdir -p ./repo-dir/dists/stable/main/binary-amd64
-          mkdir -p ./repo-dir/dists/stable/main/binary-arm64
-          mkdir -p ./repo-dir/dists/stable/main/binary-i386
+          # Creiamo la struttura che verrà caricata (all'interno di /deb)
+          mkdir -p ./repo-dir/deb/pool/main
+          mkdir -p ./repo-dir/deb/dists/stable/main/binary-amd64
+          mkdir -p ./repo-dir/deb/dists/stable/main/binary-arm64
+          mkdir -p ./repo-dir/deb/dists/stable/main/binary-i386
 
       - name: 4. Download Debian artifacts
         uses: actions/download-artifact@v4
         with:
           name: debian-packages
           # Scarica i .deb nella cartella pool
-          path: ./repo-dir/pool/main/
+          path: ./repo-dir/deb/pool/main/
 
       - name: 5. Prune and Update Debian Repo
         env:
