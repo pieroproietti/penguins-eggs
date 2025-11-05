@@ -85,13 +85,6 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           working-directory: ./repo-dir/manjaro
 
-      - name: Debug - Trova i pacchetti compilati
-        run: |
-          echo "La mia directory corrente è:"
-          pwd
-          echo "Sto cercando tutti i file .pkg.tar.zst nel workspace..."
-          find . -name "*.pkg.tar.zst"
-
       - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
