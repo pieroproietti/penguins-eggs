@@ -391,7 +391,7 @@ jobs:
     container: archlinux # Usiamo Arch come base
     
     steps:
-# 1. Installa dipendenze per TUTTI i tipi di repo
+      # 1. Installa dipendenze per TUTTI i tipi di repo
       - name: 1. Install Dependencies (Git, GPG, Arch, Debian, RPM, Alpine)
         run: |
           echo "--- Inizializzo keyring di Pacman ---"
@@ -402,11 +402,8 @@ jobs:
           pacman -Syu --noconfirm
           
           echo "--- Installo gli strumenti di publishing ---"
-          pacman -S --noconfirm git pacman-contrib gnupg \
-            dpkg         # <--- CORRETTO (contiene dpkg-scanpackages)
-            createrepo_c # <--- Per RPM (Fedora, EL9, etc.)
-            apk-tools    # <--- Per Alpine (apk index)
-                  
+          pacman -S --noconfirm git pacman-contrib gnupg dpkg createrepo_c apk-tools
+
       # 2. Crea la struttura di cartelle completa
       - name: 2. Create clean publish directory structure
         run: |
