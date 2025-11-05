@@ -406,24 +406,21 @@ jobs:
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
 
-      # 3. Scarica i file LFS (NUOVO PASSO CRUCIALE)
-      - name: 3. Pull LFS files from existing repo
-        run: |
-          echo "Scaricando i file LFS..."
-          cd /tmp/old-repo
-          git lfs pull || true
-          echo "Download LFS completato."
-          cd - # Torna alla directory precedente
-
-      # 4. Prepara la nuova cartella di pubblicazione
-      - name: 4. Create publish directory and copy old files
+      # 3. Prepara la nuova cartella di pubblicazione (LOGICA AGGIORNATA)
+      - name: 3. Create publish directory and copy ONLY static files
         run: |
           mkdir -p ./repo-dir
-          echo "Copiando i file (inclusi i binari LFS) dal vecchio repo..."
-          # Ora questo copierà i file binari REALI
-          cp -a /tmp/old-repo/. ./repo-dir/
+          echo "Copiando SOLO i file statici (README, ecc.) dal vecchio repo..."
           
-          echo "Assicurando che tutte le cartelle di distro esistano..."
+          # Trova tutti i FILE (no directory) nella root del vecchio clone
+          # e li copia nella nuova cartella.
+          # Questo copia README.md, LICENSE, ecc. ma ignora le cartelle arch/, debian/
+          find /tmp/old-repo -maxdepth 1 -type f -exec cp {} ./repo-dir/ \;
+          
+          # (Se hai file statici in sottocartelle NON di pacchetti,
+          # dovrai aggiungerli qui. Es: cp -a /tmp/old-repo/docs ./repo-dir/docs)
+
+          echo "Ricreo le cartelle di pacchetti pulite..."
           mkdir -p ./repo-dir/arch
           mkdir -p ./repo-dir/manjaro
           mkdir -p ./repo-dir/debian
@@ -432,43 +429,43 @@ jobs:
           mkdir -p ./repo-dir/el9
           mkdir -p ./repo-dir/alpine
 
-      # 5. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
-      - name: 5.1 Download Debian artifacts
+      # 4. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
+      - name: 4.1 Download Debian artifacts
         uses: actions/download-artifact@v4
         with: { name: debian-packages, path: ./repo-dir/debian/ }
           
-      - name: 5.2 Download Fedora 42 artifacts
+      - name: 4.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/fedora/42/ }
 
-      - name: 5.3 Download openSUSE artifacts
+      - name: 4.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
         with: { name: opensuse-leap-rpm-for-repo, path: ./repo-dir/opensuse/leap/ }
 
-      - name: 5.4 Download EL9 artifacts
+      - name: 4.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
         with: { name: el9-rpm-for-repo, path: ./repo-dir/el9/ }
           
-      - name: 5.5 Download Arch artifacts
+      - name: 4.5 Download Arch artifacts
         uses: actions/download-artifact@v4
         with: { name: arch-packages, path: ./repo-dir/arch/ }
           
-      - name: 5.6 Download Manjaro artifacts
+      - name: 4.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
         with: { name: manjaro-package, path: ./repo-dir/manjaro/ }
 
-      - name: 5.7 Download Alpine artifacts
+      - name: 4.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
         with: { name: alpine-package, path: ./repo-dir/alpine/ }
 
-# 6. Importa la chiave GPG
-      - name: 6. Import GPG Key
+# 5. Importa la chiave GPG
+      - name: 5. Import GPG Key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
           
-# 7. Processa Repo Arch (Pruning e Update)
-      - name: 7. Prune and Update Arch Repo
+# 6. Processa Repo Arch (Pruning e Update)
+      - name: 6. Prune and Update Arch Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
