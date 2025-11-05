@@ -531,11 +531,10 @@ jobs:
           cd ../..
       
 
-      # 9. Processa Repo Alpine (Indice NON FIRMATO)
-      - name: 9. Prune and Update Alpine Repo (Unsigned Index)
+# 9. Processa Repo Alpine
+      - name: 9. Prune and Update Alpine Repo
         env:
-          # Questo secret deve contenere la CHIAVE PUBBLICA (file .pub)
-          # creata dal job 'build-alpine'
+          # Assicurati che questo secret contenga la CHIAVE PUBBLICA (.pub)
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
@@ -546,20 +545,19 @@ jobs:
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
           
           echo "--- Pulisco vecchi pacchetti Alpine (tengo i 10 più recenti) ---"
-          # Ora 'ls' funzionerà
           ls -1 *.apk | sort -V | head -n -10 | xargs -r rm
           
-          echo "--- Aggiorno database repository Alpine (Indice NON FIRMATO) ---"
-          # Rimuovo --signing-key, non è supportato.
-          # I pacchetti sono già firmati, quindi è OK.
-          apk index -o APKINDEX.tar.gz *.apk
+          echo "--- Aggiorno database repository Alpine ---"
+          # === AGGIUNTO IL FLAG --allow-untrusted ===
+          # Questo dice a 'apk index' di accettare i pacchetti
+          # che sono già firmati, ma con una chiave che non conosce.
+          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
           
           echo "--- Aggiungo la chiave pubblica al repository ---"
           # L'utente la userà per verificare i pacchetti
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           
           cd ../.. # Torna alla radice
-
 
       # 10. PUBBLICAZIONE FINALE
       - name: 10. Deploy to penguins-repos (distruggendo la cronologia)
