@@ -1,0 +1,567 @@
+# NOME: 0-build-publish-ALL
+
+name: 0. Build and Publish ALL
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # ========================================================
+  # 1.1 JOB DI BUILD Debian
+  # ========================================================
+  build-debian:
+    runs-on: ubuntu-latest
+    container:
+      image: debian-latest
+    
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: 2. Install Debian Build Dependencies
+        run: |
+          apt-get update
+
+          # Installa i pacchetti necessari per la build
+          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils
+          mkdir -p /etc/apt/keyrings
+          curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+          apt-get update
+          apt-get install -y nodejs
+          npm install -g pnpm
+
+      - name: 3. Import GPG Key and Prime Agent
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+      - name: 4. Build .deb packages for all architectures
+        run: |
+          export GPG_TTY=$(tty)
+          pnpm install
+          pnpm deb -a
+
+      - name: 5. Upload Debian Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # Nome dell'artifact (univoco per questo job)
+          name: debian-packages
+          
+          # Percorso del pacchetto .deb costruito
+          # (dpkg-buildpackage di solito lo mette nella dir genitore)
+          path: |
+            releases/*.deb
+            releases/*.sha256
+          
+          # Tieni l'artifact solo per 1 giorno (non serve tenerlo di più)
+          retention-days: 1    
+
+  # ========================================================
+  # 1.2 JOB DI BUILD Fedora
+  # ========================================================
+  build-fc42:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:42
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 2. Install Build Dependencies (with jq)
+        run: |
+          dnf install -y 'dnf-plugins-core' rpm-build git tar gzip curl gnupg2 rpmsign jq
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | awk '{print $2}'); do
+            dnf install -y "$package"
+          done
+      - name: 3. Get Package Version from package.json
+        id: version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+      - name: 4. Update Version in .spec File
+        run: |
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+      - name: 5. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+      - name: 6. Prepare RPM Sources
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
+            --exclude=.git --exclude=.github .
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+      - name: 7. Build and Sign RPM package
+        id: build
+        env:
+          GPG_PASSPHRASE_ENV: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "$GPG_PASSPHRASE_ENV" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+      - name: 8. Upload RPM Artifact for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: fedora-42-rpm-for-repo
+          path: ${{ steps.build.outputs.rpm_path }}
+
+  # ========================================================
+  # 1.3 JOB DI BUILD Opensuse
+  # ========================================================
+  build-opensuse:
+    runs-on: ubuntu-latest
+    container:
+      image: opensuse/leap
+    steps:
+      - name: 0. Install Prerequisite Tools
+        run: |
+          zypper --non-interactive refresh
+          zypper --non-interactive install git tar gzip
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 2. Install Build Dependencies (with jq)
+        run: |
+          zypper --non-interactive install rpm-build curl gpg2 rsync nodejs-devel jq
+          zypper modifyrepo --enable repo-source
+          zypper --non-interactive refresh
+          npm install -g pnpm
+      - name: 3. Get Package Version from package.json
+        id: version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+      - name: 4. Update .spec and Install Dependencies
+        run: |
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+          cp packaging/rpm/penguins-eggs.spec packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if 0%{?suse_version}/,/%endif/c\BuildRequires:  nodejs-devel' packaging/rpm/penguins-eggs.spec.suse
+          sed -i -e '/%if %{expr: 0%{?fedora} || 0%{?suse_version}}/,/%endif/c\BuildRequires:  pnpm' packaging/rpm/penguins-eggs.spec.suse
+          sed -i '/BuildRequires: *pnpm/d' packaging/rpm/penguins-eggs.spec.suse
+          echo "Installing RPM build dependencies from simplified spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec.suse | awk '{print $2}'); do
+            echo "Installing $package..."
+            zypper --non-interactive install "$package"
+          done
+      - name: 5. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+      - name: 6. Prepare RPM Sources
+        working-directory: ${{ github.workspace }}
+        run: |
+          STAGING_DIR="/tmp/staging"
+          SOURCE_DIR_NAME="penguins-eggs-${{ steps.version.outputs.version }}"
+          mkdir -p "$STAGING_DIR/$SOURCE_DIR_NAME"
+          rsync -av --exclude '.git' --exclude '.github' ./ "$STAGING_DIR/$SOURCE_DIR_NAME/"
+          mkdir -p $HOME/rpmbuild/SOURCES
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz -C "$STAGING_DIR" "$SOURCE_DIR_NAME"
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+      - name: 7. Build and Sign RPM package
+        id: build
+        run: |
+          export GPG_TTY=$(tty)
+          echo '%_topdir %(echo $HOME)/rpmbuild' >> ~/.rpmmacros
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+      - name: 8. Upload RPM Artifact for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensuse-leap-rpm-for-repo
+          path: ${{ steps.build.outputs.rpm_path }}
+
+
+  # ========================================================
+  # 1.4 JOB DI BUILD EL9
+  # ========================================================
+  build-el9:
+    runs-on: ubuntu-latest
+    container:
+      image: almalinux:9
+    steps:
+      - name: 0. Install Prerequisite Tools
+        run: |
+          dnf install -y --allowerasing git tar gzip
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 2. Install Build Dependencies (with jq)
+        run: |
+          dnf install -y --allowerasing 'dnf-plugins-core' rpm-build curl gnupg2 rpm-sign jq
+          dnf install -y epel-release
+          /usr/bin/crb enable
+          dnf module enable nodejs:18 -y
+          dnf install -y nodejs
+          npm install -g pnpm
+          echo "Installing RPM build dependencies from spec file..."
+          for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}'); do
+            echo "Installing $package..."
+            dnf install -y --allowerasing "$package"
+          done
+      - name: 3. Get Package Version from package.json
+        id: version
+        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+      - name: 4. Update Version in .spec File
+        run: |
+          echo "Updating .spec file to version ${{ steps.version.outputs.version }}"
+          sed -i "s/^\(Version: *\).*/\1${{ steps.version.outputs.version }}/" packaging/rpm/penguins-eggs.spec
+      - name: 5. Import GPG Key and Configure RPM
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          echo '%_signature gpg' > ~/.rpmmacros
+          echo '%_gpg_name ${{ secrets.GPG_KEY_ID }}' >> ~/.rpmmacros
+      - name: 6. Prepare RPM Sources
+        run: |
+          mkdir -p $HOME/rpmbuild/SOURCES
+          tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz \
+            --transform='s,^\.,penguins-eggs-${{ steps.version.outputs.version }},' \
+            --exclude=.git --exclude=.github .
+          curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
+          cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
+      - name: 7. Build and Sign RPM package
+        id: build
+        run: |
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          rpmbuild -ba packaging/rpm/penguins-eggs.spec
+          rpmsign --addsign $(find $HOME/rpmbuild/RPMS -name '*.rpm')
+          echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
+      - name: 8. Upload RPM Artifact for publishing
+        uses: actions/upload-artifact@v4
+        with:
+          name: el9-rpm-for-repo
+          path: ${{ steps.build.outputs.rpm_path }}
+
+
+
+  # ========================================================
+  # 1.5 JOB DI BUILD Archlinux
+  # ========================================================
+  build-arch:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+      - name: 2. Prepare Build Environment
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
+      - name: 2a. Update PKGBUILD
+        run: |
+          VERSION=$(jq -r .version package.json)
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/arch/PKGBUILD
+          sed -i 's/^pkgrel=.*/pkgrel=1/' ./packaging/arch/PKGBUILD
+      - name: 3. Create Build User and Build
+        run: |
+          useradd -m builder
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          sudo -u builder bash -c "cd ./packaging/arch && updpkgsums && makepkg -s --noconfirm"
+      
+      # 4. Carica l'artifact
+      - name: 4. Upload Arch Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-packages # Nome generico
+          path: ./packaging/arch/*.pkg.tar.zst
+  
+  # ... (QUI AVRAI ALTRI JOB: build-debian, build-fedora, ecc.) ...
+  # Ognuno carica il suo artifact (es. 'debian-packages', 'fedora-packages')
+
+  # ========================================================
+  # 1.6 JOB DI BUILD Manjaro
+  # ========================================================
+  build-manjaro:
+    runs-on: ubuntu-latest
+    container:
+      image: manjarolinux/base
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+      - name: 2. Prepare Build Environment and Dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel git pnpm jq pacman-contrib
+
+      - name: 2a. Update PKGBUILD with version from package.json
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "Updating Manjaro PKGBUILD to version: $VERSION"
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/manjaro/PKGBUILD
+          sed -i 's/^pkgrel=.*/pkgrel=1/' ./packaging/manjaro/PKGBUILD
+          echo "PKGBUILD updated:"
+          grep -E "^(pkgver|pkgrel)=" ./packaging/manjaro/PKGBUILD
+      - name: 3. Prepare Build User
+        run: |
+          echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+      - name: 4. Update Checksums and Build Package as Non-Root User
+        run: |
+          sudo -u builder updpkgsums
+          sudo -u builder makepkg -s --noconfirm
+        working-directory: ./packaging/manjaro
+      - name: 5. Upload Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: manjaro-package
+          path: ./packaging/manjaro/*.pkg.tar.zst
+
+
+  # ========================================================
+  # 1.7 JOB DI BUILD Alpine
+  # ========================================================
+  build-alpine:
+    runs-on: ubuntu-latest
+    container:
+      image: alpine:latest
+    steps:
+      - name: 1. Checkout repository code
+        uses: actions/checkout@v4
+      - name: 2. Prepare Build Environment
+        run: |
+          apk update
+          apk add alpine-sdk git nodejs npm sudo device-mapper jq
+      - name: 3. Install PNPM
+        run: npm install -g pnpm
+      - name: 4. Create Build User, Keys, and Fix Environment
+        run: |
+          ln -s /usr/lib/libdevmapper.so.1.02 /usr/lib/libdevmapper.so.1.02.1
+          ln -s /lib/ld-musl-x86_64.so.1 /lib/libdl.so.2
+          adduser -D builder
+          addgroup builder abuild
+          echo | sudo -u builder abuild-keygen -a
+          cp /home/builder/.abuild/*.pub /etc/apk/keys/
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+      - name: 5. Update APKBUILD version from package.json
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "Building version: $VERSION"
+          sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/alpine/APKBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=1/" ./packaging/alpine/APKBUILD
+      - name: 6. Build The Package as Non-Root User
+        run: |
+          sudo -u builder abuild checksum
+          sudo -u builder abuild -r
+        working-directory: ./packaging/alpine
+      - name: 7. Upload Package Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpine-package
+          # Carica TUTTI i pacchetti APK generati
+          path: /home/builder/packages/**/*.apk
+
+
+
+  # ========================================================
+  # 2.0 JOB DI PUBBLICAZIONE
+  # ========================================================
+  publish-all-repos:
+    # Esegui solo dopo che TUTTI i job di build sono finiti
+    needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine]
+    runs-on: ubuntu-latest
+    container: archlinux # Usiamo Arch come base
+    
+    steps:
+      # 1. Installa dipendenze per TUTTI i tipi di repo
+      - name: 1. Install Dependencies (Git, GPG, Arch, Debian, RPM, Alpine)
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm git pacman-contrib gnupg \
+            dpkg-dev     # <--- Per Debian (dpkg-scanpackages)
+            createrepo_c # <--- Per RPM (Fedora, EL9, etc.)
+            apk-tools    # <--- Per Alpine (apk index)
+      
+      # 2. Crea la struttura di cartelle completa
+      - name: 2. Create clean publish directory structure
+        run: |
+          mkdir -p ./repo-dir/arch
+          mkdir -p ./repo-dir/manjaro
+          mkdir -p ./repo-dir/debian
+          mkdir -p ./repo-dir/fedora/42
+          mkdir -p ./repo-dir/opensuse/leap
+          mkdir -p ./repo-dir/el9
+          mkdir -p ./repo-dir/alpine
+
+      # 3. Scarica TUTTI gli artifacts
+      - name: 3.1 Download Debian artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: debian-packages
+          path: ./repo-dir/debian/
+          
+      - name: 3.2 Download Fedora 42 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: fedora-42-rpm-for-repo
+          path: ./repo-dir/fedora/42/
+
+      - name: 3.3 Download openSUSE artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: opensuse-leap-rpm-for-repo
+          path: ./repo-dir/opensuse/leap/
+
+      - name: 3.4 Download EL9 artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: el9-rpm-for-repo
+          path: ./repo-dir/el9/
+          
+      - name: 3.5 Download Arch artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: arch-packages
+          path: ./repo-dir/arch/
+          
+      - name: 3.6 Download Manjaro artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: manjaro-package
+          path: ./repo-dir/manjaro/
+
+      - name: 3.7 Download Alpine artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: alpine-package
+          path: ./repo-dir/alpine/
+
+      # 4. Importa la chiave GPG (serve a più passi)
+      - name: 4. Import GPG Key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+        run: |
+          echo "--- Importo chiave GPG ---"
+          echo "$GPG_SIGNING_KEY" | gpg --import --batch
+          
+      # 5. Processa Repo Arch
+      - name: 5. Prune and Update Arch Repo
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          set -e
+          cd ./repo-dir/arch
+          echo "--- Pulisco vecchi pacchetti Arch (tengo i 10 più recenti) ---"
+          ls -1 penguins-eggs-*.pkg.tar.zst | sort -V | head -n -10 | xargs -r rm
+          echo "--- Aggiorno database repository Arch ---"
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          cd ../.. # Torna alla radice
+
+      # 6. Processa Repo Manjaro
+      - name: 6. Prune and Update Manjaro Repo
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          set -e
+          cd ./repo-dir/manjaro
+          echo "--- Pulisco vecchi pacchetti Manjaro (tengo i 10 più recenti) ---"
+          ls -1 penguins-eggs-*.pkg.tar.zst | sort -V | head -n -10 | xargs -r rm
+          echo "--- Aggiorno database repository Manjaro ---"
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          cd ../.. # Torna alla radice
+
+      # 7. Processa Repo Debian
+      - name: 7. Prune and Update Debian Repo
+        run: |
+          set -e
+          cd ./repo-dir/debian
+          echo "--- Pulisco vecchi pacchetti Debian (tengo i 10 più recenti) ---"
+          ls -1 *.deb | sort -V | head -n -10 | xargs -r rm
+          echo "--- Aggiorno database repository Debian ---"
+          # Crea Packages e Packages.gz
+          dpkg-scanpackages . /dev/null > Packages
+          gzip -9c Packages > Packages.gz
+          cd ../.. # Torna alla radice
+
+      # 8. Processa TUTTI i Repo RPM (Fedora, openSUSE, EL9)
+      - name: 8. Prune and Update RPM Repos
+        run: |
+          set -e
+          # Processa Fedora
+          echo "--- Processo Fedora 42 ---"
+          cd ./repo-dir/fedora/42
+          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          createrepo_c .
+          cd ../../../
+          
+          # Processa openSUSE
+          echo "--- Processo openSUSE Leap ---"
+          cd ./repo-dir/opensuse/leap
+          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          createrepo_c .
+          cd ../../../
+          
+          # Processa EL9
+          echo "--- Processo EL9 ---"
+          cd ./repo-dir/el9
+          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          createrepo_c .
+          cd ../..
+      
+      # 9. Processa Repo Alpine
+      # NOTA: Questo richiede la CHIAVE PRIVATA di firma di Alpine come secret
+      - name: 9. Prune and Update Alpine Repo
+        env:
+          ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }} # <--- DEVI CREARE QUESTO SECRET
+        run: |
+          set -e
+          cd ./repo-dir/alpine
+          echo "--- Pulisco vecchi pacchetti Alpine (tengo i 10 più recenti) ---"
+          ls -1 *.apk | sort -V | head -n -10 | xargs -r rm
+          
+          echo "--- Aggiorno database repository Alpine ---"
+          # Scrive la chiave privata in un file temporaneo per 'apk index'
+          echo "$ALPINE_SIGNING_KEY" > alpine_signer.rsa
+          # Crea l'indice firmato
+          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted --signing-key alpine_signer.rsa
+          # Rimuove la chiave privata
+          rm alpine_signer.rsa
+          # (Dovresti anche aggiungere la chiave pubblica .pub a questa cartella)
+          cd ../..
+
+      # 10. PUBBLICAZIONE FINALE
+      - name: 10. Deploy to penguins-repos (distruggendo la cronologia)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          # (OBBLIGATORIO) Usa un PAT con permessi 'repo'
+          personal_token: ${{ secrets.PUBLISH_TOKEN }} 
+          
+          external_repository: pieroproietti/penguins-repos
+          publish_branch: main
+          
+          # La cartella che contiene TUTTO
+          publish_dir: ./repo-dir 
+          
+          # === LE IMPOSTAZIONI CHIAVE ===
+          force_orphan: true 
+          keep_files: false 
+          lfs: false 
+          
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Update all package repositories (Build ${{ github.run_number }})"
