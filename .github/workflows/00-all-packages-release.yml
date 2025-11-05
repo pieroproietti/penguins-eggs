@@ -19,9 +19,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Interrompe l'intero script se un comando fallisce 
-          # set -
-
           echo "Inizio a chiamare i singoli workflow in modo sequenziale..."
           echo "Tutti i rilasci verranno eseguiti usando il codice dal branch 'master'."
 
