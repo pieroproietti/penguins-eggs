@@ -12,7 +12,7 @@ jobs:
   build-debian:
     runs-on: ubuntu-latest
     container:
-      image: debian-latest
+      image: debian:13
     
     steps:
       - name: 1. Checkout repository code
