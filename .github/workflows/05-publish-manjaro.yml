@@ -83,7 +83,16 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        working-directory: ./repo-dir/manjaro
+          working-directory: ./repo-dir/manjaro
+
+      - name: Controlla dimensione file
+        run: |
+          echo "Controllo i file in ./repo-dir"
+          ls -lh ./repo-dir
+          # Se i file sono in una sottocartella, modifica il percorso
+          echo "Controllo i file Manjaro"
+          ls -lh ./repo-dir/manjaro
+          
       - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
