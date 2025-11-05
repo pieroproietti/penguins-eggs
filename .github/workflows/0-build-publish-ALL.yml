@@ -381,32 +381,49 @@ jobs:
 
 
 
-  # ========================================================
-  # 2.0 JOB DI PUBBLICAZIONE
+# ========================================================
+  # 2.0 JOB DI PUBBLICAZIONE (CON FIX LFS)
   # ========================================================
   publish-all-repos:
-    # Esegui solo dopo che TUTTI i job di build sono finiti
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine]
     runs-on: ubuntu-latest
-    container: archlinux # Usiamo Arch come base
+    container: archlinux
     
     steps:
-      # 1. Installa dipendenze per TUTTI i tipi di repo
-      - name: 1. Install Dependencies (Git, GPG, Arch, Debian, RPM, Alpine)
+      # 1. Installa dipendenze (AGGIUNTO git-lfs)
+      - name: 1. Install Dependencies
         run: |
-          echo "--- Inizializzo keyring di Pacman ---"
-          pacman-key --init
-          pacman-key --populate archlinux
-          
-          echo "--- Aggiorno il sistema base del container ---"
+          pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          
-          echo "--- Installo gli strumenti di publishing ---"
-          pacman -S --noconfirm git pacman-contrib gnupg dpkg createrepo_c apk-tools
-
-      # 2. Crea la struttura di cartelle completa
-      - name: 2. Create clean publish directory structure
+          # Aggiunto 'git-lfs' alla lista
+          pacman -S --noconfirm git git-lfs pacman-contrib gnupg dpkg createrepo_c apk-tools
+      
+      # 2. Clona il repo esistente
+      - name: 2. Clone existing repo to retrieve old files
         run: |
+          echo "Clonando penguins-repos in /tmp/old-repo..."
+          git clone https://x-access-token:${{ secrets.PUBLISH_TOKEN }}@github.com/pieroproietti/penguins-repos.git /tmp/old-repo
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+
+      # 3. Scarica i file LFS (NUOVO PASSO CRUCIALE)
+      - name: 3. Pull LFS files from existing repo
+        run: |
+          echo "Scaricando i file LFS..."
+          cd /tmp/old-repo
+          git lfs pull
+          echo "Download LFS completato."
+          cd - # Torna alla directory precedente
+
+      # 4. Prepara la nuova cartella di pubblicazione
+      - name: 4. Create publish directory and copy old files
+        run: |
+          mkdir -p ./repo-dir
+          echo "Copiando i file (inclusi i binari LFS) dal vecchio repo..."
+          # Ora questo copierà i file binari REALI
+          cp -a /tmp/old-repo/. ./repo-dir/
+          
+          echo "Assicurando che tutte le cartelle di distro esistano..."
           mkdir -p ./repo-dir/arch
           mkdir -p ./repo-dir/manjaro
           mkdir -p ./repo-dir/debian
@@ -415,168 +432,129 @@ jobs:
           mkdir -p ./repo-dir/el9
           mkdir -p ./repo-dir/alpine
 
-      # 3. Scarica TUTTI gli artifacts
-      - name: 3.1 Download Debian artifacts
+      # 5. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
+      - name: 5.1 Download Debian artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: debian-packages
-          path: ./repo-dir/debian/
+        with: { name: debian-packages, path: ./repo-dir/debian/ }
           
-      - name: 3.2 Download Fedora 42 artifacts
+      - name: 5.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: fedora-42-rpm-for-repo
-          path: ./repo-dir/fedora/42/
+        with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/fedora/42/ }
 
-      - name: 3.3 Download openSUSE artifacts
+      - name: 5.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: opensuse-leap-rpm-for-repo
-          path: ./repo-dir/opensuse/leap/
+        with: { name: opensuse-leap-rpm-for-repo, path: ./repo-dir/opensuse/leap/ }
 
-      - name: 3.4 Download EL9 artifacts
+      - name: 5.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: el9-rpm-for-repo
-          path: ./repo-dir/el9/
+        with: { name: el9-rpm-for-repo, path: ./repo-dir/el9/ }
           
-      - name: 3.5 Download Arch artifacts
+      - name: 5.5 Download Arch artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: arch-packages
-          path: ./repo-dir/arch/
+        with: { name: arch-packages, path: ./repo-dir/arch/ }
           
-      - name: 3.6 Download Manjaro artifacts
+      - name: 5.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: manjaro-package
-          path: ./repo-dir/manjaro/
+        with: { name: manjaro-package, path: ./repo-dir/manjaro/ }
 
-      - name: 3.7 Download Alpine artifacts
+      - name: 5.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: alpine-package
-          path: ./repo-dir/alpine/
+        with: { name: alpine-package, path: ./repo-dir/alpine/ }
 
-      # 4. Importa la chiave GPG (serve a più passi)
-      - name: 4. Import GPG Key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-        run: |
-          echo "--- Importo chiave GPG ---"
-          echo "$GPG_SIGNING_KEY" | gpg --import --batch
+      # 6. Importa la chiave GPG
+      - name: 6. Import GPG Key
+        env: { GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }} }
+        run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
           
-      # 5. Processa Repo Arch
-      - name: 5. Prune and Update Arch Repo
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      # 7. Processa Repo Arch (Pruning e Update)
+      - name: 7. Prune and Update Arch Repo
+        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
         run: |
           set -e
           cd ./repo-dir/arch
-          echo "--- Pulisco vecchi pacchetti Arch (tengo i 10 più recenti) ---"
-          ls -1 penguins-eggs-*.pkg.tar.zst | sort -V | head -n -10 | xargs -r rm
-          echo "--- Aggiorno database repository Arch ---"
+          echo "--- ARCH: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
+          ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- ARCH: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
-          cd ../.. # Torna alla radice
+          cd ../..
 
-      # 6. Processa Repo Manjaro
-      - name: 6. Prune and Update Manjaro Repo
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+      # 8. Processa Repo Manjaro (Pruning e Update)
+      - name: 8. Prune and Update Manjaro Repo
+        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
         run: |
           set -e
           cd ./repo-dir/manjaro
-          echo "--- Pulisco vecchi pacchetti Manjaro (tengo i 10 più recenti) ---"
-          ls -1 penguins-eggs-*.pkg.tar.zst | sort -V | head -n -10 | xargs -r rm
-          echo "--- Aggiorno database repository Manjaro ---"
+          echo "--- MANJARO: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
+          ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- MANJARO: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
-          cd ../.. # Torna alla radice
+          cd ../..
 
-      # 7. Processa Repo Debian
-      - name: 7. Prune and Update Debian Repo
+      # 9. Processa Repo Debian (Pruning e Update)
+      - name: 9. Prune and Update Debian Repo
         run: |
           set -e
           cd ./repo-dir/debian
-          echo "--- Pulisco vecchi pacchetti Debian (tengo i 10 più recenti) ---"
-          ls -1 *.deb | sort -V | head -n -10 | xargs -r rm
-          echo "--- Aggiorno database repository Debian ---"
-          # Crea Packages e Packages.gz
+          echo "--- DEBIAN: File totali prima del pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
+          ls -1 *.deb 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- DEBIAN: File rimasti dopo il pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
           dpkg-scanpackages . /dev/null > Packages
           gzip -9c Packages > Packages.gz
-          cd ../.. # Torna alla radice
+          cd ../..
 
-      # 8. Processa TUTTI i Repo RPM (Fedora, openSUSE, EL9)
-      - name: 8. Prune and Update RPM Repos
+      # 10. Processa TUTTI i Repo RPM (Pruning e Update)
+      - name: 10. Prune and Update RPM Repos
         run: |
           set -e
-          # Processa Fedora
-          echo "--- Processo Fedora 42 ---"
+          echo "--- FEDORA 42: Pulisco e Aggiorno ---"
           cd ./repo-dir/fedora/42
-          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           createrepo_c .
           cd ../../../
           
-          # Processa openSUSE
-          echo "--- Processo openSUSE Leap ---"
+          echo "--- OPENSUSE: Pulisco e Aggiorno ---"
           cd ./repo-dir/opensuse/leap
-          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           createrepo_c .
           cd ../../../
           
-          # Processa EL9
-          echo "--- Processo EL9 ---"
+          echo "--- EL9: Pulisco e Aggiorno ---"
           cd ./repo-dir/el9
-          ls -1 *.rpm | sort -V | head -n -10 | xargs -r rm
+          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           createrepo_c .
           cd ../..
       
-
-# 9. Processa Repo Alpine
-      - name: 9. Prune and Update Alpine Repo
-        env:
-          # Assicurati che questo secret contenga la CHIAVE PUBBLICA (.pub)
-          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+      # 11. Processa Repo Alpine (Pruning e Update)
+      - name: 11. Prune and Update Alpine Repo
+        env: { ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }} }
         run: |
           set -e
           cd ./repo-dir/alpine
-          
-          echo "--- Sposto tutti i file .apk nella root ---"
-          # Trova tutti i file .apk in qualsiasi sottocartella e li sposta qui
+          echo "--- ALPINE: Sposto tutti i file .apk nella root ---"
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
           
-          echo "--- Pulisco vecchi pacchetti Alpine (tengo i 10 più recenti) ---"
-          ls -1 *.apk | sort -V | head -n -10 | xargs -r rm
+          echo "--- ALPINE: File totali prima del pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
+          ls -1 *.apk 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- ALPINE: File rimasti dopo il pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
           
-          echo "--- Aggiorno database repository Alpine ---"
-          # === AGGIUNTO IL FLAG --allow-untrusted ===
-          # Questo dice a 'apk index' di accettare i pacchetti
-          # che sono già firmati, ma con una chiave che non conosce.
+          echo "--- ALPINE: Aggiorno database repository ---"
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
           
-          echo "--- Aggiungo la chiave pubblica al repository ---"
-          # L'utente la userà per verificare i pacchetti
+          echo "--- ALPINE: Aggiungo la chiave pubblica ---"
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
-          
-          cd ../.. # Torna alla radice
+          cd ../..
 
-      # 10. PUBBLICAZIONE FINALE
-      - name: 10. Deploy to penguins-repos (distruggendo la cronologia)
+      # 12. PUBBLICAZIONE FINALE
+      - name: 12. Deploy to penguins-repos (distruggendo la cronologia)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # (OBBLIGATORIO) Usa un PAT con permessi 'repo'
           personal_token: ${{ secrets.PUBLISH_TOKEN }} 
-          
           external_repository: pieroproietti/penguins-repos
           publish_branch: main
-          
-          # La cartella che contiene TUTTO
           publish_dir: ./repo-dir 
-          
-          # === LE IMPOSTAZIONI CHIAVE ===
-          force_orphan: true 
-          keep_files: false 
-          lfs: false 
-          
+          force_orphan: true
+          keep_files: false
+          lfs: false # NON CI SERVE PIÙ LFS NEL REPO DI DESTINAZIONE
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update all package repositories (Build ${{ github.run_number }})"
