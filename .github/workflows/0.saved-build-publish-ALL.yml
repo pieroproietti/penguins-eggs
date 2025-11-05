@@ -1,6 +1,6 @@
 # NOME: 0-build-publish-ALL
 
-name: 0. Build and Publish ALL
+name: 0.1 Build and Publish ALL
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
@@ -379,97 +379,13 @@ jobs:
           # Carica TUTTI i pacchetti APK generati
           path: /home/builder/packages/**/*.apk
 
-  # ========================================================
-  # 2.0 JOB DI PREPARAZIONE REPO DEBIAN (CON dists/)
-  # ========================================================
-  publish-debian-repo:
-    needs: [build-debian]
-    runs-on: ubuntu-latest
-    container: debian:13 # Container corretto per apt-ftparchive
-    
-    steps:
-      - name: 1. Install Debian Dependencies
-        run: |
-          apt-get update
-          apt-get install -y apt-utils gnupg dpkg
-
-      - name: 2. Import GPG Key
-        env:
-          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: |
-          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
-          mkdir -p ~/.gnupg
-          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
-          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-          gpg-connect-agent reloadagent /bye
-          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-
-      - name: 3. Create Debian Repo Structure
-        run: |
-          # Creiamo la struttura che verrà caricata
-          mkdir -p ./repo-dir/pool/main
-          mkdir -p ./repo-dir/dists/stable/main/binary-amd64
-          mkdir -p ./repo-dir/dists/stable/main/binary-arm64
-          mkdir -p ./repo-dir/dists/stable/main/binary-i386
-
-      - name: 4. Download Debian artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: debian-packages
-          # Scarica i .deb nella cartella pool
-          path: ./repo-dir/pool/main/
-
-      - name: 5. Prune and Update Debian Repo
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        working-directory: ./repo-dir
-        run: |
-          set -e
-          echo "--- DEBIAN: Pruning vecchi pacchetti ---"
-          ls -1 pool/main/penguins-eggs_*.deb 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          
-          echo "--- DEBIAN: Genero file Packages ---"
-          dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
-          gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
-          
-          dpkg-scanpackages -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
-          gzip -9c dists/stable/main/binary-arm64/Packages > dists/stable/main/binary-arm64/Packages.gz
-          
-          dpkg-scanpackages -a i386 pool/main > dists/stable/main/binary-i386/Packages
-          gzip -9c dists/stable/main/binary-i386/Packages > dists/stable/main/binary-i386/Packages.gz
-          
-          echo "--- DEBIAN: Genero file Release ---"
-          apt-ftparchive \
-            -o APT::FTPArchive::Release::Origin="Penguins-Eggs" \
-            -o APT::FTPArchive::Release::Label="Penguins-Eggs" \
-            -o APT::FTPArchive::Release::Suite="stable" \
-            -o APT::FTPArchive::Release::Codename="stable" \
-            -o APT::FTPArchive::Release::Architectures="amd64 arm64 i386" \
-            -o APT::FTPArchive::Release::Components="main" \
-            release dists/stable > dists/stable/Release
-            
-          echo "--- DEBIAN: Firmo file Release (creo InRelease) ---"
-          gpg --default-key "$GPG_KEY_ID" \
-              --clearsign \
-              -o dists/stable/InRelease \
-              --batch --yes --passphrase "$GPG_PASSPHRASE" \
-              dists/stable/Release
-      
-      - name: 6. Upload Final Debian Repo Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: final-debian-repo
-          path: ./repo-dir/
-          retention-days: 1
 
 
-  # ========================================================
-  # 2.1 JOB DI PUBBLICAZIONE (CON FIX LFS)
+# ========================================================
+  # 2.0 JOB DI PUBBLICAZIONE (CON FIX LFS)
   # ========================================================
   publish-all-repos:
-    needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
+    needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine]
     runs-on: ubuntu-latest
     container: archlinux
     
@@ -507,19 +423,17 @@ jobs:
           echo "Ricreo le cartelle di pacchetti pulite..."
           mkdir -p ./repo-dir/arch
           mkdir -p ./repo-dir/manjaro
+          mkdir -p ./repo-dir/debian
           mkdir -p ./repo-dir/fedora/42
           mkdir -p ./repo-dir/opensuse/leap
           mkdir -p ./repo-dir/el9
           mkdir -p ./repo-dir/alpine
 
       # 4. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
-      - name: 4.1 Download FINAL Debian Repo artifact
+      - name: 4.1 Download Debian artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: final-debian-repo
-          # Scarica il contenuto (dists/ e pool/) dentro repo-dir
-          path: ./repo-dir/        
-
+        with: { name: debian-packages, path: ./repo-dir/debian/ }
+          
       - name: 4.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/fedora/42/ }
@@ -584,6 +498,23 @@ jobs:
           
           echo "--- MANJARO: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          cd ../..
+
+      # 9. Processa Repo Debian (Pruning e Update)
+      - name: 9. Prune and Update Debian Repo
+        run: |
+          set -e
+          cd ./repo-dir/debian
+          echo "--- DEBIAN: File totali prima del pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
+          ls -1 *.deb 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- DEBIAN: File rimasti dopo il pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
+
+          echo "--- DEBIAN: Rimuovo i vecchi indici (LFS pointers) ---"
+          rm -f Packages Packages.gz
+          
+          echo "--- DEBIAN: Creo nuovi indici da zero ---"
+          dpkg-scanpackages . /dev/null > Packages
+          gzip -9c Packages > Packages.gz
           cd ../..
 
       # 10. Processa TUTTI i Repo RPM (Pruning e Update)
