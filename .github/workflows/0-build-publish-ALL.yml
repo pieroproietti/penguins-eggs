@@ -530,26 +530,36 @@ jobs:
           createrepo_c .
           cd ../..
       
-      # 9. Processa Repo Alpine
-      # NOTA: Questo richiede la CHIAVE PRIVATA di firma di Alpine come secret
-      - name: 9. Prune and Update Alpine Repo
+
+      # 9. Processa Repo Alpine (Indice NON FIRMATO)
+      - name: 9. Prune and Update Alpine Repo (Unsigned Index)
         env:
-          ALPINE_SIGNING_KEY: ${{ secrets.ALPINE_SIGNING_KEY }} # <--- DEVI CREARE QUESTO SECRET
+          # Questo secret deve contenere la CHIAVE PUBBLICA (file .pub)
+          # creata dal job 'build-alpine'
+          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
           cd ./repo-dir/alpine
+          
+          echo "--- Sposto tutti i file .apk nella root ---"
+          # Trova tutti i file .apk in qualsiasi sottocartella e li sposta qui
+          find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
+          
           echo "--- Pulisco vecchi pacchetti Alpine (tengo i 10 più recenti) ---"
+          # Ora 'ls' funzionerà
           ls -1 *.apk | sort -V | head -n -10 | xargs -r rm
           
-          echo "--- Aggiorno database repository Alpine ---"
-          # Scrive la chiave privata in un file temporaneo per 'apk index'
-          echo "$ALPINE_SIGNING_KEY" > alpine_signer.rsa
-          # Crea l'indice firmato
-          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted --signing-key alpine_signer.rsa
-          # Rimuove la chiave privata
-          rm alpine_signer.rsa
-          # (Dovresti anche aggiungere la chiave pubblica .pub a questa cartella)
-          cd ../..
+          echo "--- Aggiorno database repository Alpine (Indice NON FIRMATO) ---"
+          # Rimuovo --signing-key, non è supportato.
+          # I pacchetti sono già firmati, quindi è OK.
+          apk index -o APKINDEX.tar.gz *.apk
+          
+          echo "--- Aggiungo la chiave pubblica al repository ---"
+          # L'utente la userà per verificare i pacchetti
+          echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
+          
+          cd ../.. # Torna alla radice
+
 
       # 10. PUBBLICAZIONE FINALE
       - name: 10. Deploy to penguins-repos (distruggendo la cronologia)
