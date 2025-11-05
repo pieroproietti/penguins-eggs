@@ -407,11 +407,10 @@ jobs:
 
       - name: 3. Create Debian Repo Structure
         run: |
-          # Creiamo la struttura che verrà caricata (all'interno di /deb)
           mkdir -p ./repo-dir/deb/pool/main
           mkdir -p ./repo-dir/deb/dists/stable/main/binary-amd64
           mkdir -p ./repo-dir/deb/dists/stable/main/binary-arm64
-          mkdir -p ./repo-dir/deb/dists/stable/main/binary-i386
+          mkdir -p ./repo-dir/deb/dists/stable/main/binary-i386        
 
       - name: 4. Download Debian artifacts
         uses: actions/download-artifact@v4
@@ -424,13 +423,16 @@ jobs:
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        working-directory: ./repo-dir
+        # La working-directory DEVE essere ./repo-dir/deb
+        working-directory: ./repo-dir/deb
         run: |
           set -e
           echo "--- DEBIAN: Pruning vecchi pacchetti ---"
+          # Il percorso qui è RELATIVO, quindi solo pool/main
           ls -1 pool/main/penguins-eggs_*.deb 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          
+
           echo "--- DEBIAN: Genero file Packages ---"
+          # Il percorso qui è RELATIVO, quindi solo dists/stable...
           dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
           gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
           
