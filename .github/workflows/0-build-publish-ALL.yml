@@ -411,7 +411,7 @@ jobs:
         run: |
           echo "Scaricando i file LFS..."
           cd /tmp/old-repo
-          git lfs pull
+          git lfs pull || true
           echo "Download LFS completato."
           cd - # Torna alla directory precedente
 
