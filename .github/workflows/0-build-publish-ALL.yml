@@ -467,7 +467,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
           
-      # 7. Processa Repo Arch (Pruning e Update)
+# 7. Processa Repo Arch (Pruning e Update)
       - name: 7. Prune and Update Arch Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
@@ -477,6 +477,11 @@ jobs:
           echo "--- ARCH: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           echo "--- ARCH: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
+          
+          echo "--- ARCH: Rimuovo i vecchi database (LFS pointers) ---"
+          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+          
+          echo "--- ARCH: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
@@ -490,6 +495,11 @@ jobs:
           echo "--- MANJARO: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           echo "--- MANJARO: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
+
+          echo "--- MANJARO: Rimuovo i vecchi database (LFS pointers) ---"
+          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+          
+          echo "--- MANJARO: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
@@ -501,6 +511,11 @@ jobs:
           echo "--- DEBIAN: File totali prima del pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
           ls -1 *.deb 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           echo "--- DEBIAN: File rimasti dopo il pruning: $(ls -1 *.deb 2>/dev/null | wc -l)"
+
+          echo "--- DEBIAN: Rimuovo i vecchi indici (LFS pointers) ---"
+          rm -f Packages Packages.gz
+          
+          echo "--- DEBIAN: Creo nuovi indici da zero ---"
           dpkg-scanpackages . /dev/null > Packages
           gzip -9c Packages > Packages.gz
           cd ../..
@@ -509,21 +524,31 @@ jobs:
       - name: 10. Prune and Update RPM Repos
         run: |
           set -e
+          
           echo "--- FEDORA 42: Pulisco e Aggiorno ---"
           cd ./repo-dir/fedora/42
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- FEDORA 42: Rimuovo vecchia cartella repodata (LFS pointer) ---"
+          rm -rf repodata
+          echo "--- FEDORA 42: Creo nuovo repo ---"
           createrepo_c .
           cd ../../../
           
           echo "--- OPENSUSE: Pulisco e Aggiorno ---"
           cd ./repo-dir/opensuse/leap
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- OPENSUSE: Rimuovo vecchia cartella repodata (LFS pointer) ---"
+          rm -rf repodata
+          echo "--- OPENSUSE: Creo nuovo repo ---"
           createrepo_c .
           cd ../../../
           
           echo "--- EL9: Pulisco e Aggiorno ---"
           cd ./repo-dir/el9
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
+          echo "--- EL9: Rimuovo vecchia cartella repodata (LFS pointer) ---"
+          rm -rf repodata
+          echo "--- EL9: Creo nuovo repo ---"
           createrepo_c .
           cd ../..
       
@@ -540,6 +565,9 @@ jobs:
           echo "--- ALPINE: File totali prima del pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
           ls -1 *.apk 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           echo "--- ALPINE: File rimasti dopo il pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
+          
+          echo "--- ALPINE: Rimuovo vecchio indice (LFS pointer) ---"
+          rm -f APKINDEX.tar.gz
           
           echo "--- ALPINE: Aggiorno database repository ---"
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
