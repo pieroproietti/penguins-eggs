@@ -85,14 +85,13 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           working-directory: ./repo-dir/manjaro
 
-      - name: Controlla dimensione file
+      - name: Debug - Trova i pacchetti compilati
         run: |
-          echo "Controllo i file in ./repo-dir"
-          ls -lh ./repo-dir
-          # Se i file sono in una sottocartella, modifica il percorso
-          echo "Controllo i file Manjaro"
-          ls -lh ./repo-dir/manjaro
-          
+          echo "La mia directory corrente è:"
+          pwd
+          echo "Sto cercando tutti i file .pkg.tar.zst nel workspace..."
+          find . -name "*.pkg.tar.zst"
+
       - name: 6. Deploy to penguins-repos
         uses: peaceiris/actions-gh-pages@v4
         with:
