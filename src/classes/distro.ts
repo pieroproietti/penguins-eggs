@@ -100,12 +100,13 @@ class Distro implements IDistro {
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
       /**
-       * Fedora family: Almalinux, Fedora, Nobara. Rocky
+       * Fedora family: Almalinux, Fedora, Nobara. Rhel, Rocky
        */
     } else if (
       this.distroId === 'Almalinux' ||
       this.distroId === 'Fedora' ||
       this.distroId === 'Nobara' ||
+      this.distroId === 'Rhel' ||
       this.distroId === 'Rocky') {
 
       this.familyId = 'fedora'
