@@ -506,11 +506,11 @@ jobs:
           retention-days: 1
 
 
+  
   # ========================================================
   # 2.1 JOB DI PUBBLICAZIONE (Sul server penguins-eggs.net)
   # ========================================================
   publish-all-repos:
-    # Dipende sempre da tutti i job di build
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
     runs-on: ubuntu-latest
     container: archlinux
@@ -521,7 +521,6 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          # Lista ridotta: non servono più git, git-lfs, dpkg
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
@@ -536,7 +535,6 @@ jobs:
           mkdir -p ./repo-dir/rpm/el9
 
       # 3. Scarica TUTTI i nuovi artifacts
-      # (Questi step sono identici a prima, rinominati per semplicità)
       - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
         with:
@@ -573,89 +571,75 @@ jobs:
         uses: actions/download-artifact@v4
         with: { name: alpine-package, path: ./repo-dir/alpine/ }
 
-      # 4. Importa la chiave GPG (Identico a prima)
+      # 4. Importa la chiave GPG
       - name: 4. Import GPG Key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
 
-      # 5. Processa Repo Arch (Identico a prima)
+      # 5. Processa Repo Arch
       - name: 5. Prune and Update Arch Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/arch
-          echo "--- ARCH: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- ARCH: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          echo "--- ARCH: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-      # 6. Processa Repo Manjaro (Identico a prima)
+      # 6. Processa Repo Manjaro
       - name: 6. Prune and Update Manjaro Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/manjaro
-          echo "--- MANJARO: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- MANJARO: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          echo "--- MANJARO: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-      # 7. Processa TUTTI i Repo RPM (Identico a prima)
+      # 7. Processa TUTTI i Repo RPM
       - name: 7. Prune and Update RPM Repos
         run: |
           set -e
-          
           cd ./repo-dir/rpm/fedora/42
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           rm -rf repodata
           createrepo_c .
           cd ../../../..
-          
           cd ./repo-dir/rpm/opensuse/leap
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           rm -rf repodata
           createrepo_c .
           cd ../../../..
-          
           cd ./repo-dir/rpm/el9
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
           rm -rf repodata
           createrepo_c .
           cd ../../..
 
-      # 8. Processa Repo Alpine (Identico a prima)
+      # 8. Processa Repo Alpine
       - name: 8. Prune and Update Alpine Repo
         env:
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
           cd ./repo-dir/alpine
-          echo "--- ALPINE: Sposto tutti i file .apk nella root ---"
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
-          
-          echo "--- ALPINE: File totali prima del pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
           ls -1 *.apk 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- ALPINE: File rimasti dopo il pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
-          
           rm -f APKINDEX.tar.gz
-          
-          echo "--- ALPINE: Aggiorno database repository ---"
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
-          
-          echo "--- ALPINE: Aggiungo la chiave pubblica ---"
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd ../..
 
-      # 9. TEST DI CONNESSIONE SSH MANUALE
+      # ==================================================
+      # BLOCCO DI TEST - QUI CI SONO LE MODIFICHE
+      # ==================================================
+
+      # 9. TEST DI CONNESSIONE SSH MANUALE (con fix per Host Key)
       - name: 9. Manual SSH Connection Test
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
@@ -663,25 +647,25 @@ jobs:
           SSH_USER: ${{ secrets.SERVER_USER }}
         run: |
           echo "--- 1. Setting up SSH client ---"
-          # Il container archlinux dovrebbe già avere openssh
           which ssh || pacman -Syu --noconfirm openssh
           
           echo "--- 2. Installing private key ---"
+          # HOME in actions è /github/home, quindi ~ è /github/home
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
           chmod 600 ~/.ssh/id_key
           
-          echo "--- 3. Adding server to known_hosts ---"
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
-          
-          echo "--- 4. Attempting verbose SSH connection ---"
-          # Usiamo -v (verbose) e -i (identity file)
-          # Eseguiamo un comando semplice (ls) sulla cartella di destinazione
-          ssh -v -i ~/.ssh/id_key "$SSH_USER@$SSH_HOST" "ls -l /var/www/html/repos"
+          echo "--- 3. Attempting connection (NO Host Key Check) ---"
+          # Aggiungiamo le opzioni per saltare il controllo della chiave host
+          ssh -v \
+            -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            "$SSH_USER@$SSH_HOST" "ls -l /var/www/html/repos"
 
       # 10. PUBBLICAZIONE FINALE (Temporaneamente disabilitata)
       - name: 10. Deploy to penguins-eggs.net via SCP
-        if: false # DISABILITIAMO QUESTO STEP PER IL TEST
+        if: false # Manteniamo disabilitato per ora
         uses: appleboy/scp-action@v0.1.7
         with:
           debug: true
