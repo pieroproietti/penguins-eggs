@@ -630,18 +630,25 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-# 10. PUBBLICAZIONE FINALE (Aggiunge e aggiorna, NON cancella)
-      - name: 10. Deploy to penguins-eggs.net via SCP
-        # Torniamo a scp-action, che è compatibile con sftp-only
-        uses: appleboy/scp-action@v0.1.7
+
+      # 10. PUBBLICAZIONE FINALE (con SFTP puro)
+      - name: 10. Deploy to penguins-eggs.net via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          # Protocollo
+          protocol: sftp
+          port: 22
+          # Credenziali dai secret
+          server: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-
-          # L'azione copia il contenuto di 'source' in 'target'
-          source: "./repo-dir/*" 
-          target: "/var/www/html/repos"
           
-          timeout: 120s
+          # Cartella locale da cui copiare
+          # Lo slash finale è importante!
+          local-dir: ./repo-dir/
+          
+          # Cartella remota su cui caricare
+          server-dir: /var/www/html/repos/
+          
+          # Non cancelliamo i file vecchi (default)
+          delete-server-files: false
