@@ -1,0 +1,184 @@
+# NOME: 2. Re-index All Repos
+#
+# Workflow manuale per scaricare tutti i pacchetti dal server,
+# re-indicizzare TUTTE le distribuzioni e ricaricare tutto.
+#
+# DA USARE QUANDO:
+# Hai aggiunto manualmente pacchetti al server (via SFTP) e
+# hai bisogno di aggiornare i file di indice (Packages.gz, repodata, ecc.)
+
+name: 2. Re-index All Repos
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download-index-upload:
+    runs-on: ubuntu-latest
+    # Usiamo Archlinux perché ha tutti gli strumenti di indicizzazione
+    container: archlinux
+    
+    steps:
+      # 1. Installa tutte le dipendenze necessarie
+      - name: 1. Install Dependencies
+        run: |
+          pacman-key --init && pacman-key --populate archlinux
+          pacman -Syu --noconfirm
+          # Installiamo rsync (per download) e tutti gli strumenti di repo
+          pacman -S --noconfirm rsync openssh \
+                                gnupg pacman-contrib \
+                                createrepo_c \
+                                dpkg apt \
+                                apk-tools
+
+      # 2. Installa la chiave SSH per la connessione
+      - name: 2. Install SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          # Aggiunge l'host ai known_hosts per rsync/sftp
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      # 3. Prepara la cartella locale e scarica i repo esistenti
+      - name: 3. Download Existing Repos from Server
+        env:
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          mkdir -p ./repo-dir
+          echo "--- Downloading all packages from server via rsync ---"
+          # Sincronizza il contenuto di /var/www/html/repos/ nella cartella locale ./repo-dir/
+          rsync -avz -e "ssh -i ~/.ssh/id_key -o StrictHostKeyChecking=no" \
+            "$SSH_USER@$SSH_HOST:/var/www/html/repos/" \
+            ./repo-dir/
+          echo "--- Download complete ---"
+
+      # 4. Importa la chiave GPG e attiva l'agente
+      - name: 4. Import GPG Key and Prime Agent
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+      # ==================================================
+      # INIZIO INDICIZZAZIONE
+      # ==================================================
+
+      # 5. Re-index Debian Repo
+      - name: 5. Re-index Debian Repo
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        working-directory: ./repo-dir/deb
+        run: |
+          set -e
+          echo "--- DEBIAN: Genero file Packages ---"
+          dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
+          gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+          
+          dpkg-scanpackages -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
+          gzip -9c dists/stable/main/binary-arm64/Packages > dists/stable/main/binary-arm64/Packages.gz
+          
+          dpkg-scanpackages -a i386 pool/main > dists/stable/main/binary-i386/Packages
+          gzip -9c dists/stable/main/binary-i386/Packages > dists/stable/main/binary-i386/Packages.gz
+          
+          echo "--- DEBIAN: Genero file Release ---"
+          apt-ftparchive \
+            -o APT::FTPArchive::Release::Origin="Penguins-Eggs" \
+            -o APT::FTPArchive::Release::Label="Penguins-Eggs" \
+            -o APT::FTPArchive::Release::Suite="stable" \
+            -o APT::FTPArchive::Release::Codename="stable" \
+            -o APT::FTPArchive::Release::Architectures="amd64 arm64 i386" \
+            -o APT::FTPArchive::Release::Components="main" \
+            release dists/stable > dists/stable/Release
+            
+          echo "--- DEBIAN: Firmo file Release (creo InRelease) ---"
+          # Usiamo l'agente GPG primato nello step 4
+          gpg --default-key "$GPG_KEY_ID" \
+              --clearsign \
+              -o dists/stable/InRelease \
+              --batch --yes --passphrase "$GPG_PASSPHRASE" \
+              dists/stable/Release
+
+      # 6. Re-index Arch Repo
+      - name: 6. Re-index Arch Repo
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          set -e
+          cd ./repo-dir/arch
+          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+          echo "--- ARCH: Indicizzo tutti i pacchetti .pkg.tar.zst ---"
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          cd ../..
+
+      # 7. Re-index Manjaro Repo
+      - name: 7. Re-index Manjaro Repo
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          set -e
+          cd ./repo-dir/manjaro
+          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+          echo "--- MANJARO: Indicizzo tutti i pacchetti .pkg.tar.zst ---"
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
+          cd ../..
+
+      # 8. Re-index RPM Repos
+      - name: 8. Re-index RPM Repos
+        run: |
+          set -e
+          echo "--- RPM: Indicizzo Fedora ---"
+          cd ./repo-dir/rpm/fedora/42; rm -rf repodata; createrepo_c .; cd ../../../..
+          echo "--- RPM: Indicizzo openSUSE ---"
+          cd ./repo-dir/rpm/opensuse/leap; rm -rf repodata; createrepo_c .; cd ../../../..
+          echo "--- RPM: Indicizzo EL9 ---"
+          cd ./repo-dir/rpm/el9; rm -rf repodata; createrepo_c .; cd ../../..
+
+      # 9. Re-index Alpine Repo
+      - name: 9. Re-index Alpine Repo
+        env:
+          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+        run: |
+          set -e
+          cd ./repo-dir/alpine
+          # Assicuriamoci che la chiave pubblica sia presente
+          echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
+          rm -f APKINDEX.tar.gz
+          echo "--- ALPINE: Indicizzo tutti i pacchetti .apk ---"
+          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+          cd ../..
+
+      # ==================================================
+      # FINE INDICIZZAZIONE
+      # ==================================================
+
+      # 10. Carica tutto il repo aggiornato sul server
+      - name: 10. Deploy to penguins-eggs.net via Manual SFTP
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          echo "--- 1. Creazione sftp-batch.txt ---"
+          echo "lcd ./repo-dir" > sftp-batch.txt
+          # Questo comando sovrascriverà il repo remoto con il contenuto locale
+          echo "put -r . /var/www/html/repos" >> sftp-batch.txt
+          echo "quit" >> sftp-batch.txt
+          
+          echo "--- 2. Caricamento repository aggiornati via SFTP ---"
+          sftp -v -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -b sftp-batch.txt \
+            "$SSH_USER@$SSH_HOST"
