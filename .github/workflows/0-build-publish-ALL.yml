@@ -521,7 +521,7 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          # 'openssh' per ssh-keyscan, 'rsync' per il deploy
+          # 'openssh' per ssh-keyscan
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
@@ -535,7 +535,7 @@ jobs:
           mkdir -p ./repo-dir/rpm/opensuse/leap
           mkdir -p ./repo-dir/rpm/el9
 
-      # 3. Scarica TUTTI i nuovi artifacts (SINTASSI CORRETTA)
+      # 3. Scarica TUTTI i nuovi artifacts
       - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
         with:
@@ -629,7 +629,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
 
       # 10. PUBBLICAZIONE FINALE (con SFTP puro)
       - name: 10. Deploy to penguins-eggs.net via SFTP
