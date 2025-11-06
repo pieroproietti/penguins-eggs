@@ -537,21 +537,15 @@ jobs:
           mkdir -p ./repo-dir
           echo "Copiando SOLO i file statici (README, ecc.) dal vecchio repo..."
           
-          # Trova tutti i FILE (no directory) nella root del vecchio clone
-          # e li copia nella nuova cartella.
-          # Questo copia README.md, LICENSE, ecc. ma ignora le cartelle arch/, debian/
           find /tmp/old-repo -maxdepth 1 -type f -exec cp {} ./repo-dir/ \;
           
-          # (Se hai file statici in sottocartelle NON di pacchetti,
-          # dovrai aggiungerli qui. Es: cp -a /tmp/old-repo/docs ./repo-dir/docs)
-
           echo "Ricreo le cartelle di pacchetti pulite..."
           mkdir -p ./repo-dir/arch
           mkdir -p ./repo-dir/manjaro
-          mkdir -p ./repo-dir/fedora/42
-          mkdir -p ./repo-dir/opensuse/leap
-          mkdir -p ./repo-dir/el9
           mkdir -p ./repo-dir/alpine
+          mkdir -p ./repo-dir/rpm/fedora/42
+          mkdir -p ./repo-dir/rpm/opensuse/leap
+          mkdir -p ./repo-dir/rpm/el9
 
       # 4. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
       - name: 4.1 Download FINAL Debian Repo artifact
@@ -563,16 +557,26 @@ jobs:
 
       - name: 4.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
-        with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/fedora/42/ }
+        with:
+          name: fedora-42-rpm-for-repo
+          # --- CORREZIONE QUI ---
+          path: ./repo-dir/rpm/fedora/42/
 
       - name: 4.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
-        with: { name: opensuse-leap-rpm-for-repo, path: ./repo-dir/opensuse/leap/ }
+        with:
+          name: opensuse-leap-rpm-for-repo
+          # --- CORREZIONE QUI ---
+          path: ./repo-dir/rpm/opensuse/leap/
 
       - name: 4.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
-        with: { name: el9-rpm-for-repo, path: ./repo-dir/el9/ }
-          
+        with:
+          name: el9-rpm-for-repo
+          # --- CORREZIONE QUI ---
+          path: ./repo-dir/rpm/el9/
+      
+
       - name: 4.5 Download Arch artifacts
         uses: actions/download-artifact@v4
         with: { name: arch-packages, path: ./repo-dir/arch/ }
@@ -627,38 +631,30 @@ jobs:
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-      # 10. Processa TUTTI i Repo RPM (Pruning e Update)
+# 10. Processa TUTTI i Repo RPM (Pruning e Update)
       - name: 10. Prune and Update RPM Repos
         run: |
           set -e
           
-          echo "--- FEDORA 42: Pulisco e Aggiorno ---"
-          cd ./repo-dir/fedora/42
+          cd ./repo-dir/rpm/fedora/42
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- FEDORA 42: Rimuovo vecchia cartella repodata (LFS pointer) ---"
           rm -rf repodata
-          echo "--- FEDORA 42: Creo nuovo repo ---"
           createrepo_c .
-          cd ../../../
+          cd ../../../..
           
-          echo "--- OPENSUSE: Pulisco e Aggiorno ---"
-          cd ./repo-dir/opensuse/leap
+          cd ./repo-dir/rpm/opensuse/leap
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- OPENSUSE: Rimuovo vecchia cartella repodata (LFS pointer) ---"
           rm -rf repodata
-          echo "--- OPENSUSE: Creo nuovo repo ---"
           createrepo_c .
-          cd ../../../
+          cd ../../../..
           
-          echo "--- EL9: Pulisco e Aggiorno ---"
-          cd ./repo-dir/el9
+          cd ./repo-dir/rpm/el9
           ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- EL9: Rimuovo vecchia cartella repodata (LFS pointer) ---"
           rm -rf repodata
-          echo "--- EL9: Creo nuovo repo ---"
           createrepo_c .
-          cd ../..
-      
+          cd ../../..
+
+
       # 11. Processa Repo Alpine (Pruning e Update)
       - name: 11. Prune and Update Alpine Repo
         env:
