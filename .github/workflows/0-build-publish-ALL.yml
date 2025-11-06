@@ -306,8 +306,8 @@ jobs:
       - name: 5. Update Checksums and Build Package
         run: |
           # Questo comando è corretto e non cambia
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} bash -c "cd ./packaging/arch && updpkgsums && makepkg -s --noconfirm"
-      
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} bash -c "cd ./packaging/arch && updpkgsums && makepkg -s -f --noconfirm"
+
       # --- STEP DI BUILD MODIFICATO ---
       - name: 5. Update Checksums and Build Package
         run: |
@@ -375,7 +375,7 @@ jobs:
         run: |
           # Questo comando è corretto e non cambia
           sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} updpkgsums
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s --noconfirm
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s --noconfirm -f
         working-directory: ./packaging/manjaro
 
 
