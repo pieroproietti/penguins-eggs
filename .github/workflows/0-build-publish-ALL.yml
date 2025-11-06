@@ -655,21 +655,41 @@ jobs:
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd ../..
 
-      # 9. PUBBLICAZIONE FINALE (SUL TUO SERVER)
-      - name: 9. Deploy to penguins-eggs.net via SCP
+      # 9. TEST DI CONNESSIONE SSH MANUALE
+      - name: 9. Manual SSH Connection Test
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          echo "--- 1. Setting up SSH client ---"
+          # Il container archlinux dovrebbe già avere openssh
+          which ssh || pacman -Syu --noconfirm openssh
+          
+          echo "--- 2. Installing private key ---"
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          
+          echo "--- 3. Adding server to known_hosts ---"
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          
+          echo "--- 4. Attempting verbose SSH connection ---"
+          # Usiamo -v (verbose) e -i (identity file)
+          # Eseguiamo un comando semplice (ls) sulla cartella di destinazione
+          ssh -v -i ~/.ssh/id_key "$SSH_USER@$SSH_HOST" "ls -l /var/www/html/repos"
+
+      # 10. PUBBLICAZIONE FINALE (Temporaneamente disabilitata)
+      - name: 10. Deploy to penguins-eggs.net via SCP
+        if: false # DISABILITIAMO QUESTO STEP PER IL TEST
         uses: appleboy/scp-action@v0.1.7
         with:
-          # Aggiungiamo il debug
           debug: true
-          
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-
           source: "./repo-dir/*" 
           target: "/var/www/html/repos" 
-          
-          # Disabilitiamo temporaneamente il clean per il test
           clean: false 
           timeout: 120s
