@@ -521,7 +521,7 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          # 'openssh' è necessario per 'ssh-keyscan'
+          # 'openssh' per ssh-keyscan, 'rsync' per il deploy
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh rsync
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
@@ -630,7 +630,7 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 10. PUBBLICAZIONE FINALE (Ri-abilitata e definitiva con Rsync)
+      # 10. PUBBLICAZIONE FINALE (Aggiunge e aggiorna, NON cancella)
       - name: 10. Deploy to penguins-eggs.net via Rsync
         uses: appleboy/rsync-action@v1.0.0
         with:
@@ -639,11 +639,8 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
 
-          # Sincronizza il *contenuto* di repo-dir
-          # Lo slash finale su 'source' è importante!
+          # Lo slash finale su 'source' è cruciale
           source: "./repo-dir/"
           target: "/var/www/html/repos" 
           
-          # 'delete: true' è l'equivalente di 'clean: true'
-          # Rimuove i file sul server che non esistono più in locale
-          #delete: true
+          # NON usiamo 'delete: true', così i vecchi file rimangono sul server
