@@ -3,12 +3,6 @@
 # Esegue la re-indicizzazione di TUTTI i repository
 # utilizzando container Docker dedicati per ogni tipo di repo.
 #
-# L'host deve avere 'docker.io' installato e le immagini:
-# - deb-rpm-indexer
-# - arch-indexer
-# - alpine-indexer
-# L'utente SSH deve essere nel gruppo 'docker'.
-#
 name: Re-index On Host (Full Docker)
 
 on:
@@ -22,10 +16,6 @@ jobs:
       - name: 1. Execute Remote Re-index (via Docker)
         uses: appleboy/ssh-action@v1.0.3
         
-        # =======================================================
-        # CORREZIONE: Questo blocco è ora al livello corretto
-        # (parallelo a 'uses:' e 'with:')
-        # =======================================================
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -44,7 +34,15 @@ jobs:
 
             # --- 0. Imposta GPG per questa sessione SSH (sull'HOST) ---
             echo "Importing GPG key..."
-            echo "$GPG_SIGNING_KEY" | gpg --import --batch
+            
+            # =======================================================
+            # MODIFICA: Utilizzo di 'heredoc' per un import GPG robusto
+            # (risolve l'errore 'no valid OpenPGP data found')
+            # =======================================================
+            gpg --import --batch << EOF
+            $GPG_SIGNING_KEY
+            EOF
+            
             mkdir -p ~/.gnupg
             echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
             echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
@@ -59,7 +57,6 @@ jobs:
 
             # --- 2. Re-index Debian & RPM (Container 'deb-rpm-indexer') ---
             echo "--- DEBIAN/RPM: Re-indexing (Container) ---"
-            # (Rimosso 'sudo' perché l'utente è nel gruppo docker)
             docker run --rm \
               -v "$REPO_PATH:/repo" \
               -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
