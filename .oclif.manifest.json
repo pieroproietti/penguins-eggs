@@ -1123,7 +1123,7 @@
     "tools:repo": {
       "aliases": [],
       "args": {},
-      "description": "add/remove penguins-eggs-repo",
+      "description": "add/remove penguins-repos",
       "examples": [
         "sudo eggs tools repo --add",
         "sudo eggs tools repo --remove"
@@ -1131,7 +1131,7 @@
       "flags": {
         "add": {
           "char": "a",
-          "description": "add penguins-eggs-repo",
+          "description": "add penguins-repos",
           "name": "add",
           "allowNo": false,
           "type": "boolean"
@@ -1152,7 +1152,7 @@
         },
         "remove": {
           "char": "r",
-          "description": "remove penguins-eggs-repo",
+          "description": "remove penguins-repos",
           "name": "remove",
           "allowNo": false,
           "type": "boolean"
