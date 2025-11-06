@@ -58,8 +58,10 @@ source=(
 
 build() {
  cd "$srcdir"/"$pkgname"
- pnpm install
+ env NODE_ENV=development pnpm install
  pnpm build  
+ rm -rf node_modules
+ pnpm install --prod --offline
 }
 
 package() {

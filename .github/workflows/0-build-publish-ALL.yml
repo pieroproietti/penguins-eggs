@@ -506,8 +506,9 @@ jobs:
           retention-days: 1
 
 
+  
   # ========================================================
-  # 2.1 JOB DI PUBBLICAZIONE (CON FIX LFS)
+  # 2.1 JOB DI PUBBLICAZIONE (Sul server penguins-eggs.net)
   # ========================================================
   publish-all-repos:
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
@@ -515,31 +516,18 @@ jobs:
     container: archlinux
     
     steps:
-      # 1. Installa dipendenze (AGGIUNTO git-lfs)
+      # 1. Installa solo le dipendenze necessarie
       - name: 1. Install Dependencies
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          # Aggiunto 'git-lfs' alla lista
-          pacman -S --noconfirm git git-lfs pacman-contrib gnupg dpkg createrepo_c apk-tools
-      
-      # 2. Clona il repo esistente
-      - name: 2. Clone existing repo to retrieve old files
-        run: |
-          echo "Clonando penguins-repos in /tmp/old-repo..."
-          git clone https://x-access-token:${{ secrets.PUBLISH_TOKEN }}@github.com/pieroproietti/penguins-repos.git /tmp/old-repo
-        env:
-          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          # 'openssh' ci fornisce il client 'sftp'
+          pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
-      # 3. Prepara la nuova cartella di pubblicazione (LOGICA AGGIORNATA)
-      - name: 3. Create publish directory and copy ONLY static files
+      # 2. Prepara le cartelle di pubblicazione (VUOTE)
+      - name: 2. Create publish directory structure
         run: |
-          mkdir -p ./repo-dir
-          echo "Copiando SOLO i file statici (README, ecc.) dal vecchio repo..."
-          
-          find /tmp/old-repo -maxdepth 1 -type f -exec cp {} ./repo-dir/ \;
-          
-          echo "Ricreo le cartelle di pacchetti pulite..."
+          mkdir -p ./repo-dir/deb
           mkdir -p ./repo-dir/arch
           mkdir -p ./repo-dir/manjaro
           mkdir -p ./repo-dir/alpine
@@ -547,149 +535,119 @@ jobs:
           mkdir -p ./repo-dir/rpm/opensuse/leap
           mkdir -p ./repo-dir/rpm/el9
 
-      # 4. Scarica TUTTI i nuovi artifacts (i nomi dei passi sono +0.1)
-      - name: 4.1 Download FINAL Debian Repo artifact
+      # 3. Scarica TUTTI i nuovi artifacts
+      - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
         with:
           name: final-debian-repo
-          # Scarica il contenuto (dists/ e pool/) dentro repo-dir
-          path: ./repo-dir/        
-
-      - name: 4.2 Download Fedora 42 artifacts
+          path: ./repo-dir/
+      - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
-          # --- CORREZIONE QUI ---
           path: ./repo-dir/rpm/fedora/42/
-
-      - name: 4.3 Download openSUSE artifacts
+      - name: 3.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
-          # --- CORREZIONE QUI ---
           path: ./repo-dir/rpm/opensuse/leap/
-
-      - name: 4.4 Download EL9 artifacts
+      - name: 3.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
         with:
           name: el9-rpm-for-repo
-          # --- CORREZIONE QUI ---
           path: ./repo-dir/rpm/el9/
-      
-
-      - name: 4.5 Download Arch artifacts
+      - name: 3.5 Download Arch artifacts
         uses: actions/download-artifact@v4
-        with: { name: arch-packages, path: ./repo-dir/arch/ }
-          
-      - name: 4.6 Download Manjaro artifacts
+        with:
+          name: arch-packages
+          path: ./repo-dir/arch/
+      - name: 3.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
-        with: { name: manjaro-package, path: ./repo-dir/manjaro/ }
-
-      - name: 4.7 Download Alpine artifacts
+        with:
+          name: manjaro-package
+          path: ./repo-dir/manjaro/
+      - name: 3.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
-        with: { name: alpine-package, path: ./repo-dir/alpine/ }
+        with:
+          name: alpine-package
+          path: ./repo-dir/alpine/
 
-# 5. Importa la chiave GPG
-      - name: 5. Import GPG Key
+      # 4. Importa la chiave GPG
+      - name: 4. Import GPG Key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
 
-# 6. Processa Repo Arch (Pruning e Update)
-      - name: 6. Prune and Update Arch Repo
+      # 5. Processa Repo Arch
+      - name: 5. Prune and Update Arch Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/arch
-          echo "--- ARCH: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- ARCH: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
-          
-          echo "--- ARCH: Rimuovo i vecchi database (LFS pointers) ---"
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          
-          echo "--- ARCH: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-      # 8. Processa Repo Manjaro (Pruning e Update)
-      - name: 8. Prune and Update Manjaro Repo
+      # 6. Processa Repo Manjaro
+      - name: 6. Prune and Update Manjaro Repo
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/manjaro
-          echo "--- MANJARO: File totali prima del pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
           ls -1 penguins-eggs-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- MANJARO: File rimasti dopo il pruning: $(ls -1 *.pkg.tar.zst 2>/dev/null | wc -l)"
-
-          echo "--- MANJARO: Rimuovo i vecchi database (LFS pointers) ---"
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          
-          echo "--- MANJARO: Creo un nuovo database da zero ---"
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-# 10. Processa TUTTI i Repo RPM (Pruning e Update)
-      - name: 10. Prune and Update RPM Repos
+      # 7. Processa TUTTI i Repo RPM
+      - name: 7. Prune and Update RPM Repos
         run: |
           set -e
-          
-          cd ./repo-dir/rpm/fedora/42
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../../..
-          
-          cd ./repo-dir/rpm/opensuse/leap
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../../..
-          
-          cd ./repo-dir/rpm/el9
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../..
+          cd ./repo-dir/rpm/fedora/42; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../../..
+          cd ./repo-dir/rpm/opensuse/leap; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../../..
+          cd ./repo-dir/rpm/el9; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../..
 
-
-      # 11. Processa Repo Alpine (Pruning e Update)
-      - name: 11. Prune and Update Alpine Repo
+      # 8. Processa Repo Alpine
+      - name: 8. Prune and Update Alpine Repo
         env:
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
           cd ./repo-dir/alpine
-          echo "--- ALPINE: Sposto tutti i file .apk nella root ---"
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
-          
-          echo "--- ALPINE: File totali prima del pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
           ls -1 *.apk 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          echo "--- ALPINE: File rimasti dopo il pruning: $(ls -1 *.apk 2>/dev/null | wc -l)"
-          
-          echo "--- ALPINE: Rimuovo vecchio indice (LFS pointer) ---"
           rm -f APKINDEX.tar.gz
-          
-          echo "--- ALPINE: Aggiorno database repository ---"
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
-          
-          echo "--- ALPINE: Aggiungo la chiave pubblica ---"
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd ../..
 
-      # 12. PUBBLICAZIONE FINALE
-      - name: 12. Deploy to penguins-repos (distruggendo la cronologia)
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          personal_token: ${{ secrets.PUBLISH_TOKEN }} 
-          external_repository: pieroproietti/penguins-repos
-          publish_branch: main
-          publish_dir: ./repo-dir 
-          force_orphan: true
-          keep_files: false
-          lfs: false 
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update all package repositories (Build ${{ github.run_number }})"
+      # 9. PUBBLICAZIONE FINALE (Manuale con SFTP)
+      - name: 9. Deploy to penguins-eggs.net via Manual SFTP
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          echo "--- 1. Installing private key ---"
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          
+          echo "--- 2. Creating SFTP batch file ---"
+          # 'lcd' cambia la cartella locale del client sftp
+          # 'put -r .' carica ricorsivamente tutto (compresi i file .dot)
+          # dalla cartella locale (./repo-dir) alla cartella remota
+          echo "lcd ./repo-dir" > sftp-batch.txt
+          echo "put -r . /var/www/html/repos" >> sftp-batch.txt
+          echo "quit" >> sftp-batch.txt
+          
+          echo "--- 3. Running SFTP upload ---"
+          # Usiamo il client sftp standard in modalità batch (-b)
+          sftp -v -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -b sftp-batch.txt \
+            "$SSH_USER@$SSH_HOST"

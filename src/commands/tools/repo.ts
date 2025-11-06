@@ -22,9 +22,9 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 import Diversions from '../../classes/diversions.js'
 
-const repoKeyUrl = 'https://pieroproietti.github.io/penguins-repos/KEY.asc'
+const repoKeyUrl = 'https://penguins-eggs.net/repos/KEY.asc'
 const repoKeyPath = '/usr/share/keyrings/penguins-repos.gpg'
-const repoUrl = `https://pieroproietti.github.io/penguins-repos`
+const repoUrl = `https://penguins-eggs.net/repos`       // no slash at end
 let repoPath = '/etc/apt/sources.list.d/penguins-repos' // Base path without extension
 
 /**
@@ -127,9 +127,9 @@ async function archlinuxRepoAdd(distroId = "Arch") {
   const repoBlockIdentifier = '# penguins-repos';
   const repoName = '[penguins-eggs]'
   const keyId = 'F6773EA7D2F309BA3E5DE08A45B10F271525403F'
-  let serverUrl = 'https://pieroproietti.github.io/penguins-repos/arch'
+  let serverUrl = repoUrl +'/arch'
   if (Diversions.isManjaroBased(distroId)) {
-    serverUrl = 'https://pieroproietti.github.io/penguins-repos/manjaro'
+    serverUrl = repoUrl + '/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
   const echo = Utils.setEcho(true)
@@ -165,9 +165,9 @@ async function archlinuxRepoRemove(distroId = 'Arch') {
 
   const repoBlockIdentifier = '# penguins-repos'
   const repoName = '[penguins-eggs]'
-  let serverUrl = 'https://pieroproietti.github.io/penguins-repos/arch'
+  let serverUrl = repoUrl +'/arch'
   if (Diversions.isManjaroBased(distroId)) {
-    serverUrl = 'https://pieroproietti.github.io/penguins-repos/manjaro'
+    serverUrl = repoUrl + '/manjaro'
   }
   const pacmanConfPath = '/etc/pacman.conf'
 
