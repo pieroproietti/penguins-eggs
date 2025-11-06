@@ -62,9 +62,12 @@ export default class Daddy {
       );
     }
 
-    // Define type-safe inquirer questions
-    const questions: inquirer.QuestionCollection<IEggsConfig> = [
-      {
+    /**
+     *     // Define type-safe inquirer questions
+     * const questions: inquirer.QuestionCollection<IEggsConfig> = [
+     */
+    const questions: any = [
+    {
         type: 'input',
         name: 'snapshot_prefix',
         message: 'LiveCD iso prefix: ',
