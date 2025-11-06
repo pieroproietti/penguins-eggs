@@ -522,7 +522,7 @@ jobs:
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
           # 'openssh' è necessario per 'ssh-keyscan'
-          pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
+          pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh rsync
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
       - name: 2. Create publish directory structure
@@ -630,18 +630,20 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 10. PUBBLICAZIONE FINALE (Ri-abilitata e definitiva)
-      - name: 10. Deploy to penguins-eggs.net via SCP
-        uses: appleboy/scp-action@v0.1.7
+      # 10. PUBBLICAZIONE FINALE (Ri-abilitata e definitiva con Rsync)
+      - name: 10. Deploy to penguins-eggs.net via Rsync
+        uses: appleboy/rsync-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
 
-          source: "./repo-dir/*" 
+          # Sincronizza il *contenuto* di repo-dir
+          # Lo slash finale su 'source' è importante!
+          source: "./repo-dir/"
           target: "/var/www/html/repos" 
           
-          # Ri-abilitiamo il clean per rimuovere i vecchi pacchetti
-          clean: true 
-          timeout: 120s
+          # 'delete: true' è l'equivalente di 'clean: true'
+          # Rimuove i file sul server che non esistono più in locale
+          #delete: true
