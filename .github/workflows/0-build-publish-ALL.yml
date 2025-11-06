@@ -535,28 +535,42 @@ jobs:
           mkdir -p ./repo-dir/rpm/opensuse/leap
           mkdir -p ./repo-dir/rpm/el9
 
-      # 3. Scarica TUTTI i nuovi artifacts
+      # 3. Scarica TUTTI i nuovi artifacts (SINTASSI CORRETTA)
       - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
-        with: { name: final-debian-repo, path: ./repo-dir/deb/ }
+        with:
+          name: final-debian-repo
+          path: ./repo-dir/deb/
       - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
-        with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/rpm/fedora/42/ }
+        with:
+          name: fedora-42-rpm-for-repo
+          path: ./repo-dir/rpm/fedora/42/
       - name: 3.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
-        with: { name: opensuse-leap-rpm-for-repo, path: ./repo-dir/rpm/opensuse/leap/ }
+        with:
+          name: opensuse-leap-rpm-for-repo
+          path: ./repo-dir/rpm/opensuse/leap/
       - name: 3.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
-        with: { name: el9-rpm-for-repo, path: ./repo-dir/rpm/el9/ }
+        with:
+          name: el9-rpm-for-repo
+          path: ./repo-dir/rpm/el9/
       - name: 3.5 Download Arch artifacts
         uses: actions/download-artifact@v4
-        with: { name: arch-packages, path: ./repo-dir/arch/ }
+        with:
+          name: arch-packages
+          path: ./repo-dir/arch/
       - name: 3.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
-        with: { name: manjaro-package, path: ./repo-dir/manjaro/ }
+        with:
+          name: manjaro-package
+          path: ./repo-dir/manjaro/
       - name: 3.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
-        with: { name: alpine-package, path: ./repo-dir/alpine/ }
+        with:
+          name: alpine-package
+          path: ./repo-dir/alpine/
 
       # 4. Importa la chiave GPG
       - name: 4. Import GPG Key
@@ -566,7 +580,8 @@ jobs:
 
       # 5. Processa Repo Arch
       - name: 5. Prune and Update Arch Repo
-        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/arch
@@ -577,7 +592,8 @@ jobs:
 
       # 6. Processa Repo Manjaro
       - name: 6. Prune and Update Manjaro Repo
-        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/manjaro
@@ -596,7 +612,8 @@ jobs:
 
       # 8. Processa Repo Alpine
       - name: 8. Prune and Update Alpine Repo
-        env: { ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }} }
+        env:
+          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
           cd ./repo-dir/alpine
@@ -608,7 +625,6 @@ jobs:
           cd ../..
 
       # 9. Aggiunge la chiave host del server a known_hosts
-      # Questo risolve "Host key verification failed" per l'azione scp
       - name: 9. Add Server Host Key to known_hosts
         run: |
           mkdir -p ~/.ssh
@@ -620,7 +636,6 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          # Corretto il nome del secret
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
 
