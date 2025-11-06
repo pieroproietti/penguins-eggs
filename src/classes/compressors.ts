@@ -1,17 +1,35 @@
 /**
  * ./src/classes/compressors.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
+ * penguins-eggs v.25.7.x / ECMAScript 2020
+ * author: Piero Proietti (modified by Hossein Seilani)
  * license: MIT
  */
 
-import shx from 'shelljs'
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+/**
+ * [CHANGE 1] Convert shell execution to async/await using promisify
+ * Previously shx.exec was used which executes commands synchronously. 
+ * Using execAsync allows us to await the completion of shell commands, 
+ * making populate() and check() truly asynchronous, avoiding race conditions 
+ * and ensuring reliability when checking compressors.
+ */
+const execAsync = promisify(exec);
+
+export type Compressor = 'error' | 'gzip' | 'lz4' | 'lzma' | 'lzo' | 'xz' | 'zstd';
 
 export default class Compressors {
-  dest = '/tmp/eggs-mksquash-dest'
+  dest = '/tmp/eggs-mksquash-dest';
+  source = '/tmp/eggs-mksquash-test';
 
-  isEnabled = {
+  /**
+   * [CHANGE 2] Define precise type for isEnabled and initialize all compressor flags
+   * This provides TypeScript type safety, prevents undefined values, and ensures
+   * that all compressors have a default enabled/disabled state. Previously, 
+   * initialization was less strict, which could lead to runtime errors.
+   */
+  isEnabled: Record<Compressor, boolean> = {
     error: false,
     gzip: true,
     lz4: false,
@@ -19,107 +37,137 @@ export default class Compressors {
     lzo: false,
     xz: false,
     zstd: false
-  }
-
-  source = '/tmp/eggs-mksquash-test'
+  };
 
   /**
-   * fast compression
-   * @returns
+   * [CHANGE 3] Add debug flag
+   * This allows optional logging of errors during checks, giving developers
+   * visibility into why a compressor might be considered unavailable, while
+   * keeping the default behavior silent to avoid confusing standard users.
+   */
+  debug = false;
+
+  /**
+   * Return fast compression command based on available compressors.
+   * [CHANGE 4] Use helper method getCompressor to avoid repeating logic
+   * across multiple methods (fast, pendrive). This reduces code duplication
+   * and ensures consistent selection of compressors.
    */
   fast(): string {
-    let comp = 'gzip'
-    if (this.isEnabled.zstd) {
-      comp = 'zstd -b 1M -Xcompression-level 3'
-    } else if (this.isEnabled.lz4) {
-      comp = 'lz4'
-    }
-
-    return comp
+    return this.getCompressor(['zstd', 'lz4', 'gzip'], '3');
   }
 
   /**
-   * max
-   * @returns
+   * Return maximum compression command for the current CPU architecture.
+   * [CHANGE 5] Dynamic selection of filter for ARM/x86 and improved readability.
+   * This ensures that the resulting compressed files are optimized for the architecture.
    */
   max(): string {
-    let filter = 'x86'
-    if (process.arch === 'arm64') {
-      filter = 'arm'
-    }
-
-    const options = '-b 1M -no-duplicates -no-recovery -always-use-fragments'
-    if (process.arch === 'ia32') {
-      // options = '-b 1M'
-    }
-
-    const comp = `xz -Xbcj ${filter} ${options}`
-    return comp
-  }
-
-  pendrive(level = '15'): string {
-    let comp = 'gzip'
-    if (this.isEnabled.zstd) {
-      comp = `zstd -b 1M -Xcompression-level ${level}`
-    } else if (this.isEnabled.lz4) {
-      comp = 'lz4'
-    }
-
-    return comp
+    const filter = process.arch === 'arm64' ? 'arm' : 'x86';
+    const options = '-b 1M -no-duplicates -no-recovery -always-use-fragments';
+    return `xz -Xbcj ${filter} ${options}`;
   }
 
   /**
-   * populate
+   * Return compression command suitable for pendrive usage.
+   * [CHANGE 6] Use getCompressor to maintain consistent logic with fast() and
+   * allow specifying compression level for zstd. Reduces repeated code and
+   * improves maintainability.
    */
-  async populate() {
-    await this.prepareCheck()
-    this.isEnabled.error = await this.check('error')
-    this.isEnabled.lzma = await this.check('lzma')
-    this.isEnabled.lzo = await this.check('lzo')
-    this.isEnabled.lz4 = await this.check('lz4')
-    this.isEnabled.xz = await this.check('xz')
-    this.isEnabled.zstd = await this.check('zstd')
-    await this.removeCheck()
+  pendrive(level = '15'): string {
+    return this.getCompressor(['zstd', 'lz4', 'gzip'], level);
   }
 
   /**
-   * standard
-   * @returns
+   * Return standard compression command.
+   * This is a fixed, safe option with moderate compression.
    */
   standard(): string {
-    const comp = 'xz -b 1M'
-    return comp
+    return 'xz -b 1M';
   }
 
   /**
-   * check mksquashfs exists
-   * @param compressor
-   * @returns
+   * Populate isEnabled flags by checking each compressor.
+   * [CHANGE 7] Loop through all compressors instead of checking them one by one.
+   * This reduces repetitive code, ensures all compressors are tested, and makes 
+   * future maintenance easier if more compressors are added.
    */
-  private async check(compressor: string): Promise<boolean> {
-    let result = false
+  async populate() {
+    await this.prepareCheck();
 
-    const { stderr } = shx.exec('mksquashfs ' + this.source + ' ' + this.dest + ' -comp ' + compressor + ' -no-xattrs -ef ' + this.dest, { silent: true })
-    if (stderr === '') {
-      result = true
+    const compressors: Compressor[] = ['error', 'lzma', 'lzo', 'lz4', 'xz', 'zstd'];
+    for (const comp of compressors) {
+      this.isEnabled[comp] = await this.check(comp);
     }
 
-    return result
+    await this.removeCheck();
   }
 
   /**
-   * prepareCheck
+   * [CHANGE 8] New method added: status()
+   * Provides the user/developer a simple way to see which compressors are available
+   * and enabled. Improves UX by exposing internal state without accessing private fields.
+   */
+  status() {
+    return this.isEnabled;
+  }
+
+  /**
+   * Check if a given compressor is supported by mksquashfs.
+   * [CHANGE 9] Use execAsync to run the shell command asynchronously and wait for completion.
+   * [CHANGE 10] Log errors only if debug mode is enabled. This prevents confusing
+   * silent failures while giving developers visibility when needed.
+   */
+  private async check(compressor: Compressor): Promise<boolean> {
+    let result = false;
+    try {
+      const { stderr } = await execAsync(
+        `mksquashfs ${this.source} ${this.dest} -comp ${compressor} -no-xattrs -ef ${this.dest}`
+      );
+      result = stderr === '';
+    } catch (err) {
+      if (this.debug) console.error(`[check] compressor=${compressor}`, err);
+    }
+    return result;
+  }
+
+  /**
+   * Prepare the temporary source folder for compressor checks.
+   * [CHANGE 11] Security improvement: Validate that source and dest paths
+   * are under /tmp/eggs-mksquash-* to prevent accidental deletion of important directories.
+   * [CHANGE 12] Use execAsync for asynchronous directory creation and removal.
    */
   private async prepareCheck() {
-    shx.exec('rm -rf ' + this.source, { silent: true })
-    shx.exec('mkdir ' + this.source, { silent: true })
+    if (!this.source.startsWith('/tmp/eggs-mksquash')) throw new Error('Invalid source path');
+    if (!this.dest.startsWith('/tmp/eggs-mksquash')) throw new Error('Invalid dest path');
+
+    await execAsync(`rm -rf ${this.source}`);
+    await execAsync(`mkdir -p ${this.source}`);
   }
 
   /**
-   * removeCheck
+   * Remove temporary source folder and destination file after checks.
+   * [CHANGE 13] Use async removal to ensure consistency with prepareCheck and
+   * avoid blocking the event loop.
    */
   private async removeCheck() {
-    shx.exec('rm -rf ' + this.source, { silent: true })
-    shx.exec('rm -f  ' + this.dest, { silent: true })
+    await execAsync(`rm -rf ${this.source}`);
+    await execAsync(`rm -f ${this.dest}`);
+  }
+
+  /**
+   * Helper method to select the first available compressor from a preferred list.
+   * [CHANGE 14] Consolidates logic for fast() and pendrive() to reduce code duplication.
+   * Allows optional compression level for zstd.
+   * This ensures a consistent compressor selection strategy across the class.
+   */
+  private getCompressor(preferred: Compressor[], level?: string): string {
+    for (const comp of preferred) {
+      if (this.isEnabled[comp]) {
+        if (comp === 'zstd' && level) return `zstd -b 1M -Xcompression-level ${level}`;
+        return comp;
+      }
+    }
+    return 'gzip'; // fallback if no preferred compressor is enabled
   }
 }
