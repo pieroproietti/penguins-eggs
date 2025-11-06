@@ -287,11 +287,12 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-      # --- NUOVO STEP PER GPG ---
+# ... (step 3. Create Build User)
+
       - name: 4. Import GPG Key and Prime Agent (for builder)
         run: |
-          # Importa la chiave per l'utente builder
-          sudo -u builder gpg --import --batch <(echo "${{ secrets.GPG_SIGNING_KEY }}")
+          # Usa una pipe standard per l'importazione
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | sudo -u builder gpg --import --batch
 
           # Configura GPG e GPG-Agent per l'utente builder
           sudo -u builder bash -c 'mkdir -p ~/.gnupg'
@@ -299,8 +300,13 @@ jobs:
           sudo -u builder bash -c 'echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf'
           sudo -u builder gpg-connect-agent reloadagent /bye
 
-          # Prima l'agente con la passphrase per l'utente builder
-          sudo -u builder gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null <(echo "${{ secrets.GPG_PASSPHRASE }}")
+          # Usa una pipe standard per il priming della passphrase
+          echo "${{ secrets.GPG_PASSPHRASE }}" | sudo -u builder gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+      
+      - name: 5. Update Checksums and Build Package
+        run: |
+          # Questo comando è corretto e non cambia
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} bash -c "cd ./packaging/arch && updpkgsums && makepkg -s --noconfirm"
       
       # --- STEP DI BUILD MODIFICATO ---
       - name: 5. Update Checksums and Build Package
@@ -349,11 +355,12 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
           
-      # --- NUOVO STEP PER GPG ---
+# ... (step 3. Prepare Build User)
+          
       - name: 3a. Import GPG Key and Prime Agent (for builder)
         run: |
-          # Importa la chiave per l'utente builder
-          sudo -u builder gpg --import --batch <(echo "${{ secrets.GPG_SIGNING_KEY }}")
+          # Usa una pipe standard per l'importazione
+          echo "${{ secrets.GPG_SIGNING_KEY }}" | sudo -u builder gpg --import --batch
 
           # Configura GPG e GPG-Agent per l'utente builder
           sudo -u builder bash -c 'mkdir -p ~/.gnupg'
@@ -361,9 +368,17 @@ jobs:
           sudo -u builder bash -c 'echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf'
           sudo -u builder gpg-connect-agent reloadagent /bye
 
-          # Prima l'agente con la passphrase per l'utente builder
-          sudo -u builder gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null <(echo "${{ secrets.GPG_PASSPHRASE }}")
+          # Usa una pipe standard per il priming della passphrase
+          echo "${{ secrets.GPG_PASSPHRASE }}" | sudo -u builder gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           
+      - name: 4. Update Checksums and Build Package as Non-Root User
+        run: |
+          # Questo comando è corretto e non cambia
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} updpkgsums
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s --noconfirm
+        working-directory: ./packaging/manjaro
+
+
       # --- STEP DI BUILD MODIFICATO ---
       - name: 4. Update Checksums and Build Package as Non-Root User
         run: |
