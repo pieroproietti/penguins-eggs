@@ -540,7 +540,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: final-debian-repo
-          path: ./repo-dir/deb/
+          path: ./repo-dir/
       - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with:
