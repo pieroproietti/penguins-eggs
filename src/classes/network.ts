@@ -6,12 +6,11 @@
  * license: MIT
  */
 
+
 import { Netmask } from 'netmask'
 import os from 'node:os'
+import dns from 'node:dns' // new change [1]
 
-/**
- *
- */
 export default class Network {
   address = ''
   cidr = ''
@@ -19,101 +18,96 @@ export default class Network {
   internal = false
   mac = ''
   netmask = ''
-  o = {} as Netmask
+  o: Netmask | null = null
+  interfaceName = '' // new change [2]
 
-  /**
-   *
-   */
   constructor() {
     const interfaces = os.networkInterfaces()
-    const address = ''
-    if (interfaces !== undefined) {
-      for (const devName in interfaces) {
-        const iface = interfaces[devName]
-        if (iface !== undefined) {
-          for (const alias of iface) {
-            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-              // take just the first!
-              if (this.address === '') {
-                this.address = alias.address
-              }
 
-              if (this.cidr === '' && alias.cidr !== null) {
-                this.cidr = alias.cidr
-              }
+    if (!interfaces) {
+      console.warn('⚠️ No network interfaces found.') // new change [3]
+      return
+    }
 
-              if (this.family === '') {
-                this.family = alias.family
-              }
+    // new change [4] — priority list for preferred interfaces
+    const preferred = ['eth0', 'enp', 'wlan0', 'en0']
+    const keys = Object.keys(interfaces).sort((a, b) => {
+      const pa = preferred.some(p => a.includes(p)) ? -1 : 1
+      const pb = preferred.some(p => b.includes(p)) ? -1 : 1
+      return pa - pb
+    })
 
-              if (this.mac === '') {
-                this.mac = alias.mac
-              }
+    for (const devName of keys) {
+      const iface = interfaces[devName]
+      if (!iface) continue
 
-              if (this.netmask === '') {
-                this.netmask = alias.netmask
-              }
-            }
-          }
+      for (const alias of iface) {
+        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+          this.interfaceName = devName // new change [5]
+          this.address ||= alias.address
+          this.cidr ||= alias.cidr ?? `${alias.address}/${this.netmaskToPrefix(alias.netmask)}`
+          this.family ||= alias.family
+          this.mac ||= alias.mac
+          this.netmask ||= alias.netmask
+          break
         }
       }
+      if (this.address) break
+    }
 
-      /**
-       * valori da netmask
-       */
-      this.o = new Netmask(this.cidr)
+    if (!this.cidr) {
+      console.warn('⚠️ CIDR not detected; fallback calculation may be inaccurate.') // new change [6]
+    }
+
+    if (this.cidr) {
+      try {
+        this.o = new Netmask(this.cidr)
+      } catch (err) {
+        console.error('❌ Failed to parse CIDR:', err)
+      }
     }
   }
 
-  base() {
-    return this.o.base
+  // Convert netmask to prefix length, e.g. 255.255.255.0 → /24
+  private netmaskToPrefix(mask: string): number {
+    // new change [7]
+    return mask
+      .split('.')
+      .map(octet => parseInt(octet, 10).toString(2))
+      .join('')
+      .split('1').length - 1
   }
 
-  bitmask() {
-    this.o.bitmask
+  base() { return this.o?.base ?? '' }
+  broadcast() { return this.o?.broadcast ?? '' }
+  first() { return this.o?.first ?? '' }
+  last() { return this.o?.last ?? '' }
+  size() { return this.o?.size ?? 0 }
+  toString() { return this.o?.toString() ?? '' }
+
+  // new change [8] — check for internet connectivity
+  async hasInternetConnection(): Promise<boolean> {
+    return new Promise(resolve => {
+      dns.lookup('google.com', err => {
+        resolve(!err)
+      })
+    })
   }
 
-  broadcast() {
-    return this.o.broadcast
-  }
-
-  contains() {
-    return this.o.contains
-  }
-
-  first() {
-    return this.o.first
-  }
-
-  forEach() {
-    return this.o.forEach
-  }
-
-  hostmask() {
-    return this.o.hostmask
-  }
-
-  last() {
-    return this.o.last
-  }
-
-  maskLong() {
-    return this.o.maskLong
-  }
-
-  netLong() {
-    return this.o.netLong
-  }
-
-  next() {
-    return this.o.next
-  }
-
-  size() {
-    return this.o.size
-  }
-
-  toString() {
-    return this.o.toString
+  // new change [9] — print readable info in terminal
+  printInfo(): void {
+    console.log('🌐 Network Information:')
+    console.log('---------------------------')
+    console.log(`Interface: ${this.interfaceName}`)
+    console.log(`Address:   ${this.address}`)
+    console.log(`CIDR:      ${this.cidr}`)
+    console.log(`Family:    ${this.family}`)
+    console.log(`MAC:       ${this.mac}`)
+    console.log(`Netmask:   ${this.netmask}`)
+    console.log(`Base IP:   ${this.base()}`)
+    console.log(`Broadcast: ${this.broadcast()}`)
+    console.log(`First IP:  ${this.first()}`)
+    console.log(`Last IP:   ${this.last()}`)
+    console.log(`Total IPs: ${this.size()}`)
   }
 }
