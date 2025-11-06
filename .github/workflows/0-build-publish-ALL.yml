@@ -259,10 +259,8 @@ jobs:
           name: el9-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
-
-
 # ========================================================
-  # 1.5 JOB DI BUILD Archlinux (CON FIRMA)
+  # 1.5 JOB DI BUILD Archlinux (CORRETTO)
   # ========================================================
   build-arch:
     runs-on: ubuntu-latest
@@ -287,8 +285,6 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
 
-# ... (step 3. Create Build User)
-
       - name: 4. Import GPG Key and Prime Agent (for builder)
         run: |
           # Usa una pipe standard per l'importazione
@@ -305,16 +301,9 @@ jobs:
       
       - name: 5. Update Checksums and Build Package
         run: |
-          # Questo comando è corretto e non cambia
+          # Passa il GPGKEY ID e usa -f (force) per sovrascrivere
           sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} bash -c "cd ./packaging/arch && updpkgsums && makepkg -s -f --noconfirm"
-
-      # --- STEP DI BUILD MODIFICATO ---
-      - name: 5. Update Checksums and Build Package
-        run: |
-          # Passa il GPGKEY ID direttamente all'ambiente del builder
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} bash -c "cd ./packaging/arch && updpkgsums && makepkg -s --noconfirm"
       
-      # 4. Carica l'artifact
       - name: 6. Upload Arch Package Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -326,7 +315,7 @@ jobs:
 
 
   # ========================================================
-  # 1.6 JOB DI BUILD Manjaro (CON FIRMA)
+  # 1.6 JOB DI BUILD Manjaro (CORRETTO)
   # ========================================================
   build-manjaro:
     runs-on: ubuntu-latest
@@ -355,8 +344,6 @@ jobs:
           echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
           chown -R builder:builder "$GITHUB_WORKSPACE"
           
-# ... (step 3. Prepare Build User)
-          
       - name: 3a. Import GPG Key and Prime Agent (for builder)
         run: |
           # Usa una pipe standard per l'importazione
@@ -373,18 +360,9 @@ jobs:
           
       - name: 4. Update Checksums and Build Package as Non-Root User
         run: |
-          # Questo comando è corretto e non cambia
+          # Passa il GPGKEY ID e usa -f (force) per sovrascrivere
           sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} updpkgsums
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s --noconfirm -f
-        working-directory: ./packaging/manjaro
-
-
-      # --- STEP DI BUILD MODIFICATO ---
-      - name: 4. Update Checksums and Build Package as Non-Root User
-        run: |
-          # Passa il GPGKEY ID direttamente all'ambiente del builder
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} updpkgsums
-          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s --noconfirm
+          sudo -u builder GPGKEY=${{ secrets.GPG_KEY_ID }} makepkg -s -f --noconfirm
         working-directory: ./packaging/manjaro
         
       - name: 5. Upload Package Artifact
@@ -395,6 +373,7 @@ jobs:
           path: |
             ./packaging/manjaro/*.pkg.tar.zst
             ./packaging/manjaro/*.pkg.tar.zst.sig
+
 
   # ========================================================
   # 1.7 JOB DI BUILD Alpine
