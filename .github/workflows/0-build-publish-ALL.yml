@@ -630,24 +630,18 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 10. PUBBLICAZIONE FINALE (con SFTP puro)
+      # 10. PUBBLICAZIONE FINALE (con SFTP puro e chiave SSH)
       - name: 10. Deploy to penguins-eggs.net via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: lary_v/sftp-action@v1.2.0
         with:
-          # Protocollo
-          protocol: sftp
+          host: ${{ secrets.SERVER_HOST }}
           port: 22
-          # Credenziali dai secret
-          server: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          # Il nome del parametro corretto per la chiave
+          privateKey: ${{ secrets.SERVER_SSH_KEY }}
           
-          # Cartella locale da cui copiare
-          # Lo slash finale è importante!
-          local-dir: ./repo-dir/
+          # Cartella locale da cui copiare (lo / finale è importante)
+          localPath: ./repo-dir/
           
-          # Cartella remota su cui caricare
-          server-dir: /var/www/html/repos/
-          
-          # Non cancelliamo i file vecchi (default)
-          delete-server-files: false
+          # Cartella remota su cui caricare (lo / finale è importante)
+          remotePath: /var/www/html/repos/
