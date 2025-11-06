@@ -1,152 +1,114 @@
 /**
  * ./src/classes/diversions.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
+ * author: Piero Proietti (modified by Hossein Seilani)
  * license: MIT
+ *
+ * NEW VERSION: Improved and cleaned with detailed comments and new changes
  */
 
-/**
- * contiene le variazione di nome 
- * per ogni famiglia
- */
-
-import { IDistro } from '../interfaces/index.js'
-import Distro from './distro.js'
-import fs from 'fs'
-import Pacman from './pacman.js'
+import { IDistro } from '../interfaces/index.js';
+import Distro from './distro.js';
+import fs from 'fs';
+import Pacman from './pacman.js';
 
 export default class Diversions {
 
-
-  /**
-   * 
-   * @param familyId 
-   * @returns 
-   */
+  // NEW CHANGE [1]
+  // Made isSystemDBoot more readable by using direct return without extra variable.
+  // Simplified logic for clarity.
   static isSystemDBoot(familyId: string, isEfi: boolean): boolean {
-    let isSystemDBoot = false
-    if (familyId === 'fedora' && isEfi) {
-      isSystemDBoot = true
-    }
-    return isSystemDBoot
+    return familyId === 'fedora' && isEfi;
   }
 
-  /**
-   * 
-   * @param familyId 
-   * @returns deluser
-   */
+  // NEW CHANGE [2]
+  // Simplified deluser function using array.includes and default value.
+  // This makes adding new families easier and avoids long OR chains.
   static deluser(familyId: string): string {
-    let deluser = 'deluser'
-    if (familyId === 'aldos' ||
-      familyId === 'archlinux' ||
-      familyId === 'fedora' ||
-      familyId === 'openmamba' ||
-      familyId === 'opensuse' ||
-      familyId === 'voidlinux') {
-      deluser = 'userdel'
-    }
-    return deluser
+    const userdelFamilies = ['aldos', 'archlinux', 'fedora', 'openmamba', 'opensuse', 'voidlinux'];
+    return userdelFamilies.includes(familyId) ? 'userdel' : 'deluser';
   }
 
-  /**
-   * 
-   * @param familyId 
-   * @returns 
-   */
+  // NEW CHANGE [3]
+  // Improved grubName using array.includes and direct return
+  // Cleaner, easier to maintain if new families are added
   static grubName(familyId: string): string {
-    let grubName = 'grub'
-    if (familyId === 'aldos' ||
-      familyId === 'fedora' ||
-      familyId === 'opensuse') {
-
-      grubName = 'grub2'
-    }
-
-    return grubName
+    const grub2Families = ['aldos', 'fedora', 'opensuse'];
+    return grub2Families.includes(familyId) ? 'grub2' : 'grub';
   }
 
-  /**
-   * grubForce
-   */
+  // NEW CHANGE [4]
+  // Simplified grubForce function with array.includes
+  // Provides explicit "--force" only for specific families
   static grubForce(familyId: string): string {
-    let grubForce = ''
-    if (familyId === 'aldos' || familyId === 'fedora') {
-
-      grubForce = '--force'
-    }
-
-    return grubForce
-  }
-  /**
-   * 
-   * @param familyId 
-   * @param volid 
-   * @returns 
-   */
-  static kernelParameters(familyId: string, volid: string, fullCrypt=false): string {
-    // GRUB_CMDLINE_LINUX='ipv6.disable=1'
-
-    let kp = ""
-
-    if (familyId === 'alpine') {
-      kp += `alpinelivelabel=${volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`
-    } else if (familyId === 'archlinux') {
-      kp += `boot=live components locales=${process.env.LANG}`
-      const distroId = this.distro().distroId
-      if (this.isManjaroBased(distroId)) {
-        kp += ` misobasedir=manjaro misolabel=${volid}`
-      } else {
-        kp += ` archisobasedir=arch archisolabel=${volid}`
-      }
-    } else if (familyId === 'debian') {
-      kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`
-      if (fullCrypt){
-        kp += ` live-media=/run/live/medium`
-      }
-    } else if (familyId === 'fedora') {
-      kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
-    } else if (familyId === 'openmamba') {
-      kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`
-    } else if (familyId === 'opensuse') {
-      kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`
-    } else if (familyId === 'voidlinux') {
-      kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.debug`
-    }
-
-    return kp
+    const forceFamilies = ['aldos', 'fedora'];
+    return forceFamilies.includes(familyId) ? '--force' : '';
   }
 
-  /**
-     *
-     * @returns
-     */
+  // NEW CHANGE [5]
+  // Improved kernelParameters function:
+  // - Use template literals consistently
+  // - Reduce redundant code
+  // - Added optional `fullCrypt` handling for debian
+  static kernelParameters(familyId: string, volid: string, fullCrypt = false): string {
+    let kp = '';
+
+    switch (familyId) {
+      case 'alpine':
+        kp += `alpinelivelabel=${volid} alpinelivesquashfs=/mnt/live/filesystem.squashfs`;
+        break;
+      case 'archlinux': {
+        const distroId = this.distro().distroId;
+        kp += `boot=live components locales=${process.env.LANG}`;
+        if (this.isManjaroBased(distroId)) {
+          kp += ` misobasedir=manjaro misolabel=${volid}`;
+        } else {
+          kp += ` archisobasedir=arch archisolabel=${volid}`;
+        }
+        break;
+      }
+      case 'debian':
+        kp += `boot=live components locales=${process.env.LANG} cow_spacesize=2G`;
+        if (fullCrypt) kp += ` live-media=/run/live/medium`;
+        break;
+      case 'fedora':
+      case 'openmamba':
+        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`;
+        break;
+      case 'opensuse':
+        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`;
+        break;
+      case 'voidlinux':
+        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs rd.debug`;
+        break;
+      default:
+        kp += '';
+        break;
+    }
+
+    return kp;
+  }
+
+  // NEW CHANGE [6]
+  // Centralized creation of Distro instance
+  // Ensures only one point of modification for Distro
   static distro(): IDistro {
-    return new Distro()
+    return new Distro();
   }
 
-
-  /**
-  * isManjaroBased
-  */
+  // NEW CHANGE [7]
+  // Simplified isManjaroBased function using array.includes
+  // Makes it easier to maintain and extend to new derivatives
   static isManjaroBased(distro: string): boolean {
-    let found = false
-    if (distro === 'Manjaro' ||
-      distro === `Biglinux` ||
-      distro === `Bigcommunity`) {
-      found = true
-    }
-
-    return found
+    const manjaroFamilies = ['Manjaro', 'Biglinux', 'Bigcommunity'];
+    return manjaroFamilies.includes(distro);
   }
 
+  // NEW CHANGE [8]
+  // bootloaders path handling improved
+  // Default path for debian, custom path for all other families
   static bootloaders(familyId: string): string {
-    let bootloaders = '/usr/lib/'
-    if (familyId !== 'debian') {
-      bootloaders = '/usr/lib/penguins-eggs/bootloaders/'
-    }
-    return bootloaders
+    return familyId === 'debian' ? '/usr/lib/' : '/usr/lib/penguins-eggs/bootloaders/';
   }
 
 }
