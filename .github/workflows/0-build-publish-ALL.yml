@@ -521,6 +521,7 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
+          # 'openssh' è necessario per 'ssh-keyscan'
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
@@ -537,36 +538,22 @@ jobs:
       # 3. Scarica TUTTI i nuovi artifacts
       - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
-        with:
-          name: final-debian-repo
-          path: ./repo-dir/deb/
-
+        with: { name: final-debian-repo, path: ./repo-dir/deb/ }
       - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: fedora-42-rpm-for-repo
-          path: ./repo-dir/rpm/fedora/42/
-
+        with: { name: fedora-42-rpm-for-repo, path: ./repo-dir/rpm/fedora/42/ }
       - name: 3.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: opensuse-leap-rpm-for-repo
-          path: ./repo-dir/rpm/opensuse/leap/
-
+        with: { name: opensuse-leap-rpm-for-repo, path: ./repo-dir/rpm/opensuse/leap/ }
       - name: 3.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: el9-rpm-for-repo
-          path: ./repo-dir/rpm/el9/
-
+        with: { name: el9-rpm-for-repo, path: ./repo-dir/rpm/el9/ }
       - name: 3.5 Download Arch artifacts
         uses: actions/download-artifact@v4
         with: { name: arch-packages, path: ./repo-dir/arch/ }
-        
       - name: 3.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
         with: { name: manjaro-package, path: ./repo-dir/manjaro/ }
-
       - name: 3.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
         with: { name: alpine-package, path: ./repo-dir/alpine/ }
@@ -579,8 +566,7 @@ jobs:
 
       # 5. Processa Repo Arch
       - name: 5. Prune and Update Arch Repo
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
         run: |
           set -e
           cd ./repo-dir/arch
@@ -591,8 +577,7 @@ jobs:
 
       # 6. Processa Repo Manjaro
       - name: 6. Prune and Update Manjaro Repo
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        env: { GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }} }
         run: |
           set -e
           cd ./repo-dir/manjaro
@@ -605,26 +590,13 @@ jobs:
       - name: 7. Prune and Update RPM Repos
         run: |
           set -e
-          cd ./repo-dir/rpm/fedora/42
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../../..
-          cd ./repo-dir/rpm/opensuse/leap
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../../..
-          cd ./repo-dir/rpm/el9
-          ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm
-          rm -rf repodata
-          createrepo_c .
-          cd ../../..
+          cd ./repo-dir/rpm/fedora/42; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../../..
+          cd ./repo-dir/rpm/opensuse/leap; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../../..
+          cd ./repo-dir/rpm/el9; ls -1 *.rpm 2>/dev/null | sort -V | head -n -10 | xargs -r rm; rm -rf repodata; createrepo_c .; cd ../../..
 
       # 8. Processa Repo Alpine
       - name: 8. Prune and Update Alpine Repo
-        env:
-          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+        env: { ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }} }
         run: |
           set -e
           cd ./repo-dir/alpine
@@ -635,45 +607,26 @@ jobs:
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd ../..
 
-      # ==================================================
-      # BLOCCO DI TEST - QUI CI SONO LE MODIFICHE
-      # ==================================================
-
-      # 9. TEST DI CONNESSIONE SSH MANUALE (con fix per Host Key)
-      - name: 9. Manual SSH Connection Test
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SSH_HOST: ${{ secrets.SERVER_HOST }}
-          SSH_USER: ${{ secrets.SERVER_USER }}
+      # 9. Aggiunge la chiave host del server a known_hosts
+      # Questo risolve "Host key verification failed" per l'azione scp
+      - name: 9. Add Server Host Key to known_hosts
         run: |
-          echo "--- 1. Setting up SSH client ---"
-          which ssh || pacman -Syu --noconfirm openssh
-          
-          echo "--- 2. Installing private key ---"
-          # HOME in actions è /github/home, quindi ~ è /github/home
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
-          chmod 600 ~/.ssh/id_key
-          
-          echo "--- 3. Attempting connection (NO Host Key Check) ---"
-          # Aggiungiamo le opzioni per saltare il controllo della chiave host
-          ssh -v \
-            -i ~/.ssh/id_key \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            "$SSH_USER@$SSH_HOST" "ls -l /var/www/html/repos"
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 10. PUBBLICAZIONE FINALE (Temporaneamente disabilitata)
+      # 10. PUBBLICAZIONE FINALE (Ri-abilitata e definitiva)
       - name: 10. Deploy to penguins-eggs.net via SCP
-        if: false # Manteniamo disabilitato per ora
         uses: appleboy/scp-action@v0.1.7
         with:
-          debug: true
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
+          # Corretto il nome del secret
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
+
           source: "./repo-dir/*" 
           target: "/var/www/html/repos" 
-          clean: false 
+          
+          # Ri-abilitiamo il clean per rimuovere i vecchi pacchetti
+          clean: true 
           timeout: 120s
