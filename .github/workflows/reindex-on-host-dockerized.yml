@@ -1,0 +1,139 @@
+# NOME: 3. Re-index On Host (Full Docker)
+#
+# Esegue la re-indicizzazione di TUTTI i repository
+# utilizzando container Docker dedicati per ogni tipo di repo.
+#
+# L'host deve avere 'docker.io' installato e le immagini:
+# - deb-rpm-indexer
+# - arch-indexer
+# - alpine-indexer
+#
+name: 3. Re-index On Host (Full Docker)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  reindex-on-host:
+    runs-on: ubuntu-latest
+    
+steps:
+      - name: 1. Execute Remote Re-index (via Docker)
+        uses: appleboy/ssh-action@v1.0.3
+        
+        # CORREZIONE: 'env:' è FUORI da 'with:',
+        # allo stesso livello di 'uses:'
+        env: 
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          
+          script: |
+            set -e
+            echo "--- Esecuzione re-indicizzazione (Full Docker) su host: $HOSTNAME ---"
+
+            # --- 0. Imposta GPG per questa sessione SSH (sull'HOST) ---
+            # Questo è necessario per passare la chiave GPG ai container che firmano
+            echo "Importing GPG key..."
+            echo "$GPG_SIGNING_KEY" | gpg --import --batch
+            mkdir -p ~/.gnupg
+            echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+            echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+            gpg-connect-agent reloadagent /bye
+            echo "Priming GPG key..."
+            echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+
+            # --- 1. Definisci percorso base ---
+            REPO_PATH="/var/www/html/repos"
+            echo "Percorso repository: $REPO_PATH"
+            # Definiamo il percorso GPG sull'host
+            HOST_GPG_PATH="$HOME/.gnupg"
+
+            # --- 2. Re-index Debian & RPM (Container 'deb-rpm-indexer') ---
+            echo "--- DEBIAN/RPM: Re-indexing (Container) ---"
+            # Montiamo l'intero repo, la cartella GPG dell'host
+            # e passiamo le variabili d'ambiente.
+            docker run --rm \
+              -v "$REPO_PATH:/repo" \
+              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
+              -e "GPG_KEY_ID=$GPG_KEY_ID" \
+              -e "GPG_PASSPHRASE=$GPG_PASSPHRASE" \
+              deb-rpm-indexer \
+              bash -c "
+                set -e
+                
+                echo '--- DEBIAN: Indexing ---'
+                cd /repo/deb
+                dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
+                gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+                dpkg-scanpackages -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
+                gzip -9c dists/stable/main/binary-arm64/Packages > dists/stable/main/binary-arm64/Packages.gz
+                dpkg-scanpackages -a i386 pool/main > dists/stable/main/binary-i386/Packages
+                gzip -9c dists/stable/main/binary-i386/Packages > dists/stable/main/binary-i386/Packages.gz
+                
+                apt-ftparchive \
+                  -o APT::FTPArchive::Release::Origin=\"Penguins-Eggs\" \
+                  -o APT::FTPArchive::Release::Label=\"Penguins-Eggs\" \
+                  -o APT::FTPArchive::Release::Suite=\"stable\" \
+                  -o APT::FTPArchive::Release::Codename=\"stable\" \
+                  -o APT::FTPArchive::Release::Architectures=\"amd64 arm64 i386\" \
+                  -o APT::FTPArchive::Release::Components=\"main\" \
+                  release dists/stable > dists/stable/Release
+                
+                gpg --default-key \"$GPG_KEY_ID\" \
+                    --clearsign \
+                    -o dists/stable/InRelease \
+                    --batch --yes --passphrase \"$GPG_PASSPHRASE\" \
+                    dists/stable/Release
+                
+                echo '--- RPM: Indexing ---'
+                cd /repo/rpm/fedora/42; rm -rf repodata; createrepo_c .;
+                cd /repo/rpm/opensuse/leap; rm -rf repodata; createrepo_c .;
+                cd /repo/rpm/el9; rm -rf repodata; createrepo_c .;
+              "
+            
+            # --- 3. Re-index Arch (Container 'arch-indexer') ---
+            echo "--- ARCH: Re-indexing (Container) ---"
+            docker run --rm \
+              -v "$REPO_PATH/arch:/repo" \
+              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
+              -e "GPG_KEY_ID=$GPG_KEY_ID" \
+              arch-indexer \
+              bash -c "
+                rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
+                repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
+              "
+
+            # --- 4. Re-index Manjaro (Container 'arch-indexer') ---
+            echo "--- MANJARO: Re-indexing (Container) ---"
+            docker run --rm \
+              -v "$REPO_PATH/manjaro:/repo" \
+              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
+              -e "GPG_KEY_ID=$GPG_KEY_ID" \
+              arch-indexer \
+              bash -c "
+                rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
+                repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
+              "
+            
+            # --- 5. Re-index Alpine (Container 'alpine-indexer') ---
+            echo "--- ALPINE: Re-indexing (Container) ---"
+            docker run --rm \
+              -v "$REPO_PATH/alpine:/repo" \
+              alpine-indexer \
+              bash -c "
+                rm -f APKINDEX.tar.gz && \
+                apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+              "
+            
+            # Scriviamo comunque la chiave .pub fuori dal container
+            cd $REPO_PATH/alpine
+            echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
+
+            echo "--- ✅ Re-index (Full Docker) completato ---"
