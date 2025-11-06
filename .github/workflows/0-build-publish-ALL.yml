@@ -291,11 +291,25 @@ jobs:
       - name: 4. Upload Arch Package Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: arch-packages # Nome generico
+          name: arch-packages
           path: ./packaging/arch/*.pkg.tar.zst
-  
-  # ... (QUI AVRAI ALTRI JOB: build-debian, build-fedora, ecc.) ...
-  # Ognuno carica il suo artifact (es. 'debian-packages', 'fedora-packages')
+
+      - name: 5. Update and Sign Arch Linux Repository
+        run: |
+          set -e
+          echo "$GPG_SIGNING_KEY" | gpg --import --batch
+          mkdir -p ~/.gnupg
+          echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+          NEW_PKG_FILE=$(ls -vr penguins-eggs-*.pkg.tar.zst | head -n 1)
+          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz "$NEW_PKG_FILE"
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        working-directory: ./repo-dir/arch
 
   # ========================================================
   # 1.6 JOB DI BUILD Manjaro
@@ -551,7 +565,7 @@ jobs:
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
-          
+
 # 6. Processa Repo Arch (Pruning e Update)
       - name: 6. Prune and Update Arch Repo
         env:
