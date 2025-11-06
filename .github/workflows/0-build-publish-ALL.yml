@@ -521,7 +521,7 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
-          # 'openssh' per ssh-keyscan
+          # 'openssh' ci fornisce il client 'sftp'
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
       # 2. Prepara le cartelle di pubblicazione (VUOTE)
@@ -624,24 +624,30 @@ jobs:
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd ../..
 
-      # 9. Aggiunge la chiave host del server a known_hosts
-      - name: 9. Add Server Host Key to known_hosts
+      # 9. PUBBLICAZIONE FINALE (Manuale con SFTP)
+      - name: 9. Deploy to penguins-eggs.net via Manual SFTP
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
         run: |
+          echo "--- 1. Installing private key ---"
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-
-      # 10. PUBBLICAZIONE FINALE (con SFTP puro e chiave SSH)
-      - name: 10. Deploy to penguins-eggs.net via SFTP
-        uses: lary_v/sftp-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          port: 22
-          username: ${{ secrets.SERVER_USER }}
-          # Il nome del parametro corretto per la chiave
-          privateKey: ${{ secrets.SERVER_SSH_KEY }}
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
           
-          # Cartella locale da cui copiare (lo / finale è importante)
-          localPath: ./repo-dir/
+          echo "--- 2. Creating SFTP batch file ---"
+          # 'lcd' cambia la cartella locale del client sftp
+          # 'put -r .' carica ricorsivamente tutto (compresi i file .dot)
+          # dalla cartella locale (./repo-dir) alla cartella remota
+          echo "lcd ./repo-dir" > sftp-batch.txt
+          echo "put -r . /var/www/html/repos" >> sftp-batch.txt
+          echo "quit" >> sftp-batch.txt
           
-          # Cartella remota su cui caricare (lo / finale è importante)
-          remotePath: /var/www/html/repos/
+          echo "--- 3. Running SFTP upload ---"
+          # Usiamo il client sftp standard in modalità batch (-b)
+          sftp -v -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -b sftp-batch.txt \
+            "$SSH_USER@$SSH_HOST"
