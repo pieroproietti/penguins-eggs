@@ -1,6 +1,6 @@
 # NOME: 0-build-publish-ALL
 
-name: 0. Build and Publish ALL
+name: 1. Build publish ALL - no prune
 
 env:
   BOOTLOADERS_VERSION: v25.9.8
