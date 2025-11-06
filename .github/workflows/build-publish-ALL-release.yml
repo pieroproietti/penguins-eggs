@@ -1,6 +1,6 @@
 # NOME: 2-build-publish-ALL-release
 
-name: 2-build-publish-ALL-release
+name: Build/publish ALL with release
 
 env:
   BOOTLOADERS_VERSION: v25.9.8

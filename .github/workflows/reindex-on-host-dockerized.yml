@@ -8,7 +8,7 @@
 # - arch-indexer
 # - alpine-indexer
 #
-name: 3. Re-index On Host (Full Docker)
+name: Re-index On Host (Full Docker)
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
   reindex-on-host:
     runs-on: ubuntu-latest
     
-steps:
+    steps:
       - name: 1. Execute Remote Re-index (via Docker)
         uses: appleboy/ssh-action@v1.0.3
         
