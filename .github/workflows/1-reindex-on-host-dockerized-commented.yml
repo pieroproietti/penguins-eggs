@@ -1,16 +1,12 @@
-name: 1-reindex-on-host-dockerized-commented
+name: 1-reindex-on-host-dockerized
 
 on:
-  # Permette l'avvio manuale dalla tab "Actions" di GitHub
   workflow_dispatch:
-  # Avvia lo script ogni giorno a mezzanotte UTC
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *' # Every day at midnight UTC
 
 jobs:
   reindex-repositories:
-    # Usiamo un runner di GitHub (ubuntu-latest) per avviare lo script.
-    # Questo runner si connetterà poi al nostro server via SSH.
     runs-on: ubuntu-latest
     name: Re-index repositories on host
     
@@ -18,7 +14,6 @@ jobs:
       - name: Re-index repositories
         uses: appleboy/ssh-action@v1.0.3
         with:
-          # Credenziali per il server VPS (prese dai Secret del repository)
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -28,18 +23,9 @@ jobs:
             echo "--- Esecuzione re-indicizzazione (Full Docker) su host: $HOSTNAME ---"
 
             # --- 0. Prepara i secret come file temporanei ---
-            #
-            # MOTIVAZIONE: I secret multi-linea (come le chiavi GPG) non possono
-            # essere passati in modo affidabile come variabili d'ambiente
-            # (né via SSH, né via 'docker run -e').
-            # La soluzione più robusta è salvarli in file temporanei sull'host
-            # e poi montarli nei container tramite '-v'.
-            #
             echo "Creazione file secret temporanei..."
             echo "${{ secrets.GPG_SIGNING_KEY }}" > /tmp/penguins-gpg.key
             echo "${{ secrets.ALPINE_PUBLIC_KEY }}" > /tmp/penguins-alpine.pub
-            
-            # Imposta permessi sicuri per la chiave privata
             chmod 600 /tmp/penguins-gpg.key
             chmod 644 /tmp/penguins-alpine.pub
 
@@ -59,10 +45,8 @@ jobs:
                 set -e
                 
                 echo '--- Container: Importing GPG key from file ---'
-                # Importa la chiave GPG (montata da /tmp/gpg.key) in modalità non interattiva
                 gpg --import --batch /tmp/gpg.key
                 
-                # Configura GPG per l'uso non interattivo
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
@@ -70,7 +54,6 @@ jobs:
                 
                 echo '--- DEBIAN: Indexing ---'
                 cd /repo/deb
-                # --multiversion silenzia i warning se ci sono più versioni dello stesso pacchetto
                 dpkg-scanpackages --multiversion -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
                 gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
                 dpkg-scanpackages --multiversion -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
@@ -87,12 +70,6 @@ jobs:
                   -o APT::FTPArchive::Release::Components=\"main\" \
                   release dists/stable > dists/stable/Release
                 
-                #
-                # MOTIVAZIONE PER \$: Dobbiamo usare \$GPG_KEY_ID e \$GPG_PASSPHRASE
-                # per impedire alla shell SSH (la prima shell) di "mangiare"
-                # la variabile. Vogliamo che sia la 'bash -c' (la seconda shell)
-                # a interpretare le variabili passate con '-e'.
-                #
                 gpg --default-key \"\$GPG_KEY_ID\" \
                     --clearsign \
                     -o dists/stable/InRelease \
@@ -123,7 +100,6 @@ jobs:
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                 gpg-connect-agent reloadagent /bye
                 
-                # Attiva la chiave GPG per repo-add
                 echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
@@ -159,15 +135,12 @@ jobs:
             docker run --rm \
               -v "$REPO_PATH/alpine:/repo" \
               alpine-indexer \
-              # MOTIVAZIONE 'sh -c': L'immagine Alpine non ha 'bash', usa 'sh'
-              sh -c "
-                rm -f APKINDEX.tar.gz && \
-                # MOTIVAZIONE '/sbin/apk': Il comando 'apk' non è nel $PATH
-                # predefinito della shell 'sh' non interattiva.
-                /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
-              "
+              # ================================================
+              # CORREZIONE: Comando su riga singola e senza commenti
+              # per evitare errori di parsing della shell 'sh'
+              # ================================================
+              sh -c "rm -f APKINDEX.tar.gz && /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted"
             
-            # Copia la chiave pubblica Alpine (creata al Passo 0) nella repo
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
             
             # --- 6. Pulizia file temporanei ---
