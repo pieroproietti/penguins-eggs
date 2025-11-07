@@ -8,7 +8,7 @@ common:
   - cryptsetup-bin
   - cryptsetup-initramfs
   - curl # wardrobe
-  - dbus-bin | uuidgen-runtime # uuid-runtime per devuan
+  - dbus-bin | uuid-runtime 
   - dosfstools # eggs
   - dpkg-dev  # yolk
   - git # wardrobe

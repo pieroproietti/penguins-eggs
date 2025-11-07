@@ -2,6 +2,8 @@ name: 1-reindex-on-host-dockerized
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight UTC
 
 jobs:
   reindex-repositories:
@@ -12,15 +14,13 @@ jobs:
       - name: Re-index repositories
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # ====================================================================
+          # MODIFICA: Corretti i nomi dei secret per combaciare con la tua lista
+          # ====================================================================
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           
-          # ====================================================================
-          # MODIFICA PRINCIPALE:
-          # I secret multi-linea (come le chiavi GPG) vengono inseriti
-          # direttamente qui, non nel blocco 'env'.
-          # ====================================================================
           script: |
             set -e
             echo "--- Esecuzione re-indicizzazione (Full Docker) su host: $HOSTNAME ---"
@@ -28,7 +28,7 @@ jobs:
             # --- 0. Imposta GPG per questa sessione SSH (sull'HOST) ---
             echo "Importing GPG key..."
             
-            # Qui usiamo la sintassi ${{ secrets.NOME }} per "stamparla" nello script
+            # Iniezione diretta del secret GPG
             echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch            
 
             mkdir -p ~/.gnupg
@@ -36,7 +36,6 @@ jobs:
             echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
             gpg-connect-agent reloadagent /bye
             echo "Priming GPG key..."
-            # La passphrase (single-line) può usare la variabile $GPG_PASSPHRASE
             echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
             # --- 1. Definisci percorso base ---
@@ -120,15 +119,13 @@ jobs:
               "
             
             cd $REPO_PATH/alpine
-            # Anche qui, iniezione diretta del secret
+            # Iniezione diretta del secret Alpine
             echo "${{ secrets.ALPINE_PUBLIC_KEY }}" > penguins-eggs.rsa.pub
             
             echo "--- ✅ Re-index (Full Docker) completato ---"
         
-        # ====================================================================
-        # Qui lasciamo solo i secret "semplici" (single-line)
-        # GPG_SIGNING_KEY e ALPINE_PUBLIC_KEY sono stati RIMOSSI
-        # ====================================================================
+        # Qui lasciamo solo i secret "semplici"
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          
