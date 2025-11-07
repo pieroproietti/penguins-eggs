@@ -1,4 +1,4 @@
-# NOME: 3. Re-index On Host (Full Docker)
+# NOME: 1. Re-index On Host (Full Docker)
 #
 # Esegue la re-indicizzazione di TUTTI i repository
 # utilizzando container Docker dedicati per ogni tipo di repo.
@@ -36,13 +36,10 @@ jobs:
             echo "Importing GPG key..."
             
             # =======================================================
-            # MODIFICA: Utilizzo di 'heredoc' per un import GPG robusto
-            # (risolve l'errore 'no valid OpenPGP data found')
+            # MODIFICA: Utilizzo di 'echo | pipe' per un import GPG robusto
             # =======================================================
-            gpg --import --batch << EOF
-            $GPG_SIGNING_KEY
-            EOF
-            
+            echo "$GPG_SIGNING_KEY" | gpg --import --batch            
+
             mkdir -p ~/.gnupg
             echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
             echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
