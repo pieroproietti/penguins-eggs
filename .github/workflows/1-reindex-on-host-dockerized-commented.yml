@@ -1,9 +1,7 @@
-name: 1-reindex-on-host-dockerized
+name: 1-reindex-on-host-dockerized-commented
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *' # Every day at midnight UTC
 
 jobs:
   reindex-repositories:
@@ -135,11 +133,13 @@ jobs:
             docker run --rm \
               -v "$REPO_PATH/alpine:/repo" \
               alpine-indexer \
-              # ================================================
-              # CORREZIONE: Comando su riga singola e senza commenti
-              # per evitare errori di parsing della shell 'sh'
-              # ================================================
-              sh -c "rm -f APKINDEX.tar.gz && /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted"
+              sh -c "
+                rm -f APKINDEX.tar.gz && \
+                # ================================================
+                # CORREZIONE: Usiamo il percorso assoluto /sbin/apk
+                # ================================================
+                /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+              "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
             
