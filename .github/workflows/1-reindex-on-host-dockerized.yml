@@ -70,9 +70,6 @@ jobs:
                   -o APT::FTPArchive::Release::Components=\"main\" \
                   release dists/stable > dists/stable/Release
                 
-                # ================================================
-                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID e $GPG_PASSPHRASE
-                # ================================================
                 gpg --default-key \"\$GPG_KEY_ID\" \
                     --clearsign \
                     -o dists/stable/InRelease \
@@ -103,11 +100,9 @@ jobs:
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                 gpg-connect-agent reloadagent /bye
                 
-                # CORREZIONE: Aggiunto \ per "escapare" $GPG_PASSPHRASE
                 echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
-                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID
                 repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
@@ -129,11 +124,9 @@ jobs:
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                 gpg-connect-agent reloadagent /bye
                 
-                # CORREZIONE: Aggiunto \ per "escapare" $GPG_PASSPHRASE
                 echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
-                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID
                 repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
@@ -142,7 +135,10 @@ jobs:
             docker run --rm \
               -v "$REPO_PATH/alpine:/repo" \
               alpine-indexer \
-              bash -c "
+              # ================================================
+              # CORREZIONE: 'bash' non esiste in Alpine, usiamo 'sh'
+              # ================================================
+              sh -c "
                 rm -f APKINDEX.tar.gz && \
                 apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
