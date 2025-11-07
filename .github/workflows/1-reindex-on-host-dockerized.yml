@@ -22,41 +22,38 @@ jobs:
             set -e
             echo "--- Esecuzione re-indicizzazione (Full Docker) su host: $HOSTNAME ---"
 
-            # --- 0. Imposta GPG per questa sessione SSH (sull'HOST) ---
-            echo "Importing GPG key..."
-            echo "${{ secrets.GPG_SIGNING_KEY }}" | gpg --import --batch            
-
-            mkdir -p ~/.gnupg
-            echo "pinentry-mode loopback" > ~/.gnupg/gpg.conf
-            echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
-            gpg-connect-agent reloadagent /bye
-            
-            echo "Priming GPG key..."
-            echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
-
             # --- 1. Definisci percorso base ---
+            # (Il vecchio Passo 0 è stato rimosso perché inutile)
             REPO_PATH="/var/www/html/repos"
             echo "Percorso repository: $REPO_PATH"
-            HOST_GPG_PATH="$HOME/.gnupg"
 
             # --- 2. Re-index Debian & RPM (Container 'deb-rpm-indexer') ---
             echo "--- DEBIAN/RPM: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH:/repo" \
-              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
               -e "GPG_KEY_ID=${{ secrets.GPG_KEY_ID }}" \
               -e "GPG_PASSPHRASE=${{ secrets.GPG_PASSPHRASE }}" \
+              -e "GPG_SIGNING_KEY=${{ secrets.GPG_SIGNING_KEY }}" \
               deb-rpm-indexer \
               bash -c "
                 set -e
                 
+                # Importa GPG *dentro* il container
+                echo '--- Container: Importing GPG key ---'
+                echo \"$GPG_SIGNING_KEY\" | gpg --import --batch
+                mkdir -p ~/.gnupg
+                echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
+                echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
+                gpg-connect-agent reloadagent /bye
+                
                 echo '--- DEBIAN: Indexing ---'
                 cd /repo/deb
-                dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
+                # Aggiunto --multiversion per silenziare i warning
+                dpkg-scanpackages --multiversion -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
                 gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
-                dpkg-scanpackages -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
+                dpkg-scanpackages --multiversion -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
                 gzip -9c dists/stable/main/binary-arm64/Packages > dists/stable/main/binary-arm64/Packages.gz
-                dpkg-scanpackages -a i386 pool/main > dists/stable/main/binary-i386/Packages
+                dpkg-scanpackages --multiversion -a i386 pool/main > dists/stable/main/binary-i386/Packages
                 gzip -9c dists/stable/main/binary-i386/Packages > dists/stable/main/binary-i386/Packages.gz
                 
                 apt-ftparchive \
@@ -68,6 +65,7 @@ jobs:
                   -o APT::FTPArchive::Release::Components=\"main\" \
                   release dists/stable > dists/stable/Release
                 
+                # Ora GPG ha i permessi per scrivere
                 gpg --default-key \"$GPG_KEY_ID\" \
                     --clearsign \
                     -o dists/stable/InRelease \
@@ -84,10 +82,22 @@ jobs:
             echo "--- ARCH: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH/arch:/repo" \
-              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
               -e "GPG_KEY_ID=${{ secrets.GPG_KEY_ID }}" \
+              -e "GPG_PASSPHRASE=${{ secrets.GPG_PASSPHRASE }}" \
+              -e "GPG_SIGNING_KEY=${{ secrets.GPG_SIGNING_KEY }}" \
               arch-indexer \
               bash -c "
+                set -e
+                # Importa GPG *dentro* il container
+                echo '--- Container: Importing GPG key ---'
+                echo \"$GPG_SIGNING_KEY\" | gpg --import --batch
+                mkdir -p ~/.gnupg
+                echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
+                echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
+                gpg-connect-agent reloadagent /bye
+                # Attiva la chiave per repo-add
+                echo \"$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+                
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
                 repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
@@ -96,10 +106,22 @@ jobs:
             echo "--- MANJARO: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH/manjaro:/repo" \
-              -v "$HOST_GPG_PATH:/root/.gnupg:ro" \
               -e "GPG_KEY_ID=${{ secrets.GPG_KEY_ID }}" \
+              -e "GPG_PASSPHRASE=${{ secrets.GPG_PASSPHRASE }}" \
+              -e "GPG_SIGNING_KEY=${{ secrets.GPG_SIGNING_KEY }}" \
               arch-indexer \
               bash -c "
+                set -e
+                # Importa GPG *dentro* il container
+                echo '--- Container: Importing GPG key ---'
+                echo \"$GPG_SIGNING_KEY\" | gpg --import --batch
+                mkdir -p ~/.gnupg
+                echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
+                echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
+                gpg-connect-agent reloadagent /bye
+                # Attiva la chiave per repo-add
+                echo \"$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+                
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
                 repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
