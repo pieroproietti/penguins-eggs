@@ -122,30 +122,30 @@ class Distro implements IDistro {
    * This avoids long if/else chains and allows easier future updates.
    */
   private configureDebianUbuntuDevuan() {
-    const mapping: Record<string, { familyId: string; distroLike: string; uniqueId: string; livePath?: string; calamares?: boolean }> = {
-      jessie: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'jessie', livePath: '/lib/live/mount/medium/', calamares: false },
-      stretch: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'stretch', livePath: '/lib/live/mount/medium/', calamares: false },
-      buster: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'buster' },
-      bullseye: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'bullseye' },
-      bookworm: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'bookworm' },
-      trixie: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'trixie' },
-      forky: { familyId: 'debian', distroLike: 'Debian', uniqueId: 'forky' },
-      beowulf: { familyId: 'devuan', distroLike: 'Devuan', uniqueId: 'beowulf' },
-      chimaera: { familyId: 'devuan', distroLike: 'Devuan', uniqueId: 'chimaera' },
-      daedalus: { familyId: 'devuan', distroLike: 'Devuan', uniqueId: 'daedalus' },
-      excalibur: { familyId: 'devuan', distroLike: 'Devuan', uniqueId: 'excalibur' },
-      bionic: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'bionic', livePath: '/lib/live/mount/medium/' },
-      focal: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'focal', livePath: '/lib/live/mount/medium/' },
-      jammy: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'jammy', livePath: '/lib/live/mount/medium/' },
-      noble: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
-      questing: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
-      devel: { familyId: 'ubuntu', distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
+    const mapping: Record<string, { distroLike: string; uniqueId: string; livePath?: string; calamares?: boolean }> = {
+      jessie: {  distroLike: 'Debian', uniqueId: 'jessie', livePath: '/lib/live/mount/medium/', calamares: false },
+      stretch: { distroLike: 'Debian', uniqueId: 'stretch', livePath: '/lib/live/mount/medium/', calamares: false },
+      buster: {  distroLike: 'Debian', uniqueId: 'buster' },
+      bullseye: {  distroLike: 'Debian', uniqueId: 'bullseye' },
+      bookworm: {  distroLike: 'Debian', uniqueId: 'bookworm' },
+      trixie: {  distroLike: 'Debian', uniqueId: 'trixie' },
+      forky: {  distroLike: 'Debian', uniqueId: 'forky' },
+      beowulf: {  distroLike: 'Devuan', uniqueId: 'beowulf' },
+      chimaera: {  distroLike: 'Devuan', uniqueId: 'chimaera' },
+      daedalus: {  distroLike: 'Devuan', uniqueId: 'daedalus' },
+      excalibur: { distroLike: 'Devuan', uniqueId: 'excalibur' },
+      bionic: { distroLike: 'Ubuntu', uniqueId: 'bionic', livePath: '/lib/live/mount/medium/' },
+      focal: { distroLike: 'Ubuntu', uniqueId: 'focal', livePath: '/lib/live/mount/medium/' },
+      jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy', livePath: '/lib/live/mount/medium/' },
+      noble: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
+      questing: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
+      devel: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
     };
 
     // NEW CHANGE13: Apply mapping if codename exists
     const cfg = mapping[this.codenameId];
     if (cfg) {
-      this.familyId = cfg.familyId;
+      this.familyId = "debian"
       this.distroLike = cfg.distroLike;
       this.distroUniqueId = cfg.uniqueId;
       if (cfg.livePath) this.liveMediumPath = cfg.livePath;
