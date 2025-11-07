@@ -138,8 +138,8 @@ class Distro implements IDistro {
       focal: { distroLike: 'Ubuntu', uniqueId: 'focal', livePath: '/lib/live/mount/medium/' },
       jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy', livePath: '/lib/live/mount/medium/' },
       noble: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
-      questing: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
-      devel: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
+      questing: { distroLike: 'Ubuntu', uniqueId: 'questing', livePath: '/lib/live/mount/medium/' },
+      devel: { distroLike: 'Ubuntu', uniqueId: 'devel', livePath: '/lib/live/mount/medium/' },
     };
 
     // NEW CHANGE13: Apply mapping if codename exists
