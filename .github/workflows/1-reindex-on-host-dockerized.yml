@@ -23,11 +23,9 @@ jobs:
             echo "--- Esecuzione re-indicizzazione (Full Docker) su host: $HOSTNAME ---"
 
             # --- 0. Prepara i secret come file temporanei ---
-            # Questo è un modo molto più robusto di gestire secret multi-linea
             echo "Creazione file secret temporanei..."
             echo "${{ secrets.GPG_SIGNING_KEY }}" > /tmp/penguins-gpg.key
             echo "${{ secrets.ALPINE_PUBLIC_KEY }}" > /tmp/penguins-alpine.pub
-            # Imposta permessi restrittivi
             chmod 600 /tmp/penguins-gpg.key
             chmod 644 /tmp/penguins-alpine.pub
 
@@ -46,9 +44,11 @@ jobs:
               bash -c "
                 set -e
                 
-                # Importa GPG *dal file*
                 echo '--- Container: Importing GPG key from file ---'
-                gpg --import /tmp/gpg.key
+                # ==================
+                # CORREZIONE: Aggiunto --batch
+                # ==================
+                gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
@@ -95,9 +95,11 @@ jobs:
               arch-indexer \
               bash -c "
                 set -e
-                # Importa GPG *dal file*
                 echo '--- Container: Importing GPG key from file ---'
-                gpg --import /tmp/gpg.key
+                # ==================
+                # CORREZIONE: Aggiunto --batch
+                # ==================
+                gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
@@ -119,9 +121,11 @@ jobs:
               arch-indexer \
               bash -c "
                 set -e
-                # Importa GPG *dal file*
                 echo '--- Container: Importing GPG key from file ---'
-                gpg --import /tmp/gpg.key
+                # ==================
+                # CORREZIONE: Aggiunto --batch
+                # ==================
+                gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
@@ -143,7 +147,6 @@ jobs:
                 apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
             
-            # Copia la chiave pubblica dal file temporaneo
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
             
             # --- 6. Pulizia file temporanei ---
@@ -152,3 +155,4 @@ jobs:
             rm /tmp/penguins-alpine.pub
 
             echo "--- ✅ Re-index (Full Docker) completato ---"
+            
