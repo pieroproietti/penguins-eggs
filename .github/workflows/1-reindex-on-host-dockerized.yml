@@ -122,5 +122,5 @@ jobs:
             
             echo "--- ✅ Re-index (Full Docker) completato ---"
         
-        # Blocco 'env:' RIMOSSO COMPLETAMENTE
-  
+        # NESSUN BLOCCO 'env:' QUI
+        
