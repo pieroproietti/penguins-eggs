@@ -20,7 +20,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY }}
+          ALPINE_PUBLIC_KEY: ${{ secrets.ALPINE_PUBLIC_KEY }}
 
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -128,6 +128,6 @@ jobs:
               "
             
             cd $REPO_PATH/alpine
-            echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
+            echo "$ALPINE_PUBLIC_KEY" > penguins-eggs.rsa.pub
 
             echo "--- ✅ Re-index (Full Docker) completato ---"
