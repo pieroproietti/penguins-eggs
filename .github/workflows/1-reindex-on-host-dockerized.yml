@@ -5,7 +5,7 @@ on:
 
 jobs:
   reindex-repositories:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Re-index repositories on host
     
     steps:
