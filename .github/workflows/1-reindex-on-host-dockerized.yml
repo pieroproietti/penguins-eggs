@@ -52,8 +52,8 @@ jobs:
                 
                 echo '--- DEBIAN: Indexing ---'
                 cd /repo/deb
-                dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd66/Packages
-                gzip -9c dists/stable/main/binary-amd66/Packages > dists/stable/main/binary-amd66/Packages.gz
+                dpkg-scanpackages -a amd64 pool/main > dists/stable/main/binary-amd64/Packages
+                gzip -9c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
                 dpkg-scanpackages -a arm64 pool/main > dists/stable/main/binary-arm64/Packages
                 gzip -9c dists/stable/main/binary-arm64/Packages > dists/stable/main/binary-arm64/Packages.gz
                 dpkg-scanpackages -a i386 pool/main > dists/stable/main/binary-i386/Packages
@@ -101,7 +101,7 @@ jobs:
               arch-indexer \
               bash -c "
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
-                repo-add --sign --key \"$GG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
+                repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
             # --- 5. Re-index Alpine (Container 'alpine-indexer') ---
