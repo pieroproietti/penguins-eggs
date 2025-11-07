@@ -38,7 +38,7 @@ class Distro implements IDistro {
   familyId: string = 'debian';
   homeUrl: string = 'https://penguins-eggs.net';
   isCalamaresAvailable: boolean = true;
-  liveMediumPath: string = '/run/live/medium/';
+  liveMediumPath: string = '/run/lcd ive/medium/';
   releaseId: string = '';
   squashfs: string = 'live/filesystem.squashfs';
   supportUrl: string = 'https://penguins-eggs.net';
@@ -114,14 +114,14 @@ class Distro implements IDistro {
     }
 
     // NEW CHANGE11: Handle Debian/Ubuntu/Devuan and their derivatives
-    this.configureDebianUbuntuDevuan();
+    this.debianFamily();
   }
 
   /**
    * NEW CHANGE12: Map Debian, Ubuntu, Devuan codenames to proper IDs and paths
    * This avoids long if/else chains and allows easier future updates.
    */
-  private configureDebianUbuntuDevuan() {
+  private debianFamily() {
     const mapping: Record<string, { distroLike: string; uniqueId: string; livePath?: string; calamares?: boolean }> = {
       jessie: {  distroLike: 'Debian', uniqueId: 'jessie', livePath: '/lib/live/mount/medium/', calamares: false },
       stretch: { distroLike: 'Debian', uniqueId: 'stretch', livePath: '/lib/live/mount/medium/', calamares: false },
@@ -138,8 +138,8 @@ class Distro implements IDistro {
       focal: { distroLike: 'Ubuntu', uniqueId: 'focal', livePath: '/lib/live/mount/medium/' },
       jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy', livePath: '/lib/live/mount/medium/' },
       noble: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
-      questing: { distroLike: 'Ubuntu', uniqueId: 'questing', livePath: '/lib/live/mount/medium/' },
-      devel: { distroLike: 'Ubuntu', uniqueId: 'devel', livePath: '/lib/live/mount/medium/' },
+      questing: { distroLike: 'Ubuntu', uniqueId: 'questing'},
+      devel: { distroLike: 'Ubuntu', uniqueId: 'devel'},
     };
 
     // NEW CHANGE13: Apply mapping if codename exists
