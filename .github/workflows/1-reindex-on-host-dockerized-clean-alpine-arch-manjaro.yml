@@ -1,14 +1,12 @@
-name: 1-reindex-on-host-dockerized
+name: 1-reindex-on-host-dockerized-clean-alpine-arch-manjaro
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *' # Every day at midnight UTC
 
 jobs:
   reindex-repositories:
     runs-on: ubuntu-latest
-    name: Re-index repositories on host
+    name: 1-reindex-on-host-dockerized-clean-alpine-arch-manjaro
     
     steps:
       - name: Re-index repositories
@@ -33,7 +31,7 @@ jobs:
             REPO_PATH="/var/www/html/repos"
             echo "Percorso repository: $REPO_PATH"
 
-            # --- 2. Re-index Debian & RPM (Container 'deb-rpm-indexer') ---
+            # --- 2. Re-index Debian & RPM (INVARIATO) ---
             echo "--- DEBIAN/RPM: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH:/repo" \
@@ -82,7 +80,7 @@ jobs:
                 cd /repo/rpm/el9; rm -rf repodata; createrepo_c .;
               "
             
-            # --- 3. Re-index Arch (Container 'arch-indexer') ---
+            # --- 3. Re-index Arch (MODIFICATO CON PULIZIA) ---
             echo "--- ARCH: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH/arch:/repo" \
@@ -102,11 +100,26 @@ jobs:
                 
                 echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
+                # --- LOGICA DI PULIZIA ARCH ---
+                echo '--- ARCH: Cleaning old packages ---'
+                # Trova tutti i nomi base unici (es. 'penguins-eggs', 'calamares-eggs')
+                PKG_BASES=\$(find . -maxdepth 1 -name \"*.pkg.tar.zst\" -exec basename {} \\; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+                for base in \$PKG_BASES; do
+                  echo \"Processing: \$base\"
+                  # Per ogni nome base, elenca tutti i file, ordinali per versione (-V),
+                  # tieni tutti tranne l'ultimo (head -n -1) e cancellali
+                  ls \${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                  # Fai lo stesso per i file .sig
+                  ls \${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                done
+                # --- FINE LOGICA DI PULIZIA ---
+                
+                echo '--- ARCH: Indexing remaining packages ---'
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
                 repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
-            # --- 4. Re-index Manjaro (Container 'arch-indexer') ---
+            # --- 4. Re-index Manjaro (MODIFICATO CON PULIZIA) ---
             echo "--- MANJARO: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH/manjaro:/repo" \
@@ -126,20 +139,41 @@ jobs:
                 
                 echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
+                # --- LOGICA DI PULIZIA MANJARO ---
+                echo '--- MANJARO: Cleaning old packages ---'
+                PKG_BASES=\$(find . -maxdepth 1 -name \"*.pkg.tar.zst\" -exec basename {} \\; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+                for base in \$PKG_BASES; do
+                  echo \"Processing: \$base\"
+                  ls \${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                  ls \${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                done
+                # --- FINE LOGICA DI PULIZIA ---
+
+                echo '--- MANJARO: Indexing remaining packages ---'
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
                 repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
-            # --- 5. Re-index Alpine (Container 'alpine-indexer') ---
+            # --- 5. Re-index Alpine (MODIFICATO CON PULIZIA) ---
             echo "--- ALPINE: Re-indexing (Container) ---"
             docker run --rm \
               -v "$REPO_PATH/alpine:/repo" \
               alpine-indexer \
               sh -c "
+                set -e
+                
+                # --- LOGICA DI PULIZIA ALPINE ---
+                echo '--- ALPINE: Cleaning old packages ---'
+                # Assicurati che il container 'alpine-indexer' abbia 'coreutils' per 'sort -V'
+                PKG_BASES=\$(find . -maxdepth 1 -name \"*.apk\" -exec basename {} \\; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+                for base in \$PKG_BASES; do
+                  echo \"Processing: \$base\"
+                  ls \${base}-*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                done
+                # --- FINE LOGICA DI PULIZIA ---
+
+                echo '--- ALPINE: Indexing remaining packages ---'
                 rm -f APKINDEX.tar.gz && \
-                # ================================================
-                # CORREZIONE: Usiamo il percorso assoluto /sbin/apk
-                # ================================================
                 /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
             
