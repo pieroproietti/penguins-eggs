@@ -135,12 +135,12 @@ jobs:
             docker run --rm \
               -v "$REPO_PATH/alpine:/repo" \
               alpine-indexer \
-              # ================================================
-              # CORREZIONE: 'bash' non esiste in Alpine, usiamo 'sh'
-              # ================================================
               sh -c "
                 rm -f APKINDEX.tar.gz && \
-                apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+                # ================================================
+                # CORREZIONE: Usiamo il percorso assoluto /sbin/apk
+                # ================================================
+                /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
