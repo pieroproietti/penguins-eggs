@@ -45,9 +45,6 @@ jobs:
                 set -e
                 
                 echo '--- Container: Importing GPG key from file ---'
-                # ==================
-                # CORREZIONE: Aggiunto --batch
-                # ==================
                 gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
@@ -73,10 +70,13 @@ jobs:
                   -o APT::FTPArchive::Release::Components=\"main\" \
                   release dists/stable > dists/stable/Release
                 
-                gpg --default-key \"$GPG_KEY_ID\" \
+                # ================================================
+                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID e $GPG_PASSPHRASE
+                # ================================================
+                gpg --default-key \"\$GPG_KEY_ID\" \
                     --clearsign \
                     -o dists/stable/InRelease \
-                    --batch --yes --passphrase \"$GPG_PASSPHRASE\" \
+                    --batch --yes --passphrase \"\$GPG_PASSPHRASE\" \
                     dists/stable/Release
                 
                 echo '--- RPM: Indexing ---'
@@ -96,19 +96,19 @@ jobs:
               bash -c "
                 set -e
                 echo '--- Container: Importing GPG key from file ---'
-                # ==================
-                # CORREZIONE: Aggiunto --batch
-                # ==================
                 gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                 gpg-connect-agent reloadagent /bye
-                echo \"$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+                
+                # CORREZIONE: Aggiunto \ per "escapare" $GPG_PASSPHRASE
+                echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
-                repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
+                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID
+                repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
             # --- 4. Re-index Manjaro (Container 'arch-indexer') ---
@@ -122,19 +122,19 @@ jobs:
               bash -c "
                 set -e
                 echo '--- Container: Importing GPG key from file ---'
-                # ==================
-                # CORREZIONE: Aggiunto --batch
-                # ==================
                 gpg --import --batch /tmp/gpg.key
                 
                 mkdir -p ~/.gnupg
                 echo 'pinentry-mode loopback' > ~/.gnupg/gpg.conf
                 echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
                 gpg-connect-agent reloadagent /bye
-                echo \"$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
+                
+                # CORREZIONE: Aggiunto \ per "escapare" $GPG_PASSPHRASE
+                echo \"\$GPG_PASSPHRASE\" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
                 
                 rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz && \
-                repo-add --sign --key \"$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
+                # CORREZIONE: Aggiunto \ per "escapare" $GPG_KEY_ID
+                repo-add --sign --key \"\$GPG_KEY_ID\" penguins-eggs.db.tar.gz *.pkg.tar.zst
               "
             
             # --- 5. Re-index Alpine (Container 'alpine-indexer') ---
@@ -155,4 +155,3 @@ jobs:
             rm /tmp/penguins-alpine.pub
 
             echo "--- ✅ Re-index (Full Docker) completato ---"
-            
