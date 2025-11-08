@@ -575,7 +575,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
 
-      - name: 4a. Prime GPG Agent (Unlock Key)
+      - name: 4a. Immetti la passphase!!!
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
