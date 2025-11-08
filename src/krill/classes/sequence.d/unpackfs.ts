@@ -17,7 +17,7 @@ import path from 'path'
  */
 export default async function unpackfs(this: Sequence): Promise<void> {
   const squafsPath = path.join(this.distro.liveMediumPath, this.distro.squashfs)
-  const cmd = `unsquashfs -d ${this.installTarget} -f ${squafsPath}, ${this.toNull}`
+  const cmd = `unsquashfs -d ${this.installTarget} -f ${squafsPath} ${this.toNull}`
   const echoYes = Utils.setEcho(true)
   const echoNo = Utils.setEcho(false)
   await exec(cmd, echoNo)
