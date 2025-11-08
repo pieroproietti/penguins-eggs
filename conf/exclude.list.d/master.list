@@ -1,46 +1,39 @@
-# Based on: https://git.devuan.org/devuan/refractasnapshot-base/src/branch/master/snapshot_exclude.list
-#
-# Location: /etc/penguins-eggs/exclude.list.d/master.list
-#
-# This is a template, from the original exclude.list of refracta-snapshot
-#
-# Authors: fsmithred (original)
-#          Hosein Seilany
-#          Piero Proietti, 
-#          Tim Wallace, 
-#          wfrcrd@github.com
-#
-# NOTE: all is alfabetic sorted using code->command palette->sortes lines ascending
-######################################################################################################
-
-# SYSTEM:  Exclude some system files - These are required, and you probably shouldn't change them.
-#          They are temporary files only created on bootup - otherwise would waste space on a clone
+#################################################################################
+# SYSTEM: Essential system files and directories that should not be cloned.
+# These are typically runtime temporary files or virtual directories created during boot.
+# Copying them wastes space and can cause issues in the cloned system.
+#################################################################################
 cdrom/*
 dev/*
 media/*
 mnt/*
 proc/*
-swapfile
+run/*
 sys/*
 tmp/*
+var/tmp/*
+lost+found
+swapfile
+swap/*
 
-# fedora/el9/etc
+# Temporary configuration files generated during boot or by specific hardware
 boot/*rescue*
-
-
-*.cache # suggestion from blaxbox-ai
-
-######################################################################################################
-# LIVE STUFFS: files depending on live
 etc/udev/rules.d/70-persistent-cd.rules
 etc/udev/rules.d/70-persistent-net.rules
+
+#################################################################################
+# LIVE ENVIRONMENT: Files and settings specific to Live (USB/CD) environments.
+# These files are only valid when the system is running from a portable medium and are not needed in a permanent installation.
+#################################################################################
 lib/live/*
 live
 persistence.conf
 var/lib/live/config/*
 
-######################################################################################################
-# HARDWARE DEPENDAND FILES: created/updated during restoration of clone by calamares
+#################################################################################
+# HARDWARE & MOUNT SPECIFIC: Files that depend on the specific hardware and mount state of the system.
+# These files must be regenerated on the new system to be compatible with its hardware.
+#################################################################################
 boot/grub/device.map
 boot/grub/grub.cfg
 boot/grub/menu.lst
@@ -50,44 +43,278 @@ etc/fstab
 etc/fstab.d/*
 etc/mtab
 
-######################################################################################################
-# CACHES: that tend to be very large and unneeded - only for Arch and Debian based Linuxes
+#################################################################################
+# USER DATA & PRIVACY: Files related to user data and privacy.
+# Includes command history, browser cookies, cache files, authentication data, etc., which should not be copied into a generic system image.
+#################################################################################
 
-# Arch family
-home/*/.local/share/yay
-# NOT necessary: under var/cache/ we remove all
-#var/cache/pacman/pkg
-#var/cache/private/yay
+# --- Files for the root user ---
+root/.aptitude
+root/.bash_history
+root/.disk-manager.conf
+root/.fstab.log
+root/.ICEauthority
+root/.lesshst
+root/.local/share/*
+root/.nano_history
+root/.synaptic
+root/.VirtualBox
+root/.Xauthority
+root/*/.log
+root/.cache/*
+root/.temp/*
+root/env01/*
+root/.local/lib/python3.8/*
+root/.local/lib/python3.10
+root/.local/share/Google/*
+root/.bundle/cache/*
+root/.wallpapers/video/*
+root/.maltego/*
+root/.msf4/*
+root/.wine/*
+root/.BurpSuite/*
+root/.config/chromium
+root/.kayak
 
-# Debian family
-# NOT necessary: under var/cache/ we remove all
-#var/cache/apt/apt-file/*
-#var/cache/apt/archives/*.deb
-#var/cache/apt/pkgcache.bin
-#var/cache/apt/srcpkgcache.bin
-#var/cache/debconf/*~old
+# --- Files for user home directories ---
+# Generic and common files
+home/*/.adobe
+home/*/.aptitude
+home/*/.bash_history
+home/*/.cache
+home/*/.dbus
+home/*/.gksu*
+home/*/.gnupg
+home/*/.gvfs
+home/*/.ICEauthority
+home/*/.lesshst
+home/*/.log
+home/*/.macromedia
+home/*/.nano_history
+home/*/.pulse*
+home/*/.recently-used
+home/*/.recently-used.xbel
+home/*/.Trash*
+home/*/.vbox*
+home/*/.VirtualBox
+home/*/.wine
+home/*/.Xauthority
+home/*/.xchat2
+home/*/.xsession-errors*
+home/*/VirtualBox\ VMs
+home/*/.local/share/Trash/*
+home/*/.local/share/recently-used.xbel
+home/*/.thumbnails/fail/*
+home/*/.thumbnails/large/*
+home/*/.thumbnails/normal/*
+home/*/.var/app/org.filezillaproject.Filezilla/config/filezilla
+home/*/snap/firefox/common/.cache/mozilla
+home/*/.var/app/org.mozilla.Thunderbird/cache/thunderbird/
+home/*/.gnome2/gedit-metadata.xml
+home/*/.gimp-2.4
+home/*/.gimp-2.6
+home/*/.gimp-2.8
+home/*/.config/GIMP/
+home/*/.gconf/apps/gnome-settings/gnome-search-tool/%gconf.xml
+home/*/.xchat2/scrollback/
+home/*//.xchat2/logs/*log
+home/*//.xchat2/xchatlogs/*log
+home/*/.kde/cache*
+home/*/.kde/share/apps/RecentDocuments/*.desktop
+home/*/.kde4/share/apps/RecentDocuments/*.desktop
+home/*/.local/share/RecentDocuments/*.desktop
+home/*/.libreoffice/3-suse/user/registrymodifications.xcu
+home/*/.libreoffice/3/user/registrymodifications
+home/*/.nautilus/metafiles/*
+home/*/.viminfo
+home/*/.xsession-errors
+home/bk/*
+home/bk/
+home/*/env01/*
 
-######################################################################################################
-# MISC: miscellanea
-.snapshots/*
-etc/apt/*~
+# --- Data from specific browsers and applications ---
+# Mozilla Firefox
+home/*/.mozilla/*/Cache/*
+home/*/.mozilla/*/cookies.sqlite
+home/*/.mozilla/*/downloads.sqlite
+home/*/.mozilla/*/formhistory.sqlite
+home/*/.mozilla/*/places.sqlite
+home/*/.mozilla/*/signons.sqlite
+home/*/.mozilla/*/urlclassifier3.sqlite
+
+# Brave Browser
+home/*/.config/BraveSoftware/Brave-Browser/Default/GPUCache
+home/*/.config/BraveSoftware/Brave-Browser/Default/Cookies
+home/*/.config/BraveSoftware/Brave-Browser/Default/Cookies-journal
+home/*/.config/BraveSoftware/Brave-Browser/Default/IndexedDB
+home/*/.config/BraveSoftware/Brave-Browser/Default/databases/*
+home/*/.config/BraveSoftware/Brave-Browser/Default/Web Data
+home/*/.config/BraveSoftware/Brave-Browser/Default/History
+home/*/.config/BraveSoftware/Brave-Browser/Default/Login Data
+home/*/.config/BraveSoftware/Brave-Browser/Default/Login Data-journal
+
+# Chromium / VSCodium
+home/*/.config/chromium/*
+home/*/.config/VSCodium/*
+
+# Discord
+home/*/.config/discord
+home/*/.config/discord/Cache
+home/*/.config/discord/Code Cache
+home/*/.config/discord/GPUCache
+home/*/.config/discord/Network Persistent State
+home/*/.config/discord/Cookies
+home/*/.config/discord/Cookies-journal
+home/*/.config/discord/QuotaManager
+
+# Other software
+home/*/.evolution/cache/
+home/*/.config/filezilla
+home/*/.config/hexchat
+home/*/.local/share/jupyter/*
+home/*/.local/share/QtProject/*
+home/*/.local/share/DBeaverData/*
+home/*/.local/share/Google/*
+home/*/.maltego/v4.2.17/var/cache/*
+home/*/.ZAP/*
+home/*/.config/Code/*
+home/*/.local/lib/python3.9/site-packages/*
+
+#################################################################################
+# CACHES & TEMPORARY DATA: Large directories containing cache and temporary files.
+# These files occupy a lot of space and are easily regenerated. Removing them saves significant space.
+#################################################################################
+*.cache
+var/cache/apt-xapian-index/*
+var/lib/gems/*/cache/*
+var/backups/*
+var/mail/*
+var/spool/*
+var/spool/mail/*
+home/*/.cache
+root/.cache/*
+
+#################################################################################
+# APPLICATIONS & DEVELOPMENT: Files for specific applications, libraries, and development tools.
+# These files are usually for running specific programs that may not exist on all systems or are very large.
+#################################################################################
+# Security and analysis tools
+opt/BurpSuitePro/*
+opt/nessus/var/nessus/audits/audit_warehouse.audit
+usr/share/burpsuite/*
+usr/share/zaproxy/plugin/reports-release-0.16.0.zap
+var/lib/aide/*
+usr/share/metasploit-framework/vendor/bundle/ruby/*
+usr/share/arachni/vendor/bundle/ruby/*/cache/*
+
+# Development environments and compilers
+usr/bin/x86_64-w64-mingw32-cpp-win32
+usr/bin/x86_64-w64-mingw32-gcc-*-win32
+usr/bin/x86_64-w64-mingw32-gcc-ar-win32
+usr/bin/x86_64-w64-mingw32-gcc-nm-win32
+usr/bin/x86_64-w64-mingw32-gcc-ranlib-win32
+usr/bin/x86_64-w64-mingw32-gcc-*-win32
+usr/bin/x86_64-w64-mingw32-gcov-*-win32
+usr/bin/x86_64-w64-mingw32-lto-dump-win32
+usr/lib/gcc/x86_64-w64-mingw32/*
+usr/lib/gcc/i686-w64-mingw32/*
+usr/x86_64-w64-mingw32/*
+usr/i686-w64-mingw32/*
+usr/include/boost/
+
+# Large libraries and frameworks
+usr/lib/python3/dist-packages/sklearn/*
+usr/lib/python3/dist-packages/pandas/*
+usr/lib/python3/dist-packages/plotly/*
+usr/lib/python3/dist-packages/scipy/*
+usr/lib/python3/dist-packages/botocore/*
+usr/lib/python3/dist-packages/googleapiclient/*
+usr/lib/python3/dist-packages/wx/*
+usr/lib/python3/dist-packages/Cryptodome/*
+usr/lib/python3/dist-packages/matplotlib/*
+usr/lib/python3/dist-packages/sympy/*
+usr/lib/python3/dist-packages/oci/*
+usr/lib/python3/dist-packages/llvmlite/*
+usr/lib/python2.7/dist-packages/sklearn/*
+usr/lib/python2.7/dist-packages/pandas/
+usr/local/lib/python2.7/dist-packages/sklearn/*
+usr/lib/mono/*
+usr/lib/x86_64-linux-gnu/wine/*
+usr/lib/x86_64-linux-gnu/dri/*
+usr/lib/i386-linux-gnu/*
+usr/lib/snapd/*
+
+# Graphics and office software
+usr/share/gimp/2.0/help/en/images/*
+usr/share/krita/*
+usr/share/eclipse/*
+usr/share/xemacs21/*
+usr/share/texmf/*
+usr/share/kivy-examples/*
+usr/share/go-1.13/*
+usr/lib/codelite/*
+usr/lib/libreoffice/program/*
+usr/share/gtk-doc/html/*
+usr/share/doc/*
+usr/share/dict/*
+usr/share/man
+
+#################################################################################
+# LOGS & BACKUPS: System log files and backups, which contain temporary information and can be large.
+#################################################################################
+var/log/kern.log
+var/log/lastlog
+var/log/syslog
+var/log/lynis-report.dat
+var/log/dmesg/*
+var/log/vmware-*.log
+var/log/vmware-network*.log
+var/backups/*.bak
+var/backups/*.gz
+
+#################################################################################
+# CONFIGURATION & TEMPLATES: Specific configuration files or templates that should not be copied.
+#################################################################################
 etc/crypttab
 etc/initramfs-tools/conf.d/cryptroot
 etc/initramfs-tools/conf.d/resume
 etc/popularity-contest.conf
+etc/apt/*~
+etc/calamares/old/*
+etc/calamares/old2/*
+
+# Home directory templates (skel)
 etc/skel/.config/Code
+etc/skel/.cache/
+etc/skel/.local/lib/python3.8/*
+etc/skel/.local/lib/python3.9/*
 etc/skel/.local/share/baloo/*
 etc/skel/.ZAP/*
-lost+found
-swap/*
-swapfile
-timeshift 
+etc/skel/.config/chromium/*
+etc/skel/.config/VSCodium/*
+etc/skel/.BurpSuite/*
 
+#################################################################################
+# CUSTOM & EXTERNAL: Files and directories related to specific tools or operating systems.
+#################################################################################
+# Penguins Eggs (ISO creation tool)
+etc/penguins-eggs.d/*
+usr/lib/penguins-eggs/*
+usr/bin/eggs
+usr/lib/penguins-eggs-bk/*
+
+
+# BlissOS
+blissos/data.img
+
+# Snap Packages
+var/lib/snapd/*
+
+#################################################################################
+# PLACEHOLDERS: Variables to be replaced by scripts.
+# These are not files themselves but templates for dynamic lists.
+#################################################################################
 {{{usr_list}}}
-
 {{{var_list}}}
-
 {{{homes_list}}}
-
 {{{home_list}}}
-
