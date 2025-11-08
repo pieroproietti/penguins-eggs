@@ -18,8 +18,33 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
-## v25.11.5
-Starting with this version, we have changed the repository for the [penguins-eggs](https://github.com/pieroproietti/penguins-repos) packages.
+
+## v25.11.8
+### Repository Update and Instructions
+We have completed an important transition to improve the distribution and updating of penguins-eggs.
+
+### New Unified Repository
+All packages have been moved to our new centralized repository: https://penguins-eggs.net/repos/
+
+This change simplifies maintenance and ensures faster and more reliable access to new versions for all supported distributions.
+
+### Simplified Repository Add Command
+To facilitate the transition to the new repository (and for new installations), we have introduced a new command:
+```
+sudo eggs tools repo --add
+```
+This command automatically detects your distribution (Debian, Ubuntu, Arch, Manjaro, Fedora, etc.) and adds the correct repository to your package manager configuration (apt, pacman, dnf).
+
+### Updated Instructions
+As a result, the official installation and update instructions on our website and in the documentation have been updated to reflect this new method. 
+
+### What to do:
+
+**For new users**: Follow the updated instructions on the website, which now use the commands ```eggs tools repo --add``` and ```eggs tools repo --remove```.
+
+**For existing users**: We recommend running ```sudo eggs tools repo --add``` to ensure you are connected to the new repository and will receive future updates. You may need to manually remove old repository entries (e.g., the old PPA or GitHub entries).
+
+In addition to our official repository, penguins-eggs will continue to be available in [Chaotic-AUR](https://aur.chaotic.cx/) and [Manjaro](https://manjaro.org/).
 
 ## v25.11.4
 * penguins-eggs now depends on the polkit (pkexec|policykit-1 on Debian/Ubuntu) to allow GUI installation without using a password.
