@@ -82,6 +82,18 @@ class Distro implements IDistro {
       return;
     }
 
+    /**
+     * Arch 
+     */
+    if (this.codenameId === 'rolling' || this.codenameId === 'n/a') {
+      this.familyId = 'archlinux'
+      this.distroLike = 'Arch'
+      this.codenameId = 'rolling'
+      this.distroUniqueId = 'archlinux'
+      this.liveMediumPath = '/run/archiso/bootmnt/'
+      this.squashfs = `arch/x86_64/airootfs.sfs`
+    }
+
     // NEW CHANGE8: Consolidated Fedora-family detection for multiple derivatives
     const fedoraDistros = ['Almalinux', 'Fedora', 'Nobara', 'Rhel', 'Rocky'];
     if (fedoraDistros.includes(this.distroId)) {
@@ -123,23 +135,23 @@ class Distro implements IDistro {
    */
   private debianFamily() {
     const mapping: Record<string, { distroLike: string; uniqueId: string; livePath?: string; calamares?: boolean }> = {
-      jessie: {  distroLike: 'Debian', uniqueId: 'jessie', livePath: '/lib/live/mount/medium/', calamares: false },
+      jessie: { distroLike: 'Debian', uniqueId: 'jessie', livePath: '/lib/live/mount/medium/', calamares: false },
       stretch: { distroLike: 'Debian', uniqueId: 'stretch', livePath: '/lib/live/mount/medium/', calamares: false },
-      buster: {  distroLike: 'Debian', uniqueId: 'buster' },
-      bullseye: {  distroLike: 'Debian', uniqueId: 'bullseye' },
-      bookworm: {  distroLike: 'Debian', uniqueId: 'bookworm' },
-      trixie: {  distroLike: 'Debian', uniqueId: 'trixie' },
-      forky: {  distroLike: 'Debian', uniqueId: 'forky' },
-      beowulf: {  distroLike: 'Devuan', uniqueId: 'beowulf' },
-      chimaera: {  distroLike: 'Devuan', uniqueId: 'chimaera' },
-      daedalus: {  distroLike: 'Devuan', uniqueId: 'daedalus' },
+      buster: { distroLike: 'Debian', uniqueId: 'buster' },
+      bullseye: { distroLike: 'Debian', uniqueId: 'bullseye' },
+      bookworm: { distroLike: 'Debian', uniqueId: 'bookworm' },
+      trixie: { distroLike: 'Debian', uniqueId: 'trixie' },
+      forky: { distroLike: 'Debian', uniqueId: 'forky' },
+      beowulf: { distroLike: 'Devuan', uniqueId: 'beowulf' },
+      chimaera: { distroLike: 'Devuan', uniqueId: 'chimaera' },
+      daedalus: { distroLike: 'Devuan', uniqueId: 'daedalus' },
       excalibur: { distroLike: 'Devuan', uniqueId: 'excalibur' },
       bionic: { distroLike: 'Ubuntu', uniqueId: 'bionic', livePath: '/lib/live/mount/medium/' },
-      focal: { distroLike: 'Ubuntu', uniqueId: 'focal'}, 
-      jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy'},
-      noble: { distroLike: 'Ubuntu', uniqueId: 'noble'},
-      questing: { distroLike: 'Ubuntu', uniqueId: 'questing'},
-      devel: { distroLike: 'Ubuntu', uniqueId: 'devel'},
+      focal: { distroLike: 'Ubuntu', uniqueId: 'focal' },
+      jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy' },
+      noble: { distroLike: 'Ubuntu', uniqueId: 'noble' },
+      questing: { distroLike: 'Ubuntu', uniqueId: 'questing' },
+      devel: { distroLike: 'Ubuntu', uniqueId: 'devel' },
     };
 
     // NEW CHANGE13: Apply mapping if codename exists
