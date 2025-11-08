@@ -92,6 +92,7 @@ class Distro implements IDistro {
       this.distroUniqueId = 'archlinux'
       this.liveMediumPath = '/run/archiso/bootmnt/'
       this.squashfs = `arch/x86_64/airootfs.sfs`
+      return;
     }
 
     // NEW CHANGE8: Consolidated Fedora-family detection for multiple derivatives
