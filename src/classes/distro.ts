@@ -150,7 +150,7 @@ class Distro implements IDistro {
       focal: { distroLike: 'Ubuntu', uniqueId: 'focal' },
       jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy' },
       noble: { distroLike: 'Ubuntu', uniqueId: 'noble' },
-      questing: { distroLike: 'Ubuntu', uniqueId: 'questing' },
+      // questing: { distroLike: 'Ubuntu', uniqueId: 'questing' }, not LTS go on derivatives
       devel: { distroLike: 'Ubuntu', uniqueId: 'devel' },
     };
 
