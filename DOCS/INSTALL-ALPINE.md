@@ -8,7 +8,7 @@ Open your terminal and run the following commands:
 
 # Download the public key
 ```
-wget https://pieroproietti.github.io/penguins-eggs-repo/alpine/piero.proietti@gmail.com-68452915.rsa.pub
+wget https://penguins-eggs.net/repos/piero.proietti@gmail.com-68452915.rsa.pub
 ```
 # Move the key to the trusted keys directory
 ```
@@ -24,7 +24,7 @@ sudo nano /etc/apk/repositories
 
 Add the following line to the end of the file:
 ```
-https://pieroproietti.github.io/penguins-eggs-repo/alpine
+https://penguins-eggs.net/repos/alpine
 ```
 Save the file and exit the editor.
 

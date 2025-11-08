@@ -8,7 +8,7 @@ First, we need to import the GPG key that the packages are signed with. This ass
 
 Run this command to import the key:
 ```
-sudo rpm --import https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
+sudo rpm --import https://penguins-eggs.net/repos/KEY.asc
 ```
 ## Step 2: Add the penguins-eggs Repository
 Now, we need to tell dnf where to find our packages. We will create a new repository configuration file.
@@ -20,11 +20,11 @@ sudo nano /etc/yum.repos.d/penguins-eggs.repo
 Paste the following text inside the editor:
 ```
 [penguins-eggs]
-name=penguins-eggs-repo
-baseurl=https://pieroproietti.github.io/penguins-eggs-repo/rpm/fedora/42/
+name=penguins-eggs-repos
+baseurl=https://penguins-eggs.net/repos/rpm/fedora/42/
 enabled=1
 gpgcheck=1
-gpgkey=https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
+gpgkey=https://penguins-eggs.net/repos/KEY.asc
 ```
 
 Save the file and close the editor (in nano, press Ctrl+X, then Y and Enter).
