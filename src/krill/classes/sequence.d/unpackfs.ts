@@ -10,13 +10,13 @@
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
+import path from 'path'
 
 /**
  * unpackfs
  */
 export default async function unpackfs(this: Sequence): Promise<void> {
-  // const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.liveMediumPath}`
-  const cmd = `unsquashfs -d ${this.installTarget} -f ${this.distro.liveMediumPath}${this.distro.squashfs} ${this.toNull}`
+  const cmd = `unsquashfs -d ${this.installTarget} -f ${path.join(this.distro.liveMediumPath, this.distro.squashfs} ${this.toNull}`
   const echoYes = Utils.setEcho(true)
   const echoNo = Utils.setEcho(false)
   await exec(cmd, echoNo)
