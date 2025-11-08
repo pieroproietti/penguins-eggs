@@ -480,13 +480,8 @@ export default class Pacman {
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
 
-    } else if (this.distro().distroUniqueId === 'questing' ) {
-      const dest = '/etc/penguins-eggs.d/distros/questing'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-
       /**
-       * Ubuntu rhino: eredita da noble e buster
+       * Ubuntu rhino: devel
        *
        */
     } else if (distroUniqueId === 'devel') {
