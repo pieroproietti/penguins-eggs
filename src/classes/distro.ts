@@ -16,7 +16,6 @@ import shell from 'shelljs';
 import { IDistro } from '../interfaces/index.js';
 import Utils from './utils.js';
 import Diversions from './diversions.js';
-import Pacman from './pacman.js';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -234,17 +233,17 @@ class Distro implements IDistro {
    * Handles Debian, openSUSE, Manjaro and derivatives consistently.
    */
   private applyFamilySpecificPaths() {
-    if (this.familyId === 'debian') {
+    if (this.familyId === 'archlinux') {
+      if (Diversions.isManjaroBased(this.distroId)) {
+        this.liveMediumPath = '/run/miso/bootmnt/';
+        this.squashfs = 'manjaro/x86_64/livefs.sfs';
+        this.codenameId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim();
+        this.distroUniqueId = 'manjaro';
+      }
+    } else if (this.familyId === 'debian') {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath();
     } else if (this.familyId === 'opensuse') {
       this.usrLibPath = '/usr/lib64/';
-    }
-
-    if (Diversions.isManjaroBased(this.distroId)) {
-      this.liveMediumPath = '/run/miso/bootmnt/';
-      this.squashfs = 'manjaro/x86_64/livefs.sfs';
-      this.codenameId = shell.exec('lsb_release -cs', { silent: true }).stdout.toString().trim();
-      this.distroUniqueId = 'manjaro';
     }
   }
 
