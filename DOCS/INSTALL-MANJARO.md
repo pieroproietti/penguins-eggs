@@ -16,7 +16,7 @@ Scroll to the bottom of the file and add the following lines:
 ```
 [penguins-eggs]
 SigLevel = Optional TrustAll
-Server = https://pieroproietti.github.io/penguins-eggs-repo/manjaro
+Server = https://penguins-eggs.net/repos/manjaro
 ```
 
 ## Step 2: Import the GPG Key

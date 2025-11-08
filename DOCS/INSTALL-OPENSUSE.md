@@ -9,7 +9,7 @@ First, we need to import the GPG key that the packages are signed with. This ens
 Run this commands to add `penguins-egge-repo` and install `penguins-eggs`:
 
 ```
-sudo zypper addrepo --refresh 'https://pieroproietti.github.io/penguins-eggs-repo/rpm/opensuse/leap/' penguins-eggs-repo
+sudo zypper addrepo --refresh 'https://penguins-eggs.net/repos/rpm/opensuse/leap/' penguins-eggs-repo
 sudo zypper refresh
 sudo zypper install penguins-eggs
 ```

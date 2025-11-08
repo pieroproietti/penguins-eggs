@@ -10,7 +10,7 @@ Scroll to the bottom of the file and add the following lines:
 ```
 [penguins-eggs]
 SigLevel = Optional TrustAll
-Server = https://pieroproietti.github.io/penguins-eggs-repo/arch
+Server = https://penguins-eggs.net/repos/arch
 ```
 
 ## Step 2: Import the GPG Key

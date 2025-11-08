@@ -8,24 +8,24 @@ First, we need to import the GPG key that the packages are signed with. This ass
 
 Run this command to import the key:
 ```
-sudo rpm --import https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
+sudo rpm --import https://https://penguins-eggs.net/repos/KEY.asc
 ```
 ## Step 2: Add the penguins-eggs Repository
 Now, we need to tell dnf where to find our packages. We will create a new repository configuration file.
 
 Run this command to create and open the file with the nano editor:
 ```
-sudo nano /etc/yum.repos.d/penguins-eggs.repo
+sudo nano /etc/yum.repos.d/penguins-eggs-repos.repo
 ```
 
 Paste the following text inside the editor:
 ```
 [penguins-eggs]
 name=penguins-eggs-repo
-baseurl=https://pieroproietti.github.io/penguins-eggs-repo/rpm/el/9
+baseurl=https://penguins-eggs.net/repos/rpm/el9
 enabled=1
 gpgcheck=1
-gpgkey=https://pieroproietti.github.io/penguins-eggs-repo/KEY.asc
+gpgkey=https://https://penguins-eggs.net/repos/KEY.asc
 ```
 Note: This example uses the repository for Enterprise Linux 9. If you are using a different version, like EL8, change the path accordingly (e.g., el/8).
 
