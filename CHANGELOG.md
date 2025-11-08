@@ -44,7 +44,8 @@ As a result, the official installation and update instructions on our website an
 
 **For existing users**: We recommend running ```sudo eggs tools repo --add``` to ensure you are connected to the new repository and will receive future updates. You may need to manually remove old repository entries (e.g., the old PPA or GitHub entries).
 
-In addition to our official repository, penguins-eggs will continue to be available in [Chaotic-AUR](https://aur.chaotic.cx/) and [Manjaro](https://manjaro.org/).
+### Important for Arch, Manjaro and Manjaro derivatives (BigLinux/BigCommunity)
+In addition to our official repository, penguins-eggs will continue to be **available** in [Chaotic-AUR](https://aur.chaotic.cx/) and [Manjaro](https://manjaro.org/).
 
 ## v25.11.4
 * penguins-eggs now depends on the polkit (pkexec|policykit-1 on Debian/Ubuntu) to allow GUI installation without using a password.
