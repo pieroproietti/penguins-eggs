@@ -81,10 +81,9 @@ class Distro implements IDistro {
 
 
     /**
-     * Alpine, Fedora, openmamba, opensuse, VoidLinux solo distroId.
+     * Alpine, Fedora, openmamba, opensuse analyze **distroId** 
      * 
-     * Debian, Devuan, Ubuntu e derivate ricadono in
-     * default e si analizza il codebaseId
+     * Arch, Debian, Devuan, Ubuntu and derivatives we analyze **codebaseId**
      * 
      */
 
@@ -137,7 +136,7 @@ class Distro implements IDistro {
     } else {
 
       /**
-       * We must analize codenameId
+       * Debian/ARCH: we  analize **codenameId**
        */
 
       /**
@@ -197,14 +196,6 @@ class Distro implements IDistro {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
         this.liveMediumPath = '/run/live/medium/'  //initramfs
-        // this.liveMediumPath = '/run/initramfs/live/'  // dracut
-        /**
-         * dracut su trixie
-         if (Pacman.packageIsInstalled('dracut')) {
-           this.liveMediumPath = '/run/initramfs/live/'
-         }
-         */
-
 
         /**
          * Debian 14 forky
@@ -296,11 +287,11 @@ class Distro implements IDistro {
         /**
          * derivatives: families archlinux, debian
          */
-        let file = path.resolve(__dirname, '../../conf/derivatives.yaml')
+        let archDebianDerivatives = path.resolve(__dirname, '../../conf/derivatives.yaml')
         if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
-          file = '/etc/penguins-eggs.d/derivatives.yaml'
+          archDebianDerivatives = '/etc/penguins-eggs.d/derivatives.yaml'
         }
-        const content = fs.readFileSync(file, 'utf8')
+        const content = fs.readFileSync(archDebianDerivatives, 'utf8')
         const distros = yaml.load(content) as IDistros[]
         for (const distro of distros) {
           if (distro.ids !== undefined) {
@@ -320,12 +311,12 @@ class Distro implements IDistro {
          * derivatives: family fedora
          */
         if (!found) {
-          let file = path.resolve(__dirname, '../../conf/derivatives_fedora.yaml')
+          let fedoraDerivatives = path.resolve(__dirname, '../../conf/derivatives_fedora.yaml')
           if (fs.existsSync('/etc/penguins-eggs.d/derivatives_fedora.yaml')) {
-            file = '/etc/penguins-eggs.d/derivatives_fedora.yaml'
+            fedoraDerivatives = '/etc/penguins-eggs.d/derivatives_fedora.yaml'
           }
 
-          const content = fs.readFileSync(file, 'utf8')
+          const content = fs.readFileSync(fedoraDerivatives, 'utf8')
           const elem = yaml.load(content) as string[]
           if (elem.includes(this.distroId)) {
             this.familyId = 'fedora'
@@ -367,7 +358,7 @@ class Distro implements IDistro {
     }
 
     /**
-     * Manjarolinux e derivate (biglinux)
+     * Manjarolinux anf derivatives (biglinux)
      */
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
@@ -387,7 +378,7 @@ class Distro implements IDistro {
         lines = data.split('\n')
       }
 
-      // per ogni riga
+      // read every line
       for (const line of lines) {
         if (line.startsWith('HOME_URL=')) {
           this.homeUrl = line.slice('HOME_URL='.length).replaceAll('"', '')
