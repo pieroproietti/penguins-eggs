@@ -4,17 +4,12 @@
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
- */
+ */ 
 
 import chalk from 'chalk'
-
-
-// packages
 import fs, { Dirent } from 'node:fs'
 import { constants } from 'node:fs'
-// backup
 import path from 'node:path'
-
 
 // interfaces
 import { IAddons, IExcludes, IWorkDir } from '../interfaces/index.js'
@@ -24,7 +19,7 @@ import CliAutologin from './cli-autologin.js'
 import Incubator from './incubation/incubator.js'
 import Settings from './settings.js'
 
-// Methods
+// methods
 import { fertilization } from './ovary.d/fertilization.js'
 import { produce } from './ovary.d/produce.js'
 import { bindLiveFs, uBindLiveFs } from './ovary.d/bind-live-fs.js'
@@ -48,7 +43,7 @@ import { finished } from './ovary.d/finished.js'
 // crypt
 import { luksExecuteCommand, buildLuksFormatArgs } from './ovary.d/luks-helpers.js'
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
-import { interactiveCryptoConfig, CryptoConfig, ArgonCryptoConfig, Pbkdf2CryptoConfig } from './ovary.d/luks-interactive-crypto-config.js'
+import { interactiveCryptoConfig, CryptoConfig } from './ovary.d/luks-interactive-crypto-config.js'
 
 // homecrypt
 import { luksHome } from './ovary.d/luks-home.js'
@@ -58,107 +53,67 @@ import { installHomecryptSupport } from './ovary.d/luks-home-support.js'
 import { luksRootInitrd } from './ovary.d/luks-root-initrd.js'
 import { luksRoot } from './ovary.d/luks-root.js'
 
-// _dirname
+// get directory name
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * Ovary:
+ * Ovary class — responsible for managing the full ISO creation lifecycle.
  */
 export default class Ovary {
   cliAutologin = new CliAutologin()
 
   compression = ''
-
   clone = false
-
   homecrypt = false
-
   fullcrypt = false
-
   hidden = false
-
-  echo = {}
-
+  echo: Record<string, unknown> = {} // new change [1]
   familyId = ''
-
   distroId = ''
-
   distroLike = ''
-
-  distroLliveMediumPath = ''
-
+  distroLiveMediumPath = '' // new change [2] — fixed typo from distroLliveMediumPath
   genisoimage = false
-
-  incubator = {} as Incubator
-
-  settings = {} as Settings
-
+  incubator: Incubator | null = null // new change [3]
+  settings: Settings | null = null // new change [4]
   snapshot_basename = ''
-
   snapshot_prefix = ''
-
   theme = ''
-
   toNull = ''
-
   verbose = false
-
   volid = ''
-
   uuid = ''
-
   kernel = ''
-
   initrd = ''
-
   vmlinuz = ''
-
   nest = ''
-
   dotMnt = ''
-
-  dotOverlay = {} as IWorkDir
-
+  dotOverlay: IWorkDir | null = null
   dotLivefs = ''
-
   luksMappedName = ''
-
   luksMountpoint = ''
-
   luksFile = ''
-
   luksDevice = ''
-
   luksPassword = ''
+  luksConfig: CryptoConfig | null = null // new change [5]
 
-  luksConfig = {} as CryptoConfig
-
-
-
-  // I put all methods on ovary.d
+  // Primary build lifecycle methods
   public fertilization = fertilization
   public produce = produce
 
-  // called only inside Ovary
+  // Utility and sub-stages
   addExclusion = addExclusion
   bindLiveFs = bindLiveFs
   bindVfs = bindVfs
   copied = copied
   createXdgAutostart = createXdgAutostart
   editLiveFs = editLiveFs
-  // luks
   luksExecuteCommand = luksExecuteCommand
   buildLuksFormatArgs = buildLuksFormatArgs
   luksGetPassword = luksGetPassword
   interactiveCryptoConfig = interactiveCryptoConfig
-
-  // luksHome
   luksHome = luksHome
   installHomecryptSupport = installHomecryptSupport
-  
-  // luksRoot
   luksRoot = luksRoot
-      
   finished = finished
   initrdAlpine = initrdAlpine
   initrdArch = initrdArch
@@ -179,5 +134,61 @@ export default class Ovary {
   userCreateLive = userCreateLive
   usersRemove = usersRemove
   xorrisoCommand = xorrisoCommand
-}
 
+  /**
+   * Initialize internal components safely.
+   * Prevents uninitialized class references from causing runtime errors.
+   */
+  constructor() { // new change [6]
+    try {
+      this.incubator = new Incubator()
+      this.settings = new Settings()
+      chalk.blue('🐣 Ovary initialized successfully.')
+    } catch (err) {
+      console.error(chalk.red('❌ Failed to initialize Ovary components:'), err)
+    }
+  }
+
+  /**
+   * Validate the environment before ISO creation.
+   * This ensures all prerequisites (e.g., kernel, initrd, directories) exist.
+   */
+  validateEnvironment(): boolean { // new change [7]
+    const required = [this.kernel, this.initrd, this.vmlinuz]
+    const missing = required.filter(f => !f || !fs.existsSync(f))
+    if (missing.length > 0) {
+      console.error(chalk.red('⚠️ Missing critical boot files:'), missing)
+      return false
+    }
+    return true
+  }
+
+  /**
+   * Display current build configuration in readable form.
+   */
+  printConfig(): void { // new change [8]
+    console.log(chalk.cyan('\n🧬 Ovary Build Configuration'))
+    console.log('--------------------------------------')
+    console.log(`Distro:       ${this.distroId || 'unknown'}`)
+    console.log(`Family:       ${this.familyId || 'unknown'}`)
+    console.log(`Compression:  ${this.compression || 'default'}`)
+    console.log(`Crypt Mode:   ${this.fullcrypt ? 'Full' : this.homecrypt ? 'Home' : 'None'}`)
+    console.log(`Theme:        ${this.theme || 'default'}`)
+    console.log(`Snapshot:     ${this.snapshot_basename}`)
+    console.log(`Verbose:      ${this.verbose}`)
+  }
+
+  /**
+   * Execute the full ISO creation lifecycle safely.
+   * (Wrapper for produce/fertilization)
+   */
+  async runFullBuild(): Promise<void> { // new change [9]
+    this.printConfig()
+    if (!this.validateEnvironment()) return
+    console.log(chalk.yellow('\n🚀 Starting full ISO build...'))
+    await this.fertilization()
+    await this.produce()
+    await this.finished()
+    console.log(chalk.green('\n✅ ISO build completed successfully!'))
+  }
+}
