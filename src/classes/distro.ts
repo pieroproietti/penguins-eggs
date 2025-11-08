@@ -37,7 +37,7 @@ class Distro implements IDistro {
   familyId: string = 'debian';
   homeUrl: string = 'https://penguins-eggs.net';
   isCalamaresAvailable: boolean = true;
-  liveMediumPath: string = '/run/lcd ive/medium/';
+  liveMediumPath: string = '/run/live/medium/';
   releaseId: string = '';
   squashfs: string = 'live/filesystem.squashfs';
   supportUrl: string = 'https://penguins-eggs.net';
