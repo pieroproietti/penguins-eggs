@@ -475,8 +475,13 @@ export default class Pacman {
        * Ubuntu noble: e la nuova baseline per ubuntu
        *
        */
-    } else if (this.distro().distroUniqueId === 'noble') {
+    } else if (this.distro().distroUniqueId === 'noble' ) {
       const dest = '/etc/penguins-eggs.d/distros/noble'
+      const noble = `${rootPen}/conf/distros/noble`
+      await exec(`cp -r ${noble}/* ${dest}`, echo)
+
+    } else if (this.distro().distroUniqueId === 'questing' ) {
+      const dest = '/etc/penguins-eggs.d/distros/questing'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
 
