@@ -135,9 +135,9 @@ class Distro implements IDistro {
       daedalus: {  distroLike: 'Devuan', uniqueId: 'daedalus' },
       excalibur: { distroLike: 'Devuan', uniqueId: 'excalibur' },
       bionic: { distroLike: 'Ubuntu', uniqueId: 'bionic', livePath: '/lib/live/mount/medium/' },
-      focal: { distroLike: 'Ubuntu', uniqueId: 'focal', livePath: '/lib/live/mount/medium/' },
-      jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy', livePath: '/lib/live/mount/medium/' },
-      noble: { distroLike: 'Ubuntu', uniqueId: 'noble', livePath: '/lib/live/mount/medium/' },
+      focal: { distroLike: 'Ubuntu', uniqueId: 'focal'}, 
+      jammy: { distroLike: 'Ubuntu', uniqueId: 'jammy'},
+      noble: { distroLike: 'Ubuntu', uniqueId: 'noble'},
       questing: { distroLike: 'Ubuntu', uniqueId: 'questing'},
       devel: { distroLike: 'Ubuntu', uniqueId: 'devel'},
     };
@@ -148,7 +148,7 @@ class Distro implements IDistro {
       this.familyId = "debian"
       this.distroLike = cfg.distroLike;
       this.distroUniqueId = cfg.uniqueId;
-      if (cfg.livePath) this.liveMediumPath = cfg.livePath;
+      if (cfg.livePath !== undefined) this.liveMediumPath = cfg.livePath;
       if (cfg.calamares !== undefined) this.isCalamaresAvailable = cfg.calamares;
       return;
     }
