@@ -168,7 +168,7 @@ jobs:
                 PKG_BASES=\$(find . -maxdepth 1 -name \"*.apk\" -exec basename {} \\; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
                 for base in \$PKG_BASES; do
                   echo \"Processing: \$base\"
-                  ls \${base}-*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+                  ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
                 done
                 # --- FINE LOGICA DI PULIZIA ---
 
