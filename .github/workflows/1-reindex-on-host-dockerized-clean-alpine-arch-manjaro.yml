@@ -174,8 +174,9 @@ jobs:
 
                 echo '--- ALPINE: Indexing remaining packages ---'
                 rm -f APKINDEX.tar.gz && \
-                /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+                abuild-index -m -o APKINDEX.tar.gz *.apk
               "
+              # /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
             
