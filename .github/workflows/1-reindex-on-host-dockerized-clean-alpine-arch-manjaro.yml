@@ -174,7 +174,8 @@ jobs:
                 # --- FINE LOGICA DI PULIZIA ---
 
                 echo '--- ALPINE: Indexing remaining packages ---'
-                rm -f APKINDEX.tar.gz && \
+                rm -f APKINDEX.tar.gz
+
                 ABUILD_CONF=/dev/null abuild index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
               # /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
