@@ -160,7 +160,6 @@ jobs:
             mkdir -p "$REPO_PATH/alpine/x86_64"
             
             docker run --rm \
-              # ESEGUIAMO COME ROOT (RIMOSSO -u)
               -v "$REPO_PATH/alpine/x86_64:/repo" \
               alpine-indexer \
               sh -c "
