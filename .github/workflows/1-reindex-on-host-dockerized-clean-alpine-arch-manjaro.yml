@@ -180,7 +180,7 @@ jobs:
 
                 export ABUILD_CONF=/dev/null
 
-                abuild index -o APKINDEX.tar.gz *.apk --allow-untrusted
+                abuild -o APKINDEX.tar.gz index *.apk --allow-untrusted                
               "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
