@@ -158,7 +158,6 @@ jobs:
             echo "--- ALPINE: Re-indexing (Container) ---"
             mkdir -p "$REPO_PATH/alpine/x86_64"
             docker run --rm \
-              -u "$(id -u):$(id -g)" \
               -v "$REPO_PATH/alpine/x86_64:/repo" \
               alpine-indexer \
               sh -c "
@@ -182,7 +181,7 @@ jobs:
                 # --- FINE LOGICA DI PULIZIA ---
 
                 echo '--- ALPINE: Indexing remaining packages ---'
-                rm -f APKINDEX.tar.gz
+                rm -F APKINDEX.tar.gz
 
                 touch APKBUILD                
 
