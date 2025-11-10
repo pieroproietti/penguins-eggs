@@ -180,7 +180,7 @@ jobs:
 
                 export ABUILD_CONF=/dev/null
 
-                abuild index *.apk
+                abuild index
             "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
