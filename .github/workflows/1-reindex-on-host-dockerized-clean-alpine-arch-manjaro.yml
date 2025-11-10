@@ -175,7 +175,7 @@ jobs:
 
                 echo '--- ALPINE: Indexing remaining packages ---'
                 rm -f APKINDEX.tar.gz && \
-                abuild index -o APKINDEX.tar.gz *.apk
+                ABUILD_CONF=/dev/null abuild index -o APKINDEX.tar.gz *.apk --allow-untrusted
               "
               # /sbin/apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
             
