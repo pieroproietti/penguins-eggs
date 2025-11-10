@@ -162,7 +162,14 @@ jobs:
               -v "$REPO_PATH/alpine/x86_64:/repo" \
               alpine-indexer \
               sh -c "
-                set -e
+                set -ex
+
+              echo '--- ALPINE: Enabling community repository ---'
+              sed -i -E 's|#(.*v[0-9]+\.[0-9]+/community)|\1|g' /etc/apk/repositories
+              
+              # 2. Popoliamo la cache degli indici (main E community)
+              echo '--- ALPINE: Fetching upstream indexes (apk update) ---'
+              apk update                
                 
                 # --- LOGICA DI PULIZIA ALPINE ---
                 echo '--- ALPINE: Cleaning old packages ---'
