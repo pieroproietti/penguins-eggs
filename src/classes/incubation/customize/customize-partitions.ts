@@ -46,13 +46,12 @@ export async function customizePartitions() {
     partition.availableFileSystemTypes.push('f2fs')
   }
 
-  // Controlla se /sys/firmware/efi NON esiste
-  if (!fs.existsSync('/sys/firmware/efi')) {
-    // Se non esiste elimina la chiave efi, eliminala
-    if (partition.efi) {
-      delete partition.efi
-    }
-  }
+  // Cannot work here
+  // if (!fs.existsSync('/sys/firmware/efi')) {
+  //   if (partition.efi) {
+  //     delete partition.efi
+  //   }
+  // }
 
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
 
