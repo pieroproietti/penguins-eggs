@@ -178,8 +178,10 @@ jobs:
 
                 touch APKBUILD
 
-                abuild index -o APKINDEX.tar.gz *.apk
-              "
+                export ABUILD_CONF=/dev/null
+
+                abuild index *.apk
+            "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
             
