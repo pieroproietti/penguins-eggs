@@ -181,13 +181,15 @@ jobs:
                 # --- FINE LOGICA DI PULIZIA ---
 
                 echo '--- ALPINE: Indexing remaining packages ---'
-                rm -F APKINDEX.tar.gz
+                rm -f APKINDEX.tar.gz
 
+                # Crea APKBUILD dummy
                 touch APKBUILD                
 
-                abuild -f index
+                abuild -F index
 
-                rm APKBUILD
+                # Rimuove APKBUILD dummy
+                rm -f APKBUILD
             "
             
             cp /tmp/penguins-alpine.pub $REPO_PATH/alpine/penguins-eggs.rsa.pub
