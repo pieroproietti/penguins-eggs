@@ -156,9 +156,10 @@ jobs:
             
             # --- 5. Re-index Alpine (MODIFICATO CON PULIZIA) ---
             echo "--- ALPINE: Re-indexing (Container) ---"
+            mkdir -p "$REPO_PATH/alpine/x86_64"
             docker run --rm \
               -u "$(id -u):$(id -g)" \
-              -v "$REPO_PATH/alpine:/repo" \
+              -v "$REPO_PATH/alpine/x86_64:/repo" \
               alpine-indexer \
               sh -c "
                 set -e
