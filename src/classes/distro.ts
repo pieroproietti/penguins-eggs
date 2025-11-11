@@ -233,14 +233,6 @@ class Distro implements IDistro {
         this.distroUniqueId = 'excalibur'
 
         /**
-         * Ubuntu bionic
-         */
-      } else if (this.codenameId === 'bionic') {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'bionic'
-        this.liveMediumPath = '/lib/live/mount/medium/'
-
-        /**
          * Ubuntu focal
          */
       } else if (this.codenameId === 'focal') {

@@ -499,7 +499,7 @@ jobs:
           gpg --default-key "$GPG_KEY_ID" \
               --clearsign \
               -o dists/stable/InRelease \
-              --batch --yes --passphrase "$GGPG_PASSPHRASE" \
+              --batch --yes --passphrase "$GPG_PASSPHRASE" \
               dists/stable/Release
       
       - name: 6. Upload Final Debian Repo Artifact
@@ -509,8 +509,10 @@ jobs:
           path: ./repo-dir/
           retention-days: 1
   
+
+
   # ========================================================
-  # 2.1 JOB DI PUBBLICAZIONE (INVARIATO)
+  # 2.1 JOB DI PUBBLICAZIONE (CON PULIZIA)
   # ========================================================
   publish-all-repos:
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
@@ -585,22 +587,46 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-      - name: 5. Update Arch Repo (NO Pruning)
+      - name: 5. Update Arch Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/arch
+          
+          # --- LOGICA DI PULIZIA ARCH ---
+          echo '--- ARCH: Cleaning old packages ---'
+          PKG_BASES=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          for base in $PKG_BASES; do
+            echo "Processing: $base"
+            ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+            ls ${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+          done
+          echo '--- ARCH: Cleaning complete ---'
+          # --- FINE LOGICA DI PULIZIA ---
+          
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
 
-      - name: 6. Update Manjaro Repo (NO Pruning)
+      - name: 6. Update Manjaro Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -e
           cd ./repo-dir/manjaro
+          
+          # --- LOGICA DI PULIZIA MANJARO ---
+          echo '--- MANJARO: Cleaning old packages ---'
+          PKG_BASES=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          for base in $PKG_BASES; do
+            echo "Processing: $base"
+            ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+            ls ${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+          done
+          echo '--- MANJARO: Cleaning complete ---'
+          # --- FINE LOGICA DI PULIZIA ---
+          
           rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd ../..
@@ -612,13 +638,26 @@ jobs:
           cd ./repo-dir/rpm/opensuse/leap; rm -rf repodata; createrepo_c .; cd ../../../..
           cd ./repo-dir/rpm/el9; rm -rf repodata; createrepo_c .; cd ../../..
 
-      - name: 8. Update Alpine Repo (NO Pruning)
+      - name: 8. Update Alpine Repo (WITH Pruning)
         env:
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
           set -e
           cd ./repo-dir/alpine
+          # Sposta tutti i pacchetti .apk nella directory corrente
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
+
+          # --- LOGICA DI PULIZIA ALPINE ---
+          echo '--- ALPINE: Cleaning old packages ---'
+          # L'immagine container 'archlinux' ha 'coreutils' (per sort -V)
+          PKG_BASES=$(find . -maxdepth 1 -name "*.apk" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          for base in $PKG_BASES; do
+            echo "Processing: $base"
+            ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+          done
+          echo '--- ALPINE: Cleaning complete ---'
+          # --- FINE LOGICA DI PULIZIA ---
+
           rm -f APKINDEX.tar.gz
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub

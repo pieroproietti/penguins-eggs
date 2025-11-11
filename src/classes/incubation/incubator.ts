@@ -31,12 +31,12 @@ import {customizePartitions} from './customize/customize-partitions.js'
 import { Alpine } from './incubator.d/alpine.js'
 import { Archlinux } from './incubator.d/archlinux.js'
 import { Buster } from './incubator.d/buster.js'
-import { Trixie } from './incubator.d/trixie.js'
 import { Fedora } from './incubator.d/fedora.js'
+import { Manjaro } from './incubator.d/manjaro.js'
 import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
-import { Manjaro } from './incubator.d/manjaro.js'
+import { Trixie } from './incubator.d/trixie.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)

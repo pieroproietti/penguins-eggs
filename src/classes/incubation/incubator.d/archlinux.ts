@@ -8,7 +8,6 @@
 
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
-import Pacman from '../../pacman.js'
 import Fisherman from '../fisherman.js'
 
 /**

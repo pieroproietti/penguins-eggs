@@ -38,8 +38,6 @@ export default class Debian {
     }
 
     // remove others calamares links
-    await exec('rm -f /usr/share/applications/calamares-eggs-debugging.desktop')
-    await exec('rm -f /usr/share/applications/calamares-eggs.desktop')
     await exec('rm -f /usr/share/applications/calamares.desktop')
   }
 
