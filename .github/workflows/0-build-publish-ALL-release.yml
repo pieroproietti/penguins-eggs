@@ -596,7 +596,7 @@ jobs:
           
           # --- LOGICA DI PULIZIA ARCH ---
           echo '--- ARCH: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
           for base in $PKG_BASES; do
             echo "Processing: $base"
             ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
@@ -618,7 +618,7 @@ jobs:
           
           # --- LOGICA DI PULIZIA MANJARO ---
           echo '--- MANJARO: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)          
           for base in $PKG_BASES; do
             echo "Processing: $base"
             ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
@@ -650,7 +650,7 @@ jobs:
           # --- LOGICA DI PULIZIA ALPINE ---
           echo '--- ALPINE: Cleaning old packages ---'
           # L'immagine container 'archlinux' ha 'coreutils' (per sort -V)
-          PKG_BASES=$(find . -maxdepth 1 -name "*.apk" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)          
           for base in $PKG_BASES; do
             echo "Processing: $base"
             ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
