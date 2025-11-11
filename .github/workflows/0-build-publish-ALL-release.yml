@@ -10,7 +10,7 @@ on:
 
 jobs:
   # ========================================================
-  # 1.1 JOB DI BUILD Debian (INVARIATO)
+  # 1.1 JOB DI BUILD Debian / Crea artefatto container: debian:13 su host
   # ========================================================
   build-debian:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
           retention-days: 1    
 
   # ========================================================
-  # 1.2 JOB DI BUILD Fedora (MODIFICATO)
+  # 1.2 JOB DI BUILD Fedora / Crea artefatto
   # ========================================================
   build-fc42:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
           path: ${{ steps.build.outputs.rpm_path }}
 
   # ========================================================
-  # 1.3 JOB DI BUILD Opensuse (MODIFICATO)
+  # 1.3 JOB DI BUILD Opensuse / Crea artefatto
   # ========================================================
   build-opensuse:
     runs-on: ubuntu-latest
@@ -201,7 +201,7 @@ jobs:
           path: ${{ steps.build.outputs.rpm_path }}
 
   # ========================================================
-  # 1.4 JOB DI BUILD EL9 (MODIFICATO)
+  # 1.4 JOB DI BUILD EL9 / Crea artefatto
   # ========================================================
   build-el9:
     runs-on: ubuntu-latest
@@ -273,7 +273,7 @@ jobs:
           path: ${{ steps.build.outputs.rpm_path }}
 
   # ========================================================
-  # 1.5 JOB DI BUILD Archlinux
+  # 1.5 JOB DI BUILD Archlinux / Crea artefatto
   # ========================================================
   build-arch:
     runs-on: ubuntu-latest
@@ -323,7 +323,7 @@ jobs:
             ./packaging/arch/*.pkg.tar.zst.sig
 
   # ========================================================
-  # 1.6 JOB DI BUILD Manjaro
+  # 1.6 JOB DI BUILD Manjaro / Crea artefatto
   # ========================================================
   build-manjaro:
     runs-on: ubuntu-latest
@@ -376,7 +376,7 @@ jobs:
             ./packaging/manjaro/*.pkg.tar.zst.sig
 
   # ========================================================
-  # 1.7 JOB DI BUILD Alpine
+  # 1.7 JOB DI BUILD Alpine / Crea artefatto container: alpine:latest su host
   # ========================================================
   build-alpine:
     runs-on: ubuntu-latest
@@ -423,7 +423,13 @@ jobs:
 
 
   # ========================================================
-  # 2.0 JOB DI PREPARAZIONE REPO DEBIAN
+  # 2.0 JOB DI PREPARAZIONE REPO DEBIAN container Debian
+  # FROM debian:bookworm-slim 
+  # Installa gli strumenti per Debian, RPM e GPG
+  # RUN apt-get update && \
+  #  apt-get install -y dpkg-dev apt-utils createrepo-c gnupg && \
+  #  rm -rf /var/lib/apt/lists/*
+  # WORKDIR /repo
   # ========================================================
   publish-debian-repo:
     needs: [build-debian]
@@ -505,7 +511,7 @@ jobs:
 
 
   # ========================================================
-  # 3.0 JOB DI PUBBLICAZIONE
+  # 3.0 JOB DI PUBBLICAZIONE container: archlinux su host
   # ========================================================
   publish-all-repos:
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
