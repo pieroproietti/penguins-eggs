@@ -511,8 +511,8 @@ jobs:
   
 
 
-  # ========================================================
-  # 2.1 JOB DI PUBBLICAZIONE (CON DEBUG AVANZATO)
+# ========================================================
+  # 2.1 JOB DI PUBBLICAZIONE (Logica Corretta: Upload-then-Prune)
   # ========================================================
   publish-all-repos:
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
@@ -524,6 +524,7 @@ jobs:
         run: |
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
+          # 'openssh' fornisce scp e ssh
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools openssh
 
       - name: 2. Create publish directory structure
@@ -536,6 +537,7 @@ jobs:
           mkdir -p ./repo-dir/rpm/opensuse/leap
           mkdir -p ./repo-dir/rpm/el9
 
+      # ... (Tutti gli step '3.x Download Artifacts' rimangono INVARIATI) ...
       - name: 3.1 Download FINAL Debian Repo artifact
         uses: actions/download-artifact@v4
         with:
@@ -572,11 +574,11 @@ jobs:
           name: alpine-package
           path: ./repo-dir/alpine/
 
+      # ... (Gli step '4' e '4a' per GPG rimangono INVARIATI) ...
       - name: 4. Import GPG Key
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
-
       - name: 4a. Immetti la passphase!!!
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -587,134 +589,105 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-      - name: 5. Update Arch Repo (WITH Pruning AND DEBUG)
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          set -ex  # 'e' per exit on error, 'x' per trace
-          cd ./repo-dir/arch
-          
-          echo "--- ARCH: Files BEFORE cleaning ---"
-          ls -l
-          
-          # --- LOGICA DI PULIZIA ARCH ---
-          echo '--- ARCH: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9].*/\1/' | sort -u)
-          
-          echo "--- ARCH: Found package bases: ---"
-          echo "$PKG_BASES"
-          echo "---------------------------------"
-          
-          for base in $PKG_BASES; do
-            echo "--- Processing: $base ---"
-            ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
-            ls ${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
-          done
-          
-          echo '--- ARCH: Cleaning complete ---'
-          echo "--- ARCH: Files AFTER cleaning ---"
-          ls -l
-          # --- FINE LOGICA DI PULIZIA ---
-          
-          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
-          cd ../..
-
-      - name: 6. Update Manjaro Repo (WITH Pruning AND DEBUG)
-        env:
-          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
-        run: |
-          set -ex  # 'e' per exit on error, 'x' per trace
-          cd ./repo-dir/manjaro
-          
-          echo "--- MANJARO: Files BEFORE cleaning ---"
-          ls -l
-          
-          # --- LOGICA DI PULIZIA MANJARO ---
-          echo '--- MANJARO: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9].*/\1/' | sort -u)
-          
-          echo "--- MANJARO: Found package bases: ---"
-          echo "$PKG_BASES"
-          echo "-------------------------------------"
-          
-          for base in $PKG_BASES; do
-            echo "--- Processing: $base ---"
-            ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
-            ls ${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
-          done
-          
-          echo '--- MANJARO: Cleaning complete ---'
-          echo "--- MANJARO: Files AFTER cleaning ---"
-          ls -l
-          # --- FINE LOGICA DI PULIZIA ---
-          
-          rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
-          repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
-          cd ../..
-
-      - name: 7. Update RPM Repos (NO Pruning)
-        run: |
-          set -e
-          cd ./repo-dir/rpm/fedora/42; rm -rf repodata; createrepo_c .; cd ../../../..
-          cd ./repo-dir/rpm/opensuse/leap; rm -rf repodata; createrepo_c .; cd ../../../..
-          cd ./repo-dir/rpm/el9; rm -rf repodata; createrepo_c .; cd ../../..
-
-      - name: 8. Update Alpine Repo (WITH Pruning AND DEBUG)
-        env:
-          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
-        run: |
-          set -ex # 'e' per exit on error, 'x' per trace
-          cd ./repo-dir/alpine
-          
-          echo "--- ALPINE: Moving packages ---"
-          find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
-          
-          echo "--- ALPINE: Files BEFORE cleaning ---"
-          ls -l
-
-          # --- LOGICA DI PULIZIA ALPINE ---
-          echo '--- ALPINE: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name '*.apk' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
-          
-          echo "--- ALPINE: Found package bases: ---"
-          echo "$PKG_BASES"
-          echo "-----------------------------------"
-          
-          for base in $PKG_BASES; do
-            echo "--- Processing: $base ---"
-            ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
-          done
-          
-          echo '--- ALPINE: Cleaning complete ---'
-          echo "--- ALPINE: Files AFTER cleaning ---"
-          ls -l
-          # --- FINE LOGICA DI PULIZIA ---
-
-          rm -f APKINDEX.tar.gz
-          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
-          echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
-          cd ../..
-
-      - name: 9. Deploy to penguins-eggs.net via Manual SFTP
+      # --- GLI STEP 5, 6, 7, 8 SONO STATI CANCELLATI ---
+      # La pulizia e l'indicizzazione avvengono ora sul server.
+      
+      - name: 9. Setup SSH e Upload NUOVI pacchetti (con SCP)
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           SSH_HOST: ${{ secrets.SERVER_HOST }}
           SSH_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PATH: /var/www/html/repos
         run: |
           echo "--- 1. Installing private key ---"
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
           chmod 600 ~/.ssh/id_key
           
-          echo "--- 2. Creating SFTP batch file ---"
-          echo "lcd ./repo-dir" > sftp-batch.txt
-          echo "put -r . /var/www/html/repos" >> sftp-batch.txt
-          echo "quit" >> sftp-batch.txt
+          # Usiamo 'scp -r' che *unisce* le directory, non sovrascrive
+          echo "--- 2. Uploading ALL new packages via SCP ---"
           
-          echo "--- 3. Running SFTP upload ---"
-          sftp -v -i ~/.ssh/id_key \
+          # 'scp' unisce le directory. 
+          # Copia il *contenuto* di ./repo-dir/ in /var/www/html/repos/
+          # Es: ./repo-dir/arch/*.zst -> /var/www/html/repos/arch/*.zst
+          scp -v -r -i ~/.ssh/id_key \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            -b sftp-batch.txt \
-            "$SSH_USER@$SSH_HOST"
+            ./repo-dir/* \
+            "$SSH_USER@$SSH_HOST:$SERVER_PATH/"
+
+      - name: 10. Esegui Pulizia e Re-indicizzazione (Remoto via SSH)
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PATH: /var/www/html/repos
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          ALPINE_SIGNING_KEY_PUB_CONTENT: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+        run: |
+          echo "--- 1. Installing private key (per SSH) ---"
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          
+          # Questo è un unico, grande script eseguito sul server
+          echo "--- 2. Running remote prune and re-index script ---"
+          ssh -v -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            "$SSH_USER@$SSH_HOST" "
+            
+            # Attiva la modalità 'exit on error' sul server
+            set -e
+            
+            # --- 1. PULIZIA ARCH ---
+            echo '--- [REMOTO] ARCH: Cleaning old packages ---'
+            cd $SERVER_PATH/arch
+            # NOTA: Questa è la regex CORRETTA che funziona anche per calamares-eggs
+            PKG_BASES=\$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+            for base in \$PKG_BASES; do
+              echo \"Processing: \$base\"
+              ls \${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+              ls \${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+            done
+            echo '--- [REMOTO] ARCH: Re-indexing ---'
+            rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+            repo-add --sign --key '$GPG_KEY_ID' penguins-eggs.db.tar.gz *.pkg.tar.zst
+
+            # --- 2. PULIZIA MANJARO ---
+            echo '--- [REMOTO] MANJARO: Cleaning old packages ---'
+            cd $SERVER_PATH/manjaro
+            PKG_BASES=\$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+            for base in \$PKG_BASES; do
+              echo \"Processing: \$base\"
+              ls \${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+              ls \${base}-*.pkg.tar.zst.sig 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+            done
+            echo '--- [REMOTO] MANJARO: Re-indexing ---'
+            rm -f penguins-eggs.db.tar.gz penguins-eggs.files.tar.gz
+            repo-add --sign --key '$GPG_KEY_ID' penguins-eggs.db.tar.gz *.pkg.tar.zst
+
+            # --- 3. PULIZIA ALPINE ---
+            echo '--- [REMOTO] ALPINE: Cleaning old packages ---'
+            cd $SERVER_PATH/alpine
+            # Sposta i file da sottodirectory se 'scp' li ha creati
+            find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
+            PKG_BASES=\$(find . -maxdepth 1 -name '*.apk' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+            for base in \$PKG_BASES; do
+              echo \"Processing: \$base\"
+              ls \${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+            done
+            echo '--- [REMOTO] ALPINE: Re-indexing ---'
+            rm -f APKINDEX.tar.gz
+            apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+            # Ricrea la chiave pubblica
+            echo '$ALPINE_SIGNING_KEY_PUB_CONTENT' > penguins-eggs.rsa.pub
+
+            # --- 4. RE-INDEx RPM (Nessuna pulizia richiesta) ---
+            echo '--- [REMOTO] RPM: Re-indexing ---'
+            cd $SERVER_PATH/rpm/fedora/42; rm -rf repodata; createrepo_c .;
+            cd $SERVER_PATH/rpm/opensuse/leap; rm -rf repodata; createrepo_c .;
+            cd $SERVER_PATH/rpm/el9; rm -rf repodata; createrepo_c .;
+            
+            echo '--- [REMOTO] All operations complete ---'
+            "
