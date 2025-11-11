@@ -596,7 +596,7 @@ jobs:
           
           # --- LOGICA DI PULIZIA ARCH ---
           echo '--- ARCH: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9].*/\1/' | sort -u)
           for base in $PKG_BASES; do
             echo "Processing: $base"
             ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
@@ -618,7 +618,7 @@ jobs:
           
           # --- LOGICA DI PULIZIA MANJARO ---
           echo '--- MANJARO: Cleaning old packages ---'
-          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)          
+          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9].*/\1/' | sort -u)          
           for base in $PKG_BASES; do
             echo "Processing: $base"
             ls ${base}-*.pkg.tar.zst 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
@@ -649,15 +649,16 @@ jobs:
 
           # --- LOGICA DI PULIZIA ALPINE ---
           echo '--- ALPINE: Cleaning old packages ---'
-          # L'immagine container 'archlinux' ha 'coreutils' (per sort -V)
-          PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)          
+          # FIX: Usiamo la logica 'find *.apk' e la regex 'sed' fornita dall'utente,
+          # che è nota per funzionare con la struttura dei pacchetti Alpine.
+          PKG_BASES=$(find . -maxdepth 1 -name '*.apk' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
           for base in $PKG_BASES; do
             echo "Processing: $base"
+            # La logica 'ls' era già corretta
             ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
           done
           echo '--- ALPINE: Cleaning complete ---'
           # --- FINE LOGICA DI PULIZIA ---
-
           rm -f APKINDEX.tar.gz
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
