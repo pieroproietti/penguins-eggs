@@ -78,12 +78,10 @@ jobs:
         id: version
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
       
-      # --- MODIFICA: Aggiunto step per leggere il file 'release' ---
       - name: 3a. Get Package Release from 'release' file
         id: release
         run: echo "release_num=$(cat release | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-      # --- MODIFICA: Aggiorna sia Versione che Release ---
       - name: 4. Update Version and Release in .spec File
         run: |
           echo "Updating .spec file to version ${{ steps.version.outputs.version }} and release ${{ steps.release.outputs.release_num }}"
@@ -148,12 +146,10 @@ jobs:
         id: version
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
       
-      # --- MODIFICA: Aggiunto step per leggere il file 'release' ---
       - name: 3a. Get Package Release from 'release' file
         id: release
         run: echo "release_num=$(cat release | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-      # --- MODIFICA: Aggiorna sia Versione che Release prima di copiare .spec.suse ---
       - name: 4. Update .spec and Install Dependencies
         run: |
           echo "Updating .spec file to version ${{ steps.version.outputs.version }} and release ${{ steps.release.outputs.release_num }}"
@@ -236,12 +232,10 @@ jobs:
         id: version
         run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
       
-      # --- MODIFICA: Aggiunto step per leggere il file 'release' ---
       - name: 3a. Get Package Release from 'release' file
         id: release
         run: echo "release_num=$(cat release | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-      # --- MODIFICA: Aggiorna sia Versione che Release ---
       - name: 4. Update Version and Release in .spec File
         run: |
           echo "Updating .spec file to version ${{ steps.version.outputs.version }} and release ${{ steps.release.outputs.release_num }}"
@@ -279,7 +273,7 @@ jobs:
           path: ${{ steps.build.outputs.rpm_path }}
 
   # ========================================================
-  # 1.5 JOB DI BUILD Archlinux (MODIFICATO)
+  # 1.5 JOB DI BUILD Archlinux
   # ========================================================
   build-arch:
     runs-on: ubuntu-latest
@@ -293,7 +287,6 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm jq pacman-contrib gnupg
       
-      # --- MODIFICA: Legge 'release' e aggiorna pkgrel ---
       - name: 2a. Update PKGBUILD
         run: |
           VERSION=$(jq -r .version package.json)
@@ -330,7 +323,7 @@ jobs:
             ./packaging/arch/*.pkg.tar.zst.sig
 
   # ========================================================
-  # 1.6 JOB DI BUILD Manjaro (MODIFICATO)
+  # 1.6 JOB DI BUILD Manjaro
   # ========================================================
   build-manjaro:
     runs-on: ubuntu-latest
@@ -344,7 +337,6 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel git pnpm jq pacman-contrib gnupg
 
-      # --- MODIFICA: Legge 'release' e aggiorna pkgrel ---
       - name: 2a. Update PKGBUILD with version and release
         run: |
           VERSION=$(jq -r .version package.json)
@@ -384,7 +376,7 @@ jobs:
             ./packaging/manjaro/*.pkg.tar.zst.sig
 
   # ========================================================
-  # 1.7 JOB DI BUILD Alpine (MODIFICATO)
+  # 1.7 JOB DI BUILD Alpine
   # ========================================================
   build-alpine:
     runs-on: ubuntu-latest
@@ -429,8 +421,9 @@ jobs:
           name: alpine-package
           path: /home/builder/packages/**/*.apk
 
+
   # ========================================================
-  # 2.0 JOB DI PREPARAZIONE REPO DEBIAN (INVARIATO)
+  # 2.0 JOB DI PREPARAZIONE REPO DEBIAN
   # ========================================================
   publish-debian-repo:
     needs: [build-debian]
@@ -512,20 +505,17 @@ jobs:
 
 
   # ========================================================
-  # 2.1 JOB DI PUBBLICAZIONE (Logica Self-Hosted)
+  # 3.0 JOB DI PUBBLICAZIONE
   # ========================================================
   publish-all-repos:
     needs: [build-debian, build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
     runs-on: ubuntu-latest # Il tuo self-hosted runner
-    
-    # --- MODIFICA CHIAVE ---
-    # Montiamo la directory REALE del repository (host) 
-    # dentro il container (container)
+
+    # /var/www/html/repos è il path reale della repository
     container:
       image: archlinux
       volumes:
         - /var/www/html/repos:/mnt/repos # HostPath:ContainerPath
-    # --- FINE MODIFICA ---
     
     steps:
       - name: 1. Install Dependencies
@@ -540,31 +530,37 @@ jobs:
           name: final-debian-repo
           # Scarica direttamente nella directory montata
           path: /mnt/repos/
+
       - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with:
           name: fedora-42-rpm-for-repo
           path: /mnt/repos/rpm/fedora/42/
+
       - name: 3.3 Download openSUSE artifacts
         uses: actions/download-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
           path: /mnt/repos/rpm/opensuse/leap/
+
       - name: 3.4 Download EL9 artifacts
         uses: actions/download-artifact@v4
         with:
           name: el9-rpm-for-repo
           path: /mnt/repos/rpm/el9/
+
       - name: 3.5 Download Arch artifacts
         uses: actions/download-artifact@v4
         with:
           name: arch-packages
           path: /mnt/repos/arch/
+
       - name: 3.6 Download Manjaro artifacts
         uses: actions/download-artifact@v4
         with:
           name: manjaro-package
           path: /mnt/repos/manjaro/
+
       - name: 3.7 Download Alpine artifacts
         uses: actions/download-artifact@v4
         with:
@@ -586,6 +582,8 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
+      # Pulizia precedenti pacchetti penguins-eggs:
+      # Arch, Manjaro ed Alpine
       - name: 5. Update Arch Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
@@ -637,16 +635,7 @@ jobs:
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd / # Ritorna alla root
 
-      - name: 7. Update RPM Repos (NO Pruning)
-        run: |
-          set -e
-          echo "--- RPM: Re-indexing ---"
-          cd /mnt/repos/rpm/fedora/42; rm -rf repodata; createrepo_c .;
-          cd /mnt/repos/rpm/opensuse/leap; rm -rf repodata; createrepo_c .;
-          cd /mnt/repos/rpm/el9; rm -rf repodata; createrepo_c .;
-          cd / # Ritorna alla root
-
-      - name: 8. Update Alpine Repo (WITH Pruning)
+      - name: 7. Update Alpine Repo (WITH Pruning)
         env:
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
@@ -671,6 +660,3 @@ jobs:
           apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd / # Ritorna alla root
-
-      # --- STEP 9 (DEPLOY) È STATO RIMOSSO ---
-      # Non serve più, le modifiche sono già live sul filesystem host.
