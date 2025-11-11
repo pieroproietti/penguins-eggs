@@ -509,7 +509,8 @@ jobs:
           path: ./repo-dir/
           retention-days: 1
   
-  # ========================================================
+
+# ========================================================
   # 2.1 JOB DI PUBBLICAZIONE (CON PULIZIA)
   # ========================================================
   publish-all-repos:
@@ -636,4 +637,51 @@ jobs:
           cd ./repo-dir/rpm/opensuse/leap; rm -rf repodata; createrepo_c .; cd ../../../..
           cd ./repo-dir/rpm/el9; rm -rf repodata; createrepo_c .; cd ../../..
 
-      -
+      - name: 8. Update Alpine Repo (WITH Pruning)
+        env:
+          ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
+        run: |
+          set -e
+          cd ./repo-dir/alpine
+          # Sposta tutti i pacchetti .apk nella directory corrente
+          find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
+
+          # --- LOGICA DI PULIZIA ALPINE ---
+          echo '--- ALPINE: Cleaning old packages ---'
+          # L'immagine container 'archlinux' ha 'coreutils' (per sort -V)
+          PKG_BASES=$(find . -maxdepth 1 -name "*.apk" -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
+          for base in $PKG_BASES; do
+            echo "Processing: $base"
+            ls ${base}-[0-9]*.apk 2>/dev/null | sort -V | head -n -1 | xargs -r rm -vf
+          done
+          echo '--- ALPINE: Cleaning complete ---'
+          # --- FINE LOGICA DI PULIZIA ---
+
+          rm -f APKINDEX.tar.gz
+          apk index -o APKINDEX.tar.gz *.apk --allow-untrusted
+          echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
+          cd ../..
+
+      - name: 9. Deploy to penguins-eggs.net via Manual SFTP
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          echo "--- 1. Installing private key ---"
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_key
+          chmod 600 ~/.ssh/id_key
+          
+          echo "--- 2. Creating SFTP batch file ---"
+          echo "lcd ./repo-dir" > sftp-batch.txt
+          echo "put -r . /var/www/html/repos" >> sftp-batch.txt
+          echo "quit" >> sftp-batch.txt
+          
+          echo "--- 3. Running SFTP upload ---"
+          sftp -v -i ~/.ssh/id_key \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -b sftp-batch.txt \
+            "$SSH_USER@$SSH_HOST"
+            
