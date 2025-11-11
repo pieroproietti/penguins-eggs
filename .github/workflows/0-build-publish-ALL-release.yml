@@ -499,7 +499,7 @@ jobs:
           gpg --default-key "$GPG_KEY_ID" \
               --clearsign \
               -o dists/stable/InRelease \
-              --batch --yes --passphrase "$GGPG_PASSPHRASE" \
+              --batch --yes --passphrase "$GPG_PASSPHRASE" \
               dists/stable/Release
       
       - name: 6. Upload Final Debian Repo Artifact
@@ -510,7 +510,7 @@ jobs:
           retention-days: 1
   
 
-# ========================================================
+  # ========================================================
   # 2.1 JOB DI PUBBLICAZIONE (CON PULIZIA)
   # ========================================================
   publish-all-repos:
@@ -684,4 +684,3 @@ jobs:
             -o UserKnownHostsFile=/dev/null \
             -b sftp-batch.txt \
             "$SSH_USER@$SSH_HOST"
-            
