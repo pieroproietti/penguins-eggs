@@ -49,10 +49,10 @@ export default class Opensuse {
     let success=false
     const echo = Utils.setEcho(verbose)
     try {
-      await exec('zypper remove -y calamares calamares-eggs', echo)
+      await exec('zypper remove -y calamares calamares', echo)
       success=true
     } catch {
-      Utils.error(`Cannot remove calamares-eggs`)
+      Utils.error(`Cannot remove calamares`)
     }
 
     if (success && fs.existsSync('/etc/calamares')) {

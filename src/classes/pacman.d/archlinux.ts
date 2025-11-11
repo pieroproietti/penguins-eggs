@@ -17,7 +17,7 @@ import Utils from '../utils.js'
  * @remarks all the utilities
  */
 export default class Archlinux {
-  static packs4calamares = ['calamares-eggs'] // , 'calamares']
+  static packs4calamares = ['calamares'] // , 'calamares']
 
   /**
    * Archlinux: calamaresInstall
@@ -25,11 +25,11 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
-    let cmd = `pacman -S calamares-eggs --noconfirm`
+    let cmd = `pacman -S calamares --noconfirm`
     try {
       await exec(cmd, echo)
     } catch {
-      Utils.error(`Cannot install calamares-eggs`)
+      Utils.error(`Cannot install calamares`)
     }
   }
 
@@ -51,10 +51,10 @@ export default class Archlinux {
     let success = false
     const echo = Utils.setEcho(verbose)
     try {
-      await exec('pacman -R calamares calamares-eggs --noconfirm', echo)
+      await exec('pacman -R calamares calamares --noconfirm', echo)
       success=true
     } catch {
-      Utils.error(`Cannot remove calamares-eggs`)
+      Utils.error(`Cannot remove calamares`)
     }
 
     if (success && fs.existsSync('/etc/calamares')) {
