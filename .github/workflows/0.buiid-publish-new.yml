@@ -11,7 +11,6 @@ on:
 jobs:
   # ========================================================
   # 1.1 - 1.7: JOB DI BUILD (Girano su GITHUB)
-  # TUTTI QUESTI JOB SONO INVARIATI.
   # Usano 'runs-on: ubuntu-latest' per girare sui runner
   # standard di GitHub.
   # ========================================================
@@ -408,23 +407,23 @@ jobs:
           name: alpine-package
           path: /home/builder/packages/**/*.apk
 
+
   # ========================================================
-  # 2.0 JOB DI PUBBLICAZIONE DEBIAN (Gira su HOST)
-  # Esegue l'indicizzazione Debian direttamente sul volume montato
+  # 2.0 JOB DI PUBBLICAZIONE DEBIAN (Gira su HOST, NO CONTAINER)
   # ========================================================
   publish-debian-repo:
     needs: [build-debian]
+    # Gira sul tuo runner self-hosted
     runs-on: self-hosted
-    container:
-      image: debian:13
-      volumes:
-        - /var/www/html/repos:/mnt/repos # HostPath:ContainerPath
+    
+    # --- NESSUN CONTAINER RICHIESTO ---
+    # L'host è già Debian.
     
     steps:
-      - name: 1. Install Debian Dependencies
+      - name: 1. Install Debian Dependencies on Host
         run: |
-          apt-get update
-          apt-get install -y apt-utils gnupg dpkg dpkg-dev      
+          sudo apt-get update
+          sudo apt-get install -y apt-utils gnupg dpkg dpkg-dev      
 
       - name: 2. Import GPG Key
         env:
@@ -440,28 +439,25 @@ jobs:
 
       - name: 3. Create Debian Repo Structure
         run: |
-          # --- MODIFICA CHIAVE ---
-          # Crea la struttura sul volume montato
-          mkdir -p /mnt/repos/deb/pool/main
-          mkdir -p /mnt/repos/deb/dists/stable/main/binary-amd64
-          mkdir -p /mnt/repos/deb/dists/stable/main/binary-arm64
-          mkdir -p /mnt/repos/deb/dists/stable/main/binary-i386      
+          # Lavoriamo direttamente sul percorso REALE dell'host
+          mkdir -p /var/www/html/repos/deb/pool/main
+          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-amd64
+          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-arm64
+          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-i386      
 
       - name: 4. Download Debian artifacts
         uses: actions/download-artifact@v4
         with:
           name: debian-packages
-          # --- MODIFICA CHIAVE ---
-          # Scarica direttamente nella directory montata
-          path: /mnt/repos/deb/pool/main/
+          # Scarica direttamente nel percorso REALE dell'host
+          path: /var/www/html/repos/deb/pool/main/
 
       - name: 5. Update Debian Repo (NO Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        # --- MODIFICA CHIAVE ---
-        # Lavora direttamente nella directory montata
-        working-directory: /mnt/repos/deb
+        # Lavora direttamente nel percorso REALE dell'host
+        working-directory: /var/www/html/repos/deb
         run: |
           set -e
           echo "--- DEBIAN: Genero file Packages ---"
@@ -491,18 +487,15 @@ jobs:
               --batch --yes --passphrase "$GPG_PASSPHRASE" \
               dists/stable/Release
       
-      # --- MODIFICA CHIAVE ---
-      # Step 6 (Upload Artifact) rimosso. Non è più necessario.
-
   # ========================================================
-  # 3.0 JOB DI PUBBLICAZIONE
-  # Pulisce e indicizza Arch, Manjaro, Alpine e RPM
-  # ========================================================
+  # 3.0 JOB DI PUBBLICAZIONE FINALE (GIRA SU HOST, IN CONTAINER)
+    # ========================================================
   publish-all-repos:
     needs: [build-fc42, build-opensuse, build-el9, build-arch, build-manjaro, build-alpine, publish-debian-repo]
-    runs-on: self-hosted
+    # Gira sul tuo runner self-hosted
+    runs-on: self-hosted 
 
-    # /var/www/html/repos è il path reale della repository
+    # QUESTO CONTAINER E' NECESSARIO
     container:
       image: archlinux
       volumes:
@@ -514,7 +507,8 @@ jobs:
           pacman-key --init && pacman-key --populate archlinux
           pacman -Syu --noconfirm
           pacman -S --noconfirm pacman-contrib gnupg createrepo_c apk-tools
-
+      
+      # (Download steps 3.2 - 3.7 invariati, usano /mnt/repos)
       - name: 3.2 Download Fedora 42 artifacts
         uses: actions/download-artifact@v4
         with:
@@ -561,21 +555,17 @@ jobs:
           gpg-connect-agent reloadagent /bye
           echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
 
-      # Pulizia precedenti pacchetti penguins-eggs:
-      # Arch, Manjaro ed Alpine
+      # (Steps 5, 6, 7, 8 invariati, usano /mnt/repos)
       - name: 5. Update Arch Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           set -ex
-          # Lavoriamo direttamente nella directory montata
           cd /mnt/repos/arch
           echo "--- ARCH: Files BEFORE cleaning ---"
           ls -l
           
-          # --- LOGICA DI PULIZIA ARCH ---
           echo '--- ARCH: Cleaning old packages ---'
-          # La tua regex collaudata
           PKG_BASES=$(find . -maxdepth 1 -name '*.pkg.tar.zst' -exec basename {} \; | sed -E 's/(.*)-[0-9]+\..*/\1/' | sort -u)
           echo "--- ARCH: Found package bases: $PKG_BASES"
           for base in $PKG_BASES; do
@@ -614,8 +604,6 @@ jobs:
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd / # Ritorna alla root
 
-      # --- MODIFICA CHIAVE ---
-      # Aggiunto lo step per l'indicizzazione RPM
       - name: 7. Update RPM Repos (NO Pruning)
         run: |
           set -e
@@ -631,7 +619,6 @@ jobs:
         run: |
           set -ex
           cd /mnt/repos/alpine
-          # Sposta tutti i pacchetti .apk nella directory corrente
           find . -mindepth 2 -type f -name '*.apk' -exec mv {} . \;
           
           echo "--- ALPINE: Files BEFORE cleaning ---"
