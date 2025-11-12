@@ -447,22 +447,25 @@ jobs:
 
 
 
-  # ========================================================
+# ========================================================
   # 2.0 JOB DI PUBBLICAZIONE DEBIAN
-  # runs-on: self-hosted (runner vps) No container
+  # runs-on: self-hosted (runner vps) CON CONTAINER
   # ========================================================
     publish-debian-repo:
       needs: [build-debian]
       runs-on: self-hosted
-    
-    # --- NESSUN CONTAINER RICHIESTO ---
-    # L'host è già Debian.
+      
+      container:
+        image: debian:13
+        volumes:
+          - /var/www/html/repos/deb:/mnt/deb-repo # HostPath:ContainerPath
     
       steps:
       - name: 1. Install Debian Dependencies on Host
         run: |
-          sudo apt-get update
-          sudo apt-get install -y apt-utils gnupg dpkg dpkg-dev      
+          # --- MODIFICA: 'sudo' non è più necessario ---
+          apt-get update
+          apt-get install -y apt-utils gnupg dpkg dpkg-dev
 
       - name: 2. Import GPG Key
         env:
@@ -478,25 +481,25 @@ jobs:
 
       - name: 3. Create Debian Repo Structure
         run: |
-          # Lavoriamo direttamente sul percorso REALE dell'host
-          mkdir -p /var/www/html/repos/deb/pool/main
-          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-amd64
-          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-arm64
-          mkdir -p /var/www/html/repos/deb/dists/stable/main/binary-i386      
+          # --- MODIFICA: Usiamo il percorso del container mappato ---
+          mkdir -p /mnt/deb-repo/pool/main
+          mkdir -p /mnt/deb-repo/dists/stable/main/binary-amd64
+          mkdir -p /mnt/deb-repo/dists/stable/main/binary-arm64
+          mkdir -p /mnt/deb-repo/dists/stable/main/binary-i386
 
       - name: 4. Download Debian artifacts
         uses: actions/download-artifact@v4
         with:
           name: debian-packages
-          # Scarica direttamente nel percorso REALE dell'host
-          path: /var/www/html/repos/deb/pool/main/
+          # --- MODIFICA: Usiamo il percorso del container mappato ---
+          path: /mnt/deb-repo/pool/main/
 
       - name: 5. Update Debian Repo (NO Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        # Lavora direttamente nel percorso REALE dell'host
-        working-directory: /var/www/html/repos/deb
+        # --- MODIFICA: Usiamo il percorso del container mappato ---
+        working-directory: /mnt/deb-repo
         run: |
           set -e
           echo "--- DEBIAN: Genero file Packages ---"
@@ -529,6 +532,7 @@ jobs:
 
 
 
+              
   # ========================================================
   # 3.0 JOB DI PUBBLICAZIONE FINALE
   # runs-on: self-hosted (runner vps) 
