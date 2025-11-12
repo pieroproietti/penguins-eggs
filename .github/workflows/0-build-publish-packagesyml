@@ -1,7 +1,7 @@
 # ========================================================
-# NOME: 0-build-publish-new
+# NOME: 0-build-publish-packages
 # ========================================================
-name: 0-build-publish-new
+name: 0-build-publish-packages
 env:
   BOOTLOADERS_VERSION: v25.9.8
 on:
