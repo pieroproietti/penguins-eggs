@@ -19,8 +19,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.12
+Testing, mainly restructuring and correction of the new CI for release (birthday edition).
+
 ## v25.11.10
-Testing release, just same little fix.
+Testing, mainly restructuring and correction of the new CI for release.
 
 ## v25.11.8
 ### Repository Update and Instructions
