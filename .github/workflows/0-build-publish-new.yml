@@ -16,11 +16,11 @@ jobs:
     # ========================================================
     # build-alpine
     # ========================================================
-    build-alpine:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: alpine:latest
-    steps:
+    build-alpine: 
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: alpine:latest
+      steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
@@ -66,11 +66,11 @@ jobs:
   # ========================================================
   # build-arch
   # ========================================================
-  build-arch:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: archlinux
-    steps:
+    build-arch:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: archlinux
+      steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
@@ -119,11 +119,11 @@ jobs:
   # ========================================================
   # build-debian
   # ========================================================
-  build-debian:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: debian:13
-    steps:
+    build-debian:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: debian:13
+      steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
       - name: 2. Install Debian Build Dependencies
@@ -157,16 +157,16 @@ jobs:
             releases/*.deb
             releases/*.sha256
           retention-days: 1
-  # END build-debian
+    # END build-debian
 
   # ========================================================
   # build-el9
   # ========================================================
-  build-el9:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: almalinux:9
-    steps:
+    build-el9:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: almalinux:9
+      steps:
       - name: 0. Install Prerequisite Tools
         run: |
           dnf install -y --allowerasing git tar gzip
@@ -235,16 +235,16 @@ jobs:
         with:
           name: el9-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
-  # END build-el9
+    # END build-el9
 
   # ========================================================
   # build-fc42
   # ========================================================
-  build-fc42:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: fedora:42
-    steps:
+    build-fc42:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: fedora:42
+      steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
         with:
@@ -300,16 +300,16 @@ jobs:
         with:
           name: fedora-42-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
-  # END build-fc42
+    # END build-fc42
 
   # ========================================================
   # build-manjaro
   # ========================================================
-  build-manjaro:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: manjarolinux/base
-    steps:
+    build-manjaro:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: manjarolinux/base
+      steps:
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
@@ -360,11 +360,11 @@ jobs:
   # ========================================================
   # build-opensuse
   # ========================================================
-  build-opensuse:
-    runs-on: ubuntu-latest # Runner GitHub
-    container:
-      image: opensuse/leap
-    steps:
+    build-opensuse:
+      runs-on: ubuntu-latest # Runner GitHub
+      container:
+        image: opensuse/leap
+      steps:
       - name: 0. Install Prerequisite Tools
         run: |
           zypper --non-interactive refresh
@@ -442,7 +442,7 @@ jobs:
           name: opensuse-leap-rpm-for-repo
           path: ${{ steps.build.outputs.rpm_path }}
 
-  # END build-opensuse
+    # END build-opensuse
 
 
 
@@ -451,14 +451,14 @@ jobs:
   # 2.0 JOB DI PUBBLICAZIONE DEBIAN
   # runs-on: self-hosted (runner vps) No container
   # ========================================================
-  publish-debian-repo:
-    needs: [build-debian]
-    runs-on: self-hosted
+    publish-debian-repo:
+      needs: [build-debian]
+      runs-on: self-hosted
     
     # --- NESSUN CONTAINER RICHIESTO ---
     # L'host è già Debian.
     
-    steps:
+      steps:
       - name: 1. Install Debian Dependencies on Host
         run: |
           sudo apt-get update
@@ -525,7 +525,7 @@ jobs:
               -o dists/stable/InRelease \
               --batch --yes --passphrase "$GPG_PASSPHRASE" \
               dists/stable/Release
-      
+
 
 
 
@@ -533,17 +533,16 @@ jobs:
   # 3.0 JOB DI PUBBLICAZIONE FINALE
   # runs-on: self-hosted (runner vps) 
   # ========================================================
-  publish-all-repos:
-    needs: [build-alpine, build-arch, build-el9, build-fc42, build-manjaro, build-opensuse, \
-            publish-debian-repo]
-    runs-on: self-hosted 
+    publish-all-repos:
+      needs: [build-alpine, build-arch, build-el9, build-fc42, build-manjaro, build-opensuse, publish-debian-repo]
+      runs-on: self-hosted 
 
-    container:
-      image: archlinux
-      volumes:
-        - /var/www/html/repos:/mnt/repos # HostPath:ContainerPath
+      container:
+        image: archlinux
+        volumes:
+          - /var/www/html/repos:/mnt/repos # HostPath:ContainerPath
     
-    steps:
+      steps:
       - name: 1. Install Dependencies
         run: |
           pacman-key --init && pacman-key --populate archlinux
