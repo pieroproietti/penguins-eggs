@@ -422,7 +422,8 @@ jobs:
           tar -czf $HOME/rpmbuild/SOURCES/penguins-eggs.tar.gz -C "$STAGING_DIR" "$SOURCE_DIR_NAME"
           curl -LO https://github.com/pieroproietti/penguins-bootloaders/releases/download/${{ env.BOOTLOADERS_VERSION }}/bootloaders.tar.gz
           cp bootloaders.tar.gz $HOME/rpmbuild/SOURCES/
-      - name: 7. Build and Sign RPM package
+
+      - name: 8. Build and Sign RPM package
         id: build
         run: |
           export GPG_TTY=$(tty)
@@ -434,7 +435,8 @@ jobs:
           echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 -o /dev/null -s /dev/null
           rpmbuild -ba packaging/rpm/penguins-eggs.spec.suse
           echo "rpm_path=$(find $HOME/rpmbuild/RPMS -name '*.rpm')" >> $GITHUB_OUTPUT
-      - name: 8. Upload RPM Artifact for publishing
+
+      - name: 9. Upload RPM Artifact for publishing
         uses: actions/upload-artifact@v4
         with:
           name: opensuse-leap-rpm-for-repo
