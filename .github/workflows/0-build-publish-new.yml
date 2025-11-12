@@ -593,7 +593,7 @@ jobs:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
         run: echo "$GPG_SIGNING_KEY" | gpg --import --batch
 
-      - name: 4. Immetti la passphrase!!!
+      - name: 5. Immetti la passphrase!!!
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
@@ -605,7 +605,7 @@ jobs:
 
 
       # Update 
-      - name: 5. Update Alpine Repo (WITH Pruning)
+      - name: 6. Update Alpine Repo (WITH Pruning)
         env:
           ALPINE_SIGNING_KEY_PUB: ${{ secrets.ALPINE_SIGNING_KEY_PUB }}
         run: |
@@ -632,7 +632,7 @@ jobs:
           echo "$ALPINE_SIGNING_KEY_PUB" > penguins-eggs.rsa.pub
           cd / # Ritorna alla root      
 
-      - name: 6. Update Arch Repo (WITH Pruning)
+      - name: 7. Update Arch Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
@@ -661,7 +661,7 @@ jobs:
           repo-add --sign --key "$GPG_KEY_ID" penguins-eggs.db.tar.gz *.pkg.tar.zst
           cd / # Ritorna alla root
 
-      - name: 7. Update RPM Repos
+      - name: 8. Update RPM Repos
         run: |
           set -e
           echo "--- RPM: Re-indexing ---"
@@ -671,7 +671,7 @@ jobs:
           cd / # Ritorna alla root
 
 
-      - name: 8. Update Manjaro Repo (WITH Pruning)
+      - name: 9. Update Manjaro Repo (WITH Pruning)
         env:
           GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
