@@ -1,4 +1,4 @@
-name: 1-reindex-on-host-dockerized-clean-alpine-arch-manjaro
+name: 1-reindex-repository
 
 on:
   workflow_dispatch:
