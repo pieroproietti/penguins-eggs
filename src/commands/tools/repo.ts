@@ -6,16 +6,8 @@
  * license: MIT
  */
 
-/**
- * Debian 13 trixe, Ubuntu 24.04 noble usano il formato deb822
- * * esiste un comando per modernizzare le sorgenti:
- * sudo apt modernize-sources
- */
-
-
 import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
-import path from 'node:path'
 
 import Distro from '../../classes/distro.js'
 import Utils from '../../classes/utils.js'
@@ -28,23 +20,26 @@ const repoKeyUrl = repoUrl + '/KEY.asc'
 let repoPath = '/etc/apt/sources.list.d/penguins-repos' // Base path without extension
 const repoKeyPath = '/usr/share/keyrings/penguins-repos.gpg'
 
-// RPM (Fedora/EL)
-const rpmKeyUrl = repoUrl + '/rpm/RPM-GPG-KEY-penguins-eggs'
-const rpmKeyOwner = 'piero.proietti@gmail.com' // Per cercare e rimuovere la chiave
-const rpmRepoFilePath = '/etc/yum.repos.d/penguins-eggs.repo' // Percorso di destinazione
-const rpmRepoFedoraUrl = repoUrl + '/rpm/fedora/penguins-eggs.repo'
-const rpmRepoEl9Url = repoUrl + '/rpm/el9/penguins-eggs.repo'
-
-// openSUSE
-const opensuseRepoUrl = repoUrl + '/rpm/opensuse/penguins-eggs.repo'
-const opensuseRepoName = 'penguins-eggs' // Dal file .repo
-
 // Alpine
 const alpineRepoUrl = repoUrl + '/alpine/'
 const alpineKeyName = 'piero.proietti@gmail.com-662b958c'
 const alpineKeyUrl = repoUrl + `/alpine/${alpineKeyName}.rsa.pub`
 const alpineKeyPath = `/etc/apk/keys/${alpineKeyName}.rsa.pub`
 const alpineRepoFile = '/etc/apk/repositories'
+
+// RPM (Fedora/EL)
+const rpmKeyUrl = repoKeyUrl
+const rpmKeyOwner = 'piero.proietti@gmail.com' // Per cercare e rimuovere la chiave
+const rpmRepoFilePath = '/etc/yum.repos.d/penguins-eggs.repo' // Percorso di destinazione
+const rpmRepoFedoraUrl = repoUrl + '/rpm/fedora/42'
+const rpmRepoEl9Url = repoUrl + '/rpm/el9'
+
+// RPM (openSUSE)
+const opensuseKeyUrl = repoKeyUrl
+const opensuseRepoUrl = repoUrl + '/rpm/opensuse/leap'
+const opensuseRepoFilePath = '/etc/zypp/repos.d/penguins-eggs.repo' // NUOVO
+const opensuseKeyOwner = rpmKeyOwner // RIUTILIZZA
+
 
 
 /**
@@ -74,19 +69,21 @@ export default class Repo extends Command {
 
     if (Utils.isRoot()) {
       const distro = new Distro()
+      const msgReposAdd = 'Are you sure you want to add https://penguins-eggs.net/repos to your repositories?'
+      const msgReposRemove = 'Are you sure to remove https://penguins-eggs.net/repos to your repositories?'
 
       if (distro.familyId === 'alpine') {
         /**
          * Alpine
          */
         if (flags.add) {
-          Utils.warning(`Sei sicuro di voler aggiungere penguins-repos ai tuoi repository?`)
-          if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
+          Utils.warning(msgReposAdd)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await alpineRepoAdd()
           }
         } else if (flags.remove) {
-          Utils.warning(`Sei sicuro di voler rimuovere penguins-repos dai tuoi repository?`)
-          if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
+          Utils.warning(msgReposRemove)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await alpineRepoRemove()
           }
         }
@@ -94,13 +91,13 @@ export default class Repo extends Command {
 
       } else if (distro.familyId === 'archlinux') {
         if (flags.add) {
-          Utils.warning(`Are you sure to add penguins-repos to your repositories?`)
-          if (await Utils.customConfirm('Select yes to continue...')) {
+          Utils.warning(msgReposAdd)
+          if (await Utils.customConfirm('Select yes to continue')) {
             await archlinuxRepoAdd(distro.distroId)
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove penguins-repos to your repositories?`)
-          if (await Utils.customConfirm('Select yes to continue...')) {
+          Utils.warning(msgReposRemove)
+          if (await Utils.customConfirm('Select yes to continue')) {
             await archlinuxRepoRemove(distro.distroId)
           }
         }
@@ -111,18 +108,18 @@ export default class Repo extends Command {
          * Debian
          */
         if (flags.add) {
-          Utils.warning(`Are you sure to add source ${path.basename(repoPath)} to your repositories?`)
-          if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
+          Utils.warning(msgReposAdd)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await debianRemove()
-            if (await is822()) {
+            if (await debianIs822()) {
               await debianAdd822()
             } else {
               await debianAdd()
             }
           }
         } else if (flags.remove) {
-          Utils.warning(`Are you sure to remove source ${path.basename(repoPath)} to your repositories?`)
-          if (nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
+          Utils.warning(msgReposRemove)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await debianRemove()
           }
           await exec('apt-get update')
@@ -134,18 +131,18 @@ export default class Repo extends Command {
          */
         let repoUrl = rpmRepoFedoraUrl
         if (distro.distroId !== 'Fedora') {
-          repoUrl = rpmRepoEl9Url // Supponiamo che non-Fedora in questa famiglia sia EL
-          Utils.warning(`Rilevato ${distro.distroId}. Utilizzo del repository EL9.`)
+          // RHEL9
+          repoUrl = rpmRepoEl9Url
         }
 
         if (flags.add) {
-          Utils.warning(`Sei sicuro di voler aggiungere penguins-repos ai tuoi repository?`)
+          Utils.warning(msgReposAdd)
           if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
             await rpmRepoAdd(repoUrl, rpmKeyUrl)
           }
         } else if (flags.remove) {
-          Utils.warning(`Sei sicuro di voler rimuovere penguins-repos dai tuoi repository?`)
-          if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
+          Utils.warning(msgReposRemove)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await rpmRepoRemove(rpmRepoFilePath, rpmKeyOwner)
           }
         }
@@ -156,32 +153,102 @@ export default class Repo extends Command {
          * openSUSE
          */
         if (flags.add) {
-          Utils.warning(`Sei sicuro di voler aggiungere penguins-repos ai tuoi repository?`)
-          if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
-            await opensuseRepoAdd(opensuseRepoUrl)
+          Utils.warning(msgReposAdd)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
+            // Passiamo sia repoUrl che keyUrl
+            await opensuseRepoAdd(opensuseRepoUrl, opensuseKeyUrl)
           }
         } else if (flags.remove) {
-          Utils.warning(`Sei sicuro di voler rimuovere penguins-repos dai tuoi repository?`)
-          if (nointeractive || (await Utils.customConfirm('Seleziona sì per continuare...'))) {
-            await opensuseRepoRemove(opensuseRepoName)
+          Utils.warning(msgReposRemove)
+          if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
+            // RIUTILIZZIAMO la funzione di rimozione di Fedora!
+            await rpmRepoRemove(opensuseRepoFilePath, opensuseKeyOwner)
           }
         }
+        // Aggiungiamo un refresh finale
+        await exec('zypper refresh')
 
       } else {
         /**
          * All the others
          */
-        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-repo nor chaotic-aur!`)
+        Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs.net/repos nor chaotic-aur!`)
       }
     }
   }
 }
 
 
-/**
- * ARCH
+
+
+/** ===============================================
+ *  ALPINE
+ *  ===============================================
  */
-// archlinuxRepoAdd
+
+/**
+ * alpineRepoAdd()
+ */
+async function alpineRepoAdd() {
+  console.log('Adding Alpine repository...')
+  const echo = Utils.setEcho(true)
+
+  if (fs.existsSync(alpineKeyPath)) {
+    console.log('Chiave già esistente.')
+  } else {
+    await exec(`curl -fsSL ${alpineKeyUrl} -o ${alpineKeyPath}`, echo)
+  }
+
+  const repoFileContent = fs.readFileSync(alpineRepoFile, 'utf8')
+  if (repoFileContent.includes(alpineRepoUrl)) {
+    console.log('La linea del repository è già presente in /etc/apk/repositories.')
+  } else {
+    fs.appendFileSync(alpineRepoFile, `\n${alpineRepoUrl}\n`)
+    console.log('Repository aggiunto.')
+  }
+  console.log('Esegui "apk update" per aggiornare i repository.')
+}
+
+/**
+ * alpineRepoRemove()
+ */
+async function alpineRepoRemove() {
+  console.log('Rimozione repository Alpine...')
+  const echo = Utils.setEcho(true)
+
+  // Rimuovi chiave
+  if (fs.existsSync(alpineKeyPath)) {
+    await exec(`rm -f ${alpineKeyPath}`, echo)
+    console.log('Chiave del repository rimossa.')
+  } else {
+    console.log('Chiave del repository non trovata.')
+  }
+
+  // Rimuovi da /etc/apk/repositories
+  if (fs.existsSync(alpineRepoFile)) {
+    let content = fs.readFileSync(alpineRepoFile, 'utf8')
+    if (content.includes(alpineRepoUrl)) {
+      const newLines = content.split('\n').filter(line => line.trim() !== alpineRepoUrl)
+      fs.writeFileSync(alpineRepoFile, newLines.join('\n'))
+      console.log('Linea del repository rimossa da /etc/apk/repositories.')
+    } else {
+      console.log('Linea del repository non trovata in /etc/apk/repositories.')
+    }
+  }
+  console.log('Esegui "apk update" per aggiornare i repository.')
+}
+
+
+
+
+/** ===============================================
+ *  ARCH
+ *  ===============================================
+ */
+
+/**
+ * archlinuxRepoAdd()
+ */
 async function archlinuxRepoAdd(distroId = "Arch") {
   console.log(`Adding penguins-repos for ${distroId}`)
 
@@ -220,7 +287,11 @@ async function archlinuxRepoAdd(distroId = "Arch") {
   console.log(message);
 }
 
-// archlinuxRepoRemove
+
+/**
+ * archlinuxRepoRemove()
+ * @param distroId 
+ */
 async function archlinuxRepoRemove(distroId = 'Arch') {
   console.log(`Removing penguins-repos for ${distroId}`)
 
@@ -260,7 +331,10 @@ async function archlinuxRepoRemove(distroId = 'Arch') {
   }
 }
 
-// archlinuxAurAdd
+
+/**
+ * archlinuxAurAdd()
+ */
 async function archlinuxAurAdd() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
@@ -282,7 +356,9 @@ async function archlinuxAurAdd() {
   fs.appendFileSync('/etc/pacman.conf', chaoticAppend)
 }
 
-// archlinuxAurRemove
+/**
+ * archlinuxAurRemove()
+ */
 async function archlinuxAurRemove() {
   const path = '/var/cache/pacman/pkg/'
   const keyring = 'chaotic-keyring.pkg.tar.zst'
@@ -300,10 +376,15 @@ async function archlinuxAurRemove() {
 }
 
 
-/**
- * DEBIAN
+
+/** ===============================================
+ *  DEBIAN
+ *  ===============================================
  */
-// debianAdd
+
+/**
+ * debianAdd()
+ */
 async function debianAdd() {
   await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
 
@@ -311,14 +392,18 @@ async function debianAdd() {
   fs.writeFileSync(`${repoPath}.list`, content)
 }
 
-//  debianRemove
+/**
+ * debianRemove()
+ */
 async function debianRemove() {
   await exec(`rm -f ${repoKeyPath}`)
   await exec(`rm -f ${repoPath}*`)
 }
 
-// is822
-async function is822(): Promise<boolean> {
+/**
+ * debianIs822()
+ **/
+async function debianIs822(): Promise<boolean> {
   let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
   const is822Result = (await exec(test, { capture: true, echo: false }))
@@ -330,7 +415,9 @@ async function is822(): Promise<boolean> {
   return retval
 }
 
-// debianAdd822
+/**
+ * debianAdd822()
+ */
 async function debianAdd822() {
   await exec(`curl -fsSL ${repoKeyUrl} | gpg --dearmor -o ${repoKeyPath}`)
 
@@ -345,86 +432,71 @@ async function debianAdd822() {
 }
 
 
-// ... [funzioni DEBIAN esistenti] ...
-
-/**
- * ALPINE
+/** ===============================================
+ *  Fedora/EL9
+ *  ===============================================
  */
-async function alpineRepoAdd() {
-  console.log('Aggiunta repository Alpine...')
-  const echo = Utils.setEcho(true)
-
-  if (fs.existsSync(alpineKeyPath)) {
-    console.log('Chiave già esistente.')
-  } else {
-    await exec(`curl -fsSL ${alpineKeyUrl} -o ${alpineKeyPath}`, echo)
-  }
-
-  const repoFileContent = fs.readFileSync(alpineRepoFile, 'utf8')
-  if (repoFileContent.includes(alpineRepoUrl)) {
-    console.log('La linea del repository è già presente in /etc/apk/repositories.')
-  } else {
-    fs.appendFileSync(alpineRepoFile, `\n${alpineRepoUrl}\n`)
-    console.log('Repository aggiunto.')
-  }
-  console.log('Esegui "apk update" per aggiornare i repository.')
-}
-
-async function alpineRepoRemove() {
-  console.log('Rimozione repository Alpine...')
-  const echo = Utils.setEcho(true)
-
-  // Rimuovi chiave
-  if (fs.existsSync(alpineKeyPath)) {
-    await exec(`rm -f ${alpineKeyPath}`, echo)
-    console.log('Chiave del repository rimossa.')
-  } else {
-    console.log('Chiave del repository non trovata.')
-  }
-
-  // Rimuovi da /etc/apk/repositories
-  if (fs.existsSync(alpineRepoFile)) {
-    let content = fs.readFileSync(alpineRepoFile, 'utf8')
-    if (content.includes(alpineRepoUrl)) {
-      const newLines = content.split('\n').filter(line => line.trim() !== alpineRepoUrl)
-      fs.writeFileSync(alpineRepoFile, newLines.join('\n'))
-      console.log('Linea del repository rimossa da /etc/apk/repositories.')
-    } else {
-      console.log('Linea del repository non trovata in /etc/apk/repositories.')
-    }
-  }
-  console.log('Esegui "apk update" per aggiornare i repository.')
-}
 
 /**
- * RPM (Fedora/EL)
+ * rpmRepoAdd()
+ * @param repoUrl 
+ * @param keyUrl 
+ */
+/**
+ * rpmRepoAdd()
+ * @param repoUrl 
+ * @param keyUrl 
  */
 async function rpmRepoAdd(repoUrl: string, keyUrl: string) {
-  console.log(`Aggiunta repository RPM da ${repoUrl}...`)
-  const echo = Utils.setEcho(true)
+  console.log(`Adding RPM repository for ${repoUrl}...`);
+  const echo = Utils.setEcho(true);
 
-  // Assicura che dnf-plugins-core sia installato
-  await exec('dnf install dnf-plugins-core -y', echo)
+  // 1. Definisci il contenuto del file .repo
+  const repoContent = `
+[penguins-eggs]
+name=penguins-eggs.net repos
+baseurl=${repoUrl}
+enabled=1
+gpgcheck=1
+gpgkey=${keyUrl}
+`;
+  // keyUrl (https://penguins-eggs.net/repos/KEY.asc) è già corretto per il campo gpgkey
 
-  // Aggiungi repo
-  await exec(`dnf config-manager --add-repo ${repoUrl}`, echo)
+  try {
+    // 2. Scrivi il file .repo
+    fs.writeFileSync(rpmRepoFilePath, repoContent.trim());
+    console.log(`Repository file created at ${rpmRepoFilePath}`);
 
-  // Importa chiave
-  await exec(`rpm --import ${keyUrl}`, echo)
+    // 3. Importa la chiave GPG nel database RPM
+    // (dnf lo farebbe comunque, ma importarlo è più pulito)
+    await exec(`rpm --import ${keyUrl}`, echo);
+    console.log(`GPG key imported from ${keyUrl}`);
 
-  console.log('Repository aggiunto. Esegui "dnf check-update" per aggiornare.')
+    // 4. Pulisci la cache per forzare l'aggiornamento
+    await exec('dnf clean metadata', echo);
+
+    console.log('Repository added. Use "dnf check-update" to refresh.');
+
+  } catch (error: any) {
+    console.error(`Failed to add RPM repository: ${error.message}`);
+  }
 }
 
+/**
+ * rpmRepoRemove()
+ * @param repoFilePath 
+ * @param keyOwner 
+ */
 async function rpmRepoRemove(repoFilePath: string, keyOwner: string) {
-  console.log('Rimozione repository RPM...')
+  console.log('Removing RPM repo...')
   const echo = Utils.setEcho(true)
 
   // Rimuovi file .repo
   if (fs.existsSync(repoFilePath)) {
     await exec(`rm -f ${repoFilePath}`, echo)
-    console.log(`Rimosso ${repoFilePath}.`)
+    console.log(`Removed ${repoFilePath}.`)
   } else {
-    console.log(`File repository ${repoFilePath} non trovato.`)
+    console.log(`File repository ${repoFilePath} not found.`)
   }
 
   // Rimuovi chiave GPG
@@ -440,36 +512,56 @@ async function rpmRepoRemove(repoFilePath: string, keyOwner: string) {
       }
     }
   } else {
-    console.log('Nessuna chiave GPG corrispondente da rimuovere.')
+    console.log('No GPG key to remove.')
   }
 
-  console.log('Repository rimosso. Esegui "dnf check-update" per aggiornare.')
+  console.log('Repository removed. Use "dnf check-update" to refresh.')
 }
 
-/**
- * openSUSE
+
+
+
+
+/** ===============================================
+ * Opensuse
+ * ===============================================
  */
-async function opensuseRepoAdd(repoUrl: string) {
+
+/**
+ * opensuseRepoAdd()
+ * @param repoUrl 
+ * @param keyUrl 
+ */
+async function opensuseRepoAdd(repoUrl: string, keyUrl: string) {
   console.log(`Aggiunta repository openSUSE da ${repoUrl}...`)
   const echo = Utils.setEcho(true)
 
-  // zypper ar <url>
-  await exec(`zypper addrepo ${repoUrl}`, echo)
+  // 1. Definisci il contenuto del file .repo
+  const repoContent = `
+[penguins-eggs]
+name=penguins-eggs.net repos
+baseurl=${repoUrl}
+enabled=1
+gpgcheck=1          
+repo_gpgcheck=0     <-- AGGIUNGI QUESTA LINEA
+gpgkey=${keyUrl}
+autorefresh=1
+`;
+// gpgcheck=1 -> Controlla i pacchetti RPM (corretto)
+// repo_gpgcheck=0 -> NON controllare i metadati/repomd.xml (risolve il prompt)
 
-  // Refresh e importa chiave
-  await exec(`zypper --gpg-auto-import-keys refresh`, echo)
+  try {
+    // 2. Scrivi il file .repo nella directory di zypper
+    fs.writeFileSync(opensuseRepoFilePath, repoContent.trim());
+    console.log(`Repository file created at ${opensuseRepoFilePath}`);
 
-  console.log('Repository aggiunto.')
-}
+    // 3. Importa la chiave GPG nel database RPM (stesso comando di Fedora)
+    await exec(`rpm --import ${keyUrl}`, echo);
+    console.log(`GPG key imported from ${keyUrl}`);
+    
+    console.log('Repository added. Use "zypper refresh" to update.');
 
-async function opensuseRepoRemove(repoName: string) {
-  console.log(`Rimozione repository openSUSE: ${repoName}...`)
-  const echo = Utils.setEcho(true)
-
-  // zypper rr <name>
-  await exec(`zypper removerepo ${repoName}`, echo)
-
-  // Refresh
-  await exec(`zypper refresh`, echo)
-  console.log('Repository rimosso.')
+  } catch (error: any) {
+    console.error(`Failed to add openSUSE repository: ${error.message}`);
+  }
 }
