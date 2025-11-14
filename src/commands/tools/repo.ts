@@ -533,7 +533,7 @@ async function rpmRepoRemove(repoFilePath: string, keyOwner: string) {
  * @param keyUrl 
  */
 async function opensuseRepoAdd(repoUrl: string, keyUrl: string) {
-  console.log(`Aggiunta repository openSUSE da ${repoUrl}...`)
+  console.log(`Adding repository openSUSE ${repoUrl}`)
   const echo = Utils.setEcho(true)
 
   // 1. Definisci il contenuto del file .repo
@@ -543,7 +543,7 @@ name=penguins-eggs.net repos
 baseurl=${repoUrl}
 enabled=1
 gpgcheck=1          
-repo_gpgcheck=0     <-- AGGIUNGI QUESTA LINEA
+repo_gpgcheck=0
 gpgkey=${keyUrl}
 autorefresh=1
 `;
