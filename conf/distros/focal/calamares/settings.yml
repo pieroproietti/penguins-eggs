@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2021 Harald Sitter <sitter@kde.org>
+# SPDX-FileCopyrightText: 2017 Jonathan Riddell <jr@jriddell.org>
+# SPDX-FileCopyrightText: 2016 Rohan Garg <rohan@kde.org>
+---
+modules-search: [ local, /usr/share/calamares/modules ]
+
+instances:
+- id:       mkinitramfs
+  module:   shellprocess
+  config:   shellprocess@mkinitramfs.conf
+
+- id:       install_translations
+  module:   shellprocess
+  config:   shellprocess@install_translations.conf
+
+- id:       before_bootloader
+  module:   contextualprocess
+  config:   before_bootloader_context.conf
+
+- id:       after_bootloader
+  module:   contextualprocess
+  config:   after_bootloader_context.conf
+
+- id: logs
+  module: shellprocess
+  config: shellprocess@logs.conf
+
+- id: boot_deploy
+  module: shellprocess
+  config: shellprocess@boot_deploy.conf
+
+- id: boot_reconfigure
+  module: shellprocess
+  config: shellprocess@boot_reconfigure.conf
+# NB: nomodeset is not forwared for OEM mode. An OEM shouldn't use this
+#   kind of hack for OEM installations!
+
+- id: nomodeset
+  module: shellprocess
+  config: shellprocess@nomodeset.conf
+
+- id: aptsources
+  module: shellprocess
+  config: shellprocess@aptsources.conf
+
+sequence:
+
+  - show:
+    - welcome
+    - locale
+    - keyboard
+    - partition
+    - users     # OPTIONAL
+
+  - exec:
+    - partition
+    - mount
+    - unpackfs
+    - machineid
+    - fstab
+    - locale
+    - keyboard
+    - localecfg
+    - luksbootkeyfile
+    - users           # OPTIONAL
+    - displaymanager
+    - networkcfg
+    - hwclock
+    - shellprocess@boot_deploy
+    - initramfscfg
+    - grubcfg
+    - contextualprocess@before_bootloader
+    - bootloader
+    - contextualprocess@after_bootloader
+    - shellprocess@mkinitramfs
+    # initramfs
+    - shellprocess@boot_reconfigure
+    - shellprocess@nomodeset
+    - shellprocess@aptsources
+    - shellprocess@install_translations
+    - packages
+    - cleanup
+    - shellprocess@logs
+    - umount
+
+  - show:
+    - finished
+
+branding: default
+prompt-install: false
+dont-chroot: false
+oem-setup: false
+disable-cancel: false
+disable-cancel-during-exec: false
+hide-back-and-next-during-exec: false
+quit-at-end: false

@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+---
+message: "installation of translation packages..."
+dontChroot: false
+timeout: 1800
+script:
+    - "/usr/libexec/calamares/calamares-l10n-helper.sh"

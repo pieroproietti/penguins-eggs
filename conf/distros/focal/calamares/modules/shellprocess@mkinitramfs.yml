@@ -1,0 +1,6 @@
+# shellprocess_mkinitramfs.conf
+message: "Creating the boot image (initramfs)..."
+dontChroot: false
+timeout: 300
+script:
+    - "mkinitramfs -o /boot/initrd.img-$(uname -r)"

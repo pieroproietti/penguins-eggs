@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2020 Harald Sitter <sitter@kde.org>
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+#
+# Follow up to boot_deploy. This is inside chroot!
+# Make sure everything is configured properly by reconfiguring the package.
+---
+message: "Final reconfiguration of the kernel and bootloader..."
+dontChroot: false
+timeout: 300
+script:
+    - chmod 644 /boot/vmlinuz-`uname -r`
+    - chown 0:0 /boot/vmlinuz-`uname -r`
+    # Reconfigure to ensure hooks are run as necessary. But disable initrd
+    # updating, it happens in initramfs module controlled by cala.
+    - INITRD=No dpkg-reconfigure -fnoninteractive linux-image-`uname -r`

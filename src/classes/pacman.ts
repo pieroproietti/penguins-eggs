@@ -455,21 +455,21 @@ export default class Pacman {
        **********************************************************************************/
 
       /**
-       * Ubuntu focal: eredita da noble
+       * Ubuntu focal: eredita da focal
        */
     } else if (distroUniqueId === 'focal') {
       const dest = '/etc/penguins-eggs.d/distros/focal'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
       
 
       /**
-       * Ubuntu 22.04 jammy: eredita da noble
+       * Ubuntu 22.04 jammy: eredita da focal
        */
     } else if (distroUniqueId === 'jammy') {
       const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
+      const focal = `${rootPen}/conf/distros/focal`
+      await exec(`cp -r ${focal}/* ${dest}`, echo)
 
       /**
        * Ubuntu noble: e la nuova baseline per ubuntu
