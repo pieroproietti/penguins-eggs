@@ -28,7 +28,7 @@ const alpineKeyPath = `/etc/apk/keys/${alpineKeyName}.rsa.pub`
 const alpineRepoFile = '/etc/apk/repositories'
 
 // RPM (Fedora/EL)
-const rpmKeyUrl = repoUrl + '/rpm/RPM-GPG-KEY-penguins-eggs'
+const rpmKeyUrl = repoKeyUrl 
 const rpmKeyOwner = 'piero.proietti@gmail.com' // Per cercare e rimuovere la chiave
 const rpmRepoFilePath = '/etc/yum.repos.d/penguins-eggs.repo' // Percorso di destinazione
 const rpmRepoFedoraUrl = repoUrl + '/rpm/fedora/42'
@@ -36,6 +36,7 @@ const rpmRepoEl9Url = repoUrl + '/rpm/el9'
 
 
 // RPM (openSUSE)
+const opensuseKeyUrl = repoKeyUrl 
 const opensuseRepoUrl = repoUrl + '/rpm/opensuse/leap'
 const opensuseRepoName = 'penguins-eggs'
 
@@ -437,20 +438,44 @@ async function debianAdd822() {
  * @param repoUrl 
  * @param keyUrl 
  */
+/**
+ * rpmRepoAdd()
+ * @param repoUrl 
+ * @param keyUrl 
+ */
 async function rpmRepoAdd(repoUrl: string, keyUrl: string) {
-  console.log(`Adding RPM repository on ${repoUrl}...`)
-  const echo = Utils.setEcho(true)
+  console.log(`Adding RPM repository for ${repoUrl}...`);
+  const echo = Utils.setEcho(true);
 
-  // Assicura che dnf-plugins-core sia installato
-  await exec('dnf install dnf-plugins-core -y', echo)
+  // 1. Definisci il contenuto del file .repo
+  const repoContent = `
+[penguins-eggs]
+name=penguins-eggs.net repos
+baseurl=${repoUrl}
+enabled=1
+gpgcheck=1
+gpgkey=${keyUrl}
+`;
+  // keyUrl (https://penguins-eggs.net/repos/KEY.asc) è già corretto per il campo gpgkey
 
-  // Aggiungi repo
-  await exec(`dnf config-manager --add-repo ${repoUrl}`, echo)
+  try {
+    // 2. Scrivi il file .repo
+    fs.writeFileSync(rpmRepoFilePath, repoContent.trim());
+    console.log(`Repository file created at ${rpmRepoFilePath}`);
 
-  // Importa chiave
-  await exec(`rpm --import ${keyUrl}`, echo)
+    // 3. Importa la chiave GPG nel database RPM
+    // (dnf lo farebbe comunque, ma importarlo è più pulito)
+    await exec(`rpm --import ${keyUrl}`, echo);
+    console.log(`GPG key imported from ${keyUrl}`);
+    
+    // 4. Pulisci la cache per forzare l'aggiornamento
+    await exec('dnf clean metadata', echo);
 
-  console.log('Repository added. Use "dnf check-update" tu refresh.')
+    console.log('Repository added. Use "dnf check-update" to refresh.');
+
+  } catch (error: any) {
+    console.error(`Failed to add RPM repository: ${error.message}`);
+  }
 }
 
 /**
