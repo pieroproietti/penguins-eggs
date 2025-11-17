@@ -11,14 +11,15 @@ export default class Prerequisites extends Command {
   ]
 
   static flags = {
-    auto: Flags.boolean({char: 'a', description: 'Auto-install without confirmation'}),
+    add: Flags.boolean({char: 'a', description: 'install prerequisites without confirmation'}),
+    remove: Flags.boolean({char: 'a', description: 'remove prerequisites without confirmation'}),
   }
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(Prerequisites)
     
-    this.log('Penguins Eggs Dependency Installer')
-    this.log('==================================')
+    this.log('Penguins Eggs Dependency Install/Remove')
+    this.log('=======================================')
 
     // Determina la distribuzione
     const distro = await this.detectDistro()
