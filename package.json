@@ -116,7 +116,7 @@
         "build": "shx rm -rf dist && tsc -b",
         "clean": "rm -rf build dist *.AppImage AppDir squashfs-root",
         "deb": "shx rm -rf dist && tsc -p . && oclif manifest && pb deb --release $(cat ./release)",
-        "dist:appimage:simple": "pnpm build && pnpm run build:appimage:simple",
+        "dist:appimage": "pnpm build && pnpm run build:appimage",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
