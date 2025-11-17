@@ -2,8 +2,8 @@ import {Command, Flags} from '@oclif/core'
 import {execSync} from 'node:child_process'
 import {existsSync} from 'node:fs'
 
-export default class InstallDeps extends Command {
-  static description = 'Install system dependencies for Penguins Eggs'
+export default class Prerequisites extends Command {
+  static description = 'Install system prerequisistes for Penguins Eggs'
 
   static examples = [
     '<%= config.bin %> <%= command.id %>',
@@ -15,32 +15,32 @@ export default class InstallDeps extends Command {
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(InstallDeps)
+    const {flags} = await this.parse(Prerequisites)
     
-    this.log('🐧 Penguins Eggs Dependency Installer')
-    this.log('======================================')
+    this.log('Penguins Eggs Dependency Installer')
+    this.log('==================================')
 
     // Determina la distribuzione
     const distro = await this.detectDistro()
-    this.log(`🔍 Detected distribution: ${distro}`)
+    this.log(`Detected distribution: ${distro}`)
 
     // Mostra i comandi di installazione
     const installCmd = this.getInstallCommand(distro)
     
     this.log('')
-    this.log('📦 Installation command:')
+    this.log('Installation command:')
     this.log(`   ${installCmd}`)
     
     if (flags.auto) {
       this.log('')
-      this.log('🚀 Auto-installing dependencies...')
+      this.log('Auto-installing dependencies...')
       this.installDependencies(installCmd)
     } else {
       this.log('')
-      this.log('💡 To install automatically, run:')
+      this.log('To install automatically, run:')
       this.log(`   eggs install-deps --auto`)
       this.log('')
-      this.log('🔧 Or run the command above manually with sudo')
+      this.log('Or run the command above manually with sudo')
     }
   }
 
@@ -85,10 +85,10 @@ export default class InstallDeps extends Command {
     try {
       execSync(cmd, {stdio: 'inherit'})
       this.log('')
-      this.log('✅ All dependencies installed successfully!')
-      this.log('🚀 You can now use Penguins Eggs without issues.')
+      this.log('SUCCESS: All dependencies installed successfully!')
+      this.log('You can now use Penguins Eggs without issues.')
     } catch (error) {
-      this.error('❌ Failed to install dependencies. Please run the command manually.')
+      this.log('ERROR: Failed to install dependencies. Please run the command manually.')
     }
   }
 }

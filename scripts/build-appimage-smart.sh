@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🛠️ Building Penguins Eggs Smart AppImage..."
+echo "Building Penguins Eggs Smart AppImage..."
 
 APP_NAME="penguins-eggs"
 VERSION=$(node -p "require('./package.json').version")
@@ -9,11 +9,11 @@ ARCH="x86_64"
 
 # Verifica build
 if [ ! -f "dist/bin/dev.js" ]; then
-    echo "❌ Build not found. Run: pnpm run build"
+    echo "ERROR: Build not found. Run: pnpm run build"
     exit 1
 fi
 
-echo "✅ Build found: dist/bin/dev.js"
+echo "SUCCESS: Build found: dist/bin/dev.js"
 
 # Pulisci e crea struttura
 rm -rf AppDir
@@ -22,23 +22,37 @@ mkdir -p AppDir/usr/bin
 
 # Scarica appimagetool
 if [ ! -f "appimagetool" ]; then
-    echo "📥 Downloading appimagetool..."
+    echo "Downloading appimagetool..."
     wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH}.AppImage -O appimagetool
     chmod +x appimagetool
 fi
 
 # Copia il progetto
-echo "📦 Copying project files..."
+echo "Copying project files..."
 for dir in dist node_modules assets addons bin conf dracut manpages mkinitcpio mkinitfs scripts src templates; do
     if [ -d "$dir" ]; then
-        echo "  📁 $dir"
+        echo "  Copying: $dir"
         cp -r "$dir" AppDir/usr/lib/penguins-eggs/
     fi
 done
 
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
-# Crea AppRun "Smart" che verifica le dipendenze
+# Verifica che i file siano stati copiati correttamente
+echo "Verifying copied files..."
+if [ ! -f "AppDir/usr/lib/penguins-eggs/dist/bin/dev.js" ]; then
+    echo "ERROR: dist/bin/dev.js not copied to AppDir!"
+    exit 1
+fi
+
+if [ ! -d "AppDir/usr/lib/penguins-eggs/node_modules" ]; then
+    echo "ERROR: node_modules not copied to AppDir!"
+    exit 1
+fi
+
+echo "SUCCESS: All files copied correctly"
+
+# Crea AppRun con debug
 cat > AppDir/AppRun << 'EOF'
 #!/bin/bash
 set -e
@@ -46,14 +60,21 @@ set -e
 HERE="$(dirname "$(readlink -f "$0")")"
 APP_DIR="$HERE/usr/lib/penguins-eggs"
 
-# Usa solo tool di sistema - più affidabile
+echo "=== PENGUINS EGGS APPIMAGE DEBUG ==="
+echo "HERE: $HERE"
+echo "APP_DIR: $APP_DIR"
+echo "PATH: $PATH"
+echo "NODE_PATH: $NODE_PATH"
+echo "================================"
+
+# Setup ambiente
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin"
 export NODE_PATH="$APP_DIR/node_modules"
 
-echo "🐧 Penguins Eggs AppImage"
-echo "🔧 Checking system dependencies..."
+echo "Penguins Eggs AppImage"
+echo "Checking system dependencies..."
 
-# Lista completa delle dipendenze CRITICHE per penguins-eggs
+# Lista dipendenze CRITICHE
 CRITICAL_TOOLS=(
     "mksquashfs:squashfs-tools"
     "xorriso:xorriso" 
@@ -70,7 +91,7 @@ CRITICAL_TOOLS=(
     "grub-mkrescue:grub2-common"
 )
 
-# Lista delle dipendenze RACCOMANDATE
+# Lista dipendenze RACCOMANDATE
 RECOMMENDED_TOOLS=(
     "lvm2:lvm2"
     "dmsetup:lvm2"
@@ -89,16 +110,16 @@ check_tool() {
     
     if command -v "$tool" >/dev/null 2>&1; then
         if [ "$critical" = "1" ]; then
-            echo "   ✅ $tool: $(command -v "$tool")"
+            echo "   [OK] $tool: $(command -v "$tool")"
         else
-            echo "   ✅ $tool: available"
+            echo "   [OK] $tool: available"
         fi
         return 0
     else
         if [ "$critical" = "1" ]; then
-            echo "   ❌ $tool: MISSING (install: $package)"
+            echo "   [MISSING] $tool: install $package"
         else
-            echo "   ⚠️  $tool: missing (optional: $package)"
+            echo "   [OPTIONAL] $tool: missing ($package)"
         fi
         return 1
     fi
@@ -106,7 +127,7 @@ check_tool() {
 
 # Verifica tool critici
 echo ""
-echo "🚨 CRITICAL dependencies (required for basic functionality):"
+echo "CRITICAL dependencies (required for basic functionality):"
 MISSING_CRITICAL=0
 for tool_info in "${CRITICAL_TOOLS[@]}"; do
     IFS=':' read -r tool package <<< "$tool_info"
@@ -117,7 +138,7 @@ done
 
 # Verifica tool raccomandati
 echo ""
-echo "📦 RECOMMENDED dependencies (additional features):"
+echo "RECOMMENDED dependencies (additional features):"
 for tool_info in "${RECOMMENDED_TOOLS[@]}"; do
     IFS=':' read -r tool package <<< "$tool_info"
     check_tool "$tool" "$package" 0
@@ -126,13 +147,13 @@ done
 # Se mancano tool critici, mostra come installarli
 if [ $MISSING_CRITICAL -gt 0 ]; then
     echo ""
-    echo "❌ MISSING $MISSING_CRITICAL critical dependencies!"
+    echo "MISSING $MISSING_CRITICAL critical dependencies!"
     echo ""
-    echo "💡 INSTALLATION COMMANDS:"
+    echo "INSTALLATION COMMANDS:"
     echo ""
     
-    # Raggruppa per distribuzione
-    echo "📋 For Debian/Ubuntu:"
+    # Per Debian/Ubuntu
+    echo "For Debian/Ubuntu:"
     UBUNTU_PACKAGES=""
     for tool_info in "${CRITICAL_TOOLS[@]}"; do
         IFS=':' read -r tool package <<< "$tool_info"
@@ -143,133 +164,51 @@ if [ $MISSING_CRITICAL -gt 0 ]; then
     echo "   sudo apt-get update && sudo apt-get install$UBUNTU_PACKAGES"
     
     echo ""
-    echo "📋 For Fedora:"
+    echo "For Fedora:"
     echo "   sudo dnf install squashfs-tools xorriso rsync curl jq git parted cryptsetup dosfstools grub2-tools"
     
     echo ""
-    echo "📋 For Arch Linux:"
+    echo "For Arch Linux:"
     echo "   sudo pacman -S squashfs-tools libisoburn rsync curl jq git parted cryptsetup dosfstools grub"
     
     echo ""
-    echo "⏳ Continuing in 5 seconds (some features may not work)..."
-    sleep 5
+    echo "Continuing in 2 seconds..."
+    sleep 2
 fi
 
 echo ""
-echo "🚀 Starting Penguins Eggs..."
+echo "Starting Penguins Eggs..."
+
+# DEBUG approfondito
+echo "=== DEBUG INFO ==="
+echo "Current directory: $(pwd)"
+echo "Node.js available: $(command -v node)"
+echo "Node.js version: $(node --version 2>/dev/null || echo 'NOT FOUND')"
+echo "APP_DIR contents:"
+ls -la "$APP_DIR/" | head -5
+echo "dist/bin contents:"
+ls -la "$APP_DIR/dist/bin/" 2>/dev/null || echo "dist/bin not found"
+echo "=================="
+
+# Verifica essenziale
+if [ ! -f "$APP_DIR/dist/bin/dev.js" ]; then
+    echo "ERROR: dist/bin/dev.js not found in AppImage!"
+    echo "Available in AppDir:"
+    find "$APP_DIR" -name "*.js" | head -10
+    exit 1
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+    echo "ERROR: Node.js not found in system!"
+    exit 1
+fi
 
 # Esegui penguins-eggs
+echo "Executing: cd '$APP_DIR' && node 'dist/bin/dev.js' $@"
 cd "$APP_DIR"
-exec node "$APP_DIR/dist/bin/dev.js" "$@"
+exec node "dist/bin/dev.js" "$@"
 EOF
 chmod +x AppDir/AppRun
-
-# Crea script di installazione automatica
-cat > AppDir/usr/lib/penguins-eggs/install-deps.sh << 'EOF'
-#!/bin/bash
-echo "🐧 Penguins Eggs Dependency Installer"
-echo "======================================"
-
-detect_distro() {
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        echo "$ID"
-    else
-        echo "unknown"
-    fi
-}
-
-install_deps_debian() {
-    echo "📦 Installing dependencies for Debian/Ubuntu..."
-    sudo apt-get update
-    sudo apt-get install -y \
-        squashfs-tools \
-        xorriso \
-        rsync \
-        curl \
-        jq \
-        git \
-        parted \
-        cryptsetup \
-        dosfstools \
-        grub2-common \
-        grub-pc-bin \
-        grub-efi-amd64-bin \
-        isolinux \
-        syslinux \
-        syslinux-common \
-        ipxe \
-        lvm2 \
-        sshfs \
-        gnupg
-}
-
-install_deps_fedora() {
-    echo "📦 Installing dependencies for Fedora..."
-    sudo dnf install -y \
-        squashfs-tools \
-        xorriso \
-        rsync \
-        curl \
-        jq \
-        git \
-        parted \
-        cryptsetup \
-        dosfstools \
-        grub2-tools \
-        grub2-tools-extra \
-        syslinux \
-        ipxe \
-        lvm2 \
-        sshfs \
-        gnupg
-}
-
-install_deps_arch() {
-    echo "📦 Installing dependencies for Arch Linux..."
-    sudo pacman -S --noconfirm \
-        squashfs-tools \
-        libisoburn \
-        rsync \
-        curl \
-        jq \
-        git \
-        parted \
-        cryptsetup \
-        dosfstools \
-        grub \
-        syslinux \
-        ipxe \
-        lvm2 \
-        sshfs \
-        gnupg
-}
-
-DISTRO=$(detect_distro)
-echo "🔍 Detected distribution: $DISTRO"
-
-case "$DISTRO" in
-    ubuntu|debian)
-        install_deps_debian
-        ;;
-    fedora)
-        install_deps_fedora
-        ;;
-    arch|manjaro)
-        install_deps_arch
-        ;;
-    *)
-        echo "❌ Unsupported distribution: $DISTRO"
-        echo "💡 Please install dependencies manually"
-        exit 1
-        ;;
-esac
-
-echo ""
-echo "✅ All dependencies installed successfully!"
-echo "🚀 You can now use Penguins Eggs without dependency warnings."
-EOF
-chmod +x AppDir/usr/lib/penguins-eggs/install-deps.sh
 
 # Crea .desktop e icona
 mkdir -p AppDir/usr/share/applications
@@ -291,8 +230,8 @@ cat > AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.svg << 'EOF'
   <rect width="256" height="256" fill="#4A90E2"/>
   <circle cx="128" cy="100" r="45" fill="white"/>
   <ellipse cx="128" cy="190" rx="65" ry="45" fill="white"/>
-  <text x="128" y="110" text-anchor="middle" font-family="Arial" font-size="38" fill="#4A90E2">🐧</text>
-  <text x="128" y="235" text-anchor="middle" font-family="Arial" font-size="20" fill="white" font-weight="bold">EGGS</text>
+  <text x="128" y="110" text-anchor="middle" font-family="Arial" font-size="38" fill="#4A90E2">EGGS</text>
+  <text x="128" y="235" text-anchor="middle" font-family="Arial" font-size="20" fill="white" font-weight="bold">Penguins</text>
 </svg>
 EOF
 
@@ -312,26 +251,26 @@ ln -sf usr/share/applications/penguins-eggs.desktop AppDir/penguins-eggs.desktop
 ln -sf ../AppRun AppDir/usr/bin/eggs
 
 # Crea AppImage
-echo "🎯 Creating Smart AppImage..."
+echo "Creating Smart AppImage..."
 ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
 
 # Test
-echo "🧪 Testing Smart AppImage..."
+echo "Testing Smart AppImage..."
 chmod +x "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
 
+echo "=== TESTING APPIMAGE ==="
 if ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage --version; then
-    echo "🎉 Smart AppImage tested successfully!"
+    echo "SUCCESS: Smart AppImage tested successfully!"
     echo ""
-    echo "💡 Features:"
-    echo "   ✅ Automatic dependency checking"
-    echo "   📋 Installation commands for your distro"
-    echo "   🚀 Works on any Linux distribution"
-    echo ""
-    echo "🔧 To install all dependencies:"
-    echo "   ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage install-deps"
+    echo "Features:"
+    echo "   - Automatic dependency checking"
+    echo "   - Installation commands for your distro"
+    echo "   - Works on any Linux distribution"
 else
-    echo "⚠️ AppImage created but test failed"
+    echo "WARNING: AppImage test returned error"
+    echo "This may be normal if dependencies are missing"
 fi
 
 echo ""
-echo "✅ SMART AppImage created: ${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
+echo "SMART AppImage created: ${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
+echo "Size: $(du -h "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage" | cut -f1)"

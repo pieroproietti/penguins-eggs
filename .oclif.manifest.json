@@ -659,6 +659,38 @@
         "pods.js"
       ]
     },
+    "prerequisites": {
+      "aliases": [],
+      "args": {},
+      "description": "Install system prerequisistes for Penguins Eggs",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --auto"
+      ],
+      "flags": {
+        "auto": {
+          "char": "a",
+          "description": "Auto-install without confirmation",
+          "name": "auto",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "prerequisites",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "prerequisites.js"
+      ]
+    },
     "produce": {
       "aliases": [],
       "args": {},
