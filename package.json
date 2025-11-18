@@ -1,7 +1,7 @@
 {
     "name": "penguins-eggs",
     "shortName": "eggs",
-    "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
+    "description": "A remaster system tool, compatible with Almalinux, Alpine, Arch, Debian, Devuan, Fedora, Manjaro, Opensuse, Ubuntu and derivatives",
     "version": "25.11.18",
     "author": "Piero Proietti",
     "bin": {

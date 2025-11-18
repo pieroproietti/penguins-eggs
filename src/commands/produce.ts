@@ -22,7 +22,7 @@ import Distro from '../classes/distro.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Produce extends Command {
-  static description = 'produce a live image from your system whithout your data'
+  static description = 'produce a live image from your system'
 
   static examples = [
     'sudo eggs produce                    # zstd fast compression',
