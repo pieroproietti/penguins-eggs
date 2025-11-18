@@ -59,7 +59,7 @@ _eggs_tools() {
     cmds)
 _values "completions" \
 "clean[clean system log, apt, etc]" \
-"repo[add/remove penguins-eggs-repo]" \
+"repo[add/remove penguins-repos]" \
 "skel[update skel from home configuration]" \
 "stat[get statistics from sourceforge]" \
 "yolk[configure eggs to install without internet]" \
@@ -77,10 +77,10 @@ _values "completions" \
         ;;
         "repo")
           _arguments -S \
-"(-a --add)"{-a,--add}"[add penguins-eggs-repo]" \
+"(-a --add)"{-a,--add}"[add penguins-repos]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-r --remove)"{-r,--remove}"[remove penguins-eggs-repo]" \
+"(-r --remove)"{-r,--remove}"[remove penguins-repos]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files"
@@ -196,6 +196,7 @@ _eggs() {
 "love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
 "pods[eggs pods: build ISOs from containers]" \
+"prerequisites[Install system prerequisistes for Penguins Eggs]" \
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
@@ -332,6 +333,11 @@ _arguments -S \
 pods)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+prerequisites)
+_arguments -S \
+"(-a --auto)"{-a,--auto}"[Auto-install without confirmation]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 produce)
