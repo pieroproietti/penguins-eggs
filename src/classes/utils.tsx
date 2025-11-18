@@ -112,6 +112,12 @@ export default class Utils {
    }
 
    /**
+    * isAppImage
+    */
+   static isAppImage() {
+      return !!process.env.APPIMAGE;
+   }
+   /**
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
@@ -965,7 +971,11 @@ export default class Utils {
     * @returns flag
     */
    static flag(): string {
-      return chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
+      let type='       '
+      if (Utils.isAppImage()) {
+         type='AppImage'
+      }
+      return chalk.bgGreen.whiteBright(` ${pjson.name} ${type}   `) +
          chalk.bgWhite.blue(" Perri's Brewery edition ") +
          chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
    }
