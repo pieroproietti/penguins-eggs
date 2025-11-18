@@ -3,48 +3,95 @@ import {execSync} from 'node:child_process'
 import {existsSync} from 'node:fs'
 
 export default class Prerequisites extends Command {
-  static description = 'Install or remove system prerequisites for Penguins Eggs'
+  static description = 'Check, install or remove system prerequisites'
 
   static examples = [
-    '<%= config.bin %> <%= command.id %> --add',
+    '<%= config.bin %> <%= command.id %>',
+    '<%= config.bin %> <%= command.id %> --install',
     '<%= config.bin %> <%= command.id %> --remove',
+    '<%= config.bin %> <%= command.id %> --check',
+    '<%= config.bin %> <%= command.id %> --install --auto',
+    '<%= config.bin %> <%= command.id %> --remove --auto',
   ]
 
   static flags = {
-    add: Flags.boolean({char: 'a', description: 'install prerequisites'}),
-    remove: Flags.boolean({char: 'r', description: 'remove prerequisites'}),
+    install: Flags.boolean({description: 'install prerequisites'}),
+    remove: Flags.boolean({description: 'remove prerequisites'}),
+    check: Flags.boolean({description: 'check prerequisites status'}),
+    auto: Flags.boolean({description: 'run without confirmation'}),
   }
 
   public async run(): Promise<void> {
     const {flags} = await this.parse(Prerequisites)
     
-    this.log('Penguins Eggs Dependency Manager')
-    this.log('================================')
+    this.log('Penguins Eggs - System Prerequisites')
+    this.log('=====================================')
 
-    // Verifica che sia specificato add o remove
-    if (!flags.add && !flags.remove) {
-      this.log('ERROR: Please specify --add to install or --remove to uninstall')
-      this.log('')
-      this.log('Examples:')
-      this.log('  eggs prerequisites --add     # Install dependencies')
-      this.log('  eggs prerequisites --remove  # Remove dependencies')
-      return
-    }
-
-    // Determina la distribuzione
     const distro = await this.detectDistro()
     this.log(`Detected distribution: ${distro}`)
 
     if (distro === 'unknown') {
       this.log('ERROR: Could not detect your Linux distribution')
+      this.log('Please install dependencies manually for your system.')
       return
     }
 
-    // Gestisce installazione o rimozione
-    if (flags.add) {
+    // Se nessun flag, mostra status
+    if (!flags.install && !flags.remove && !flags.check) {
+      await this.showStatus(distro)
+      return
+    }
+
+    if (flags.check) {
+      await this.showStatus(distro)
+    }
+
+    if (flags.install) {
       await this.handleInstall(distro, flags.auto)
-    } else if (flags.remove) {
+    }
+
+    if (flags.remove) {
       await this.handleRemove(distro, flags.auto)
+    }
+  }
+
+  private async showStatus(distro: string): Promise<void> {
+    const packages = this.getPackages(distro)
+    
+    this.log('')
+    this.log('Prerequisites status:')
+    this.log('')
+
+    let allInstalled = true
+    let installedCount = 0
+    const totalCount = packages.length
+
+    for (const pkg of packages) {
+      const isInstalled = this.isPackageInstalled(distro, pkg)
+      const status = isInstalled ? '[INSTALLED]' : '[MISSING]  '
+      this.log(`  ${status} ${pkg}`)
+      
+      if (isInstalled) {
+        installedCount++
+      } else {
+        allInstalled = false
+      }
+    }
+
+    this.log('')
+    this.log(`Progress: ${installedCount}/${totalCount} packages installed`)
+    
+    if (allInstalled) {
+      this.log('SUCCESS: All prerequisites are installed!')
+      this.log('You can now use all Penguins Eggs features.')
+    } else {
+      this.log('WARNING: Some prerequisites are missing.')
+      this.log('')
+      this.log('To install missing packages, run:')
+      this.log(`  eggs prerequisites --install`)
+      this.log('')
+      this.log('For automatic installation:')
+      this.log(`  eggs prerequisites --install --auto`)
     }
   }
 
@@ -69,7 +116,7 @@ export default class Prerequisites extends Command {
     } else {
       this.log('')
       this.log('To install automatically, run:')
-      this.log(`  eggs prerequisites --add`)
+      this.log(`  eggs prerequisites --install --auto`)
       this.log('')
       this.log('Or run the command above manually with sudo')
     }
@@ -86,8 +133,9 @@ export default class Prerequisites extends Command {
     })
 
     this.log('')
-    this.log('WARNING: This will remove system packages!')
+    this.log('⚠️  WARNING: This will remove system packages!')
     this.log('Make sure you understand what you are removing.')
+    this.log('Some of these packages might be used by other applications.')
     this.log('')
     this.log('Removal command:')
     this.log(`  ${removeCmd}`)
@@ -99,7 +147,7 @@ export default class Prerequisites extends Command {
     } else {
       this.log('')
       this.log('To remove automatically, run:')
-      this.log(`  eggs prerequisites --remove`)
+      this.log(`  eggs prerequisites --remove --auto`)
       this.log('')
       this.log('Or run the command above manually with sudo')
     }
@@ -113,7 +161,8 @@ export default class Prerequisites extends Command {
           'squashfs-tools', 'xorriso', 'rsync', 'curl', 'jq', 'git',
           'parted', 'cryptsetup', 'dosfstools', 'grub2-common',
           'grub-pc-bin', 'grub-efi-amd64-bin', 'isolinux', 'syslinux',
-          'syslinux-common', 'ipxe', 'lvm2', 'sshfs', 'gnupg'
+          'syslinux-common', 'ipxe', 'lvm2', 'sshfs', 'gnupg',
+          'fuse', 'libfuse2'
         ]
       
       case 'fedora':
@@ -121,14 +170,16 @@ export default class Prerequisites extends Command {
         return [
           'squashfs-tools', 'xorriso', 'rsync', 'curl', 'jq', 'git',
           'parted', 'cryptsetup', 'dosfstools', 'grub2-tools',
-          'grub2-tools-extra', 'syslinux', 'ipxe', 'lvm2', 'sshfs', 'gnupg'
+          'grub2-tools-extra', 'syslinux', 'ipxe', 'lvm2', 'sshfs', 'gnupg',
+          'fuse', 'fuse-libs'
         ]
       
       case 'arch':
         return [
           'squashfs-tools', 'libisoburn', 'rsync', 'curl', 'jq', 'git',
           'parted', 'cryptsetup', 'dosfstools', 'grub', 'syslinux',
-          'ipxe', 'lvm2', 'sshfs', 'gnupg'
+          'ipxe', 'lvm2', 'sshfs', 'gnupg',
+          'fuse2'
         ]
       
       default:
@@ -152,7 +203,7 @@ export default class Prerequisites extends Command {
         return `sudo pacman -S --noconfirm ${packages}`
       
       default:
-        return 'echo "Unsupported distribution"'
+        return `echo "Unsupported distribution: ${distro}"`
     }
   }
 
@@ -172,19 +223,61 @@ export default class Prerequisites extends Command {
         return `sudo pacman -Rs --noconfirm ${packages}`
       
       default:
-        return 'echo "Unsupported distribution"'
+        return `echo "Unsupported distribution: ${distro}"`
     }
   }
 
   private executeCommand(cmd: string, action: 'install' | 'remove'): void {
     try {
+      this.log('')
+      this.log(`Executing: ${cmd}`)
+      this.log('')
+      
       execSync(cmd, {stdio: 'inherit'})
+      
       this.log('')
       this.log(`SUCCESS: Dependencies ${action}ed successfully!`)
+      
+      if (action === 'install') {
+        this.log('You can now use all Penguins Eggs features.')
+      } else {
+        this.log('Prerequisites have been removed from your system.')
+      }
     } catch (error) {
       this.log('')
       this.log(`ERROR: Failed to ${action} dependencies.`)
+      this.log('This might be due to:')
+      this.log('  - Network connectivity issues')
+      this.log('  - Package repository problems') 
+      this.log('  - Insufficient permissions')
+      this.log('')
       this.log('Please check your system and try again.')
+    }
+  }
+
+  private isPackageInstalled(distro: string, pkg: string): boolean {
+    try {
+      switch (distro) {
+        case 'debian':
+        case 'ubuntu':
+          // Verifica se il pacchetto è installato con dpkg
+          const result = execSync(`dpkg -l | grep "^ii\\s*${pkg}\\s"`, {stdio: 'pipe'}).toString()
+          return result.trim().length > 0
+          
+        case 'fedora':
+        case 'rhel':
+          execSync(`rpm -q ${pkg}`, {stdio: 'ignore'})
+          return true
+          
+        case 'arch':
+          execSync(`pacman -Q ${pkg}`, {stdio: 'ignore'})
+          return true
+          
+        default:
+          return false
+      }
+    } catch {
+      return false
     }
   }
 
@@ -198,6 +291,8 @@ export default class Prerequisites extends Command {
         if (osRelease.includes('ID=arch')) return 'arch'
         if (osRelease.includes('ID=rhel')) return 'rhel'
         if (osRelease.includes('ID=centos')) return 'rhel'
+        if (osRelease.includes('ID=rocky')) return 'rhel'
+        if (osRelease.includes('ID=alma')) return 'rhel'
       }
       
       if (existsSync('/etc/redhat-release')) return 'rhel'
