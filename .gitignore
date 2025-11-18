@@ -31,3 +31,9 @@ mychroot/ci/*.pkg.tar.zst
 mychroot/ci/*.tar.gz
 mychroot/ci/iso/*
 
+
+# AppImage stuffs
+AppDir
+*.AppImage
+appimagetool
+

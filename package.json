@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Arch, Debian, Devuan, Ubuntu and others",
-    "version": "25.11.14",
+    "version": "25.11.17",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -112,11 +112,15 @@
     "scripts": {
         "_postpack": "shx rm -f oclif.manifest.json",
         "_prepack": "oclif manifest && ocl -t linux-x64",
+        "build:appimage": "./scripts/build-appimage.sh",
         "build": "shx rm -rf dist && tsc -b",
+        "clean": "rm -rf build dist *.AppImage AppDir squashfs-root",
         "deb": "shx rm -rf dist && tsc -p . && oclif manifest && pb deb --release $(cat ./release)",
+        "dist:appimage": "pnpm build && pnpm run build:appimage",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
+        "postbuild": "shx cp -r assets addons bin conf dracut manpages mkinitcpio mkinitfs scripts dist/",
         "posttest": "pnpm run lint",
         "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r . && pb tarballs --release $(cat ./release)",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
