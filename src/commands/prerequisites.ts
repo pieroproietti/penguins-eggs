@@ -8,14 +8,11 @@ export default class Prerequisites extends Command {
   static examples = [
     '<%= config.bin %> <%= command.id %> --add',
     '<%= config.bin %> <%= command.id %> --remove',
-    '<%= config.bin %> <%= command.id %> --add --auto',
-    '<%= config.bin %> <%= command.id %> --remove --auto',
   ]
 
   static flags = {
     add: Flags.boolean({char: 'a', description: 'install prerequisites'}),
     remove: Flags.boolean({char: 'r', description: 'remove prerequisites'}),
-    auto: Flags.boolean({description: 'run without confirmation'}),
   }
 
   public async run(): Promise<void> {
@@ -31,7 +28,6 @@ export default class Prerequisites extends Command {
       this.log('Examples:')
       this.log('  eggs prerequisites --add     # Install dependencies')
       this.log('  eggs prerequisites --remove  # Remove dependencies')
-      this.log('  eggs prerequisites --add --auto  # Install without confirmation')
       return
     }
 
@@ -73,7 +69,7 @@ export default class Prerequisites extends Command {
     } else {
       this.log('')
       this.log('To install automatically, run:')
-      this.log(`  eggs prerequisites --add --auto`)
+      this.log(`  eggs prerequisites --add`)
       this.log('')
       this.log('Or run the command above manually with sudo')
     }
@@ -103,7 +99,7 @@ export default class Prerequisites extends Command {
     } else {
       this.log('')
       this.log('To remove automatically, run:')
-      this.log(`  eggs prerequisites --remove --auto`)
+      this.log(`  eggs prerequisites --remove`)
       this.log('')
       this.log('Or run the command above manually with sudo')
     }

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Building Penguins Eggs Smart AppImage..."
+echo "Building Penguins Eggs AppImage..."
 
 APP_NAME="penguins-eggs"
 VERSION=$(node -p "require('./package.json').version")
@@ -103,8 +103,8 @@ if [ "$1" != "--skip-deps" ]; then
     check_dependencies
 fi
 
-echo "Starting Penguins Eggs..."
-echo ""
+# echo "Starting Penguins Eggs..."
+# echo ""
 
 # Esegui penguins-eggs
 cd "$APP_DIR"
@@ -153,14 +153,14 @@ ln -sf usr/share/applications/penguins-eggs.desktop AppDir/penguins-eggs.desktop
 ln -sf ../AppRun AppDir/usr/bin/eggs
 
 # Crea AppImage
-echo "Creating Smart AppImage..."
-ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
+echo "Creating AppImage..."
+ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
 # Test
-echo "Testing Smart AppImage..."
-chmod +x "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
+echo "Testing AppImage..."
+chmod +x "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
-if ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage --version; then
+if ./${APP_NAME}-${VERSION}-${ARCH}.AppImage --version; then
     echo "SUCCESS: AppImage working correctly!"
     echo ""
     echo "Features:"
@@ -169,14 +169,14 @@ if ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage --version; then
     echo "  - Smart error messages"
     echo ""
     echo "Usage examples:"
-    echo "  ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage --help"
-    echo "  ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage prerequisites -a"
-    echo "  ./${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage produce --help"
+    echo "  ./${APP_NAME}-${VERSION}-${ARCH}.AppImage --help"
+    echo "  ./${APP_NAME}-${VERSION}-${ARCH}.AppImage prerequisites -a"
+    echo "  ./${APP_NAME}-${VERSION}-${ARCH}.AppImage produce --help"
 else
     echo "ERROR: AppImage test failed"
     exit 1
 fi
 
 echo ""
-echo "AppImage created: ${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage"
-echo "Size: $(du -h "${APP_NAME}-${VERSION}-smart-${ARCH}.AppImage" | cut -f1)"
+echo "AppImage created: ${APP_NAME}-${VERSION}-${ARCH}.AppImage"
+echo "Size: $(du -h "${APP_NAME}-${VERSION}-${ARCH}.AppImage" | cut -f1)"
