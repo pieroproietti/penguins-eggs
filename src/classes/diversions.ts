@@ -12,7 +12,10 @@ import Distro from './distro.js';
 import fs from 'fs';
 import path from 'path'
 import Utils from './utils.js';
-import Pacman from './pacman.js';
+
+// _dirname
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 
 export default class Diversions {
 
@@ -27,7 +30,7 @@ export default class Diversions {
   // Simplified deluser function using array.includes and default value.
   // This makes adding new families easier and avoids long OR chains.
   static deluser(familyId: string): string {
-    const userdelFamilies = ['aldos', 'archlinux', 'fedora', 'openmamba', 'opensuse', 'voidlinux'];
+    const userdelFamilies = ['archlinux', 'fedora', 'openmamba', 'opensuse', 'voidlinux'];
     return userdelFamilies.includes(familyId) ? 'userdel' : 'deluser';
   }
 
@@ -35,7 +38,7 @@ export default class Diversions {
   // Improved grubName using array.includes and direct return
   // Cleaner, easier to maintain if new families are added
   static grubName(familyId: string): string {
-    const grub2Families = ['aldos', 'fedora', 'opensuse'];
+    const grub2Families = [, 'fedora', 'opensuse'];
     return grub2Families.includes(familyId) ? 'grub2' : 'grub';
   }
 
@@ -43,7 +46,7 @@ export default class Diversions {
   // Simplified grubForce function with array.includes
   // Provides explicit "--force" only for specific families
   static grubForce(familyId: string): string {
-    const forceFamilies = ['aldos', 'fedora'];
+    const forceFamilies = [, 'fedora'];
     return forceFamilies.includes(familyId) ? '--force' : '';
   }
 
@@ -112,15 +115,14 @@ export default class Diversions {
    * @returns 
    */
   static bootloaders(familyId: string): string {
-    // 1. AppImage ha priorità per non-Debian
     if (Utils.isAppImage() && familyId !== 'debian') {
       const appImagePath = path.join(__dirname, '..', '..', 'usr', 'lib', 'penguins-eggs', 'bootloaders');
       if (fs.existsSync(appImagePath)) {
-        return appImagePath;
+        return appImagePath
       }
     }
 
-    // 2. Logica originale per sistemi nativi
+    // 2. Altrimenti logica nativa
     return familyId === 'debian' ? '/usr/lib/' : '/usr/lib/penguins-eggs/bootloaders/';
   }
 }

@@ -196,13 +196,13 @@ _eggs() {
 "love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
 "pods[eggs pods: build ISOs from containers]" \
-"prerequisites[Install or remove system prerequisites for Penguins Eggs]" \
-"produce[produce a live image from your system whithout your data]" \
+"produce[produce a live image from your system]" \
+"setup[Automatically check and install system prerequisites]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
-"version[]" \
 "help[Display help for eggs.]" \
+"version[]" \
 
     ;;
     args)
@@ -335,12 +335,6 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-prerequisites)
-_arguments -S \
-"(-a --add)"{-a,--add}"[install prerequisites]" \
-"(-r --remove)"{-r,--remove}"[remove prerequisites]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
@@ -367,6 +361,12 @@ _arguments -S \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
+setup)
+_arguments -S \
+"(-c --check)"{-c,--check}"[check status only, do not install]" \
+"(-f --force)"{-f,--force}"[force installation even if already installed]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 status)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
@@ -384,15 +384,15 @@ _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
 version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac

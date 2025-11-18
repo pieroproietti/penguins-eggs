@@ -114,9 +114,12 @@ export default class Utils {
    /**
     * isAppImage
     */
-   static isAppImage() {
-      return !!process.env.APPIMAGE;
+   static isAppImage(): boolean {
+        return !!process.env.APPIMAGE || 
+            process.execPath.includes('.AppImage') ||
+            process.execPath.includes('/tmp/.mount_');
    }
+
    /**
     * Detect if running inside a container (Docker or LXC)
     */

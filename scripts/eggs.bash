@@ -26,8 +26,8 @@ kill --help --isos --nointeractive --verbose
 love --help --verbose --hidden --nointeractive --clone --homecrypt --fullcrypt
 mom --help
 pods --help
-prerequisites --add --remove
 produce --addons --basename --clone --homecrypt --fullcrypt --excludes --help --hidden --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRootHome --verbose --yolk
+setup --check --force
 status --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:repo --add --help --nointeractive --remove --verbose
@@ -40,8 +40,8 @@ wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
 autocomplete --refresh-cache
-version --json --verbose
 help --nested-commands
+version --json --verbose
 "
 
   function __trim_colon_commands()
