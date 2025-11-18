@@ -64,7 +64,6 @@ export class Setup {
   }
 
   private getPackagesForDistro(): string[] {
-    console.log(`Debug: familyId = '${this.distro.familyId}'`)
 
     switch (this.distro.familyId) {
       case 'debian':
@@ -76,12 +75,13 @@ export class Setup {
           'fuse', 'libfuse2'
         ]
 
-      case 'arch':
+      case 'archlinux':
         if (Diversions.isManjaroBased(this.distro.distroLike)) {
+          console.log('create packages list')
           // Manjaro
           return []
         } else {
-          // Archlinux
+          // archlinuxx
           return [
             'arch-install-scripts',
             'cryptsetup',
@@ -122,7 +122,7 @@ export class Setup {
         }
 
       case 'fedora':
-      case 'redhat':
+      case 'fedora':
       case 'ef9':
         return [
           'cryptsetup', 'curl', 'device-mapper', 'dosfstools', 'dracut',
@@ -154,10 +154,10 @@ export class Setup {
       case 'debian':
         return `sudo apt-get update && sudo apt-get install -y ${packagesStr}`
 
-      case 'arch':
+      case 'archlinux':
         return `sudo pacman -S --noconfirm ${packagesStr}`
 
-      case 'redhat':
+      case 'fedora':
         return `sudo dnf install -y ${packagesStr}`
 
       default:
@@ -202,13 +202,13 @@ export class Setup {
           execSync(`dpkg -s ${pkg}`, { stdio: 'ignore' })
           return true
 
-        case 'arch':
+        case 'archlinux':
           // Verifica se il pacchetto è installato su Arch
           execSync(`pacman -Q ${pkg}`, { stdio: 'ignore' })
           return true
 
-        case 'redhat':
-          // Verifica se il pacchetto è installato su RedHat/Fedora
+        case 'fedora':
+          // Verifica se il pacchetto è installato su fedora/Fedora
           execSync(`rpm -q ${pkg}`, { stdio: 'ignore' })
           return true
 
