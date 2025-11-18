@@ -662,16 +662,23 @@
     "prerequisites": {
       "aliases": [],
       "args": {},
-      "description": "Install system prerequisistes for Penguins Eggs",
+      "description": "Install or remove system prerequisites for Penguins Eggs",
       "examples": [
-        "<%= config.bin %> <%= command.id %>",
-        "<%= config.bin %> <%= command.id %> --auto"
+        "<%= config.bin %> <%= command.id %> --add",
+        "<%= config.bin %> <%= command.id %> --remove"
       ],
       "flags": {
-        "auto": {
+        "add": {
           "char": "a",
-          "description": "Auto-install without confirmation",
-          "name": "auto",
+          "description": "install prerequisites",
+          "name": "add",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "remove": {
+          "char": "r",
+          "description": "remove prerequisites",
+          "name": "remove",
           "allowNo": false,
           "type": "boolean"
         }
@@ -1581,5 +1588,5 @@
       ]
     }
   },
-  "version": "25.11.17"
+  "version": "25.11.18"
 }
