@@ -7,8 +7,9 @@
  */
 
 
-import {execSync} from 'node:child_process'
+import { execSync } from 'node:child_process'
 import Distro from './distro.js'
+import Diversions from './diversions.js'
 
 export class Setup {
   private distro: Distro
@@ -24,9 +25,9 @@ export class Setup {
 
       console.log(`Detected: ${this.distro.distroLike} ${this.distro.codenameId}`)
       console.log(`Family: ${this.distro.familyId}`)
-      
+
       const packages = this.getPackagesForDistro()
-      
+
       if (packages.length === 0) {
         console.log('ERROR: Unsupported distribution for automatic setup')
         return false
@@ -37,7 +38,7 @@ export class Setup {
       packages.forEach(pkg => console.log(`  - ${pkg}`))
 
       const installCmd = this.getInstallCommand(packages)
-      
+
       console.log('')
       console.log('Installation command:')
       console.log(`  ${installCmd}`)
@@ -45,8 +46,8 @@ export class Setup {
 
       // Esegui l'installazione
       console.log('Installing packages (this may take a few minutes)...')
-      execSync(installCmd, {stdio: 'inherit'})
-      
+      execSync(installCmd, { stdio: 'inherit' })
+
       console.log('')
       console.log('SUCCESS: Prerequisites installed successfully!')
       return true
@@ -63,6 +64,8 @@ export class Setup {
   }
 
   private getPackagesForDistro(): string[] {
+    console.log(`Debug: familyId = '${this.distro.familyId}'`)
+
     switch (this.distro.familyId) {
       case 'debian':
         return [
@@ -72,26 +75,77 @@ export class Setup {
           'syslinux-common', 'ipxe', 'lvm2', 'sshfs', 'gnupg',
           'fuse', 'libfuse2'
         ]
-      
-      case 'archlinux':
-        return [
-          'squashfs-tools', 'libisoburn', 'rsync', 'curl', 'jq', 'git',
-          'parted', 'cryptsetup', 'dosfstools', 'grub', 'syslinux',
-          'ipxe', 'lvm2', 'sshfs', 'gnupg', 'fuse2'
-        ]
-      
+
+      case 'arch':
+        if (Diversions.isManjaroBased(this.distro.distroLike)) {
+          // Manjaro
+          return []
+        } else {
+          // Archlinux
+          return [
+            'arch-install-scripts',
+            'cryptsetup',
+            'dosfstools',
+            'efibootmgr',
+            'erofs-utils',
+            'findutils',
+            'git',
+            'grub',
+            'jq',
+            'libarchive',
+            'libisoburn',
+            'lvm2',
+            'mkinitcpio-archiso',
+            'mkinitcpio-nfs-utils',
+            'mtools',
+            'nbd',
+            'nodejs',
+            'pacman-contrib',
+            'parted',
+            'polkit',
+            'procps-ng',
+            'pv',
+            'python',
+            'rsync',
+            'squashfs-tools',
+            'sshfs',
+            'syslinux',
+            'wget',
+            'xdg-utils',
+
+            // Aggiunti per compatibilità
+            'fuse2',
+            'gnupg',
+            'curl'
+          ]
+
+        }
+
       case 'fedora':
+      case 'redhat':
+      case 'ef9':
         return [
-          'squashfs-tools', 'xorriso', 'rsync', 'curl', 'jq', 'git',
-          'parted', 'cryptsetup', 'dosfstools', 'grub2-tools',
-          'grub2-tools-extra', 'syslinux', 'ipxe', 'lvm2', 'sshfs', 'gnupg',
-          'fuse', 'fuse-libs'
+          'cryptsetup', 'curl', 'device-mapper', 'dosfstools', 'dracut',
+          'efibootmgr', 'fuse', 'git', 'jq', 'lvm2', 'nodejs', 'nvme-cli',
+          'parted', 'polkit', 'rsync', 'wget', 'xdg-utils', 'xorriso',
+          'zstd', 'sshfs', 'dracut-live', 'squashfs-tools'
         ]
-      
+
+      case 'opensuse':
+      case 'suse':
+        return [
+          'cryptsetup', 'curl', 'device-mapper', 'dosfstools', 'dracut',
+          'efibootmgr', 'fuse', 'git', 'jq', 'lvm2', 'nodejs', 'nvme-cli',
+          'parted', 'polkit', 'rsync', 'wget', 'xdg-utils', 'xorriso',
+          'zstd', 'fuse-sshfs', 'dracut-kiwi-live', 'squashfs-tools'
+        ]
+
       default:
+        console.log(`Debug: Unsupported familyId: '${this.distro.familyId}'`)
         return []
     }
   }
+
 
   private getInstallCommand(packages: string[]): string {
     const packagesStr = packages.join(' ')
@@ -99,13 +153,13 @@ export class Setup {
     switch (this.distro.familyId) {
       case 'debian':
         return `sudo apt-get update && sudo apt-get install -y ${packagesStr}`
-      
+
       case 'arch':
         return `sudo pacman -S --noconfirm ${packagesStr}`
-      
+
       case 'redhat':
         return `sudo dnf install -y ${packagesStr}`
-      
+
       default:
         return `echo "Unsupported distribution: ${this.distro.familyId}"`
     }
@@ -115,14 +169,14 @@ export class Setup {
   checkPrerequisites(): boolean {
     try {
       const packages = this.getPackagesForDistro()
-      
+
       if (packages.length === 0) {
         console.log('WARNING: Unsupported distribution - cannot check prerequisites')
         return false
       }
 
       const missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
-      
+
       if (missing.length > 0) {
         console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
         console.log('Missing packages:')
@@ -145,19 +199,19 @@ export class Setup {
       switch (this.distro.familyId) {
         case 'debian':
           // Verifica se il pacchetto è installato
-          execSync(`dpkg -s ${pkg}`, {stdio: 'ignore'})
+          execSync(`dpkg -s ${pkg}`, { stdio: 'ignore' })
           return true
-          
+
         case 'arch':
           // Verifica se il pacchetto è installato su Arch
-          execSync(`pacman -Q ${pkg}`, {stdio: 'ignore'})
+          execSync(`pacman -Q ${pkg}`, { stdio: 'ignore' })
           return true
-          
+
         case 'redhat':
           // Verifica se il pacchetto è installato su RedHat/Fedora
-          execSync(`rpm -q ${pkg}`, {stdio: 'ignore'})
+          execSync(`rpm -q ${pkg}`, { stdio: 'ignore' })
           return true
-          
+
         default:
           return false
       }
