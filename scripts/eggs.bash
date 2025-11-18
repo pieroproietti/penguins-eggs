@@ -39,9 +39,9 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-help --nested-commands
 autocomplete --refresh-cache
 version --json --verbose
+help --nested-commands
 "
 
   function __trim_colon_commands()

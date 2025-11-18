@@ -200,9 +200,9 @@ _eggs() {
 "produce[produce a live image from your system whithout your data]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
-"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
 "version[]" \
+"help[Display help for eggs.]" \
 
     ;;
     args)
@@ -379,11 +379,6 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 autocomplete)
 _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
@@ -393,6 +388,11 @@ version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac

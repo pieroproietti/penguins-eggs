@@ -73,8 +73,11 @@ APP_DIR="$HERE/usr/lib/penguins-eggs"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin"
 export NODE_PATH="$APP_DIR/node_modules"
 
+# Usa una directory scrivibile per il file first-run
+FIRST_RUN_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/penguins-eggs"
+FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
+
 # Setup automatico al primo avvio (solo se non è il comando setup)
-FIRST_RUN_FILE="$APP_DIR/.first-run"
 if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
     echo "First run detected. Running automatic setup check..."
     cd "$APP_DIR"
@@ -87,6 +90,9 @@ if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
             console.log('Continuing with basic features...');
         }
     " || echo "Setup check failed, continuing with basic features..."
+    
+    # Crea directory e file nella cache dell'utente
+    mkdir -p "$FIRST_RUN_DIR"
     touch "$FIRST_RUN_FILE"
 fi
 

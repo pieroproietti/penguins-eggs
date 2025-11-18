@@ -6,6 +6,7 @@
  * license: MIT
  */
 
+import {Setup} from '../classes/setup.js'
 import {Command, Flags} from '@oclif/core'
 
 

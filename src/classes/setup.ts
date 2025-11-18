@@ -22,7 +22,7 @@ export class Setup {
       console.log('Penguins Eggs - System Setup')
       console.log('============================')
 
-      console.log(`Detected: ${this.distro.distroLike} ${this.distro.codenameLike}`)
+      console.log(`Detected: ${this.distro.distroLike} ${this.distro.codenameId}`)
       console.log(`Family: ${this.distro.familyId}`)
       
       const packages = this.getPackagesForDistro()
@@ -73,14 +73,14 @@ export class Setup {
           'fuse', 'libfuse2'
         ]
       
-      case 'arch':
+      case 'archlinux':
         return [
           'squashfs-tools', 'libisoburn', 'rsync', 'curl', 'jq', 'git',
           'parted', 'cryptsetup', 'dosfstools', 'grub', 'syslinux',
           'ipxe', 'lvm2', 'sshfs', 'gnupg', 'fuse2'
         ]
       
-      case 'redhat':
+      case 'fedora':
         return [
           'squashfs-tools', 'xorriso', 'rsync', 'curl', 'jq', 'git',
           'parted', 'cryptsetup', 'dosfstools', 'grub2-tools',
@@ -170,10 +170,8 @@ export class Setup {
   getDistroInfo(): string {
     return `
 Distribution: ${this.distro.distroLike}
-Codename: ${this.distro.codenameLike}
+Codename: ${this.distro.codenameId}
 Family: ${this.distro.familyId}
-Version: ${this.distro.versionLike}
-Architecture: ${this.distro.architecture}
     `.trim()
   }
 }
