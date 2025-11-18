@@ -48,6 +48,15 @@ for dir in dist node_modules assets addons bin conf dracut manpages mkinitcpio m
     fi
 done
 
+# Including Debian trixie bootloaders
+mkdir -p AppDir/usr/lib/penguins-eggs/bootloaders
+echo "Downloading bootloaders..."
+wget -O bootloaders.tar.gz "https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz"
+echo "Extracting bootloaders..."
+tar -xzf bootloaders.tar.gz -C AppDir/usr/lib/penguins-eggs/bootloaders --strip-components=1
+rm -f bootloaders.tar.gz
+
+# Copio package.json
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
 

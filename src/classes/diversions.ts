@@ -10,6 +10,8 @@
 import { IDistro } from '../interfaces/index.js';
 import Distro from './distro.js';
 import fs from 'fs';
+import path from 'path'
+import Utils from './utils.js';
 import Pacman from './pacman.js';
 
 export default class Diversions {
@@ -104,11 +106,21 @@ export default class Diversions {
     return manjaroFamilies.includes(distro);
   }
 
-  // NEW CHANGE [8]
-  // bootloaders path handling improved
-  // Default path for debian, custom path for all other families
+  /**
+   * 
+   * @param familyId 
+   * @returns 
+   */
   static bootloaders(familyId: string): string {
+    // 1. AppImage ha priorità per non-Debian
+    if (Utils.isAppImage() && familyId !== 'debian') {
+      const appImagePath = path.join(__dirname, '..', '..', 'usr', 'lib', 'penguins-eggs', 'bootloaders');
+      if (fs.existsSync(appImagePath)) {
+        return appImagePath;
+      }
+    }
+
+    // 2. Logica originale per sistemi nativi
     return familyId === 'debian' ? '/usr/lib/' : '/usr/lib/penguins-eggs/bootloaders/';
   }
-
 }

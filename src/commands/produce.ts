@@ -17,7 +17,6 @@ import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
 import Distro from '../classes/distro.js'
-import Bootloaders from '../classes/bootloaders.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -66,17 +65,6 @@ export default class Produce extends Command {
     const pendrive = flags.pendrive === undefined ? null : Number(flags.pendrive)
 
     if (Utils.isRoot()) {
-      /**
-       * bootloaders
-       */
-      if (Utils.isAppImage()) {
-        const distro = new Distro()
-        if (distro.familyId !== 'debian') {
-          await Bootloaders.extractFromAppImage()
-        }
-      }
-
-
       /**
        * ADDONS dei vendors
        * Fino a 3
