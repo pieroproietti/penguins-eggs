@@ -50,7 +50,19 @@ done
 
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
-# Crea AppRun
+
+#!/bin/bash
+set -e
+
+echo "Building Penguins Eggs AppImage..."
+
+APP_NAME="penguins-eggs"
+VERSION=$(node -p "require('./package.json').version")
+ARCH="x86_64"
+
+# [codice pre-esistente...]
+
+# Crea AppRun nella ROOT di AppDir
 cat > AppDir/AppRun << 'EOF'
 #!/bin/bash
 set -e
@@ -58,15 +70,33 @@ set -e
 HERE="$(dirname "$(readlink -f "$0")")"
 APP_DIR="$HERE/usr/lib/penguins-eggs"
 
-# Setup ambiente
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin"
 export NODE_PATH="$APP_DIR/node_modules"
 
-# Esegui penguins-eggs
+# Setup automatico al primo avvio (solo se non è il comando setup)
+FIRST_RUN_FILE="$APP_DIR/.first-run"
+if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
+    echo "First run detected. Running automatic setup check..."
+    cd "$APP_DIR"
+    node -e "
+        const {Setup} = require('./dist/classes/setup.js');
+        const setup = new Setup();
+        if (!setup.checkPrerequisites()) {
+            console.log('WARNING: System needs setup for full functionality.');
+            console.log('Run: eggs setup');
+            console.log('Continuing with basic features...');
+        }
+    " || echo "Setup check failed, continuing with basic features..."
+    touch "$FIRST_RUN_FILE"
+fi
+
 cd "$APP_DIR"
 exec node "dist/bin/dev.js" "$@"
 EOF
+
+# Rendi AppRun eseguibile
 chmod +x AppDir/AppRun
+
 
 # Crea .desktop e icona
 mkdir -p AppDir/usr/share/applications
