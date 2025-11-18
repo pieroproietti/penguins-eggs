@@ -659,49 +659,10 @@
         "pods.js"
       ]
     },
-    "prerequisites": {
-      "aliases": [],
-      "args": {},
-      "description": "Install or remove system prerequisites for Penguins Eggs",
-      "examples": [
-        "<%= config.bin %> <%= command.id %> --add",
-        "<%= config.bin %> <%= command.id %> --remove"
-      ],
-      "flags": {
-        "add": {
-          "char": "a",
-          "description": "install prerequisites",
-          "name": "add",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "remove": {
-          "char": "r",
-          "description": "remove prerequisites",
-          "name": "remove",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "prerequisites",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "prerequisites.js"
-      ]
-    },
     "produce": {
       "aliases": [],
       "args": {},
-      "description": "produce a live image from your system whithout your data",
+      "description": "produce a live image from your system",
       "examples": [
         "sudo eggs produce                    # zstd fast compression",
         "sudo eggs produce --pendrive         # zstd compression optimized pendrive",
@@ -880,6 +841,46 @@
         "dist",
         "commands",
         "produce.js"
+      ]
+    },
+    "setup": {
+      "aliases": [],
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
+      "examples": [
+        "<%= config.bin %> <%= command.id %>",
+        "<%= config.bin %> <%= command.id %> --check",
+        "<%= config.bin %> <%= command.id %> --force"
+      ],
+      "flags": {
+        "check": {
+          "char": "c",
+          "description": "check status only, do not install",
+          "name": "check",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "force": {
+          "char": "f",
+          "description": "force installation even if already installed",
+          "name": "force",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "setup",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "setup.js"
       ]
     },
     "status": {
