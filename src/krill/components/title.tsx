@@ -25,11 +25,12 @@ export default function Title({ title="", version=""}) : JSX.Element {
    if (Utils.isAppImage()) {
       type="(AppImage)"
    }
-   if (title=="") 
-      title=`${pjson.name} ${type}`
+   if (title==="") 
+      title=`${pjson.name}`
 
-   if (version=="")
-   version=pjson.version
+   title = ` ${title} ${type}`.padEnd(25," ")
+   let ver = ` v${pjson.version} `.padStart(25," ")
+   let motto = ` Perri's brewery edition `.padEnd(25," ")
 
    return(
       <>
@@ -42,9 +43,9 @@ export default function Title({ title="", version=""}) : JSX.Element {
             <Newline/>
          </Box>
          <Box flexDirection="row">
-            <Text backgroundColor="green"> {title} </Text>
-            <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>
-            <Text backgroundColor="red">       ver. {version}       </Text>
+            <Text backgroundColor="green">{title}</Text>
+            <Text backgroundColor="white" color="blue">{motto}</Text>
+            <Text backgroundColor="red">{ver}</Text>
          </Box>
       </>
    )

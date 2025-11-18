@@ -975,9 +975,13 @@ export default class Utils {
       if (Utils.isAppImage()) {
          type='AppImage'
       }
-      return chalk.bgGreen.whiteBright(` ${pjson.name} ${type}   `) +
-         chalk.bgWhite.blue(" Perri's Brewery edition ") +
-         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
+      let title = ` ${pjson.name} ${type}`.padEnd(25," ")
+      let motto = ` Perri's brewery edition `.padEnd(25," ")
+      let ver = ` v${pjson.version} `.padStart(25," ")
+
+      return chalk.bgGreen.whiteBright(title) +
+         chalk.bgWhite.blue(motto) +
+         chalk.bgRed.whiteBright(ver)
    }
 
 
