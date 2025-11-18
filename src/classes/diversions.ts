@@ -115,14 +115,15 @@ export default class Diversions {
    * @returns 
    */
   static bootloaders(familyId: string): string {
-    if (Utils.isAppImage() && familyId !== 'debian') {
-      const appImagePath = path.join(__dirname, '..', '..', 'usr', 'lib', 'penguins-eggs', 'bootloaders');
-      if (fs.existsSync(appImagePath)) {
-        return appImagePath
+    let pathBootloaders = '/usr/lib/'
+    if (familyId !== "debian") {
+      if (Utils.isAppImage()) {
+        const appImagePath = path.join(__dirname, '..', '..', 'bootloaders');
+        pathBootloaders = appImagePath 
+      } else {
+        pathBootloaders = '/usr/lib/penguins-eggs/bootloaders/'
       }
     }
-
-    // 2. Altrimenti logica nativa
-    return familyId === 'debian' ? '/usr/lib/' : '/usr/lib/penguins-eggs/bootloaders/';
+    return pathBootloaders
   }
 }

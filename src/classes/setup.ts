@@ -8,6 +8,7 @@
 
 
 import { execSync } from 'node:child_process'
+import Utils from './utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
@@ -22,8 +23,12 @@ export class Setup {
     try {
       console.log('Penguins Eggs - System Setup')
       console.log('============================')
-
-      console.log(`Detected: ${this.distro.distroLike} ${this.distro.codenameId}`)
+      const osInfo = Utils.getOsRelease()
+      const codenameId = osInfo.VERSION_CODENAME
+      const releaseId = osInfo.VERSION_ID
+      const  distroId = osInfo.ID
+  
+      console.log(`Detected: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId}`)
       console.log(`Family: ${this.distro.familyId}`)
 
       const packages = this.getPackagesForDistro()
@@ -165,7 +170,11 @@ export class Setup {
     }
   }
 
-  // Metodo per verificare se i prerequisiti sono già installati
+
+  /**
+   * 
+   * @returns 
+   */
   checkPrerequisites(): boolean {
     try {
       const packages = this.getPackagesForDistro()
@@ -194,6 +203,11 @@ export class Setup {
     }
   }
 
+  /**
+   * 
+   * @param pkg 
+   * @returns 
+   */
   private isPackageInstalled(pkg: string): boolean {
     try {
       switch (this.distro.familyId) {
@@ -218,14 +232,5 @@ export class Setup {
     } catch {
       return false
     }
-  }
-
-  // Metodo per ottenere informazioni sulla distribuzione (utile per debug)
-  getDistroInfo(): string {
-    return `
-Distribution: ${this.distro.distroLike}
-Codename: ${this.distro.codenameId}
-Family: ${this.distro.familyId}
-    `.trim()
   }
 }
