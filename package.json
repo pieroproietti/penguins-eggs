@@ -110,10 +110,10 @@
     "repository": "pieroproietti/penguins-eggs",
     "scripts": {
         "appimage:install": "./scripts/appimage-install.sh",
-        "appimage": "./scripts/appimage-build.sh",
-        "build": "shx rm -rf dist && tsc -b",
+        "appimage": "pnpm build && ./scripts/appimage-build.sh",
+        "build": "pnpm clean && shx rm -rf dist && tsc -p . && oclif manifest",
         "clean": "rm -rf build dist *.AppImage AppDir squashfs-root",
-        "deb": "shx rm -rf dist && tsc -p . && oclif manifest && pb deb --release $(cat ./release)",
+        "deb": "pnpm build && pb deb --release $(cat ./release)",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
