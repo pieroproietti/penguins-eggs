@@ -112,6 +112,15 @@ export default class Utils {
    }
 
    /**
+    * isAppImage
+    */
+   static isAppImage(): boolean {
+        return !!process.env.APPIMAGE || 
+            process.execPath.includes('.AppImage') ||
+            process.execPath.includes('/tmp/.mount_');
+   }
+
+   /**
     * Detect if running inside a container (Docker or LXC)
     */
    static isContainer(): boolean {
@@ -965,9 +974,20 @@ export default class Utils {
     * @returns flag
     */
    static flag(): string {
-      return chalk.bgGreen.whiteBright('      ' + pjson.name + '      ') +
-         chalk.bgWhite.blue(" Perri's Brewery edition ") +
-         chalk.bgRed.whiteBright('       ver. ' + pjson.version + '       ')
+      let type=''
+      if (Utils.isAppImage()) {
+         type='AppImage:'
+      }
+
+      let title=`${pjson.name}`
+
+      let green = ` ${type} ${title}`.padEnd(25," ")
+      let white = ` Perri's brewery edition `.padEnd(25," ")
+      let red = ` v${pjson.version} `.padStart(25," ")
+
+      return chalk.bgGreen.whiteBright(green) +
+         chalk.bgWhite.blue(white) +
+         chalk.bgRed.whiteBright(red)
    }
 
 

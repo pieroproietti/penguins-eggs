@@ -26,8 +26,8 @@ kill --help --isos --nointeractive --verbose
 love --help --verbose --hidden --nointeractive --clone --homecrypt --fullcrypt
 mom --help
 pods --help
-prerequisites --auto
 produce --addons --basename --clone --homecrypt --fullcrypt --excludes --help --hidden --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRootHome --verbose --yolk
+setup --check --force
 status --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:repo --add --help --nointeractive --remove --verbose

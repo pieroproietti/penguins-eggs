@@ -22,7 +22,7 @@ import Distro from '../classes/distro.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Produce extends Command {
-  static description = 'produce a live image from your system whithout your data'
+  static description = 'produce a live image from your system'
 
   static examples = [
     'sudo eggs produce                    # zstd fast compression',
@@ -253,7 +253,7 @@ export default class Produce extends Command {
         if (distro.familyId === 'debian') {
           Utils.info("Use penguins-eggs and this option in particular with extreme caution, and ALWAYS first try it out in a test environment.")
           Utils.sleep(3000)
-        } else{ 
+        } else {
           Utils.warning("This option is still in the experimental phase and can only be tested on Debian trixie")
           process.exit(9)
         }

@@ -11,6 +11,7 @@ import { render, Text, Box, Newline } from 'ink'
 
 // pjson
 import { createRequire } from 'module';
+import Utils from '../../classes/utils.js';
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json')
 
@@ -20,11 +21,16 @@ type TitleProps = {
 }
 
 export default function Title({ title="", version=""}) : JSX.Element {
-   if (title=="") 
-      title=pjson.name
+   let type = ""
+   if (Utils.isAppImage()) {
+      type="AppImage:"
+   }
+   if (title==="") 
+      title=`${pjson.name}`
 
-   if (version=="")
-   version=pjson.version
+   let green = ` ${type} ${title}`.padEnd(25," ")
+   let white = ` Perri's brewery edition `.padEnd(25," ")
+   let red = ` v${pjson.version} `.padStart(25," ")
 
    return(
       <>
@@ -37,9 +43,9 @@ export default function Title({ title="", version=""}) : JSX.Element {
             <Newline/>
          </Box>
          <Box flexDirection="row">
-            <Text backgroundColor="green">     {title}      </Text>
-            <Text backgroundColor="white" color="blue"> Perri's brewery edition </Text>
-            <Text backgroundColor="red">       ver. {version}       </Text>
+            <Text backgroundColor="green">{green}</Text>
+            <Text backgroundColor="white" color="blue">{white}</Text>
+            <Text backgroundColor="red">{red}</Text>
          </Box>
       </>
    )
