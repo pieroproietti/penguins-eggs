@@ -15,6 +15,24 @@ fi
 
 echo "SUCCESS: Build found: dist/bin/dev.js"
 
+# Verifica esistenza cartella appimage
+if [ ! -d "appimage" ]; then
+    echo "ERROR: appimage/ directory not found"
+    echo "Please create appimage/ with required files"
+    exit 1
+fi
+
+# Verifica file richiesti in appimage/
+if [ ! -f "appimage/AppRun" ]; then
+    echo "ERROR: appimage/AppRun not found"
+    exit 1
+fi
+
+if [ ! -f "appimage/penguins-eggs.desktop" ]; then
+    echo "ERROR: appimage/penguins-eggs.desktop not found"
+    exit 1
+fi
+
 # Verifica FUSE
 echo "Checking system requirements..."
 if ! ldconfig -p | grep -q libfuse.so.2; then
@@ -32,6 +50,8 @@ fi
 rm -rf AppDir
 mkdir -p AppDir/usr/lib/penguins-eggs
 mkdir -p AppDir/usr/bin
+mkdir -p AppDir/usr/share/applications
+mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
 # Scarica appimagetool
 if [ ! -f "appimagetool" ]; then
@@ -42,7 +62,7 @@ fi
 
 # Copia il progetto
 echo "Copying project files..."
-for dir in dist node_modules assets addons bin conf dracut manpages mkinitcpio mkinitfs scripts src templates; do
+for dir in dist node_modules assets addons bin conf dracut mkinitcpio mkinitfs scripts src templates; do
     if [ -d "$dir" ]; then
         echo "  Copying: $dir"
         cp -r "$dir" AppDir/usr/lib/penguins-eggs/
@@ -60,85 +80,30 @@ rm -f bootloaders.tar.gz
 # Copia package.json
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
-# Crea AppRun
-cat > AppDir/AppRun << 'EOF'
-#!/bin/bash
-set -e
-
-HERE="$(dirname "$(readlink -f "$0")")"
-APP_DIR="$HERE/usr/lib/penguins-eggs"
-
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin"
-export NODE_PATH="$APP_DIR/node_modules"
-
-# Usa una directory scrivibile per il file first-run
-FIRST_RUN_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/penguins-eggs"
-FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
-
-# Setup automatico al primo avvio
-if [ ! -f "$FIRST_RUN_FILE" ]; then
-    echo "First run detected. Creating wrapper in ~/.local/bin/..."
-    
-    # Crea wrapper per eseguire 'eggs' direttamente
-    mkdir -p "$HOME/.local/bin"
-    cat > "$HOME/.local/bin/eggs" << 'WRAPPER'
-#!/bin/bash
-exec "$(dirname "$(readlink -f "$0")")/../.AppImage" "$@"
-WRAPPER
-    chmod +x "$HOME/.local/bin/eggs"
-    echo "Wrapper created at: $HOME/.local/bin/eggs"
-    echo "You can now run 'eggs' directly from terminal"
-    
-    # Setup check
-    cd "$APP_DIR"
-    node -e "
-        const {Setup} = require('./dist/classes/setup.js');
-        const setup = new Setup();
-        if (!setup.checkPrerequisites()) {
-            console.log('WARNING: System needs setup for full functionality.');
-            console.log('Run: eggs setup');
-            console.log('Continuing with basic features...');
-        }
-    " || echo "Setup check failed, continuing with basic features..."
-    
-    mkdir -p "$FIRST_RUN_DIR"
-    touch "$FIRST_RUN_FILE"
-fi
-
-cd "$APP_DIR"
-exec node "dist/bin/dev.js" "$@"
-EOF
-
+# COPIA i file dall'appimage/
+echo "Copying AppImage configuration..."
+cp appimage/AppRun AppDir/
 chmod +x AppDir/AppRun
 
-# Crea .desktop e icona
-mkdir -p AppDir/usr/share/applications
-cat > AppDir/usr/share/applications/penguins-eggs.desktop << EOF
-[Desktop Entry]
-Name=Penguins Eggs
-Comment=CLI tool for Linux remastering
-Exec=eggs
-Icon=penguins-eggs
-Type=Application
-Categories=System;
-Terminal=true
-EOF
+cp appimage/penguins-eggs.desktop AppDir/
+cp appimage/penguins-eggs.desktop AppDir/usr/share/applications/
 
-# Crea icona
-mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-if command -v convert &> /dev/null; then
+# Icona - gestisce sia eggs.png che penguins-eggs.png
+if [ -f "appimage/penguins-eggs.png" ]; then
+    cp appimage/penguins-eggs.png AppDir/
+    cp appimage/penguins-eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/
+elif [ -f "appimage/eggs.png" ]; then
+    cp appimage/eggs.png AppDir/penguins-eggs.png
+    cp appimage/eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png
+    echo "Renamed eggs.png to penguins-eggs.png for compatibility"
+else
+    echo "Creating fallback icon..."
     convert -size 256x256 xc:#4A90E2 \
             -fill white -gravity center -pointsize 24 -annotate +0+0 "EGGS\nPenguins" \
-            AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png
-else
-    # Crea un'icona semplice con base64
+            AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png 2>/dev/null || \
     echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | base64 -d > AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png 2>/dev/null || true
-    echo "WARNING: Using minimal fallback icon"
+    cp AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png AppDir/
 fi
-
-# COPIA i file nella ROOT di AppDir (non link simbolici)
-cp AppDir/usr/share/applications/penguins-eggs.desktop AppDir/
-cp AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png AppDir/
 
 # Link per l'eseguibile
 ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs

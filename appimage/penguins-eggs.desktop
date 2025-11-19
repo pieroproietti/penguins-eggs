@@ -1,12 +1,10 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
-Version=1.0
-Type=Application
-Name=Penguins Eggs
-GenericName=System Remaster Tool
-Comment=Utility CLI per creare distribuzioni Linux live personalizzate
-Exec=eggs
+Categories=GNOME;GTK;Utility;
+Comment=Penguins' eggs docs/blog
+Encoding=UTF-8
+Exec=xdg-open https://penguins-eggs.net/
+GenericName=Penguins' eggs
 Icon=penguins-eggs
-Categories=System;
-Terminal=true
-StartupNotify=false
-Keywords=remaster;live;iso;linux;customization;
+Name=Penguins' eggs
+Type=Application
