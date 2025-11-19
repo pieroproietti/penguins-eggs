@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>penguins-eggs.desktop</id>
+  <name>Penguins Eggs</name>
+  <summary>CLI tool for Linux remastering and live system creation</summary>
+  <description>
+    <p>A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.</p>
+  </description>
+  <categories>
+    <category>System</category>
+  </categories>
+  <url type="homepage">https://github.com/pieroproietti/penguins-eggs</url>
+  <developer_name>Piero Proietti</developer_name>
+  <update_contact>piero.proietti_AT_gmail.com</update_contact>
+  <releases>
+    <release version="%VERSION%" date="%DATE%"/>
+  </releases>
+</component>

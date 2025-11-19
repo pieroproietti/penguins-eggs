@@ -6,11 +6,11 @@
  * license: MIT
  */
 
-import {Setup} from '../classes/setup.js'
+import {Prerequisites} from '../classes/prerequisites.js'
 import {Command, Flags} from '@oclif/core'
 
 
-export default class SetupCommand extends Command {
+export default class Setup extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static examples = [
@@ -25,21 +25,21 @@ export default class SetupCommand extends Command {
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(SetupCommand)
-    const setup = new Setup()
+    const {flags} = await this.parse(Setup)
+    const prerequisites = new Prerequisites()
 
-    this.log('Penguins Eggs - System Setup')
+    this.log('penguins-eggs - System Setup')
     this.log('============================')
     this.log('')
 
     if (flags.check) {
       // Solo check
       this.log('Checking system prerequisites...')
-      const allInstalled = setup.checkPrerequisites()
+      const allInstalled = prerequisites.check()
       
       if (allInstalled) {
         this.log('SUCCESS: All prerequisites are installed')
-        this.log('Your system is ready for Penguins Eggs!')
+        this.log('Your system is ready for penguins-eggs!')
       } else {
         this.log('WARNING: Some prerequisites are missing')
         this.log('Run: eggs setup (without --check) to install them automatically')
@@ -49,15 +49,10 @@ export default class SetupCommand extends Command {
 
     // Setup automatico: check + install
     this.log('Checking current system status...')
-    const allInstalled = setup.checkPrerequisites()
+    const allInstalled = prerequisites.check()
 
     if (allInstalled && !flags.force) {
       this.log('SUCCESS: All prerequisites are already installed')
-      this.log('Your system is ready for Penguins Eggs!')
-      this.log('')
-      this.log('You can now use commands like:')
-      this.log('  eggs produce --help')
-      this.log('  eggs calamares --help')
       return
     }
 
@@ -72,16 +67,11 @@ export default class SetupCommand extends Command {
     this.log('This will install system packages and requires sudo privileges.')
     this.log('')
 
-    const success = await setup.installPrerequisites()
+    const success = await prerequisites.install()
     
     if (success) {
       this.log('')
-      this.log('SUCCESS: Penguins Eggs setup completed!')
-      this.log('')
-      this.log('You can now use all features:')
-      this.log('  eggs produce    # Create custom ISO')
-      this.log('  eggs calamares  # Install system')
-      this.log('  eggs --help     # See all commands')
+      this.log('SUCCESS: penguins-eggs setup completed!')
     } else {
       this.log('')
       this.log('ERROR: Setup failed')

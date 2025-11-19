@@ -1,5 +1,5 @@
 /**
- * ./src/classes/setup.ts
+ * ./src/classes/prerequisites.ts
  * penguins-eggs v.25.11.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -12,16 +12,21 @@ import Utils from './utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
-export class Setup {
+export class Prerequisites {
   private distro: Distro
 
   constructor() {
     this.distro = new Distro()
   }
 
-  async installPrerequisites(): Promise<boolean> {
+
+  /**
+   * install
+   * @returns 
+   */
+  async install(): Promise<boolean> {
     try {
-      console.log('Penguins Eggs - System Setup')
+      console.log('penguins-eggs - System Setup')
       console.log('============================')
       const osInfo = Utils.getOsRelease()
       const codenameId = osInfo.VERSION_CODENAME
@@ -68,6 +73,44 @@ export class Setup {
     }
   }
 
+
+  /**
+   * 
+   * @returns 
+   */
+  check(): boolean {
+    try {
+      const packages = this.getPackagesForDistro()
+
+      if (packages.length === 0) {
+        console.log('WARNING: Unsupported distribution - cannot check prerequisites')
+        return false
+      }
+
+      const missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
+
+      if (missing.length > 0) {
+        console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
+        console.log('Missing packages:')
+        missing.forEach(pkg => console.log(`  - ${pkg}`))
+        return false
+      }
+
+      console.log(`SUCCESS: All ${packages.length} packages are installed`)
+      return true
+
+    } catch (error) {
+      console.log('ERROR: Failed to check prerequisites')
+      console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
+      return false
+    }
+  }
+
+
+  /**
+   * 
+   * @returns 
+   */
   private getPackagesForDistro(): string[] {
 
     switch (this.distro.familyId) {
@@ -84,7 +127,39 @@ export class Setup {
         if (Diversions.isManjaroBased(this.distro.distroLike)) {
           console.log('create packages list')
           // Manjaro
-          return []
+          return [
+              'arch-install-scripts',
+              'dosfstools',
+              'efibootmgr',
+              'erofs-utils',
+              'findutils',
+              'git',
+              'grub',
+              'jq',
+              'libarchive',
+              'libisoburn',
+              'lvm2',
+              'manjaro-tools-iso',
+              'mkinitcpio-nfs-utils',
+              'mtools',
+              'nbd',
+              'nodejs',
+              'pacman-contrib',
+              'parted',
+              'polkit',
+              'procps-ng',
+              'pv',
+              'python',
+              'rsync',
+              'squashfs-tools',
+              'sshfs',
+              'wget',
+              'xdg-utils',
+              // Aggiunti per compatibilità
+              'fuse2',
+              'gnupg',
+              'curl'
+            ]
         } else {
           // archlinuxx
           return [
@@ -117,7 +192,6 @@ export class Setup {
             'syslinux',
             'wget',
             'xdg-utils',
-
             // Aggiunti per compatibilità
             'fuse2',
             'gnupg',
@@ -126,7 +200,6 @@ export class Setup {
 
         }
 
-      case 'fedora':
       case 'fedora':
       case 'ef9':
         return [
@@ -152,6 +225,11 @@ export class Setup {
   }
 
 
+  /**
+   * 
+   * @param packages 
+   * @returns 
+   */
   private getInstallCommand(packages: string[]): string {
     const packagesStr = packages.join(' ')
 
@@ -170,38 +248,6 @@ export class Setup {
     }
   }
 
-
-  /**
-   * 
-   * @returns 
-   */
-  checkPrerequisites(): boolean {
-    try {
-      const packages = this.getPackagesForDistro()
-
-      if (packages.length === 0) {
-        console.log('WARNING: Unsupported distribution - cannot check prerequisites')
-        return false
-      }
-
-      const missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
-
-      if (missing.length > 0) {
-        console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
-        console.log('Missing packages:')
-        missing.forEach(pkg => console.log(`  - ${pkg}`))
-        return false
-      }
-
-      console.log(`SUCCESS: All ${packages.length} packages are installed`)
-      return true
-
-    } catch (error) {
-      console.log('ERROR: Failed to check prerequisites')
-      console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
-      return false
-    }
-  }
 
   /**
    * 
