@@ -4,7 +4,15 @@ set -e
 HERE="$(dirname "$(readlink -f "$0")")"
 APP_DIR="$HERE/usr/lib/penguins-eggs"
 
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin"
+# Imposta le variabili d'ambiente mancanti per D-Bus e XDG
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/runtime-$USER}"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+
+# Crea la directory runtime se non esiste
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 0700 "$XDG_RUNTIME_DIR"
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin:$HERE/usr/lib/penguins-eggs/node/bin"
 export NODE_PATH="$APP_DIR/node_modules"
 
 # Imposta la cache per l'autocomplete nello stesso percorso dell'app nativa
@@ -20,7 +28,7 @@ FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
 if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
     echo "First run detected. Running automatic setup check..."
     cd "$APP_DIR"
-    node -e "
+    "$HERE/usr/lib/penguins-eggs/node/bin/node" -e "
         const {Setup} = require('./dist/classes/setup.js');
         const setup = new Setup();
         if (!setup.checkPrerequisites()) {
@@ -37,4 +45,4 @@ fi
 
 cd "$APP_DIR"
 # Sopprime i warning specifici di oclif/autocomplete
-NODE_NO_WARNINGS=1 exec node --no-warnings "dist/bin/run.js" "$@"
+NODE_NO_WARNINGS=1 exec "$HERE/usr/lib/penguins-eggs/node/bin/node" --no-warnings "dist/bin/run.js" "$@"

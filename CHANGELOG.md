@@ -19,7 +19,14 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.19-rc3
+Now AppImage include nodejs, I tested it on a virgin Manjaro xfce. Was able to run and produce ISO, but - at the moment - resulting ISO fail to boot going on recovery shell.
+
+## v25.11.19-rc2
+After hear same use unable to start AppImage, I realized I forgot to include nodejs inside it, on my testing machine was working becouse nodejs is installed.
+
 ## v25.11.19-rc1
+
 First version also released as AppImage. Works on all supported versions and probably on most derivatives.
 
 My impressions of using it are extremely positive. It simply works, and for a developer, it's a double pleasure to be able to configure a distribution and test it without having to build packages.

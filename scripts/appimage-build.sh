@@ -69,6 +69,15 @@ for dir in dist node_modules assets addons bin conf dracut mkinitcpio mkinitfs s
     fi
 done
 
+# Scarica e installa Node.js
+NODE_VERSION="22.21.1"
+echo "Downloading Node.js v$NODE_VERSION..."
+wget -q https://nodejs.org/dist/latest-v22.x/node-v$NODE_VERSION-linux-x64.tar.xz -O nodejs.tar.xz
+tar -xf nodejs.tar.xz
+mkdir -p AppDir/usr/lib/penguins-eggs/node
+cp -r node-v$NODE_VERSION-linux-x64/* AppDir/usr/lib/penguins-eggs/node/
+rm -rf node-v$NODE_VERSION-linux-x64 nodejs.tar.xz
+
 # Bootloaders
 mkdir -p AppDir/usr/lib/penguins-eggs/bootloaders
 echo "Downloading bootloaders..."
