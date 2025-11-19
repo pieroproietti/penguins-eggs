@@ -1,12 +1,9 @@
 [Desktop Entry]
-Version=1.0
-Type=Application
 Name=Penguins Eggs
-GenericName=System Remaster Tool
-Comment=Utility CLI per creare distribuzioni Linux live personalizzate
+Comment=CLI tool for Linux remastering and live system creation
 Exec=eggs
 Icon=penguins-eggs
-Categories=System;
+Type=Application
+Categories=System;ConsoleOnly;
 Terminal=true
-StartupNotify=false
-Keywords=remaster;live;iso;linux;customization;
+NoDisplay=false
