@@ -39,8 +39,8 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-autocomplete --refresh-cache
 help --nested-commands
+autocomplete --refresh-cache
 version --json --verbose
 "
 
