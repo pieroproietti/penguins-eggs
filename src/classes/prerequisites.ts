@@ -19,13 +19,14 @@ export class Prerequisites {
     this.distro = new Distro()
   }
 
+
   /**
    * install
    * @returns 
    */
   async install(): Promise<boolean> {
     try {
-      console.log('Penguins Eggs - System Setup')
+      console.log('penguins-eggs - System Setup')
       console.log('============================')
       const osInfo = Utils.getOsRelease()
       const codenameId = osInfo.VERSION_CODENAME
@@ -71,6 +72,7 @@ export class Prerequisites {
       return false
     }
   }
+
 
   /**
    * 
@@ -125,7 +127,39 @@ export class Prerequisites {
         if (Diversions.isManjaroBased(this.distro.distroLike)) {
           console.log('create packages list')
           // Manjaro
-          return []
+          return [
+              'arch-install-scripts',
+              'dosfstools',
+              'efibootmgr',
+              'erofs-utils',
+              'findutils',
+              'git',
+              'grub',
+              'jq',
+              'libarchive',
+              'libisoburn',
+              'lvm2',
+              'manjaro-tools-iso',
+              'mkinitcpio-nfs-utils',
+              'mtools',
+              'nbd',
+              'nodejs',
+              'pacman-contrib',
+              'parted',
+              'polkit',
+              'procps-ng',
+              'pv',
+              'python',
+              'rsync',
+              'squashfs-tools',
+              'sshfs',
+              'wget',
+              'xdg-utils',
+              // Aggiunti per compatibilità
+              'fuse2',
+              'gnupg',
+              'curl'
+            ]
         } else {
           // archlinuxx
           return [
@@ -158,7 +192,6 @@ export class Prerequisites {
             'syslinux',
             'wget',
             'xdg-utils',
-
             // Aggiunti per compatibilità
             'fuse2',
             'gnupg',
@@ -167,7 +200,6 @@ export class Prerequisites {
 
         }
 
-      case 'fedora':
       case 'fedora':
       case 'ef9':
         return [
@@ -193,6 +225,11 @@ export class Prerequisites {
   }
 
 
+  /**
+   * 
+   * @param packages 
+   * @returns 
+   */
   private getInstallCommand(packages: string[]): string {
     const packagesStr = packages.join(' ')
 

@@ -35,7 +35,7 @@ echo "  - Main executable: $INSTALL_DIR/eggs"
 echo ""
 echo "Usage:"
 echo "  eggs help [command]  # Get help for specific commands"
-echo "  eggs setup -f        # Install prerequisites°
+echo "  eggs setup -f        # Install prerequisites"
 echo "  eggs dad -d          # Configure eggs (default values)"
 echo "  eggs love -n         # Create live ISO image (nointeractive)"
 echo ""
