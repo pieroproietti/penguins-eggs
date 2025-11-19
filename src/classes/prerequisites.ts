@@ -1,5 +1,5 @@
 /**
- * ./src/classes/setup.ts
+ * ./src/classes/prerequisites.ts
  * penguins-eggs v.25.11.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -12,14 +12,18 @@ import Utils from './utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 
-export class Setup {
+export class Prerequisites {
   private distro: Distro
 
   constructor() {
     this.distro = new Distro()
   }
 
-  async installPrerequisites(): Promise<boolean> {
+  /**
+   * install
+   * @returns 
+   */
+  async install(): Promise<boolean> {
     try {
       console.log('Penguins Eggs - System Setup')
       console.log('============================')
@@ -68,6 +72,43 @@ export class Setup {
     }
   }
 
+  /**
+   * 
+   * @returns 
+   */
+  check(): boolean {
+    try {
+      const packages = this.getPackagesForDistro()
+
+      if (packages.length === 0) {
+        console.log('WARNING: Unsupported distribution - cannot check prerequisites')
+        return false
+      }
+
+      const missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
+
+      if (missing.length > 0) {
+        console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
+        console.log('Missing packages:')
+        missing.forEach(pkg => console.log(`  - ${pkg}`))
+        return false
+      }
+
+      console.log(`SUCCESS: All ${packages.length} packages are installed`)
+      return true
+
+    } catch (error) {
+      console.log('ERROR: Failed to check prerequisites')
+      console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
+      return false
+    }
+  }
+
+
+  /**
+   * 
+   * @returns 
+   */
   private getPackagesForDistro(): string[] {
 
     switch (this.distro.familyId) {
@@ -170,38 +211,6 @@ export class Setup {
     }
   }
 
-
-  /**
-   * 
-   * @returns 
-   */
-  checkPrerequisites(): boolean {
-    try {
-      const packages = this.getPackagesForDistro()
-
-      if (packages.length === 0) {
-        console.log('WARNING: Unsupported distribution - cannot check prerequisites')
-        return false
-      }
-
-      const missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
-
-      if (missing.length > 0) {
-        console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
-        console.log('Missing packages:')
-        missing.forEach(pkg => console.log(`  - ${pkg}`))
-        return false
-      }
-
-      console.log(`SUCCESS: All ${packages.length} packages are installed`)
-      return true
-
-    } catch (error) {
-      console.log('ERROR: Failed to check prerequisites')
-      console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
-      return false
-    }
-  }
 
   /**
    * 

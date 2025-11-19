@@ -6,11 +6,11 @@
  * license: MIT
  */
 
-import {Setup} from '../classes/setup.js'
+import {Prerequisites} from '../classes/prerequisites.js'
 import {Command, Flags} from '@oclif/core'
 
 
-export default class SetupCommand extends Command {
+export default class Setup extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static examples = [
@@ -25,8 +25,8 @@ export default class SetupCommand extends Command {
   }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(SetupCommand)
-    const setup = new Setup()
+    const {flags} = await this.parse(Setup)
+    const prerequisites = new Prerequisites()
 
     this.log('Penguins Eggs - System Setup')
     this.log('============================')
@@ -35,7 +35,7 @@ export default class SetupCommand extends Command {
     if (flags.check) {
       // Solo check
       this.log('Checking system prerequisites...')
-      const allInstalled = setup.checkPrerequisites()
+      const allInstalled = prerequisites.check()
       
       if (allInstalled) {
         this.log('SUCCESS: All prerequisites are installed')
@@ -49,7 +49,7 @@ export default class SetupCommand extends Command {
 
     // Setup automatico: check + install
     this.log('Checking current system status...')
-    const allInstalled = setup.checkPrerequisites()
+    const allInstalled = prerequisites.check()
 
     if (allInstalled && !flags.force) {
       this.log('SUCCESS: All prerequisites are already installed')
@@ -72,7 +72,7 @@ export default class SetupCommand extends Command {
     this.log('This will install system packages and requires sudo privileges.')
     this.log('')
 
-    const success = await setup.installPrerequisites()
+    const success = await prerequisites.install()
     
     if (success) {
       this.log('')

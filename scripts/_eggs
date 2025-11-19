@@ -200,8 +200,8 @@ _eggs() {
 "setup[Automatically check and install system prerequisites]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
-"help[Display help for eggs.]" \
 "autocomplete[Display autocomplete installation instructions.]" \
+"help[Display help for eggs.]" \
 "version[]" \
 
     ;;
@@ -379,14 +379,14 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 autocomplete)
 _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 version)

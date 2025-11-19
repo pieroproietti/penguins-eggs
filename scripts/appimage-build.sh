@@ -81,29 +81,17 @@ rm -f bootloaders.tar.gz
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
 # COPIA i file dall'appimage/
-echo "Copying AppImage configuration..."
+# AppRun
 cp appimage/AppRun AppDir/
 chmod +x AppDir/AppRun
 
+# penguins-eggs.desktop
 cp appimage/penguins-eggs.desktop AppDir/
 cp appimage/penguins-eggs.desktop AppDir/usr/share/applications/
 
-# Icona - gestisce sia eggs.png che penguins-eggs.png
-if [ -f "appimage/penguins-eggs.png" ]; then
-    cp appimage/penguins-eggs.png AppDir/
-    cp appimage/penguins-eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/
-elif [ -f "appimage/eggs.png" ]; then
-    cp appimage/eggs.png AppDir/penguins-eggs.png
-    cp appimage/eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png
-    echo "Renamed eggs.png to penguins-eggs.png for compatibility"
-else
-    echo "Creating fallback icon..."
-    convert -size 256x256 xc:#4A90E2 \
-            -fill white -gravity center -pointsize 24 -annotate +0+0 "EGGS\nPenguins" \
-            AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png 2>/dev/null || \
-    echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | base64 -d > AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png 2>/dev/null || true
-    cp AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png AppDir/
-fi
+# penguins-eggs.png
+cp appimage/penguins-eggs.png AppDir/
+cp appimage/penguins-eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/
 
 # Link per l'eseguibile
 ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs
