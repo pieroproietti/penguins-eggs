@@ -113,21 +113,25 @@ export class Prerequisites {
    */
   private getPackagesForDistro(): string[] {
 
+    /**
+     * normalize as packageList
+     */
     let packagesList = this.distro.familyId
-    if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike) {
+    if (this.distro.familyId === 'el9') {
+      packagesList = 'fedora'
+    }
+
+    if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike)) {
       packagesList = 'manjaro'
     }
 
-    if (this.distro.familyId === 'el0') {
-      packagesList = 'fedora'
-    }
 
 
     /**
      * we select from packageList
      */
     if (packagesList === 'alpine') {
-      return = [
+      return [
         'alpine-conf', 
         'apk-tools', 
         'bash', 
