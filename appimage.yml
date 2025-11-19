@@ -1,0 +1,6 @@
+app: penguins-eggs
+icon: https://raw.githubusercontent.com/pieroproietti/penguins-eggs/main/appimage/penguins-eggs.png
+website: https://github.com/pieroproietti/penguins-eggs
+categories:
+  - System
+description: CLI tool for Linux remastering and live system creation

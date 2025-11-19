@@ -81,6 +81,23 @@ rm -f bootloaders.tar.gz
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
 # COPIA i file dall'appimage/
+
+# Copia e aggiorna metadati AppData
+if [ -f "appimage/penguins-eggs.appdata.xml" ]; then
+    mkdir -p AppDir/usr/share/metainfo
+    
+    # Aggiorna automaticamente versione e data
+    CURRENT_DATE=$(date +%Y-%m-%d)
+    sed -e "s|%VERSION%|$VERSION|g" \
+        -e "s|%DATE%|$CURRENT_DATE|g" \
+        "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/penguins-eggs.appdata.xml
+    
+    echo "AppData metadata updated: version $VERSION, date $CURRENT_DATE"
+else
+    echo "WARNING: AppData file not found at appimage/penguins-eggs.appdata.xml"
+fi
+
+
 # AppRun
 cp appimage/AppRun AppDir/
 chmod +x AppDir/AppRun

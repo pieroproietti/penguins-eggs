@@ -7,6 +7,7 @@
 [![gdrive](https://img.shields.io/badge/gdrive-all-blue)](https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY)
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourceforge.net/projects/penguins-eggs/files/)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
+[![Get it from AppImage](https://img.shields.io/badge/Get%20it%20from-AppImage-important.svg)](https://appimage.github.io/penguins-eggs/)
 
 <a href="https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY">
   <img src="https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/images/penguins-eggs-300x300.png" width="280" height="300" alt="CD-ROM">

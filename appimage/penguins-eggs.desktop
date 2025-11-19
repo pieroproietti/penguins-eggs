@@ -1,10 +1,9 @@
-#!/usr/bin/env xdg-open
 [Desktop Entry]
-Categories=GNOME;GTK;Utility;
-Comment=Penguins' eggs docs/blog
-Encoding=UTF-8
-Exec=xdg-open https://penguins-eggs.net/
-GenericName=Penguins' eggs
+Name=Penguins Eggs
+Comment=CLI tool for Linux remastering and live system creation
+Exec=eggs
 Icon=penguins-eggs
-Name=Penguins' eggs
 Type=Application
+Categories=System;ConsoleOnly;
+Terminal=true
+NoDisplay=false
