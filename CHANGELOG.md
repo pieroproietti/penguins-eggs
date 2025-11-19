@@ -19,8 +19,16 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-## v25.11.19
+## v25.11.19-rc1
 First version also released as AppImage. Works on all supported versions and probably on most derivatives.
+
+My impressions of using it are extremely positive. It simply works, and for a developer, it's a double pleasure to be able to configure a distribution and test it without having to build packages.
+
+I added the `eggs setup` command, which checks for or installs the necessary native packages on the system in use.
+
+
+I requested publication on https://github.com/AppImage/appimage.github.io, otherwise it can be downloaded [v25.11.19-rc1](https://github.com/pieroproietti/penguins-eggs/releases/tag/v25.11.19-rc1).
+
 
 ## v25.11.14
 * Almalinux, Fedora, Opensuse, Rocky Linux: rewrote the code to add or remove the repository for pre-compiled penguins-eggs packages;
