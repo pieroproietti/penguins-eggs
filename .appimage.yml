@@ -3,4 +3,5 @@ icon: https://raw.githubusercontent.com/pieroproietti/penguins-eggs/main/appimag
 website: https://github.com/pieroproietti/penguins-eggs
 categories:
   - System
+  - ConsoleOnly
 description: CLI tool for Linux remastering and live system creation
