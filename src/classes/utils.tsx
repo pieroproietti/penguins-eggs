@@ -974,17 +974,20 @@ export default class Utils {
     * @returns flag
     */
    static flag(): string {
-      let type='       '
+      let type=''
       if (Utils.isAppImage()) {
-         type='AppImage'
+         type='AppImage:'
       }
-      let title = ` ${pjson.name} ${type}`.padEnd(25," ")
-      let motto = ` Perri's brewery edition `.padEnd(25," ")
-      let ver = ` v${pjson.version} `.padStart(25," ")
 
-      return chalk.bgGreen.whiteBright(title) +
-         chalk.bgWhite.blue(motto) +
-         chalk.bgRed.whiteBright(ver)
+      let title=`${pjson.name}`
+
+      let green = ` ${type} ${title}`.padEnd(25," ")
+      let white = ` Perri's brewery edition `.padEnd(25," ")
+      let red = ` v${pjson.version} `.padStart(25," ")
+
+      return chalk.bgGreen.whiteBright(green) +
+         chalk.bgWhite.blue(white) +
+         chalk.bgRed.whiteBright(red)
    }
 
 

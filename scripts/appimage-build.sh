@@ -20,9 +20,10 @@ echo "Checking system requirements..."
 if ! ldconfig -p | grep -q libfuse.so.2; then
     echo "WARNING: libfuse2 not found. AppImage may not run properly."
     echo "Please install FUSE:"
-    echo "  Debian/Ubuntu: sudo apt-get install fuse libfuse2"
-    echo "  Fedora:        sudo dnf install fuse fuse-libs"
     echo "  Arch:          sudo pacman -S fuse2"
+    echo "  Debian/Ubuntu: sudo apt-get install fuse libfuse2"
+    echo "  Fedora/RHEL:   sudo dnf install fuse fuse-libs"
+    echo "  Opensuse:      sudo zypper install fuse fuse-libs"
     echo ""
     echo "Continuing with build anyway..."
 fi
@@ -48,7 +49,7 @@ for dir in dist node_modules assets addons bin conf dracut manpages mkinitcpio m
     fi
 done
 
-# Including Debian trixie bootloaders
+# Bootloaders
 mkdir -p AppDir/usr/lib/penguins-eggs/bootloaders
 echo "Downloading bootloaders..."
 wget -O bootloaders.tar.gz "https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.9.8/bootloaders.tar.gz"
@@ -56,22 +57,10 @@ echo "Extracting bootloaders..."
 tar -xzf bootloaders.tar.gz -C AppDir/usr/lib/penguins-eggs/bootloaders --strip-components=1
 rm -f bootloaders.tar.gz
 
-# Copio package.json
+# Copia package.json
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
-
-#!/bin/bash
-set -e
-
-echo "Building Penguins Eggs AppImage..."
-
-APP_NAME="penguins-eggs"
-VERSION=$(node -p "require('./package.json').version")
-ARCH="x86_64"
-
-# [codice pre-esistente...]
-
-# Crea AppRun nella ROOT di AppDir
+# Crea AppRun
 cat > AppDir/AppRun << 'EOF'
 #!/bin/bash
 set -e
@@ -86,9 +75,21 @@ export NODE_PATH="$APP_DIR/node_modules"
 FIRST_RUN_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/penguins-eggs"
 FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
 
-# Setup automatico al primo avvio (solo se non è il comando setup)
-if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
-    echo "First run detected. Running automatic setup check..."
+# Setup automatico al primo avvio
+if [ ! -f "$FIRST_RUN_FILE" ]; then
+    echo "First run detected. Creating wrapper in ~/.local/bin/..."
+    
+    # Crea wrapper per eseguire 'eggs' direttamente
+    mkdir -p "$HOME/.local/bin"
+    cat > "$HOME/.local/bin/eggs" << 'WRAPPER'
+#!/bin/bash
+exec "$(dirname "$(readlink -f "$0")")/../.AppImage" "$@"
+WRAPPER
+    chmod +x "$HOME/.local/bin/eggs"
+    echo "Wrapper created at: $HOME/.local/bin/eggs"
+    echo "You can now run 'eggs' directly from terminal"
+    
+    # Setup check
     cd "$APP_DIR"
     node -e "
         const {Setup} = require('./dist/classes/setup.js');
@@ -100,7 +101,6 @@ if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
         }
     " || echo "Setup check failed, continuing with basic features..."
     
-    # Crea directory e file nella cache dell'utente
     mkdir -p "$FIRST_RUN_DIR"
     touch "$FIRST_RUN_FILE"
 fi
@@ -109,9 +109,7 @@ cd "$APP_DIR"
 exec node "dist/bin/dev.js" "$@"
 EOF
 
-# Rendi AppRun eseguibile
 chmod +x AppDir/AppRun
-
 
 # Crea .desktop e icona
 mkdir -p AppDir/usr/share/applications
@@ -126,49 +124,47 @@ Categories=System;
 Terminal=true
 EOF
 
+# Crea icona
 mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
-cat > AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.svg << 'EOF'
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" fill="#4A90E2"/>
-  <circle cx="128" cy="100" r="45" fill="white"/>
-  <ellipse cx="128" cy="190" rx="65" ry="45" fill="white"/>
-  <text x="128" y="110" text-anchor="middle" font-family="Arial" font-size="38" fill="#4A90E2">EGGS</text>
-  <text x="128" y="235" text-anchor="middle" font-family="Arial" font-size="20" fill="white" font-weight="bold">Penguins</text>
-</svg>
-EOF
-
 if command -v convert &> /dev/null; then
-    convert -background none -size 256x256 \
-            AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.svg \
+    convert -size 256x256 xc:#4A90E2 \
+            -fill white -gravity center -pointsize 24 -annotate +0+0 "EGGS\nPenguins" \
             AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png
-    rm AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.svg
 else
-    mv AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.svg \
-       AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png
+    # Crea un'icona semplice con base64
+    echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" | base64 -d > AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png 2>/dev/null || true
+    echo "WARNING: Using minimal fallback icon"
 fi
 
-# Link simbolici
-ln -sf usr/share/icons/hicolor/256x256/apps/penguins-eggs.png AppDir/penguins-eggs.png
-ln -sf usr/share/applications/penguins-eggs.desktop AppDir/penguins-eggs.desktop
-ln -sf ../AppRun AppDir/usr/bin/eggs
+# COPIA i file nella ROOT di AppDir (non link simbolici)
+cp AppDir/usr/share/applications/penguins-eggs.desktop AppDir/
+cp AppDir/usr/share/icons/hicolor/256x256/apps/penguins-eggs.png AppDir/
+
+# Link per l'eseguibile
+ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs
+
+# Verifica file richiesti
+echo "Checking required AppDir files:"
+ls -la AppDir/AppRun
+ls -la AppDir/penguins-eggs.desktop
+ls -la AppDir/penguins-eggs.png
 
 # Crea AppImage
 echo "Creating AppImage..."
 ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
-# Test (se FUSE è installato)
+# Test
 echo "Testing AppImage..."
 chmod +x "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
-if ldconfig -p | grep -q libfuse.so.2; then
-    if ./${APP_NAME}-${VERSION}-${ARCH}.AppImage --version; then
+if command -v fusermount &> /dev/null || command -v fusermount3 &> /dev/null; then
+    if ./"${APP_NAME}-${VERSION}-${ARCH}.AppImage" --version; then
         echo "SUCCESS: AppImage working correctly!"
     else
-        echo "WARNING: AppImage test failed (may be due to missing FUSE)"
+        echo "WARNING: AppImage test failed"
     fi
 else
     echo "WARNING: Cannot test AppImage without FUSE"
-    echo "Install: sudo pacman -S fuse2"
 fi
 
 echo ""
