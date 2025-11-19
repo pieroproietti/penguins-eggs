@@ -31,8 +31,8 @@ export class Prerequisites {
       const osInfo = Utils.getOsRelease()
       const codenameId = osInfo.VERSION_CODENAME
       const releaseId = osInfo.VERSION_ID
-      const  distroId = osInfo.ID
-  
+      const distroId = osInfo.ID
+
       console.log(`Detected: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId}`)
       console.log(`Family: ${this.distro.familyId}`)
 
@@ -113,164 +113,201 @@ export class Prerequisites {
    */
   private getPackagesForDistro(): string[] {
 
-    switch (this.distro.familyId) {
-      case 'archlinux':
-        if (!Diversions.isManjaroBased(this.distro.distroLike)) {
-          // archlinuxx
-          return [
-            'arch-install-scripts',
-            'cryptsetup',
-            'curl',
-            'dosfstools',
-            'efibootmgr',
-            'erofs-utils',
-            'findutils',
-            'fuse2',
-            'git',
-            'gnupg',
-            'grub',
-            'jq',
-            'libarchive',
-            'libisoburn',
-            'lvm2',
-            'mkinitcpio-archiso',
-            'mkinitcpio-nfs-utils',
-            'mtools',
-            'nbd',
-            'nodejs',
-            'pacman-contrib',
-            'parted',
-            'polkit',
-            'procps-ng',
-            'pv',
-            'python',
-            'rsync',
-            'squashfs-tools',
-            'sshfs',
-            'syslinux',
-            'wget',
-            'xdg-utils',
-          ]
-        } else {
-          // Manjaro
-          return [
-              'arch-install-scripts',
-              'curl',
-              'dosfstools',
-              'efibootmgr',
-              'erofs-utils',
-              'findutils',
-              'fuse2',
-              'git',
-              'gnupg',
-              'grub',
-              'jq',
-              'libarchive',
-              'libisoburn',
-              'lvm2',
-              'manjaro-tools-iso',
-              'mkinitcpio-nfs-utils',
-              'mtools',
-              'nbd',
-              'nodejs',
-              'pacman-contrib',
-              'parted',
-              'polkit',
-              'procps-ng',
-              'pv',
-              'python',
-              'rsync',
-              'squashfs-tools',
-              'sshfs',
-              'wget',
-              'xdg-utils',
-            ]
-        }
+    let packagesList = this.distro.familyId
+    if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike) {
+      packagesList = 'manjaro'
+    }
 
-      case 'debian':
-        return [
-          'cryptsetup', 
-          'curl', 
-          'dosfstools', 
-          'fuse', 
-          'git',
-          'gnupg',
-          'grub-efi-amd64-bin', 
-          'grub-pc-bin', 
-          'grub2-common',
-          'ipxe', 
-          'isolinux', 
-          'jq', 
-          'libfuse2',
-          'lvm2', 
-          'nodejs',
-          'parted', 
-          'rsync', 
-          'squashfs-tools',
-          'sshfs', 
-          'syslinux-common', 
-          'syslinux',
-          'xorriso', 
-        ]
+    if (this.distro.familyId === 'el0') {
+      packagesList = 'fedora'
+    }
 
 
-      case 'fedora':
-      case 'ef9':
-        return [
-          'cryptsetup', 
-          'curl', 
-          'device-mapper', 
-          'dosfstools', 
-          'dracut-live', 
-          'dracut',
-          'efibootmgr', 
-          'fuse', 
-          'git', 
-          'jq', 
-          'lvm2', 
-          'nodejs', 
-          'nvme-cli',
-          'parted', 
-          'polkit', 
-          'rsync', 
-          'squashfs-tools',
-          'sshfs', 
-          'wget', 
-          'xdg-utils', 
-          'xorriso',
-          'zstd', 
-        ]
+    /**
+     * we select from packageList
+     */
+    if (packagesList === 'alpine') {
+      return = [
+        'alpine-conf', 
+        'apk-tools', 
+        'bash', 
+        'bash-completion', 
+        'cryptsetup', 
+        'curl', 
+        'device-mapper-libs', 
+        'dosfstools', 
+        'fuse', 
+        'git', 
+        'grub-bios',
+        'grub-efi', 
+        'jq', 
+        'lsblk', 
+        'lvm2', 
+        'mkinitfs', 
+        'musl-locales', 
+        'nodejs', 
+        'parted', 
+        'polkit', 
+        'rsync', 
+        'shadow', 
+        'squashfs-tools', 
+        'sshfs', 
+        'xorriso', 
+        'zstd', 
+        'libc6-compat',
+      ]
+      
+    } else if (packagesList === 'archlinux') {
+      return [
+        'arch-install-scripts',
+        'cryptsetup',
+        'curl',
+        'dosfstools',
+        'efibootmgr',
+        'erofs-utils',
+        'findutils',
+        'fuse2',
+        'git',
+        'gnupg',
+        'grub',
+        'jq',
+        'libarchive',
+        'libisoburn',
+        'lvm2',
+        'mkinitcpio-archiso',
+        'mkinitcpio-nfs-utils',
+        'mtools',
+        'nbd',
+        'nodejs',
+        'pacman-contrib',
+        'parted',
+        'polkit',
+        'procps-ng',
+        'pv',
+        'python',
+        'rsync',
+        'squashfs-tools',
+        'sshfs',
+        'syslinux',
+        'wget',
+        'xdg-utils',
+      ]
 
-      case 'opensuse':
-      case 'suse':
-        return [
-          'cryptsetup',
-          'curl', 
-          'device-mapper', 
-          'dosfstools', 
-          'dracut-kiwi-live', 
-          'dracut',
-          'efibootmgr', 
-          'fuse-sshfs', 
-          'fuse', 
-          'git', 
-          'jq', 
-          'lvm2', 
-          'nodejs', 
-          'nvme-cli',
-          'parted', 
-          'polkit', 
-          'rsync', 
-          'squashfs-tools',
-          'wget', 
-          'xdg-utils', 
-          'xorriso',
-          'zstd', 
-        ]
+    } else if (packagesList === 'debian') {
+      return [
+        'cryptsetup',
+        'curl',
+        'dosfstools',
+        'fuse',
+        'git',
+        'gnupg',
+        'grub-efi-amd64-bin',
+        'grub-pc-bin',
+        'grub2-common',
+        'ipxe',
+        'isolinux',
+        'jq',
+        'libfuse2',
+        'lvm2',
+        'nodejs',
+        'parted',
+        'rsync',
+        'squashfs-tools',
+        'sshfs',
+        'syslinux-common',
+        'syslinux',
+        'xorriso',
+      ]
 
-      default:
-        console.log(`Debug: Unsupported familyId: '${this.distro.familyId}'`)
-        return []
+    } else if (packagesList === 'fedora') {
+      return [
+        'cryptsetup',
+        'curl',
+        'device-mapper',
+        'dosfstools',
+        'dracut-live',
+        'dracut',
+        'efibootmgr',
+        'fuse',
+        'git',
+        'jq',
+        'lvm2',
+        'nodejs',
+        'nvme-cli',
+        'parted',
+        'polkit',
+        'rsync',
+        'squashfs-tools',
+        'sshfs',
+        'wget',
+        'xdg-utils',
+        'xorriso',
+        'zstd',
+      ]
+
+    } else if (packagesList === 'manjaro') {
+      return [
+        'arch-install-scripts',
+        'curl',
+        'dosfstools',
+        'efibootmgr',
+        'erofs-utils',
+        'findutils',
+        'fuse2',
+        'git',
+        'gnupg',
+        'grub',
+        'jq',
+        'libarchive',
+        'libisoburn',
+        'lvm2',
+        'manjaro-tools-iso',
+        'mkinitcpio-nfs-utils',
+        'mtools',
+        'nbd',
+        'nodejs',
+        'pacman-contrib',
+        'parted',
+        'polkit',
+        'procps-ng',
+        'pv',
+        'python',
+        'rsync',
+        'squashfs-tools',
+        'sshfs',
+        'wget',
+        'xdg-utils',
+      ]
+
+    } else if (packagesList === 'opensuse') {
+      return [
+        'cryptsetup',
+        'curl',
+        'device-mapper',
+        'dosfstools',
+        'dracut-kiwi-live',
+        'dracut',
+        'efibootmgr',
+        'fuse-sshfs',
+        'fuse',
+        'git',
+        'jq',
+        'lvm2',
+        'nodejs',
+        'nvme-cli',
+        'parted',
+        'polkit',
+        'rsync',
+        'squashfs-tools',
+        'wget',
+        'xdg-utils',
+        'xorriso',
+        'zstd',
+      ]
+
+    } else {
+      console.log(`This distro ${this.distro.distroId}/${this.distro.codenameId} is not yet recognized!`)
+      return []
     }
   }
 
