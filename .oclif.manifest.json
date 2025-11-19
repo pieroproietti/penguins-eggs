@@ -848,9 +848,9 @@
       "args": {},
       "description": "Automatically check and install system prerequisites",
       "examples": [
-        "<%= config.bin %> <%= command.id %>",
-        "<%= config.bin %> <%= command.id %> --check",
-        "<%= config.bin %> <%= command.id %> --force"
+        "sudo eggs setup                      # install prerequisites",
+        "sudo eggs setup --check              # check prerequisites presence",
+        "sudo eggs setup --force              # force prerequisites install"
       ],
       "flags": {
         "check": {

@@ -26,15 +26,11 @@ export class Prerequisites {
    */
   async install(): Promise<boolean> {
     try {
-      console.log('penguins-eggs - System Setup')
-      console.log('============================')
       const osInfo = Utils.getOsRelease()
       const codenameId = osInfo.VERSION_CODENAME
       const releaseId = osInfo.VERSION_ID
       const distroId = osInfo.ID
-
-      console.log(`Detected: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId}`)
-      console.log(`Family: ${this.distro.familyId}`)
+      console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
 
       const packages = this.getPackagesForDistro()
 
@@ -80,8 +76,13 @@ export class Prerequisites {
    */
   check(): boolean {
     try {
-      const packages = this.getPackagesForDistro()
+      const osInfo = Utils.getOsRelease()
+      const codenameId = osInfo.VERSION_CODENAME
+      const releaseId = osInfo.VERSION_ID
+      const distroId = osInfo.ID
+      console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
 
+      const packages = this.getPackagesForDistro()
       if (packages.length === 0) {
         console.log('WARNING: Unsupported distribution - cannot check prerequisites')
         return false
@@ -211,7 +212,7 @@ export class Prerequisites {
         'ipxe',
         'isolinux',
         'jq',
-        'libfuse2',
+        'libfuse2t64',
         'lvm2',
         'nodejs',
         'parted',
