@@ -196,8 +196,8 @@ _eggs() {
 "love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
 "pods[eggs pods: build ISOs from containers]" \
-"prerequisites[Install system prerequisistes for Penguins Eggs]" \
-"produce[produce a live image from your system whithout your data]" \
+"produce[produce a live image from your system]" \
+"setup[Automatically check and install system prerequisites]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
@@ -335,11 +335,6 @@ _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-prerequisites)
-_arguments -S \
-"(-a --auto)"{-a,--auto}"[Auto-install without confirmation]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
@@ -364,6 +359,12 @@ _arguments -S \
 "(-i --includeRootHome)"{-i,--includeRootHome}"[folder /root is included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+setup)
+_arguments -S \
+"(-c --check)"{-c,--check}"[check status only, do not install]" \
+"(-f --force)"{-f,--force}"[force installation even if already installed]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 status)

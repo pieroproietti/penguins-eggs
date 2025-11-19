@@ -32,11 +32,6 @@ common:
   - ipxe
   - pxelinux
 
-# dependencies arch specific
-#  arm64: grub-efi-arm64-bin, ipxe, shim-signed, u-boot-tools, 
-#  amd64: grub-pc-bin, grub-efi-ia32-bin, grub-efi-amd64-bin, syslinux-common, ipxe, isolinux, pxelinux, shim-signed
-#  i386: grub-pc-bin, grub-efi-ia32-bin, syslinux-common, ipxe, isolinux, pxelinux
-
 arch:
   amd64:
   - grub-efi-amd64-bin
