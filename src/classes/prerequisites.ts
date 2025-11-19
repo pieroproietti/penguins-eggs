@@ -114,62 +114,20 @@ export class Prerequisites {
   private getPackagesForDistro(): string[] {
 
     switch (this.distro.familyId) {
-      case 'debian':
-        return [
-          'squashfs-tools', 'xorriso', 'rsync', 'curl', 'jq', 'git',
-          'parted', 'cryptsetup', 'dosfstools', 'grub2-common',
-          'grub-pc-bin', 'grub-efi-amd64-bin', 'isolinux', 'syslinux',
-          'syslinux-common', 'ipxe', 'lvm2', 'sshfs', 'gnupg',
-          'fuse', 'libfuse2'
-        ]
-
       case 'archlinux':
-        if (Diversions.isManjaroBased(this.distro.distroLike)) {
-          console.log('create packages list')
-          // Manjaro
-          return [
-              'arch-install-scripts',
-              'dosfstools',
-              'efibootmgr',
-              'erofs-utils',
-              'findutils',
-              'git',
-              'grub',
-              'jq',
-              'libarchive',
-              'libisoburn',
-              'lvm2',
-              'manjaro-tools-iso',
-              'mkinitcpio-nfs-utils',
-              'mtools',
-              'nbd',
-              'nodejs',
-              'pacman-contrib',
-              'parted',
-              'polkit',
-              'procps-ng',
-              'pv',
-              'python',
-              'rsync',
-              'squashfs-tools',
-              'sshfs',
-              'wget',
-              'xdg-utils',
-              // Aggiunti per compatibilità
-              'fuse2',
-              'gnupg',
-              'curl'
-            ]
-        } else {
+        if (!Diversions.isManjaroBased(this.distro.distroLike)) {
           // archlinuxx
           return [
             'arch-install-scripts',
             'cryptsetup',
+            'curl',
             'dosfstools',
             'efibootmgr',
             'erofs-utils',
             'findutils',
+            'fuse2',
             'git',
+            'gnupg',
             'grub',
             'jq',
             'libarchive',
@@ -192,30 +150,122 @@ export class Prerequisites {
             'syslinux',
             'wget',
             'xdg-utils',
-            // Aggiunti per compatibilità
-            'fuse2',
-            'gnupg',
-            'curl'
           ]
-
+        } else {
+          // Manjaro
+          return [
+              'arch-install-scripts',
+              'curl',
+              'dosfstools',
+              'efibootmgr',
+              'erofs-utils',
+              'findutils',
+              'fuse2',
+              'git',
+              'gnupg',
+              'grub',
+              'jq',
+              'libarchive',
+              'libisoburn',
+              'lvm2',
+              'manjaro-tools-iso',
+              'mkinitcpio-nfs-utils',
+              'mtools',
+              'nbd',
+              'nodejs',
+              'pacman-contrib',
+              'parted',
+              'polkit',
+              'procps-ng',
+              'pv',
+              'python',
+              'rsync',
+              'squashfs-tools',
+              'sshfs',
+              'wget',
+              'xdg-utils',
+            ]
         }
+
+      case 'debian':
+        return [
+          'cryptsetup', 
+          'curl', 
+          'dosfstools', 
+          'fuse', 
+          'git',
+          'gnupg',
+          'grub-efi-amd64-bin', 
+          'grub-pc-bin', 
+          'grub2-common',
+          'ipxe', 
+          'isolinux', 
+          'jq', 
+          'libfuse2',
+          'lvm2', 
+          'nodejs',
+          'parted', 
+          'rsync', 
+          'squashfs-tools',
+          'sshfs', 
+          'syslinux-common', 
+          'syslinux',
+          'xorriso', 
+        ]
+
 
       case 'fedora':
       case 'ef9':
         return [
-          'cryptsetup', 'curl', 'device-mapper', 'dosfstools', 'dracut',
-          'efibootmgr', 'fuse', 'git', 'jq', 'lvm2', 'nodejs', 'nvme-cli',
-          'parted', 'polkit', 'rsync', 'wget', 'xdg-utils', 'xorriso',
-          'zstd', 'sshfs', 'dracut-live', 'squashfs-tools'
+          'cryptsetup', 
+          'curl', 
+          'device-mapper', 
+          'dosfstools', 
+          'dracut-live', 
+          'dracut',
+          'efibootmgr', 
+          'fuse', 
+          'git', 
+          'jq', 
+          'lvm2', 
+          'nodejs', 
+          'nvme-cli',
+          'parted', 
+          'polkit', 
+          'rsync', 
+          'squashfs-tools',
+          'sshfs', 
+          'wget', 
+          'xdg-utils', 
+          'xorriso',
+          'zstd', 
         ]
 
       case 'opensuse':
       case 'suse':
         return [
-          'cryptsetup', 'curl', 'device-mapper', 'dosfstools', 'dracut',
-          'efibootmgr', 'fuse', 'git', 'jq', 'lvm2', 'nodejs', 'nvme-cli',
-          'parted', 'polkit', 'rsync', 'wget', 'xdg-utils', 'xorriso',
-          'zstd', 'fuse-sshfs', 'dracut-kiwi-live', 'squashfs-tools'
+          'cryptsetup',
+          'curl', 
+          'device-mapper', 
+          'dosfstools', 
+          'dracut-kiwi-live', 
+          'dracut',
+          'efibootmgr', 
+          'fuse-sshfs', 
+          'fuse', 
+          'git', 
+          'jq', 
+          'lvm2', 
+          'nodejs', 
+          'nvme-cli',
+          'parted', 
+          'polkit', 
+          'rsync', 
+          'squashfs-tools',
+          'wget', 
+          'xdg-utils', 
+          'xorriso',
+          'zstd', 
         ]
 
       default:
