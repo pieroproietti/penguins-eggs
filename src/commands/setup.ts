@@ -40,8 +40,8 @@ export default class Setup extends Command {
       // Install autocomplete e manPages
       await Pacman.autocompleteInstall()
       await Pacman.manPageInstall()
+
       if (flags.check) {
-        // Solo check
         this.log('Checking system prerequisites...')
         const allInstalled = prerequisites.check()
 
