@@ -128,7 +128,7 @@ export default class Config extends Command {
        * Se stiamo utilizzando eggs da sorgenti
        * Aggiungo autocomplete e manPage
        */
-      if (Utils.isSources()) {
+      if (Utils.isSources() || Utils.isAppImage()) {
         Utils.warning('creating autocomplete...')
         await Pacman.autocompleteInstall(verbose)
         Utils.warning('creating eggs man page...')
