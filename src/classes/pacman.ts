@@ -637,19 +637,17 @@ export default class Pacman {
   static async manPageInstall(verbose = false) {
     const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
     if (fs.existsSync(manPageSrc)) {
-      const man1Dir = '/usr/share/man/man1/'
-      if (!fs.existsSync(man1Dir)) {
-        exec(`mkdir ${man1Dir} -p`)
+      const manPageDest = `/usr/share/man/man1`
+      if (!fs.existsSync(manPageDest)) {
+        exec(`mkdir ${manPageDest} -p`)
       }
-
-      const manPageDest = man1Dir + 'eggs.1.gz'
       exec(`cp ${manPageSrc} ${manPageDest}`)
       if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
         await exec('mandb > /dev/null')
         if (verbose) {
           console.log('manPage eggs installed...')
         }
-      }
+      } 
     }
   }
 
