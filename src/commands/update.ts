@@ -1,5 +1,5 @@
 /**
- * ./src/commands/syncfrom.ts
+ * ./src/commands/update.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -144,76 +144,85 @@ export default class Update extends Command {
     let filter = ''
     let copy = ''
     let install = ''
+    let repo = ''
 
-    /**
-     * Alpine
-     */
-    if (this.distro.familyId === 'alpine') {
-      let repo = `alpine/x86_64`
-
-      filter = `penguins-eggs-*-*.*.?-r?.apk`
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `apk add /tmp/${filter}`
-    
-    
-    /**
-     * Arch
-     */
-    } else if (this.distro.familyId === 'archlinux') {
-      let repo = "aur"
-      filter = `penguins-eggs-??.*.*-?-any.pkg.tar.zst`
-      if (Diversions.isManjaroBased(this.distro.distroId)) {
-        repo = 'manjaro'
-        filter = `penguins-eggs-??.*.*-?-any.pkg.tar.*`        
-      }
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `pacman -U /tmp/${filter}`
+    if (Utils.isAppImage()) {
+      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/local/bin/eggs")
+      filter = `penguins-eggs-*-x86_64.AppImage`
+      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${filter} /tmp`
+      install = `mkdir -pf /usr/local/bin |mv /tmp/${filter} /usr/local/bin/eggs`
 
 
-     /**
-     * Devuan/Debian/Ubuntu
-     */
-    } else if (this.distro.familyId === "debian") {
-      let repo = 'debs'
-      filter = `penguins-eggs_??.*.*-?_${Utils.uefiArch()}.deb`
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `apt reinstall /tmp/${filter}`
-
-
-     /**
-     * fedora/el9
-     */
-    } else if (this.distro.familyId === "fedora") {
-      let repo = 'fedora'
-      let ftype = 'fc??'
-      if (this.distro.distroId !=='Fedora') {
-        repo = 'el9'
-        ftype = 'el?'
-      }
-      filter = `penguins-eggs-??.*.*-?.${ftype}.x86_64.rpm`
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
- 
-
+    } else {
       /**
-       * openmamba
+       * Alpine
        */
-    } else if (this.distro.familyId === "openmamba") {
-      let repo = 'openmamba'
-      filter = `penguins-eggs-??.*.*-?mamba.x86_64.rpm`
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+      if (this.distro.familyId === 'alpine') {
+        repo = `alpine/x86_64`
+        filter = `penguins-eggs-*-*.*.?-r?.apk`
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `apk add /tmp/${filter}`
 
-      /**
-       * opensuse
-       */
-    } else if (this.distro.familyId === "opensuse") {
-      let repo = 'opensuse'
-      filter = `penguins-eggs-*.*.*-?.opensuse.x86_64.rpm`
-      copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-      install = `zypper install --force /tmp/${filter} || zypper install /tmp/${filter}`
+
+        /**
+         * Arch
+         */
+      } else if (this.distro.familyId === 'archlinux') {
+        repo = "aur"
+        filter = `penguins-eggs-??.*.*-?-any.pkg.tar.zst`
+        if (Diversions.isManjaroBased(this.distro.distroId)) {
+          repo = 'manjaro'
+          filter = `penguins-eggs-??.*.*-?-any.pkg.tar.*`
+        }
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `pacman -U /tmp/${filter}`
+
+
+        /**
+        * Devuan/Debian/Ubuntu
+        */
+      } else if (this.distro.familyId === "debian") {
+        repo = 'debs'
+        filter = `penguins-eggs_??.*.*-?_${Utils.uefiArch()}.deb`
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `apt reinstall /tmp/${filter}`
+
+
+        /**
+        * fedora/el9
+        */
+      } else if (this.distro.familyId === "fedora") {
+        repo = 'fedora'
+        let ftype = 'fc??'
+        if (this.distro.distroId !== 'Fedora') {
+          repo = 'el9'
+          ftype = 'el?'
+        }
+        filter = `penguins-eggs-??.*.*-?.${ftype}.x86_64.rpm`
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+
+
+        /**
+         * openmamba
+         */
+      } else if (this.distro.familyId === "openmamba") {
+        repo = 'openmamba'
+        filter = `penguins-eggs-??.*.*-?mamba.x86_64.rpm`
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+
+
+        /**
+         * opensuse
+         */
+      } else if (this.distro.familyId === "opensuse") {
+        repo = 'opensuse'
+        filter = `penguins-eggs-*.*.*-?.opensuse.x86_64.rpm`
+        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+        install = `zypper install --force /tmp/${filter} || zypper install /tmp/${filter}`
+      }
     }
-  
 
     /**
      * copy and install

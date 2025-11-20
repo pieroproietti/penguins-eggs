@@ -7,7 +7,8 @@
  */
 
 import Utils from '../classes/utils.js'
-import { Prerequisites } from '../classes/prerequisites.js'
+import Pacman from '../classes/pacman.js'
+import { Prerequisites } from '../appimage/prerequisites.js'
 import { Command, Flags } from '@oclif/core'
 
 
@@ -77,6 +78,7 @@ export default class Setup extends Command {
       if (success) {
         this.log('')
         this.log('SUCCESS: penguins-eggs setup completed!')
+        Pacman.autocompleteInstall()
       } else {
         this.log('')
         this.log('ERROR: Setup failed')

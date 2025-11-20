@@ -12,7 +12,6 @@ _eggs_autocomplete()
 
   local commands="
 adapt --help --verbose
-analyze --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help --verbose
@@ -21,12 +20,10 @@ export:appimage --clean --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose
-install --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
-krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
 kill --help --isos --nointeractive --verbose
+krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
 love --help --verbose --hidden --nointeractive --clone --homecrypt --fullcrypt
 mom --help
-pods --help
 produce --addons --basename --clone --homecrypt --fullcrypt --excludes --help --hidden --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRootHome --verbose --yolk
 setup --check --force
 status --help --verbose

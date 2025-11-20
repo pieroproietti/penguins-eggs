@@ -10,9 +10,9 @@ _eggs_export() {
   case "$state" in
     cmds)
 _values "completions" \
-"appimage[export pkg/iso to the destination host]" \
-"iso[export iso in the destination host]" \
-"pkg[export pkg/iso to the destination host]" \
+"appimage[export penguins-eggs AppImage to the destination host]" \
+"iso[export remastered ISO in the destination host]" \
+"pkg[export penguins-eggs package to the destination host]" \
 "tarballs[export pkg/iso/tarballs to the destination host]" \
 
       ;;
@@ -190,21 +190,18 @@ _eggs() {
   case "$state" in
     cmds)
       _values "completions" \
-"export[export pkg/iso to the destination host]" \
+"export[export penguins-eggs AppImage to the destination host]" \
 "tools[clean system log, apt, etc]" \
 "wardrobe[get warorobe]" \
 "adapt[adapt monitor resolution for VM only]" \
-"analyze[analyze for syncto]" \
-"calamares[configure calamares or install or configure it]" \
+"calamares[a GUI system installer - install and configure calamares]" \
 "config[Configure eggs to run it]" \
 "cuckoo[PXE start with proxy-dhcp]" \
 "dad[ask help from daddy - TUI configuration helper]" \
-"install[krill: the CLI system installer - the egg became a penguin!]" \
-"krill[krill: the CLI system installer - the egg became a penguin!]" \
 "kill[kill the eggs/free the nest]" \
+"krill[a TUI system installer - install the system]" \
 "love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
-"pods[eggs pods: build ISOs from containers]" \
 "produce[produce a live image from your system]" \
 "setup[Automatically check and install system prerequisites]" \
 "status[informations about eggs status]" \
@@ -229,12 +226,6 @@ adapt)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-analyze)
-_arguments -S \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 calamares)
@@ -273,25 +264,12 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-install)
+kill)
 _arguments -S \
-"(-b --btrfs)"{-b,--btrfs}"[Format btrfs]" \
-"(-c --chroot)"{-c,--chroot}"[chroot before to end]" \
-"(-k --crypted)"{-k,--crypted}"[Crypted CLI installation]" \
-"(-d --domain)"{-d,--domain}"[Domain name, defult: .local]:file:_files" \
-"(-H --halt)"{-H,--halt}"[Halt the system after installation]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-i --ip)"{-i,--ip}"[hostname as ip, eg: ip-192-168-1-33]" \
+"(-i --isos)"{-i,--isos}"[erase all ISOs on remote mount]" \
 "(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-N --none)"{-N,--none}"[Swap none: 256M]" \
-"(-p --pve)"{-p,--pve}"[Proxmox VE install]" \
-"(-r --random)"{-r,--random}"[Add random to hostname, eg: colibri-ay412dt]" \
-"(-R --replace)"{-R,--replace}"[Replace partition. eg: --replace /dev/sda3]:file:_files" \
-"(-s --small)"{-s,--small}"[Swap small: RAM]" \
-"(-S --suspend)"{-S,--suspend}"[Swap suspend: RAM x 2]" \
-"(-t --testing)"{-t,--testing}"[Just testing krill]" \
-"(-u --unattended)"{-u,--unattended}"[Unattended installation]" \
-"(-v --verbose)"{-v,--verbose}"[Verbose]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 krill)
@@ -315,14 +293,6 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[Verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-kill)
-_arguments -S \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-i --isos)"{-i,--isos}"[erase all ISOs on remote mount]" \
-"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
-"(-v --verbose)"{-v,--verbose}"[verbose]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 love)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
@@ -335,11 +305,6 @@ _arguments -S \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 mom)
-_arguments -S \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-pods)
 _arguments -S \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 --help"[Show help for command]" \
