@@ -1,6 +1,6 @@
 /**
- * ./src/commands/install.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * ./src/commands/krill.ts
+ * penguins-eggs v.25.11.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -24,10 +24,8 @@ import { IKrillConfig } from '../krill/interfaces/i_krill_config.js'
 /**
  * Class Krill
  */
-export default class Install extends Command {
-  static aliases = ['krill']
-
-  static description = 'krill: the CLI system installer - the egg became a penguin!'
+export default class KrillCommand extends Command {
+  static description = 'a TUI system installer - install the system'
 
   static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
 
@@ -57,7 +55,7 @@ export default class Install extends Command {
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const { flags } = await this.parse(Install)
+    const { flags } = await this.parse(KrillCommand)
 
     const { unattended } = flags
 

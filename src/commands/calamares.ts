@@ -17,7 +17,7 @@ import Utils from '../classes/utils.js'
 import { IRemix } from '../interfaces/index.js'
 
 export default class Calamares extends Command {
-  static description = 'configure calamares or install or configure it'
+  static description = 'a GUI system installer - install and configure calamares'
 
   static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
 

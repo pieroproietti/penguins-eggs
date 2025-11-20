@@ -37,48 +37,10 @@
         "adapt.js"
       ]
     },
-    "analyze": {
-      "aliases": [],
-      "args": {},
-      "description": "analyze for syncto",
-      "examples": [
-        "sudo eggs analyze"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "analyze",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "analyze.js"
-      ]
-    },
     "calamares": {
       "aliases": [],
       "args": {},
-      "description": "configure calamares or install or configure it",
+      "description": "a GUI system installer - install and configure calamares",
       "examples": [
         "sudo eggs calamares",
         "sudo eggs calamares --install",
@@ -316,12 +278,62 @@
         "dad.js"
       ]
     },
-    "install": {
-      "aliases": [
-        "krill"
-      ],
+    "kill": {
+      "aliases": [],
       "args": {},
-      "description": "krill: the CLI system installer - the egg became a penguin!",
+      "description": "kill the eggs/free the nest",
+      "examples": [
+        "sudo eggs kill"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "isos": {
+          "char": "i",
+          "description": "erase all ISOs on remote mount",
+          "name": "isos",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "kill",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "kill.js"
+      ]
+    },
+    "krill": {
+      "aliases": [],
+      "args": {},
+      "description": "a TUI system installer - install the system",
       "examples": [
         "sudo eggs install",
         "sudo eggs install --unattended --halt",
@@ -452,7 +464,7 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "install",
+      "id": "krill",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -462,59 +474,7 @@
       "relativePath": [
         "dist",
         "commands",
-        "install.js"
-      ]
-    },
-    "kill": {
-      "aliases": [],
-      "args": {},
-      "description": "kill the eggs/free the nest",
-      "examples": [
-        "sudo eggs kill"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "isos": {
-          "char": "i",
-          "description": "erase all ISOs on remote mount",
-          "name": "isos",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "kill",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "kill.js"
+        "krill.js"
       ]
     },
     "love": {
@@ -618,45 +578,6 @@
         "dist",
         "commands",
         "mom.js"
-      ]
-    },
-    "pods": {
-      "aliases": [],
-      "args": {
-        "distro": {
-          "description": "distro to build",
-          "name": "distro",
-          "required": false
-        }
-      },
-      "description": "eggs pods: build ISOs from containers",
-      "examples": [
-        "eggs pods archlinux",
-        "eggs pods debian",
-        "eggs pods ubuntu"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "pods",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "pods.js"
       ]
     },
     "produce": {
