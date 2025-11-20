@@ -36,8 +36,10 @@ export default class Setup extends Command {
     const { flags } = await this.parse(Setup)
     const prerequisites = new Prerequisites()
 
-
     if (Utils.isRoot()) {
+      // Install/refresh bash-completion allways
+      Pacman.autocompleteInstall()
+
       if (flags.check) {
         // Solo check
         this.log('Checking system prerequisites...')
@@ -78,7 +80,6 @@ export default class Setup extends Command {
       if (success) {
         this.log('')
         this.log('SUCCESS: penguins-eggs setup completed!')
-        Pacman.autocompleteInstall()
       } else {
         this.log('')
         this.log('ERROR: Setup failed')
