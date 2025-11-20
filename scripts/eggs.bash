@@ -17,6 +17,7 @@ calamares --help --install --nointeractive --policies --release --remove --theme
 config --clean --help --nointeractive --verbose
 cuckoo --help --verbose
 dad --clean --default --file --nointeractive --help --verbose
+export:appimage --clean --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose

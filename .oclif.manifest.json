@@ -958,6 +958,54 @@
         "update.js"
       ]
     },
+    "export:appimage": {
+      "aliases": [],
+      "args": {},
+      "description": "export pkg/iso to the destination host",
+      "examples": [
+        "eggs export pkg",
+        "eggs export pkg --clean",
+        "eggs export pkg --all"
+      ],
+      "flags": {
+        "clean": {
+          "char": "c",
+          "description": "remove old .AppImage before to copy",
+          "name": "clean",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "export:appimage",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "export",
+        "appimage.js"
+      ]
+    },
     "export:iso": {
       "aliases": [],
       "args": {},
