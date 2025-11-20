@@ -961,7 +961,7 @@
     "export:appimage": {
       "aliases": [],
       "args": {},
-      "description": "export pkg/iso to the destination host",
+      "description": "export penguins-eggs AppImage to the destination host",
       "examples": [
         "eggs export pkg",
         "eggs export pkg --clean",
@@ -1009,7 +1009,7 @@
     "export:iso": {
       "aliases": [],
       "args": {},
-      "description": "export iso in the destination host",
+      "description": "export remastered ISO in the destination host",
       "examples": [
         "eggs export iso",
         "eggs export iso --clean"
@@ -1063,7 +1063,7 @@
     "export:pkg": {
       "aliases": [],
       "args": {},
-      "description": "export pkg/iso to the destination host",
+      "description": "export penguins-eggs package to the destination host",
       "examples": [
         "eggs export pkg",
         "eggs export pkg --clean",
