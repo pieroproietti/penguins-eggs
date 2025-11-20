@@ -16,7 +16,7 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/
 export NODE_PATH="$APP_DIR/node_modules"
 
 # Imposta la cache per l'autocomplete nello stesso percorso dell'app nativa
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}/penguins-eggs"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}/"
 export OCLIF_CACHE_PATH="$XDG_CACHE_HOME"
 mkdir -p "$OCLIF_CACHE_PATH/autocomplete/functions"
 

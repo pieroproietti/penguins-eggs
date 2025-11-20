@@ -23,6 +23,11 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param echo
  */
 export default async function rexec(cmd: string, verbose = false): Promise<string> {
+
+    if (process.env.APPIMAGE) {
+        cmd = `export LD_LIBRARY_PATH=; ${cmd}`
+    }
+    
     if (verbose) {
         console.log(`Ovary: rexec(${cmd})`)
     }
