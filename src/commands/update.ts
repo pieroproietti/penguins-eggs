@@ -150,7 +150,7 @@ export default class Update extends Command {
       console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/local/bin/eggs")
       filter = `penguins-eggs-*-x86_64.AppImage`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${filter} /tmp`
-      install = `mkdir -pf /usr/local/bin |mv /tmp/${filter} /usr/local/bin/eggs`
+      install = `mkdir -p /usr/local/bin |mv /tmp/${filter} /usr/local/bin/eggs`
 
 
     } else {
