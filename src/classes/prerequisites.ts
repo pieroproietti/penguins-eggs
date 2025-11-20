@@ -203,6 +203,7 @@ export class Prerequisites {
         'cryptsetup',
         'curl',
         'dosfstools',
+        'dpkg-dev',
         // 'fuse',
         'git',
         'gnupg',
