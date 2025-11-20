@@ -170,10 +170,10 @@ export default class CliAutologin {
     eggsMotd += startMessage + '\n'
     eggsMotd += Utils.flag() + '\n'
     eggsMotd += `You are logged as: ${chalk.bold(user)} your password is: ${chalk.bold(userPasswd)}, root password: ${chalk.bold(rootPasswd)}\n\n`
-    eggsMotd += `install              : ${chalk.bold(installer)}\n`
-    eggsMotd += ` --unattended        : ${chalk.bold('sudo eggs install --unattended')}\n`
-    eggsMotd += ` --chroot            : ${chalk.bold('sudo eggs install --chroot')}\n`
-    eggsMotd += ` --help              : ${chalk.bold('sudo eggs install --help')}\n\n`
+    eggsMotd += `install system       : ${chalk.bold(installer)}\n`
+    eggsMotd += ` --unattended        : ${chalk.bold('sudo eggs krill --unattended')}\n`
+    eggsMotd += ` --chroot            : ${chalk.bold('sudo eggs krill --chroot')}\n`
+    eggsMotd += ` --help              : ${chalk.bold('sudo eggs krill --help')}\n\n`
     eggsMotd += stopMessage + '\n'
 
     // 🔧 [Change 9] - Same as above: safe write with error handling to improve reliability.

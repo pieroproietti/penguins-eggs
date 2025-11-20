@@ -37,8 +37,6 @@ export default class Setup extends Command {
     const prerequisites = new Prerequisites()
 
     if (Utils.isRoot()) {
-      // Install/refresh bash-completion allways
-      Pacman.autocompleteInstall()
 
       if (flags.check) {
         // Solo check
