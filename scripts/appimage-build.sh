@@ -38,6 +38,7 @@ echo "Checking system requirements..."
 if ! ldconfig -p | grep -q libfuse.so.2; then
     echo "WARNING: libfuse2 not found. AppImage may not run properly."
     echo "Please install FUSE:"
+    echo "  Alpine:        sudo apk add fuse"
     echo "  Arch:          sudo pacman -S fuse2"
     echo "  Debian/Ubuntu: sudo apt-get install fuse libfuse2"
     echo "  Fedora/RHEL:   sudo dnf install fuse fuse-libs"
