@@ -13,7 +13,7 @@ import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
 
 export default class ExportIso extends Command {
-  static description = 'export iso in the destination host'
+  static description = 'export remastered ISO in the destination host'
 
   static examples = ['eggs export iso', 'eggs export iso --clean']
 

@@ -10,6 +10,7 @@ _eggs_export() {
   case "$state" in
     cmds)
 _values "completions" \
+"appimage[export pkg/iso to the destination host]" \
 "iso[export iso in the destination host]" \
 "pkg[export pkg/iso to the destination host]" \
 "tarballs[export pkg/iso/tarballs to the destination host]" \
@@ -17,6 +18,14 @@ _values "completions" \
       ;;
     args)
       case $line[1] in
+        "appimage")
+          _arguments -S \
+"(-c --clean)"{-c,--clean}"[remove old .AppImage before to copy]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-v --verbose)"{-v,--verbose}"[verbose]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
         "iso")
           _arguments -S \
 "(-C --checksum)"{-C,--checksum}"[export checksums md5 and sha256]" \
@@ -181,7 +190,7 @@ _eggs() {
   case "$state" in
     cmds)
       _values "completions" \
-"export[export iso in the destination host]" \
+"export[export pkg/iso to the destination host]" \
 "tools[clean system log, apt, etc]" \
 "wardrobe[get warorobe]" \
 "adapt[adapt monitor resolution for VM only]" \

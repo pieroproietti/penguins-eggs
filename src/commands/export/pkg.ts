@@ -1,5 +1,5 @@
 /**
- * ./src/commands/export/deb.ts
+ * ./src/commands/export/appimage.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -19,7 +19,7 @@ import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
 import { execSync } from 'node:child_process'
 
 export default class ExportPkg extends Command {
-  static description = 'export pkg/iso to the destination host'
+  static description = 'export penguins-eggs package to the destination host'
 
   static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
 
