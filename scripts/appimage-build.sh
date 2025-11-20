@@ -63,7 +63,7 @@ fi
 
 # Copia il progetto
 echo "Copying project files..."
-for dir in dist node_modules assets addons bin conf dracut mkinitcpio mkinitfs scripts src templates; do
+for dir in dist node_modules assets addons bin conf dracut manpages mkinitcpio mkinitfs scripts src templates; do
     if [ -d "$dir" ]; then
         echo "  Copying: $dir"
         cp -r "$dir" AppDir/usr/lib/penguins-eggs/

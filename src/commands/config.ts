@@ -125,7 +125,7 @@ export default class Config extends Command {
       }
 
       /**
-       * Se stiamo utilizzando eggs da sorgenti
+       * Se stiamo utilizzando eggs da source/appimage
        * Aggiungo autocomplete e manPage
        */
       if (Utils.isSources() || Utils.isAppImage()) {
