@@ -27,9 +27,14 @@ FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
 # Setup automatico al primo avvio (solo se non è il comando setup)
 if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
     echo "First run detected. Running automatic setup check..."
-    cd "$APP_DIR"
-    "$HERE/usr/lib/penguins-eggs/node/bin/node" -e "
-        const {Setup} = require('./dist/classes/setup.js');
+    
+    # Definiamo il percorso esatto dove vive il codice di eggs dentro l'AppImage
+    # Basandoci sullo screenshot, il codice sta in /usr/lib/penguins-eggs
+    EGGS_HOME="$HERE/usr/lib/penguins-eggs"
+
+    # Usiamo i percorsi assoluti basati su $EGGS_HOME
+    "$EGGS_HOME/node/bin/node" -e "
+        const {Setup} = require('${EGGS_HOME}/dist/classes/setup.js');
         const setup = new Setup();
         if (!setup.checkPrerequisites()) {
             console.log('WARNING: System needs setup for full functionality.');
