@@ -27,7 +27,7 @@ FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
 # Setup automatico al primo avvio (solo se non è il comando setup)
 if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
     EGGS_HOME="$HERE/usr/lib/penguins-eggs"
-    "$EGGS_HOME/node/bin/node" "$EGGS_HOME/dist/classes/first-run-check.js" || echo "Warning during setup check"
+    "$EGGS_HOME/node/bin/node" "$EGGS_HOME/dist/appimage/first-run-check.js" || echo "Warning during setup check"
 
     mkdir -p "$FIRST_RUN_DIR"
     touch "$FIRST_RUN_FILE"    

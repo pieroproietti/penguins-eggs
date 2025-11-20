@@ -1,5 +1,5 @@
 /**
- * ./src/classes/prerequisites.ts
+ * ./src/appimage/prerequisites.ts
  * penguins-eggs v.25.11.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
@@ -8,9 +8,9 @@
 
 
 import { execSync } from 'node:child_process'
-import Utils from './utils.js'
-import Distro from './distro.js'
-import Diversions from './diversions.js'
+import Utils from '../classes/utils.js'
+import Distro from '../classes/distro.js'
+import Diversions from '../classes/diversions.js'
 
 export class Prerequisites {
   private distro: Distro
@@ -25,49 +25,54 @@ export class Prerequisites {
    * @returns 
    */
   async install(): Promise<boolean> {
-    try {
-      const osInfo = Utils.getOsRelease()
-      const codenameId = osInfo.VERSION_CODENAME
-      const releaseId = osInfo.VERSION_ID
-      const distroId = osInfo.ID
-      console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
+    const osInfo = Utils.getOsRelease()
+    const codenameId = osInfo.VERSION_CODENAME
+    const releaseId = osInfo.VERSION_ID
+    const distroId = osInfo.ID
+    console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
 
-      const packages = this.getPackagesForDistro()
+    const packages = this.getPackagesForDistro()
 
-      if (packages.length === 0) {
-        console.log('ERROR: Unsupported distribution for automatic setup')
-        return false
-      }
-
-      console.log('')
-      console.log('The following packages will be installed:')
-      packages.forEach(pkg => console.log(`  - ${pkg}`))
-
-      const installCmd = this.getInstallCommand(packages)
-
-      console.log('')
-      console.log('Installation command:')
-      console.log(`  ${installCmd}`)
-      console.log('')
-
-      // Esegui l'installazione
-      console.log('Installing packages (this may take a few minutes)...')
-      execSync(installCmd, { stdio: 'inherit' })
-
-      console.log('')
-      console.log('SUCCESS: Prerequisites installed successfully!')
-      return true
-
-    } catch (error) {
-      console.log('')
-      console.log('ERROR: Failed to install prerequisites')
-      console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
-      console.log('')
-      console.log('Please check your system and try again.')
-      console.log('You can also install prerequisites manually using your package manager.')
+    if (packages.length === 0) {
+      console.log('ERROR: Unsupported distribution for automatic setup')
       return false
     }
+
+    console.log('')
+    console.log('The following packages will be installed:')
+    packages.forEach(pkg => console.log(`  - ${pkg}`))
+
+    if (await Utils.customConfirm('Select yes to continue...')) {
+      Utils.titles()
+      try {
+        const installCmd = this.getInstallCommand(packages)
+
+        console.log('')
+        console.log('Installation command:')
+        console.log(`  ${installCmd}`)
+        console.log('')
+
+        // Esegui l'installazione
+        console.log('Installing packages (this may take a few minutes)...')
+        execSync(installCmd, { stdio: 'inherit' })
+
+        console.log('')
+        console.log('SUCCESS: Prerequisites installed successfully!')
+        return true
+
+      } catch (error) {
+        console.log('')
+        console.log('ERROR: Failed to install prerequisites')
+        console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
+        console.log('')
+        console.log('Please check your system and try again.')
+        console.log('You can also install prerequisites manually using your package manager.')
+        return false
+      }
+    }
+    return false
   }
+
 
 
   /**
@@ -133,35 +138,35 @@ export class Prerequisites {
      */
     if (packagesList === 'alpine') {
       return [
-        'alpine-conf', 
-        'apk-tools', 
-        'bash', 
-        'bash-completion', 
-        'cryptsetup', 
-        'curl', 
-        'device-mapper-libs', 
-        'dosfstools', 
+        'alpine-conf',
+        'apk-tools',
+        'bash',
+        'bash-completion',
+        'cryptsetup',
+        'curl',
+        'device-mapper-libs',
+        'dosfstools',
         // 'fuse', 
-        'git', 
+        'git',
         'grub-bios',
-        'grub-efi', 
-        'jq', 
-        'lsblk', 
-        'lvm2', 
-        'mkinitfs', 
-        'musl-locales', 
+        'grub-efi',
+        'jq',
+        'lsblk',
+        'lvm2',
+        'mkinitfs',
+        'musl-locales',
         // 'nodejs', 
-        'parted', 
-        'polkit', 
-        'rsync', 
-        'shadow', 
-        'squashfs-tools', 
-        'sshfs', 
-        'xorriso', 
-        'zstd', 
+        'parted',
+        'polkit',
+        'rsync',
+        'shadow',
+        'squashfs-tools',
+        'sshfs',
+        'xorriso',
+        'zstd',
         'libc6-compat',
       ]
-      
+
     } else if (packagesList === 'archlinux') {
       return [
         'arch-install-scripts',
