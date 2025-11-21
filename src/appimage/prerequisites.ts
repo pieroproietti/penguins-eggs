@@ -204,12 +204,11 @@ export class Prerequisites {
       ]
 
     } else if (packagesList === 'debian') {
-      return [
+      let debianPackages = [
         'cryptsetup',
         'curl',
         'dosfstools',
         'dpkg-dev',
-        // 'fuse',
         'git',
         'gnupg',
         'grub-efi-amd64-bin',
@@ -218,9 +217,11 @@ export class Prerequisites {
         'ipxe',
         'isolinux',
         'jq',
-        // 'libfuse2t64',
+        'live-boot',
+        'live-boot-initramfs-tools',
+        'live-config',
+        'live-config-systemd', 
         'lvm2',
-        // 'nodejs',
         'parted',
         'rsync',
         'squashfs-tools',
@@ -229,6 +230,13 @@ export class Prerequisites {
         'syslinux',
         'xorriso',
       ]
+
+      if (Utils.isSystemd()){
+        debianPackages.push('live-systemd')
+      } else {
+        debianPackages.push('live-sysvinit')
+      }
+      return debianPackages
 
     } else if (packagesList === 'fedora') {
       return [
