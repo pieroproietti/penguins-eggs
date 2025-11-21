@@ -117,7 +117,7 @@
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
         "lint": "eslint . --ext .ts",
         "manifest": "oclif manifest",
-        "postbuild": "shx cp -r .oclif.manifest.json addons assets bin conf dracut eui manpages mkinitcpio mkinitfs perrisbrewery scripts dist/",
+        "postbuild": "shx cp -r bin dist/",
         "posttest": "pnpm run lint",
         "tarballs": "shx rm -rf dist && tsc -p . && oclif manifest && oclif pack tarballs -t linux-x64 --no-xz -r . && pb tarballs --release $(cat ./release)",
         "test": "mocha --forbid-only \"test/**/*.test.ts\"",
