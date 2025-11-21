@@ -5,10 +5,6 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-import fs from 'fs'
-import os from 'os'
-import path from 'path'
-
 import { execSync } from 'node:child_process'
 import Utils from '../classes/utils.js'
 import Distro from '../classes/distro.js'
@@ -29,7 +25,7 @@ export class Prerequisites {
    * install
    * @returns 
    */
-  async install(): Promise<boolean> {
+  async install(force=false): Promise<boolean> {
 
     const packages = this.getPackagesForDistro()
 
@@ -38,20 +34,21 @@ export class Prerequisites {
       return false
     }
 
+    let missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
+    if (force) {
+      missing = packages
+    }
+    
+
     console.log('')
-    console.log('The following packages will be installed:')
-    console.log(`${packages.join(', ')}`)
+    console.log('The following packages will be installed/reinstalled:')
+    console.log(`${missing.join(', ')}`)
     console.log('')
     if (await Utils.customConfirm('Select yes to continue...')) {
-      // const homeDir = os.homedir();
-      // const filePath = path.join(homeDir, 'installcmd.sh');
-      const installCmd = this.getInstallCommand(packages)
-      // fs.writeFileSync(filePath, installCmd + '\n', { encoding: 'utf8' });
-      // fs.chmodSync(filePath, '755');
+      const installCmd = this.getInstallCommand(missing, force)
       Utils.titles(installCmd)
-      try {
 
-        // Esegui l'installazione
+      try {
         console.log('Installing packages (this may take a few minutes)...')
         //execSync(installCmd, { stdio: 'inherit' })
         execSync(installCmd, { stdio: 'ignore' })
@@ -102,6 +99,67 @@ export class Prerequisites {
     } catch (error) {
       console.log('ERROR: Failed to check prerequisites')
       console.log('Error details:', error instanceof Error ? error.message : 'Unknown error')
+      return false
+    }
+  }
+
+
+  /**
+   * 
+   * @param packages 
+   * @returns 
+   */
+private getInstallCommand(packages: string[], forceReinstall: boolean = false): string {
+    const packagesStr = packages.join(' ');
+
+    switch (this.distro.familyId) {
+      case 'debian':
+        // apt richiede il flag --reinstall per forzare la sovrascrittura
+        const aptCmd = forceReinstall ? 'install --reinstall' : 'install';
+        return `sudo apt-get update && sudo apt-get ${aptCmd} -y ${packagesStr}`;
+
+      case 'archlinux':
+        // Pacman -S reinstalla di default. 
+        // (Se volessimo evitare reinstallazioni su Arch useremmo --needed, ma qui va bene così)
+        return `sudo pacman -S --noconfirm ${packagesStr}`;
+
+      case 'fedora':
+        // dnf ha un comando specifico 'reinstall'
+        const dnfCmd = forceReinstall ? 'reinstall' : 'install';
+        return `sudo dnf ${dnfCmd} -y ${packagesStr}`;
+
+      default:
+        return `echo "Unsupported distribution: ${this.distro.familyId}"`;
+    }
+  }
+
+  /**
+   * 
+   * @param pkg 
+   * @returns 
+   */
+  private isPackageInstalled(pkg: string): boolean {
+    try {
+      switch (this.distro.familyId) {
+        case 'debian':
+          // Verifica se il pacchetto è installato
+          execSync(`dpkg -s ${pkg}`, { stdio: 'ignore' })
+          return true
+
+        case 'archlinux':
+          // Verifica se il pacchetto è installato su Arch
+          execSync(`pacman -Q ${pkg}`, { stdio: 'ignore' })
+          return true
+
+        case 'fedora':
+          // Verifica se il pacchetto è installato su fedora/Fedora
+          execSync(`rpm -q ${pkg}`, { stdio: 'ignore' })
+          return true
+
+        default:
+          return false
+      }
+    } catch {
       return false
     }
   }
@@ -324,59 +382,4 @@ export class Prerequisites {
     }
   }
 
-
-  /**
-   * 
-   * @param packages 
-   * @returns 
-   */
-  private getInstallCommand(packages: string[]): string {
-    const packagesStr = packages.join(' ')
-
-    switch (this.distro.familyId) {
-      case 'debian':
-        return `sudo apt-get update && sudo apt-get install -y ${packagesStr}`
-
-      case 'archlinux':
-        return `sudo pacman -S --noconfirm ${packagesStr}`
-
-      case 'fedora':
-        return `sudo dnf install -y ${packagesStr}`
-
-      default:
-        return `echo "Unsupported distribution: ${this.distro.familyId}"`
-    }
-  }
-
-
-  /**
-   * 
-   * @param pkg 
-   * @returns 
-   */
-  private isPackageInstalled(pkg: string): boolean {
-    try {
-      switch (this.distro.familyId) {
-        case 'debian':
-          // Verifica se il pacchetto è installato
-          execSync(`dpkg -s ${pkg}`, { stdio: 'ignore' })
-          return true
-
-        case 'archlinux':
-          // Verifica se il pacchetto è installato su Arch
-          execSync(`pacman -Q ${pkg}`, { stdio: 'ignore' })
-          return true
-
-        case 'fedora':
-          // Verifica se il pacchetto è installato su fedora/Fedora
-          execSync(`rpm -q ${pkg}`, { stdio: 'ignore' })
-          return true
-
-        default:
-          return false
-      }
-    } catch {
-      return false
-    }
-  }
 }
