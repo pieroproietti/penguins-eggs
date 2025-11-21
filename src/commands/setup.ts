@@ -34,6 +34,13 @@ export default class Setup extends Command {
     Utils.titles(this.id + ' ' + this.argv)
 
     const { flags } = await this.parse(Setup)
+
+
+    if (!Utils.isAppImage()) {
+      console.log("The eggs setup command is only used on the AppImage version.")
+      process.exit()
+    }
+
     const prerequisites = new Prerequisites()
 
     if (Utils.isRoot()) {
