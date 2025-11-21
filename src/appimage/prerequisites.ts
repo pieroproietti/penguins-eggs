@@ -5,13 +5,18 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
 
 import { execSync } from 'node:child_process'
 import Utils from '../classes/utils.js'
 import Distro from '../classes/distro.js'
 import Diversions from '../classes/diversions.js'
 
+/**
+ * 
+ */
 export class Prerequisites {
   private distro: Distro
 
@@ -25,11 +30,6 @@ export class Prerequisites {
    * @returns 
    */
   async install(): Promise<boolean> {
-    const osInfo = Utils.getOsRelease()
-    const codenameId = osInfo.VERSION_CODENAME
-    const releaseId = osInfo.VERSION_ID
-    const distroId = osInfo.ID
-    console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
 
     const packages = this.getPackagesForDistro()
 
@@ -40,21 +40,21 @@ export class Prerequisites {
 
     console.log('')
     console.log('The following packages will be installed:')
-    packages.forEach(pkg => console.log(`  - ${pkg}`))
-
+    console.log(`${packages.join(', ')}`)
+    console.log('')
     if (await Utils.customConfirm('Select yes to continue...')) {
-      Utils.titles()
+      // const homeDir = os.homedir();
+      // const filePath = path.join(homeDir, 'installcmd.sh');
+      const installCmd = this.getInstallCommand(packages)
+      // fs.writeFileSync(filePath, installCmd + '\n', { encoding: 'utf8' });
+      // fs.chmodSync(filePath, '755');
+      Utils.titles(installCmd)
       try {
-        const installCmd = this.getInstallCommand(packages)
-
-        console.log('')
-        console.log('Installation command:')
-        console.log(`  ${installCmd}`)
-        console.log('')
 
         // Esegui l'installazione
         console.log('Installing packages (this may take a few minutes)...')
-        execSync(installCmd, { stdio: 'inherit' })
+        //execSync(installCmd, { stdio: 'inherit' })
+        execSync(installCmd, { stdio: 'ignore' })
 
         console.log('')
         console.log('SUCCESS: Prerequisites installed successfully!')
@@ -67,6 +67,7 @@ export class Prerequisites {
         console.log('')
         console.log('Please check your system and try again.')
         console.log('You can also install prerequisites manually using your package manager.')
+
         return false
       }
     }
@@ -81,12 +82,6 @@ export class Prerequisites {
    */
   check(): boolean {
     try {
-      const osInfo = Utils.getOsRelease()
-      const codenameId = osInfo.VERSION_CODENAME
-      const releaseId = osInfo.VERSION_ID
-      const distroId = osInfo.ID
-      console.log(`distro: ${distroId}/${codenameId} compatible: ${this.distro.distroLike}/${this.distro.distroUniqueId} family: ${this.distro.familyId}`)
-
       const packages = this.getPackagesForDistro()
       if (packages.length === 0) {
         console.log('WARNING: Unsupported distribution - cannot check prerequisites')
@@ -97,8 +92,7 @@ export class Prerequisites {
 
       if (missing.length > 0) {
         console.log(`MISSING: ${missing.length} of ${packages.length} packages`)
-        console.log('Missing packages:')
-        missing.forEach(pkg => console.log(`  - ${pkg}`))
+        console.log(`${missing.join(', ')}`)
         return false
       }
 
@@ -220,7 +214,6 @@ export class Prerequisites {
         'live-boot',
         'live-boot-initramfs-tools',
         'live-config',
-        'live-config-systemd', 
         'lvm2',
         'parted',
         'rsync',
@@ -232,10 +225,11 @@ export class Prerequisites {
       ]
 
       if (Utils.isSystemd()){
-        debianPackages.push('live-systemd')
+        debianPackages.push('live-config-systemd')
       } else {
-        debianPackages.push('live-sysvinit')
+        debianPackages.push('live-config-sysvinit')
       }
+      debianPackages.sort()
       return debianPackages
 
     } else if (packagesList === 'fedora') {

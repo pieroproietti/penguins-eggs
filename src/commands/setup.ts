@@ -6,6 +6,7 @@
  * license: MIT
  */
 
+import Distro from '../classes/distro.js'
 import Utils from '../classes/utils.js'
 import Pacman from '../classes/pacman.js'
 import { Prerequisites } from '../appimage/prerequisites.js'
@@ -33,14 +34,23 @@ export default class Setup extends Command {
   public async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
 
-    const { flags } = await this.parse(Setup)
-
-
+    /**
+     * continue only on AppImage
+     */
     if (!Utils.isAppImage()) {
-      console.log("The eggs setup command is only used on the AppImage version.")
+      console.log("The eggs setup command is only applicable on the AppImage version.")
       process.exit()
     }
 
+    const distro = new Distro()
+    const osInfo = Utils.getOsRelease()
+    const codenameId = osInfo.VERSION_CODENAME
+    const releaseId = osInfo.VERSION_ID
+    const distroId = osInfo.ID
+    console.log(`AppImage running on: ${distroId}/${codenameId} compatible: ${distro.distroLike}/${distro.distroUniqueId} family: ${distro.familyId}`)
+
+
+    const { flags } = await this.parse(Setup)
     const prerequisites = new Prerequisites()
 
     if (Utils.isRoot()) {
