@@ -8,6 +8,13 @@ eggs is a console utility, in active development, who let you to remaster your s
 
 # INSTALL
 
+penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from https://github.com/pieroproietti/penguins-eggs/releases, then run the following commands:
+```
+$ chmod +x {{{packageNameVersioned}}}-x86_64.AppImage
+$ sudo mv /usr/local/bin
+$ sudo eggs setup
+```
+
 AlpineLinux
 ```
 $ doas apk add penguins-eggs@testing

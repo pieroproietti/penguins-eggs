@@ -119,7 +119,7 @@ export default async function information(verbose = false): Promise<void> {
         <>
             <Box ><Text> </Text></Box>
             <Box borderStyle="round" marginRight={2} flexDirection="column">
-                <Box ><Text color="cyan">eggs install</Text><Text> install your CLI iso with TUI installer krill, on GUI prefere calamares</Text></Box>
+                <Box ><Text color="cyan">eggs krill</Text><Text> install your CLI system with TUI installer krill, on GUI use calamares</Text></Box>
                 <Box><Text color="cyan">eggs wardrobe</Text><Text> build your personal system starting from cli</Text></Box>
                 <Box ><Text> </Text></Box>
                 <Box flexDirection="row">

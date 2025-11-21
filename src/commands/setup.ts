@@ -76,23 +76,18 @@ export default class Setup extends Command {
       this.log('Checking current system status...')
       const allInstalled = prerequisites.check()
 
+      // Se tutto è installato esce, e non --force
       if (allInstalled && !flags.force) {
         this.log('SUCCESS: All prerequisites are already installed')
         return
       }
-
+      
+      // reinstalla
       if (allInstalled && flags.force) {
-        this.log('Force flag detected: reinstalling prerequisites...')
-      } else {
-        this.log('Some prerequisites are missing.')
+        this.log('Reinstalling prerequisites.')
       }
 
-      this.log('')
-      this.log('Starting automatic installation...')
-      this.log('This will install system packages and requires sudo privileges.')
-      this.log('')
-
-      const success = await prerequisites.install()
+      const success = await prerequisites.install(flags.force)
 
       if (success) {
         this.log('')

@@ -19,23 +19,30 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-## v25.11.19-rc3
-Now AppImage include nodejs, I tested it on a virgin Manjaro xfce. Was able to run and produce ISO, but - at the moment - resulting ISO fail to boot going on recovery shell.
+## v25.11.21
+Starting with this version, penguins-eggs is also released as an AppImage in addition to being a native package for various distributions.
 
-## v25.11.19-rc2
-After hear same use unable to start AppImage, I realized I forgot to include nodejs inside it, on my testing machine was working becouse nodejs is installed.
+The source is the same, as are the features. I had to add a new `setup` command that is only used for the AppImage version and tweaked or removed other minor commands that are no longer used.
 
-## v25.11.19-rc1
+The AppImage is perfectly equivalent to the native package.
 
-First version also released as AppImage. Works on all supported versions and probably on most derivatives.
+There is nothing particularly magical about this; I used a well-known technique and continue to use the package managers of the various distributions, but this will probably make it easier both to create your own packages and — for those who wish to do so — to extend penguins-eggs to make it compatible with other original distributions or even help create new ones.
 
-My impressions of using it are extremely positive. It simply works, and for a developer, it's a double pleasure to be able to configure a distribution and test it without having to build packages.
+### AppImage requisites
+Before to try AppImage depending on your distro, you need this packages installed:
+* Alpine: `sudo apk add fuse`
+* Arch/Manjaro: `sudo pacman -S fuse2`
+* Debian/Devuan/Ubuntu: `sudo apt-get install fuse libfuse2`
+* Fedora/RHEL: `sudo dnf install fuse fuse-libs`
+* Opensuse: `sudo zypper install fuse fuse-libs`
 
-I added the `eggs setup` command, which checks for or installs the necessary native packages on the system in use.
-
-
-I requested publication on https://github.com/AppImage/appimage.github.io, otherwise it can be downloaded [v25.11.19-rc1](https://github.com/pieroproietti/penguins-eggs/releases/tag/v25.11.19-rc1).
-
+### AppImage installation
+penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from https://github.com/pieroproietti/penguins-eggs/releases, then run the following commands:
+```
+$ chmod +x penguins-eggs-25.11.21-x86_64.AppImage
+$ sudo mv /usr/local/bin
+$ sudo eggs setup
+```
 
 ## v25.11.14
 * Almalinux, Fedora, Opensuse, Rocky Linux: rewrote the code to add or remove the repository for pre-compiled penguins-eggs packages;
