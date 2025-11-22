@@ -27,25 +27,25 @@ export class Prerequisites {
    */
   async install(force=false): Promise<boolean> {
 
-    const packages = this.getPackagesForDistro()
+    const packagesAll = this.getPackagesForDistro()
 
-    if (packages.length === 0) {
+    if (packagesAll.length === 0) {
       console.log('ERROR: Unsupported distribution for automatic setup')
       return false
     }
 
-    let missing = packages.filter(pkg => !this.isPackageInstalled(pkg))
+    let packages = packagesAll.filter(pkg => !this.isPackageInstalled(pkg))
     if (force) {
-      missing = packages
+      packages = packagesAll
     }
     
 
     console.log('')
     console.log('The following packages will be installed/reinstalled:')
-    console.log(`${missing.join(', ')}`)
+    console.log(`${packages.join(', ')}`)
     console.log('')
     if (await Utils.customConfirm('Select yes to continue...')) {
-      const installCmd = this.getInstallCommand(missing, force)
+      const installCmd = this.getInstallCommand(packages, force)
       Utils.titles(installCmd)
 
       try {
@@ -139,17 +139,31 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
    * @returns 
    */
   private isPackageInstalled(pkg: string): boolean {
+    /**
+     * normalize familyId
+     */
+    let familyId = this.distro.familyId
+    if (this.distro.familyId === 'el9') {
+      familyId = 'fedora'
+    }
+
     try {
-      switch (this.distro.familyId) {
+      switch (familyId) {
         case 'debian':
-          // Verifica se il pacchetto è installato
           execSync(`dpkg -s ${pkg}`, { stdio: 'ignore' })
           return true
 
         case 'archlinux':
-          // Verifica se il pacchetto è installato su Arch
-          execSync(`pacman -Q ${pkg}`, { stdio: 'ignore' })
-          return true
+          // patch manjaro-tools-iso
+          if (pkg.includes('manjaro-tools-iso'))
+            return false
+
+          try {
+            execSync(`pacman -T ${pkg}`, { stdio: 'ignore' });
+            return true;
+          } catch (e) {
+            return false;
+          }
 
         case 'fedora':
           // Verifica se il pacchetto è installato su fedora/Fedora
@@ -182,8 +196,6 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
     if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike)) {
       packagesList = 'manjaro'
     }
-
-
 
     /**
      * we select from packageList
@@ -332,6 +344,7 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
         'libarchive',
         'libisoburn',
         'lvm2',
+        'manjaro-tools-iso',
         'mkinitcpio-nfs-utils',
         'mtools',
         'nbd',
@@ -348,9 +361,6 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
         'wget',
         'xdg-utils',
       ]
-      // For same reason don't take manjaro-tools-iso
-      manjaroPackages.push('manjaro-tools-iso')
-      manjaroPackages.sort()
       return manjaroPackages
 
 

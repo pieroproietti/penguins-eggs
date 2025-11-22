@@ -655,9 +655,9 @@ export default class Pacman {
         await exec(`mkdir ${manpageDest} -p`)
       }
       await exec(`cp ${manpageSrc} ${manpageDest}`)
-      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
-        await exec('mandb > /dev/null')
-      }
+      // if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
+      // await exec('mandb > /dev/null')
+      // }
     }
   }
 
