@@ -12,32 +12,5 @@ if [ "$EUID" -eq 0 ]; then
   exit
 fi
 
-# Estrai l'app_name dal file .spec
-#$APP_NAME=$(grep '^%global app_name' penguins-eggs-deps.spec | awk '{print $3}')
-
-# Estrai la versione dal file .spec
-#$SPEC_VERSION=$(grep '^Version:' penguins-eggs-eggs.spec | awk '{print $2}')
-
-# Estrai l'URL sorgente
-#SOURCE_URL=$(grep '^Source0:' penguins-eggs.spec | awk '{print $2}')
-
-# Risolvi ENTRAMBE le variabili (%{version} e %{app_name}) per ottenere l'URL finale
-#ESOLVED_URL=$(echo "${SOURCE_URL}" | sed "s/%{version}/${SPEC_VERSION}/g" | sed "s/%{app_name}/${APP_NAME}/g")
-
-# Definisci il nome del file che ci aspettiamo di avere localmente
-#LOCAL_FILENAME="${APP_NAME}-${SPEC_VERSION}.tar.gz"
-
-# Stampa l'URL per verifica
-#echo "Downloading source from: ${RESOLVED_URL}"
-
-# Scarica il file, forzando il nome corretto con -O
-#wget -O "${LOCAL_FILENAME}" "${RESOLVED_URL}"
-
-# Crea la directory dei sorgenti se non esiste
-mkdir -p ~/rpmbuild/SOURCES/
-
-# Sposta il file scaricato (che ora ha il nome corretto)
-#echo "Moving ${LOCAL_FILENAME} to rpmbuild/SOURCES/"
-#mv "${LOCAL_FILENAME}" ~/rpmbuild/SOURCES/
 echo "Building package..."
 /usr/bin/rpmbuild -bb --define "dist .opensuse" ./penguins-eggs-deps.spec
