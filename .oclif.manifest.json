@@ -769,22 +769,22 @@
       "args": {},
       "description": "Automatically check and install system prerequisites",
       "examples": [
-        "sudo eggs setup                      # install prerequisites",
-        "sudo eggs setup --check              # check prerequisites presence",
-        "sudo eggs setup --force              # force prerequisites install"
+        "sudo eggs setup                      # install native dependencies, autocomplete, man",
+        "sudo eggs setup --install            # reinstall native dependencies",
+        "sudo eggs setup --uninstall          # remove AppImage, purge configurations files, autocomplete, man"
       ],
       "flags": {
-        "check": {
-          "char": "c",
-          "description": "check status only, do not install",
-          "name": "check",
+        "install": {
+          "char": "i",
+          "description": "force installation even if already installed",
+          "name": "install",
           "allowNo": false,
           "type": "boolean"
         },
-        "force": {
-          "char": "f",
-          "description": "force installation even if already installed",
-          "name": "force",
+        "uninstall": {
+          "char": "u",
+          "description": "uninstall penguins-eggs.AppImage",
+          "name": "uninstall",
           "allowNo": false,
           "type": "boolean"
         }

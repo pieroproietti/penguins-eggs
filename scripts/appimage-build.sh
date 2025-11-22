@@ -28,8 +28,8 @@ if [ ! -f "appimage/AppRun" ]; then
     exit 1
 fi
 
-if [ ! -f "appimage/penguins-eggs.desktop" ]; then
-    echo "ERROR: appimage/penguins-eggs.desktop not found"
+if [ ! -f "appimage/net.penguins_eggs.eggs.desktop" ]; then
+    echo "ERROR: appimage/net.penguins_eggs.eggs.desktop not found"
     exit 1
 fi
 
@@ -97,10 +97,11 @@ if [ -f "appimage/penguins-eggs.appdata.xml" ]; then
     mkdir -p AppDir/usr/share/metainfo
     
     # Aggiorna automaticamente versione e data
+    # NOTA: Salvo il file con il NUOVO nome ID per coerenza con AppStream
     CURRENT_DATE=$(date +%Y-%m-%d)
     sed -e "s|%VERSION%|$VERSION|g" \
         -e "s|%DATE%|$CURRENT_DATE|g" \
-        "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/penguins-eggs.appdata.xml
+        "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/net.penguins_eggs.eggs.appdata.xml
     
     echo "AppData metadata updated: version $VERSION, date $CURRENT_DATE"
 else
@@ -112,9 +113,10 @@ fi
 cp appimage/AppRun AppDir/
 chmod +x AppDir/AppRun
 
-# penguins-eggs.desktop
-cp appimage/penguins-eggs.desktop AppDir/
-cp appimage/penguins-eggs.desktop AppDir/usr/share/applications/
+# net.penguins_eggs.eggs.desktop
+# Copia nella root (richiesto da AppImage) e in applications (richiesto da standard Linux)
+cp appimage/net.penguins_eggs.eggs.desktop AppDir/
+cp appimage/net.penguins_eggs.eggs.desktop AppDir/usr/share/applications/
 
 # penguins-eggs.png
 cp appimage/penguins-eggs.png AppDir/
@@ -126,11 +128,12 @@ ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs
 # Verifica file richiesti
 echo "Checking required AppDir files:"
 ls -la AppDir/AppRun
-ls -la AppDir/penguins-eggs.desktop
+ls -la AppDir/net.penguins_eggs.eggs.desktop
 ls -la AppDir/penguins-eggs.png
 
 # Crea AppImage
 echo "Creating AppImage..."
+# Opzionale: Definisce l'architettura esplicitamente per appimagetool
 ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
 # Test
@@ -138,10 +141,11 @@ echo "Testing AppImage..."
 chmod +x "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
 
 if command -v fusermount &> /dev/null || command -v fusermount3 &> /dev/null; then
+    # Esegue un test veloce (verifica che parta)
     if ./"${APP_NAME}-${VERSION}-${ARCH}.AppImage" --version; then
         echo "SUCCESS: AppImage working correctly!"
     else
-        echo "WARNING: AppImage test failed"
+        echo "WARNING: AppImage test failed (exit code not 0)"
     fi
 else
     echo "WARNING: Cannot test AppImage without FUSE"

@@ -6,6 +6,7 @@
  * license: MIT
  */
 
+import { exec } from '../lib/utils.js'
 import Distro from '../classes/distro.js'
 import Utils from '../classes/utils.js'
 import Pacman from '../classes/pacman.js'
@@ -17,14 +18,14 @@ export default class Setup extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static flags = {
-    check: Flags.boolean({ char: 'c', description: 'check status only, do not install' }),
-    force: Flags.boolean({ char: 'f', description: 'force installation even if already installed' }),
+    install: Flags.boolean({ char: 'i', description: 'force installation even if already installed' }),
+    uninstall: Flags.boolean({ char: 'u', description: 'uninstall penguins-eggs.AppImage' }),
   }
 
   static examples = [
-    'sudo eggs setup                      # install prerequisites',
-    'sudo eggs setup --check              # check prerequisites presence',
-    'sudo eggs setup --force              # force prerequisites install',
+    'sudo eggs setup                      # install native dependencies, autocomplete, man',
+    'sudo eggs setup --install            # reinstall native dependencies',
+    'sudo eggs setup --uninstall          # remove AppImage, purge configurations files, autocomplete, man',
   ]
 
   /**
@@ -49,57 +50,51 @@ export default class Setup extends Command {
     const distroId = osInfo.ID
     console.log(`AppImage running on: ${distroId}/${codenameId} compatible: ${distro.distroLike}/${distro.distroUniqueId} family: ${distro.familyId}`)
 
-
     const { flags } = await this.parse(Setup)
     const prerequisites = new Prerequisites()
 
     if (Utils.isRoot()) {
-      // Install autocomplete e manPages
-      await Pacman.autocompleteInstall()
-      await Pacman.manPageInstall()
 
-      if (flags.check) {
-        this.log('Checking system prerequisites...')
+      if (flags.install) {
+        await Pacman.autocompleteInstall()
+        await Pacman.manpageInstall()
+        await Pacman.configurationInstall()
+
         const allInstalled = prerequisites.check()
 
-        if (allInstalled) {
-          this.log('SUCCESS: All prerequisites are installed')
-          this.log('Your system is ready for penguins-eggs!')
-        } else {
-          this.log('WARNING: Some prerequisites are missing')
-          this.log('Run: eggs setup (without --check) to install them automatically')
+        // Se tutto è installato e non --install, esce
+        if (allInstalled && !flags.install) {
+          this.log('SUCCESS: All prerequisites are already installed')
+          return
         }
-        return
-      }
 
-      // Setup automatico: check + install
-      this.log('Checking current system status...')
-      const allInstalled = prerequisites.check()
+        // install^reinstall
+        if (allInstalled && flags.install) {
+          this.log('Reinstalling native dependencies.')
+        } else {
+          this.log('Installing native dependencies.')
+        }
 
-      // Se tutto è installato esce, e non --force
-      if (allInstalled && !flags.force) {
-        this.log('SUCCESS: All prerequisites are already installed')
-        return
-      }
-      
-      // reinstalla
-      if (allInstalled && flags.force) {
-        this.log('Reinstalling prerequisites.')
-      }
 
-      const success = await prerequisites.install(flags.force)
+        const success = await prerequisites.install(flags.install)
 
-      if (success) {
-        this.log('')
-        this.log('SUCCESS: penguins-eggs setup completed!')
+        if (success) {
+          this.log('')
+          this.log('SUCCESS: penguins-eggs setup completed!')
+        } else {
+          this.log('')
+          this.log('ERROR: Setup failed')
+          this.log('Please check your system and try again.')
+          this.log('You can also install prerequisites manually using your package manager.')
+        }
+      } else if (flags.uninstall) {
+
+        await Pacman.autocompleteRemove()
+        await Pacman.manpageRemove()
+        await Pacman.configurationRemove()
       } else {
-        this.log('')
-        this.log('ERROR: Setup failed')
-        this.log('Please check your system and try again.')
-        this.log('You can also install prerequisites manually using your package manager.')
+        Utils.useRoot(this.id)
       }
-    } else {
-      Utils.useRoot(this.id)
     }
   }
 }
