@@ -317,7 +317,7 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
       ]
 
     } else if (packagesList === 'manjaro') {
-      return [
+      let manjaroPackages = [
         'arch-install-scripts',
         'curl',
         'dosfstools',
@@ -332,7 +332,6 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
         'libarchive',
         'libisoburn',
         'lvm2',
-        'manjaro-tools-iso',
         'mkinitcpio-nfs-utils',
         'mtools',
         'nbd',
@@ -349,6 +348,11 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
         'wget',
         'xdg-utils',
       ]
+      // For same reason don't take manjaro-tools-iso
+      manjaroPackages.push('manjaro-tools-iso')
+      manjaroPackages.sort()
+      return manjaroPackages
+
 
     } else if (packagesList === 'opensuse') {
       return [

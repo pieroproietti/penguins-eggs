@@ -19,6 +19,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.22
+Minor tweaks to the sudo eggs setup command, with the definition of two new flags: --install and --uninstall, necessary for installing and removing the AppImage, autocomplete scripts, and the egs man page.
+
 ## v25.11.21
 Starting with this version, penguins-eggs is also released as an AppImage in addition to being a native package for various distributions.
 
