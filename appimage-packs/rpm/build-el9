@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# check if we are on rocky or almalinux
+if [ ! -f /etc/rocky-release ]; then
+    if [ ! -f /etc/almalinux-release ]; then
+        echo "This script is intended for rockylinux or almalinux!"
+        exit 1
+    fi
+fi
+
+# check if we are root
+if [ "$EUID" -eq 0 ]; then
+  echo "Please run as normal user"
+  exit
+fi
+
+echo "Download sources..."
+spectool -g -R penguins-eggs-deps.spec
+echo "Building package..."
+/usr/bin/rpmbuild -bb ./penguins-eggs-deps.spec
+cp $HOME/rpmbuild/RPMS/noarch/penguins-eggs-deps-*.el9.noarch.rpm  .

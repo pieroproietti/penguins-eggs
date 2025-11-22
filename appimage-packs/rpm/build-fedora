@@ -15,4 +15,4 @@ echo "Download sources..."
 spectool -g -R penguins-eggs-deps.spec
 echo "Building package..."
 /usr/bin/rpmbuild -bb ./penguins-eggs-deps.spec
-cp $HOME/rpmbuild/RPMS/noarch/penguins-eggs-deps* .
+cp $HOME/rpmbuild/RPMS/noarch/penguins-eggs-deps*fc42.noarch.rpm .
