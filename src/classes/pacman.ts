@@ -275,7 +275,7 @@ export default class Pacman {
   /**
    * Rimozione dei file di configurazione
    */
-  static async configurationRemove(verbose = true): Promise<void> {
+  static async configurationRemove(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
 
     if (fs.existsSync('/etc/penguins-eggs.d')) {
