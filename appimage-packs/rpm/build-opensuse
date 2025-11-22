@@ -14,3 +14,4 @@ fi
 
 echo "Building package..."
 /usr/bin/rpmbuild -bb --define "dist .opensuse" ./penguins-eggs-deps.spec
+cp $HOME/rpmbuild/RPMS/noarch/penguins-eggs-deps-*.opensuse.noarch.rpm .
