@@ -970,21 +970,21 @@ Automatically check and install system prerequisites
 
 ```
 USAGE
-  $ eggs setup [-c] [-f]
+  $ eggs setup [-i] [-u]
 
 FLAGS
-  -c, --check  check status only, do not install
-  -f, --force  force installation even if already installed
+  -i, --install    force installation even if already installed
+  -u, --uninstall  uninstall penguins-eggs.AppImage
 
 DESCRIPTION
   Automatically check and install system prerequisites
 
 EXAMPLES
-  sudo eggs setup                      # install prerequisites
+  sudo eggs setup                      # install native dependencies, autocomplete, man
 
-  sudo eggs setup --check              # check prerequisites presence
+  sudo eggs setup --install            # reinstall native dependencies
 
-  sudo eggs setup --force              # force prerequisites install
+  sudo eggs setup --uninstall          # remove AppImage, purge configurations files, autocomplete, man
 ```
 
 _See code: [src/commands/setup.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.22/src/commands/setup.ts)_
