@@ -30,7 +30,7 @@ Requires:       git
 Requires:       jq
 Requires:       lvm2
 # Nota: Se la tua AppImage include già Node.js, puoi commentare la riga sotto
-# Requires:       nodejs
+Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
 Requires:       polkit
