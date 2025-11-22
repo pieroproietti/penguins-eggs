@@ -337,8 +337,8 @@ _arguments -S \
 "*: :_files" ;; 
 setup)
 _arguments -S \
-"(-c --check)"{-c,--check}"[check status only, do not install]" \
-"(-f --force)"{-f,--force}"[force installation even if already installed]" \
+"(-i --install)"{-i,--install}"[force installation even if already installed]" \
+"(-u --uninstall)"{-u,--uninstall}"[uninstall penguins-eggs.AppImage]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 status)
