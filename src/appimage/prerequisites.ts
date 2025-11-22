@@ -9,6 +9,8 @@ import { execSync } from 'node:child_process'
 import Utils from '../classes/utils.js'
 import Distro from '../classes/distro.js'
 import Diversions from '../classes/diversions.js'
+import { DependencyManager } from './dependency-manager.js'
+import * as path from 'path';
 
 /**
  * 
@@ -25,7 +27,7 @@ export class Prerequisites {
    * install
    * @returns 
    */
-  async install(force=false): Promise<boolean> {
+  async install(force = false): Promise<boolean> {
 
     const packagesAll = this.getPackagesForDistro()
 
@@ -38,7 +40,7 @@ export class Prerequisites {
     if (force) {
       packages = packagesAll
     }
-    
+
 
     console.log('')
     console.log('The following packages will be installed/reinstalled:')
@@ -109,7 +111,7 @@ export class Prerequisites {
    * @param packages 
    * @returns 
    */
-private getInstallCommand(packages: string[], forceReinstall: boolean = false): string {
+  private getInstallCommand(packages: string[], forceReinstall: boolean = false): string {
     const packagesStr = packages.join(' ');
 
     switch (this.distro.familyId) {
@@ -183,217 +185,39 @@ private getInstallCommand(packages: string[], forceReinstall: boolean = false): 
    * 
    * @returns 
    */
-  private getPackagesForDistro(): string[] {
+  private installMetaPackage() {
 
     /**
-     * normalize as packageList
+     * normalize as familyId
      */
-    let packagesList = this.distro.familyId
-    if (this.distro.familyId === 'el9') {
-      packagesList = 'fedora'
-    }
-
+    let familyId = this.distro.familyId
     if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike)) {
-      packagesList = 'manjaro'
+      familyId = 'manjaro'
     }
 
-    /**
-     * we select from packageList
-     */
-    if (packagesList === 'alpine') {
-      return [
-        'alpine-conf',
-        'apk-tools',
-        'bash',
-        'bash-completion',
-        'cryptsetup',
-        'curl',
-        'device-mapper-libs',
-        'dosfstools',
-        // 'fuse', 
-        'git',
-        'grub-bios',
-        'grub-efi',
-        'jq',
-        'lsblk',
-        'lvm2',
-        'mkinitfs',
-        'musl-locales',
-        // 'nodejs', 
-        'parted',
-        'polkit',
-        'rsync',
-        'shadow',
-        'squashfs-tools',
-        'sshfs',
-        'xorriso',
-        'zstd',
-        'libc6-compat',
-      ]
-
-    } else if (packagesList === 'archlinux') {
-      return [
-        'arch-install-scripts',
-        'cryptsetup',
-        'curl',
-        'dosfstools',
-        'efibootmgr',
-        'erofs-utils',
-        'findutils',
-        // 'fuse2',
-        'git',
-        'gnupg',
-        'grub',
-        'jq',
-        'libarchive',
-        'libisoburn',
-        'lvm2',
-        'mkinitcpio-archiso',
-        'mkinitcpio-nfs-utils',
-        'mtools',
-        'nbd',
-        // 'nodejs',
-        'pacman-contrib',
-        'parted',
-        'polkit',
-        'procps-ng',
-        'pv',
-        'python',
-        'rsync',
-        'squashfs-tools',
-        'sshfs',
-        'syslinux',
-        'wget',
-        'xdg-utils',
-      ]
-
-    } else if (packagesList === 'debian') {
-      let debianPackages = [
-        'cryptsetup',
-        'curl',
-        'dosfstools',
-        'dpkg-dev',
-        'git',
-        'gnupg',
-        'grub-efi-amd64-bin',
-        'grub-pc-bin',
-        'grub2-common',
-        'ipxe',
-        'isolinux',
-        'jq',
-        'live-boot',
-        'live-boot-initramfs-tools',
-        'live-config',
-        'lvm2',
-        'parted',
-        'rsync',
-        'squashfs-tools',
-        'sshfs',
-        'syslinux-common',
-        'syslinux',
-        'xorriso',
-      ]
-
-      if (Utils.isSystemd()){
-        debianPackages.push('live-config-systemd')
-      } else {
-        debianPackages.push('live-config-sysvinit')
-      }
-      debianPackages.sort()
-      return debianPackages
-
-    } else if (packagesList === 'fedora') {
-      return [
-        'cryptsetup',
-        'curl',
-        'device-mapper',
-        'dosfstools',
-        'dracut-live',
-        'dracut',
-        'efibootmgr',
-        // 'fuse',
-        'git',
-        'jq',
-        'lvm2',
-        // 'nodejs',
-        'nvme-cli',
-        'parted',
-        'polkit',
-        'rsync',
-        'squashfs-tools',
-        'sshfs',
-        'wget',
-        'xdg-utils',
-        'xorriso',
-        'zstd',
-      ]
-
-    } else if (packagesList === 'manjaro') {
-      let manjaroPackages = [
-        'arch-install-scripts',
-        'curl',
-        'dosfstools',
-        'efibootmgr',
-        'erofs-utils',
-        'findutils',
-        // 'fuse2',
-        'git',
-        'gnupg',
-        'grub',
-        'jq',
-        'libarchive',
-        'libisoburn',
-        'lvm2',
-        'manjaro-tools-iso',
-        'mkinitcpio-nfs-utils',
-        'mtools',
-        'nbd',
-        // 'nodejs',
-        'pacman-contrib',
-        'parted',
-        'polkit',
-        'procps-ng',
-        'pv',
-        'python',
-        'rsync',
-        'squashfs-tools',
-        'sshfs',
-        'wget',
-        'xdg-utils',
-      ]
-      return manjaroPackages
-
-
-    } else if (packagesList === 'opensuse') {
-      return [
-        'cryptsetup',
-        'curl',
-        'device-mapper',
-        'dosfstools',
-        'dracut-kiwi-live',
-        'dracut',
-        'efibootmgr',
-        // 'fuse-sshfs',
-        // 'fuse',
-        'git',
-        'jq',
-        'lvm2',
-        // 'nodejs',
-        'nvme-cli',
-        'parted',
-        'polkit',
-        'rsync',
-        'squashfs-tools',
-        'wget',
-        'xdg-utils',
-        'xorriso',
-        'zstd',
-      ]
-
+    // Definiamo dove si trova la root dell'applicazione a runtime
+    // In ambiente di sviluppo è diverso da AppImage, quindi gestiamo entrambi
+    let appRoot = '';
+    if (process.env.APPDIR) {
+      // Se la cartella è in /usr/share/eggs/appimage-deps:
+      appRoot = path.join(process.env.APPDIR, 'usr/share/eggs');
     } else {
-      console.log(`This distro ${this.distro.distroId}/${this.distro.codenameId} is not yet recognized!`)
-      return []
+      // Siamo in sviluppo locale (es. ~/penguins-eggs)
+      appRoot = process.cwd();
+    }
+
+    // Chiamata al metodo statico
+    try {
+      const success = DependencyManager.installDrivers(familyId, appRoot);
+      if (success) {
+        console.log("Dipendenze installate correttamente.");
+      } else {
+        console.log("Nessuna dipendenza specifica installata (o pacchetto non trovato).");
+      }
+    } catch (e) {
+      console.error("Installazione fallita. Impossibile procedere.");
+      process.exit(1);
     }
   }
-
 }
+
