@@ -92,9 +92,11 @@ export default class Setup extends Command {
         await Pacman.autocompleteRemove()
         await Pacman.manpageRemove()
         await Pacman.configurationRemove()
-      } else {
-        Utils.useRoot(this.id)
       }
+      
+    } else {
+      Utils.useRoot(this.id)
     }
   }
 }
+

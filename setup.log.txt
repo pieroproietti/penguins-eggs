@@ -1,0 +1,22 @@
+
+ E G G S: the reproductive system of penguins
+
+ penguins-eggs            Perri's brewery edition       v25.11.22.AppImage 
+command: setup --install
+
+AppImage running on: Manjaro/n/a compatible: Arch/manjaro family: archlinux
+SUCCESS: All 30 packages are installed
+Reinstalling native dependencies.
+
+The following packages will be installed/reinstalled:
+arch-install-scripts, cryptsetup, curl, dosfstools, efibootmgr, erofs-utils, findutils, git, gnupg, grub, jq, libarchive, libisoburn, lvm2, mkinitcpio-archiso, mkinitcpio-nfs-utils, mtools, nbd, pacman-contrib, parted, polkit, procps-ng, pv, python, rsync, squashfs-tools, sshfs, syslinux, wget, xdg-utils
+
+[34m?[39m [1mSelect yes to continue...[22m
+[36m❯ No[39m
+  Yes
+
+[1m↑↓[22m [2mnavigate[22m[2m • [22m[1m⏎[22m [2mselect[22m[?25l[23G[2K[1A[2K[1A[2K[1A[2K[1A[2K[G[32m✔[39m [1mSelect yes to continue...[22m [36mNo[39m[31G
+[?25h
+ERROR: Setup failed
+Please check your system and try again.
+You can also install prerequisites manually using your package manager.
