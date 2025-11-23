@@ -29,6 +29,7 @@ The meta-packages incorporated into the AppImage were built on specific distribu
 Conceptually, I am even thinking of discontinuing the native packages altogether and releasing only the AppImage for all distributions, then perhaps trying to extend support to others.
 
 However, proving this takes time, so I am relying heavily on your opinions and the results of your suggestions.
+
 ## v25.11.22
 Minor tweaks to the sudo eggs setup command, with the definition of two new flags: --install and --uninstall, necessary for installing and removing the AppImage, autocomplete scripts, and the egs man page.
 
