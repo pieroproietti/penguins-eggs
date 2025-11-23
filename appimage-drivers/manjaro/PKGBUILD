@@ -1,0 +1,69 @@
+# Maintainer: Piero Proietti <piero.proietti_at_gmail.com>
+#
+# META-PACCHETTO PER MANJARO
+# Installa le dipendenze specifiche per penguins-eggs su Manjaro Linux.
+#
+
+pkgname=penguins-eggs-deps
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Meta package for penguins-eggs runtime dependencies (Manjaro Edition)"
+arch=('any')
+url="https://penguins-eggs.net"
+license=('GPL2')
+
+# ==============================================================================
+# DIPENDENZE (Specifica Manjaro)
+# ==============================================================================
+depends=(
+  'arch-install-scripts'
+  'dosfstools'
+  'efibootmgr'
+  'erofs-utils'
+  'findutils'
+  'git'
+  'grub'
+  'jq'
+  'libarchive'
+  'libisoburn'
+  'lvm2'
+  'manjaro-tools-iso'  # <--- La differenza chiave rispetto ad Arch
+  'mkinitcpio-nfs-utils'
+  'mtools'
+  'nbd'
+  # 'nodejs'
+  'pacman-contrib'
+  'parted'
+  'polkit'
+  'procps-ng'
+  'pv'
+  'python'
+  'rsync'
+  'squashfs-tools'
+  'sshfs'
+  'wget'
+  'xdg-utils'
+)
+
+# Suggerimenti opzionali
+optdepends=(
+  'bash-completion: eggs autocomplete'
+  'calamares: system installer GUI'
+  'zsh-completions: eggs autocomplete'
+)
+
+# Rimosso makedepends (pnpm non serve)
+# Rimosso source e sha256sums
+
+build() {
+  # Nessuna compilazione
+  return 0
+}
+
+package() {
+  # Creiamo un file README per soddisfare i requisiti di pacman
+  install -d "$pkgdir/usr/share/doc/$pkgname"
+  
+  echo "Manjaro Meta-package for penguins-eggs dependencies." > "$pkgdir/usr/share/doc/$pkgname/README.manjaro"
+  echo "Includes manjaro-tools-iso instead of archiso." >> "$pkgdir/usr/share/doc/$pkgname/README.manjaro"
+}

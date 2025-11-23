@@ -43,18 +43,32 @@ export default class Pacman {
   remix = {} as IRemix
 
   /**
-   *
+   * autocompleteInstall()
    * @param verbose
    */
-  static async autocompleteInstall(verbose = false) {
+  static async autocompleteInstall() {
     if (Pacman.packageIsInstalled('bash-completion')) {
       if (fs.existsSync('/usr/share/bash-completion/completions/')) {
         await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-      } else if (fs.existsSync('/etc/bash_completion.d/')) {
-        await exec(`cp ${__dirname}/../../scripts/eggs.bash /etc/bash_completion.d/`)
+      }
+    }
+
+    if (Pacman.packageIsInstalled('zsh-completion')) {
+      if (fs.existsSync('/usr/share/zsh/site-functions')) {
+        await exec(`cp ${__dirname}/../../scripts/_eggs /usr/share/zsh/site-functions/`)
       }
     }
   }
+
+  /**
+   * autocompleteRemove
+   * @param verbose 
+   */
+  static async autocompleteRemove(verbose = false) {
+    await exec(`rm -f /usr/share/bash-completion/completions/eggs.bash`)
+    await exec(`rm -f /usr/share/zsh/site-functions/._eggs`)
+  }
+
 
   /**
    * return true if calamares is installed
@@ -141,8 +155,6 @@ export default class Pacman {
    */
   static commandIsInstalled(cmd: string): boolean {
     let installed = false
-    // if (shx.exec(`command -V ${cmd} &>/dev/null`).code == 0) {
-    // remove output
     if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
       installed = true
     }
@@ -261,6 +273,21 @@ export default class Pacman {
   }
 
   /**
+   * Rimozione dei file di configurazione
+   */
+  static async configurationRemove(verbose = false): Promise<void> {
+    const echo = Utils.setEcho(verbose)
+
+    if (fs.existsSync('/etc/penguins-eggs.d')) {
+      await exec('rm /etc/penguins-eggs.d -rf', echo)
+    }
+
+    if (fs.existsSync('/etc/calamares')) {
+      await exec('rm /etc/calamares -rf', echo)
+    }
+  }
+
+  /**
    * Ritorna vero se machine-id è uguale
    */
   static async configurationMachineNew(verbose = false): Promise<boolean> {
@@ -274,20 +301,6 @@ export default class Pacman {
     return result
   }
 
-  /**
-   * Rimozione dei file di configurazione
-   */
-  static async configurationRemove(verbose = true): Promise<void> {
-    const echo = Utils.setEcho(verbose)
-
-    if (fs.existsSync('/etc/penguins-eggs.d')) {
-      await exec('rm /etc/penguins-eggs.d -rf', echo)
-    }
-
-    if (fs.existsSync('/etc/calamares')) {
-      await exec('rm /etc/calamares -rf', echo)
-    }
-  }
 
   /**
    *
@@ -461,7 +474,7 @@ export default class Pacman {
       const dest = '/etc/penguins-eggs.d/distros/focal'
       const focal = `${rootPen}/conf/distros/focal`
       await exec(`cp -r ${focal}/* ${dest}`, echo)
-      
+
 
       /**
        * Ubuntu 22.04 jammy: eredita da focal
@@ -475,7 +488,7 @@ export default class Pacman {
        * Ubuntu noble: e la nuova baseline per ubuntu
        *
        */
-    } else if (this.distro().distroUniqueId === 'noble' ) {
+    } else if (this.distro().distroUniqueId === 'noble') {
       const dest = '/etc/penguins-eggs.d/distros/noble'
       const noble = `${rootPen}/conf/distros/noble`
       await exec(`cp -r ${noble}/* ${dest}`, echo)
@@ -634,22 +647,29 @@ export default class Pacman {
   /**
    * Installa manPage
    */
-  static async manPageInstall(verbose = false) {
-    const manPageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
-    if (fs.existsSync(manPageSrc)) {
-      const manPageDest = `/usr/share/man/man1`
-      if (!fs.existsSync(manPageDest)) {
-        exec(`mkdir ${manPageDest} -p`)
+  static async manpageInstall() {
+    const manpageSrc = path.resolve(__dirname, '../../manpages/doc/man/eggs.1.gz')
+    if (fs.existsSync(manpageSrc)) {
+      const manpageDest = `/usr/share/man/man1`
+      if (!fs.existsSync(manpageDest)) {
+        await exec(`mkdir ${manpageDest} -p`)
       }
-      exec(`cp ${manPageSrc} ${manPageDest}`)
-      if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
-        await exec('mandb > /dev/null')
-        if (verbose) {
-          console.log('manPage eggs installed...')
-        }
-      } 
+      await exec(`cp ${manpageSrc} ${manpageDest}`)
+      // if (shx.exec('which mandb', { silent: true }).stdout.trim() !== '') {
+      // await exec('mandb > /dev/null')
+      // }
     }
   }
+
+
+  /**
+   * manpageRemove
+   */
+  static async manpageRemove() {
+    const manpageEggs = `/usr/share/man/man1/man/eggs.1.gz`
+    await exec(`rm -rf ${manpageEggs}`)
+  }
+
 
   /**
    *
@@ -714,8 +734,12 @@ export default class Pacman {
     return installed
   }
 
+  /**
+   * 
+   * @param packageNpm 
+   * @returns 
+   */
   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
     return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
   }
 }
-
