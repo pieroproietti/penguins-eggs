@@ -18,14 +18,14 @@ export default class Setup extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static flags = {
-    install: Flags.boolean({ char: 'i', description: 'force installation even if already installed' }),
-    uninstall: Flags.boolean({ char: 'u', description: 'uninstall penguins-eggs.AppImage' }),
+    install: Flags.boolean({ char: 'r', description: 'install native dependencies, autocomplete, man, etc-' }),
+    uninstall: Flags.boolean({ char: 'r', description: 'purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage' }),
   }
 
   static examples = [
-    'sudo eggs setup                      # install native dependencies, autocomplete, man',
-    'sudo eggs setup --install            # reinstall native dependencies',
-    'sudo eggs setup --uninstall          # remove AppImage, purge configurations files, autocomplete, man',
+    'eggs setup                           # this help' ,
+    'sudo eggs setup --install            # install native dependencies, autocomplete, man, etc',
+    'sudo eggs setup --uninstall          # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
   ]
 
   /**
@@ -43,6 +43,8 @@ export default class Setup extends Command {
       process.exit()
     }
 
+    const appImagePath = process.env.APPIMAGE;
+    console.log(`Running AppImage:\n${appImagePath}\n`)
 
     const distro = new Distro()
 
@@ -51,67 +53,50 @@ export default class Setup extends Command {
     const releaseId = osInfo.VERSION_ID
     const distroId = osInfo.ID
 
-    console.log(`Running on: ${distroId} ${releaseId} ${codenameId} family: ${distro.familyId}`)
-    console.log(`Compatible with:     ${distro.distroLike} ${distro.distroUniqueId}`)
-
     const { flags } = await this.parse(Setup)
     const depsManager = new DependencyManager()
 
-    if (Utils.isRoot()) {
+    console.log(`Your system is: ${distroId} ${releaseId} ${codenameId}, family ${distro.familyId}\n`)
+    console.log(`Compatible with: ${distro.distroLike} ${distro.distroUniqueId}\n`)
 
+    if (depsManager.isInstalled()) {
+      console.log('penguins-eggs distro meta-packages are already installed')
+    } else {
+      console.log('penguins-eggs distro meta-packages are NOT installed')
+    }
+
+    if (!Utils.isRoot()) {
+      console.log('\nUse:')
+      Setup.examples.forEach(element => {
+        console.log(element)
+      });
+
+    } else {
       if (flags.install) {
-        await Pacman.autocompleteInstall()
-        await Pacman.manpageInstall()
-        // await Pacman.configurationInstall()
-
-        // install^reinstall
-        if (flags.install) {
-          depsManager.reinstallDrivers()
-        } else {
-          depsManager.installDrivers()
-        }
-        
-
-
-      } else if (flags.uninstall) {
-        const appImagePath = process.env.APPIMAGE;
         console.log()
-        Utils.warning(`Are you sure you want to delete penguins-eggs AppImage:\n ${appImagePath}`)
+        Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-packages:\n`)
         if (await Utils.customConfirm('Select yes to continue...')) {
-          await depsManager.removeDrivers()
+          await Pacman.autocompleteInstall()
+          await Pacman.manpageInstall()
+          await Pacman.configurationInstall()
+          depsManager.installDistroPackages()
+        }
+      } else if (flags.uninstall) {
+        console.log()
+        Utils.warning(`Are you sure you want to remove penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-aackages:\n ${appImagePath}`)
+        if (await Utils.customConfirm('Select yes to continue...')) {
+          depsManager.removeDistroPackages()
           await Pacman.autocompleteRemove()
           await Pacman.manpageRemove()
           await Pacman.configurationRemove()
-          await this.removeAppImage()
+
+          console.log('penguins-eggs AppImage stuffs was successfully removed.\n');
+          console.log('To remove AppImage file, use:');
+          console.log(`rm ${appImagePath}\n`)
         }
       }
-
-    } else {
-      Utils.useRoot(this.id)
-    }
-
-  }
-
-  /**
-   * removeAppImage
-   */
-  async removeAppImage() {
-    // APPIMAGE contiene il percorso del file .AppImage fisico
-    const appImagePath = process.env.APPIMAGE;
-
-    // Controllo di sicurezza: procediamo solo se siamo effettivamente in esecuzione come AppImage
-    if (appImagePath && fs.existsSync(appImagePath)) {
-      console.log(`Removing AppImage in progress: ${appImagePath}`);
-
-      // Usa fs.unlink per rimuovere il file
-      // Nota: Linux permette di cancellare un eseguibile mentre è in esecuzione.
-      // Il processo continuerà fino alla chiusura, ma il file sparirà dal disco.
-      await fs.promises.unlink(appImagePath);
-
-      console.log('penguins-eggs AppImage successfully removed.');
-    } else {
-      console.log('Not running as AppImage or file does not exist, no action taken.');
     }
   }
+
 }
 

@@ -769,21 +769,21 @@
       "args": {},
       "description": "Automatically check and install system prerequisites",
       "examples": [
-        "sudo eggs setup                      # install native dependencies, autocomplete, man",
-        "sudo eggs setup --install            # reinstall native dependencies",
-        "sudo eggs setup --uninstall          # remove AppImage, purge configurations files, autocomplete, man"
+        "eggs setup                           # this help",
+        "sudo eggs setup --install            # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup --uninstall          # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
       ],
       "flags": {
         "install": {
-          "char": "i",
-          "description": "force installation even if already installed",
+          "char": "r",
+          "description": "install native dependencies, autocomplete, man, etc-",
           "name": "install",
           "allowNo": false,
           "type": "boolean"
         },
         "uninstall": {
-          "char": "u",
-          "description": "uninstall penguins-eggs.AppImage",
+          "char": "r",
+          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
           "name": "uninstall",
           "allowNo": false,
           "type": "boolean"
@@ -1558,5 +1558,5 @@
       ]
     }
   },
-  "version": "25.11.22"
+  "version": "25.11.23"
 }
