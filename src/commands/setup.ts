@@ -67,13 +67,13 @@ export default class Setup extends Command {
           await Pacman.autocompleteInstall()
           await Pacman.manpageInstall()
           await Pacman.configurationInstall()
-          depsManager.installDrivers()
+          depsManager.installDistroPackages()
         }
       } else if (flags.uninstall) {
         console.log()
         Utils.warning(`Are you sure you want to remove penguins-eggs AppImage autocomplete, manpages, configurations and drivers:\n ${appImagePath}`)
         if (await Utils.customConfirm('Select yes to continue...')) {
-          depsManager.removeDrivers()
+          depsManager.removeDistroPackages()
           await Pacman.autocompleteRemove()
           await Pacman.manpageRemove()
           await Pacman.configurationRemove()

@@ -40,8 +40,8 @@ export class DependencyManager {
 
     // Definizione della root per cercare i pacchetti
     if (process.env.APPDIR) {
-      // In AppImage, i file sono in $APPDIR/drivers (o dove li hai configurati)
-      this.appRoot = path.join(process.env.APPDIR, 'drivers');
+      // In AppImage, i file sono in $APPDIR/distro (o dove li hai configurati)
+      this.appRoot = path.join(process.env.APPDIR, 'distro');
     } else {
       // In sviluppo locale, cerchiamo nella cartella corrente o una di fallback
       this.appRoot = process.cwd(); 
@@ -91,22 +91,22 @@ export class DependencyManager {
    * Reinstalla i driver: Rimuove e poi Installa.
    * Utile per forzare un aggiornamento delle dipendenze o riparare un'installazione.
    */
-  public reinstallDrivers(): boolean {
+  public reinstallDistroPackages(): boolean {
     console.log(`[eggs] Reinstallazione driver per: ${this.familyId}...`);
     // Tentiamo la rimozione (ignoriamo errori se non era installato)
     try {
-      this.removeDrivers();
+      this.removeDistroPackages();
     } catch (e) {
       console.log(`[eggs] Nessuna versione precedente trovata o rimozione non necessaria.`);
     }
     // Procediamo con l'installazione pulita
-    return this.installDrivers();
+    return this.installDistroPackages();
   }
 
   /**
    * Rimuove i driver (meta-pacchetti) e pulisce le dipendenze.
    */
-  public removeDrivers(): boolean {
+  public removeDistroPackages(): boolean {
     console.log(`[eggs] Rimozione driver per: ${this.familyId}...`);
 
     try {
@@ -170,7 +170,7 @@ export class DependencyManager {
   /**
    * Installa i driver (meta-pacchetti) corretti in base alla distribuzione.
    */
-  public installDrivers(): boolean {
+  public installDistroPackages(): boolean {
     const depsBase = this.appRoot;
 
     // CHECK AGGIUNTO: Se è già installato, evitiamo lavoro inutile?

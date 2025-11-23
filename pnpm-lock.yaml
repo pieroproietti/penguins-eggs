@@ -149,8 +149,8 @@ importers:
         specifier: ^11.7.5
         version: 11.7.5
       oclif:
-        specifier: ^4.22.49
-        version: 4.22.49(@types/node@22.19.1)
+        specifier: ^4.22.50
+        version: 4.22.50(@types/node@22.19.1)
       perrisbrewery:
         specifier: ^25.9.16
         version: 25.9.16
@@ -3047,8 +3047,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.22.49:
-    resolution: {integrity: sha512-85wpFkG5GM9RVRU7w3NSJwqAAqvSM619DJl2j2lVkIvPlnptBw700GSO9TtF51PIq3a+hMcwmE/iybCJogQtDg==}
+  oclif@4.22.50:
+    resolution: {integrity: sha512-tro7/6Hwg1eF9ww5iCASM0JZTvs/aft6fBX33BxKMpnxzXhKydWDZ00cW4t7htlqm7LDn7DyQZD/nWteWNzX+w==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -7634,7 +7634,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  oclif@4.22.49(@types/node@22.19.1):
+  oclif@4.22.50(@types/node@22.19.1):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.937.0
       '@aws-sdk/client-s3': 3.937.0

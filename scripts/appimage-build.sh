@@ -126,7 +126,7 @@ cp appimage/penguins-eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/
 ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs
 
 # Copia i driver (meta-packages per varie distro)
-cp -r appimage/drivers AppDir/
+cp -r appimage/distro-packages AppDir/
 
 # Verifica file richiesti
 echo "Checking required AppDir files:"
