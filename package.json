@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Almalinux, Alpine, Arch, Debian, Devuan, Fedora, Manjaro, Opensuse, Ubuntu and derivatives",
-    "version": "25.11.22",
+    "version": "25.11.23",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -52,11 +52,11 @@
         "@types/ws": "^8.18.1",
         "chai": "^6.2.1",
         "eslint": "^9.39.1",
-        "eslint-config-oclif": "^6.0.118",
+        "eslint-config-oclif": "^6.0.119",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^12.0.0",
         "mocha": "^11.7.5",
-        "oclif": "^4.22.47",
+        "oclif": "^4.22.50",
         "perrisbrewery": "^25.9.16",
         "prettier": "^3.6.2",
         "shx": "^0.4.0",

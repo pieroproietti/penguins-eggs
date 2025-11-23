@@ -6,9 +6,11 @@
  * license: MIT
  */
 
+import { DependencyManager } from "./dependency-manager.js";
 
-// const prerequisites = new Prerequisites();
-//if (!prerequisites.check()) {
+
+const depsManager = new DependencyManager()
+if (!depsManager.isInstalled()) {
    console.log('WARNING: You need to setup penguins-eggs for full functionality.');
    console.log('Run: sudo eggs setup');
-//}
+}
