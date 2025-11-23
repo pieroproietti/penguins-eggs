@@ -23,14 +23,14 @@ type TitleProps = {
 export default function Title({ title="", version=""}) : JSX.Element {
    let type = ""
    if (Utils.isAppImage()) {
-      type="AppImage:"
+      type="AppImage"
    }
    if (title==="") 
       title=`${pjson.name}`
 
-   let green = ` ${type} ${title}`.padEnd(25," ")
+   let green = ` ${title}`.padEnd(25," ")
    let white = ` Perri's brewery edition `.padEnd(25," ")
-   let red = ` v${pjson.version} `.padStart(25," ")
+   let red = ` v${pjson.version}.${type}  `.padStart(25," ")
 
    return(
       <>

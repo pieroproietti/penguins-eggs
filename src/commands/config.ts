@@ -93,8 +93,7 @@ export default class Config extends Command {
 
     i.addEfi = !Pacman.isUefi()
     i.calamares=false
-    if (!homecrypt && 
-        !Pacman.calamaresExists() && 
+    if (!Pacman.calamaresExists() && 
         Pacman.isInstalledGui() && 
         Pacman.isCalamaresAvailable()) {
 
@@ -120,19 +119,8 @@ export default class Config extends Command {
 
     if (Utils.isRoot(this.id)) {
       if (flags.clean) {
-        Utils.warning('removing old configurations')
-        await exec('rm /etc/penguins-eggs.d -rf')
-      }
-
-      /**
-       * Se stiamo utilizzando eggs da source/appimage
-       * Aggiungo autocomplete e manPage
-       */
-      if (Utils.isSources() || Utils.isAppImage()) {
-        Utils.warning('creating autocomplete...')
-        await Pacman.autocompleteInstall(verbose)
-        Utils.warning('creating eggs man page...')
-        await Pacman.manPageInstall(verbose)
+        Utils.warning('removing penguins-eggs configurations')
+        await exec('rm -rf /etc/penguins-eggs.d')
       }
 
       const i = await Config.thatWeNeed(nointeractive, verbose)

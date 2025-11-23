@@ -44,32 +44,6 @@ export async function exec(command: string, { echo = false, ignore = false, capt
       stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit'
     }
 
-    // AppImage Detected
-    if (process.env.APPIMAGE) {
-      
-      // Clona l'ambiente attuale
-      const env = { ...process.env };
-
-      // 1. Rimuovi le variabili che causano conflitti di librerie (Kernel Panic)
-      delete env.LD_LIBRARY_PATH;
-      delete env.LD_PRELOAD;
-      delete env.GSETTINGS_SCHEMA_DIR;
-      delete env.PYTHONPATH;
-      delete env.MANPATH;
-
-      // 2. FORZA IL PATH DI SISTEMA
-      env.PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
-
-      // Applica l'ambiente pulito alle opzioni di spawn
-      spawnOptions.env = env;
-      
-      // (Opzionale) Debug visivo per essere sicuri che stia funzionando
-      if (echo) {
-        console.log(' [AppImage Detected] Environment sanitized for system command.');
-      }
-    }
-
-
     const child = spawn('bash', ['-c', command], spawnOptions)
 
     let stdout = ''
