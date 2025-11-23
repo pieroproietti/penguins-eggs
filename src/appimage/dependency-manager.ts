@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import Distro from '../classes/distro.js'
+import Distro from '../classes/distro.js';
 import Diversions from '../classes/diversions.js';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -25,24 +25,66 @@ const META_PACKAGE_NAME = 'penguins-eggs-deps';
 const ALPINE_VIRTUAL_PKG = '.penguins-eggs-deps'; // Nota il punto iniziale
 
 export class DependencyManager {
-  private appRoot: string
-  private distro: Distro
-  familyId: string
-
+  private appRoot: string;
+  private distro: Distro;
+  familyId: string;
   
   constructor() {
+    this.distro = new Distro();
+    this.familyId = this.distro.familyId;
+
+    // Gestione specifica per Manjaro (che si identifica come archlinux ma richiede tools diversi)
+    if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike)) {
+      this.familyId = 'manjaro';
+    }
+
+    // Definizione della root per cercare i pacchetti
     if (process.env.APPDIR) {
+      // In AppImage, i file sono in $APPDIR/drivers (o dove li hai configurati)
       this.appRoot = path.join(process.env.APPDIR, 'drivers');
     } else {
-      this.appRoot = '/'
+      // In sviluppo locale, cerchiamo nella cartella corrente o una di fallback
+      this.appRoot = process.cwd(); 
     }
+  }
 
-    this.distro = new Distro()
-    this.familyId = this.distro.familyId
-    if (this.distro.familyId === 'archlinux' && Diversions.isManjaroBased(this.distro.distroLike)) {
-      this.familyId = 'manjaro'
+  /**
+   * Verifica se i driver (meta-pacchetto) sono già installati nel sistema.
+   * @returns true se installati, false altrimenti
+   */
+  public isInstalled(): boolean {
+    try {
+      switch (this.familyId) {
+        case 'alpine':
+          // apk info -e esce con 0 se esiste, 1 se no
+          execSync(`apk info -e ${ALPINE_VIRTUAL_PKG}`, { stdio: 'ignore' });
+          return true;
+
+        case 'archlinux':
+        case 'manjaro':
+          // pacman -Q esce con 0 se trovato, 1 se no
+          execSync(`pacman -Q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+
+        case 'debian':
+          // dpkg -s verifica lo stato del pacchetto
+          execSync(`dpkg -s ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+
+        case 'el9':
+        case 'fedora':
+        case 'opensuse':
+          // rpm -q funziona per tutte le distro RPM
+          execSync(`rpm -q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+
+        default:
+          return false;
+      }
+    } catch (e) {
+      // Se il comando fallisce (exit code != 0), il pacchetto non è installato
+      return false;
     }
-
   }
 
   /**
@@ -50,7 +92,6 @@ export class DependencyManager {
    * Utile per forzare un aggiornamento delle dipendenze o riparare un'installazione.
    */
   public reinstallDrivers(): boolean {
-
     console.log(`[eggs] Reinstallazione driver per: ${this.familyId}...`);
     // Tentiamo la rimozione (ignoriamo errori se non era installato)
     try {
@@ -64,7 +105,6 @@ export class DependencyManager {
 
   /**
    * Rimuove i driver (meta-pacchetti) e pulisce le dipendenze.
-   * @param familyId L'ID della famiglia distro
    */
   public removeDrivers(): boolean {
     console.log(`[eggs] Rimozione driver per: ${this.familyId}...`);
@@ -129,11 +169,16 @@ export class DependencyManager {
 
   /**
    * Installa i driver (meta-pacchetti) corretti in base alla distribuzione.
-   * * @param distroId L'ID della distro (es. 'manjaro', 'fedora', 'ubuntu')
-   * @param appRootPath La root dell'applicazione dove si trova la cartella 'appimage-deps'
    */
   public installDrivers(): boolean {
-    const depsBase = this.appRoot
+    const depsBase = this.appRoot;
+
+    // CHECK AGGIUNTO: Se è già installato, evitiamo lavoro inutile?
+    // Se vuoi forzare l'installazione sempre, rimuovi questo blocco if.
+    if (this.isInstalled()) {
+        console.log(`[eggs] I driver per ${this.familyId} sono già installati.`);
+        return true;
+    }
 
     try {
       switch (this.familyId) {
@@ -160,7 +205,6 @@ export class DependencyManager {
           }
           break;
         }
-
         
         // ==========================================
         // DEBIAN / UBUNTU FAMILY
@@ -200,7 +244,6 @@ export class DependencyManager {
           break;
         }
 
-
         // ==========================================
         // FEDORA (RPM Family)
         // ==========================================
@@ -215,7 +258,6 @@ export class DependencyManager {
           break;
         }
 
-
         // ==========================================
         // MANJARO (Variant: manjaro-tools-iso)
         // ==========================================
@@ -228,7 +270,6 @@ export class DependencyManager {
           }
           break;
         }
-
 
         // ==========================================
         // OPENSUSE (RPM Family)
@@ -262,26 +303,23 @@ export class DependencyManager {
 
 }
 
-
-  /**
-   * Cerca un file pacchetto in una directory specifica.
-   * @param dir Directory in cui cercare (es. .../appimage-deps/rpm)
-   * @param ext Estensione del file (es. '.rpm')
-   * @param pattern Stringa opzionale che deve essere inclusa nel nome (es. 'el9')
-   */
-  function findPackage(dir: string, ext: string, pattern: string = ''): string | null {
-    try {
-      if (!fs.existsSync(dir)) {
-        console.warn(`[DependencyManager] Directory non trovata: ${dir}`);
-        return null;
-      }
-      
-      const files = fs.readdirSync(dir);
-      const found = files.find(file => file.endsWith(ext) && file.includes(pattern));
-      
-      return found ? path.join(dir, found) : null;
-    } catch (error) {
-      console.error(`[DependencyManager] Errore leggendo la directory ${dir}`, error);
+/**
+ * Helper Function (fuori classe, come richiesto)
+ * Cerca un file pacchetto in una directory specifica.
+ */
+function findPackage(dir: string, ext: string, pattern: string = ''): string | null {
+  try {
+    if (!fs.existsSync(dir)) {
+      // console.warn(`[DependencyManager] Directory non trovata: ${dir}`);
       return null;
     }
+    
+    const files = fs.readdirSync(dir);
+    const found = files.find(file => file.endsWith(ext) && file.includes(pattern));
+    
+    return found ? path.join(dir, found) : null;
+  } catch (error) {
+    console.error(`[DependencyManager] Errore leggendo la directory ${dir}`, error);
+    return null;
   }
+}
