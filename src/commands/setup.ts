@@ -62,7 +62,7 @@ export default class Setup extends Command {
     if (Utils.isRoot()) {
       if (flags.install) {
         console.log()
-        Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and drivers:\n`)
+        Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-packages:\n`)
         if (await Utils.customConfirm('Select yes to continue...')) {
           await Pacman.autocompleteInstall()
           await Pacman.manpageInstall()
@@ -71,7 +71,7 @@ export default class Setup extends Command {
         }
       } else if (flags.uninstall) {
         console.log()
-        Utils.warning(`Are you sure you want to remove penguins-eggs AppImage autocomplete, manpages, configurations and drivers:\n ${appImagePath}`)
+        Utils.warning(`Are you sure you want to remove penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-aackages:\n ${appImagePath}`)
         if (await Utils.customConfirm('Select yes to continue...')) {
           depsManager.removeDistroPackages()
           await Pacman.autocompleteRemove()
@@ -84,9 +84,9 @@ export default class Setup extends Command {
         }
       } else {
         if (depsManager.isInstalled()) {
-          console.log('penguins-eggs native dependencies are already installed')
+          console.log('penguins-eggs distro meta-packages are already installed')
         } else {
-          console.log('penguins-eggs  native dependencies are NOT installed')
+          console.log('penguins-eggs distro meta-packages are NOT installed')
         }
 
         console.log('\nUse:')
