@@ -769,7 +769,7 @@
       "args": {},
       "description": "Automatically check and install system prerequisites",
       "examples": [
-        "sudo eggs setup",
+        "eggs setup                           # this help",
         "sudo eggs setup --install            # install native dependencies, autocomplete, man, etc",
         "sudo eggs setup --uninstall          # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
       ],

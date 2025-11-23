@@ -23,7 +23,7 @@ export default class Setup extends Command {
   }
 
   static examples = [
-    'sudo eggs setup',
+    'eggs setup                           # this help' ,
     'sudo eggs setup --install            # install native dependencies, autocomplete, man, etc',
     'sudo eggs setup --uninstall          # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
   ]
@@ -44,7 +44,7 @@ export default class Setup extends Command {
     }
 
     const appImagePath = process.env.APPIMAGE;
-    console.log(`Running:\n${appImagePath}\n`)
+    console.log(`Running AppImage:\n${appImagePath}\n`)
 
     const distro = new Distro()
 
@@ -59,7 +59,19 @@ export default class Setup extends Command {
     console.log(`Your system is: ${distroId} ${releaseId} ${codenameId}, family ${distro.familyId}\n`)
     console.log(`Compatible with: ${distro.distroLike} ${distro.distroUniqueId}\n`)
 
-    if (Utils.isRoot()) {
+    if (depsManager.isInstalled()) {
+      console.log('penguins-eggs distro meta-packages are already installed')
+    } else {
+      console.log('penguins-eggs distro meta-packages are NOT installed')
+    }
+
+    if (!Utils.isRoot()) {
+      console.log('\nUse:')
+      Setup.examples.forEach(element => {
+        console.log(element)
+      });
+
+    } else {
       if (flags.install) {
         console.log()
         Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-packages:\n`)
@@ -79,24 +91,10 @@ export default class Setup extends Command {
           await Pacman.configurationRemove()
 
           console.log('penguins-eggs AppImage stuffs was successfully removed.\n');
-          console.log('To remove AppImage file, use:\n');
-          console.log(`rm ${appImagePath}`)
+          console.log('To remove AppImage file, use:');
+          console.log(`rm ${appImagePath}\n`)
         }
-      } else {
-        if (depsManager.isInstalled()) {
-          console.log('penguins-eggs distro meta-packages are already installed')
-        } else {
-          console.log('penguins-eggs distro meta-packages are NOT installed')
-        }
-
-        console.log('\nUse:')
-        Setup.examples.forEach(element => {
-          console.log(element)
-        });
       }
-
-    } else {
-      Utils.useRoot(this.id)
     }
   }
 

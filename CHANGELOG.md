@@ -19,6 +19,16 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.24
+I have introduced dependency management in the AppImage version using native meta-packages for each supported distribution. This resolves any incompatibilities at the root and has the advantage of allowing easy removal of dependencies installed by penguins-eggs AppImage, without the risk of removing pre-existing packages.
+
+Essentially, at this point, using native penguins-eggs or penguins-eggs AppImage should give exactly the same results and behave in exactly the same way.
+
+The meta-packages incorporated into the AppImage were built on specific distributions, while my tests - so far - are mainly related to Debian and - in particular - to the trixie version, but it should reasonably apply to all supported distributions. 
+
+Conceptually, I am even thinking of discontinuing the native packages altogether and releasing only the AppImage for all distributions, then perhaps trying to extend support to others.
+
+However, proving this takes time, so I am relying heavily on your opinions and the results of your suggestions.
 ## v25.11.22
 Minor tweaks to the sudo eggs setup command, with the definition of two new flags: --install and --uninstall, necessary for installing and removing the AppImage, autocomplete scripts, and the egs man page.
 
