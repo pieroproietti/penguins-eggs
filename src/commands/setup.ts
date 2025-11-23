@@ -10,8 +10,8 @@ import fs from 'fs'
 import Distro from '../classes/distro.js'
 import Utils from '../classes/utils.js'
 import Pacman from '../classes/pacman.js'
-import { Prerequisites } from '../appimage/prerequisites.js'
 import { Command, Flags } from '@oclif/core'
+import { DependencyManager } from '../appimage/dependency-manager.js'
 
 
 export default class Setup extends Command {
@@ -55,48 +55,30 @@ export default class Setup extends Command {
     console.log(`Compatible with:     ${distro.distroLike} ${distro.distroUniqueId}`)
 
     const { flags } = await this.parse(Setup)
-    const prerequisites = new Prerequisites()
+    const depsManager = new DependencyManager()
 
     if (Utils.isRoot()) {
 
       if (flags.install) {
         await Pacman.autocompleteInstall()
         await Pacman.manpageInstall()
-        await Pacman.configurationInstall()
-
-        const allInstalled = prerequisites.check()
-
-        // Se tutto è installato e non --install, esce
-        if (allInstalled && !flags.install) {
-          this.log('SUCCESS: All prerequisites are already installed')
-          return
-        }
+        // await Pacman.configurationInstall()
 
         // install^reinstall
-        if (allInstalled && flags.install) {
-          this.log('Reinstalling native dependencies.')
+        if (flags.install) {
+          depsManager.reinstallDrivers()
         } else {
-          this.log('Installing native dependencies.')
+          depsManager.installDrivers()
         }
+        
 
-
-        const success = await prerequisites.install(flags.install)
-
-        if (success) {
-          this.log('')
-          this.log('SUCCESS: penguins-eggs setup completed!')
-        } else {
-          this.log('')
-          this.log('ERROR: Setup failed')
-          this.log('Please check your system and try again.')
-          this.log('You can also install prerequisites manually using your package manager.')
-        }
 
       } else if (flags.uninstall) {
         const appImagePath = process.env.APPIMAGE;
         console.log()
         Utils.warning(`Are you sure you want to delete penguins-eggs AppImage:\n ${appImagePath}`)
         if (await Utils.customConfirm('Select yes to continue...')) {
+          await depsManager.removeDrivers()
           await Pacman.autocompleteRemove()
           await Pacman.manpageRemove()
           await Pacman.configurationRemove()
