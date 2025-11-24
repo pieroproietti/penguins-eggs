@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 ## v25.11.24
+* on the command: `sudo eggs setup`, I corrected the abbreviations for the flags `--install` and `--uninstall` to `-i` and `-u`, respectively;
+* added Linuxmint 22.3 code name zena. Thanks to [@rreyn331](https://github.com/rreyn331);
+* I modified `penguins-eggs-deps.spec` - for creating rpm meta-packages for Fedora, El9, and Opensuse. Opensuse slowroll, in the latest installed version, only uses `sshfs` and no longer `fuse-sshfs`. There was also a duplication, as the dependency for `nodejs`, which is not necessary for AppImage, had been left by mistake;
+* all official ISOs have been updated and created with the AppImage version. I would say that the experiment on the possibility of AppImage has been amply demonstrated, and therefore I will continue along this path.
+* while rebuilding all naked and colibri ISOs for ALL supported distributions, I encountered a problem in Devuan excalibut: I cannot boot the generated ISO. It freezes when starting dbus. As always in my Devuan naked images, I chose `sysvinit`. I tried modifying `/src/classes/ovary.d/edit-live-fs.ts` to remove `/etc/machine-id` and `/var/lib/dbus/machine-id`, but so far without success. 
+
+## v25.11.23
 I have introduced dependency management in the AppImage version using native meta-packages for each supported distribution. This resolves any incompatibilities at the root and has the advantage of allowing easy removal of dependencies installed by penguins-eggs AppImage, without the risk of removing pre-existing packages.
 
 Essentially, at this point, using native penguins-eggs or penguins-eggs AppImage should give exactly the same results and behave in exactly the same way.
