@@ -7,6 +7,18 @@ APP_NAME="penguins-eggs"
 VERSION=$(node -p "require('./package.json').version")
 ARCH="x86_64"
 
+# --- MODIFICA INIZIO: Lettura file release ---
+if [ -f "release" ]; then
+    # Legge il file e rimuove spazi bianchi o newlines
+    RELEASE=$(cat release | tr -d '[:space:]')
+else
+    # Default se il file non esiste
+    RELEASE="1"
+fi
+
+# Definisce la versione completa per il nome del file (es: 1.0.0-1)
+FULL_VERSION="${VERSION}-${RELEASE}"
+
 # Verifica build
 if [ ! -f "dist/bin/dev.js" ]; then
     echo "ERROR: Build not found. Run: pnpm run build"
@@ -103,7 +115,7 @@ if [ -f "appimage/penguins-eggs.appdata.xml" ]; then
         -e "s|%DATE%|$CURRENT_DATE|g" \
         "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/net.penguins_eggs.eggs.appdata.xml
     
-    echo "AppData metadata updated: version $VERSION, date $CURRENT_DATE"
+    echo "AppData metadata updated: version $FULL_VERSION, date $CURRENT_DATE"
 else
     echo "WARNING: AppData file not found at appimage/penguins-eggs.appdata.xml"
 fi
@@ -137,15 +149,15 @@ ls -la AppDir/penguins-eggs.png
 # Crea AppImage
 echo "Creating AppImage..."
 # Opzionale: Definisce l'architettura esplicitamente per appimagetool
-ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
+ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
 
 # Test
 echo "Testing AppImage..."
-chmod +x "${APP_NAME}-${VERSION}-${ARCH}.AppImage"
+chmod +x "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
 
 if command -v fusermount &> /dev/null || command -v fusermount3 &> /dev/null; then
     # Esegue un test veloce (verifica che parta)
-    if ./"${APP_NAME}-${VERSION}-${ARCH}.AppImage" --version; then
+    if ./"${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage" --version; then
         echo "SUCCESS: AppImage working correctly!"
     else
         echo "WARNING: AppImage test failed (exit code not 0)"
@@ -155,5 +167,5 @@ else
 fi
 
 echo ""
-echo "AppImage created: ${APP_NAME}-${VERSION}-${ARCH}.AppImage"
-echo "Size: $(du -h "${APP_NAME}-${VERSION}-${ARCH}.AppImage" | cut -f1)"
+echo "AppImage created: ${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
+echo "Size: $(du -h "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage" | cut -f1)"
