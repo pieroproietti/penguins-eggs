@@ -24,6 +24,7 @@ The version is based on the year, month, day, and release number. They are liste
 * added Linuxmint 22.3 code name zena. Thanks to [@rreyn331](https://github.com/rreyn331);
 * I modified `penguins-eggs-deps.spec` - for creating rpm meta-packages for Fedora, El9, and Opensuse. Opensuse slowroll, in the latest installed version, only uses `sshfs` and no longer `fuse-sshfs`. There was also a duplication, as the dependency for `nodejs`, which is not necessary for AppImage, had been left by mistake;
 * all official ISOs have been updated and created with the AppImage version. I would say that the experiment on the possibility of AppImage has been amply demonstrated, and therefore I will continue along this path.
+* added the release number to the appimage in addition to the version number, so today's version will be `penguins-eggs-25.11.24-1-x86_64.AppImage`. This gives me more freedom, as I often notice an error immediately after publication. This way, I can correct it by simply changing the release number;
 * while rebuilding all naked and colibri ISOs for ALL supported distributions, I encountered a problem in Devuan excalibut: I cannot boot the generated ISO. It freezes when starting dbus. As always in my Devuan naked images, I chose `sysvinit`. I tried modifying `/src/classes/ovary.d/edit-live-fs.ts` to remove `/etc/machine-id` and `/var/lib/dbus/machine-id`, but so far without success. 
 
 ## v25.11.23

@@ -115,7 +115,7 @@ if [ -f "appimage/penguins-eggs.appdata.xml" ]; then
         -e "s|%DATE%|$CURRENT_DATE|g" \
         "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/net.penguins_eggs.eggs.appdata.xml
     
-    echo "AppData metadata updated: version $FULL_VERSION, date $CURRENT_DATE"
+    echo "AppData metadata updated: version $VERSION, date $CURRENT_DATE"
 else
     echo "WARNING: AppData file not found at appimage/penguins-eggs.appdata.xml"
 fi
