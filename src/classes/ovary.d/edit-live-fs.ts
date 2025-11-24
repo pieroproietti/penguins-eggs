@@ -124,7 +124,7 @@ export async function editLiveFs(this: Ovary, clone = false) {
     if (fs.existsSync(`${this.settings.work_dir.merged}/etc/machine-id`)) {
         await exec(`rm ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
         await exec(`touch ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
-        Utils.write(`${this.settings.work_dir.merged}/etc/machine-id`, ':')
+        // Utils.write(`${this.settings.work_dir.merged}/etc/machine-id`, ':')
     }
 
     /**
