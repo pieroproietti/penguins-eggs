@@ -1,6 +1,6 @@
 /**
  * ./src/classes/ovary.d/edit-live-fs.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * penguins-eggs v.25.11.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -157,7 +157,6 @@ export async function editLiveFs(this: Ovary, clone = false) {
      * Blank out systemd machine id.
      * SU SYSTEMD: File vuoto = rigenerazione.
      * SU SYSVINIT (Devuan): File NON deve esistere o deve essere 0 bytes.
-     * MAI scrivere ':' o altri caratteri dentro.
      */
     
     // 1. Pulisci /etc/machine-id
