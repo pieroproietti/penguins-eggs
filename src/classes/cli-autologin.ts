@@ -151,7 +151,7 @@ export default class CliAutologin {
   async addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
-    let installer = 'sudo eggs install'
+    let installer = 'sudo eggs krill'
     if (Pacman.calamaresExists()) {
       if (Pacman.packageIsInstalled('plasma-desktop')) {
         installer = 'startplasma-wayland to run GUI and launch calamares'

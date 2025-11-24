@@ -18,8 +18,8 @@ export default class Setup extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static flags = {
-    install: Flags.boolean({ char: 'r', description: 'install native dependencies, autocomplete, man, etc-' }),
-    uninstall: Flags.boolean({ char: 'r', description: 'purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage' }),
+    install: Flags.boolean({ char: 'i', description: 'install native dependencies, autocomplete, man, etc-' }),
+    uninstall: Flags.boolean({ char: 'u', description: 'purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage' }),
   }
 
   static examples = [
