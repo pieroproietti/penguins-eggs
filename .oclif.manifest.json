@@ -775,14 +775,14 @@
       ],
       "flags": {
         "install": {
-          "char": "r",
+          "char": "i",
           "description": "install native dependencies, autocomplete, man, etc-",
           "name": "install",
           "allowNo": false,
           "type": "boolean"
         },
         "uninstall": {
-          "char": "r",
+          "char": "u",
           "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
           "name": "uninstall",
           "allowNo": false,
