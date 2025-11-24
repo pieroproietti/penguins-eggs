@@ -39,18 +39,20 @@ export async function editLiveFs(this: Ovary, clone = false) {
         console.log('Ovary: editLiveFs')
     }
 
+    const workDir = this.settings.work_dir.merged
+
     /**
      * /etc/penguins-eggs.d/is_clone file created on live
      */
     if (clone) {
-        await exec(`touch ${this.settings.work_dir.merged}/etc/penguins-eggs.d/is_clone`, this.echo)
+        await exec(`touch ${workDir}/etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
     /**
      * /etc/default/epoptes-client created on live
      */
     if (Pacman.packageIsInstalled('epoptes')) {
-        const file = `${this.settings.work_dir.merged}/etc/default/epoptes-client`
+        const file = `${workDir}/etc/default/epoptes-client`
         const text = `SERVER=${os.hostname}.local\n`
         fs.writeFileSync(file, text)
     }
@@ -63,82 +65,129 @@ export async function editLiveFs(this: Ovary, clone = false) {
     }
 
     // Truncate logs, remove archived logs.
-    let cmd = `find ${this.settings.work_dir.merged}/var/log -name "*gz" -print0 | xargs -0r rm -f`
+    let cmd = `find ${workDir}/var/log -name "*gz" -print0 | xargs -0r rm -f`
     await exec(cmd, this.echo)
-    cmd = `find ${this.settings.work_dir.merged}/var/log/ -type f -exec truncate -s 0 {} \\;`
+    cmd = `find ${workDir}/var/log/ -type f -exec truncate -s 0 {} \\;`
     await exec(cmd, this.echo)
 
-    // Allow all fixed drives to be mounted with pmount
-    if (this.settings.config.pmount_fixed && fs.existsSync(`${this.settings.work_dir.merged}/etc/pmount.allow`)) {
-        // MX aggiunto /etc
-        await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${this.settings.work_dir.merged}/etc/pmount.allow`, this.echo)
-    }
+    // =========================================================================
+    // FIX STRUTTURALE PER DEVUAN/DEBIAN (/var folders)
+    // =========================================================================
+    // Ricrea le directory essenziali che potrebbero essere state rimosse
+    // o che devono esistere vuote per il corretto avvio dei servizi.
+    const dirsToCreate = [
+        `${workDir}/var/lib/dbus`,           // Fondamentale per dbus
+        `${workDir}/var/spool/rsyslog`,      // Fondamentale per rsyslog
+        `${workDir}/var/spool/cron/crontabs` // Fondamentale per cron
+    ]
 
-    // Remove obsolete live-config file
-    if (fs.existsSync(`${this.settings.work_dir.merged}lib/live/config/1161-openssh-server`)) {
-        await exec(`rm -f ${this.settings.work_dir.merged}/lib/live/config/1161-openssh-server`, this.echo)
-    }
-
-    if (fs.existsSync(`${this.settings.work_dir.merged}/etc/ssh/sshd_config`)) {
-        /**
-         * enable/disable SSH root/users password login
-         */
-        await exec(`sed -i '/PermitRootLogin/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
-        await exec(`sed -i '/PasswordAuthentication/d' ${this.settings.work_dir.merged}/etc/ssh/sshd_config`)
-        if (this.settings.config.ssh_pass) {
-            await exec(`echo 'PasswordAuthentication yes' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-        } else {
-            await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
-            await exec(`echo 'PasswordAuthentication no' | tee -a ${this.settings.work_dir.merged}/etc/ssh/sshd_config`, this.echo)
+    for (const dir of dirsToCreate) {
+        if (!fs.existsSync(dir)) {
+            await exec(`mkdir -p ${dir}`, this.echo)
+            // Assicuriamo permessi corretti (dbus vuole 755 root:root di base)
+            await exec(`chmod 755 ${dir}`, this.echo)
         }
     }
 
-    /**
-     * ufw --force reset
-     */
-    // if (Pacman.packageIsInstalled('ufw')) {
-    //    await exec('ufw --force reset')
-    // }
+    // =========================================================================
+    // FIX CRITICO PER /var/run e /var/lock
+    // =========================================================================
+    // Su Debian/Devuan moderni, /var/run DEVE essere un symlink a /run.
+    // Se rsync lo ha copiato come directory, D-Bus e altri servizi falliscono.
+    const varRun = `${workDir}/var/run`
+    if (fs.existsSync(varRun) && !fs.lstatSync(varRun).isSymbolicLink()) {
+         if (this.verbose) console.log('Fixing /var/run symlink...');
+         await exec(`rm -rf ${varRun}`, this.echo)
+         await exec(`ln -s /run ${varRun}`, this.echo)
+    }
+
+    const varLock = `${workDir}/var/lock`
+    if (fs.existsSync(varLock) && !fs.lstatSync(varLock).isSymbolicLink()) {
+         if (this.verbose) console.log('Fixing /var/lock symlink...');
+         await exec(`rm -rf ${varLock}`, this.echo)
+         await exec(`ln -s /run/lock ${varLock}`, this.echo)
+    }
+    // =========================================================================
+
+
+    // Allow all fixed drives to be mounted with pmount
+    if (this.settings.config.pmount_fixed && fs.existsSync(`${workDir}/etc/pmount.allow`)) {
+        // MX aggiunto /etc
+        await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${workDir}/etc/pmount.allow`, this.echo)
+    }
+
+    // Remove obsolete live-config file
+    if (fs.existsSync(`${workDir}lib/live/config/1161-openssh-server`)) {
+        await exec(`rm -f ${workDir}/lib/live/config/1161-openssh-server`, this.echo)
+    }
+
+    if (fs.existsSync(`${workDir}/etc/ssh/sshd_config`)) {
+        /**
+         * enable/disable SSH root/users password login
+         */
+        await exec(`sed -i '/PermitRootLogin/d' ${workDir}/etc/ssh/sshd_config`)
+        await exec(`sed -i '/PasswordAuthentication/d' ${workDir}/etc/ssh/sshd_config`)
+        if (this.settings.config.ssh_pass) {
+            await exec(`echo 'PasswordAuthentication yes' | tee -a ${workDir}/etc/ssh/sshd_config`, this.echo)
+        } else {
+            await exec(`echo 'PermitRootLogin prohibit-password' | tee -a ${workDir}/etc/ssh/sshd_config`, this.echo)
+            await exec(`echo 'PasswordAuthentication no' | tee -a ${workDir}/etc/ssh/sshd_config`, this.echo)
+        }
+    }
 
     /**
      * /etc/fstab should exist, even if it's empty,
      * to prevent error messages at boot
      */
-    await exec(`rm ${this.settings.work_dir.merged}/etc/fstab`, this.echo)
-    await exec(`touch ${this.settings.work_dir.merged}/etc/fstab`, this.echo)
+    await exec(`rm ${workDir}/etc/fstab`, this.echo)
+    await exec(`touch ${workDir}/etc/fstab`, this.echo)
 
     /**
      * Remove crypttab if exists
      * this is crucial for tpm systems.
      */
-    if (fs.existsSync(`${this.settings.work_dir.merged}/etc/crypttab`)) {
-        await exec(`rm ${this.settings.work_dir.merged}/etc/crypttab`, this.echo)
+    if (fs.existsSync(`${workDir}/etc/crypttab`)) {
+        await exec(`rm ${workDir}/etc/crypttab`, this.echo)
     }
 
+    // =========================================================================
+    // FIX MACHINE-ID (Il colpevole del blocco SysVinit)
+    // =========================================================================
     /**
      * Blank out systemd machine id.
-     * If it does not exist, systemd-journald will fail,
-     * but if it exists and is empty, systemd will automatically
-     * set up a new unique ID.
+     * SU SYSTEMD: File vuoto = rigenerazione.
+     * SU SYSVINIT (Devuan): File NON deve esistere o deve essere 0 bytes.
+     * MAI scrivere ':' o altri caratteri dentro.
      */
-    if (fs.existsSync(`${this.settings.work_dir.merged}/etc/machine-id`)) {
-        await exec(`rm ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
-        await exec(`touch ${this.settings.work_dir.merged}/etc/machine-id`, this.echo)
-        // Utils.write(`${this.settings.work_dir.merged}/etc/machine-id`, ':')
+    
+    // 1. Pulisci /etc/machine-id
+    if (fs.existsSync(`${workDir}/etc/machine-id`)) {
+        await exec(`rm ${workDir}/etc/machine-id`, this.echo)
+        // Per Systemd serve il file vuoto per fare il bind mount
+        // Per Devuan va bene vuoto (lo riempie dbus-uuidgen)
+        await exec(`touch ${workDir}/etc/machine-id`, this.echo)
     }
+
+    // 2. Rimuovi /var/lib/dbus/machine-id
+    // Questo è il file "vero" per dbus su sistemi non-systemd.
+    // Deve sparire per essere rigenerato al boot.
+    if (fs.existsSync(`${workDir}/var/lib/dbus/machine-id`)) {
+        await exec(`rm ${workDir}/var/lib/dbus/machine-id`, this.echo)
+    }
+    // =========================================================================
 
     /**
      * LMDE4: utilizza UbuntuMono16.pf2
      * aggiungo un link a /boot/grub/fonts/UbuntuMono16.pf2
      */
-    if (fs.existsSync(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`)) {
-        shx.cp(`${this.settings.work_dir.merged}/boot/grub/fonts/unicode.pf2`, `${this.settings.work_dir.merged}/boot/grub/fonts/UbuntuMono16.pf2`)
+    if (fs.existsSync(`${workDir}/boot/grub/fonts/unicode.pf2`)) {
+        shx.cp(`${workDir}/boot/grub/fonts/unicode.pf2`, `${workDir}/boot/grub/fonts/UbuntuMono16.pf2`)
     }
 
     /**
      * cleaning /etc/resolv.conf
      */
-    const resolvFile = `${this.settings.work_dir.merged}/etc/resolv.conf`
+    const resolvFile = `${workDir}/etc/resolv.conf`
     shx.rm(resolvFile)
 
     /**
@@ -156,32 +205,32 @@ export async function editLiveFs(this: Ovary, clone = false) {
         */
 
         if (await systemdctl.isEnabled('remote-cryptsetup.target')) {
-            await systemdctl.disable('remote-cryptsetup.target', this.settings.work_dir.merged, true)
+            await systemdctl.disable('remote-cryptsetup.target', workDir, true)
         }
 
         if (await systemdctl.isEnabled('speech-dispatcherd.service')) {
-            await systemdctl.disable('speech-dispatcherd.service', this.settings.work_dir.merged, true)
+            await systemdctl.disable('speech-dispatcherd.service', workDir, true)
         }
 
         if (await systemdctl.isEnabled('wpa_supplicant-nl80211@.service')) {
-            await systemdctl.disable('wpa_supplicant-nl80211@.service', this.settings.work_dir.merged, true)
+            await systemdctl.disable('wpa_supplicant-nl80211@.service', workDir, true)
         }
 
         if (await systemdctl.isEnabled('wpa_supplicant@.service')) {
-            await systemdctl.disable('wpa_supplicant@.service', this.settings.work_dir.merged, true)
+            await systemdctl.disable('wpa_supplicant@.service', workDir, true)
         }
 
         if (await systemdctl.isEnabled('wpa_supplicant-wired@.service')) {
-            await systemdctl.disable('wpa_supplicant-wired@.service', this.settings.work_dir.merged, true)
+            await systemdctl.disable('wpa_supplicant-wired@.service', workDir, true)
         }
 
         /**
          * All systemd distros
          */
-        await exec(`rm -f ${this.settings.work_dir.merged}/var/lib/wicd/configurations/*`, this.echo)
-        await exec(`rm -f ${this.settings.work_dir.merged}/etc/wicd/wireless-settings.conf`, this.echo)
-        await exec(`rm -f ${this.settings.work_dir.merged}/etc/NetworkManager/system-connections/*`, this.echo)
-        await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/wifi/*`, this.echo)
+        await exec(`rm -f ${workDir}/var/lib/wicd/configurations/*`, this.echo)
+        await exec(`rm -f ${workDir}/etc/wicd/wireless-settings.conf`, this.echo)
+        await exec(`rm -f ${workDir}/etc/NetworkManager/system-connections/*`, this.echo)
+        await exec(`rm -f ${workDir}/etc/network/wifi/*`, this.echo)
         /**
          * removing from /etc/network/:
          * if-down.d if-post-down.d if-pre-up.d if-up.d interfaces interfaces.d
@@ -189,7 +238,7 @@ export async function editLiveFs(this: Ovary, clone = false) {
         const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
         let cleanDir = ''
         for (cleanDir of cleanDirs) {
-            await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/${cleanDir}/wpasupplicant`, this.echo)
+            await exec(`rm -f ${workDir}/etc/network/${cleanDir}/wpasupplicant`, this.echo)
         }
     }
 
@@ -198,88 +247,74 @@ export async function editLiveFs(this: Ovary, clone = false) {
      * and netman, so they aren't stealthily included in the snapshot.
      */
     if (this.familyId === 'debian') {
-        if (fs.existsSync(`${this.settings.work_dir.merged}/etc/network/interfaces`)) {
-            await exec(`rm -f ${this.settings.work_dir.merged}/etc/network/interfaces`, this.echo)
-            Utils.write(`${this.settings.work_dir.merged}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
+        if (fs.existsSync(`${workDir}/etc/network/interfaces`)) {
+            await exec(`rm -f ${workDir}/etc/network/interfaces`, this.echo)
+            Utils.write(`${workDir}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
         }
 
         /**
          * add some basic files to /dev
          */
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/console`)) {
-            await exec(`mknod -m 622 ${this.settings.work_dir.merged}/dev/console c 5 1`, this.echo)
+        // Ho condensato i controlli ripetitivi su mknod per leggibilità
+        // Nota: Questo è safe da eseguire, anche se devtmpfs solitamente gestisce tutto.
+        
+        const devNodes = [
+            { path: 'console', m: '622', type: 'c', major: 5, minor: 1 },
+            { path: 'null',    m: '666', type: 'c', major: 1, minor: 3 },
+            { path: 'zero',    m: '666', type: 'c', major: 1, minor: 5 },
+            { path: 'ptmx',    m: '666', type: 'c', major: 5, minor: 2 },
+            { path: 'tty',     m: '666', type: 'c', major: 5, minor: 0 },
+            { path: 'random',  m: '444', type: 'c', major: 1, minor: 8 },
+            { path: 'urandom', m: '444', type: 'c', major: 1, minor: 9 },
+        ]
+
+        for (const node of devNodes) {
+            if (!fs.existsSync(`${workDir}/dev/${node.path}`)) {
+                await exec(`mknod -m ${node.m} ${workDir}/dev/${node.path} ${node.type} ${node.major} ${node.minor}`, this.echo)
+            }
         }
 
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/null`)) {
-            await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/null c 1 3`, this.echo)
+        if (!fs.existsSync(`${workDir}/dev/{console,ptmx,tty}`)) {
+            await exec(`chown -v root:tty ${workDir}/dev/{console,ptmx,tty}`, this.echo)
         }
 
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/zero`)) {
-            await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/zero c 1 5`, this.echo)
+        // Link simbolici standard
+        const links = [
+             { src: '/proc/self/fd', dest: 'fd' },
+             { src: '/proc/self/fd/0', dest: 'stdin' },
+             { src: '/proc/self/fd/1', dest: 'stdout' },
+             { src: '/proc/self/fd/2', dest: 'stderr' },
+             { src: '/proc/kcore', dest: 'core' }
+        ];
+
+        for (const link of links) {
+            if (!fs.existsSync(`${workDir}/dev/${link.dest}`)) {
+                await exec(`ln -sv ${link.src} ${workDir}/dev/${link.dest}`, this.echo)
+            }
         }
 
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/ptmx`)) {
-            await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/ptmx c 5 2`, this.echo)
+        if (!fs.existsSync(`${workDir}/dev/shm`)) {
+            await exec(`mkdir -v ${workDir}/dev/shm`, this.echo)
         }
 
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/tty`)) {
-            await exec(`mknod -m 666 ${this.settings.work_dir.merged}/dev/tty c 5 0`, this.echo)
+        if (!fs.existsSync(`${workDir}/dev/pts`)) {
+            await exec(`mkdir -v ${workDir}/dev/pts`, this.echo)
         }
 
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/random`)) {
-            await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/random c 1 8`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/urandom`)) {
-            await exec(`mknod -m 444 ${this.settings.work_dir.merged}/dev/urandom c 1 9`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`)) {
-            await exec(`chown -v root:tty ${this.settings.work_dir.merged}/dev/{console,ptmx,tty}`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/fd`)) {
-            await exec(`ln -sv /proc/self/fd ${this.settings.work_dir.merged}/dev/fd`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdin`)) {
-            await exec(`ln -sv /proc/self/fd/0 ${this.settings.work_dir.merged}/dev/stdin`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stdout`)) {
-            await exec(`ln -sv /proc/self/fd/1 ${this.settings.work_dir.merged}/dev/stdout`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/stderr`)) {
-            await exec(`ln -sv /proc/self/fd/2 ${this.settings.work_dir.merged}/dev/stderr`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/core`)) {
-            await exec(`ln -sv /proc/kcore ${this.settings.work_dir.merged}/dev/core`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
-            await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/shm`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/pts`)) {
-            await exec(`mkdir -v ${this.settings.work_dir.merged}/dev/pts`, this.echo)
-        }
-
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/dev/shm`)) {
-            await exec(`chmod 1777 ${this.settings.work_dir.merged}/dev/shm`, this.echo)
+        if (!fs.existsSync(`${workDir}/dev/shm`)) {
+            await exec(`chmod 1777 ${workDir}/dev/shm`, this.echo)
         }
 
         /**
          * creo /tmp
          */
-        if (!fs.existsSync(`${this.settings.work_dir.merged}/tmp`)) {
-            await exec(`mkdir ${this.settings.work_dir.merged}/tmp`, this.echo)
+        if (!fs.existsSync(`${workDir}/tmp`)) {
+            await exec(`mkdir ${workDir}/tmp`, this.echo)
         }
 
         /**
          * Assegno 1777 a /tmp creava problemi con MXLINUX
          */
-        await exec(`chmod 1777 ${this.settings.work_dir.merged}/tmp`, this.echo)
+        await exec(`chmod 1777 ${workDir}/tmp`, this.echo)
     }
 }
