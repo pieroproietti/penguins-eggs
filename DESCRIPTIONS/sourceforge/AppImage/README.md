@@ -1,4 +1,5 @@
-# AppImage
+# AppImage x86_64
+
 ## Penguin&#39;s eggs are generated and new birds are ready to fly...
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![www](https://img.shields.io/badge/www-blog-cyan)](https://penguins-eggs.net)
@@ -30,6 +31,7 @@ Conceptually, I am even thinking of discontinuing the native packages altogether
 However, proving this takes time, so I am relying heavily on your opinions and the results of your suggestions.
 
 ## AppImage requisites
+
 Before to try AppImage depending on your distro, you need this packages installed:
 * Alpine: `sudo apk add fuse`
 * Arch/Manjaro: `sudo pacman -S fuse2`
