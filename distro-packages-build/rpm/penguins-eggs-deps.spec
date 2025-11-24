@@ -30,11 +30,12 @@ Requires:       git
 Requires:       jq
 Requires:       lvm2
 # Nota: Se la tua AppImage include già Node.js, puoi commentare la riga sotto
-Requires:       nodejs
+# Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
 Requires:       polkit
 Requires:       rsync
+Requires:       sshfs
 Requires:       wget
 Requires:       xdg-utils
 Requires:       xorriso
@@ -45,11 +46,9 @@ Requires:       zstd
 # ==============================================================================
 %if 0%{?suse_version}
 # openSUSE
-Requires:       fuse-sshfs
 Requires:       dracut-kiwi-live
 %else
 # Fedora / RHEL / EL9
-Requires:       sshfs
 Requires:       dracut-live
 %endif
 
