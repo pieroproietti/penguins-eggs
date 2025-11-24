@@ -16,7 +16,7 @@ BuildArch:      noarch
 AutoReqProv:    no
 
 # ==============================================================================
-# DIPENDENZE DI RUNTIME (Copiate dal tuo spec originale)
+# DIPENDENZE DI RUNTIME COMUNI
 # ==============================================================================
 Requires:       bash-completion
 Requires:       cryptsetup
@@ -42,14 +42,16 @@ Requires:       xorriso
 Requires:       zstd
 
 # ==============================================================================
-# DIPENDENZE CONDIZIONALI (Logica identica al tuo spec originale)
+# DIPENDENZE CONDIZIONALI (Distro-specifiche)
 # ==============================================================================
 %if 0%{?suse_version}
-# openSUSE
+# openSUSE (Slowroll, Tumbleweed, Leap)
 Requires:       dracut-kiwi-live
+Requires:       squashfs
 %else
 # Fedora / RHEL / EL9
 Requires:       dracut-live
+Requires:       squashfs-tools
 %endif
 
 %description
@@ -74,5 +76,7 @@ install -m 644 README.txt %{buildroot}%{_docdir}/%{name}/README.txt
 %{_docdir}/%{name}/README.txt
 
 %changelog
+* Mon Nov 24 2025 Piero Proietti <piero.proietti@gmail.com> - 1.0.0-2
+- Added missing squashfs/squashfs-tools dependency
 * Sat Nov 22 2025 Piero Proietti <piero.proietti@gmail.com> - 1.0.0-1
 - Initial meta-package creation
