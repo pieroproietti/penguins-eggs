@@ -18,7 +18,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
-# AppImage x86_65
+# AppImage x86_64
 I have introduced dependency management in the AppImage version using native meta-packages for each supported distribution. This resolves any incompatibilities at the root and has the advantage of allowing easy removal of dependencies installed by penguins-eggs AppImage, without the risk of removing pre-existing packages.
 
 Essentially, at this point, using native penguins-eggs or penguins-eggs AppImage should give exactly the same results and behave in exactly the same way.
