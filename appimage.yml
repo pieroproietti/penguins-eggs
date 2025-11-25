@@ -1,6 +1,15 @@
 app: penguins-eggs
 icon: https://raw.githubusercontent.com/pieroproietti/penguins-eggs/main/appimage/penguins-eggs.png
 website: https://github.com/pieroproietti/penguins-eggs
+github: pieroproietti/penguins-eggs
+license: GPL-3.0
 categories:
   - System
+  - Utility
+  - ConsoleOnly
 description: CLI tool for Linux remastering and live system creation
+long_description: |
+  Penguins-eggs is a sophisticated command-line utility for Linux used to remaster your system 
+  and redistribute it as live ISO images. It supports system backup and the creation 
+  of custom spin-offs across various distributions like Alpine, Arch, Debian, Devuan, El9, 
+  Fedora, Opensuse and Ubuntu.
