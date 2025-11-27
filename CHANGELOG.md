@@ -20,6 +20,14 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.27
+I spent a couple of days trying to create an even more generic appimage, using Debian bookwork and trixie bootloaders as a basis. The result was far from satisfactory, with long AppImage build times and limited portability: specifically, it worked on Debian and Arch, but I couldn't get it to work on Fedora and Opensuse.
+
+At this point, I realized that the method for obtaining a lightweight and portable AppImage was precisely this: put the bare minimum in the AppImage—nodejs—and delegate the installation/removal of dependencies to native meta-packages.
+
+This way, you get the best of both worlds.
+
+
 ## v25.11.24
 * on the command: `sudo eggs setup`, I corrected the abbreviations for the flags `--install` and `--uninstall` to `-i` and `-u`, respectively;
 * added Linuxmint 22.3 code name zena. Thanks to [@rreyn331](https://github.com/rreyn331);
