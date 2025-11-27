@@ -68,7 +68,7 @@ _eggs_setup() {
     cmds)
 _values "completions" \
 "install[Automatically check and install system prerequisites]" \
-"remove[Automatically check and install system prerequisites]" \
+"purge[Automatically check and install system prerequisites]" \
 
       ;;
     args)
@@ -78,7 +78,7 @@ _values "completions" \
 --help"[Show help for command]" \
 "*: :_files"
         ;;
-        "remove")
+        "purge")
           _arguments -S \
 "(-i --install)"{-i,--install}"[install native dependencies, autocomplete, man, etc-]" \
 "(-u --uninstall)"{-u,--uninstall}"[purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage]" \

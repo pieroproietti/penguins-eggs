@@ -13,13 +13,13 @@ import { Command, Flags } from '@oclif/core'
 import { DependencyManager } from '../../appimage/dependency-manager.js'
 
 
-export default class Setup extends Command {
+export default class Install extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static examples = [
     'eggs setup                           # this help',
     'sudo eggs setup install              # install native dependencies, autocomplete, man, etc',
-    'sudo eggs setup remove               # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
+    'sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
   ]
 
   /**
@@ -45,7 +45,7 @@ export default class Setup extends Command {
     const releaseId = osInfo.VERSION_ID
     const distroId = osInfo.ID
 
-    const { flags } = await this.parse(Setup)
+    const { flags } = await this.parse(Install)
     const depsManager = new DependencyManager()
 
     console.log(`Your system is: ${distroId} ${releaseId} ${codenameId}, family ${distro.familyId}\n`)
@@ -59,7 +59,7 @@ export default class Setup extends Command {
 
     if (!Utils.isRoot()) {
       console.log('\nUse:')
-      Setup.examples.forEach(element => {
+      Install.examples.forEach(element => {
         console.log(element)
       });
 

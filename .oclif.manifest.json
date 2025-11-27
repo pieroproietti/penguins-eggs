@@ -1043,60 +1043,38 @@
         "tarballs.js"
       ]
     },
-    "setup:install": {
+    "wardrobe:get": {
       "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
+      "args": {
+        "repo": {
+          "description": "repository to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "get warorobe",
       "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup remove               # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
-      ],
-      "flags": {},
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "setup:install",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "setup",
-        "install.js"
-      ]
-    },
-    "setup:remove": {
-      "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
-      "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup remove               # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
+        "eggs wardrobe get",
+        "eggs wardrobe get your-wardrobe"
       ],
       "flags": {
-        "install": {
-          "char": "i",
-          "description": "install native dependencies, autocomplete, man, etc-",
-          "name": "install",
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
           "allowNo": false,
           "type": "boolean"
         },
-        "uninstall": {
-          "char": "u",
-          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
-          "name": "uninstall",
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
           "allowNo": false,
           "type": "boolean"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "setup:remove",
+      "id": "wardrobe:get",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1106,8 +1084,196 @@
       "relativePath": [
         "dist",
         "commands",
-        "setup",
-        "remove.js"
+        "wardrobe",
+        "get.js"
+      ]
+    },
+    "wardrobe:list": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "wardrobe to get",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "list costumes and accessoires in wardrobe",
+      "examples": [
+        "eggs wardrobe list",
+        "eggs wardrobe list your-wardrobe",
+        "eggs wardrobe list --distro arch"
+      ],
+      "flags": {
+        "distro": {
+          "char": "d",
+          "description": "distro",
+          "name": "distro",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:list",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "list.js"
+      ]
+    },
+    "wardrobe:show": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "costume to show",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "show costumes/accessories in wardrobe",
+      "examples": [
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "json": {
+          "char": "j",
+          "description": "output JSON",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:show",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "example": [
+        "eggs wardrobe show colibri",
+        "eggs wardrobe show accessories/firmwares",
+        "eggs wardrobe show accessories/"
+      ],
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "show.js"
+      ]
+    },
+    "wardrobe:wear": {
+      "aliases": [],
+      "args": {
+        "repo": {
+          "description": "costume to wear",
+          "name": "repo",
+          "required": false
+        }
+      },
+      "description": "wear costume/accessories from wardrobe",
+      "examples": [
+        "sudo eggs wardrobe wear duck",
+        "sudo eggs wardrobe wear accessories/firmwares",
+        "sudo eggs wardrobe wear wagtail/waydroid"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no_accessories": {
+          "char": "a",
+          "description": "not install accessories",
+          "name": "no_accessories",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "no_firmwares": {
+          "char": "f",
+          "description": "not install firmwares",
+          "name": "no_firmwares",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "wardrobe": {
+          "char": "w",
+          "description": "wardrobe",
+          "name": "wardrobe",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "wardrobe:wear",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "wardrobe",
+        "wear.js"
       ]
     },
     "tools:clean": {
@@ -1351,38 +1517,19 @@
         "yolk.js"
       ]
     },
-    "wardrobe:get": {
+    "setup:install": {
       "aliases": [],
-      "args": {
-        "repo": {
-          "description": "repository to get",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "get warorobe",
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
       "examples": [
-        "eggs wardrobe get",
-        "eggs wardrobe get your-wardrobe"
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
       ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
+      "flags": {},
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "wardrobe:get",
+      "id": "setup:install",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1392,51 +1539,38 @@
       "relativePath": [
         "dist",
         "commands",
-        "wardrobe",
-        "get.js"
+        "setup",
+        "install.js"
       ]
     },
-    "wardrobe:list": {
+    "setup:purge": {
       "aliases": [],
-      "args": {
-        "repo": {
-          "description": "wardrobe to get",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "list costumes and accessoires in wardrobe",
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
       "examples": [
-        "eggs wardrobe list",
-        "eggs wardrobe list your-wardrobe",
-        "eggs wardrobe list --distro arch"
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
       ],
       "flags": {
-        "distro": {
-          "char": "d",
-          "description": "distro",
-          "name": "distro",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
+        "install": {
+          "char": "i",
+          "description": "install native dependencies, autocomplete, man, etc-",
+          "name": "install",
           "allowNo": false,
           "type": "boolean"
         },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
+        "uninstall": {
+          "char": "u",
+          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
+          "name": "uninstall",
           "allowNo": false,
           "type": "boolean"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "wardrobe:list",
+      "id": "setup:purge",
       "pluginAlias": "penguins-eggs",
       "pluginName": "penguins-eggs",
       "pluginType": "core",
@@ -1446,142 +1580,8 @@
       "relativePath": [
         "dist",
         "commands",
-        "wardrobe",
-        "list.js"
-      ]
-    },
-    "wardrobe:show": {
-      "aliases": [],
-      "args": {
-        "repo": {
-          "description": "costume to show",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "show costumes/accessories in wardrobe",
-      "examples": [
-        "eggs wardrobe show colibri",
-        "eggs wardrobe show accessories/firmwares",
-        "eggs wardrobe show accessories/"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "json": {
-          "char": "j",
-          "description": "output JSON",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "wardrobe": {
-          "char": "w",
-          "description": "wardrobe",
-          "name": "wardrobe",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "wardrobe:show",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "example": [
-        "eggs wardrobe show colibri",
-        "eggs wardrobe show accessories/firmwares",
-        "eggs wardrobe show accessories/"
-      ],
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "wardrobe",
-        "show.js"
-      ]
-    },
-    "wardrobe:wear": {
-      "aliases": [],
-      "args": {
-        "repo": {
-          "description": "costume to wear",
-          "name": "repo",
-          "required": false
-        }
-      },
-      "description": "wear costume/accessories from wardrobe",
-      "examples": [
-        "sudo eggs wardrobe wear duck",
-        "sudo eggs wardrobe wear accessories/firmwares",
-        "sudo eggs wardrobe wear wagtail/waydroid"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "no_accessories": {
-          "char": "a",
-          "description": "not install accessories",
-          "name": "no_accessories",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "no_firmwares": {
-          "char": "f",
-          "description": "not install firmwares",
-          "name": "no_firmwares",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "wardrobe": {
-          "char": "w",
-          "description": "wardrobe",
-          "name": "wardrobe",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "wardrobe:wear",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "wardrobe",
-        "wear.js"
+        "setup",
+        "purge.js"
       ]
     }
   },

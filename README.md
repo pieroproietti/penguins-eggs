@@ -512,7 +512,8 @@ sudo eggs produce --max
 * [`eggs love`](#eggs-love)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
-* [`eggs setup`](#eggs-setup)
+* [`eggs setup install`](#eggs-setup-install)
+* [`eggs setup purge`](#eggs-setup-purge)
 * [`eggs status`](#eggs-status)
 * [`eggs tools clean`](#eggs-tools-clean)
 * [`eggs tools repo`](#eggs-tools-repo)
@@ -973,13 +974,34 @@ EXAMPLES
 
 _See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.27/src/commands/produce.ts)_
 
-## `eggs setup`
+## `eggs setup install`
 
 Automatically check and install system prerequisites
 
 ```
 USAGE
-  $ eggs setup [-i] [-u]
+  $ eggs setup install
+
+DESCRIPTION
+  Automatically check and install system prerequisites
+
+EXAMPLES
+  $ eggs setup                           # this help
+
+  sudo eggs setup install              # install native dependencies, autocomplete, man, etc
+
+  sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
+```
+
+_See code: [src/commands/setup/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.27/src/commands/setup/install.ts)_
+
+## `eggs setup purge`
+
+Automatically check and install system prerequisites
+
+```
+USAGE
+  $ eggs setup purge [-i] [-u]
 
 FLAGS
   -i, --install    install native dependencies, autocomplete, man, etc-
@@ -991,12 +1013,12 @@ DESCRIPTION
 EXAMPLES
   $ eggs setup                           # this help
 
-  sudo eggs setup --install            # install native dependencies, autocomplete, man, etc
+  sudo eggs setup install              # install native dependencies, autocomplete, man, etc
 
-  sudo eggs setup --uninstall          # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
+  sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
 ```
 
-_See code: [src/commands/setup.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.27/src/commands/setup.ts)_
+_See code: [src/commands/setup/purge.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.27/src/commands/setup/purge.ts)_
 
 ## `eggs status`
 

@@ -14,7 +14,7 @@ import { Command, Flags } from '@oclif/core'
 import { DependencyManager } from '../../appimage/dependency-manager.js'
 
 
-export default class Remove extends Command {
+export default class Purge extends Command {
   static description = 'Automatically check and install system prerequisites'
 
   static flags = {
@@ -25,7 +25,7 @@ export default class Remove extends Command {
   static examples = [
     'eggs setup                           # this help',
     'sudo eggs setup install              # install native dependencies, autocomplete, man, etc',
-    'sudo eggs setup remove               # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
+    'sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
   ]
 
   /**
@@ -51,7 +51,7 @@ export default class Remove extends Command {
     const releaseId = osInfo.VERSION_ID
     const distroId = osInfo.ID
 
-    const { flags } = await this.parse(Remove)
+    const { flags } = await this.parse(Purge)
     const depsManager = new DependencyManager()
 
     console.log(`Your system is: ${distroId} ${releaseId} ${codenameId}, family ${distro.familyId}\n`)
@@ -60,7 +60,7 @@ export default class Remove extends Command {
 
     if (Utils.isRoot()) {
       console.log()
-      Utils.warning(`Are you sure you want to remove penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-aackages:\n ${appImagePath}`)
+      Utils.warning(`Are you sure you want to purge penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-aackages:\n ${appImagePath}`)
       if (await Utils.customConfirm('Select yes to continue...')) {
         depsManager.removeDistroPackages()
         await Pacman.autocompleteRemove()
