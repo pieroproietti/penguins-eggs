@@ -250,7 +250,7 @@ export default class Pacman {
     }
 
     execSync(`mkdir -p ${init}`)
-    shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
+    // shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
 
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)

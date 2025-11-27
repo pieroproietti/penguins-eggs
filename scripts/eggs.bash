@@ -25,7 +25,8 @@ krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --n
 love --help --verbose --hidden --nointeractive --clone --homecrypt --fullcrypt
 mom --help
 produce --addons --basename --clone --homecrypt --fullcrypt --excludes --help --hidden --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRootHome --verbose --yolk
-setup --install --uninstall
+setup:install 
+setup:remove --install --uninstall
 status --help --verbose
 tools:clean --help --nointeractive --verbose
 tools:repo --add --help --nointeractive --remove --verbose
