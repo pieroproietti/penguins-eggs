@@ -1,5 +1,5 @@
 Package: penguins-eggs-deps
-Version: 1.0.0
+Version: 1.0.0-1
 Section: admin
 Priority: optional
 Architecture: amd64

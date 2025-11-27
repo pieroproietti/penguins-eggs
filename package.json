@@ -2,7 +2,7 @@
     "name": "penguins-eggs",
     "shortName": "eggs",
     "description": "A remaster system tool, compatible with Almalinux, Alpine, Arch, Debian, Devuan, Fedora, Manjaro, Opensuse, Ubuntu and derivatives",
-    "version": "25.11.25",
+    "version": "25.11.27",
     "author": "Piero Proietti",
     "bin": {
         "eggs": "./bin/run.js"
@@ -109,8 +109,7 @@
     },
     "repository": "pieroproietti/penguins-eggs",
     "scripts": {
-        "appimage": "pnpm build && ./scripts/appimage-build.sh",
-        "appimage:install": "./scripts/appimage-install.sh",
+        "appimage": "pnpm build && ./appimage.sh",
         "build": "pnpm clean && shx rm -rf dist && tsc -p . && oclif manifest",
         "clean": "rm -rf build dist *.AppImage AppDir",
         "deb": "pnpm build && pb deb --release $(cat ./release)",
