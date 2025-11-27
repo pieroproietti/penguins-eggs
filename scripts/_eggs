@@ -58,6 +58,39 @@ _values "completions" \
   esac
 }
 
+_eggs_setup() {
+  local context state state_descr line
+  typeset -A opt_args
+
+  _arguments -C "1: :->cmds" "*::arg:->args"
+
+  case "$state" in
+    cmds)
+_values "completions" \
+"install[Automatically check and install system prerequisites]" \
+"purge[Automatically check and install system prerequisites]" \
+
+      ;;
+    args)
+      case $line[1] in
+        "install")
+          _arguments -S \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+        "purge")
+          _arguments -S \
+"(-i --install)"{-i,--install}"[install native dependencies, autocomplete, man, etc-]" \
+"(-u --uninstall)"{-u,--uninstall}"[purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage]" \
+--help"[Show help for command]" \
+"*: :_files"
+        ;;
+
+      esac
+      ;;
+  esac
+}
+
 _eggs_tools() {
   local context state state_descr line
   typeset -A opt_args
@@ -191,6 +224,7 @@ _eggs() {
     cmds)
       _values "completions" \
 "export[export penguins-eggs AppImage to the destination host]" \
+"setup[Automatically check and install system prerequisites]" \
 "tools[clean system log, apt, etc]" \
 "wardrobe[get warorobe]" \
 "adapt[adapt monitor resolution for VM only]" \
@@ -203,7 +237,6 @@ _eggs() {
 "love[the simplest way to get an egg!]" \
 "mom[ask help from mommy - TUI helper]" \
 "produce[produce a live image from your system]" \
-"setup[Automatically check and install system prerequisites]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
@@ -215,6 +248,9 @@ _eggs() {
       case $line[1] in
 export)
   _eggs_export
+  ;;
+setup)
+  _eggs_setup
   ;;
 tools)
   _eggs_tools
@@ -333,12 +369,6 @@ _arguments -S \
 "(-i --includeRootHome)"{-i,--includeRootHome}"[folder /root is included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
-setup)
-_arguments -S \
-"(-i --install)"{-i,--install}"[force installation even if already installed]" \
-"(-u --uninstall)"{-u,--uninstall}"[uninstall penguins-eggs.AppImage]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 status)

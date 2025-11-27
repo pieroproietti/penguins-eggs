@@ -48,11 +48,13 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
 
     // postfix (data)
     const postfix = Utils.getPostfix()
+    /*
     console.log('prefix:', prefix)
     console.log('prefix:', this.volid)
     console.log('arch:', Utils.uefiArch())
     console.log('typology:', typology)
     console.log('postfix:', postfix)
+    */
 
     this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
 
