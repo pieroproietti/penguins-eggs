@@ -1043,6 +1043,73 @@
         "tarballs.js"
       ]
     },
+    "setup:install": {
+      "aliases": [],
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
+      "examples": [
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "setup:install",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "setup",
+        "install.js"
+      ]
+    },
+    "setup:purge": {
+      "aliases": [],
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
+      "examples": [
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
+      ],
+      "flags": {
+        "install": {
+          "char": "i",
+          "description": "install native dependencies, autocomplete, man, etc-",
+          "name": "install",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "uninstall": {
+          "char": "u",
+          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
+          "name": "uninstall",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "setup:purge",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "setup",
+        "purge.js"
+      ]
+    },
     "wardrobe:get": {
       "aliases": [],
       "args": {
@@ -1515,73 +1582,6 @@
         "commands",
         "tools",
         "yolk.js"
-      ]
-    },
-    "setup:install": {
-      "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
-      "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
-      ],
-      "flags": {},
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "setup:install",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "setup",
-        "install.js"
-      ]
-    },
-    "setup:purge": {
-      "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
-      "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
-      ],
-      "flags": {
-        "install": {
-          "char": "i",
-          "description": "install native dependencies, autocomplete, man, etc-",
-          "name": "install",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "uninstall": {
-          "char": "u",
-          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
-          "name": "uninstall",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "setup:purge",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "setup",
-        "purge.js"
       ]
     }
   },

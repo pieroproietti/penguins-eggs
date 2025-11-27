@@ -57,13 +57,7 @@ export default class Install extends Command {
       console.log('penguins-eggs distro meta-packages are NOT installed')
     }
 
-    if (!Utils.isRoot()) {
-      console.log('\nUse:')
-      Install.examples.forEach(element => {
-        console.log(element)
-      });
-
-    } else {
+    if (Utils.isRoot()) {
       console.log()
       Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-packages:\n`)
       if (await Utils.customConfirm('Select yes to continue...')) {
@@ -72,6 +66,10 @@ export default class Install extends Command {
         await Pacman.configurationInstall()
         depsManager.installDistroPackages()
       }
+
+    } else {
+      Utils.useRoot(this.id)
     }
+
   }
 }

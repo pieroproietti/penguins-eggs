@@ -68,10 +68,11 @@ export default class Purge extends Command {
         await Pacman.configurationRemove()
 
         console.log('penguins-eggs AppImage stuffs was successfully removed.\n');
-        console.log('To remove AppImage file, use:');
-        console.log(`rm ${appImagePath}\n`)
+        console.log('You can completely erase AppImage file, using:');
+        console.log(`sudo rm ${appImagePath}\n`)
       }
+    } else {
+      Utils.useRoot(this.id)
     }
   }
-
 }
