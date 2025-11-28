@@ -53,6 +53,7 @@ export default class Pacman {
       }
     }
 
+    // Su arch è ok, su debian God know
     if (Pacman.packageIsInstalled('zsh-completions')) {
       if (fs.existsSync('/usr/share/zsh/site-functions')) {
         await exec(`cp ${__dirname}/../../scripts/_eggs /usr/share/zsh/site-functions/`)
