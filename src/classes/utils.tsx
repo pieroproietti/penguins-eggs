@@ -975,8 +975,8 @@ export default class Utils {
     */
    static flag(): string {
       let type=''
-      if (Utils.isAppImage()) {
-         type='AppImage'
+      if (!Utils.isAppImage()) {
+         type='Native'
       }
 
       let title=`${pjson.name}`

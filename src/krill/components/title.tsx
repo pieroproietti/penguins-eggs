@@ -22,8 +22,8 @@ type TitleProps = {
 
 export default function Title({ title="", version=""}) : JSX.Element {
    let type = ""
-   if (Utils.isAppImage()) {
-      type="AppImage"
+   if (!Utils.isAppImage()) {
+      type="Native"
    }
    if (title==="") 
       title=`${pjson.name}`
