@@ -1078,22 +1078,7 @@
         "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
         "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
       ],
-      "flags": {
-        "install": {
-          "char": "i",
-          "description": "install native dependencies, autocomplete, man, etc-",
-          "name": "install",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "uninstall": {
-          "char": "u",
-          "description": "purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage",
-          "name": "uninstall",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
+      "flags": {},
       "hasDynamicHelp": false,
       "hiddenAliases": [],
       "id": "setup:purge",

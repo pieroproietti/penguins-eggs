@@ -147,10 +147,10 @@ export default class Update extends Command {
     let repo = ''
 
     if (Utils.isAppImage()) {
-      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/local/bin/eggs")
+      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/bin/eggs")
       filter = `penguins-eggs-*-x86_64.AppImage`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${filter} /tmp`
-      install = `mkdir -p /usr/local/bin |mv /tmp/${filter} /usr/local/bin/eggs`
+      install = `mv /tmp/${filter} /usr/bin/eggs`
 
 
     } else {

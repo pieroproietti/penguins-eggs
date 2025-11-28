@@ -12,15 +12,10 @@ import Utils from '../../classes/utils.js'
 import Pacman from '../../classes/pacman.js'
 import { Command, Flags } from '@oclif/core'
 import { DependencyManager } from '../../appimage/dependency-manager.js'
-
+import { execSync } from 'node:child_process'
 
 export default class Purge extends Command {
   static description = 'Automatically check and install system prerequisites'
-
-  static flags = {
-    install: Flags.boolean({ char: 'i', description: 'install native dependencies, autocomplete, man, etc-' }),
-    uninstall: Flags.boolean({ char: 'u', description: 'purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage' }),
-  }
 
   static examples = [
     'eggs setup                           # this help',
@@ -68,8 +63,13 @@ export default class Purge extends Command {
         await Pacman.configurationRemove()
 
         console.log('penguins-eggs AppImage stuffs was successfully removed.\n');
-        console.log('You can completely erase AppImage file, using:');
-        console.log(`sudo rm ${appImagePath}\n`)
+        if (appImagePath === '/usr/bin/eggs/') {
+          execSync(`rm ${appImagePath} /usr/bin/eggs`)
+        } else {
+          console.log('You can completely erase AppImage file, using:');
+          console.log(`sudo rm ${appImagePath}\n`)
+        }
+
       }
     } else {
       Utils.useRoot(this.id)

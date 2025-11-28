@@ -116,8 +116,6 @@ export default class Fisherman {
      * and end in:
      * /etc/calamares/modules/partition.conf
      *
-     * And we solve the issue of Sebastien who need btrfs
-     *
      */
     if (vendor !== 'eggs') {
       let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)

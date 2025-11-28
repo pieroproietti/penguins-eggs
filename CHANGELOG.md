@@ -71,7 +71,7 @@ Before to try AppImage depending on your distro, you need this packages installe
 penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from https://github.com/pieroproietti/penguins-eggs/releases, then run the following commands:
 ```
 $ chmod +x penguins-eggs-25.11.21-x86_64.AppImage
-$ sudo mv /usr/local/bin
+$ sudo mv /usr/bin
 $ sudo eggs setup
 ```
 
