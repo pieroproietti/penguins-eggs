@@ -78,7 +78,7 @@ install -d %{buildroot}%{_datadir}/bash-completion/completions
 ln -s /usr/lib/%{name}/scripts/eggs.bash \
    %{buildroot}%{_datadir}/bash-completion/completions/
 
-# Install zsh-completion files
+# Install zsh-completions files
 install -d %{buildroot}%{_datadir}/zsh/functions/Completion/Zsh/
 ln -s ../lib/%{name}/scripts/_eggs \
    %{buildroot}%{_datadir}/zsh/functions/Completion/Zsh/
