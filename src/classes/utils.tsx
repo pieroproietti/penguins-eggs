@@ -447,7 +447,7 @@ export default class Utils {
     *
     * @param volid
     */
-   static getVolid(volid = 'unknown') {
+   static VolidTrim(volid = 'unknown') {
       // // 28 +  4 .iso = 32 lunghezza max di volid
       if (volid.length >= 32) {
          volid = volid.substring(0, 32)

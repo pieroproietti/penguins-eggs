@@ -185,19 +185,23 @@ export default class Daddy {
     isCustom: boolean,
     fileCustom: string
   ) {
-    // Reset snapshot prefix if empty
+
     if (!config.snapshot_prefix) {
-      let fstype = '';
-      try {
-        const { data } = await exec(`findmnt -n -o FSTYPE /`, { capture: true });
-        fstype = data.trim() === 'ext4' ? '' : `${data.trim()}-`;
-      } catch (err) {
-        console.warn('Unable to detect FSTYPE:', err);
-      }
+      /**
+       * add fstype: btrfs, xfs, etc
+       */
+      // let fstype = '';
+      // try {
+      //   const { data } = await exec(`findmnt -n -o FSTYPE /`, { capture: true });
+      //   fstype = data.trim() === 'ext4' ? '' : `${data.trim()}-`;
+      // } catch (err) {
+      //   console.warn('Unable to detect FSTYPE:', err);
+      // }
+      
       config.snapshot_prefix = Utils.snapshotPrefix(
         this.settings.distro.distroId,
         this.settings.distro.codenameId
-      ) + fstype;
+      )
     }
 
     // Apply custom YAML if needed

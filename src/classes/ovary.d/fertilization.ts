@@ -34,7 +34,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
 
     if (await this.settings.load()) {
         await this.settings.loadRemix(this.theme)
-        this.volid = Utils.getVolid(this.settings.remix.name)
+        this.volid = Utils.VolidTrim(this.settings.remix.name)
 
         this.uuid = Utils.uuidGen()
 

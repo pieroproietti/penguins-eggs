@@ -10,13 +10,13 @@ import { Command, Flags } from '@oclif/core'
 import inquirer from 'inquirer'
 import Distro from '../classes/distro.js'
 
-import Pacman from '../classes/pacman.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
 import Diversions from '../classes/diversions.js'
 import { exec } from '../lib/utils.js'
+import { spawn } from 'child_process';
 
-import fs from 'node:fs'
+
 import axios from 'axios'
 import https from 'node:https'
 const agent = new https.Agent({
@@ -70,8 +70,12 @@ export default class Update extends Command {
         break
       }
 
-      case 'Package_Manager': {
-        await this.getPkgFromPackageManager()
+      case 'Internet': {
+        if (Utils.isAppImage()) {
+          await this.getLatestAppImage()
+        } else {
+          await this.getPkgFromPackageManager()
+        }
 
         break
       }
@@ -90,7 +94,7 @@ export default class Update extends Command {
    */
   async choosePkg(): Promise<string> {
     const choices: string[] = ['Abort']
-    choices.push('LAN', 'Package_Manager', 'Source')
+    choices.push('LAN', 'Internet', 'Source')
 
     const questions: any = [
       {
@@ -112,6 +116,7 @@ export default class Update extends Command {
    *
    */
   async getPkgFromPackageManager() {
+    Utils.titles(`update from package Manager`)
     let cmd = ""
     if (this.distro.familyId === 'alpine') {
       cmd = `doas apk add penguins-egga`
@@ -126,7 +131,6 @@ export default class Update extends Command {
     } else if (this.distro.familyId === "opensuse") {
       cmd = 'sudo zypper install penguins-eggs\\zypper install --force penguins-eggs'
     }
-    Utils.titles(`update`)
     Utils.warning(`To install/update penguins-eggs cut and copy one of the follow commands`)
     console.log()
     console.log(cmd)
@@ -147,10 +151,10 @@ export default class Update extends Command {
     let repo = ''
 
     if (Utils.isAppImage()) {
-      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/local/bin/eggs")
+      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/bin/eggs")
       filter = `penguins-eggs-*-x86_64.AppImage`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${filter} /tmp`
-      install = `mkdir -p /usr/local/bin |mv /tmp/${filter} /usr/local/bin/eggs`
+      install = `mv /tmp/${filter} /usr/bin/eggs`
 
 
     } else {
@@ -275,4 +279,75 @@ export default class Update extends Command {
       console.log('- ' + country[0] + ': ' + country[1])
     }
   }
+
+
+  /**
+   * 
+   */
+  async getLatestAppImage() {
+    let url = await this.getLatestAppImageUrl()
+    let AppFile= '/tmp/eggs.AppImage'
+    if (url !== null ) {
+      await this.downloadWithCurl(url, AppFile)
+    }
+    await exec(`mv ${AppFile} /usr/bin/eggs`)
+    await exec(`chmod +x /usr/bin/eggs`)
+  }
+
+  /**
+   * 
+   */
+  async getLatestAppImageUrl(): Promise<string | null> {
+    const repo = 'pieroproietti/penguins-eggs';
+    const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
+
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`Errore API GitHub: ${response.statusText}`);
+
+      const data = await response.json() as any;
+
+      // Cerchiamo l'asset che finisce per .AppImage
+      const asset = data.assets.find((a: any) => a.name.endsWith('.AppImage'));
+
+      return asset ? asset.browser_download_url : null;
+    } catch (error) {
+      console.error(" :", error);
+      return null;
+    }
+  }
+
+  /**
+   * 
+   * @param url 
+   * @param outputFilename 
+   * @returns 
+   */
+  async downloadWithCurl(url: string, outputFilename: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log(`Avvio download di: ${outputFilename}...`);
+
+      // Spawniamo il processo curl
+      // -L: segue i redirect (fondamentale per GitHub)
+      // -o: specifica il file di output
+      const curl = spawn('curl', ['-L', '-o', outputFilename, url], {
+        stdio: 'inherit' // Questo mostra la progress bar di curl direttamente nel tuo terminale!
+      });
+
+      curl.on('close', (code) => {
+        if (code === 0) {
+          console.log('\nDownload completato con successo!');
+          resolve();
+        } else {
+          reject(new Error(`Curl è uscito con codice errore: ${code}`));
+        }
+      });
+
+      curl.on('error', (err) => {
+        reject(new Error(`Impossibile avviare curl. È installato? ${err.message}`));
+      });
+    });
+  }
+
+
 }
