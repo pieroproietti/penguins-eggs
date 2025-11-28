@@ -286,6 +286,7 @@ export default class Update extends Command {
    */
   async getLatestAppImage() {
     let url = await this.getLatestAppImageUrl()
+    console.log(`Downloading AppImage from ${url}`)
     let AppFile= '/tmp/eggs.AppImage'
     if (url !== null ) {
       await this.downloadWithCurl(url, AppFile)

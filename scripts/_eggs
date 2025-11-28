@@ -80,8 +80,6 @@ _values "completions" \
         ;;
         "purge")
           _arguments -S \
-"(-i --install)"{-i,--install}"[install native dependencies, autocomplete, man, etc-]" \
-"(-u --uninstall)"{-u,--uninstall}"[purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage]" \
 --help"[Show help for command]" \
 "*: :_files"
         ;;
