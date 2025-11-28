@@ -11,6 +11,7 @@ import Utils from '../../classes/utils.js'
 import Pacman from '../../classes/pacman.js'
 import { Command, Flags } from '@oclif/core'
 import { DependencyManager } from '../../appimage/dependency-manager.js'
+import { execSync } from 'node:child_process'
 
 
 export default class Install extends Command {
@@ -61,6 +62,11 @@ export default class Install extends Command {
       console.log()
       Utils.warning(`Are you sure you want to install penguins-eggs AppImage autocomplete, manpages, configurations and distro meta-packages:\n`)
       if (await Utils.customConfirm('Select yes to continue...')) {
+        const appImagePath = process.env.APPIMAGE;
+        if (appImagePath !=='/usr/bin/eggs') {
+          execSync(`mv ${appImagePath} /usr/bin/eggs`)
+          console.log(`${appImagePath} moved to /usr/bin/eggs`)
+        }
         await Pacman.autocompleteInstall()
         await Pacman.manpageInstall()
         await Pacman.configurationInstall()
