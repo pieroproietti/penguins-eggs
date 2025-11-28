@@ -53,7 +53,7 @@ export default class Pacman {
       }
     }
 
-    if (Pacman.packageIsInstalled('zsh-completion')) {
+    if (Pacman.packageIsInstalled('zsh-completions')) {
       if (fs.existsSync('/usr/share/zsh/site-functions')) {
         await exec(`cp ${__dirname}/../../scripts/_eggs /usr/share/zsh/site-functions/`)
       }
@@ -282,9 +282,12 @@ export default class Pacman {
       await exec('rm /etc/penguins-eggs.d -rf', echo)
     }
 
-    if (fs.existsSync('/etc/calamares')) {
-      await exec('rm /etc/calamares -rf', echo)
-    }
+    /**
+     * No remove calamares more
+     */
+    // if (fs.existsSync('/etc/calamares')) {
+    //   await exec('rm /etc/calamares -rf', echo)
+    // }
   }
 
   /**
@@ -666,7 +669,7 @@ export default class Pacman {
    * manpageRemove
    */
   static async manpageRemove() {
-    const manpageEggs = `/usr/share/man/man1/man/eggs.1.gz`
+    const manpageEggs = `/usr/share/man/man1/eggs.1.gz`
     await exec(`rm -rf ${manpageEggs}`)
   }
 
