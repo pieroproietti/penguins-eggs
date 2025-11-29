@@ -2,7 +2,7 @@
 #
 # mantainer: Muflone http://www.muflone.com/contacts/english/
 # contributor: Piero Proietti <piero.proietti_at_gmail.com>
-_bootloadersver=25.9.8
+_bootloadersver=25.11.27
 
 pkgname=penguins-eggs
 pkgver=
