@@ -3,7 +3,7 @@
 # Maintainer: Mark Wagie <mark at manjaro dot org>
 # Contributor: Stefano Capitani <stefano_at_manjaro_org>
 # Contributor: Piero Proietti <piero.proietti_at_gmail.com>
-_bootloadersver=25.11.28
+_bootloadersver=25.11.27
 
 pkgname=penguins-eggs
 pkgver=25.11.28
