@@ -16,7 +16,7 @@ import os from 'os'
 import inquirer from 'inquirer'
 import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
-import { Netmask } from 'netmask'
+//import { Netmask } from 'netmask'
 
 import Kernel from './utils.d/kernel.js'
 
@@ -794,13 +794,19 @@ export default class Utils {
       return cidr
    }
 
-   /**
-    *
-    * broadcast
-   */
    static broadcast(): string {
-      let n = new Netmask(Utils.cidr())
-      return n.broadcast
+      const netmask = Utils.netmask()
+      const ip = Utils.address()
+
+      const ipParts = ip.split('.').map(Number);
+      const maskParts = netmask.split('.').map(Number);
+      
+      const broadcastParts = ipParts.map((part, index) => {
+         // Bitwise OR tra il blocco IP e il blocco Netmask invertito (255 - mask)
+         return part | (255 - maskParts[index]);
+      });
+      
+      return broadcastParts.join('.');
    }
 
    /**
