@@ -61,6 +61,9 @@ export default class Purge extends Command {
         await Pacman.autocompleteRemove()
         await Pacman.manpageRemove()
         await Pacman.configurationRemove()
+        execSync('rm -f /usr/share/applications/penguins-eggs.desktop')
+        execSync('rm -f /usr/bin/penguins-links-add.sh')
+        execSync('rm -f /usr/local/bin/g4*')
 
         console.log('penguins-eggs AppImage stuffs was successfully removed.\n');
         if (appImagePath === '/usr/bin/eggs') {
