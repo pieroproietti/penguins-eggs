@@ -3,10 +3,10 @@
 # Maintainer: Mark Wagie <mark at manjaro dot org>
 # Contributor: Stefano Capitani <stefano_at_manjaro_org>
 # Contributor: Piero Proietti <piero.proietti_at_gmail.com>
-_bootloadersver=25.9.8
+_bootloadersver=25.11.28
 
 pkgname=penguins-eggs
-pkgver=25.9.8
+pkgver=25.11.28
 pkgrel=1
 pkgdesc="A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE"
 arch=('any')
@@ -47,7 +47,7 @@ optdepends=(
  'zsh-completions: eggs autocomplete'
 )
 makedepends=(
- 'pnpm'
+ #'pnpm'
 )
 
 options=('!strip')
@@ -121,7 +121,3 @@ cp -r "$srcdir/bootloaders" "$pkgdir/usr/lib/$pkgname/"
  # Symlink to adapt
  ln -s /usr/lib/"$pkgname/"addons/eggs/adapt/bin/adapt "$pkgdir/"usr/bin/adapt
 }
-
-# updpkgsums
-sha256sums=('37091dc5ec0e72905b5a4e61e21dcfc604b571c8492b3d9ad60a229574b59e1c'
-            'c5dcfd82a8e65160af5c93365f07776a00d44e8b531d6641f4cadbbe7b4b5baf')

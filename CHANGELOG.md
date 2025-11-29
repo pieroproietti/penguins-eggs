@@ -20,6 +20,28 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.11.29
+I am continuing the transition to adopting AppImages as the standard release method for penguins-eggs.
+
+The reason is simple: a single package works for everything, and using native meta-packages within the AppImage for dependencies we work always with original packages on every distro.
+
+I have tested it extensively on Arch, Debian, Fedora, Manjaro, and Opesuse, leaving out Alpine for the moment, which has some peculiarities.
+
+I also tested AppImage for the `eggs cuckoo` command. It works great on Debian, the same cannot be said for the other distributions. We'll just have to live with that for now.
+
+I decided to remove the label “AppImage” from the AppImage version and introduced a new label “native” next to the version for the native packages (the traditional one), to highlight that we will continue along this path.
+
+The installation and updating of AppImage has been improved. Just download it from GitHub and run it with sudo. The executable is copied to `/usr/bin/eggs` and is automatically configured. 
+
+After that, just type: `eggs love` to get the ISO of the installed system.
+
+The AppImage is updated with the command: `sudo eggs update`. just select internet and the latest release available on GitHub will be downloaded and installed.
+
+The AppImage must be removed using the command: `sudo eggs setup remove`, which will remove all dependencies, the manual page, desktop icon and autocomplete.
+
+Manuals and information would need to be rewritten, but fortunately the README.md, autocompletion (bash and zsh) and eggs man page are constantly updated.
+
+
 ## v25.11.27
 I spent a couple of days trying to create an even more generic appimage, using Debian bookwork and trixie bootloaders as a basis. The result was far from satisfactory, with long AppImage build times and limited portability: specifically, it worked on Debian and Arch, but I couldn't get it to work on Fedora and Opensuse.
 

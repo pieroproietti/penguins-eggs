@@ -52,7 +52,7 @@ export default class Cuckoo extends Command {
         host: n.address,
         subnet: n.cidr,
         tftpserver: n.address,
-        broadcast: n.broadcast()
+        broadcast: Utils.broadcast()
       }
       pxe.dhcpdStart(dhcpOptions)
 

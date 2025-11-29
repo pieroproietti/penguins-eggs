@@ -34,7 +34,8 @@ export default class Purge extends Command {
      * continue only on AppImage
      */
     if (!Utils.isAppImage()) {
-      console.log("The eggs setup command is only applicable on the AppImage version.")
+      console.log("The eggs setup purge command is only applicable on the AppImage version.")
+      console.log("On penguins-eggs native package this operation is done by the system package manager.")
       process.exit()
     }
 

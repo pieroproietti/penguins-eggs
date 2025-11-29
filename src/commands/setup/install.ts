@@ -35,6 +35,7 @@ export default class Install extends Command {
      */
     if (!Utils.isAppImage()) {
       console.log("The eggs setup command is only applicable on the AppImage version.")
+      console.log("On penguins-eggs native package this operation is done by the system package manager.")
       process.exit()
     }
 
