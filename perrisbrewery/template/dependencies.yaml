@@ -22,6 +22,7 @@ common:
   - lvm2  # pvdisplay in krill
   - nodejs (>= 18)
   - parted 
+  - pxelinux
   - policykit-1 | pkexec # calamares
   - rsync
   - squashfs-tools

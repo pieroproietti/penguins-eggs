@@ -118,8 +118,7 @@ export default class Diversions {
     let pathBootloaders = '/usr/lib/'
     if (familyId !== "debian") {
       if (Utils.isAppImage()) {
-        const appImagePath = path.join(__dirname, '..', '..', 'bootloaders');
-        pathBootloaders = appImagePath 
+        pathBootloaders = path.join(__dirname, '..', '..', 'bootloaders/');
       } else {
         pathBootloaders = '/usr/lib/penguins-eggs/bootloaders/'
       }
