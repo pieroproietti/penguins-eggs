@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.11.27</h1>
+    <h1>eggs(1) -- the reproductive system of penguins: eggs v25.11.29</h1>
     <h1>SYNOPSIS</h1>
     <p>eggs is a console utility, in active development, who let you to remaster your system and redistribuite it as live ISO image.</p>
     <h1>INSTALL</h1>
     <p>penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from https://github.com/pieroproietti/penguins-eggs/releases, then run the following commands:</p>
-    <pre><code>$ chmod +x penguins-eggs_25.11.27-1_amd64-x86_64.AppImage
+    <pre><code>$ chmod +x penguins-eggs_25.11.29-1_amd64-x86_64.AppImage
 $ sudo mv /usr/local/bin
 $ sudo eggs setup
 </code></pre>
@@ -19,30 +19,30 @@ $ sudo eggs setup
     <pre><code>$ doas apk add penguins-eggs@testing
 </code></pre>
     <p>AlmaLinux/RockyLinux</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.27-1_amd64-1rocky9.5..x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.29-1_amd64-1rocky9.5..x86_64.rpm
 
 </code></pre>
     <p>Arch</p>
     <pre><code>$ sudo pacman -S penguins-eggs
-$ sudo pacman -U penguins-eggs_25.11.27-1_amd64-1-x86_64.pkg.tar.zst
+$ sudo pacman -U penguins-eggs_25.11.29-1_amd64-1-x86_64.pkg.tar.zst
 </code></pre>
     <p>Debian/Devuan/Ubuntu</p>
     <pre><code>$ sudo apt install penguins-eggs
-$ sudo dpkg -i penguins-eggs_25.11.27-1_amd64.deb
+$ sudo dpkg -i penguins-eggs_25.11.29-1_amd64.deb
 </code></pre>
     <p>Fedora</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.27-1_amd64-1fedora.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.29-1_amd64-1fedora.x86_64.rpm
 </code></pre>
     <p>Manjaro</p>
     <pre><code>$ sudo pamac install penguins-eggs
 </code></pre>
     <p>OpenMamba</p>
-    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.27-1_amd64-1mamba.x86_64.rpm
+    <pre><code>$ sudo dnf install ./penguins-eggs_25.11.29-1_amd64-1mamba.x86_64.rpm
 </code></pre>
     <h1>USAGE</h1>
     <pre><code>$ eggs (-v|--version|version)
 
-penguins-eggs/25.11.27  
+penguins-eggs/25.11.29  
 $ eggs --help [COMMAND]
 
 USAGE
@@ -463,11 +463,7 @@ EXAMPLES
     <h2><code>eggs setup purge</code></h2>
     <p>Automatically check and install system prerequisites</p>
     <pre><code>USAGE
-  $ eggs setup purge [-i] [-u]
-
-FLAGS
-  -i, --install    install native dependencies, autocomplete, man, etc-
-  -u, --uninstall  purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
+  $ eggs setup purge
 
 DESCRIPTION
   Automatically check and install system prerequisites
