@@ -36,9 +36,10 @@
   distroLike: Debian
   family: debian
   ids:
+    - gigi    # LMDE 7
     - lory    # Parrot lory
     - orchid  # VanillaOS
-    - gigi    # LMDE 7
+    - yirmibes # pardus-25
 
 # forky
 - id: forky
