@@ -61,11 +61,20 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 ## AppImage
 [![penguins-eggs as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://github.com/pieroproietti/penguins-eggs/releases)
 
+
 Although penguins-eggs has only recently been released as an AppImage, it is perhaps the simplest method. All you need is to get the penguins-eggs AppImage: open a browser at the url: `https://github.com/pieroproietti/penguins-eggs`, on the right side, find `latest release`, download the AppImage `penguins-eggs-25.x.x-1-x86_64.AppImage` and launch it using `sudo`
 
 The AppImage will be be automatically configured and renamed as `/usr/bin/eggs`. It's ready to use! 
 
 `eggs love` to get your system remastered as live ISO.
+
+Before to try AppImage depending on your distro, you need this packages installed:
+
+* Alpine: `sudo apk add fuse`
+* Arch/Manjaro: `sudo pacman -S fuse2`
+* Debian/Devuan/Ubuntu: `sudo apt-get install fuse libfuse2`
+* Fedora/RHEL: sudo dnf `install fuse fuse-libs`
+* Opensuse: sudo zypper `install fuse fuse-libs`
 
 Note that the AppImage version and the native version consist of exactly the same code and install/remove the same native dependencies on every distro.
 
