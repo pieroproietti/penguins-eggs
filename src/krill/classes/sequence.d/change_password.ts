@@ -9,6 +9,7 @@
 
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
+import Utils from '../../../classes/utils.js'
 
 /**
  * changePassword
@@ -16,7 +17,7 @@ import Sequence from '../sequence.js'
  * @param newPassword
  */
 export default async function changePassword(this: Sequence, name = 'live', newPassword = 'evolution') {
-  const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} /usr/sbin/chpasswd ${this.toNull}`
+  const cmd = `echo ${name}:${newPassword} | chroot ${this.installTarget} ${this.toNull}`
   
   await exec(cmd, this.echo)
 }

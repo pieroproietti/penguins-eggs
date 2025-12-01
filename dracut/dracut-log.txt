@@ -1,3 +1,0 @@
-dracut[I]: Executing: /usr/bin/dracut --force --confdir /usr/lib/penguins-eggs/dracut/dracut.conf.d --kmoddir /lib/modules/6.12.48+deb13-amd64 /home/eggs/iso/live/initrd.img-6.12.48+deb13-amd64 6.12.48+deb13-amd64
-dracut[I]: 62bluetooth: Could not find any command of '/usr/lib/bluetooth/bluetoothd /usr/libexec/bluetooth/bluetoothd'!
-dracut[E]: Module '90block' cannot be found.
