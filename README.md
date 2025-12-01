@@ -68,13 +68,19 @@ The AppImage will be be automatically configured and renamed as `/usr/bin/eggs`.
 
 `eggs love` to get your system remastered as live ISO.
 
-Before to try AppImage depending on your distro, you need this packages installed:
-
+## Before to try AppImage depending on your distro, you need this packages installed:
 * Alpine: `sudo apk add fuse`
 * Arch/Manjaro: `sudo pacman -S fuse2`
 * Debian/Devuan/Ubuntu: `sudo apt-get install fuse libfuse2`
-* Fedora/RHEL: sudo dnf `install fuse fuse-libs`
-* Opensuse: sudo zypper `install fuse fuse-libs`
+* Fedora/RHEL: `sudo dnf install fuse fuse-libs`
+* Opensuse: `sudo zypper install fuse fuse-libs`
+
+## AppImage installation
+penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from [github.com/pieroproietti](https://github.com/pieroproietti/penguins-eggs/releases) or on [appimage.github.io](https://appimage.github.io/penguins-eggs), then run the following commands:
+```
+$ chmod +x penguins-eggs-25.11.29-1-x86_64.AppImage
+$ sudo ./penguins-eggs-25.11.29-1-x86_64.AppImage
+```
 
 Note that the AppImage version and the native version consist of exactly the same code and install/remove the same native dependencies on every distro.
 
@@ -514,6 +520,8 @@ sudo eggs produce --max
 - [Presentation](#presentation)
 - [Installation](#installation)
   - [AppImage](#appimage)
+  - [Before to try AppImage depending on your distro, you need this packages installed:](#before-to-try-appimage-depending-on-your-distro-you-need-this-packages-installed)
+  - [AppImage installation](#appimage-installation)
   - [Native packages](#native-packages)
   - [penguins-eggs-25.7.x installation](#penguins-eggs-257x-installation)
     - [using fresh-eggs](#using-fresh-eggs)

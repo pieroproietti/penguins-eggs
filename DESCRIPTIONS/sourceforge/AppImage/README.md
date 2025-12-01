@@ -40,11 +40,10 @@ Before to try AppImage depending on your distro, you need this packages installe
 * Opensuse: `sudo zypper install fuse fuse-libs`
 
 ## AppImage installation
-penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from https://github.com/pieroproietti/penguins-eggs/releases, then run the following commands:
+penguins-eggs as an AppImage, it can be installed on all supported distributions. Download it from [github.com/pieroproietti](https://github.com/pieroproietti/penguins-eggs/releases) or on [appimage.github.io](https://appimage.github.io/penguins-eggs), then run the following commands:
 ```
-$ chmod +x penguins-eggs-25.11.24-1-x86_64.AppImage
-$ sudo mv penguins-eggs-25.11.24-1-x86_64.AppImage /usr/local/bin/eggs
-$ sudo eggs setup
+$ chmod +x penguins-eggs-25.11.29-1-x86_64.AppImage
+$ sudo ./penguins-eggs-25.11.29-1-x86_64.AppImage
 ```
 
 [![Get it as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://appimage.github.io/penguins-eggs/)
