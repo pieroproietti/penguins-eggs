@@ -8,7 +8,7 @@
 [![drive](https://img.shields.io/badge/drive-isos-blue)](https://penguins-eggs.net/drive)
 [![sourceforge](https://img.shields.io/badge/sourceforge-all-blue)](https://sourgeforge.net/project/penguins-eggs)
 [![ver](https://img.shields.io/npm/v/penguins-eggs.svg)](https://npmjs.org/package/penguins-eggs)
-[![Get it as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://github.com/pieroproietti/penguins-eggs/releases)
+[![Get it as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://appimage.github.io/penguins-eggs/)
 
 
 <a href="https://drive.google.com/drive/folders/19fwjvsZiW0Dspu2Iq-fQN0J-PDbKBlYY">
@@ -47,6 +47,6 @@ $ sudo mv penguins-eggs-25.11.24-1-x86_64.AppImage /usr/local/bin/eggs
 $ sudo eggs setup
 ```
 
-[![Get it as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://github.com/pieroproietti/penguins-eggs/releases)
+[![Get it as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://appimage.github.io/penguins-eggs/)
 
 
