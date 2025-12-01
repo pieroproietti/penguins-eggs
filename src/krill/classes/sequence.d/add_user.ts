@@ -22,7 +22,7 @@ import Sequence from '../sequence.js'
  * @param roomNumber
  * @param workPhone
  * @param homePhone
- */
+ */ 
 export default async function addUser(this: Sequence, username = 'live', password = 'evolution', fullusername = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
 
   // adduser user
@@ -38,7 +38,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
   }
   await exec(cmd, this.echo)
   
-  cmd = `echo ${username}:${password} | chroot ${this.installTarget} /usr/sbin/chpasswd ${this.toNull}`
+  cmd = `echo ${username}:${password} | chroot ${this.installTarget} ${Utils.chpasswdPath()} ${this.toNull}`
   await exec(cmd, this.echo)
 
   let group = 'wheel'

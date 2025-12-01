@@ -6,104 +6,157 @@
  * license: MIT
  */
 
-// packages
 import fs from 'fs'
 import path from 'node:path'
 import yaml from 'js-yaml'
+import { execSync } from 'node:child_process'
+import * as bcrypt from 'bcryptjs'
 
-
-// classes
 import Ovary from '../ovary.js'
-
-// functions
 import { exec } from '../../lib/utils.js'
 import rexec from './rexec.js'
 import Utils from '../utils.js'
 
-// _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-   * list degli utenti: grep -E 1[0-9]{3}  /etc/passwd | sed s/:/\ / | awk '{print $1}'
-   * create la home per user_opt
-   * @param verbose
-   */
+ * Genera un hash Bcrypt ($2a$) compatibile con Linux PAM.
+ * Sostituisce SHA-512 ($6$) ma è ugualmente accettato e sicuro.
+ */
+function getLinuxHash(password: string): string {
+    // Genera un salt con costo 10
+    const salt = bcrypt.genSaltSync(10)
+    // Ritorna stringa tipo: $2a$10$N9qo8u...
+    return bcrypt.hashSync(password, salt)
+}
+
+/**
+ * Aggiunge un utente a un gruppo modificando direttamente il file /etc/group.
+ * Bypassa i problemi di 'usermod' (exit code 6) su ambienti chroot/minimal.
+ */
+function addUserToGroupFile(mountPath: string, groupName: string, userName: string) {
+    const groupFile = path.join(mountPath, 'etc', 'group')
+    
+    if (fs.existsSync(groupFile)) {
+        try {
+            let content = fs.readFileSync(groupFile, 'utf8')
+            let lines = content.split('\n')
+            let modified = false
+
+            lines = lines.map(line => {
+                // Cerca la riga che inizia con "groupName:"
+                if (line.startsWith(`${groupName}:`)) {
+                    const parts = line.split(':')
+                    // parts[3] contiene la lista utenti (es: "user1,user2")
+                    const currentUsers = parts[3] ? parts[3].split(',') : []
+                    
+                    if (!currentUsers.includes(userName)) {
+                        currentUsers.push(userName)
+                        parts[3] = currentUsers.join(',') // Ricostruisce la lista
+                        modified = true
+                        return parts.join(':') // Ricostruisce la riga
+                    }
+                }
+                return line
+            })
+
+            if (modified) {
+                fs.writeFileSync(groupFile, lines.join('\n'))
+                // Non logghiamo nulla per tenere la console pulita, o usa console.log se vuoi debug
+            }
+        } catch (e) {
+            console.error(`Errore scrivendo su ${groupFile}:`, e)
+        }
+    }
+}
+
 export async function userCreateLive(this: Ovary) {
     if (this.verbose) {
         console.log('Ovary: userCreateLive')
     }
 
+    const merged = this.settings.work_dir.merged
+    const user = this.settings.config.user_opt
+    const userPwd = this.settings.config.user_opt_passwd
+    const rootPwd = this.settings.config.root_passwd
+
     const cmds: string[] = []
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' rm /home/' + this.settings.config.user_opt + ' -rf', this.verbose))
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' mkdir /home/' + this.settings.config.user_opt, this.verbose))
 
-    // Create user using useradd
-    cmds.push(await rexec('chroot ' + this.settings.work_dir.merged + ' useradd ' + this.settings.config.user_opt + ' --home-dir /home/' + this.settings.config.user_opt + ' --shell /bin/bash ', this.verbose))
-
-    // live password 
-    cmds.push(await rexec('echo ' + this.settings.config.user_opt + ':' + this.settings.config.user_opt_passwd + ' | chroot ' + this.settings.work_dir.merged + ' /usr/sbin/chpasswd', this.verbose))
-
-    // root password
-    cmds.push(await rexec(' echo root:' + this.settings.config.root_passwd + ' | chroot ' + this.settings.work_dir.merged + ' /usr/sbin/chpasswd', this.verbose))
-
-    // Alpine naked don't have /etc/skel
-    if (fs.existsSync('/etc/skel')) {
-        cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' cp /etc/skel/. /home/' + this.settings.config.user_opt + ' -R', this.verbose))
+    // 1. PULIZIA (Diretta, senza chroot)
+    if (fs.existsSync(`${merged}/home/${user}`)) {
+         cmds.push(await rexec(`rm -rf ${merged}/home/${user}`, this.verbose))
     }
 
-    // da problemi con il mount sshfs
-    cmds.push(await rexec('chroot  ' + this.settings.work_dir.merged + ' chown ' + this.settings.config.user_opt + ':users' + ' /home/' + this.settings.config.user_opt + ' -R', this.verbose))
+    // 2. CREAZIONE UTENTE 
+    // Usiamo useradd dell'HOST con --root. 
+    // È sicuro, usa le librerie del tuo sistema per scrivere i file nella ISO.
+    // Ignoriamo errore se utente esiste (|| true)
+    cmds.push(await rexec(`useradd --root ${merged} ${user} -m --shell /bin/bash || true`, this.verbose))
 
+    // 3. CALCOLO HASH IN NODEJS (BCRYPT)
+    const userHash = getLinuxHash(userPwd)
+    const rootHash = getLinuxHash(rootPwd)
+
+    // 4. INIEZIONE NELLO SHADOW
+    // Usiamo sed per scrivere l'hash calcolato.
+    // Usiamo '|' come delimitatore perché l'hash bcrypt contiene '/' e '$'
+    if (userHash) {
+        cmds.push(await rexec(`sed -i 's|^${user}:[^:]*:|${user}:${userHash}:|' ${merged}/etc/shadow`, this.verbose))
+    }
+    if (rootHash) {
+        cmds.push(await rexec(`sed -i 's|^root:[^:]*:|root:${rootHash}:|' ${merged}/etc/shadow`, this.verbose))
+    }
+
+    // 5. FIX PERMESSI HOME
+    try {
+        // Nota: grep deve girare sulla guest per leggere i valori corretti
+        const uid = execSync(`grep "^${user}:" ${merged}/etc/passwd | cut -d: -f3`).toString().trim()
+        const gid = execSync(`grep "^${user}:" ${merged}/etc/passwd | cut -d: -f4`).toString().trim()
+        
+        if (uid && gid) {
+             cmds.push(await rexec(`chown -R ${uid}:${gid} ${merged}/home/${user}`, this.verbose))
+        }
+    } catch (e) {
+        console.log("Warning: impossibile settare permessi home (utente forse non creato?)")
+    }
 
     /**
-     * 
+     * GESTIONE GRUPPI (Manuale via Node.js per massima affidabilità)
+     * Invece di chiamare binari usermod/gpasswd che falliscono, modifichiamo il file testo.
      */
+    
+    // Gruppi specifici per famiglia
+    const groupsToAdd: string[] = []
+
     switch (this.familyId) {
-        case 'alpine': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-
+        case 'alpine': 
+            groupsToAdd.push('wheel')
             break
-        }
-
-        case 'archlinux': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} wheel`, this.verbose))
-
-            // check or create group: autologin
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} getent group autologin || chroot ${this.settings.work_dir.merged} groupadd autologin`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} gpasswd -a ${this.settings.config.user_opt} autologin`, this.verbose))
-
+        case 'archlinux': 
+            groupsToAdd.push('wheel', 'autologin')
             break
-        }
-
-        case 'debian': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sudo ${this.settings.config.user_opt}`, this.verbose))
-
+        case 'debian': 
+            groupsToAdd.push('sudo')
             break
-        }
-
-        case 'fedora': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-
+        case 'fedora': 
+            groupsToAdd.push('wheel')
             break
-        }
-
-        case 'openmamba': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG sysadmin ${this.settings.config.user_opt}`, this.verbose))
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG autologin ${this.settings.config.user_opt}`, this.verbose))
-
+        case 'openmamba': 
+            groupsToAdd.push('sysadmin', 'autologin')
             break
-        }
-
-        case 'opensuse': {
-            cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG wheel ${this.settings.config.user_opt}`, this.verbose))
-
+        case 'opensuse': 
+            groupsToAdd.push('wheel')
             break
-        }
-        // No default
+    }
+
+    // Aggiungi i gruppi definiti sopra
+    for (const g of groupsToAdd) {
+        addUserToGroupFile(merged, g, user)
+        if (this.verbose) console.log(`Added ${user} to group ${g} (manual)`)
     }
 
     /**
-     * look to calamares/modules/users.conf for groups
+     * GESTIONE GRUPPI DA CALAMARES/CONFIG
      */
     let usersConf = '/etc/calamares/modules/users.conf'
     if (!fs.existsSync(usersConf)) {
@@ -113,27 +166,15 @@ export async function userCreateLive(this: Ovary) {
     if (fs.existsSync(usersConf)) {
         interface IUserCalamares {
             defaultGroups: string[]
-            doAutologin: boolean
-            doReusePassword: boolean
-            passwordRequirements: {
-                maxLenght: number
-                minLenght: number
-            }
-            setRootPassword: boolean
-            sudoersGroup: string
-            userShell: string
         }
         const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
+        
         for (const group of o.defaultGroups) {
-            const groupExists = await exec(`chroot ${this.settings.work_dir.merged} getent group ${group}`, {ignore: true})
-            if (groupExists.code == 0) {
-                cmds.push(await rexec(`chroot ${this.settings.work_dir.merged} usermod -aG ${group} ${this.settings.config.user_opt} ${this.toNull}`, this.verbose))
-                Utils.warning(`added ${this.settings.config.user_opt} to group ${group}`)
-            }
+            // Aggiungiamo direttamente via file. Se il gruppo non esiste nel file, la funzione lo ignora.
+            addUserToGroupFile(merged, group, user)
         }
-    } else {
-        console.log(`il file ${usersConf} non esiste!`)
-        await Utils.pressKeyToExit()
+        if (this.verbose) console.log(`Processed Calamares default groups for ${user}`)
+
     }
 
 }

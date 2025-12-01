@@ -112,9 +112,9 @@ export default class Utils {
     * isAppImage
     */
    static isAppImage(): boolean {
-        return !!process.env.APPIMAGE || 
-            process.execPath.includes('.AppImage') ||
-            process.execPath.includes('/tmp/.mount_');
+      return !!process.env.APPIMAGE ||
+         process.execPath.includes('.AppImage') ||
+         process.execPath.includes('/tmp/.mount_');
    }
 
    /**
@@ -797,12 +797,12 @@ export default class Utils {
 
       const ipParts = ip.split('.').map(Number);
       const maskParts = netmask.split('.').map(Number);
-      
+
       const broadcastParts = ipParts.map((part, index) => {
          // Bitwise OR tra il blocco IP e il blocco Netmask invertito (255 - mask)
          return part | (255 - maskParts[index]);
       });
-      
+
       return broadcastParts.join('.');
    }
 
@@ -977,16 +977,16 @@ export default class Utils {
     * @returns flag
     */
    static flag(): string {
-      let type=''
+      let type = ''
       if (!Utils.isAppImage()) {
-         type=' native'
+         type = ' native'
       }
 
-      let title=`${pjson.name}`
+      let title = `${pjson.name}`
 
-      let green = ` ${title}`.padEnd(25," ")
-      let white = ` Perri's brewery edition `.padEnd(25," ")
-      let red = ` v${pjson.version}${type} `.padStart(25," ")
+      let green = ` ${title}`.padEnd(25, " ")
+      let white = ` Perri's brewery edition `.padEnd(25, " ")
+      let red = ` v${pjson.version}${type} `.padStart(25, " ")
 
       return chalk.bgGreen.whiteBright(green) +
          chalk.bgWhite.blue(white) +
@@ -1100,4 +1100,17 @@ export default class Utils {
       // console.log('wait...')
       return new Promise(resolve => setTimeout(resolve, ms));
    }
+
+   /**
+    * chpasswdPath
+    * @returns 
+    */
+   static chpasswdPath() {
+      let chpasswdPath = '/usr/sbin/chpasswd'
+      if (fs.existsSync(chpasswdPath)) {
+         chpasswdPath = '/usr/bin/chpasswd'
+      }
+      return chpasswdPath
+   }
+   
 }

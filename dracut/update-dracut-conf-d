@@ -1,2 +1,0 @@
-#!/bin/bash
-sudo cp dracut.conf.d/*.conf /usr/lib/penguins-eggs/dracut/dracut.conf.d/
