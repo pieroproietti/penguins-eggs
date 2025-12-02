@@ -1,10 +1,7 @@
 /**
  * ./src/krill/modules/unpackfs.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
+ * * CLEANED: Just unpacks. SELinux is handled via autorelabel on first boot.
  */
 
 import Utils from '../../../classes/utils.js'
@@ -14,11 +11,22 @@ import path from 'path'
 
 /**
  * unpackfs
+ * Scompatta il filesystem (senza tentare fix SELinux costosi qui)
  */
 export default async function unpackfs(this: Sequence): Promise<void> {
   const squafsPath = path.join(this.distro.liveMediumPath, this.distro.squashfs)
+  
+  // -d: destination
+  // -f: force (overwrite)
   const cmd = `unsquashfs -d ${this.installTarget} -f ${squafsPath} ${this.toNull}`
-  const echoYes = Utils.setEcho(true)
+  
+  // Usiamo echo false per evitare di intasare il log con migliaia di file
   const echoNo = Utils.setEcho(false)
+  
+  console.log('Unpacking filesystem (this may take a while)...')
+  
+  // Esecuzione
   await exec(cmd, echoNo)
+  
+  console.log('Filesystem unpacked successfully.')
 }
