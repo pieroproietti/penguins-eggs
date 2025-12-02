@@ -1101,16 +1101,5 @@ export default class Utils {
       return new Promise(resolve => setTimeout(resolve, ms));
    }
 
-   /**
-    * chpasswdPath
-    * @returns 
-    */
-   static chpasswdPath() {
-      let chpasswdPath = '/usr/sbin/chpasswd'
-      if (fs.existsSync(chpasswdPath)) {
-         chpasswdPath = '/usr/bin/chpasswd'
-      }
-      return chpasswdPath
-   }
    
 }
