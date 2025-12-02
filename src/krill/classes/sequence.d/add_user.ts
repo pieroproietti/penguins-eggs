@@ -1,95 +1,134 @@
 /**
- * ./src/krill/modules/add-user.ts
+ * ./src/krill/classes/secquence.d/add-user.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
+ * * REFACTORED: Uses "The SysUser Master" class.
+ * Replaces chroot/binary dependencies with pure Node.js manipulation.
  */
 
+import SysUsers, { IPasswdEntry } from '../../../classes/sys-users.js'
 import Utils from '../../../classes/utils.js'
-import fs from 'fs'
-import yaml from 'js-yaml'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
+import fs from 'fs'
+import path from 'path'
+import yaml from 'js-yaml'
 
-/**
- *
- * @param this
- * @param username
- * @param password
- * @param fullusername
- * @param roomNumber
- * @param workPhone
- * @param homePhone
- */ 
+interface IUserCalamares {
+    defaultGroups: string[]
+    // Altri campi opzionali ignorati per ora
+}
+
 export default async function addUser(this: Sequence, username = 'live', password = 'evolution', fullusername = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
+    
+    const target = this.installTarget
+    const familyId = this.distro.familyId
+    
+    // --- 1. INIZIALIZZAZIONE SYSUSERS ---
+    const sysUsers = new SysUsers(target, familyId)
+    sysUsers.load() // Carica passwd, shadow, group in memoria
+    
+    console.log(`Creating user ${username} via SysUsers (Safe Mode)...`)
 
-  // adduser user
-  let cmd = `chroot ${this.installTarget} adduser ${username} --home /home/${username} --shell /bin/bash --disabled-password --gecos "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-  if (this.distro.familyId === 'archlinux') {
-    cmd = `chroot ${this.installTarget} useradd --create-home --shell /bin/bash ${username} ${this.toNull}`
-  } else if (this.distro.familyId === 'fedora') {
-    cmd = `chroot ${this.installTarget} adduser ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-  } else if (this.distro.familyId === 'openmamba') {
-    cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-  } else if (this.distro.familyId === 'opensuse') {
-    cmd = `chroot ${this.installTarget} useradd ${username} --create-home --shell /bin/bash --comment "${fullusername},${roomNumber},${workPhone},${homePhone}" ${this.toNull}`
-  }
-  await exec(cmd, this.echo)
-  
-  cmd = `echo ${username}:${password} | chroot ${this.installTarget} ${Utils.chpasswdPath()} ${this.toNull}`
-  await exec(cmd, this.echo)
-
-  let group = 'wheel'
-  if (this.distro.familyId === 'debian') {
-    group = 'sudo'
-  } else if (this.distro.familyId === 'openmamba') {
-    group = 'sysadmin'
-  } 
-
-  cmd = `chroot ${this.installTarget} usermod -aG ${group} ${username} ${this.toNull}`
-  await exec(cmd, this.echo)
-
-  // add autologin group in archlinux
-  await exec(cmd, this.echo)
-  if (this.distro.familyId === 'archlinux') {
-    await exec(`chroot ${this.installTarget} getent group autologin || groupadd autologin`)
-    await exec(`chroot ${this.installTarget} usermod -aG autologin ${username}`)
-  }
-
-  /**
-   * look to calamares/modules/users.conf for groups
-   */
-  let usersConf = '/etc/calamares/modules/users.conf'
-  if (!fs.existsSync(usersConf)) {
-    usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
-  }
-
-  if (fs.existsSync(usersConf)) {
-    interface IUserCalamares {
-      defaultGroups: string[]
-      doAutologin: boolean
-      doReusePassword: boolean
-      passwordRequirements: {
-        maxLenght: number
-        minLenght: number
-      }
-      setRootPassword: boolean
-      sudoersGroup: string
-      userShell: string
+    // --- 2. PREPARAZIONE DATI ---
+    
+    // Shell detection (Fallback per Alpine/Minimal)
+    let shell = '/bin/bash'
+    if (!fs.existsSync(path.join(target, 'bin/bash')) && fs.existsSync(path.join(target, 'bin/ash'))) {
+        shell = '/bin/ash'
     }
-    const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
-    for (const group of o.defaultGroups) {
-      const groupExists = await exec(`getent group ${group}`)
-      if (groupExists.code == 0) {
-        let addGroup = `chroot ${this.installTarget} usermod -aG ${group} ${username}`
-        await exec(addGroup)
-      }
-    }
-  } else {
-    console.log(`cannot find: ${usersConf}!`)
-    await Utils.pressKeyToExit()
-  }
 
+    // Definizione oggetto utente
+    const newUser: IPasswdEntry = {
+        username: username,
+        password: 'x',
+        uid: '1000', // Hardcoded per il primo utente (standard installer)
+        gid: '1000',
+        gecos: `${fullusername},${roomNumber},${workPhone},${homePhone}`,
+        home: `/home/${username}`,
+        shell: shell
+    }
+
+    // --- 3. MODIFICHE LOGICHE (IN MEMORIA) ---
+    
+    // Aggiunge l'utente (gestisce passwd, shadow, group primario, subuid)
+    sysUsers.addUser(newUser, password)
+
+    // Aggiungi ai gruppi amministrativi (logica distro)
+    let adminGroup = 'wheel'
+    if (['debian', 'ubuntu', 'linuxmint', 'pop', 'neon'].includes(familyId)) {
+        adminGroup = 'sudo'
+    } else if (familyId === 'openmamba') {
+        adminGroup = 'sysadmin'
+    }
+    sysUsers.addUserToGroup(username, adminGroup)
+
+    // Aggiungi ai gruppi definiti in Calamares/Eggs config
+    let usersConf = '/etc/calamares/modules/users.conf'
+    if (!fs.existsSync(usersConf)) {
+        usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
+    }
+    
+    if (fs.existsSync(usersConf)) {
+        try {
+            const content = fs.readFileSync(usersConf, 'utf8')
+            const o = yaml.load(content) as IUserCalamares
+            if (o && o.defaultGroups) {
+                for (const grp of o.defaultGroups) {
+                    sysUsers.addUserToGroup(username, grp)
+                }
+            }
+        } catch (e) { 
+            console.error('Warning: Error parsing users.conf, skipping extra groups.', e) 
+        }
+    }
+
+    // Fix specifico Archlinux (Autologin)
+    if (familyId === 'archlinux') {
+        sysUsers.addUserToGroup(username, 'autologin')
+    }
+
+    // --- 4. SALVATAGGIO ATOMICO SU DISCO ---
+    // Scrive tutti i file di config e applica chcon (SELinux) se necessario
+    await sysUsers.save()
+
+
+    // --- 5. CREAZIONE FISICA HOME DIRECTORY ---
+    // Queste operazioni toccano il filesystem reale, quindi usiamo exec/fs
+    const homeDir = path.join(target, newUser.home)
+    
+    // Cleanup preventivo
+    await exec(`rm -rf ${homeDir}`, this.echo)
+    
+    // Creazione da /etc/skel
+    const skelPath = path.join(target, 'etc', 'skel')
+    if (fs.existsSync(skelPath)) {
+        await exec(`mkdir -p ${homeDir}`, this.echo)
+        await exec(`cp -rT ${skelPath} ${homeDir}`, this.echo)
+    } else {
+        await exec(`mkdir -p ${homeDir}`, this.echo)
+    }
+
+    // Permessi e Proprietario
+    await exec(`chown -R ${newUser.uid}:${newUser.gid} ${homeDir}`, this.echo)
+    
+    // Privacy: 700 è meglio di 755 per la home utente
+    await exec(`chmod 700 ${homeDir}`, this.echo)
+
+    // --- 6. FIX SELINUX FINALE (HOME & RELABEL) ---
+    // SysUsers ha sistemato /etc/*, ma la home directory è appena stata creata
+    // e potrebbe avere contesti errati.
+    if (['fedora', 'rhel', 'centos', 'almalinux', 'rocky'].includes(familyId)) {
+        try {
+            console.log('Applying SELinux contexts to home directory...')
+            // Fix contesto home
+            await exec(`chcon -R -t user_home_t ${homeDir}`, { echo: false }).catch(() => {})
+            
+            // Fix "Nuclear Option": forza relabel al boot se qualcosa fosse sfuggito
+            await exec(`touch ${target}/.autorelabel`, { echo: false })
+        } catch (e) {
+            console.error('SELinux home fix warning:', e)
+        }
+    }
+
+    console.log(`User ${username} successfully configured via SysUser Master.`)
 }

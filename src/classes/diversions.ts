@@ -78,7 +78,7 @@ export default class Diversions {
         break;
       case 'fedora':
       case 'openmamba':
-        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs selinux=0`;
+        kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs enforcing=0`;
         break;
       case 'opensuse':
         kp += `root=live:CDLABEL=${volid} rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs apparmor=0`;
