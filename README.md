@@ -519,13 +519,30 @@ sudo eggs produce --max
 * [`eggs config`](#eggs-config)
 * [`eggs cuckoo`](#eggs-cuckoo)
 * [`eggs dad`](#eggs-dad)
+* [`eggs export appimage`](#eggs-export-appimage)
+* [`eggs export iso`](#eggs-export-iso)
+* [`eggs export pkg`](#eggs-export-pkg)
+* [`eggs export tarballs`](#eggs-export-tarballs)
 * [`eggs help [COMMAND]`](#eggs-help-command)
 * [`eggs kill`](#eggs-kill)
 * [`eggs krill`](#eggs-krill)
 * [`eggs love`](#eggs-love)
 * [`eggs mom`](#eggs-mom)
 * [`eggs produce`](#eggs-produce)
+* [`eggs setup install`](#eggs-setup-install)
+* [`eggs setup purge`](#eggs-setup-purge)
+* [`eggs status`](#eggs-status)
+* [`eggs tools clean`](#eggs-tools-clean)
+* [`eggs tools repo`](#eggs-tools-repo)
+* [`eggs tools skel`](#eggs-tools-skel)
+* [`eggs tools stat`](#eggs-tools-stat)
+* [`eggs tools yolk`](#eggs-tools-yolk)
+* [`eggs update`](#eggs-update)
 * [`eggs version`](#eggs-version)
+* [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
+* [`eggs wardrobe list [REPO]`](#eggs-wardrobe-list-repo)
+* [`eggs wardrobe show [REPO]`](#eggs-wardrobe-show-repo)
+* [`eggs wardrobe wear [REPO]`](#eggs-wardrobe-wear-repo)
 
 ## `eggs adapt`
 
@@ -546,7 +563,7 @@ EXAMPLES
   $ eggs adapt
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/adapt.ts)_
+_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -610,7 +627,7 @@ EXAMPLES
   sudo eggs calamares --remove
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/calamares.ts)_
+_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -637,7 +654,7 @@ EXAMPLES
   sudo eggs config --clean --nointeractive
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/config.ts)_
+_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/config.ts)_
 
 ## `eggs cuckoo`
 
@@ -658,7 +675,7 @@ EXAMPLES
   sudo eggs cuckoo
 ```
 
-_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/cuckoo.ts)_
+_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/cuckoo.ts)_
 
 ## `eggs dad`
 
@@ -687,7 +704,109 @@ EXAMPLES
   sudo dad --default
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/dad.ts)_
+_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/dad.ts)_
+
+## `eggs export appimage`
+
+export penguins-eggs AppImage to the destination host
+
+```
+USAGE
+  $ eggs export appimage [-c] [-h] [-v]
+
+FLAGS
+  -c, --clean    remove old .AppImage before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export penguins-eggs AppImage to the destination host
+
+EXAMPLES
+  $ eggs export pkg
+
+  $ eggs export pkg --clean
+
+  $ eggs export pkg --all
+```
+
+_See code: [src/commands/export/appimage.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/export/appimage.ts)_
+
+## `eggs export iso`
+
+export remastered ISO in the destination host
+
+```
+USAGE
+  $ eggs export iso [-C] [-c] [-h] [-v]
+
+FLAGS
+  -C, --checksum  export checksums md5 and sha256
+  -c, --clean     delete old ISOs before to copy
+  -h, --help      Show CLI help.
+  -v, --verbose   verbose
+
+DESCRIPTION
+  export remastered ISO in the destination host
+
+EXAMPLES
+  $ eggs export iso
+
+  $ eggs export iso --clean
+```
+
+_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/export/iso.ts)_
+
+## `eggs export pkg`
+
+export penguins-eggs package to the destination host
+
+```
+USAGE
+  $ eggs export pkg [-a] [-c] [-h] [-v]
+
+FLAGS
+  -a, --all      export all archs
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export penguins-eggs package to the destination host
+
+EXAMPLES
+  $ eggs export pkg
+
+  $ eggs export pkg --clean
+
+  $ eggs export pkg --all
+```
+
+_See code: [src/commands/export/pkg.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/export/pkg.ts)_
+
+## `eggs export tarballs`
+
+export pkg/iso/tarballs to the destination host
+
+```
+USAGE
+  $ eggs export tarballs [-c] [-h] [-v]
+
+FLAGS
+  -c, --clean    remove old .deb before to copy
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  export pkg/iso/tarballs to the destination host
+
+EXAMPLES
+  $ eggs export tarballs
+
+  $ eggs export tarballs --clean
+```
+
+_See code: [src/commands/export/tarballs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/export/tarballs.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -730,7 +849,7 @@ EXAMPLES
   sudo eggs kill
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/kill.ts)_
+_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/kill.ts)_
 
 ## `eggs krill`
 
@@ -771,7 +890,7 @@ EXAMPLES
   sudo eggs install --chroot
 ```
 
-_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/krill.ts)_
+_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/krill.ts)_
 
 ## `eggs love`
 
@@ -797,7 +916,7 @@ EXAMPLES
   $ eggs auto
 ```
 
-_See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/love.ts)_
+_See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/love.ts)_
 
 ## `eggs mom`
 
@@ -817,7 +936,7 @@ EXAMPLES
   $ eggs mom
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/mom.ts)_
+_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -870,7 +989,210 @@ EXAMPLES
   sudo eggs produce --basename=colibri
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.11.2/src/commands/produce.ts)_
+_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/produce.ts)_
+
+## `eggs setup install`
+
+Automatically check and install system prerequisites
+
+```
+USAGE
+  $ eggs setup install
+
+DESCRIPTION
+  Automatically check and install system prerequisites
+
+EXAMPLES
+  $ eggs setup                           # this help
+
+  sudo eggs setup install              # install native dependencies, autocomplete, man, etc
+
+  sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
+```
+
+_See code: [src/commands/setup/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/setup/install.ts)_
+
+## `eggs setup purge`
+
+Automatically check and install system prerequisites
+
+```
+USAGE
+  $ eggs setup purge
+
+DESCRIPTION
+  Automatically check and install system prerequisites
+
+EXAMPLES
+  $ eggs setup                           # this help
+
+  sudo eggs setup install              # install native dependencies, autocomplete, man, etc
+
+  sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
+```
+
+_See code: [src/commands/setup/purge.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/setup/purge.ts)_
+
+## `eggs status`
+
+informations about eggs status
+
+```
+USAGE
+  $ eggs status [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  informations about eggs status
+
+EXAMPLES
+  $ eggs status
+```
+
+_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/status.ts)_
+
+## `eggs tools clean`
+
+clean system log, apt, etc
+
+```
+USAGE
+  $ eggs tools clean [-h] [-n] [-v]
+
+FLAGS
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -v, --verbose        verbose
+
+DESCRIPTION
+  clean system log, apt, etc
+
+EXAMPLES
+  sudo eggs tools clean
+```
+
+_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/tools/clean.ts)_
+
+## `eggs tools repo`
+
+add/remove penguins-repos
+
+```
+USAGE
+  $ eggs tools repo [-a] [-h] [-n] [-r] [-v]
+
+FLAGS
+  -a, --add            add penguins-repos
+  -h, --help           Show CLI help.
+  -n, --nointeractive  no user interaction
+  -r, --remove         remove penguins-repos
+  -v, --verbose        verbose
+
+DESCRIPTION
+  add/remove penguins-repos
+
+EXAMPLES
+  sudo eggs tools repo --add
+
+  sudo eggs tools repo --remove
+```
+
+_See code: [src/commands/tools/repo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/tools/repo.ts)_
+
+## `eggs tools skel`
+
+update skel from home configuration
+
+```
+USAGE
+  $ eggs tools skel [-h] [-u <value>] [-v]
+
+FLAGS
+  -h, --help          Show CLI help.
+  -u, --user=<value>  user to be used
+  -v, --verbose
+
+DESCRIPTION
+  update skel from home configuration
+
+EXAMPLES
+  sudo eggs tools skel
+
+  sudo eggs tools skel --user user-to-be-copied
+```
+
+_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/tools/skel.ts)_
+
+## `eggs tools stat`
+
+get statistics from sourceforge
+
+```
+USAGE
+  $ eggs tools stat [-h] [-m] [-y]
+
+FLAGS
+  -h, --help   Show CLI help.
+  -m, --month  current month
+  -y, --year   current year
+
+DESCRIPTION
+  get statistics from sourceforge
+
+EXAMPLES
+  $ eggs tools stat
+
+  $ eggs tools stat --month
+
+  $ eggs tools stat --year
+```
+
+_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/tools/stat.ts)_
+
+## `eggs tools yolk`
+
+configure eggs to install without internet
+
+```
+USAGE
+  $ eggs tools yolk [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  configure eggs to install without internet
+
+EXAMPLES
+  sudo eggs tools yolk
+```
+
+_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/tools/yolk.ts)_
+
+## `eggs update`
+
+update the Penguins' eggs tool
+
+```
+USAGE
+  $ eggs update [-h] [-v]
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose  verbose
+
+DESCRIPTION
+  update the Penguins' eggs tool
+
+EXAMPLES
+  $ eggs update
+```
+
+_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/update.ts)_
 
 ## `eggs version`
 
@@ -891,6 +1213,122 @@ FLAG DESCRIPTIONS
 ```
 
 _See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.36/src/commands/version.ts)_
+
+## `eggs wardrobe get [REPO]`
+
+get warorobe
+
+```
+USAGE
+  $ eggs wardrobe get [REPO] [-h] [-v]
+
+ARGUMENTS
+  [REPO]  repository to get
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  get warorobe
+
+EXAMPLES
+  $ eggs wardrobe get
+
+  $ eggs wardrobe get your-wardrobe
+```
+
+_See code: [src/commands/wardrobe/get.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/wardrobe/get.ts)_
+
+## `eggs wardrobe list [REPO]`
+
+list costumes and accessoires in wardrobe
+
+```
+USAGE
+  $ eggs wardrobe list [REPO] [-d <value>] [-h] [-v]
+
+ARGUMENTS
+  [REPO]  wardrobe to get
+
+FLAGS
+  -d, --distro=<value>  distro
+  -h, --help            Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  list costumes and accessoires in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe list
+
+  $ eggs wardrobe list your-wardrobe
+
+  $ eggs wardrobe list --distro arch
+```
+
+_See code: [src/commands/wardrobe/list.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/wardrobe/list.ts)_
+
+## `eggs wardrobe show [REPO]`
+
+show costumes/accessories in wardrobe
+
+```
+USAGE
+  $ eggs wardrobe show [REPO] [-h] [-j] [-v] [-w <value>]
+
+ARGUMENTS
+  [REPO]  costume to show
+
+FLAGS
+  -h, --help              Show CLI help.
+  -j, --json              output JSON
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  show costumes/accessories in wardrobe
+
+EXAMPLES
+  $ eggs wardrobe show colibri
+
+  $ eggs wardrobe show accessories/firmwares
+
+  $ eggs wardrobe show accessories/
+```
+
+_See code: [src/commands/wardrobe/show.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/wardrobe/show.ts)_
+
+## `eggs wardrobe wear [REPO]`
+
+wear costume/accessories from wardrobe
+
+```
+USAGE
+  $ eggs wardrobe wear [REPO] [-h] [-a] [-f] [-v] [-w <value>]
+
+ARGUMENTS
+  [REPO]  costume to wear
+
+FLAGS
+  -a, --no_accessories    not install accessories
+  -f, --no_firmwares      not install firmwares
+  -h, --help              Show CLI help.
+  -v, --verbose
+  -w, --wardrobe=<value>  wardrobe
+
+DESCRIPTION
+  wear costume/accessories from wardrobe
+
+EXAMPLES
+  sudo eggs wardrobe wear duck
+
+  sudo eggs wardrobe wear accessories/firmwares
+
+  sudo eggs wardrobe wear wagtail/waydroid
+```
+
+_See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v25.12.3/src/commands/wardrobe/wear.ts)_
 <!-- commandsstop -->
 
 # GUI
