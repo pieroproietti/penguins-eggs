@@ -1,180 +1,112 @@
 /**
- * ./src/classes/ovary.d/create-user-live.ts
+ * src/classes/ovary.d/user-create-live.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
+ * * REFACTORED: Uses "The SysUser Master" class.
+ * Creates the live user directly in the merged filesystem safely.
  */
 
 import fs from 'fs'
-import path from 'node:path'
-import yaml from 'js-yaml'
-import { execSync } from 'node:child_process'
-import * as bcrypt from 'bcryptjs'
-
-import Ovary from '../ovary.js'
+import path from 'path'
 import { exec } from '../../lib/utils.js'
-import rexec from './rexec.js'
-import Utils from '../utils.js'
+import Ovary from '../ovary.js'
+import SysUsers, { IPasswdEntry } from '../sys-users.js'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
-
-/**
- * Genera un hash Bcrypt ($2a$) compatibile con Linux PAM.
- * Sostituisce SHA-512 ($6$) ma è ugualmente accettato e sicuro.
- */
-function getLinuxHash(password: string): string {
-    // Genera un salt con costo 10
-    const salt = bcrypt.genSaltSync(10)
-    // Ritorna stringa tipo: $2a$10$N9qo8u...
-    return bcrypt.hashSync(password, salt)
-}
-
-/**
- * Aggiunge un utente a un gruppo modificando direttamente il file /etc/group.
- * Bypassa i problemi di 'usermod' (exit code 6) su ambienti chroot/minimal.
- */
-function addUserToGroupFile(mountPath: string, groupName: string, userName: string) {
-    const groupFile = path.join(mountPath, 'etc', 'group')
+export default async function userCreateLive(this: Ovary): Promise<void> {
     
-    if (fs.existsSync(groupFile)) {
+    // Target: la directory "merged" dell'overlayfs
+    let target = this.settings.work_dir.merged
+    if (!target || !fs.existsSync(target)) {
+        console.error(`SysUsers Error: Target directory not found at: ${target}`)
+        return
+    }
+
+    const familyId = (this as any).distro?.familyId || (this as any).familyId 
+    console.log(`Creating LIVE user in snapshot at ${target} (Family: ${familyId})...`)
+
+    // 1. CARICAMENTO CONFIGURAZIONE ESISTENTE
+    const sysUsers = new SysUsers(target, familyId)
+    sysUsers.load()
+
+    // 2. DEFINIZIONE UTENTE LIVE
+    const username = this.settings.config.user_opt || 'live'
+    const password = 'evolution' // Password default live
+    
+    // Shell detection
+    let shell = '/bin/bash'
+    if (!fs.existsSync(path.join(target, 'bin/bash')) && fs.existsSync(path.join(target, 'bin/ash'))) {
+        shell = '/bin/ash'
+    }
+
+    const liveUser: IPasswdEntry = {
+        username: username,
+        password: 'x',
+        uid: '1000', // Live user è sempre 1000
+        gid: '1000',
+        gecos: 'Live User,,,',
+        home: `/home/${username}`,
+        shell: shell
+    }
+
+    // 3. CREAZIONE LOGICA (IN MEMORIA)
+    // Rimuove eventuali residui precedenti e aggiunge il nuovo
+    sysUsers.addUser(liveUser, password)
+
+    // Aggiungi ai gruppi amministrativi
+    let adminGroup = 'wheel'
+    if (['debian', 'ubuntu', 'linuxmint', 'pop', 'neon'].includes(familyId)) {
+        adminGroup = 'sudo'
+    } else if (familyId === 'openmamba') {
+        adminGroup = 'sysadmin'
+    }
+    sysUsers.addUserToGroup(username, adminGroup)
+
+    // GRUPPO AUTOLOGIN (Fondamentale per la live!)
+    // Creiamo il gruppo se non esiste (logica semplificata: lo aggiungiamo a sysUsers se manca?)
+    // SysUsers.addUserToGroup fallisce silenziosamente se il gruppo non c'è. 
+    // Per sicurezza su Fedora/Arch, autologin di solito esiste o va creato.
+    // Proviamo ad aggiungerlo:
+    sysUsers.addUserToGroup(username, 'autologin'); // <--- PUNTO E VIRGOLA FONDAMENTALE QUI!
+    
+    // Aggiungiamo anche ai gruppi standard audio/video/network se esistono
+    ['video', 'audio', 'network', 'input', 'lp', 'storage', 'optical'].forEach(grp => {
+        sysUsers.addUserToGroup(username, grp)
+    })
+
+    // 4. SALVATAGGIO ATOMICO SU DISCO
+    await sysUsers.save()
+
+
+    // 5. CREAZIONE FISICA HOME DIRECTORY
+    const homeDir = path.join(target, 'home', username)
+    
+    // Cleanup
+    if (fs.existsSync(homeDir)) await exec(`rm -rf ${homeDir}`, this.echo)
+    
+    // Scheletro (/etc/skel)
+    const skelPath = path.join(target, 'etc', 'skel')
+    if (fs.existsSync(skelPath)) {
+        await exec(`mkdir -p ${homeDir}`, this.echo)
+        await exec(`cp -rT ${skelPath} ${homeDir}`, this.echo)
+    } else {
+        await exec(`mkdir -p ${homeDir}`, this.echo)
+    }
+
+    // Permessi
+    await exec(`chown -R 1000:1000 ${homeDir}`, this.echo)
+    // Per la live va bene anche 755, ma 700 è più sicuro. Lasciamo standard.
+    await exec(`chmod 755 ${homeDir}`, this.echo)
+
+    // 6. FIX SELINUX SPECIFICO PER HOME LIVE
+    if (['fedora', 'rhel', 'centos', 'almalinux', 'rocky'].includes(familyId)) {
         try {
-            let content = fs.readFileSync(groupFile, 'utf8')
-            let lines = content.split('\n')
-            let modified = false
-
-            lines = lines.map(line => {
-                // Cerca la riga che inizia con "groupName:"
-                if (line.startsWith(`${groupName}:`)) {
-                    const parts = line.split(':')
-                    // parts[3] contiene la lista utenti (es: "user1,user2")
-                    const currentUsers = parts[3] ? parts[3].split(',') : []
-                    
-                    if (!currentUsers.includes(userName)) {
-                        currentUsers.push(userName)
-                        parts[3] = currentUsers.join(',') // Ricostruisce la lista
-                        modified = true
-                        return parts.join(':') // Ricostruisce la riga
-                    }
-                }
-                return line
-            })
-
-            if (modified) {
-                fs.writeFileSync(groupFile, lines.join('\n'))
-                // Non logghiamo nulla per tenere la console pulita, o usa console.log se vuoi debug
-            }
+            await exec(`chcon -R -t user_home_t ${homeDir}`, { echo: false }).catch(()=>{})
+            // Nota: .autorelabel nella root della live potrebbe rallentare il boot, 
+            // ma è meglio averlo se i contesti sono dubbi.
+            // await exec(`touch ${target}/.autorelabel`, { echo: false }) 
         } catch (e) {
-            console.error(`Errore scrivendo su ${groupFile}:`, e)
+            console.error('SELinux home fix warning:', e)
         }
     }
-}
-
-export async function userCreateLive(this: Ovary) {
-    if (this.verbose) {
-        console.log('Ovary: userCreateLive')
-    }
-
-    const merged = this.settings.work_dir.merged
-    const user = this.settings.config.user_opt
-    const userPwd = this.settings.config.user_opt_passwd
-    const rootPwd = this.settings.config.root_passwd
-
-    const cmds: string[] = []
-
-    // 1. PULIZIA (Diretta, senza chroot)
-    if (fs.existsSync(`${merged}/home/${user}`)) {
-         cmds.push(await rexec(`rm -rf ${merged}/home/${user}`, this.verbose))
-    }
-
-    // 2. CREAZIONE UTENTE 
-    // Usiamo useradd dell'HOST con --root. 
-    // È sicuro, usa le librerie del tuo sistema per scrivere i file nella ISO.
-    // Ignoriamo errore se utente esiste (|| true)
-    cmds.push(await rexec(`useradd --root ${merged} ${user} -m --shell /bin/bash || true`, this.verbose))
-
-    // 3. CALCOLO HASH IN NODEJS (BCRYPT)
-    const userHash = getLinuxHash(userPwd)
-    const rootHash = getLinuxHash(rootPwd)
-
-    // 4. INIEZIONE NELLO SHADOW
-    // Usiamo sed per scrivere l'hash calcolato.
-    // Usiamo '|' come delimitatore perché l'hash bcrypt contiene '/' e '$'
-    if (userHash) {
-        cmds.push(await rexec(`sed -i 's|^${user}:[^:]*:|${user}:${userHash}:|' ${merged}/etc/shadow`, this.verbose))
-    }
-    if (rootHash) {
-        cmds.push(await rexec(`sed -i 's|^root:[^:]*:|root:${rootHash}:|' ${merged}/etc/shadow`, this.verbose))
-    }
-
-    // 5. FIX PERMESSI HOME
-    try {
-        // Nota: grep deve girare sulla guest per leggere i valori corretti
-        const uid = execSync(`grep "^${user}:" ${merged}/etc/passwd | cut -d: -f3`).toString().trim()
-        const gid = execSync(`grep "^${user}:" ${merged}/etc/passwd | cut -d: -f4`).toString().trim()
-        
-        if (uid && gid) {
-             cmds.push(await rexec(`chown -R ${uid}:${gid} ${merged}/home/${user}`, this.verbose))
-        }
-    } catch (e) {
-        console.log("Warning: impossibile settare permessi home (utente forse non creato?)")
-    }
-
-    /**
-     * GESTIONE GRUPPI (Manuale via Node.js per massima affidabilità)
-     * Invece di chiamare binari usermod/gpasswd che falliscono, modifichiamo il file testo.
-     */
     
-    // Gruppi specifici per famiglia
-    const groupsToAdd: string[] = []
-
-    switch (this.familyId) {
-        case 'alpine': 
-            groupsToAdd.push('wheel')
-            break
-        case 'archlinux': 
-            groupsToAdd.push('wheel', 'autologin')
-            break
-        case 'debian': 
-            groupsToAdd.push('sudo')
-            break
-        case 'fedora': 
-            groupsToAdd.push('wheel')
-            break
-        case 'openmamba': 
-            groupsToAdd.push('sysadmin', 'autologin')
-            break
-        case 'opensuse': 
-            groupsToAdd.push('wheel')
-            break
-    }
-
-    // Aggiungi i gruppi definiti sopra
-    for (const g of groupsToAdd) {
-        addUserToGroupFile(merged, g, user)
-        if (this.verbose) console.log(`Added ${user} to group ${g} (manual)`)
-    }
-
-    /**
-     * GESTIONE GRUPPI DA CALAMARES/CONFIG
-     */
-    let usersConf = '/etc/calamares/modules/users.conf'
-    if (!fs.existsSync(usersConf)) {
-        usersConf = '/etc/penguins-eggs.d/krill/modules/users.conf'
-    }
-
-    if (fs.existsSync(usersConf)) {
-        interface IUserCalamares {
-            defaultGroups: string[]
-        }
-        const o = yaml.load(fs.readFileSync(usersConf, 'utf8')) as IUserCalamares
-        
-        for (const group of o.defaultGroups) {
-            // Aggiungiamo direttamente via file. Se il gruppo non esiste nel file, la funzione lo ignora.
-            addUserToGroupFile(merged, group, user)
-        }
-        if (this.verbose) console.log(`Processed Calamares default groups for ${user}`)
-
-    }
-
+    console.log(`Live user '${username}' created successfully via SysUser Master.`)
 }

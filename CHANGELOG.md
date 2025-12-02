@@ -20,6 +20,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+ovary.d/create-live.ts
+ovary.d/users-remove.ts
+sequence.d/del-user.ts
+sequence.d/add-user.ts
+
 ## v25.11.29
 I am continuing the transition to adopting AppImages as the standard release method for penguins-eggs.
 
