@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+## v25.12.2 Yocto-way
+yocto-way on user-create-live.ts, users-remove-ts and add_users.ts
+
 ## v25.11.29
 I am continuing the transition to adopting AppImages as the standard release method for penguins-eggs.
 
