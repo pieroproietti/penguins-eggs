@@ -208,7 +208,7 @@ export default class Pacman {
     /**
      * Salvo la configurazione di eggs.yaml
      */
-    config.machine_id = Utils.machineId()
+    config.machine_id = '' //Utils.machineId()
     config.vmlinuz = Utils.vmlinuz()
     config.initrd_img = Utils.initrdImg()
     const settings = new Settings()

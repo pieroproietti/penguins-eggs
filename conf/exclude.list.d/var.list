@@ -1,8 +1,7 @@
 ######################################################################################################
 # var: use this exclusions, attention this can lead to lost something
 var/backups/*
-var/cache/* 
-var/lib/aide/*
+var/cache/* var/lib/aide/*
 var/lib/apt/*~
 var/lib/apt/cache/*
 var/lib/apt/cdroms.list
@@ -14,7 +13,10 @@ var/lib/apt/mirrors/
 var/lib/apt/periodic/
 var/lib/aptitude/*.old
 var/lib/cache/*
-var/lib/dbus/machine-id
+
+# NON CANCELLARE QUESTO SU DEVUAN!
+# var/lib/dbus/machine-id
+
 var/lib/dhcp/*
 var/lib/dkms/wireguard/*
 var/lib/dpkg/*~old
@@ -22,8 +24,11 @@ var/lib/gems/2.7.0/cache/*
 var/log/*.log
 var/log/*.log.?
 var/log/*/*
-var/spool/*
+
+# Modifica per var/spool: non cancellare la directory intera, 
+# ma svuota solo directory specifiche se necessario. 
+# Se cancelli "var/spool/*" cron e rsyslog non trovano la cartella e danno errore.
+# var/spool/* var/spool/mail/*
+var/spool/postfix/*
+
 var/tmp/*
-
-
-#var/lib/snapd/*

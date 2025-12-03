@@ -186,7 +186,7 @@ export default class Utils {
    }
 
    /**
-    * Occore vedere un modo per creare machine-id dove non esiste
+    * Usata da pacman e config credo non serva affatto
     */
    static machineId(): string {
       let result = ''
