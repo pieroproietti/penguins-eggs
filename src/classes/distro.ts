@@ -9,7 +9,8 @@
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import shell from 'shelljs'
+import {shx} from '../lib/utils.js'
+
 
 import { IDistro } from '../interfaces/index.js'
 import Utils from './utils.js'
@@ -355,7 +356,7 @@ class Distro implements IDistro {
     if (Diversions.isManjaroBased(this.distroId)) {
       this.liveMediumPath = '/run/miso/bootmnt/'
       this.squashfs = 'manjaro/x86_64/livefs.sfs'
-      this.codenameId = shell.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
+      this.codenameId = shx.exec(`lsb_release -cs`, { silent: true }).stdout.toString().trim()
       this.distroUniqueId = 'manjaro'
     }
 

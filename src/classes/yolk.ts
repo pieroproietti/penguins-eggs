@@ -8,9 +8,7 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import shx from 'shelljs'
-
-import { exec } from '../lib/utils.js'
+import { shx, exec } from '../lib/utils.js'
 import Bleach from './bleach.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'

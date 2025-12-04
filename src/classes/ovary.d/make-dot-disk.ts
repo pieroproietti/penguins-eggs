@@ -11,7 +11,7 @@ import mustache from 'mustache'
 
 // packages
 import fs, { Dirent } from 'node:fs'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 import path from 'path'
 
 // interfaces

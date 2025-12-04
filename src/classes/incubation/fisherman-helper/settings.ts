@@ -14,7 +14,7 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import shx from 'shelljs'
+import {shx} from '../../../lib/utils.js'
 
 import { ISettings } from '../../../interfaces/i-settings.js'
 import Utils from '../../utils.js'

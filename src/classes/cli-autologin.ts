@@ -11,7 +11,7 @@ import { execSync } from '../lib/utils.js'
 // 🔧 [Change 1] - Removed unused `{ link }` import to clean up unnecessary dependencies.
 import fs from 'node:fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../lib/utils.js'
 
 // libraries
 import { exec } from '../lib/utils.js'

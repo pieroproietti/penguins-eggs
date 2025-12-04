@@ -7,8 +7,7 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import { exec } from '../../../lib/utils.js'
-import shx from "shelljs"
+import { exec, shx } from '../../../lib/utils.js'
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../../classes/sequence.js'
 import Utils from '../../../classes/utils.js'

@@ -15,7 +15,7 @@ const pjson = require('../../../package.json')
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 import Diversions from '../diversions.js'
 
 import { IInstaller } from '../../interfaces/i-installer.js'

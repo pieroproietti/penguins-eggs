@@ -16,9 +16,7 @@ import getUsername from '../../lib/get_username.js'
 import getUserfullname from '../../lib/get_userfullname.js'
 import getPassword from '../../lib/get_password.js'
 import getHostname from '../../lib/get_hostname.js'
-import shx from 'shelljs'
-
-
+import {shx} from '../../../lib/utils.js'
 
 
 /**
@@ -48,7 +46,7 @@ export async function users(this: Prepare): Promise<IUsers> {
 
     let hostname = this.krillConfig.hostname
     if (hostname === '' || hostname === undefined) {
-        hostname = shx.exec('cat /etc/hostname').trim()
+        hostname = shx.exec('cat /etc/hostname').stdout.trim()
     }
 
     let autologin = true

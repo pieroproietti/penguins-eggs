@@ -9,7 +9,7 @@
 import os from 'os'
 import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../lib/utils.js'
 
 // libraries
 import { exec } from '../lib/utils.js'

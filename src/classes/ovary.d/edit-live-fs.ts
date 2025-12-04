@@ -10,7 +10,7 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 
 // classes
 import Ovary from '../ovary.js'

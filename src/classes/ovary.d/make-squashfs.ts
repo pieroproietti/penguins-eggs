@@ -9,7 +9,7 @@
 // packages
 import fs from 'fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import { shx } from '../../lib/utils.js'
 import Diversions from '../diversions.js'
 
 // classes

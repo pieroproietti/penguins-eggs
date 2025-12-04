@@ -7,9 +7,7 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
-
-import { exec } from '../../lib/utils.js'
+import { exec, shx} from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -98,8 +96,8 @@ export default class Fedora {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/dnf install ${packageName}`, { silent: true }) === '0') {
-      retVal = true
+    if (shx.exec('/usr/bin/dnf install ' + packageName, { silent: true }).code === 0) {
+          retVal = true
     }
 
     return retVal

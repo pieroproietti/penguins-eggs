@@ -19,7 +19,7 @@ import selectInstallationDevice from '../../lib/select_installation_device.js'
 import selectReplacedPartition from '../../lib/select_replaced_partition.js'
 import selectUserSwapChoice from '../../lib/select_user_swap_choice.js'
 
-import shx from 'shelljs'
+import {shx} from '../../../lib/utils.js'
 
 import selectInstallationMode from '../../lib/select_installation_mode.js'
 

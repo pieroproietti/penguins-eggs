@@ -6,11 +6,10 @@
  * license: MIT
  */
 
-import { execSync } from '../lib/utils.js'
+import { shx, execSync } from '../lib/utils.js'
 import fs from 'node:fs'
 // _dirname
 import path from 'node:path'
-import shx from 'shelljs'
 
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
@@ -155,13 +154,14 @@ export default class Pacman {
    * @param cmd
    */
   static commandIsInstalled(cmd: string): boolean {
-    let installed = false
-    if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
-      installed = true
+    try {
+      shx.exec(`command -V ${cmd}`, { silent: true });
+      return true;
+    } catch (e) {
+      return false;
     }
-
-    return installed
   }
+
 
   /**
    * Restituisce VERO se i file di configurazione SONO presenti
@@ -251,7 +251,6 @@ export default class Pacman {
     }
 
     execSync(`mkdir -p ${init}`)
-    // shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
 
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
