@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import { execSync } from 'node:child_process'
+import { execSync } from '../lib/utils.js'
 import fs from 'node:fs'
 // _dirname
 import path from 'node:path'

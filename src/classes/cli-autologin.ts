@@ -7,7 +7,7 @@
  */
 
 import chalk from 'chalk'
-import { execSync } from 'node:child_process'
+import { execSync } from '../lib/utils.js'
 // 🔧 [Change 1] - Removed unused `{ link }` import to clean up unnecessary dependencies.
 import fs from 'node:fs'
 import path from 'node:path'
