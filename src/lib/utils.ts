@@ -1,3 +1,12 @@
+/**
+ * ./src/lib/utils.ts
+ * penguins-eggs v.25.7.x / ecmascript 2020
+ * author: Piero Proietti
+ * email: piero.proietti@gmail.com
+ * license: MIT
+ */
+
+
 import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync, SpawnSyncOptions } from 'child_process';
@@ -9,6 +18,10 @@ const APPIMAGE_ENV_BLACKLIST = [
   'GSETTINGS_SCHEMA_DIR', 'QT_PLUGIN_PATH', 'XDG_DATA_DIRS', 'LIBRARY_PATH'
 ];
 
+/**
+ * 
+ * @returns 
+ */
 function getCleanEnv(): NodeJS.ProcessEnv {
   const env = { ...process.env };
   if (process.env.APPIMAGE) {
@@ -17,7 +30,9 @@ function getCleanEnv(): NodeJS.ProcessEnv {
   return env;
 }
 
-// --- INTERFACCE ---
+/**
+ * 
+ */
 interface ShellExecResult {
   code: number;
   stdout: string;
@@ -25,15 +40,18 @@ interface ShellExecResult {
 }
 
 /**
- * OGGETTO SHX (EMULATORE SHELLJS)
+ * shx
  * Sostituto drop-in per shelljs che usa API native e ambiente pulito.
  */
 export const shx = {
 
-
   /**
-   * SED: Sostituzione stringhe in file (simile a sed -i)
-   * shx.sed('-i', 'old', 'new', file)
+   * shx.sed
+   * @param flag 
+   * @param regex 
+   * @param replacement 
+   * @param file 
+   * @returns 
    */
   sed: (flag: string, regex: string | RegExp, replacement: string, file: string): void => {
     // Ignoriamo il flag '-i' (in-place è default qui)
@@ -48,7 +66,8 @@ export const shx = {
   },
 
   /**
-   * TOUCH: Aggiorna timestamp o crea file vuoto
+   * shx.touch
+   * @param file 
    */
   touch: (file: string): void => {
     const time = new Date();
@@ -60,9 +79,10 @@ export const shx = {
   },
 
   /**
-     * CP: Copia file o cartelle
-     * Supporta wildcard '*' finale per copiare il contenuto
-     */
+   * shx.cp
+   * Supporta wildcard '*' finale per copiare il contenuto
+   * 
+   */
   cp: (arg1: string, arg2: string, arg3?: string): void => {
     // Gestione argomenti variabili (se c'è il flag '-r')
     let src = arg3 ? arg2 : arg1;
@@ -107,8 +127,9 @@ export const shx = {
   },
 
   /**
-   * RM: Rimuove file o cartelle
-   * Supporta: shx.rm('-rf', path) oppure shx.rm(path)
+   * shx.rm
+   * @param arg1 
+   * @param arg2 
    */
   rm: (arg1: string, arg2?: string): void => {
     const target = arg2 ? arg2 : arg1;
@@ -117,8 +138,9 @@ export const shx = {
   },
 
   /**
-   * MKDIR: Crea directory
-   * Supporta: shx.mkdir('-p', path) oppure shx.mkdir(path)
+   * shx.mkdir
+   * @param arg1 
+   * @param arg2 
    */
   mkdir: (arg1: string, arg2?: string): void => {
     const dir = arg2 ? arg2 : arg1;
@@ -126,15 +148,18 @@ export const shx = {
   },
 
   /**
-   * MV: Sposta file
+   * shx.mv
+   * @param src 
+   * @param dest 
    */
   mv: (src: string, dest: string): void => {
     fs.renameSync(src, dest);
   },
 
   /**
-   * CHMOD: Cambia permessi
-   * Supporta: shx.chmod('+x', file) o ottale
+   * shx.chmod
+   * @param mode 
+   * @param file 
    */
   chmod: (mode: string | number, file: string): void => {
     let finalMode = mode;
@@ -146,8 +171,10 @@ export const shx = {
   },
 
   /**
-   * TEST: Verifica esistenza
-   * shx.test('-e', path)
+   * shx.test
+   * @param flag 
+   * @param pathToCheck 
+   * @returns 
    */
   test: (flag: string, pathToCheck: string): boolean => {
     try {
@@ -161,8 +188,10 @@ export const shx = {
   },
 
   /**
-   * LN: Link simbolici
-   * shx.ln('-s', target, link)
+   * shx.ln
+   * @param flag 
+   * @param target 
+   * @param link 
    */
   ln: (flag: string, target: string, link: string): void => {
     // Ignoriamo il flag '-s' perché fs.symlink lo fa di default su Linux
@@ -173,10 +202,12 @@ export const shx = {
     fs.symlinkSync(target, link);
   },
 
+
   /**
-   * EXEC: Esegue comandi shell (SANITIZZATO)
-   * Ritorna un oggetto { code, stdout, stderr } come ShellJS.
-   * NON lancia eccezioni, ma popola 'code'.
+   * shx.exec
+   * @param command 
+   * @param options 
+   * @returns 
    */
   exec: (command: string, options: { silent?: boolean, async?: boolean } = {}): ShellExecResult => {
     const env = getCleanEnv();
@@ -204,9 +235,14 @@ export const shx = {
 };
 
 
-// --- EXPORT DELLE TUE VECCHIE FUNZIONI (PER COMPATIBILITA') ---
 
-// Manteniamo questa per chi usa execSync aspettandosi stringa o throw error
+
+/**
+ * execSync
+ * @param command 
+ * @param param1 
+ * @returns 
+ */
 export function execSync(command: string, { echo = false, ignore = false, stdio = undefined }: any = {}): string | null {
   if (echo) console.log(command);
   const result = shx.exec(command, { silent: ignore || stdio === 'ignore' });

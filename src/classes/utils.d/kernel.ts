@@ -167,7 +167,7 @@ export default class Kernel {
    * debian, fedora, opensuse, rasberry
    */
   private static vmlinuzFromUname(): string {
-    let kernelVersion = (execSync('uname -r', {silent: true}) || '').trim()
+    let kernelVersion = (execSync('uname -r') || '').trim()
 
     // Try 1: path standard (es. Debian, Ubuntu, Fedora)
     let standardPath = `/boot/vmlinuz-${kernelVersion}`
