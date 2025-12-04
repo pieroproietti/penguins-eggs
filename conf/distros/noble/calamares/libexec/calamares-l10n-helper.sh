@@ -13,11 +13,18 @@
 
 set -ex
 
-. /etc/default/locale
+#Do Tasks For Detected OS
+. /etc/os-release
 
-echo $LANG
-echo $LC_TIME
-without_ext=$(echo $LANG | cut -d. -f1)
+echo "Detected OS ID: $ID"
+
+case $ID in
+  ubuntu) 
+    . /etc/default/locale
+
+    echo $LANG
+    echo $LC_TIME
+    without_ext=$(echo $LANG | cut -d. -f1)
 
 # Calamares technically should mangle locale.gen, but it's broken
 # https://github.com/calamares/calamares/issues/940
@@ -29,10 +36,15 @@ without_ext=$(echo $LANG | cut -d. -f1)
 # regardless of network availablity or calamares bugs.
 # NB: this is a special way of calling it unique to Ubuntu which will mangle
 #   the config and enable it in one go
-/usr/sbin/locale-gen --keep-existing "$LANG"
-/usr/sbin/locale-gen --keep-existing "$LC_TIME"
+    /usr/sbin/locale-gen --keep-existing "$LANG"
+    /usr/sbin/locale-gen --keep-existing "$LC_TIME"
 
-apt-get update || true
+    apt-get update || true
 # apt-get install language-selector-common || true
-missing=$(check-language-support --language="$without_ext")
-apt-get install -y $missing || true
+    missing=$(check-language-support --language="$without_ext")
+    apt-get install -y $missing || true
+    ;;
+  *) 
+    echo "Not pure Ubuntu Distribution. Script skipped"
+    ;;
+esac

@@ -6,10 +6,17 @@
 
 set -ex
 
-echo "Reinstalling ubuntu-keyring"
+#Do Tasks For Detected OS
+. /etc/os-release
 
-ls /etc/apt/sources.list.d/
+echo "Detected OS ID: $ID"
 
-apt-get install --reinstall ubuntu-keyring
-
-ls /etc/apt/sources.list.d/
+case $ID in
+  ubuntu) 
+    echo "Reinstalling ubuntu-keyring"
+    apt install --reinstall ubuntu-keyring
+    ;;
+  *) 
+    echo "Not pure Ubuntu Distribution. Script skipped"
+    ;;
+esac
