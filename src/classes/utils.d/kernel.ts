@@ -63,7 +63,7 @@ export default class Kernel {
         Utils.warning("Non è possibile determinare il kernel in un container.")
         process.exit(1)
       }
-      targetKernel = (execSync('uname -r', {silent:true }) || '').trim()
+      targetKernel = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
     }
     const kernelVersionShort = targetKernel.split('.').slice(0, 2).join('.');
 
@@ -167,7 +167,7 @@ export default class Kernel {
    * debian, fedora, opensuse, rasberry
    */
   private static vmlinuzFromUname(): string {
-    let kernelVersion = (execSync('uname -r') || '').trim()
+    let kernelVersion = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
 
     // Try 1: path standard (es. Debian, Ubuntu, Fedora)
     let standardPath = `/boot/vmlinuz-${kernelVersion}`

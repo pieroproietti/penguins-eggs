@@ -6,21 +6,31 @@
  * license: MIT
  */
 
-
 import fs from 'fs';
 import path from 'path';
-import { spawn, spawnSync, SpawnSyncOptions } from 'child_process';
+// Importiamo con alias per poter wrappare
+import { 
+  spawn as nodeSpawn, 
+  spawnSync as nodeSpawnSync, 
+  SpawnOptions, 
+  SpawnSyncOptions, 
+  SpawnSyncReturns, 
+  ChildProcess 
+} from 'child_process';
 import { IExec } from '../interfaces/index.js';
 
-// --- CONFIGURAZIONE APPIMAGE ---
+/**
+ * Pulizia AppImage
+ * Variabili d'ambiente da rimuovere per evitare conflitti.
+ */
 const APPIMAGE_ENV_BLACKLIST = [
   'LD_LIBRARY_PATH', 'LD_PRELOAD', 'PYTHONPATH', 'PERLLIB',
-  'GSETTINGS_SCHEMA_DIR', 'QT_PLUGIN_PATH', 'XDG_DATA_DIRS', 'LIBRARY_PATH'
+  'GSETTINGS_SCHEMA_DIR', 'QT_PLUGIN_PATH', 'XDG_DATA_DIRS', 
+  'LIBRARY_PATH', 'PKG_CONFIG_PATH', 'GIO_MODULE_DIR', 'APPIMAGE', 'APPDIR'
 ];
 
 /**
- * 
- * @returns 
+ * Ottiene un ambiente pulito dalle variabili AppImage
  */
 function getCleanEnv(): NodeJS.ProcessEnv {
   const env = { ...process.env };
@@ -30,13 +40,72 @@ function getCleanEnv(): NodeJS.ProcessEnv {
   return env;
 }
 
-/**
- * 
- */
 interface ShellExecResult {
   code: number;
   stdout: string;
   stderr: string;
+}
+
+interface ExecSyncOptions {
+  echo?: boolean;
+  ignore?: boolean;
+  stdio?: 'pipe' | 'ignore' | 'inherit';
+}
+
+/**
+ * spawnSync (WRAPPER INTELLIGENTE)
+ * Supporta:
+ * 1. (command, args, options)
+ * 2. (command, options) -> args diventa []
+ */
+export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, arg3?: SpawnSyncOptions): SpawnSyncReturns<string | Buffer> {
+  let args: string[] = [];
+  let options: SpawnSyncOptions = {};
+
+  // Rilevamento argomenti (Polimorfismo)
+  if (Array.isArray(arg2)) {
+    args = arg2;
+    options = arg3 || {};
+  } else if (arg2 && typeof arg2 === 'object') {
+    // TypeScript fix: cast esplicito
+    options = arg2 as SpawnSyncOptions;
+  }
+
+  const env = getCleanEnv();
+  const finalEnv = { ...env, ...(options.env || {}) };
+
+  return nodeSpawnSync(command, args, {
+    ...options,
+    env: finalEnv
+  });
+}
+
+/**
+ * spawn (WRAPPER INTELLIGENTE)
+ * Supporta:
+ * 1. (command, args, options)
+ * 2. (command, options) -> args diventa []
+ */
+export function spawn(command: string, arg2?: readonly string[] | SpawnOptions, arg3?: SpawnOptions): ChildProcess {
+  let args: readonly string[] = [];
+  let options: SpawnOptions = {};
+
+  // Rilevamento argomenti (Polimorfismo)
+  if (Array.isArray(arg2)) {
+    args = arg2;
+    options = arg3 || {};
+  } else if (arg2 && typeof arg2 === 'object') {
+    // TypeScript fix: cast esplicito
+    options = arg2 as SpawnOptions;
+  }
+
+  const env = getCleanEnv();
+  const finalEnv = { ...env, ...(options.env || {}) };
+
+  return nodeSpawn(command, args, {
+    ...options,
+    env: finalEnv
+  });
 }
 
 /**
@@ -45,30 +114,16 @@ interface ShellExecResult {
  */
 export const shx = {
 
-  /**
-   * shx.sed
-   * @param flag 
-   * @param regex 
-   * @param replacement 
-   * @param file 
-   * @returns 
-   */
   sed: (flag: string, regex: string | RegExp, replacement: string, file: string): void => {
-    // Ignoriamo il flag '-i' (in-place è default qui)
     if (!fs.existsSync(file)) return;
 
     const content = fs.readFileSync(file, 'utf8');
-    // Crea una RegExp globale se viene passata una stringa
     const searchRegex = typeof regex === 'string' ? new RegExp(regex, 'g') : regex;
     const newContent = content.replace(searchRegex, replacement);
 
     fs.writeFileSync(file, newContent, 'utf8');
   },
 
-  /**
-   * shx.touch
-   * @param file 
-   */
   touch: (file: string): void => {
     const time = new Date();
     try {
@@ -78,104 +133,59 @@ export const shx = {
     }
   },
 
-  /**
-   * shx.cp
-   * Supporta wildcard '*' finale per copiare il contenuto
-   * 
-   */
   cp: (arg1: string, arg2: string, arg3?: string): void => {
-    // Gestione argomenti variabili (se c'è il flag '-r')
-    let src = arg3 ? arg2 : arg1;
+    const src = arg3 ? arg2 : arg1;
     const dest = arg3 ? arg3 : arg2;
 
-    // --- FIX WILDCARD (*) ---
-    // Se il path finisce con '*', Node non lo capisce. Dobbiamo farlo noi.
     if (src.endsWith('*')) {
-      const srcDir = path.dirname(src); // Rimuove l'asterisco
+      const srcDir = path.dirname(src); 
+      if (!fs.existsSync(srcDir)) return;
+      if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
 
-      if (!fs.existsSync(srcDir)) return; // Se la cartella sorgente non esiste, usciamo
-
-      // Assicuriamoci che la destinazione esista
-      if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest, { recursive: true });
-      }
-
-      // Leggiamo il contenuto e copiamo uno per uno
       const items = fs.readdirSync(srcDir);
       items.forEach(item => {
         const s = path.join(srcDir, item);
         const d = path.join(dest, item);
         fs.cpSync(s, d, { recursive: true, force: true });
       });
-      return; // Abbiamo finito
+      return;
     }
-    // ------------------------
 
-    // Logica standard (senza asterisco)
     let finalDest = dest;
-    // Se la destinazione è una cartella esistente, copiamo DENTRO
     if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
       finalDest = path.join(dest, path.basename(src));
     }
 
-    // Esegue copia
     if (fs.existsSync(src)) {
       fs.cpSync(src, finalDest, { recursive: true, force: true });
-    } else {
-      // Opzionale: loggare che il file sorgente non esiste, ma shelljs -f di solito ignora
     }
   },
 
-  /**
-   * shx.rm
-   * @param arg1 
-   * @param arg2 
-   */
   rm: (arg1: string, arg2?: string): void => {
     const target = arg2 ? arg2 : arg1;
-    // force: true non lancia errore se il file non esiste
     fs.rmSync(target, { recursive: true, force: true });
   },
 
-  /**
-   * shx.mkdir
-   * @param arg1 
-   * @param arg2 
-   */
   mkdir: (arg1: string, arg2?: string): void => {
     const dir = arg2 ? arg2 : arg1;
     fs.mkdirSync(dir, { recursive: true });
   },
 
-  /**
-   * shx.mv
-   * @param src 
-   * @param dest 
-   */
   mv: (src: string, dest: string): void => {
+    if (!fs.existsSync(src)) return;
     fs.renameSync(src, dest);
   },
 
-  /**
-   * shx.chmod
-   * @param mode 
-   * @param file 
-   */
   chmod: (mode: string | number, file: string): void => {
+    if (!fs.existsSync(file)) return;
     let finalMode = mode;
     if (mode === '+x') finalMode = 0o755;
-    if (mode === '755') finalMode = 0o755;
-    if (mode === '644') finalMode = 0o644;
-
+    if (typeof mode === 'string' && !isNaN(parseInt(mode, 8))) {
+       finalMode = parseInt(mode, 8);
+    }
     fs.chmodSync(file, finalMode as fs.Mode);
   },
 
-  /**
-   * shx.test
-   * @param flag 
-   * @param pathToCheck 
-   * @returns 
-   */
   test: (flag: string, pathToCheck: string): boolean => {
     try {
       const stats = fs.statSync(pathToCheck);
@@ -187,43 +197,24 @@ export const shx = {
     }
   },
 
-  /**
-   * shx.ln
-   * @param flag 
-   * @param target 
-   * @param link 
-   */
   ln: (flag: string, target: string, link: string): void => {
-    // Ignoriamo il flag '-s' perché fs.symlink lo fa di default su Linux
-    // Se il link esiste, lo rimuoviamo prima per evitare errori
-    if (fs.existsSync(link)) {
+    if (fs.existsSync(link) || fs.lstatSync(link, {throwIfNoEntry: false})) {
       fs.rmSync(link, { force: true });
     }
     fs.symlinkSync(target, link);
   },
 
-
-  /**
-   * shx.exec
-   * @param command 
-   * @param options 
-   * @returns 
-   */
-  exec: (command: string, options: { silent?: boolean, async?: boolean } = {}): ShellExecResult => {
+  exec: (command: string, options: { silent?: boolean } = {}): ShellExecResult => {
     const env = getCleanEnv();
-
-    // Mappatura opzioni
-    const stdioMode = options.silent ? 'ignore' : 'inherit';
-
-    // Opzioni spawn
     const spawnOpts: SpawnSyncOptions = {
-      stdio: options.silent ? 'pipe' : 'inherit', // Se silent=true, catturiamo per ritornare stdout
+      stdio: options.silent ? 'pipe' : 'inherit',
       env: env,
       shell: '/bin/bash',
       encoding: 'utf-8'
     };
 
-    const result = spawnSync(command, [], spawnOpts);
+    // Usiamo nodeSpawnSync perché calcoliamo l'env qui sopra
+    const result = nodeSpawnSync(command, [], spawnOpts);
 
     return {
       code: result.status ?? 1,
@@ -231,44 +222,54 @@ export const shx = {
       stderr: result.stderr ? result.stderr.toString() : ''
     };
   }
-
 };
-
-
-
 
 /**
  * execSync
- * @param command 
- * @param param1 
- * @returns 
  */
-export function execSync(command: string, { echo = false, ignore = false, stdio = undefined }: any = {}): string | null {
+export function execSync(command: string, options: ExecSyncOptions = {}): string | null {
+  const { echo = false, ignore = false, stdio } = options;
   if (echo) console.log(command);
-  const result = shx.exec(command, { silent: ignore || stdio === 'ignore' });
+  const isSilent = ignore || stdio === 'ignore'; 
+  const result = shx.exec(command, { silent: isSilent });
 
   if (result.code !== 0) {
-    throw new Error(`Command failed: ${command}\nStderr: ${result.stderr}`);
+    throw new Error(`Command failed: ${command}\nExit Code: ${result.code}\nStderr: ${result.stderr}`);
   }
   return result.stdout.trim();
 }
 
-// Manteniamo exec async
+/**
+ * exec (Async)
+ */
 export async function exec(command: string, { echo = false, ignore = false, capture = false } = {}): Promise<IExec> {
   return new Promise((resolve, reject) => {
     if (echo) console.log(command);
+    
     const env = getCleanEnv();
-    const child = spawn(command, [], {
-      stdio: ignore ? 'ignore' : capture ? 'pipe' : 'inherit',
+    // Usiamo nodeSpawn direttamente qui per coerenza
+    const child = nodeSpawn(command, [], {
+      stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit'),
       env: env,
       shell: '/bin/bash'
     });
 
     let stdout = '';
-    if (capture && child.stdout) child.stdout.on('data', d => stdout += d);
+    let stderr = '';
 
-    child.on('error', (error) => reject({ code: 1, error }));
-    child.on('exit', (code) => resolve({ code: code || 0, data: stdout.trim() }));
+    if (capture && child.stdout) child.stdout.on('data', d => stdout += d.toString());
+    if (capture && child.stderr) child.stderr.on('data', d => stderr += d.toString());
+
+    child.on('error', (error) => {
+      reject({ code: 1, error, stderr }); 
+    });
+
+    child.on('close', (code) => {
+      resolve({ 
+        code: code || 0, 
+        data: stdout.trim(), 
+        error: code !== 0 ? stderr.trim() : undefined 
+      });
+    });
   });
 }
-

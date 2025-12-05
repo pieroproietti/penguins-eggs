@@ -8,13 +8,12 @@
  * Refactored Utils class - imports from modular utilities
  */
 
-import { shx } from '../lib/utils.js'
+import { shx, execSync, spawnSync } from '../lib/utils.js'
 import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
 import inquirer from 'inquirer'
-import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
 
 import Kernel from './utils.d/kernel.js'
@@ -967,8 +966,7 @@ export default class Utils {
          msg = 'Press a key to continue...'
       }
       console.log(msg)
-
-      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
       if (!procContinue) {
          process.exit(0)
       }
@@ -982,7 +980,7 @@ export default class Utils {
       }
       console.log(msg)
 
-      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
       if (!procContinue) {
          process.exit(0)
       }

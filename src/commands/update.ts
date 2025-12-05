@@ -13,9 +13,7 @@ import Distro from '../classes/distro.js'
 import Tools from '../classes/tools.js'
 import Utils from '../classes/utils.js'
 import Diversions from '../classes/diversions.js'
-import { exec } from '../lib/utils.js'
-import { spawn } from 'child_process';
-
+import { exec, spawn } from '../lib/utils.js'
 
 import axios from 'axios'
 import https from 'node:https'

@@ -37,3 +37,4 @@ AppDir
 *.AppImage
 appimagetool
 
+.cache

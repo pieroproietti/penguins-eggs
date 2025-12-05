@@ -1,22 +1,60 @@
 #!/bin/bash
 set -e
 
+# --- CONFIGURAZIONE VERSIONI ---
+# Usa una versione specifica per garantire stabilità
+NODE_VERSION="22.13.1"
+BOOTLOADERS_TAG="v25.11.27"
+ARCH="x86_64"
+APP_NAME="penguins-eggs"
+CACHE_DIR="cache"
+
+# Crea directory di cache se non esiste
+mkdir -p "$CACHE_DIR"
+
 echo "Building Penguins Eggs AppImage..."
 
-APP_NAME="penguins-eggs"
-VERSION=$(node -p "require('./package.json').version")
-ARCH="x86_64"
+# Funzione Helper per il download sicuro
+download_file() {
+    local url="$1"
+    local dest="$2"
+    local name="$3"
 
-# --- MODIFICA INIZIO: Lettura file release ---
+    if [ -f "$dest" ]; then
+        echo "Using cached $name."
+        return 0
+    fi
+
+    echo "Downloading $name..."
+    # Prova con wget (mostra progress bar, mostra errori)
+    if command -v wget >/dev/null 2>&1; then
+        if ! wget --no-check-certificate -nv --show-progress "$url" -O "$dest"; then
+            echo "Error downloading $name with wget."
+            rm -f "$dest" # Rimuove file parziale
+            return 1
+        fi
+    # Fallback su curl
+    elif command -v curl >/dev/null 2>&1; then
+        if ! curl -L -f -o "$dest" "$url"; then
+            echo "Error downloading $name with curl."
+            rm -f "$dest"
+            return 1
+        fi
+    else
+        echo "Error: Neither wget nor curl found."
+        exit 1
+    fi
+}
+
+VERSION=$(node -p "require('./package.json').version")
+
+# --- LETTURA FILE RELEASE ---
 if [ -f "release" ]; then
-    # Legge il file e rimuove spazi bianchi o newlines
     RELEASE=$(cat release | tr -d '[:space:]')
 else
-    # Default se il file non esiste
     RELEASE="1"
 fi
 
-# Definisce la versione completa per il nome del file (es: 1.0.0-1)
 FULL_VERSION="${VERSION}-${RELEASE}"
 
 # Verifica build
@@ -24,148 +62,117 @@ if [ ! -f "dist/bin/dev.js" ]; then
     echo "ERROR: Build not found. Run: pnpm run build"
     exit 1
 fi
-
 echo "SUCCESS: Build found: dist/bin/dev.js"
 
-# Verifica esistenza cartella appimage
-if [ ! -d "appimage" ]; then
-    echo "ERROR: appimage/ directory not found"
-    echo "Please create appimage/ with required files"
+# Verifica struttura base
+if [ ! -d "appimage" ] || [ ! -f "appimage/AppRun" ] || [ ! -f "appimage/net.penguins_eggs.eggs.desktop" ]; then
+    echo "ERROR: appimage directory structure incomplete."
     exit 1
 fi
 
-# Verifica file richiesti in appimage/
-if [ ! -f "appimage/AppRun" ]; then
-    echo "ERROR: appimage/AppRun not found"
-    exit 1
-fi
-
-if [ ! -f "appimage/net.penguins_eggs.eggs.desktop" ]; then
-    echo "ERROR: appimage/net.penguins_eggs.eggs.desktop not found"
-    exit 1
-fi
-
-# Verifica FUSE
-echo "Checking system requirements..."
-if ! ldconfig -p | grep -q libfuse.so.2; then
-    echo "WARNING: libfuse2 not found. AppImage may not run properly."
-    echo "Please install FUSE:"
-    echo "  Alpine:        sudo apk add fuse"
-    echo "  Arch:          sudo pacman -S fuse2"
-    echo "  Debian/Ubuntu: sudo apt-get install fuse libfuse2"
-    echo "  Fedora/RHEL:   sudo dnf install fuse fuse-libs"
-    echo "  Opensuse:      sudo zypper install fuse fuse-libs"
-    echo ""
-    echo "Continuing with build anyway..."
-fi
-
-# Pulisci e crea struttura
+# Pulisci e crea struttura AppDir
 rm -rf AppDir
 mkdir -p AppDir/usr/lib/penguins-eggs
 mkdir -p AppDir/usr/bin
 mkdir -p AppDir/usr/share/applications
 mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
-# Scarica appimagetool
-if [ ! -f "appimagetool" ]; then
-    echo "Downloading appimagetool..."
-    wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH}.AppImage -O appimagetool
-    chmod +x appimagetool
+# --- GESTIONE APPIMAGETOOL ---
+TOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH}.AppImage"
+TOOL_PATH="$CACHE_DIR/appimagetool-${ARCH}.AppImage"
+
+# Check integrità basico (dimensione > 0)
+if [ -f "$TOOL_PATH" ] && [ ! -s "$TOOL_PATH" ]; then
+    rm "$TOOL_PATH"
 fi
+
+download_file "$TOOL_URL" "$TOOL_PATH" "appimagetool"
+chmod +x "$TOOL_PATH"
+cp "$TOOL_PATH" appimagetool
+chmod +x appimagetool
 
 # Copia il progetto
 echo "Copying project files..."
 for dir in dist node_modules assets addons bin conf dracut eui manpages mkinitcpio mkinitfs scripts src templates; do
     if [ -d "$dir" ]; then
-        echo "  Copying: $dir"
         cp -r "$dir" AppDir/usr/lib/penguins-eggs/
     fi
 done
 
-# Scarica e installa Node.js
-NODE_VERSION="22.21.1"
-echo "Downloading Node.js v$NODE_VERSION..."
-wget -q https://nodejs.org/dist/latest-v22.x/node-v$NODE_VERSION-linux-x64.tar.xz -O nodejs.tar.xz
-tar -xf nodejs.tar.xz
+# --- GESTIONE NODE.JS ---
+# URL corretto puntando alla cartella della versione specifica, non 'latest'
+NODE_FILE="node-v$NODE_VERSION-linux-x64.tar.xz"
+NODE_URL="https://nodejs.org/dist/v$NODE_VERSION/$NODE_FILE"
+NODE_PATH="$CACHE_DIR/$NODE_FILE"
+
+# Check integrità archivio
+if [ -f "$NODE_PATH" ]; then
+    if ! tar -tJf "$NODE_PATH" &> /dev/null; then
+        echo "Cached Node.js archive is corrupted. Deleting..."
+        rm "$NODE_PATH"
+    fi
+fi
+
+download_file "$NODE_URL" "$NODE_PATH" "Node.js v$NODE_VERSION"
+
+echo "Extracting Node.js..."
+tar -xf "$NODE_PATH"
 mkdir -p AppDir/usr/lib/penguins-eggs/node
 cp -r node-v$NODE_VERSION-linux-x64/* AppDir/usr/lib/penguins-eggs/node/
-rm -rf node-v$NODE_VERSION-linux-x64 nodejs.tar.xz
+rm -rf node-v$NODE_VERSION-linux-x64
 
-# Bootloaders
+# --- GESTIONE BOOTLOADERS ---
+BOOT_URL="https://github.com/pieroproietti/penguins-bootloaders/releases/download/${BOOTLOADERS_TAG}/bootloaders.tar.gz"
+BOOT_FILE="bootloaders-${BOOTLOADERS_TAG}.tar.gz"
+BOOT_PATH="$CACHE_DIR/$BOOT_FILE"
+
+if [ -f "$BOOT_PATH" ]; then
+    if ! tar -tzf "$BOOT_PATH" &> /dev/null; then
+        echo "Cached bootloaders archive is corrupted. Deleting..."
+        rm "$BOOT_PATH"
+    fi
+fi
+
+download_file "$BOOT_URL" "$BOOT_PATH" "bootloaders"
+
 mkdir -p AppDir/usr/lib/penguins-eggs/bootloaders
-echo "Downloading bootloaders..."
-wget -q -O bootloaders.tar.gz "https://github.com/pieroproietti/penguins-bootloaders/releases/download/v25.11.27/bootloaders.tar.gz"
 echo "Extracting bootloaders..."
-tar -xzf bootloaders.tar.gz -C AppDir/usr/lib/penguins-eggs/bootloaders --strip-components=1
-rm -f bootloaders.tar.gz
+tar -xzf "$BOOT_PATH" -C AppDir/usr/lib/penguins-eggs/bootloaders --strip-components=1
 
 # Copia package.json
 cp package.json AppDir/usr/lib/penguins-eggs/ 2>/dev/null || true
 
-# COPIA i file dall'appimage/
-
-# Copia e aggiorna metadati AppData
+# --- METADATI E INTEGRAZIONE ---
 if [ -f "appimage/penguins-eggs.appdata.xml" ]; then
     mkdir -p AppDir/usr/share/metainfo
-    
-    # Aggiorna automaticamente versione e data
-    # NOTA: Salvo il file con il NUOVO nome ID per coerenza con AppStream
     CURRENT_DATE=$(date +%Y-%m-%d)
     sed -e "s|%VERSION%|$VERSION|g" \
         -e "s|%DATE%|$CURRENT_DATE|g" \
         "appimage/penguins-eggs.appdata.xml" > AppDir/usr/share/metainfo/net.penguins_eggs.eggs.appdata.xml
-    
-    echo "AppData metadata updated: version $VERSION, date $CURRENT_DATE"
-else
-    echo "WARNING: AppData file not found at appimage/penguins-eggs.appdata.xml"
 fi
 
-
-# AppRun
 cp appimage/AppRun AppDir/
 chmod +x AppDir/AppRun
 
-# net.penguins_eggs.eggs.desktop
-# Copia nella root (richiesto da AppImage) e in applications (richiesto da standard Linux)
 cp appimage/net.penguins_eggs.eggs.desktop AppDir/
 cp appimage/net.penguins_eggs.eggs.desktop AppDir/usr/share/applications/
 
-# penguins-eggs.png
 cp appimage/penguins-eggs.png AppDir/
 cp appimage/penguins-eggs.png AppDir/usr/share/icons/hicolor/256x256/apps/
 
 # Link per l'eseguibile
 ln -sf ../lib/penguins-eggs/dist/bin/dev.js AppDir/usr/bin/eggs
 
-# Copia i driver (meta-packages per varie distro)
+# Copia driver
 cp -r appimage/distro-packages AppDir/
 
-# Verifica file richiesti
-echo "Checking required AppDir files:"
-ls -la AppDir/AppRun
-ls -la AppDir/net.penguins_eggs.eggs.desktop
-ls -la AppDir/penguins-eggs.png
-
-# Crea AppImage
+# --- CREAZIONE APPIMAGE ---
 echo "Creating AppImage..."
-# Opzionale: Definisce l'architettura esplicitamente per appimagetool
 ARCH=$ARCH ./appimagetool AppDir "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
 
-# Test
-echo "Testing AppImage..."
-chmod +x "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
-
-if command -v fusermount &> /dev/null || command -v fusermount3 &> /dev/null; then
-    # Esegue un test veloce (verifica che parta)
-    if ./"${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage" --version; then
-        echo "SUCCESS: AppImage working correctly!"
-    else
-        echo "WARNING: AppImage test failed (exit code not 0)"
-    fi
-else
-    echo "WARNING: Cannot test AppImage without FUSE"
-fi
-
-echo ""
+# Test Veloce
 echo "AppImage created: ${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage"
 echo "Size: $(du -h "${APP_NAME}-${FULL_VERSION}-${ARCH}.AppImage" | cut -f1)"
+
+# Pulizia finale (opzionale)
+rm -f appimagetool

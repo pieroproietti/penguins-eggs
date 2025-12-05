@@ -1,6 +1,6 @@
 /**
  * ./src/classes/ovary.d/edit-live-fs.ts
- * penguins-eggs v.25.11.x / ecmascript 2020
+ * penguins-eggs v.25.12.5 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -53,9 +53,6 @@ export async function editLiveFs(this: Ovary, clone = false) {
     // =========================================================================
     // FIX DEFINITIVO PER DEVUAN/SYSVINIT (Init Script Hardening)
     // =========================================================================
-    // Modifichiamo gli script di init per auto-ripararsi all'avvio.
-    // Questo bypassa problemi di concorrenza, esclusioni rsync e permessi.
-    
     if (Utils.isSysvinit()) {
         if (this.verbose) console.log('SysVinit detected: Hardening init scripts...');
         await patchInitScripts(workDir, this.verbose);
@@ -104,12 +101,18 @@ export async function editLiveFs(this: Ovary, clone = false) {
         await exec(`rm ${workDir}/etc/crypttab`, this.echo)
     }
 
-    // Machine ID cleanup (Solo per Systemd)
-    // Per SysVinit ci pensa la patchInitScripts
-    if (!Utils.isSysvinit() && fs.existsSync(`${workDir}/etc/machine-id`)) {
+    // 🔧 [MODIFICA 1] Machine ID cleanup
+    // Cancelliamo SEMPRE il machine-id, anche su SysVinit.
+    // Questo garantisce che lo script patchato (dbus) trovi il file mancante e lo rigeneri.
+    if (fs.existsSync(`${workDir}/etc/machine-id`)) {
         await exec(`rm ${workDir}/etc/machine-id`, this.echo)
-        await exec(`touch ${workDir}/etc/machine-id`, this.echo)
+        await exec(`touch ${workDir}/etc/machine-id`, this.echo) // Lo ricreiamo vuoto
     }
+    // Rimuoviamo anche quello in /var/lib/dbus per forzare la rigenerazione
+    if (fs.existsSync(`${workDir}/var/lib/dbus/machine-id`)) {
+         await exec(`rm ${workDir}/var/lib/dbus/machine-id`, this.echo)
+    }
+
 
     if (fs.existsSync(`${workDir}/boot/grub/fonts/unicode.pf2`)) {
         shx.cp(`${workDir}/boot/grub/fonts/unicode.pf2`, `${workDir}/boot/grub/fonts/UbuntuMono16.pf2`)
@@ -198,35 +201,40 @@ async function patchInitScripts(workDir: string, verbose: boolean) {
         
         let content = fs.readFileSync(dbusScript, 'utf8');
         
-        // Questo codice viene iniettato nello script bash di avvio.
-        // Crea le cartelle volatili (/var/run/dbus) che spariscono al reboot!
+        // 🔧 [MODIFICA 2] Use dbus-uuidgen --ensure
+        // Questa versione è molto più robusta:
+        // 1. Prova a usare dbus-uuidgen (metodo ufficiale).
+        // 2. Se fallisce, usa un UUID random generato da /proc/sys/kernel/random/uuid
+        // 3. Solo come ultima spiaggia usa quello statico.
         const dbusFix = `
 ### EGGS-FIX-START
-# Self-healing: Ensure runtime directories exist (they are on tmpfs!)
-mkdir -p /var/run/dbus
-chmod 755 /var/run/dbus
-# Ensure persistent directories exist
-mkdir -p /var/lib/dbus
-chmod 755 /var/lib/dbus
-# Create static machine-id if missing
+# Ensure runtime directories exist
+mkdir -p /var/run/dbus /var/lib/dbus
+chmod 755 /var/run/dbus /var/lib/dbus
+
+# Generate Machine ID if missing
 if [ ! -s /var/lib/dbus/machine-id ]; then
-  echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
-  chmod 644 /var/lib/dbus/machine-id
+  if [ -x /usr/bin/dbus-uuidgen ]; then
+    /usr/bin/dbus-uuidgen --ensure
+  elif [ -f /proc/sys/kernel/random/uuid ]; then
+    cat /proc/sys/kernel/random/uuid | tr -d '-' > /var/lib/dbus/machine-id
+  else
+    echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
+  fi
 fi
-# Sync /etc/machine-id just in case
-if [ ! -s /etc/machine-id ]; then
+
+# Sync /etc/machine-id
+if [ ! -s /etc/machine-id ] && [ -s /var/lib/dbus/machine-id ]; then
   cp /var/lib/dbus/machine-id /etc/machine-id
 fi
 ### EGGS-FIX-END
 `;
-        // Inseriamo subito dopo la shebang
         if (!content.includes('EGGS-FIX-START')) {
             content = content.replace('#!/bin/sh', `#!/bin/sh\n${dbusFix}`);
             fs.writeFileSync(dbusScript, content, 'utf8');
         }
     }
 
-    // ... (resta uguale per rsyslog e cron) ...
     // 2. PATCH RSYSLOG
     const rsyslogScript = `${workDir}/etc/init.d/rsyslog`;
     if (fs.existsSync(rsyslogScript)) {
