@@ -37,5 +37,5 @@ AppDir
 *.AppImage
 appimagetool
 
-.cache
+cache/*
 nodejs.tar.xz
