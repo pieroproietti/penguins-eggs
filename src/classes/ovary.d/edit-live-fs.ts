@@ -197,40 +197,70 @@ async function patchInitScripts(workDir: string, verbose: boolean) {
     // 1. PATCH DBUS (Il più importante)
     const dbusScript = `${workDir}/etc/init.d/dbus`;
     if (fs.existsSync(dbusScript)) {
-        if (verbose) console.log(`Patching ${dbusScript} to fix missing directories...`);
+        if (verbose) console.log(`Patching ${dbusScript} to fix missing directories and RO fs...`);
         
         let content = fs.readFileSync(dbusScript, 'utf8');
-        
-        // 🔧 [MODIFICA 2] Use dbus-uuidgen --ensure
-        // Questa versione è molto più robusta:
-        // 1. Prova a usare dbus-uuidgen (metodo ufficiale).
-        // 2. Se fallisce, usa un UUID random generato da /proc/sys/kernel/random/uuid
-        // 3. Solo come ultima spiaggia usa quello statico.
+        let modified = false;
+
+        // PATCH A: Header con gestione Ramdisk Fallback e Mount Proc
+        // Questa intestazione viene inserita all'inizio e prova a montare tmpfs se non può scrivere
         const dbusFix = `
 ### EGGS-FIX-START
-# Ensure runtime directories exist
+# 1. Assicuriamoci che /proc sia montato (necessario per leggere uuid kernel)
+if ! mountpoint -q /proc/; then
+  mount -t proc proc /proc
+fi
+
+# 2. Gestione Filesystem Read-Only (RO)
+# Se non possiamo scrivere in /var/lib/dbus, montiamo un tmpfs (RAM) sopra.
+# Questo bypassa il blocco dell'overlayfs non ancora pronto tipico delle build AppImage.
+if ! mkdir -p /var/lib/dbus 2>/dev/null || ! touch /var/lib/dbus/.rw_check 2>/dev/null; then
+  echo "EGGS-DEBUG: Filesystem Read-Only detected! Mounting tmpfs on /var/lib/dbus" > /dev/console
+  mount -t tmpfs -o size=1m tmpfs /var/lib/dbus
+fi
+rm -f /var/lib/dbus/.rw_check
+
+# 3. Creazione Directory Runtime
 mkdir -p /var/run/dbus /var/lib/dbus
 chmod 755 /var/run/dbus /var/lib/dbus
 
-# Generate Machine ID if missing
+# 4. Generazione Machine ID (Non-Blocking Strategy)
+# Se il file non esiste (o è vuoto), lo creiamo.
 if [ ! -s /var/lib/dbus/machine-id ]; then
-  if [ -x /usr/bin/dbus-uuidgen ]; then
-    /usr/bin/dbus-uuidgen --ensure
-  elif [ -f /proc/sys/kernel/random/uuid ]; then
+  # Prova A: Usa UUID del kernel (Istantaneo, non blocca)
+  if [ -f /proc/sys/kernel/random/uuid ]; then
     cat /proc/sys/kernel/random/uuid | tr -d '-' > /var/lib/dbus/machine-id
+  # Prova B: Fallback statico
   else
     echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
   fi
+  chmod 644 /var/lib/dbus/machine-id
 fi
 
-# Sync /etc/machine-id
+# 5. Sync /etc/machine-id (Best effort, ignora errori se /etc è RO)
 if [ ! -s /etc/machine-id ] && [ -s /var/lib/dbus/machine-id ]; then
-  cp /var/lib/dbus/machine-id /etc/machine-id
+  cp /var/lib/dbus/machine-id /etc/machine-id 2>/dev/null || true
 fi
 ### EGGS-FIX-END
 `;
         if (!content.includes('EGGS-FIX-START')) {
             content = content.replace('#!/bin/sh', `#!/bin/sh\n${dbusFix}`);
+            modified = true;
+        }
+
+        // PATCH B: SABOTAGE PREVENTION (Questa è quella che mancava!)
+        // Impediamo che create_machineid cancelli il file che abbiamo appena creato
+        // perché l'uptime è basso. 
+        if (content.includes('rm -f "${MACHINEID}"')) {
+             if (verbose) console.log('Patching dbus: disabling auto-delete of machine-id on boot');
+             content = content.replace(
+                 'rm -f "${MACHINEID}"', 
+                 ': # EGGS-PATCH: Prevent deletion of valid machine-id'
+             );
+             modified = true;
+        }
+
+        if (modified) {
             fs.writeFileSync(dbusScript, content, 'utf8');
         }
     }

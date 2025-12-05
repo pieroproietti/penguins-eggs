@@ -21,7 +21,8 @@ import { IExec } from '../interfaces/index.js';
 
 /**
  * Pulizia AppImage
- * Variabili d'ambiente da rimuovere per evitare conflitti.
+ * Variabili d'ambiente da rimuovere per evitare conflitti quando si eseguono
+ * comandi di sistema dall'interno di una AppImage.
  */
 const APPIMAGE_ENV_BLACKLIST = [
   'LD_LIBRARY_PATH', 'LD_PRELOAD', 'PYTHONPATH', 'PERLLIB',
@@ -31,6 +32,7 @@ const APPIMAGE_ENV_BLACKLIST = [
 
 /**
  * Ottiene un ambiente pulito dalle variabili AppImage
+ * @returns Oggetto process.env sanificato
  */
 function getCleanEnv(): NodeJS.ProcessEnv {
   const env = { ...process.env };
@@ -57,6 +59,7 @@ interface ExecSyncOptions {
  * Supporta:
  * 1. (command, args, options)
  * 2. (command, options) -> args diventa []
+ * Pulisce automaticamente l'ambiente.
  */
 export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, arg3?: SpawnSyncOptions): SpawnSyncReturns<string | Buffer> {
   let args: string[] = [];
@@ -67,7 +70,7 @@ export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, a
     args = arg2;
     options = arg3 || {};
   } else if (arg2 && typeof arg2 === 'object') {
-    // TypeScript fix: cast esplicito
+    // TypeScript fix: cast esplicito per evitare errori di tipo union
     options = arg2 as SpawnSyncOptions;
   }
 
@@ -85,6 +88,7 @@ export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, a
  * Supporta:
  * 1. (command, args, options)
  * 2. (command, options) -> args diventa []
+ * Pulisce automaticamente l'ambiente.
  */
 export function spawn(command: string, arg2?: readonly string[] | SpawnOptions, arg3?: SpawnOptions): ChildProcess {
   let args: readonly string[] = [];
@@ -137,6 +141,7 @@ export const shx = {
     const src = arg3 ? arg2 : arg1;
     const dest = arg3 ? arg3 : arg2;
 
+    // --- GESTIONE WILDCARD (*) ---
     if (src.endsWith('*')) {
       const srcDir = path.dirname(src); 
       if (!fs.existsSync(srcDir)) return;
@@ -150,6 +155,7 @@ export const shx = {
       });
       return;
     }
+    // ----------------------------
 
     let finalDest = dest;
     if (fs.existsSync(dest) && fs.statSync(dest).isDirectory()) {
