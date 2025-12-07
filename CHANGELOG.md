@@ -22,7 +22,8 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v25.12.7
 * Refactored for AppImage compatibility: Completely removed the shelljs dependency and ensured all external calls are purged of AppImage environment variables;
-* Reintroduced --fullcrypt: This option is now enabled exclusively for native installations on Debian Trixie or Devuan Excalibur.
+* Reintroduced `--fullcrypt`: This option is now enabled exclusively for native installations on Debian Trixie or Devuan Excalibur;
+* Reintroduced `--homecrypt`: Unlike `--fullcrypt`, this option is available for use on AppImages and across other distributions.
 
 # v25.12.3
 This release introduces a direct user provisioning strategy, replacing high-level commands with direct manipulation of system database files (`/etc/passwd`, `/etc/shadow`) to ensure deterministic and host-independent user creation. We resolved critical boot freezes on Devuan (SysVinit) by hardening init scripts against race conditions and implementing self-healing for dbus and machine-id. Fedora 43 (Rawhide) compatibility has also been verified.
