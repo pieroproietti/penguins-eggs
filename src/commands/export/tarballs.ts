@@ -20,7 +20,7 @@ import path from 'path'
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json');
-import { execSync } from 'node:child_process'
+import { execSync } from '../../lib/utils.js'
 import { exists, existsSync } from 'node:fs'
 
 export default class ExportTarballs extends Command {
@@ -55,9 +55,9 @@ export default class ExportTarballs extends Command {
     // Ora servono in più parti
     this.user = os.userInfo().username
     if (this.user === 'root') {
-      this.user = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim()
+      this.user = (execSync('echo $DOAS_USER') || '').trim()
       if (this.user === '') {
-        this.user = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim()
+        this.user = (execSync('echo $DOAS_USER') || '').trim()
       }
     }
     this.clean = flags.clean

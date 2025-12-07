@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import path from 'path'
 import Distro from '../distro.js'
 import Utils from '../utils.js'
-import { execSync } from 'node:child_process'
+import { execSync } from '../../lib/utils.js'
 
 
 /**
@@ -63,7 +63,7 @@ export default class Kernel {
         Utils.warning("Non è possibile determinare il kernel in un container.")
         process.exit(1)
       }
-      targetKernel = execSync('uname -r').toString().trim()
+      targetKernel = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
     }
     const kernelVersionShort = targetKernel.split('.').slice(0, 2).join('.');
 
@@ -167,7 +167,7 @@ export default class Kernel {
    * debian, fedora, opensuse, rasberry
    */
   private static vmlinuzFromUname(): string {
-    let kernelVersion = execSync('uname -r').toString().trim()
+    let kernelVersion = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
 
     // Try 1: path standard (es. Debian, Ubuntu, Fedora)
     let standardPath = `/boot/vmlinuz-${kernelVersion}`

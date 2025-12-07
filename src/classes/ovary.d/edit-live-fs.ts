@@ -1,6 +1,6 @@
 /**
  * ./src/classes/ovary.d/edit-live-fs.ts
- * penguins-eggs v.25.11.x / ecmascript 2020
+ * penguins-eggs v.25.12.5 / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
@@ -10,7 +10,7 @@
 import fs from 'fs'
 import os from 'os'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 
 // classes
 import Ovary from '../ovary.js'
@@ -53,9 +53,6 @@ export async function editLiveFs(this: Ovary, clone = false) {
     // =========================================================================
     // FIX DEFINITIVO PER DEVUAN/SYSVINIT (Init Script Hardening)
     // =========================================================================
-    // Modifichiamo gli script di init per auto-ripararsi all'avvio.
-    // Questo bypassa problemi di concorrenza, esclusioni rsync e permessi.
-    
     if (Utils.isSysvinit()) {
         if (this.verbose) console.log('SysVinit detected: Hardening init scripts...');
         await patchInitScripts(workDir, this.verbose);
@@ -104,12 +101,18 @@ export async function editLiveFs(this: Ovary, clone = false) {
         await exec(`rm ${workDir}/etc/crypttab`, this.echo)
     }
 
-    // Machine ID cleanup (Solo per Systemd)
-    // Per SysVinit ci pensa la patchInitScripts
-    if (!Utils.isSysvinit() && fs.existsSync(`${workDir}/etc/machine-id`)) {
+    // 🔧 [MODIFICA 1] Machine ID cleanup
+    // Cancelliamo SEMPRE il machine-id, anche su SysVinit.
+    // Questo garantisce che lo script patchato (dbus) trovi il file mancante e lo rigeneri.
+    if (fs.existsSync(`${workDir}/etc/machine-id`)) {
         await exec(`rm ${workDir}/etc/machine-id`, this.echo)
-        await exec(`touch ${workDir}/etc/machine-id`, this.echo)
+        await exec(`touch ${workDir}/etc/machine-id`, this.echo) // Lo ricreiamo vuoto
     }
+    // Rimuoviamo anche quello in /var/lib/dbus per forzare la rigenerazione
+    if (fs.existsSync(`${workDir}/var/lib/dbus/machine-id`)) {
+         await exec(`rm ${workDir}/var/lib/dbus/machine-id`, this.echo)
+    }
+
 
     if (fs.existsSync(`${workDir}/boot/grub/fonts/unicode.pf2`)) {
         shx.cp(`${workDir}/boot/grub/fonts/unicode.pf2`, `${workDir}/boot/grub/fonts/UbuntuMono16.pf2`)
@@ -194,39 +197,74 @@ async function patchInitScripts(workDir: string, verbose: boolean) {
     // 1. PATCH DBUS (Il più importante)
     const dbusScript = `${workDir}/etc/init.d/dbus`;
     if (fs.existsSync(dbusScript)) {
-        if (verbose) console.log(`Patching ${dbusScript} to fix missing directories...`);
+        if (verbose) console.log(`Patching ${dbusScript} to fix missing directories and RO fs...`);
         
         let content = fs.readFileSync(dbusScript, 'utf8');
-        
-        // Questo codice viene iniettato nello script bash di avvio.
-        // Crea le cartelle volatili (/var/run/dbus) che spariscono al reboot!
+        let modified = false;
+
+        // PATCH A: Header con gestione Ramdisk Fallback e Mount Proc
+        // Questa intestazione viene inserita all'inizio e prova a montare tmpfs se non può scrivere
         const dbusFix = `
 ### EGGS-FIX-START
-# Self-healing: Ensure runtime directories exist (they are on tmpfs!)
-mkdir -p /var/run/dbus
-chmod 755 /var/run/dbus
-# Ensure persistent directories exist
-mkdir -p /var/lib/dbus
-chmod 755 /var/lib/dbus
-# Create static machine-id if missing
+# 1. Assicuriamoci che /proc sia montato (necessario per leggere uuid kernel)
+if ! mountpoint -q /proc/; then
+  mount -t proc proc /proc
+fi
+
+# 2. Gestione Filesystem Read-Only (RO)
+# Se non possiamo scrivere in /var/lib/dbus, montiamo un tmpfs (RAM) sopra.
+# Questo bypassa il blocco dell'overlayfs non ancora pronto tipico delle build AppImage.
+if ! mkdir -p /var/lib/dbus 2>/dev/null || ! touch /var/lib/dbus/.rw_check 2>/dev/null; then
+  echo "EGGS-DEBUG: Filesystem Read-Only detected! Mounting tmpfs on /var/lib/dbus" > /dev/console
+  mount -t tmpfs -o size=1m tmpfs /var/lib/dbus
+fi
+rm -f /var/lib/dbus/.rw_check
+
+# 3. Creazione Directory Runtime
+mkdir -p /var/run/dbus /var/lib/dbus
+chmod 755 /var/run/dbus /var/lib/dbus
+
+# 4. Generazione Machine ID (Non-Blocking Strategy)
+# Se il file non esiste (o è vuoto), lo creiamo.
 if [ ! -s /var/lib/dbus/machine-id ]; then
-  echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
+  # Prova A: Usa UUID del kernel (Istantaneo, non blocca)
+  if [ -f /proc/sys/kernel/random/uuid ]; then
+    cat /proc/sys/kernel/random/uuid | tr -d '-' > /var/lib/dbus/machine-id
+  # Prova B: Fallback statico
+  else
+    echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
+  fi
   chmod 644 /var/lib/dbus/machine-id
 fi
-# Sync /etc/machine-id just in case
-if [ ! -s /etc/machine-id ]; then
-  cp /var/lib/dbus/machine-id /etc/machine-id
+
+# 5. Sync /etc/machine-id (Best effort, ignora errori se /etc è RO)
+if [ ! -s /etc/machine-id ] && [ -s /var/lib/dbus/machine-id ]; then
+  cp /var/lib/dbus/machine-id /etc/machine-id 2>/dev/null || true
 fi
 ### EGGS-FIX-END
 `;
-        // Inseriamo subito dopo la shebang
         if (!content.includes('EGGS-FIX-START')) {
             content = content.replace('#!/bin/sh', `#!/bin/sh\n${dbusFix}`);
+            modified = true;
+        }
+
+        // PATCH B: SABOTAGE PREVENTION (Questa è quella che mancava!)
+        // Impediamo che create_machineid cancelli il file che abbiamo appena creato
+        // perché l'uptime è basso. 
+        if (content.includes('rm -f "${MACHINEID}"')) {
+             if (verbose) console.log('Patching dbus: disabling auto-delete of machine-id on boot');
+             content = content.replace(
+                 'rm -f "${MACHINEID}"', 
+                 ': # EGGS-PATCH: Prevent deletion of valid machine-id'
+             );
+             modified = true;
+        }
+
+        if (modified) {
             fs.writeFileSync(dbusScript, content, 'utf8');
         }
     }
 
-    // ... (resta uguale per rsyslog e cron) ...
     // 2. PATCH RSYSLOG
     const rsyslogScript = `${workDir}/etc/init.d/rsyslog`;
     if (fs.existsSync(rsyslogScript)) {

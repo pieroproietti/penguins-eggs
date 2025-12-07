@@ -9,7 +9,7 @@ import chalk from 'chalk'
 import mustache from 'mustache'
 import fs from 'node:fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 import yaml from 'js-yaml'
 
 import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'

@@ -8,7 +8,7 @@
 
 import Distro from '../classes/distro.js';
 import Diversions from '../classes/diversions.js';
-import { execSync } from 'child_process';
+import { execSync } from '../lib/utils.js';
 import * as fs from 'fs';
 import * as path from 'path';
 

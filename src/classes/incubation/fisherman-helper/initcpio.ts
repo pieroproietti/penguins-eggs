@@ -5,17 +5,17 @@
  * email: piero.proietti@gmail.com
  * license: MIT
  */
-
-
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from '../../../lib/utils.js'
 import { access } from 'fs/promises';
 
-const execAsync = promisify(exec);
-
+/**
+ * 
+ * @returns 
+ */
 export async function initcpio(): Promise<string> {
   try {
-    const { stdout: kernelVersion } = await execAsync('uname -r');
+    const result = await exec('uname -r');
+    const kernelVersion = result.data;
     const version = kernelVersion.trim();
 
     // Manjaro
