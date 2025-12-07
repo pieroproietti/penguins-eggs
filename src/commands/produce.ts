@@ -17,7 +17,6 @@ import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
 import Distro from '../classes/distro.js'
-import UI from 'inquirer/lib/ui/baseUI.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
