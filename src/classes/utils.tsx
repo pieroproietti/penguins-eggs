@@ -1136,17 +1136,12 @@ export default class Utils {
    }
 
 
-     /**
+  /**
    *
    * @param cmd
    */
   static commandExists(cmd: string): boolean {
-    try {
-      shx.exec(`command -V ${cmd}`, { silent: true });
-      return true;
-    } catch (e) {
-      return false;
-    }
+   return !!shx.which(cmd);
   }
 
 }

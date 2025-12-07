@@ -203,6 +203,11 @@ export const shx = {
     }
   },
 
+  which: (cmd: string): string | null => {
+    const result = shx.exec(`command -v ${cmd}`, { silent: true });
+    return result.code === 0 ? result.stdout.trim() : null;
+  },
+
   ln: (flag: string, target: string, link: string): void => {
     if (fs.existsSync(link) || fs.lstatSync(link, {throwIfNoEntry: false})) {
       fs.rmSync(link, { force: true });

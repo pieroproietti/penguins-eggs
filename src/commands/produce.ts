@@ -17,6 +17,7 @@ import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
 import Distro from '../classes/distro.js'
+import UI from 'inquirer/lib/ui/baseUI.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -248,10 +249,13 @@ export default class Produce extends Command {
         Utils.warning(message)
       }
 
-      if (fullcrypt) {
+      if (fullcrypt && Utils.isAppImage() ) {
+          Utils.warning("eggs --fullcrypt cannot be used on AppImage")
+          process.exit(0)
+      } else {
         const distro = new Distro()
         // 
-        if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalinur') ) {
+        if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalibur') ) {
           Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
           Utils.sleep(3000)
         } else {
