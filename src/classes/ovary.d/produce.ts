@@ -174,8 +174,6 @@ export async function produce(
          * homecrypt/fullcrypt/clone/standard
          */
         if (this.homecrypt) {
-            this.settings.config.user_opt = 'live' // patch for humans
-            this.settings.config.user_opt_passwd = 'evolution'
             Utils.warning("eggs will SAVE users and users' data ENCRYPTED on the live (ISO)/live/home.img")
 
         } else if (this.fullcrypt) {
@@ -292,24 +290,12 @@ export async function produce(
             // We dont' need more
             await this.ubindVfs()
 
-
-            const cleanSystem = !(this.clone || this.fullcrypt)
-            if (cleanSystem) {
-                /**
-                 * SOLO per homecrypt e standard
-                 */
+            // Se non clone
+            if (!(this.clone || this.fullcrypt || this.homecrypt)) {
                 await this.usersRemove()
                 await this.userCreateLive()
                 if (Pacman.isInstalledGui()) {
                     await this.createXdgAutostart(this.settings.config.theme, myAddons, myLinks, noicons)
-
-                    /**
-                     * GUI installed but NOT Desktop Manager: just create motd and issue
-                     */
-                    // if (displaymanager().length > 0) {
-                    //     this.cliAutologin.addIssue(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-                    //     this.cliAutologin.addMotd(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
-                    // }
                 } else {
                     this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
                 }

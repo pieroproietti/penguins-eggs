@@ -130,7 +130,8 @@ export async function luksHome(
     // SDDM (sia file .conf che directory .conf.d)
     await exec(`[ -e /etc/sddm.conf ] && cp -a /etc/sddm.conf ${this.luksMountpoint}/.system-backup/`, this.echo)
     await exec(`[ -e /etc/sddm.conf.d ] && cp -a /etc/sddm.conf.d ${this.luksMountpoint}/.system-backup/`, this.echo)
-    
+
+
     warning(`unmount ${this.luksDevice}`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
 
