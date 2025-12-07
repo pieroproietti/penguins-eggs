@@ -250,11 +250,11 @@ export default class Produce extends Command {
 
       if (fullcrypt) {
         const distro = new Distro()
-        if (distro.familyId === 'debian') {
-          Utils.info("Use penguins-eggs and this option in particular with extreme caution, and ALWAYS first try it out in a test environment.")
+        if (distro.familyId === 'debian' && distro.codenameId === 'trixie') {
+          Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
           Utils.sleep(3000)
         } else {
-          Utils.warning("This option is still in the experimental phase and can only be tested on Debian trixie")
+          Utils.warning("eggs --fullcrypt can be used only with Debian trixie")
           process.exit(9)
         }
       }
