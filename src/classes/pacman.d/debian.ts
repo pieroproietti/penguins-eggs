@@ -7,9 +7,7 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
-
-import { exec } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -132,7 +130,7 @@ export default class Debian {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/apt-get install -y ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec('/usr/bin/apt-get install -y ' + packageName, { silent: true }).code === 0) {
       retVal = true
     }
 

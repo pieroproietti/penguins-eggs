@@ -23,7 +23,7 @@ import Utils from '../../classes/utils.js'
 import Xdg from '../../classes/xdg.js'
 import { IInstaller, IDevices, IDevice } from '../../interfaces/index.js'
 import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i_krill.js'
-import { exec } from '../../lib/utils.js'
+import { exec, spawnSync } from '../../lib/utils.js'
 
 // Import all modules (unchanged)
 import partition from './sequence.d/partition.js'
@@ -56,7 +56,6 @@ import hostname from './sequence.d/hostname.js'
 import CFS from './cfs.js'
 import Title from '../components/title.js'
 import cliCursor from 'cli-cursor'
-import { spawnSync } from 'child_process'
 
 /**
  * Main Sequence class - Simple Refactoring
@@ -387,7 +386,7 @@ export default class Sequence {
     if (this.unattended && this.nointeractive) {
       await sleep(5000)
     } else {
-      spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
     }
 
     await exec(cmd, { echo: false })

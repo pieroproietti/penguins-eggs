@@ -7,7 +7,8 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
+
+import {shx} from '../../lib/utils.js'
 
 import { exec } from '../../lib/utils.js'
 import Utils from '../utils.js'
@@ -144,7 +145,7 @@ export default class Alpine {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/sbin/apk add ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec('/sbin/apk add ' + packageName, { silent: true }).code === 0) {
       retVal = true
     }
 

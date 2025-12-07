@@ -6,11 +6,10 @@
  * license: MIT
  */
 
-import { execSync } from 'node:child_process'
+import { shx, execSync } from '../lib/utils.js'
 import fs from 'node:fs'
 // _dirname
 import path from 'node:path'
-import shx from 'shelljs'
 
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
 import { exec } from '../lib/utils.js'
@@ -75,7 +74,7 @@ export default class Pacman {
    * return true if calamares is installed
    */
   static calamaresExists(): boolean {
-    return this.commandIsInstalled('calamares')
+    return Utils.commandExists('calamares')
   }
 
   /**
@@ -148,19 +147,6 @@ export default class Pacman {
     }
 
     return retVal
-  }
-
-  /**
-   *
-   * @param cmd
-   */
-  static commandIsInstalled(cmd: string): boolean {
-    let installed = false
-    if (shx.exec(`command -V ${cmd} >/dev/null 2>&1`).code == 0) {
-      installed = true
-    }
-
-    return installed
   }
 
   /**
@@ -251,15 +237,14 @@ export default class Pacman {
     }
 
     execSync(`mkdir -p ${init}`)
-    // shx.ln('-s', path.resolve(__dirname, '../../addons'), addons)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
-
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives_fedora.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/love.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/tools.yaml'), config_tools)
     shx.cp(path.resolve(__dirname, '../../conf/yolk.yaml'), confRoot)
+
     // init
     shx.cp(path.resolve(__dirname, '../../conf/init/unattended.sh'), '/etc/penguins-eggs.d/init')
     shx.chmod('+x', '/etc/penguins-eggs.d/init/unattended.sh')
@@ -269,7 +254,6 @@ export default class Pacman {
     // creazione cartella exclude.list.d
     execSync(`mkdir -p /etc/penguins-eggs.d/exclude.list.d`)
     shx.cp(path.resolve(__dirname, '../../conf/exclude.list.d/*'), '/etc/penguins-eggs.d/exclude.list.d')
-
     await this.configurationFresh()
   }
 

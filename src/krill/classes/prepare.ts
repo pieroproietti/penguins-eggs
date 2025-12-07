@@ -9,7 +9,7 @@
 
 import os from 'os'
 import fs from 'fs'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 import axios from 'axios'
 
 import { IKrillConfig } from '../interfaces/i_krill_config.js'
@@ -244,7 +244,7 @@ export default class Krill {
   private generateHostname(ip: boolean, random: boolean): string {
     let hostname = this.krillConfig.hostname
     if (hostname === '') {
-      hostname = shx.exec('cat /etc/hostname', { silent: true }).trim()
+      hostname = shx.exec('cat /etc/hostname', { silent: true }).stdout.trim()
     }
 
     if (ip) {
@@ -252,9 +252,9 @@ export default class Krill {
     }
 
     if (random) {
-      const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
-      const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).trim()
-      const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).trim()
+      const fl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).stdout.trim()
+      const n = shx.exec(`tr -dc 0-9 </dev/urandom | head -c 3 ; echo ''`, { silent: true }).stdout.trim()
+      const sl = shx.exec(`tr -dc a-z </dev/urandom | head -c 2 ; echo ''`, { silent: true }).stdout.trim()
       hostname = `${os.hostname()}-${fl}${n}${sl}`
     }
 

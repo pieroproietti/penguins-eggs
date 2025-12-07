@@ -16,7 +16,7 @@
  */
 
 import path from 'node:path'
-import shx from 'shelljs'
+import {shx} from '../lib/utils.js'
 
 import Systemctl from './systemctl.js'
 

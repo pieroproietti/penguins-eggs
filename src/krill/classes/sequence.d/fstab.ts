@@ -7,7 +7,8 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import shx from 'shelljs'
+
+import {shx} from '../../../lib/utils.js'
 import { InstallationMode } from '../krill_enums.js'
 
 import Pacman from '../../../classes/pacman.js'

@@ -7,7 +7,7 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 
 import { exec } from '../../lib/utils.js'
 import Utils from '../utils.js'
@@ -88,7 +88,7 @@ export default class Archlinux {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/pacman -Si ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec('/usr/bin/pacman -Si ' + packageName, { silent: true }).code === 0) {
       retVal = true
     }
 

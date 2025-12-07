@@ -10,7 +10,7 @@
 // packages
 import fs, { Dirent } from 'node:fs'
 import path from 'node:path'
-import shx from 'shelljs'
+import  {shx} from '../../lib/utils.js'
 
 // classes
 import Ovary from '../ovary.js'

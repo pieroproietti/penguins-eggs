@@ -7,7 +7,7 @@
  */
 
 import inquirer from 'inquirer'
-import shx from 'shelljs'
+import {shx} from '../../lib/utils.js'
 
 export default async function selectInstallationDevice(): Promise<string> {
   const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')

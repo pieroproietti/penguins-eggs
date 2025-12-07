@@ -17,7 +17,7 @@ import Utils from '../../../classes/utils.js'
 import selectRegions from '../../lib/select_regions.js'
 import selectZones from '../../lib/select_zones.js'
 import axios from 'axios'
-import shx from 'shelljs'
+import {shx} from '../../../lib/utils.js'
 
 
 /**

@@ -12,7 +12,7 @@ import Utils from '../../classes/utils.js'
 import Pacman from '../../classes/pacman.js'
 import { Command, Flags } from '@oclif/core'
 import { DependencyManager } from '../../appimage/dependency-manager.js'
-import { execSync } from 'node:child_process'
+import { execSync } from '../../lib/utils.js'
 
 export default class Purge extends Command {
   static description = 'Automatically check and install system prerequisites'

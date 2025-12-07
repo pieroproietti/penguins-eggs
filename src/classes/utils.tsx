@@ -8,13 +8,12 @@
  * Refactored Utils class - imports from modular utilities
  */
 
-import shx from 'shelljs'
+import { shx, execSync, spawnSync } from '../lib/utils.js'
 import fs from 'fs'
 import dns from 'dns'
 import path from 'path'
 import os from 'os'
 import inquirer from 'inquirer'
-import { execSync, spawnSync } from 'child_process'
 import chalk from 'chalk'
 
 import Kernel from './utils.d/kernel.js'
@@ -175,12 +174,7 @@ export default class Utils {
    static isOpenRc(): boolean {
       let isOpenRc = false
       if (!this.isContainer()) {
-         try {
-            execSync('command -v openrc')
-            isOpenRc = true
-         } catch (error) {
-            isOpenRc = false
-         }
+         isOpenRc = Utils.commandExists('openrc')
       }
       return isOpenRc
    }
@@ -481,56 +475,85 @@ export default class Utils {
    }
 
    /**
-    * Extimate the linuxfs dimension
-    * probably is better to rename it as
-    * getLiveSpaceRootNeed
-    * @returns {number} Byte
-    */
+   * Estimate the linuxfs dimension
+   * (Refactored to use native FS instead of dd/od)
+   * @returns {number} GB
+   */
    static getLiveRootSpace(type = 'debian-live'): number {
       let squashFs = '/run/live/medium/live/filesystem.squashfs'
       if (type === 'mx') {
          squashFs = '/live/boot-dev/antiX/linuxfs'
       }
 
-      // Ottengo la dimensione del file compresso
-      const compressedFs = fs.statSync(squashFs).size
+      // 1. Leggiamo il tipo di compressione DIRETTAMENTE dall'header del file SquashFS
+      // L'identificativo della compressione è a offset 20 (2 bytes, little endian)
+      // 1=gzip, 2=lzo, 3=lzma, 4=xz, 5=lz4, 6=zstd
+      let compressionId = 0;
 
-      // get compression factor by reading the linuxfs squasfs file, if available
-      const compressedFs_compression_type = shx.exec(`dd if=${compressedFs} bs=1 skip=20 count=2 status=none 2>/dev/null| /usr/bin/od -An -tdI`)
-
-      let compression_factor = 0
-      if (compressedFs_compression_type === '1') {
-         compression_factor = 37 // gzip
-      } else if (compressedFs_compression_type === '2') {
-         compression_factor = 52 // lzo, not used by antiX
-      } else if (compressedFs_compression_type === '3') {
-         compression_factor = 52 // lzma, not used by antiX
-      } else if (compressedFs_compression_type === '4') {
-         compression_factor = 31 // xz
-      } else if (compressedFs_compression_type === '5') {
-         compression_factor = 52 // lz4
-      } else {
-         compression_factor = 30 // anything else or linuxfs not reachable (toram), should be pretty conservative
+      try {
+         if (fs.existsSync(squashFs)) {
+            const fd = fs.openSync(squashFs, 'r');
+            const buffer = Buffer.alloc(2);
+            // Leggi 2 byte alla posizione 20
+            fs.readSync(fd, buffer, 0, 2, 20);
+            fs.closeSync(fd);
+            compressionId = buffer.readUInt16LE(0);
+         }
+      } catch (e) {
+         console.error("Error reading squashfs header:", e);
       }
 
+      // 2. Determiniamo il fattore di compressione in base all'ID letto
+      let compression_factor = 30; // Default conservative
 
-      let rootfs_file_size = 0
-      const linuxfs_file_size = (Number(shx.exec('df /live/linux --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024 * 100) / compression_factor
+      switch (compressionId) {
+         case 1: // gzip
+            compression_factor = 37;
+            break;
+         case 2: // lzo
+            compression_factor = 52;
+            break;
+         case 3: // lzma
+            compression_factor = 52;
+            break;
+         case 4: // xz
+            compression_factor = 31;
+            break;
+         case 5: // lz4
+            compression_factor = 52;
+            break;
+         case 6: // zstd (aggiunto per completezza)
+            compression_factor = 37; // simile a gzip come ratio medio
+            break;
+         default:
+            compression_factor = 30;
+      }
 
+      // 3. Calcolo dimensione Linux FS
+      // Nota: shx.exec ritorna un oggetto, dobbiamo prendere .stdout e pulirlo
+      let rootfs_file_size = 0;
+
+      const dfCmdLinux = 'df /live/linux --output=used --total | /usr/bin/tail -n1';
+      const dfResultLinux = shx.exec(dfCmdLinux, { silent: true }).stdout.trim();
+      const linuxfs_used = Number(dfResultLinux) || 0; // Gestione caso NaN
+
+      const linuxfs_file_size = (linuxfs_used * 1024 * 100) / compression_factor;
+
+      // 4. Calcolo persist-root (se esiste)
       if (fs.existsSync('/live/persist-root')) {
-         rootfs_file_size = Number(shx.exec('df /live/persist-root --output=used --total | /usr/bin/tail -n1').stdout.trim()) * 1024
+         const dfCmdRoot = 'df /live/persist-root --output=used --total | /usr/bin/tail -n1';
+         const dfResultRoot = shx.exec(dfCmdRoot, { silent: true }).stdout.trim();
+         rootfs_file_size = (Number(dfResultRoot) || 0) * 1024;
       }
 
-      let rootSpaceNeeded: number
+      let rootSpaceNeeded: number;
       if (type === 'mx') {
-         /**
-          * add rootfs file size to the calculated linuxfs file size. Probaby conservative, as rootfs will likely have some overlap with linuxfs
-          */
-         rootSpaceNeeded = linuxfs_file_size + rootfs_file_size
+         rootSpaceNeeded = linuxfs_file_size + rootfs_file_size;
       } else {
-         rootSpaceNeeded = linuxfs_file_size
+         rootSpaceNeeded = linuxfs_file_size;
       }
-      return rootSpaceNeeded / 1073741824.0 // Converte in GB
+
+      return rootSpaceNeeded / 1073741824.0; // Converte in GB
    }
 
    /**
@@ -938,8 +961,7 @@ export default class Utils {
          msg = 'Press a key to continue...'
       }
       console.log(msg)
-
-      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
       if (!procContinue) {
          process.exit(0)
       }
@@ -953,7 +975,7 @@ export default class Utils {
       }
       console.log(msg)
 
-      const pressKeyToExit = spawnSync('read _ ', { shell: true, stdio: [0, 1, 2] })
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
       if (!procContinue) {
          process.exit(0)
       }
@@ -1112,5 +1134,19 @@ export default class Utils {
       }
       return chpasswdPath
    }
-   
+
+
+     /**
+   *
+   * @param cmd
+   */
+  static commandExists(cmd: string): boolean {
+    try {
+      shx.exec(`command -V ${cmd}`, { silent: true });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 }

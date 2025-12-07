@@ -16,7 +16,7 @@ import { exec } from '../../lib/utils.js'
 import os from 'node:os'
 
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
-import { execSync } from 'node:child_process'
+import { execSync } from '../../lib/utils.js'
 
 export default class ExportPkg extends Command {
   static description = 'export penguins-eggs package to the destination host'
@@ -53,9 +53,9 @@ export default class ExportPkg extends Command {
     // Ora servono in più parti
     this.user = os.userInfo().username
     if (this.user === 'root') {
-      this.user = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim()
+      this.user = (execSync('echo $DOAS_USER') || '').trim()
       if (this.user === '') {
-        this.user = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim()
+        this.user = (execSync('echo $DOAS_USER') || '').trim()
       }
     }
     this.all = flags.all

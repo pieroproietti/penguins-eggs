@@ -10,7 +10,7 @@ import { Command, Flags, flush } from '@oclif/core'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
-import shx from 'shelljs'
+import {shx} from '../lib/utils.js'
 
 
 import Utils from '../classes/utils.js'

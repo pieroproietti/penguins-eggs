@@ -7,9 +7,7 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
-
-import { exec } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -101,7 +99,7 @@ export default class Opensuse {
    */
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
-    if (shx.exec(`/usr/bin/zypper install ${packageName}`, { silent: true }) === '0') {
+    if (shx.exec('/usr/bin/zypper install ' + packageName, { silent: true }).code === 0) {
       retVal = true
     }
 

@@ -8,7 +8,7 @@
  */
 
 import fs from 'node:fs'
-import shx from 'shelljs'
+import {shx} from '../../../lib/utils.js'
 
 import Sequence from '../sequence.js'
 

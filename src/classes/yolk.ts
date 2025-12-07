@@ -8,9 +8,7 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import shx from 'shelljs'
-
-import { exec } from '../lib/utils.js'
+import { shx, exec } from '../lib/utils.js'
 import Bleach from './bleach.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
@@ -40,7 +38,7 @@ export default class Yolk {
     Utils.warning(`Creating yolk on ${this.yolkDir}`)
 
     Utils.warning('Updating system')
-    if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
+    if (!Utils.commandExists('dpkg-scanpackages')) {
       Utils.warning(`I cannot find the command dpkg-scanpackages`)
       process.exit(0)
     }
