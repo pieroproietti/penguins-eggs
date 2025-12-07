@@ -3,7 +3,9 @@ set -e
 
 # --- CONFIGURAZIONE VERSIONI ---
 # Usa una versione specifica per garantire stabilità
-NODE_VERSION="22.13.1"
+#NODE_VERSION="22.13.1"
+NODE_VERSION="22.21.0"
+#BOOTLOADERS_TAG="v25.9.8"
 BOOTLOADERS_TAG="v25.11.27"
 ARCH="x86_64"
 APP_NAME="penguins-eggs"

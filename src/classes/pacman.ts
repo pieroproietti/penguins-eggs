@@ -74,7 +74,7 @@ export default class Pacman {
    * return true if calamares is installed
    */
   static calamaresExists(): boolean {
-    return this.commandIsInstalled('calamares')
+    return Utils.commandExists('calamares')
   }
 
   /**
@@ -148,20 +148,6 @@ export default class Pacman {
 
     return retVal
   }
-
-  /**
-   *
-   * @param cmd
-   */
-  static commandIsInstalled(cmd: string): boolean {
-    try {
-      shx.exec(`command -V ${cmd}`, { silent: true });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
 
   /**
    * Restituisce VERO se i file di configurazione SONO presenti

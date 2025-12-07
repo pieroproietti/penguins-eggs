@@ -38,7 +38,7 @@ export default class Yolk {
     Utils.warning(`Creating yolk on ${this.yolkDir}`)
 
     Utils.warning('Updating system')
-    if (!Pacman.commandIsInstalled('dpkg-scanpackages')) {
+    if (!Utils.commandExists('dpkg-scanpackages')) {
       Utils.warning(`I cannot find the command dpkg-scanpackages`)
       process.exit(0)
     }

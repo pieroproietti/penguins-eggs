@@ -174,12 +174,7 @@ export default class Utils {
    static isOpenRc(): boolean {
       let isOpenRc = false
       if (!this.isContainer()) {
-         try {
-            execSync('command -v openrc')
-            isOpenRc = true
-         } catch (error) {
-            isOpenRc = false
-         }
+         isOpenRc = Utils.commandExists('openrc')
       }
       return isOpenRc
    }
@@ -1139,5 +1134,19 @@ export default class Utils {
       }
       return chpasswdPath
    }
+
+
+     /**
+   *
+   * @param cmd
+   */
+  static commandExists(cmd: string): boolean {
+    try {
+      shx.exec(`command -V ${cmd}`, { silent: true });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
 }
