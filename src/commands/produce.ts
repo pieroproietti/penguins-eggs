@@ -253,7 +253,7 @@ export default class Produce extends Command {
        */
       if (Utils.isAppImage() && fullcrypt) {
         Utils.warning("eggs produce --fullcrypt cannot be used on AppImage")
-        console.log("\nyou can try:\nsudo eggs produce --homecrypt")
+        console.log(`\nyou can try: "sudo eggs produce --homecrypt"`)
         process.exit(9)
       }
 
@@ -264,7 +264,7 @@ export default class Produce extends Command {
           Utils.sleep(3000)
         } else {
           Utils.warning(`eggs produce --fullcrypt cannot be used on ${distro.distroId}/${distro.codenameId}`)
-          console.log("\nyou can try:\nsudo eggs produce --homecrypt")
+          console.log(`\nyou can try: "sudo eggs produce --homecrypt"`)
           process.exit(9)
         }
       }
