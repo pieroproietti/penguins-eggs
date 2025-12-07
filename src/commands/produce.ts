@@ -251,7 +251,7 @@ export default class Produce extends Command {
       if (!Utils.isAppImage() && fullcrypt) {
         Utils.warning("eggs --fullcrypt cannot be used on AppImage")
         process.exit(9)
-      } else (Utils.isAppImage() && fullcrypt) {
+      } else if (Utils.isAppImage() && fullcrypt) {
         const distro = new Distro()
         if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalibur')) {
           Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
