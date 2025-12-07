@@ -249,20 +249,22 @@ export default class Produce extends Command {
         Utils.warning(message)
       }
 
-      if (fullcrypt && Utils.isAppImage() ) {
-          Utils.warning("eggs --fullcrypt cannot be used on AppImage")
-          process.exit(0)
-      } else {
-        const distro = new Distro()
-        // 
-        if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalibur') ) {
-          Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
-          Utils.sleep(3000)
-        } else {
-          Utils.warning("eggs --fullcrypt can be used only with Debian trixie or Devuan excalibur")
-          process.exit(9)
+      if (!Utils.isAppImage()) {
+        if (fullcrypt) {
+          const distro = new Distro()
+          if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalibur')) {
+            Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
+            Utils.sleep(3000)
+          } else {
+            Utils.warning(`eggs --fullcrypt cannot be used on ${distro.distroId}/${distro.codenameId}`)
+            process.exit(9)
+          }
         }
+      } else {
+        Utils.warning("eggs --fullcrypt cannot be used on AppImage")
+        process.exit(9)
       }
+
 
       if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
