@@ -297,11 +297,25 @@ export async function produce(
                 await this.usersRemove()
                 await this.userCreateLive()
                 if (Pacman.isInstalledGui()) {
-                    await this.createXdgAutostart(this.settings.config.theme, myAddons, myLinks, noicons)
+                    await this.createXdgAutostart(
+                        this.settings.config.theme, 
+                        myAddons, 
+                        myLinks, 
+                        noicons
+                    )
                 } else {
-                    // CLI not cripted
+                    // naked senza homecrypt
                     if (!homecrypt) {
-                        this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+                        this.cliAutologin.add(
+                            this.settings.distro.distroId, 
+                            this.settings.distro.codenameId, 
+                            this.settings.config.user_opt, 
+                            this.settings.config.user_opt_passwd, 
+                            this.settings.config.root_passwd, 
+                            this.settings.work_dir.merged)
+                    } else {
+                        // naked CON homecrypt 
+                        this.cliAutologin.remove(this.settings.work_dir.merged)
                     }
                 }
             }
