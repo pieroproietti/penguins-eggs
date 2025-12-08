@@ -62,13 +62,13 @@ Lightweight and Distro-Agnostic: It works across various Debian, Devuan, Ubuntu,
 [![penguins-eggs as AppImage](https://img.shields.io/badge/Get%20it%20as-AppImage-important.svg)](https://github.com/pieroproietti/penguins-eggs/releases)
 
 
-Although penguins-eggs has only recently been released as an AppImage, it is perhaps the simplest method. All you need is to get the penguins-eggs AppImage: open a browser at the url: `https://github.com/pieroproietti/penguins-eggs`, on the right side, find `latest release`, download the AppImage `penguins-eggs-25.x.x-1-x86_64.AppImage` and launch it using `sudo`
+Although penguins-eggs has only recently been released as an AppImage, this is perhaps the simplest method. All you need is to get the penguins-eggs AppImage: open a browser at the url: `https://github.com/pieroproietti/penguins-eggs`, on the right side, find `latest release`, download the AppImage `penguins-eggs-25.x.x-1-x86_64.AppImage` and launch it using `sudo`
 
-The AppImage will be be automatically configured and renamed as `/usr/bin/eggs`. It's ready to use! 
+The AppImage will be automatically configured and renamed as `/usr/bin/eggs`. It's ready to use! 
 
 `eggs love` to get your system remastered as live ISO.
 
-## Before to try AppImage depending on your distro, you need this packages installed:
+## Before trying the AppImage, depending on your distro, you need to install these packages:
 * Alpine: `sudo apk add fuse`
 * Arch/Manjaro: `sudo pacman -S fuse2`
 * Debian/Devuan/Ubuntu: `sudo apt-get install fuse libfuse2`
@@ -107,7 +107,7 @@ And follow instructions.
 Since penguins-eggs-25.7.14 rpm packages for Enterprise Linux [el9](https://penguins-eggs.net/basket/index.php/packages/el9) are availables.
 
 ### AlpineLinux
-I created and maintain a package for Alpine. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/alpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
+I maintain a package for Alpine Linux. Its repository is [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) and related packages can be downloaded from  [penguins-eggs.net](https://penguins-eggs.net/basket/index.php/packages/alpine) or the [sourceforge page](https://sourceforge.net/projects/penguins-eggs/files/Packages/alpine/).
 
 ### Arch
 Just download and install penguins-eggs-25.x.x using [fresh-eggs](https://github.com/pieroproietti/fresh-eggs).
