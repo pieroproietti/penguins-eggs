@@ -256,7 +256,6 @@ export default class Fisherman {
   async buildModuleInitcpio() {
     const { initcpio } = await import('./fisherman-helper/initcpio.js');
     const preset = await initcpio()
-
     const name = 'initcpio'
     let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
     let moduleDest = this.installer.modules + name + '.conf'
