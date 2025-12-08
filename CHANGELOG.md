@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.8
+- **Smart Shrinking for LUKS**: Implemented a "shrink phase" for `home.img` creation. The system now allocates a 
+  generous container, fills it with data, minimizes the internal filesystem using `resize2fs -M`, and finally truncates the image file to the exact size required (plus a safety margin). This guarantees the smallest possible ISO size for encrypted clones;
+
+- **CLI Login with Homecrypt**: Currently, logging into CLI-only systems (headless/server) generated with `--homecrypt` fails, whereas Desktop environments work perfectly. I am aware of this limitation and promise to investigate and address it in future releases.
+
+ 
 # v25.12.7
 * Refactored for AppImage compatibility: Completely removed the shelljs dependency and ensured all external calls are purged of AppImage environment variables;
 * Reintroduced `--fullcrypt`: This option is now enabled exclusively for native installations on Debian Trixie or Devuan Excalibur;
