@@ -13,7 +13,7 @@ fi
 rm -f $CHROOT/usr/share/applications/install-system.desktop
 
 # remove CLI autologin if exists
-rm -f $CHROOT/etc/systemd/system/getty@.service.d/override.conf
+rm -f $CHROOT/etc/systemd/system/getty@tty1.service.d/override.conf
 
 # remove 10-installer if exists
 rm -f $CHROOT/etc/sudoers.d/10-installer

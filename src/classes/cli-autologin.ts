@@ -1,19 +1,17 @@
 /**
- * ./src/lib/cli-autologin.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * ./src/classes/cli-autologin.ts
+ * penguins-eggs v.25.12.8 / ecmascript 2020
  * author: Piero Proietti
  * modified by: Hossein Seilani
  * license: MIT
  */
 
 import chalk from 'chalk'
-import { execSync } from '../lib/utils.js'
 import fs from 'node:fs'
 import path from 'node:path'
-import { shx } from '../lib/utils.js'
 
 // libraries
-import { exec } from '../lib/utils.js'
+import { execSync, shx } from '../lib/utils.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
 
@@ -22,9 +20,17 @@ const stopMessage = 'eggs-stop-message'
 
 export default class CliAutologin {
   
+  /**
+   * 
+   * @param distro 
+   * @param version 
+   * @param user 
+   * @param userPasswd 
+   * @param rootPasswd 
+   * @param chroot 
+   */
   async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
 
-    // 🔧 [Change 1] - Added parameter validation to prevent running with missing credentials.
     if (!user || !userPasswd || !rootPasswd) {
       throw new Error('Missing user credentials for CLI autologin setup.')
     }
@@ -33,21 +39,24 @@ export default class CliAutologin {
     if (Utils.isSystemd()) {
       Utils.warning("systemd: creating CLI autologin")
 
-      const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+      const oldGlobalDir = `${chroot}/etc/systemd/system/getty@.service.d`
+      if (fs.existsSync(oldGlobalDir)) {
+        Utils.warning(`Removing legacy global autologin config: ${oldGlobalDir}`)
+        shx.rm('-rf', oldGlobalDir)
+      }      
+
+      const fileOverride = `${chroot}/etc/systemd/system/getty@tty1.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
 
-      // 🔧 [Change 2] - Replaced raw `rm -rf` shell command with `fs.rmSync()`.
+      // Clean existing override directory using shx
       if (fs.existsSync(dirOverride)) {
-        try {
-          fs.rmSync(dirOverride, { recursive: true, force: true })
-        } catch (err) {
-          Utils.error(`Failed to remove ${dirOverride}: ${err}`)
-        }
+        shx.rm('-rf', dirOverride)
       }
 
       // Exclude OpenSUSE since it uses a different login mechanism.
       if (distro !== 'Opensuse') {
-        fs.mkdirSync(dirOverride, { recursive: true })
+        shx.mkdir(dirOverride)
+        
         let content = ''
         content += '[Service]\n'
         content += 'ExecStart=\n'
@@ -55,7 +64,7 @@ export default class CliAutologin {
 
         try {
           fs.writeFileSync(fileOverride, content)
-          fs.chmodSync(fileOverride, 0o755)
+          shx.chmod(0o755, fileOverride)
         } catch (err) {
           Utils.error(`Failed to write ${fileOverride}: ${err}`)
         }
@@ -70,9 +79,9 @@ export default class CliAutologin {
 
       const inittab = chroot + '/etc/inittab'
 
-      // 🔧 [Change 3] - Backup inittab before modification
+      // Backup inittab
       if (fs.existsSync(inittab)) {
-        fs.copyFileSync(inittab, `${inittab}.bak`)
+        shx.cp(inittab, `${inittab}.bak`)
       }
 
       let content = ''
@@ -93,7 +102,7 @@ export default class CliAutologin {
       content += `/bin/login -f ${user}\n`
 
       fs.writeFileSync(autologin, content, 'utf-8')
-      execSync(`chmod +x ${autologin}`)
+      shx.chmod('+x', autologin)
 
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
@@ -103,32 +112,24 @@ export default class CliAutologin {
       Utils.warning("sysvinit: creating CLI autologin")
       const inittab = chroot + '/etc/inittab'
 
-      // 🔧 [Change 4] - Backup for SysVInit
+      // Backup for SysVInit
       if (fs.existsSync(inittab)) {
-        try {
-          fs.copyFileSync(inittab, `${inittab}.bak`)
-        } catch (e) {
-          Utils.warning(`Could not backup inittab: ${e}`)
-        }
+         shx.cp(inittab, `${inittab}.bak`)
       }
 
       let content = fs.readFileSync(inittab, 'utf8')
 
-      // 🔧 [Change 5] - ROBUST REGEX REPLACEMENT
-      // Instead of exact string match, we use Regex to find the tty1 line.
-      // We force usage of /sbin/agetty (safer than getty) and add --noclear to prevent blinking/loops.
-      // ^(1:[0-9]*:respawn:) matches the ID and runlevels
-      // (.*getty\s+.*tty1.*)$ matches the command part
+      // Robust Regex Replacement for tty1 line
+      // Forces /sbin/agetty and adds --noclear
       const regex = /^(1:[0-9]*:respawn:)(.*getty\s+.*tty1.*)$/gm;
 
       if (regex.test(content)) {
         regex.lastIndex = 0; // Reset index
         content = content.replace(regex, (match, prefix, oldCmd) => {
-           // We comment out the original line for safety and append the new valid one
            return `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`;
         });
       } else {
-        // Fallback if regex fails: append config
+        // Fallback: append config
         Utils.warning("Standard tty1 line not found in inittab. Appending autologin configuration.");
         content += `\n# Autologin added by penguins-eggs\n1:2345:respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux\n`;
       }
@@ -140,6 +141,15 @@ export default class CliAutologin {
     }
   }
 
+  /**
+   * 
+   * @param distro 
+   * @param version 
+   * @param user 
+   * @param userPasswd 
+   * @param rootPasswd 
+   * @param chroot 
+   */
   async addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileIssue = `${chroot}/etc/issue`
     if (fs.existsSync(fileIssue)) {
@@ -160,6 +170,15 @@ export default class CliAutologin {
     }
   }
 
+  /**
+   * 
+   * @param distro 
+   * @param version 
+   * @param user 
+   * @param userPasswd 
+   * @param rootPasswd 
+   * @param chroot 
+   */
   async addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
 
@@ -173,7 +192,7 @@ export default class CliAutologin {
     }
 
     if (!fs.existsSync(fileMotd)) {
-      await exec(`touch ${fileMotd}`)
+      shx.touch(fileMotd)
     }
 
     this.msgRemove(fileMotd)
@@ -195,19 +214,20 @@ export default class CliAutologin {
     }
   }
 
+
+  /**
+   * 
+   * @param chroot 
+   */
   async remove(chroot = '/') {
     
     // --- SYSTEMD REMOVE ---
     if (Utils.isSystemd()) {
-      const fileOverride = `${chroot}/etc/systemd/system/getty@.service.d/override.conf`
+      const fileOverride = `${chroot}/etc/systemd/system/getty@tty1.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
 
       if (fs.existsSync(dirOverride)) {
-        try {
-          fs.rmSync(dirOverride, { recursive: true, force: true })
-        } catch (err) {
-          Utils.error(`Failed to remove ${dirOverride}: ${err}`)
-        }
+         shx.rm(dirOverride)
       }
 
       this.msgRemove(`${chroot}/etc/motd`)
@@ -217,10 +237,10 @@ export default class CliAutologin {
     } else if (Utils.isOpenRc()) {
       const inittab = chroot + '/etc/inittab'
       
-      // 🔧 [Change 6] - Safe Restore: If backup exists, use it.
+      // Safe Restore: If backup exists, use it.
       if (fs.existsSync(`${inittab}.bak`)) {
-        fs.copyFileSync(`${inittab}.bak`, inittab)
-        fs.rmSync(`${inittab}.bak`)
+        shx.cp(`${inittab}.bak`, inittab)
+        shx.rm(`${inittab}.bak`)
       } else {
         // Fallback to manual string replacement (Legacy)
         const search = 'autologin'
@@ -239,19 +259,18 @@ export default class CliAutologin {
 
       const autologin = `${chroot}/bin/autologin`
       if (autologin.startsWith(chroot)) {
-        execSync(`rm -f ${autologin}`)
+        shx.rm(autologin)
       }
 
     // --- SYSVINIT REMOVE ---
     } else if (Utils.isSysvinit()) {
       const inittab = chroot + '/etc/inittab'
 
-      // 🔧 [Change 7] - Safe Restore for SysVinit
-      // Much safer to restore the backup than trying to undo regex replacements manually.
+      // Safe Restore for SysVinit
       if (fs.existsSync(`${inittab}.bak`)) {
         console.log(`Restoring ${inittab} from backup...`);
-        fs.copyFileSync(`${inittab}.bak`, inittab)
-        fs.rmSync(`${inittab}.bak`)
+        shx.cp(`${inittab}.bak`, inittab)
+        shx.rm(`${inittab}.bak`)
       } else {
         // Fallback: Try to clean up the inserted lines
         const search = '--autologin'
@@ -259,8 +278,6 @@ export default class CliAutologin {
         let content = ''
         const lines = fs.readFileSync(inittab, 'utf8').split('\n')
         for (let i = 0; i < lines.length; i++) {
-          // If we find our modified line, we try to revert to a standard one
-          // Note: This is less precise than backup restore, hence why backup is preferred.
           if (lines[i].includes(search)) lines[i] = replace
           content += lines[i] + '\n'
         }

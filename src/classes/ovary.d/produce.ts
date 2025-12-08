@@ -250,7 +250,7 @@ export async function produce(
                 this.settings.distro,
                 this.settings.config.user_opt,
                 this.theme,
-                this.clone || this.fullcrypt,
+                this.clone || this.fullcrypt || this.homecrypt,
                 verbose)
 
             await this.incubator.config(release)
