@@ -19,7 +19,7 @@ const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
 export default class CliAutologin {
-  
+
   /**
    * 
    * @param distro 
@@ -29,7 +29,12 @@ export default class CliAutologin {
    * @param rootPasswd 
    * @param chroot 
    */
-  async add(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
+  async add(distro: string,
+    version: string,
+    user: string,
+    userPasswd: string,
+    rootPasswd: string,
+    chroot = '/') {
 
     if (!user || !userPasswd || !rootPasswd) {
       throw new Error('Missing user credentials for CLI autologin setup.')
@@ -43,7 +48,7 @@ export default class CliAutologin {
       if (fs.existsSync(oldGlobalDir)) {
         Utils.warning(`Removing legacy global autologin config: ${oldGlobalDir}`)
         shx.rm('-rf', oldGlobalDir)
-      }      
+      }
 
       const fileOverride = `${chroot}/etc/systemd/system/getty@tty1.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
@@ -56,7 +61,7 @@ export default class CliAutologin {
       // Exclude OpenSUSE since it uses a different login mechanism.
       if (distro !== 'Opensuse') {
         shx.mkdir(dirOverride)
-        
+
         let content = ''
         content += '[Service]\n'
         content += 'ExecStart=\n'
@@ -73,7 +78,7 @@ export default class CliAutologin {
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
 
-    // --- OPENRC ---
+      // --- OPENRC ---
     } else if (Utils.isOpenRc()) {
       Utils.warning("openrc: creating CLI autologin")
 
@@ -107,14 +112,14 @@ export default class CliAutologin {
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
 
-    // --- SYSVINIT ---
+      // --- SYSVINIT ---
     } else if (Utils.isSysvinit()) {
       Utils.warning("sysvinit: creating CLI autologin")
       const inittab = chroot + '/etc/inittab'
 
       // Backup for SysVInit
       if (fs.existsSync(inittab)) {
-         shx.cp(inittab, `${inittab}.bak`)
+        shx.cp(inittab, `${inittab}.bak`)
       }
 
       let content = fs.readFileSync(inittab, 'utf8')
@@ -126,7 +131,7 @@ export default class CliAutologin {
       if (regex.test(content)) {
         regex.lastIndex = 0; // Reset index
         content = content.replace(regex, (match, prefix, oldCmd) => {
-           return `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`;
+          return `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`;
         });
       } else {
         // Fallback: append config
@@ -135,11 +140,108 @@ export default class CliAutologin {
       }
 
       fs.writeFileSync(inittab, content, 'utf-8')
-      
+
       await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
       await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
     }
   }
+
+
+  /**
+   * remove()
+   * Rimuove qualsiasi configurazione di autologin (Systemd, OpenRC, SysVinit).
+   * Pulisce sia i target specifici (tty1) che quelli globali per evitare conflitti.
+   * * @param chroot - Il percorso della root del sistema (default: '/')
+   */
+  async remove(chroot = '/') {
+
+    // --- SYSTEMD REMOVE ---
+    if (Utils.isSystemd()) {
+      // 1. Rimuove il target specifico TTY1 (quello corretto che usiamo ora)
+      const specificDir = `${chroot}/etc/systemd/system/getty@tty1.service.d`
+      if (fs.existsSync(specificDir)) {
+        shx.rm('-rf', specificDir)
+      }
+
+      // 2. Rimuove il target generico (residui vecchi o configurazioni ereditate dall'host)
+      // Questo è fondamentale per risolvere il problema del "loop" su tty2/tty3
+      const globalDir = `${chroot}/etc/systemd/system/getty@.service.d`
+      if (fs.existsSync(globalDir)) {
+        shx.rm('-rf', globalDir)
+      }
+
+      // Pulizia messaggi di benvenuto
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+
+      // --- OPENRC REMOVE ---
+    } else if (Utils.isOpenRc()) {
+      const inittab = chroot + '/etc/inittab'
+
+      // Safe Restore: Se esiste il backup, usalo.
+      if (fs.existsSync(`${inittab}.bak`)) {
+        shx.cp(`${inittab}.bak`, inittab)
+        shx.rm(`${inittab}.bak`)
+      } else {
+        // Fallback: ripristino manuale delle stringhe (Legacy)
+        const search = 'autologin'
+        const replace = `tty1::respawn:/sbin/getty 38400 tty1`
+        let content = ''
+        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes(search)) lines[i] = replace
+          content += lines[i] + '\n'
+        }
+        fs.writeFileSync(inittab, content, 'utf-8')
+      }
+
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+
+      // Rimuove lo script binario di supporto per OpenRC
+      const autologin = `${chroot}/bin/autologin`
+      if (fs.existsSync(autologin)) {
+        shx.rm(autologin)
+      }
+
+      // --- SYSVINIT REMOVE ---
+    } else if (Utils.isSysvinit()) {
+      const inittab = chroot + '/etc/inittab'
+
+      // Safe Restore per SysVinit
+      if (fs.existsSync(`${inittab}.bak`)) {
+        // console.log(`Restoring ${inittab} from backup...`);
+        shx.cp(`${inittab}.bak`, inittab)
+        shx.rm(`${inittab}.bak`)
+      } else {
+        // Fallback: Pulisce le righe inserite
+        const search = '--autologin'
+        const replace = '1:2345:respawn:/sbin/getty 38400 tty1'
+        let content = ''
+        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes(search)) lines[i] = replace
+          content += lines[i] + '\n'
+        }
+        fs.writeFileSync(inittab, content, 'utf-8')
+      }
+
+      this.msgRemove(`${chroot}/etc/motd`)
+      this.msgRemove(`${chroot}/etc/issue`)
+    }
+  }
+
+
+  private async msgRemove(path: string) {
+    if (fs.existsSync(path)) {
+      if (!fs.lstatSync(path).isSymbolicLink()) {
+        let content = fs.readFileSync(path, 'utf8')
+        content = content.replace(/eggs-start-message[\s\S]*?eggs-stop-message/g, '')
+        fs.writeFileSync(path, content, 'utf-8')
+      }
+    }
+  }
+
 
   /**
    * 
@@ -215,87 +317,4 @@ export default class CliAutologin {
   }
 
 
-  /**
-   * 
-   * @param chroot 
-   */
-  async remove(chroot = '/') {
-    
-    // --- SYSTEMD REMOVE ---
-    if (Utils.isSystemd()) {
-      const fileOverride = `${chroot}/etc/systemd/system/getty@tty1.service.d/override.conf`
-      const dirOverride = path.dirname(fileOverride)
-
-      if (fs.existsSync(dirOverride)) {
-         shx.rm(dirOverride)
-      }
-
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-
-    // --- OPENRC REMOVE ---
-    } else if (Utils.isOpenRc()) {
-      const inittab = chroot + '/etc/inittab'
-      
-      // Safe Restore: If backup exists, use it.
-      if (fs.existsSync(`${inittab}.bak`)) {
-        shx.cp(`${inittab}.bak`, inittab)
-        shx.rm(`${inittab}.bak`)
-      } else {
-        // Fallback to manual string replacement (Legacy)
-        const search = 'autologin'
-        const replace = `tty1::respawn:/sbin/getty 38400 tty1`
-        let content = ''
-        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes(search)) lines[i] = replace
-          content += lines[i] + '\n'
-        }
-        fs.writeFileSync(inittab, content, 'utf-8')
-      }
-
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-
-      const autologin = `${chroot}/bin/autologin`
-      if (autologin.startsWith(chroot)) {
-        shx.rm(autologin)
-      }
-
-    // --- SYSVINIT REMOVE ---
-    } else if (Utils.isSysvinit()) {
-      const inittab = chroot + '/etc/inittab'
-
-      // Safe Restore for SysVinit
-      if (fs.existsSync(`${inittab}.bak`)) {
-        console.log(`Restoring ${inittab} from backup...`);
-        shx.cp(`${inittab}.bak`, inittab)
-        shx.rm(`${inittab}.bak`)
-      } else {
-        // Fallback: Try to clean up the inserted lines
-        const search = '--autologin'
-        const replace = '1:2345:respawn:/sbin/getty 38400 tty1'
-        let content = ''
-        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes(search)) lines[i] = replace
-          content += lines[i] + '\n'
-        }
-        fs.writeFileSync(inittab, content, 'utf-8')
-      }
-
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-    }
-  }
-
-  private async msgRemove(path: string) {
-    if (fs.existsSync(path)) {
-      if (!fs.lstatSync(path).isSymbolicLink()) {
-        let content = fs.readFileSync(path, 'utf8')
-        content = content.replace(/eggs-start-message[\s\S]*?eggs-stop-message/g, '')
-        fs.writeFileSync(path, content, 'utf-8')
-      }
-    }
-  }
 }
