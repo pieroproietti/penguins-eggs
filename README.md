@@ -241,25 +241,50 @@ Furthermore, addons, predominantly themes, have been organized under the vendor'
 > For detailed instructions on using a wardrobe, please consult the wardrobe users' guide  [wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide).
 
 
-## Clone/Cryptedclone
-When creating a live distribution of your system, you have different options to consider: the default mode, clone, and cryptedclone.
-•	The default mode, achieved by using the command `eggs produce`, completely removes user data from the live distribution. This ensures that no private data remains in the live system.
- 
-•	The `eggs produce --clone` command allows you to save both user data and system data directly in the generated ISO. This means that if someone obtains a copy of the ISO, they will be able to see and access the 
-user data directly from the live system. It's important to note that this data is not encrypted, so it may not be suitable if you have sensitive information on your system.
- 
-•	On the other hand, the `eggs produce --cryptedclone` command saves the data within the generated ISO using a LUKS (Linux Unified Key Setup) volume. With this option, the user data will not be visible in the live system. However, it can be automatically reinstalled during the system installation process using the "krill" installer. Even if someone has the generated ISO, they won't be able to access the user data without the LUKS passphrase. This ensures that your data remains protected.
+## System Cloning and Data Handling
+When creating a live distribution of your system using eggs produce, you must decide how to handle user data. You have three primary approaches: Default (Clean), Direct Clone, and Encrypted Clone.
 
-To summarize the available options:
+### 1. Default Mode (Clean System)
+Command: `eggs produce`
 
-•	`eggs produce` (default): All private data is removed from the live system.
+This is the default mode. It completely removes all user data and personal settings from the live distribution.
 
-•	`eggs produce --clone`: All user data is included unencrypted directly in the live system.
+Best for: Creating a distributable ISO to share with others or creating a clean "factory reset" image.
 
-•	`eggs produce --cryptedclone`: All user data is included encrypted within a LUKS volume inside the ISO.
-> [!TIP]
->    During the installation process, you can use the "krill" installer to restore your crypted data automatically. By running the command "sudo eggs install" with the "krill" installer, your encrypted data will be securely transferred and made available in the installed system.
+Privacy: Maximum. No private data remains in the live system.
 
+### 2. Clone (Unencrypted)
+Command: `eggs produce --clone`
+
+This command creates an exact replica of your current system, saving both system files and user data directly into the ISO.
+
+Behavior: If someone obtains this ISO, they can boot it and immediately access your files, browsing history, and settings without a password.
+
+Best for: Personal backups where the physical media (USB/DVD) remains in your secure possession.
+
+Privacy Warning: Low. Data is not encrypted. Do not share this ISO publicly if it contains sensitive information.
+
+### 3. Encrypted Clone (Secure Backup)
+Commands: `eggs produce --homecrypt` / `eggs produce --fullcrypt`
+
+These options save your data within the ISO but protect it inside a LUKS (Linux Unified Key Setup) volume.
+
+Behavior: Your user data is included but is not visible or accessible in the live system session. Even if a third party obtains the ISO, they cannot access the data without the LUKS passphrase.
+
+Best for: Secure backups or transporting your environment across different machines.
+
+> [NOTE] Availability and Scope
+
+> eggs produce --homecrypt: Available for most distributions using either native penguins-eggs packages or the AppImage. It protects sensitive data under /home and system accounts.
+
+> `eggs produce --fullcrypt`: Supported only on Debian Trixie and Devuan Excalibur, and exclusively when using native eggs packages. Unlike homecrypt, this option does not limit protection to /home, but encrypts the entire system.
+
+| Command | Data Included? | Encryption | Visible on Live System? | Use Case |
+| :--- | :--- | :--- | :--- | :--- |
+| `eggs produce` | No | N/A | No | Public Distribution / Clean Install |
+| `eggs produce --clone` | **Yes** | No | **Yes** | Personal Unsecured Backup |
+| `eggs produce --homecrypt` | **Yes** (/home) | **Yes (LUKS)** | Yes | Secure Backup of User Data |
+| `eggs produce --fullcrypt` | **Yes** (Full) | **Yes (LUKS)** | Yes | Maximum Security Backup (Debian/Devuan only) |
 
 ## Calamares and krill
  Calamares and Krill are powerful tools in the Eggs project, [calamares](https://calamares.io), offering versatile installation options for Linux systems. The Eggs project was specifically designed to utilize Calamares as the default system installer, providing users with the flexibility to customize their installations using themes. However, Eggs goes beyond Calamares by introducing its own installer called Krill, which focuses on command-line interface (CLI) installations, particularly for server environments.
