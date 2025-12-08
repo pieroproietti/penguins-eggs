@@ -65,6 +65,10 @@ export async function luksHome(
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
+    const megabyte = 1073741824
+    if (size < megabyte) {
+      size = megabyte
+    }
     const luksSize = Math.ceil(size * 2)
 
     /**
@@ -89,7 +93,7 @@ export async function luksHome(
     warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await this.luksExecuteCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    warning(`formatting c ext4 `)
+    warning(`formatting ext4 `)
     await exec(`mkfs.ext4 -L live-home ${this.luksDevice}`,this.echo)
 
     warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
@@ -106,20 +110,25 @@ export async function luksHome(
     warning(`copying /home on  ${this.luksMountpoint}`)
     await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`, this.echo)
 
+
+    /**
+     * utenti e gruppi in .system-backup
+     */
     warning(`saving user accounts info...`)
-    // Crea directory per backup system files
     await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`, this.echo)
     
-    // Filtra solo utenti con UID >= 1000
+    // passwd/shadow: solo utenti con UID >= 1000
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`, this.echo)
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`, this.echo)
 
-    // Per i gruppi: salva TUTTI (non filtrare per GID)
+    // group/gshadow TUTTI
     // Gli utenti possono appartenere a gruppi di sistema (sudo, audio, video, etc.)
     await exec(`cp /etc/group ${this.luksMountpoint}/.system-backup/group`, this.echo)
     await exec(`cp /etc/gshadow ${this.luksMountpoint}/.system-backup/gshadow`, this.echo)
 
-    // saving display manager (autologin) configs...
+    /**
+     * saving display manager (autologin) configs...
+     */
     warning(`saving display manager configuration...`)
     // GDM (gdm3 è comune su Debian/Ubuntu)
     await exec(`[ -e /etc/gdm3 ] && cp -a /etc/gdm3 ${this.luksMountpoint}/.system-backup/`, this.echo)
@@ -131,12 +140,80 @@ export async function luksHome(
     await exec(`[ -e /etc/sddm.conf ] && cp -a /etc/sddm.conf ${this.luksMountpoint}/.system-backup/`, this.echo)
     await exec(`[ -e /etc/sddm.conf.d ] && cp -a /etc/sddm.conf.d ${this.luksMountpoint}/.system-backup/`, this.echo)
 
-
-    warning(`unmount ${this.luksDevice}`)
+    // ==============================================================================
+    // INIZIO FASE DI SHRINK (COMPATTAZIONE)
+    // ==============================================================================
+    
+    warning(`Unmounting ${this.luksMountpoint} to perform shrinking...`)
     await exec(`umount ${this.luksMountpoint}`, this.echo)
 
-    warning(`closing LUKS volume ${this.luksMappedName}.`)
+    // 1. Controllo integrità (obbligatorio prima del resize)
+    warning(`Checking filesystem integrity...`)
+    await exec(`e2fsck -f -y ${this.luksDevice}`, this.echo)
+
+    // 2. Riduzione del filesystem al minimo
+    warning(`Shrinking filesystem to minimum size...`)
+    await exec(`resize2fs -M ${this.luksDevice}`, this.echo)
+
+    // 3. Calcolo della nuova dimensione del filesystem
+    warning(`Calculating new sizes...`)
+    
+    // Usiamo tune2fs per ottenere block count e block size in modo pulito
+    const tuneOutput = (await exec(`tune2fs -l ${this.luksDevice}`, { capture: true })).data
+    
+    const blockSizeMatch = tuneOutput.match(/Block size:\s+(\d+)/)
+    const blockCountMatch = tuneOutput.match(/Block count:\s+(\d+)/)
+
+    if (!blockSizeMatch || !blockCountMatch) {
+       throw new Error("Could not determine filesystem size from tune2fs")
+    }
+
+    const blockSize = parseInt(blockSizeMatch[1], 10)
+    const blockCount = parseInt(blockCountMatch[1], 10)
+    const fsSizeBytes = blockSize * blockCount
+
+    // 4. Calcolo dell'offset LUKS (Header size) senza usare l'helper
+    // Eseguiamo cryptsetup status direttamente e catturiamo l'output
+    const statusOutput = (await exec(`cryptsetup status ${this.luksMappedName}`, { capture: true })).data
+    
+    // Cerchiamo la riga "offset:  4096 sectors"
+    const offsetMatch = statusOutput.match(/offset:\s+(\d+)\s+sectors/)
+    
+    let luksHeaderBytes = 0
+    if (offsetMatch && offsetMatch[1]) {
+        // I settori in questo contesto sono sempre 512 bytes
+        luksHeaderBytes = parseInt(offsetMatch[1], 10) * 512
+        warning(`Detected LUKS header: ${bytesToGB(luksHeaderBytes)}`)
+    } else {
+        // Fallback sicuro: LUKS2 usa max 16MB, mettiamo 32MB per stare larghi
+        luksHeaderBytes = 32 * 1024 * 1024
+        warning(`Could not detect LUKS offset, using safe fallback: 32MB`)
+    }
+
+    // 5. Calcolo dimensione finale + Margine di sicurezza
+    // Aggiungiamo 50MB extra per evitare errori di arrotondamento o metadati
+    const safetyMargin = 50 * 1024 * 1024 
+    const finalFileSize = fsSizeBytes + luksHeaderBytes + safetyMargin
+
+    warning(`Final minimized size: ${bytesToGB(finalFileSize)}`)
+
+    // 6. Chiusura volume
+    warning(`Closing LUKS volume ${this.luksMappedName}...`)
     await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
+
+    // 7. Truncate finale
+    warning(`Truncating ${this.luksFile} to release unused space...`)
+    await exec(`truncate -s ${finalFileSize} ${this.luksFile}`, this.echo)
+
+    // ==============================================================================
+    // FINE FASE DI SHRINK
+    // ==============================================================================
+    
+    // warning(`unmount ${this.luksDevice}`)
+    // await exec(`umount ${this.luksMountpoint}`, this.echo)
+
+    // warning(`closing LUKS volume ${this.luksMappedName}.`)
+    // await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
 
     warning(`moving ${this.luksMappedName}  to (ISO)/live/.`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
