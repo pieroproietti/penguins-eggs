@@ -9,31 +9,41 @@ import { exec } from '../../../lib/utils.js'
 import { access } from 'fs/promises';
 
 /**
- * 
- * @returns 
+ * Cerca il file .preset per mkinitcpio appropriato per il kernel corrente.
+ * @returns Il percorso del file .preset trovato.
+ * @throws {Error} Se non è possibile trovare un file .preset valido.
  */
 export async function initcpio(): Promise<string> {
   try {
-    const result = await exec('uname -r');
-    const kernelVersion = result.data;
+    const kernelVersion = (await exec('uname -r', { capture: true })).data
     const version = kernelVersion.trim();
 
-    // Manjaro
+    // Logica Manjaro
     if (version.includes('MANJARO')) {
       try {
-        // Estrai major e minor version. Es: da "6.12.48-1-MANJARO" -> ["6", "12", "48-1-MANJARO"]
         const parts = version.split('.');
-        // Costruisci il nome del preset come "linux" + "6" + "12" -> "linux612"
         const kernelName = `linux${parts[0]}${parts[1]}`;
-        const manjaroPreset = `/etc/mkinitcpio.d/${kernelName}.preset`;
 
-        await access(manjaroPreset); // Verifica se esiste /etc/mkinitcpio.d/linux612.preset
-        return manjaroPreset; // Se esiste, lo restituisce e la funzione termina
-      } catch {
-        // Se anche questa logica fallisce, lascia che proceda al fallback per Arch
-        // console.warn('Logica Manjaro fallita, si tenta il fallback per Arch...');
+        // Tentativo 1: Major/Minor (es. /etc/mkinitcpio.d/linux61.preset)
+        const manjaroPreset = `/etc/mkinitcpio.d/${kernelName}.preset`;
+        await access(manjaroPreset);
+        return manjaroPreset;
+
+      } catch (e) {
+        try {
+          const parts = version.split('.');
+          const kernelName = `linux${parts[0]}${parts[1]}`;
+          // Tentativo 2: Major/Minor con Architettura (es. /etc/mkinitcpio.d/linux61-x86_64.preset)
+          const manjaroPresetArch = `/etc/mkinitcpio.d/${kernelName}-x86_64.preset`;
+          await access(manjaroPresetArch);
+          return manjaroPresetArch;
+
+        } catch (e) {
+          // Fallito, si procede al FALLBACK ARCH
+        }
       }
     } else if (version.includes('cachyos')) {
+      // Logica CachyOS
       try {
         let kernelType = 'linux-cachyos'; // default
         if (version.includes('lts')) {
@@ -47,16 +57,11 @@ export async function initcpio(): Promise<string> {
         await access(cachyPreset);
         return cachyPreset;
       } catch {
-        // Se anche questa logica fallisce, lascia che proceda al fallback per Arch
-        // console.warn('Logica Manjaro fallita, si tenta il fallback per Arch...');
+        // Fallito, si procede al fallback Arch
       }
     }
 
-    /**
-     * FALLBACK ARCH
-     */
-
-    // Determina il tipo di kernel
+    // FALLBACK ARCH
     let kernelType = 'linux'; // default
 
     if (version.includes('lts')) {
@@ -74,7 +79,7 @@ export async function initcpio(): Promise<string> {
     return archPreset;
 
   } catch (error) {
-    // Rimuoviamo l'errore originale dalla stringa per un messaggio più pulito
-    throw new Error(`Impossibile trovare un file .preset valido in /etc/mkinitcpio.d/`);
+    // Lancia un errore se tutti i tentativi falliscono.
+    throw new Error(`Impossibile trovare un file .preset valido in /etc/mkinitcpio.d/.`);
   }
 }
