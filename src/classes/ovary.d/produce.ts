@@ -287,17 +287,22 @@ export async function produce(
                 }
             }
 
-            // We dont' need more
+            // We don't need more
             await this.ubindVfs()
 
-            // Se non clone
-            if (!(this.clone || this.fullcrypt || this.homecrypt)) {
+            /**
+             * special cases
+             */
+            if (!(this.clone || this.fullcrypt)) {
                 await this.usersRemove()
                 await this.userCreateLive()
                 if (Pacman.isInstalledGui()) {
                     await this.createXdgAutostart(this.settings.config.theme, myAddons, myLinks, noicons)
                 } else {
-                    this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+                    // CLI not cripted
+                    if (!homecrypt) {
+                        this.cliAutologin.add(this.settings.distro.distroId, this.settings.distro.codenameId, this.settings.config.user_opt, this.settings.config.user_opt_passwd, this.settings.config.root_passwd, this.settings.work_dir.merged)
+                    }
                 }
             }
 
