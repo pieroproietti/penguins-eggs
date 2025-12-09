@@ -118,11 +118,10 @@ export default class Sequence {
   remix = {} as IRemix
   distro = {} as IDistro
   luksMappedName = 'luks-volume'                    // encrypted ISOs
-  luksFile = ``                               // encrypted ISOs
+  luksFile = ``                                     // encrypted ISOs
   luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
-  luksMountpoint = `/mnt`                     // encrypted ISOs
-  luksRootName = ''                           // installation encrypted
-  liveHomeDevice = '/dev/mapper/live-home'
+  luksMountpoint = `/mnt`                           // encrypted ISOs
+  luksRootName = ''                                 // installation encrypted
   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
   unattended = false
   nointeractive = false
@@ -260,15 +259,6 @@ export default class Sequence {
     await this.executeStep("machineid", 46, () => this.machineId())
     await this.executeStep("Creating fstab", 49, () => this.fstab(this.partitions.installationDevice))
 
-    // 6. homecrypt clone restoration
-    if (fs.existsSync(this.liveHomeDevice)) {
-      await this.executeStep("Restoring data from homecrypt", 50, async () => {
-        this.is_clone = true
-        let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
-        await exec(`${restoreHomeCrypt} ${this.liveHomeDevice} ${this.installTarget}`)
-      })
-    }
-
     // 7. Network and hostname
     await this.executeStep("Network configuration", 61, () => this.networkCfg())
     await this.executeStep("Create hostname", 64, () => this.hostname(this.network.domain))
@@ -342,6 +332,16 @@ export default class Sequence {
       await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
       await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
     })
+
+    // 6. homecrypt clone restoration
+    const liveHomeDevice = '/dev/mapper/live-home'
+    if (fs.existsSync(liveHomeDevice)) {
+      this.is_clone = true
+      await this.executeStep("Restoring data from homecrypt", 89, async () => {
+        let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
+        await exec(`${restoreHomeCrypt} ${liveHomeDevice} ${this.installTarget}`)
+      })
+    }
 
     // 13. Custom final steps
     const cfs = new CFS()
