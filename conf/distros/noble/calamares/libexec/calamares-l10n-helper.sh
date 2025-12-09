@@ -33,6 +33,7 @@ without_ext=$(echo $LANG | cut -d. -f1)
 /usr/sbin/locale-gen --keep-existing "$LC_TIME"
 
 apt-get update || true
-# apt-get install language-selector-common || true
+# we need language-selector-common 
+apt-get install language-selector-common || true
 missing=$(check-language-support --language="$without_ext")
 apt-get install -y $missing || true

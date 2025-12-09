@@ -80,6 +80,7 @@ sequence:
     - shellprocess@aptsources
     - shellprocess@install_translations
     - packages
+    - removeuser
     - cleanup
     - shellprocess@logs
     - umount
