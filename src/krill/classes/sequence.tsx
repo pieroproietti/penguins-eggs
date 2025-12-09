@@ -7,6 +7,9 @@
  * license: MIT
  */
 
+import path from 'path'
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 import { IRemix, IDistro, INet } from '../../interfaces/index.js'
 import Settings from '../../classes/settings.js'
 import React from 'react'
@@ -119,8 +122,8 @@ export default class Sequence {
   luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
   luksMountpoint = `/mnt`                     // encrypted ISOs
   luksRootName = ''                           // installation encrypted
+  liveHomeDevice = '/dev/mapper/live-home'
   is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
-  is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
   unattended = false
   nointeractive = false
   chroot = false
@@ -150,7 +153,7 @@ export default class Sequence {
     this.distro = new Distro()
     this.efi = fs.existsSync('/sys/firmware/efi/efivars');
     this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
-    this.luksRootName = `${this.distro.distroLike}_root`   
+    this.luksRootName = `${this.distro.distroLike}_root`
     this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }
 
@@ -213,7 +216,7 @@ export default class Sequence {
     this.halt = halt
     this.verbose = verbose
     this.echo = Utils.setEcho(this.verbose)
-    
+
     if (this.verbose) {
       this.toNull = ''
       this.spinner = false
@@ -225,7 +228,7 @@ export default class Sequence {
   /**
    * Main installation sequence - Linear and clear
    */
-  private async runInstallationSequence(chroot=false): Promise<void> {
+  private async runInstallationSequence(chroot = false): Promise<void> {
     // 1. Partitioning and formatting
     let isPartitioned = false
     await this.executeStep("Creating partitions", 0, async () => {
@@ -257,16 +260,12 @@ export default class Sequence {
     await this.executeStep("machineid", 46, () => this.machineId())
     await this.executeStep("Creating fstab", 49, () => this.fstab(this.partitions.installationDevice))
 
-    // 6. Crypted clone restoration
-    if (this.is_crypted_clone) {
-      await this.executeStep("Restore private data from crypted clone", 55, async () => {
-        if (fs.existsSync(this.luksFile)) {
-          const cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
-          await exec(cmd, Utils.setEcho(true))
-          this.is_clone = true
-        } else {
-          await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
-        }
+    // 6. homecrypt clone restoration
+    if (fs.existsSync(this.liveHomeDevice)) {
+      await this.executeStep("Restoring data from homecrypt", 50, async () => {
+        this.is_clone = true
+        let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
+        await exec(`${restoreHomeCrypt} ${this.liveHomeDevice} ${this.installTarget}`)
       })
     }
 
@@ -284,8 +283,8 @@ export default class Sequence {
       // Locale
       await this.executeStep("Locale", 70, async () => {
         if (this.distro.familyId === 'alpine' ||
-            this.distro.familyId === 'archlinux' ||
-            this.distro.familyId === 'debian') {
+          this.distro.familyId === 'archlinux' ||
+          this.distro.familyId === 'debian') {
           await this.locale()
         }
       })
@@ -316,6 +315,7 @@ export default class Sequence {
           }
         })
       }
+
     }
 
     // 10. Always remove CLI autologin
@@ -361,7 +361,7 @@ export default class Sequence {
     // 15. Unmounting
     await this.executeStep("umount Virtual File System", 96, () => this.umountVfs())
     await this.executeStep("umount File system", 99, () => this.umountFs())
-    
+
   }
 
   /**
@@ -369,10 +369,10 @@ export default class Sequence {
    */
   private async completeInstallation(): Promise<void> {
     await sleep(500)
-    
+
     const cmd = this.halt ? "poweroff" : "reboot"
     let message = `Press a key to ${cmd}`
-    
+
     if (this.unattended && this.nointeractive) {
       message = `System will ${cmd} in 5 seconds...`
     }
