@@ -117,12 +117,16 @@ export default class Sequence {
   settings = {} as Settings
   remix = {} as IRemix
   distro = {} as IDistro
-  luksMappedName = 'luks-volume'                    // encrypted ISOs
-  luksFile = ``                                     // encrypted ISOs
-  luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
-  luksMountpoint = `/mnt`                           // encrypted ISOs
-  luksRootName = ''                                 // installation encrypted
-  is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
+  // luksMappedName = 'luks-volume'                    // encrypted ISOs
+  // luksFile = ``                                     // encrypted ISOs
+  // luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
+  // luksMountpoint = `/mnt`
+  luksRootName = ''
+  cryptedHomeDevice = '/dev/mapper/live-home'
+  cryptedRootDevice = '/dev/mapper/live-root'
+  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone') || 
+              fs.existsSync(this.cryptedHomeDevice) ||
+              fs.existsSync(this.cryptedRootDevice)
   unattended = false
   nointeractive = false
   chroot = false
@@ -151,7 +155,7 @@ export default class Sequence {
     this.devices.swap = {} as IDevice
     this.distro = new Distro()
     this.efi = fs.existsSync('/sys/firmware/efi/efivars');
-    this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
+    // this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
     this.luksRootName = `${this.distro.distroLike}_root`
     this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }
@@ -312,35 +316,34 @@ export default class Sequence {
     await this.executeStep("Remove autologin CLI", 80, () => this.cliAutologin.remove(this.installTarget))
 
     // 10. mkinitramfs
-    await this.executeStep("initramfs configure", 86, () => this.initramfsCfg(this.partitions.installationDevice))
-    await this.executeStep("initramfs", 87, () => this.initramfs())
+    await this.executeStep("initramfs configure", 81, () => this.initramfsCfg(this.partitions.installationDevice))
+    await this.executeStep("initramfs", 82, () => this.initramfs())
 
     // 11. Bootloader configuration
-    await this.executeStep("bootloader-config", 81, () => this.bootloaderConfig())
-    await this.executeStep("grubcfg", 82, () => this.grubcfg())
-    await this.executeStep("bootloader", 83, () => this.bootloader())
+    await this.executeStep("bootloader-config", 83, () => this.bootloaderConfig())
+    await this.executeStep("grubcfg", 84, () => this.grubcfg())
+    await this.executeStep("bootloader", 85, () => this.bootloader())
 
     // 12. Final system setup
     if (this.distro.familyId === 'debian') {
-      await this.executeStep("Remove sources-yolk", 84, () => this.execCalamaresModule('sources-yolk-undo'))
+      await this.executeStep("Remove sources-yolk", 86, () => this.execCalamaresModule('sources-yolk-undo'))
     }
 
-    await this.executeStep("Add/remove packages", 85, () => this.packages())
+    await this.executeStep("Add/remove packages", 87, () => this.packages())
     await this.executeStep("Remove GUI installer link", 88, () => this.removeInstallerLink())
 
     await this.executeStep("Cleanup", 89, async () => {
       await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
-      await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
     })
 
     // 6. homecrypt clone restoration
-    const liveHomeDevice = '/dev/mapper/live-home'
-    if (fs.existsSync(liveHomeDevice)) {
-      this.is_clone = true
-      await this.executeStep("Restoring data from homecrypt", 89, async () => {
+    if (fs.existsSync(this.cryptedHomeDevice)) {
+      await this.executeStep("Restoring data from clone --homecrypt", 89, async () => {
         let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
-        await exec(`${restoreHomeCrypt} ${liveHomeDevice} ${this.installTarget}`)
+        await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
       })
+      // Occorre comunque rimuovere il clone
+      await this.delLiveUser()
     }
 
     // 13. Custom final steps
