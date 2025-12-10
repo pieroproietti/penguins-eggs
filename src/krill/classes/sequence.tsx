@@ -337,7 +337,7 @@ export default class Sequence {
     // 6. homecrypt clone restoration
     if (fs.existsSync(this.cryptedHomeDevice)) {
       await exec('sync')
-      await this.executeStep("Restoring data from clone --homecrypt", 90, async () => {
+      await this.executeStep("Restoring data from homecrypt", 90, async () => {
         let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
         await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
       })
