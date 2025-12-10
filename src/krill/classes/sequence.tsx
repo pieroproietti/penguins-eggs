@@ -123,10 +123,8 @@ export default class Sequence {
   // luksMountpoint = `/mnt`
   luksRootName = ''
   cryptedHomeDevice = '/dev/mapper/live-home'
-  cryptedRootDevice = '/dev/mapper/live-root'
   is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone') || 
-              fs.existsSync(this.cryptedHomeDevice) ||
-              fs.existsSync(this.cryptedRootDevice)
+              fs.existsSync(this.cryptedHomeDevice)
   unattended = false
   nointeractive = false
   chroot = false
@@ -338,12 +336,11 @@ export default class Sequence {
 
     // 6. homecrypt clone restoration
     if (fs.existsSync(this.cryptedHomeDevice)) {
-      await this.executeStep("Restoring data from clone --homecrypt", 89, async () => {
+      await exec('sync')
+      await this.executeStep("Restoring data from clone --homecrypt", 90, async () => {
         let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
         await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
       })
-      // Occorre comunque rimuovere il clone
-      await this.delLiveUser()
     }
 
     // 13. Custom final steps
@@ -351,7 +348,7 @@ export default class Sequence {
     const steps = await cfs.steps()
     if (steps.length > 0) {
       for (const step of steps) {
-        await this.executeStep(`running ${step}`, 90, () => this.execCalamaresModule(step))
+        await this.executeStep(`running ${step}`, 91, () => this.execCalamaresModule(step))
       }
     }
 
