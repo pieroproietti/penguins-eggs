@@ -86,7 +86,7 @@ export default class Ovary {
 
   distroLike = ''
 
-  distroLliveMediumPath = ''
+  distroLiveMediumPath = ''
 
   genisoimage = false
 
