@@ -267,7 +267,7 @@ export default class Utils {
     * @param device
     */
    static uuid(device: string): string {
-      const uuid = shx.exec(`blkid -s UUID -o value ${device}`).stdout.trim()
+      const uuid = shx.exec(`blkid -p -s UUID -o value ${device}`, { silent: true }).stdout.trim()
       return uuid
    }
 
