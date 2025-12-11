@@ -101,16 +101,16 @@ export async function editLiveFs(this: Ovary, clone = false) {
         await exec(`rm ${workDir}/etc/crypttab`, this.echo)
     }
 
-    // 🔧 [MODIFICA 1] Machine ID cleanup
+    // Machine ID cleanup
     // Cancelliamo SEMPRE il machine-id, anche su SysVinit.
     // Questo garantisce che lo script patchato (dbus) trovi il file mancante e lo rigeneri.
     if (fs.existsSync(`${workDir}/etc/machine-id`)) {
-        await exec(`rm ${workDir}/etc/machine-id`, this.echo)
+        await exec(`rm -f ${workDir}/etc/machine-id`, this.echo)
         await exec(`touch ${workDir}/etc/machine-id`, this.echo) // Lo ricreiamo vuoto
     }
     // Rimuoviamo anche quello in /var/lib/dbus per forzare la rigenerazione
     if (fs.existsSync(`${workDir}/var/lib/dbus/machine-id`)) {
-         await exec(`rm ${workDir}/var/lib/dbus/machine-id`, this.echo)
+         await exec(`rm -f ${workDir}/var/lib/dbus/machine-id`, this.echo)
     }
 
 
