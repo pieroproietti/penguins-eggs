@@ -46,8 +46,9 @@ export default function Partitions({ installationDevice, installationMode, files
         if (fs.existsSync(brandingFile)) {
             const calamares = yaml.load(fs.readFileSync(brandingFile, 'utf-8')) as unknown as IBranding
 
-            productName = calamares.string_product_name
-            version = calamares.string_product_version
+            productName = calamares.strings.productName
+            version = calamares.strings.version
+
         }
     }
 

@@ -15,19 +15,19 @@ import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import { exec } from '../../lib/utils.js'
 
-import { 
-  interactiveCryptoConfig, 
-  type CryptoConfig, 
-  type ArgonCryptoConfig, 
-  type Pbkdf2CryptoConfig 
+import {
+  interactiveCryptoConfig,
+  type CryptoConfig,
+  type ArgonCryptoConfig,
+  type Pbkdf2CryptoConfig
 } from './luks-interactive-crypto-config.js'; // Assicurati che il percorso sia corretto
 
-const noop = () => {}; 
+const noop = () => { };
 type ConditionalLoggers = {
-    log: (...args: any[]) => void;
-    warning: (msg: string) => void;
-    success: (msg: string) => void;
-    info: (msg: string) => void;
+  log: (...args: any[]) => void;
+  warning: (msg: string) => void;
+  success: (msg: string) => void;
+  info: (msg: string) => void;
 }
 
 /**
@@ -39,10 +39,10 @@ type ConditionalLoggers = {
 export async function luksRoot(this: Ovary) {
 
   const loggers: ConditionalLoggers = {
-      log: this.hidden ? noop : console.log,
-      warning: this.hidden ? noop : Utils.warning,
-      success: this.hidden ? noop : Utils.success,
-      info: this.hidden ? noop : Utils.info,
+    log: this.hidden ? noop : console.log,
+    warning: this.hidden ? noop : Utils.warning,
+    success: this.hidden ? noop : Utils.success,
+    info: this.hidden ? noop : Utils.info,
   };
 
   const { log, warning, success, info } = loggers;
@@ -70,7 +70,7 @@ export async function luksRoot(this: Ovary) {
     log('====================================')
 
     if (!fs.existsSync(live_fs)) {
-        throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
+      throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
     }
     const stats = fs.statSync(live_fs);
     let size = stats.size; // Dimensione REALE del file in Byte
@@ -112,23 +112,11 @@ export async function luksRoot(this: Ovary) {
     warning(`Syncing filesystem on ${this.luksMountpoint}...`);
     await exec('sync', this.echo); // Forza scrittura dati su disco
 
-    warning(`Attempting unmount ${this.luksMountpoint}...`);
-    try {
-        await exec(`umount ${this.luksMountpoint}`, this.echo);
-        success(`Unmounted ${this.luksMountpoint} successfully.`);
-    } catch (umountError) {
-        Utils.error(`Failed to unmount ${this.luksMountpoint}! Trying force unmount...`);
-        // Tenta un unmount forzato/lazy come ultima risorsa
-        await exec(`umount -lf ${this.luksMountpoint}`).catch((forceError) => {
-             Utils.error(`Force unmount also failed: ${forceError}`);
-             // Considera se lanciare un errore qui per fermare il processo
-        });
-        // Lancia comunque l'errore originale per segnalare il problema
-        throw umountError;
-    }
-
-    warning(`closing LUKS volume ${this.luksFile}.`)
-    await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
+    /**
+     * smonta this.luksMountpoint
+     * Shrink()
+     */
+    await this.luksShrink()
 
     warning(`moving ${this.luksMappedName} on (ISO)/live.`)
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)

@@ -23,10 +23,10 @@ export default async function unpackfs(this: Sequence): Promise<void> {
   // Usiamo echo false per evitare di intasare il log con migliaia di file
   const echoNo = Utils.setEcho(false)
   
-  console.log('Unpacking filesystem (this may take a while)...')
+  // console.log('Unpacking filesystem (this may take a while)...')
   
   // Esecuzione
   await exec(cmd, echoNo)
   
-  console.log('Filesystem unpacked successfully.')
+  // console.log('Filesystem unpacked successfully.')
 }

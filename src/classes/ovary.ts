@@ -47,6 +47,7 @@ import { finished } from './ovary.d/finished.js'
 
 // crypt
 import { luksExecuteCommand, buildLuksFormatArgs } from './ovary.d/luks-helpers.js'
+import { luksShrink } from './ovary.d/luks-shrink.js'
 import { luksGetPassword } from './ovary.d/luks-get-password.js'
 import { interactiveCryptoConfig, CryptoConfig, ArgonCryptoConfig, Pbkdf2CryptoConfig } from './ovary.d/luks-interactive-crypto-config.js'
 
@@ -85,7 +86,7 @@ export default class Ovary {
 
   distroLike = ''
 
-  distroLliveMediumPath = ''
+  distroLiveMediumPath = ''
 
   genisoimage = false
 
@@ -150,6 +151,7 @@ export default class Ovary {
   luksExecuteCommand = luksExecuteCommand
   buildLuksFormatArgs = buildLuksFormatArgs
   luksGetPassword = luksGetPassword
+  luksShrink = luksShrink
   interactiveCryptoConfig = interactiveCryptoConfig
 
   // luksHome

@@ -7,6 +7,9 @@
  * license: MIT
  */
 
+import path from 'path'
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
+
 import { IRemix, IDistro, INet } from '../../interfaces/index.js'
 import Settings from '../../classes/settings.js'
 import React from 'react'
@@ -114,13 +117,14 @@ export default class Sequence {
   settings = {} as Settings
   remix = {} as IRemix
   distro = {} as IDistro
-  luksMappedName = 'luks-volume'                    // encrypted ISOs
-  luksFile = ``                               // encrypted ISOs
-  luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
-  luksMountpoint = `/mnt`                     // encrypted ISOs
-  luksRootName = ''                           // installation encrypted
-  is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
-  is_crypted_clone = fs.existsSync('/etc/penguins-eggs.d/is_crypted_clone')
+  // luksMappedName = 'luks-volume'                    // encrypted ISOs
+  // luksFile = ``                                     // encrypted ISOs
+  // luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
+  // luksMountpoint = `/mnt`
+  luksRootName = ''
+  cryptedHomeDevice = '/dev/mapper/live-home'
+  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone') || 
+              fs.existsSync(this.cryptedHomeDevice)
   unattended = false
   nointeractive = false
   chroot = false
@@ -149,8 +153,8 @@ export default class Sequence {
     this.devices.swap = {} as IDevice
     this.distro = new Distro()
     this.efi = fs.existsSync('/sys/firmware/efi/efivars');
-    this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
-    this.luksRootName = `${this.distro.distroLike}_root`   
+    // this.luksFile = `${this.distro.liveMediumPath}live/${this.luksMappedName}`
+    this.luksRootName = `${this.distro.distroLike}_root`
     this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }
 
@@ -213,7 +217,7 @@ export default class Sequence {
     this.halt = halt
     this.verbose = verbose
     this.echo = Utils.setEcho(this.verbose)
-    
+
     if (this.verbose) {
       this.toNull = ''
       this.spinner = false
@@ -225,7 +229,7 @@ export default class Sequence {
   /**
    * Main installation sequence - Linear and clear
    */
-  private async runInstallationSequence(chroot=false): Promise<void> {
+  private async runInstallationSequence(chroot = false): Promise<void> {
     // 1. Partitioning and formatting
     let isPartitioned = false
     await this.executeStep("Creating partitions", 0, async () => {
@@ -257,19 +261,6 @@ export default class Sequence {
     await this.executeStep("machineid", 46, () => this.machineId())
     await this.executeStep("Creating fstab", 49, () => this.fstab(this.partitions.installationDevice))
 
-    // 6. Crypted clone restoration
-    if (this.is_crypted_clone) {
-      await this.executeStep("Restore private data from crypted clone", 55, async () => {
-        if (fs.existsSync(this.luksFile)) {
-          const cmd = `eggs syncfrom --rootdir /tmp/calamares-krill-root/ --file ${this.luksFile}`
-          await exec(cmd, Utils.setEcho(true))
-          this.is_clone = true
-        } else {
-          await Utils.pressKeyToExit(`Cannot find luks-volume file ${this.luksFile}`)
-        }
-      })
-    }
-
     // 7. Network and hostname
     await this.executeStep("Network configuration", 61, () => this.networkCfg())
     await this.executeStep("Create hostname", 64, () => this.hostname(this.network.domain))
@@ -284,8 +275,8 @@ export default class Sequence {
       // Locale
       await this.executeStep("Locale", 70, async () => {
         if (this.distro.familyId === 'alpine' ||
-            this.distro.familyId === 'archlinux' ||
-            this.distro.familyId === 'debian') {
+          this.distro.familyId === 'archlinux' ||
+          this.distro.familyId === 'debian') {
           await this.locale()
         }
       })
@@ -316,39 +307,47 @@ export default class Sequence {
           }
         })
       }
+
     }
 
     // 10. Always remove CLI autologin
     await this.executeStep("Remove autologin CLI", 80, () => this.cliAutologin.remove(this.installTarget))
 
     // 10. mkinitramfs
-    await this.executeStep("initramfs configure", 86, () => this.initramfsCfg(this.partitions.installationDevice))
-    await this.executeStep("initramfs", 87, () => this.initramfs())
+    await this.executeStep("initramfs configure", 81, () => this.initramfsCfg(this.partitions.installationDevice))
+    await this.executeStep("initramfs", 82, () => this.initramfs())
 
     // 11. Bootloader configuration
-    await this.executeStep("bootloader-config", 81, () => this.bootloaderConfig())
-    await this.executeStep("grubcfg", 82, () => this.grubcfg())
-    await this.executeStep("bootloader", 83, () => this.bootloader())
+    await this.executeStep("bootloader-config", 83, () => this.bootloaderConfig())
+    await this.executeStep("grubcfg", 84, () => this.grubcfg())
+    await this.executeStep("bootloader", 85, () => this.bootloader())
 
     // 12. Final system setup
     if (this.distro.familyId === 'debian') {
-      await this.executeStep("Remove sources-yolk", 84, () => this.execCalamaresModule('sources-yolk-undo'))
+      await this.executeStep("Remove sources-yolk", 86, () => this.execCalamaresModule('sources-yolk-undo'))
     }
 
-    await this.executeStep("Add/remove packages", 85, () => this.packages())
+    await this.executeStep("Add/remove packages", 87, () => this.packages())
     await this.executeStep("Remove GUI installer link", 88, () => this.removeInstallerLink())
 
     await this.executeStep("Cleanup", 89, async () => {
       await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_clone`)
-      await exec(`rm -f ${this.installTarget}/etc/penguins-eggs.d/is_crypted_clone`)
     })
+
+    // 6. homecrypt clone restoration
+    if (fs.existsSync(this.cryptedHomeDevice)) {
+      await this.executeStep("Restoring data from homecrypt", 90, async () => {
+        let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
+        await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
+      })
+    }
 
     // 13. Custom final steps
     const cfs = new CFS()
     const steps = await cfs.steps()
     if (steps.length > 0) {
       for (const step of steps) {
-        await this.executeStep(`running ${step}`, 90, () => this.execCalamaresModule(step))
+        await this.executeStep(`running ${step}`, 91, () => this.execCalamaresModule(step))
       }
     }
 
@@ -361,7 +360,7 @@ export default class Sequence {
     // 15. Unmounting
     await this.executeStep("umount Virtual File System", 96, () => this.umountVfs())
     await this.executeStep("umount File system", 99, () => this.umountFs())
-    
+
   }
 
   /**
@@ -369,10 +368,10 @@ export default class Sequence {
    */
   private async completeInstallation(): Promise<void> {
     await sleep(500)
-    
+
     const cmd = this.halt ? "poweroff" : "reboot"
     let message = `Press a key to ${cmd}`
-    
+
     if (this.unattended && this.nointeractive) {
       message = `System will ${cmd} in 5 seconds...`
     }

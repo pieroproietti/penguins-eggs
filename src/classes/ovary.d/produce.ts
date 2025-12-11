@@ -30,6 +30,7 @@ import Repo from './../yolk.js'
 import Ovary from './../ovary.js'
 
 import { CryptoConfig } from './luks-interactive-crypto-config.js'
+import e from 'express'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -304,8 +305,18 @@ export async function produce(
                         noicons
                     )
                 } else {
-                    // naked senza homecrypt
-                    if (!homecrypt) {
+                    // Se NON homecrypt 
+                    if (homecrypt) {
+                        await this.cliAutologin.remove()
+                        // remove autologin
+                        // const removeAutologin = path.resolve(__dirname, '../../../scripts/remove-autologin.sh')
+                        // const cmd = `${removeAutologin} ${this.settings.work_dir.merged}`
+                        // await Utils.pressKeyToExit(cmd)
+                        // await exec(cmd)
+                        // await Utils.pressKeyToExit("controlla")
+
+                    } else {
+                        // add autologin
                         this.cliAutologin.add(
                             this.settings.distro.distroId, 
                             this.settings.distro.codenameId, 
@@ -313,9 +324,6 @@ export async function produce(
                             this.settings.config.user_opt_passwd, 
                             this.settings.config.root_passwd, 
                             this.settings.work_dir.merged)
-                    } else {
-                        // naked CON homecrypt 
-                        this.cliAutologin.remove(this.settings.work_dir.merged)
                     }
                 }
             }
@@ -327,9 +335,11 @@ export async function produce(
                  * homecrypt: installa il supporto 
                  */
                 const squashfsRoot = this.settings.work_dir.merged
-                const homeImgPath = this.distroLliveMediumPath + 'live/home.img'
+                const homeImgPath = this.distroLiveMediumPath + 'live/home.img'
                 this.installHomecryptSupport(squashfsRoot, homeImgPath)
+
             }
+
 
             mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
             await this.uBindLiveFs() // we don't need more

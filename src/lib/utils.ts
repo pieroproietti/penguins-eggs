@@ -215,6 +215,54 @@ export const shx = {
     fs.symlinkSync(target, link);
   },
 
+  ls: (arg1?: string | string[], arg2?: string | string[]): string[] => {
+    let options = '';
+    let paths: string[] = [];
+
+    // Rilevamento argomenti: ls('-R', path) vs ls(path)
+    if (typeof arg1 === 'string' && arg1.startsWith('-')) {
+      options = arg1;
+      // Se c'è arg2 lo usa, altrimenti default a '.'
+      paths = arg2 ? (Array.isArray(arg2) ? arg2 : [arg2]) : ['.'];
+    } else {
+      // Nessuna opzione, arg1 sono i path. Se null, default a '.'
+      paths = arg1 ? (Array.isArray(arg1) ? arg1 : [arg1]) : ['.'];
+    }
+
+    const recursive = options.includes('R');
+    let results: string[] = [];
+
+    paths.forEach(p => {
+      if (!fs.existsSync(p)) return;
+
+      const stat = fs.statSync(p);
+      if (stat.isDirectory()) {
+        if (recursive) {
+          // Funzione ricorsiva interna
+          const walk = (dir: string) => {
+            const files = fs.readdirSync(dir);
+            files.forEach(f => {
+              const fullPath = path.join(dir, f);
+              results.push(fullPath); // Aggiunge il path completo
+              if (fs.statSync(fullPath).isDirectory()) {
+                walk(fullPath);
+              }
+            });
+          };
+          walk(p);
+        } else {
+          // Comportamento standard: ritorna solo i nomi dei file nella cartella
+          results = results.concat(fs.readdirSync(p));
+        }
+      } else {
+        // È un file singolo
+        results.push(p);
+      }
+    });
+
+    return results;
+  },
+
   exec: (command: string, options: { silent?: boolean } = {}): ShellExecResult => {
     const env = getCleanEnv();
     const spawnOpts: SpawnSyncOptions = {
@@ -283,4 +331,5 @@ export async function exec(command: string, { echo = false, ignore = false, capt
       });
     });
   });
+
 }

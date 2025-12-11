@@ -38,8 +38,8 @@ export default function Finished({
   const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
   const branding = settings.branding
   const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
-  productName = calamares.string_product_name
-  version = calamares.string_product_version
+  productName = calamares.strings.productName
+  version = calamares.strings.version
 
   /**
   * totale width=75

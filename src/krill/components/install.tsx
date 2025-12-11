@@ -38,8 +38,8 @@ export default function Install({ message = "Install", percent = 0, spinner = fa
   const branding = settings.branding
 
   const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
-  productName = calamares.string_product_name
-  version = calamares.string_product_version
+  productName = calamares.strings.productName
+  version = calamares.strings.version
 
   let barLen = 53
   let progress = Math.round(barLen * percent / 100)
