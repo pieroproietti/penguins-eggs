@@ -357,6 +357,9 @@ export default class Sequence {
       await this.emergencyShell(message)
     }
 
+    // Before to unmount
+    await exec('sync')
+
     // 15. Unmounting
     await this.executeStep("umount Virtual File System", 96, () => this.umountVfs())
     await this.executeStep("umount File system", 99, () => this.umountFs())

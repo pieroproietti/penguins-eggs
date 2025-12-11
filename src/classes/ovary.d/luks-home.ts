@@ -65,7 +65,7 @@ export async function luksHome(
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
-    const megabyte = 1073741824
+    const megabyte = 1048576*128
     if (size < megabyte) {
       size = megabyte
     }
