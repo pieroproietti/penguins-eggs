@@ -85,7 +85,7 @@ export default class Yolk {
     await exec(cmd, { capture: true, echo: false })
 
     // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
-    const now = shx.exec('date -R -u').stdout.trim()
+    const now = shx.exec('date -R -u', {silent: true}).stdout.trim()
     const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.uefiArch()} \nDate: ${now}\n`
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)

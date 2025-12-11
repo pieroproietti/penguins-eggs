@@ -46,7 +46,7 @@ export async function users(this: Prepare): Promise<IUsers> {
 
     let hostname = this.krillConfig.hostname
     if (hostname === '' || hostname === undefined) {
-        hostname = shx.exec('cat /etc/hostname').stdout.trim()
+        hostname = shx.exec('cat /etc/hostname',{silent: true}).stdout.trim()
     }
 
     let autologin = true
