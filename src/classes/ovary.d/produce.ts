@@ -328,7 +328,7 @@ export async function produce(
                 }
             }
 
-            await this.editLiveFs(clone)
+            await this.editLiveFs()
 
             if (this.homecrypt) {
                 /**

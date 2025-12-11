@@ -123,8 +123,7 @@ export default class Sequence {
   // luksMountpoint = `/mnt`
   luksRootName = ''
   cryptedHomeDevice = '/dev/mapper/live-home'
-  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone') || 
-              fs.existsSync(this.cryptedHomeDevice)
+  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone')
   unattended = false
   nointeractive = false
   chroot = false
