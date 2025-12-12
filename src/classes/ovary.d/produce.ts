@@ -256,9 +256,8 @@ export async function produce(
 
             await this.incubator.config(release)
 
-
-            // Qua inseriamo uno sleep di un minuto
-            await Utils.sleep(5000) // 5 secondo
+            // 5 secondi di sleep
+            await Utils.sleep(5000)
 
             await this.bindLiveFs()
             await this.bindVfs()
@@ -298,22 +297,18 @@ export async function produce(
                 await this.usersRemove()
                 await this.userCreateLive()
                 if (Pacman.isInstalledGui()) {
+                    // GUI
                     await this.createXdgAutostart(
                         this.settings.config.theme, 
                         myAddons, 
                         myLinks, 
                         noicons
                     )
+                    
                 } else {
-                    // Se NON homecrypt 
+                    // CLI
                     if (homecrypt) {
                         await this.cliAutologin.remove()
-                        // remove autologin
-                        // const removeAutologin = path.resolve(__dirname, '../../../scripts/remove-autologin.sh')
-                        // const cmd = `${removeAutologin} ${this.settings.work_dir.merged}`
-                        // await Utils.pressKeyToExit(cmd)
-                        // await exec(cmd)
-                        // await Utils.pressKeyToExit("controlla")
 
                     } else {
                         // add autologin

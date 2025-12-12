@@ -6,26 +6,29 @@
  * license: MIT
  */
 
+// packages
 import fs from 'fs'
 import os from 'os'
 import path from 'node:path'
 import {shx} from '../../lib/utils.js'
+
+// classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import Pacman from '../pacman.js'
 import Systemctl from '../systemctl.js'
+
 import { exec } from '../../lib/utils.js'
 
+// _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export async function editLiveFs(this: Ovary, clone = false) {
-    if (this.verbose) console.log('Ovary: editLiveFs (Essential/Back-to-Basics)')
+    if (this.verbose) console.log('Ovary: editLiveFs')
 
     const workDir = this.settings.work_dir.merged
 
-    // Flag clone (standard eggs)
     if (clone) {
-        await exec(`mkdir -p ${workDir}/etc/penguins-eggs.d`, this.echo)
         await exec(`touch ${workDir}/etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
@@ -48,48 +51,38 @@ export async function editLiveFs(this: Ovary, clone = false) {
     await exec(cmd, this.echo)
 
     // =========================================================================
-    // FIX SYSVINIT (Minimal & Clean)
+    // FIX DEFINITIVO PER DEVUAN/SYSVINIT (Init Script Hardening)
     // =========================================================================
     if (Utils.isSysvinit()) {
-        if (this.verbose) console.log('SysVinit detected: Applying ESSENTIAL fixes only...');
-        
-        // 1. D-BUS FIX (Indispensabile per evitare il boot freeze)
-        // Crea machine-id e directory, impedisce cancellazione.
+        if (this.verbose) console.log('SysVinit detected: Hardening init scripts...');
         await patchInitScripts(workDir, this.verbose);
-        
-        // 2. GETTY FIX (Indispensabile se manca il binario)
-        // Assicura che /sbin/getty esista (spesso c'è solo agetty)
-        await fixGettyBinary(workDir, this.verbose);
-        
-        // 3. TTY NODES (Indispensabile per velocità/race-conditions)
-        // Crea /dev/ttyX staticamente
-        await createTtyNodes(workDir, this.verbose); 
-        
-        // NOTA: Non tocchiamo più inittab o rc.local. 
-        // Lasciamo che live-config gestisca il login/autologin standard.
-        // Questo dovrebbe permettere ai prompt di cryptsetup di apparire.
     }
     // =========================================================================
 
-    // Fix Symlinks
+    // Fix Symlinks /var/run e /var/lock
     const varRun = `${workDir}/var/run`
     if (fs.existsSync(varRun) && !fs.lstatSync(varRun).isSymbolicLink()) {
+         if (this.verbose) console.log('Fixing /var/run symlink...');
          await exec(`rm -rf ${varRun}`, this.echo)
          await exec(`ln -s /run ${varRun}`, this.echo)
     }
 
     const varLock = `${workDir}/var/lock`
     if (fs.existsSync(varLock) && !fs.lstatSync(varLock).isSymbolicLink()) {
+         if (this.verbose) console.log('Fixing /var/lock symlink...');
          await exec(`rm -rf ${varLock}`, this.echo)
          await exec(`ln -s /run/lock ${varLock}`, this.echo)
     }
 
-    // Pmount fix
+    // Altri fix standard
     if (this.settings.config.pmount_fixed && fs.existsSync(`${workDir}/etc/pmount.allow`)) {
         await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${workDir}/etc/pmount.allow`, this.echo)
     }
 
-    // SSH fix
+    if (fs.existsSync(`${workDir}lib/live/config/1161-openssh-server`)) {
+        await exec(`rm -f ${workDir}/lib/live/config/1161-openssh-server`, this.echo)
+    }
+
     if (fs.existsSync(`${workDir}/etc/ssh/sshd_config`)) {
         await exec(`sed -i '/PermitRootLogin/d' ${workDir}/etc/ssh/sshd_config`)
         await exec(`sed -i '/PasswordAuthentication/d' ${workDir}/etc/ssh/sshd_config`)
@@ -104,16 +97,23 @@ export async function editLiveFs(this: Ovary, clone = false) {
     await exec(`rm ${workDir}/etc/fstab`, this.echo)
     await exec(`touch ${workDir}/etc/fstab`, this.echo)
 
+    if (fs.existsSync(`${workDir}/etc/crypttab`)) {
+        await exec(`rm ${workDir}/etc/crypttab`, this.echo)
+    }
+
     // Machine ID cleanup
+    // Cancelliamo SEMPRE il machine-id, anche su SysVinit.
+    // Questo garantisce che lo script patchato (dbus) trovi il file mancante e lo rigeneri.
     if (fs.existsSync(`${workDir}/etc/machine-id`)) {
         await exec(`rm -f ${workDir}/etc/machine-id`, this.echo)
-        await exec(`touch ${workDir}/etc/machine-id`, this.echo)
+        await exec(`touch ${workDir}/etc/machine-id`, this.echo) // Lo ricreiamo vuoto
     }
+    // Rimuoviamo anche quello in /var/lib/dbus per forzare la rigenerazione
     if (fs.existsSync(`${workDir}/var/lib/dbus/machine-id`)) {
          await exec(`rm -f ${workDir}/var/lib/dbus/machine-id`, this.echo)
     }
-    
-    // Grub fonts
+
+
     if (fs.existsSync(`${workDir}/boot/grub/fonts/unicode.pf2`)) {
         shx.cp(`${workDir}/boot/grub/fonts/unicode.pf2`, `${workDir}/boot/grub/fonts/UbuntuMono16.pf2`)
     }
@@ -124,63 +124,177 @@ export async function editLiveFs(this: Ovary, clone = false) {
     if (Utils.isSystemd()) {
         const systemdctl = new Systemctl(this.verbose)
         if (await systemdctl.isEnabled('remote-cryptsetup.target')) await systemdctl.disable('remote-cryptsetup.target', workDir, true)
+        if (await systemdctl.isEnabled('speech-dispatcherd.service')) await systemdctl.disable('speech-dispatcherd.service', workDir, true)
+        if (await systemdctl.isEnabled('wpa_supplicant-nl80211@.service')) await systemdctl.disable('wpa_supplicant-nl80211@.service', workDir, true)
+        if (await systemdctl.isEnabled('wpa_supplicant@.service')) await systemdctl.disable('wpa_supplicant@.service', workDir, true)
+        if (await systemdctl.isEnabled('wpa_supplicant-wired@.service')) await systemdctl.disable('wpa_supplicant-wired@.service', workDir, true)
+
+        await exec(`rm -f ${workDir}/var/lib/wicd/configurations/*`, this.echo)
+        await exec(`rm -f ${workDir}/etc/wicd/wireless-settings.conf`, this.echo)
         await exec(`rm -f ${workDir}/etc/NetworkManager/system-connections/*`, this.echo)
-    }
-}
-
-async function fixGettyBinary(workDir: string, verbose: boolean) {
-    const sbin = `${workDir}/sbin`;
-    // Se c'è agetty ma manca getty, creiamo il symlink. Live-config usa spesso 'getty'.
-    if (!fs.existsSync(`${sbin}/getty`) && fs.existsSync(`${sbin}/agetty`)) {
-        if (verbose) console.log('Symlinking agetty to getty...');
-        await exec(`ln -s agetty ${sbin}/getty`);
-    }
-}
-
-async function createTtyNodes(workDir: string, verbose: boolean) {
-    // Creiamo i device node statici per aiutare udev ed evitare race conditions
-    for (let i = 1; i <= 6; i++) {
-        const tty = `${workDir}/dev/tty${i}`;
-        if (!fs.existsSync(tty)) {
-            await exec(`mknod -m 620 ${tty} c 4 ${i}`);
-            await exec(`chown root:tty ${tty}`);
+        await exec(`rm -f ${workDir}/etc/network/wifi/*`, this.echo)
+        
+        const cleanDirs = ['if-down.d', 'if-post-down.d', 'if-pre-up.d', 'if-up.d', 'interfaces.d']
+        for (const cleanDir of cleanDirs) {
+            await exec(`rm -f ${workDir}/etc/network/${cleanDir}/wpasupplicant`, this.echo)
         }
     }
+
+    if (this.familyId === 'debian') {
+        if (fs.existsSync(`${workDir}/etc/network/interfaces`)) {
+            await exec(`rm -f ${workDir}/etc/network/interfaces`, this.echo)
+            Utils.write(`${workDir}/etc/network/interfaces`, 'auto lo\niface lo inet loopback')
+        }
+
+        const devNodes = [
+            { path: 'console', m: '622', type: 'c', major: 5, minor: 1 },
+            { path: 'null',    m: '666', type: 'c', major: 1, minor: 3 },
+            { path: 'zero',    m: '666', type: 'c', major: 1, minor: 5 },
+            { path: 'ptmx',    m: '666', type: 'c', major: 5, minor: 2 },
+            { path: 'tty',     m: '666', type: 'c', major: 5, minor: 0 },
+            { path: 'random',  m: '444', type: 'c', major: 1, minor: 8 },
+            { path: 'urandom', m: '444', type: 'c', major: 1, minor: 9 },
+        ]
+
+        for (const node of devNodes) {
+            if (!fs.existsSync(`${workDir}/dev/${node.path}`)) {
+                await exec(`mknod -m ${node.m} ${workDir}/dev/${node.path} ${node.type} ${node.major} ${node.minor}`, this.echo)
+            }
+        }
+
+        if (!fs.existsSync(`${workDir}/dev/console`)) {
+             await exec(`chown -v root:tty ${workDir}/dev/{console,ptmx,tty}`, this.echo)
+        }
+
+        const links = [
+             { src: '/proc/self/fd', dest: 'fd' },
+             { src: '/proc/self/fd/0', dest: 'stdin' },
+             { src: '/proc/self/fd/1', dest: 'stdout' },
+             { src: '/proc/self/fd/2', dest: 'stderr' },
+             { src: '/proc/kcore', dest: 'core' }
+        ];
+
+        for (const link of links) {
+            if (!fs.existsSync(`${workDir}/dev/${link.dest}`)) {
+                await exec(`ln -sv ${link.src} ${workDir}/dev/${link.dest}`, this.echo)
+            }
+        }
+
+        if (!fs.existsSync(`${workDir}/dev/shm`)) await exec(`mkdir -v ${workDir}/dev/shm`, this.echo)
+        if (!fs.existsSync(`${workDir}/dev/pts`)) await exec(`mkdir -v ${workDir}/dev/pts`, this.echo)
+        await exec(`chmod 1777 ${workDir}/dev/shm`, this.echo)
+
+        if (!fs.existsSync(`${workDir}/tmp`)) await exec(`mkdir ${workDir}/tmp`, this.echo)
+        await exec(`chmod 1777 ${workDir}/tmp`, this.echo)
+    }
 }
 
+/**
+ * Patcha direttamente gli script di init in /etc/init.d/
+ */
 async function patchInitScripts(workDir: string, verbose: boolean) {
+    
+    // 1. PATCH DBUS (Il più importante)
     const dbusScript = `${workDir}/etc/init.d/dbus`;
     if (fs.existsSync(dbusScript)) {
+        if (verbose) console.log(`Patching ${dbusScript} to fix missing directories and RO fs...`);
+        
         let content = fs.readFileSync(dbusScript, 'utf8');
         let modified = false;
 
-        // Fix D-Bus Header (Creazione ID e Dir se mancano)
+        // PATCH A: Header con gestione Ramdisk Fallback e Mount Proc
+        // Questa intestazione viene inserita all'inizio e prova a montare tmpfs se non può scrivere
         const dbusFix = `
 ### EGGS-FIX-START
-[ ! -d /proc/1 ] && mount -t proc proc /proc
-mkdir -p /run/dbus /var/lib/dbus
-[ ! -e /var/run/dbus ] && ln -s /run/dbus /var/run/dbus
-if ! mkdir -p /var/lib/dbus 2>/dev/null; then mount -t tmpfs -o size=1m tmpfs /var/lib/dbus; fi
-if [ ! -s /var/lib/dbus/machine-id ]; then
-  if [ -f /proc/sys/kernel/random/uuid ]; then cat /proc/sys/kernel/random/uuid | tr -d '-' > /var/lib/dbus/machine-id;
-  else echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id; fi
+# 1. Assicuriamoci che /proc sia montato (necessario per leggere uuid kernel)
+if ! mountpoint -q /proc/; then
+  mount -t proc proc /proc
 fi
-[ ! -s /etc/machine-id ] && cp /var/lib/dbus/machine-id /etc/machine-id 2>/dev/null
-[ ! -s /etc/machine-id ] && mount --bind /var/lib/dbus/machine-id /etc/machine-id
+
+# 2. Gestione Filesystem Read-Only (RO)
+# Se non possiamo scrivere in /var/lib/dbus, montiamo un tmpfs (RAM) sopra.
+# Questo bypassa il blocco dell'overlayfs non ancora pronto tipico delle build AppImage.
+if ! mkdir -p /var/lib/dbus 2>/dev/null || ! touch /var/lib/dbus/.rw_check 2>/dev/null; then
+  echo "EGGS-DEBUG: Filesystem Read-Only detected! Mounting tmpfs on /var/lib/dbus" > /dev/console
+  mount -t tmpfs -o size=1m tmpfs /var/lib/dbus
+fi
+rm -f /var/lib/dbus/.rw_check
+
+# 3. Creazione Directory Runtime
+mkdir -p /var/run/dbus /var/lib/dbus
+chmod 755 /var/run/dbus /var/lib/dbus
+
+# 4. Generazione Machine ID (Non-Blocking Strategy)
+# Se il file non esiste (o è vuoto), lo creiamo.
+if [ ! -s /var/lib/dbus/machine-id ]; then
+  # Prova A: Usa UUID del kernel (Istantaneo, non blocca)
+  if [ -f /proc/sys/kernel/random/uuid ]; then
+    cat /proc/sys/kernel/random/uuid | tr -d '-' > /var/lib/dbus/machine-id
+  # Prova B: Fallback statico
+  else
+    echo "00000000000000000000000000000001" > /var/lib/dbus/machine-id
+  fi
+  chmod 644 /var/lib/dbus/machine-id
+fi
+
+# 5. Sync /etc/machine-id (Best effort, ignora errori se /etc è RO)
+if [ ! -s /etc/machine-id ] && [ -s /var/lib/dbus/machine-id ]; then
+  cp /var/lib/dbus/machine-id /etc/machine-id 2>/dev/null || true
+fi
 ### EGGS-FIX-END
 `;
         if (!content.includes('EGGS-FIX-START')) {
             content = content.replace('#!/bin/sh', `#!/bin/sh\n${dbusFix}`);
             modified = true;
         }
-        
-        // Sabotage Prevention (Regex Robusta)
-        const sabotageRegex = /rm\s+-f\s+["']?\$\{?MACHINEID\}?["']?/g;
-        if (sabotageRegex.test(content)) {
-             content = content.replace(sabotageRegex, ': # EGGS-PATCH: Prevent deletion');
+
+        // PATCH B: SABOTAGE PREVENTION (Questa è quella che mancava!)
+        // Impediamo che create_machineid cancelli il file che abbiamo appena creato
+        // perché l'uptime è basso. 
+        if (content.includes('rm -f "${MACHINEID}"')) {
+             if (verbose) console.log('Patching dbus: disabling auto-delete of machine-id on boot');
+             content = content.replace(
+                 'rm -f "${MACHINEID}"', 
+                 ': # EGGS-PATCH: Prevent deletion of valid machine-id'
+             );
              modified = true;
         }
 
-        if (modified) fs.writeFileSync(dbusScript, content, 'utf8');
+        if (modified) {
+            fs.writeFileSync(dbusScript, content, 'utf8');
+        }
+    }
+
+    // 2. PATCH RSYSLOG
+    const rsyslogScript = `${workDir}/etc/init.d/rsyslog`;
+    if (fs.existsSync(rsyslogScript)) {
+        let content = fs.readFileSync(rsyslogScript, 'utf8');
+        const fix = `
+### EGGS-FIX-START
+mkdir -p /var/spool/rsyslog
+chmod 755 /var/spool/rsyslog
+### EGGS-FIX-END
+`;
+        if (!content.includes('EGGS-FIX-START')) {
+            content = content.replace('#!/bin/sh', `#!/bin/sh\n${fix}`);
+            fs.writeFileSync(rsyslogScript, content, 'utf8');
+        }
+    }
+
+    // 3. PATCH CRON
+    const cronScript = `${workDir}/etc/init.d/cron`;
+    if (fs.existsSync(cronScript)) {
+        let content = fs.readFileSync(cronScript, 'utf8');
+        const fix = `
+### EGGS-FIX-START
+mkdir -p /var/spool/cron/crontabs
+chmod 1730 /var/spool/cron/crontabs
+chown root:crontab /var/spool/cron/crontabs 2>/dev/null || true
+### EGGS-FIX-END
+`;
+        if (!content.includes('EGGS-FIX-START')) {
+            content = content.replace('#!/bin/sh', `#!/bin/sh\n${fix}`);
+            fs.writeFileSync(cronScript, content, 'utf8');
+        }
     }
 }
