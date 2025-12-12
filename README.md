@@ -93,8 +93,8 @@ Note that the AppImage version and the native version consist of exactly the sam
 ### using fresh-eggs
 It's the most pratical way and is suitable for all [supported distros](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md). 
 
-### (ONLY FOR UBUNTU/DEBIAN-based systems)
-Use the ./eggs_install.sh file to install `eggs` to your system.
+### (ONLY FOR UBUNTU/DEBIAN-based systems) Using Eggo
+Use the ./eggo.sh file to install `eggs` to your system.
 
 [fresh-eggs](https://github.com/pieroproietti/fresh-eggs) configure automatically `nodesource` when need, and install the right package for your distro. Copy and paste, the follow commands:
 ```
