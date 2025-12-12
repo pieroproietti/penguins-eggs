@@ -173,7 +173,8 @@ export default class Daddy {
     }
 
     if (!Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-      console.log('- GUI system detected, calamares is available but not installed.');
+      console.log(chalk.yellow('- Warning: GUI system detected, calamares is available but not installed.'));
+      console.log('Calamares is used to make an installer of your operating system.')
     }
   }
 
@@ -197,7 +198,7 @@ export default class Daddy {
       // } catch (err) {
       //   console.warn('Unable to detect FSTYPE:', err);
       // }
-      
+
       config.snapshot_prefix = Utils.snapshotPrefix(
         this.settings.distro.distroId,
         this.settings.distro.codenameId
@@ -239,11 +240,12 @@ export default class Daddy {
    */
   private displayFinalHelp() {
     console.log();
-    console.log(chalk.cyan('Your configuration was saved on: /etc/penguins-eggs.d'));
+    console.log(chalk.green('---CONFIG GENERATION SUCCESFULL--'))
+    console.log(chalk.cyan('Your eggs configuration was saved on: /etc/penguins-eggs.d'));
     console.log(chalk.cyan('You can create a clean ISO with: ') + chalk.white('sudo eggs produce'));
-    console.log(chalk.cyan('Or a full personal clone: ') + chalk.white('sudo eggs produce --clone'));
+    console.log(chalk.cyan('Or a full clone(transforming your os into a iso): ') + chalk.white('sudo eggs produce --clone'));
     console.log();
-    console.log(chalk.cyan('If you don’t have enough space to remaster, you can mount remote or local space:'));
+    console.log(chalk.cyan('Note: If you don’t have enough space to remaster, you can mount remote or local space:'));
     console.log(chalk.cyan('- Create a hidden mountpoint under the nest:'));
     console.log(chalk.white('sudo mkdir /home/eggs/.mnt -p'));
     console.log(chalk.cyan('- Mount remote space:'));
