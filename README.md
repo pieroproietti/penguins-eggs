@@ -93,6 +93,9 @@ Note that the AppImage version and the native version consist of exactly the sam
 ### using fresh-eggs
 It's the most pratical way and is suitable for all [supported distros](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md). 
 
+### (ONLY FOR UBUNTU/DEBIAN-based systems)
+Use the ./eggs_install.sh file to install `eggs` to your system.
+
 [fresh-eggs](https://github.com/pieroproietti/fresh-eggs) configure automatically `nodesource` when need, and install the right package for your distro. Copy and paste, the follow commands:
 ```
 git clone https://github.com/pieroproietti/fresh-eggs
@@ -114,6 +117,7 @@ Just download and install penguins-eggs-25.x.x using [fresh-eggs](https://github
 
 ### Debian, Devuan, Ubuntu
 Just download and install penguins-eggs-25.x.x using [fresh-eggs](https://github.com/pieroproietti/fresh-eggs).
+Or use the script ./eggs_install.sh
 
 #### Debian 10 Buster, Debian 11 Bullseye
 Before to install `penguins-eggs-25.x.x`, add the repos from `nodesource`. Follow these [instructions](https://github.com/pieroproietti/penguins-eggs/issues/368) to get `nodejs>18` available.
