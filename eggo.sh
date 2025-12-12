@@ -7,9 +7,8 @@ LATEST_DEB_URL=$(curl -s https://api.github.com/repos/pieroproietti/penguins-egg
 wget -P ./Eggo/ $LATEST_DEB_URL
 echo "Downloaded the latest .deb file."
 echo "Installing..."
-sudo dpkg -i ./Eggo/*.deb
+sudo apt install ./Eggo/*.deb
 echo "Installation complete."
-fi
 echo "--Installation finished--"
 echo "Now you can run 'eggs' from your terminal to start Penguin's Eggs."
 echo "Press any key to exit..."
