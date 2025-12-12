@@ -21,10 +21,7 @@ const stopMessage = 'eggs-stop-message'
 export default class CliAutologin {
 
   /**
-   * Configura l'autologin CLI.
-   * SYSTEMD: Pulisce tutto ed imposta defaul a multiuser
-   * SYSVINIT (Devuan): Modifica inittab e disabilita i Display Manager per evitare blocchi.
-   * * @param distro 
+   * @param distro 
    * @param version 
    * @param user 
    * @param userPasswd 
@@ -42,193 +39,160 @@ export default class CliAutologin {
       throw new Error('Missing user credentials for CLI autologin setup.')
     }
 
-    // --- SYSTEMD ADD ---
     if (Utils.isSystemd()) {
-      Utils.warning("systemd: enabling CLI autologin on tty1")
-      const systemdDir = `${chroot}/etc/systemd/system`
-
-      // Definizioni per TTY1
-      const tty1Dir = `${systemdDir}/getty@tty1.service.d`
-
-      // 1. Pulizia Totale
-      const oldGlobalDir = `${systemdDir}/getty@.service.d`
-      if (fs.existsSync(oldGlobalDir)) {
-        shx.rm('-rf', oldGlobalDir)
-      }
-
-      // Ricreiamo la directory specifica per TTY1
-      if (fs.existsSync(tty1Dir)) {
-        shx.rm('-rf', tty1Dir)
-      }
-
-      // 3. Imposta default.target -> multi-user.target
-      const defaultTarget = `${systemdDir}/default.target`
-      if (fs.existsSync(defaultTarget)) shx.rm(defaultTarget)
-      shx.exec(`ln -sf ${chroot}/usr/lib/systemd/system/multi-user.target`)
-      // shx.ln('-sf', '/usr/lib/systemd/system/multi-user.target', defaultTarget)
-
-      // --- OPENRC ADD ---
+      this.systemdAdd(chroot)
     } else if (Utils.isOpenRc()) {
-      Utils.warning("openrc: creating CLI autologin")
-      const inittab = chroot + '/etc/inittab'
-      if (fs.existsSync(inittab)) shx.cp(inittab, `${inittab}.bak`)
-
-      let content = ''
-      const search = `tty1::respawn:/sbin/getty 38400 tty1`
-      const replace = `tty1::respawn:/sbin/getty -L 38400 tty1 -n -l /bin/autologin`
-      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i].includes(search)) lines[i] = replace
-        content += lines[i] + '\n'
-      }
-      fs.writeFileSync(inittab, content, 'utf-8')
-
-      const autologin = chroot + '/bin/autologin'
-      content = '#!/bin/sh\n'
-      content += `/bin/login -f ${user}\n`
-      fs.writeFileSync(autologin, content, 'utf-8')
-      shx.chmod('+x', autologin)
-
-      // --- SYSVINIT ADD (DEVUAN FIX) ---
+      this.openrcAdd(chroot, user)
     } else if (Utils.isSysvinit()) {
-      Utils.warning("sysvinit: creating CLI autologin and disabling GUI")
-      const inittab = chroot + '/etc/inittab'
-
-      // 1. Inittab Backup & Mod
-      if (fs.existsSync(inittab)) shx.cp(inittab, `${inittab}.bak`)
-
-      let content = fs.readFileSync(inittab, 'utf8')
-      const regex = /^([1-6c]+:[0-9]*:respawn:)(.*getty\s+.*tty1.*)$/gm;
-
-      if (regex.test(content)) {
-        regex.lastIndex = 0;
-        content = content.replace(regex, (match, prefix, oldCmd) => {
-          return `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`;
-        });
-      } else {
-        content += `\n# Autologin added by penguins-eggs\n1:2345:respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux\n`;
-      }
-      fs.writeFileSync(inittab, content, 'utf-8')
-
-      // 2. FIX DEVUAN: Disabilitare Display Manager per evitare conflitti video
-      const displayManagers = ['lightdm', 'sddm', 'gdm3', 'slim', 'lxdm', 'xdm'];
-      displayManagers.forEach(dm => {
-        const initScript = `${chroot}/etc/init.d/${dm}`;
-        if (fs.existsSync(initScript)) {
-          // Rimuove i link di avvio dai runlevel (rcX.d)
-          const rcDirs = shx.ls('-d', `${chroot}/etc/rc*.d`);
-          rcDirs.forEach(rcDir => shx.rm('-f', `${rcDir}/*${dm}`));
-        }
-      });
-
+      this.sysvinitAdd(chroot, user)
     }
     await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
     await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
   }
 
   /**
-     * Rimuove autologin e configura il target finale.
-     * Logica semplificata: gestiamo solo il default.target.
-     */
+  * Rimuove autologin e configura il target finale.
+  * Logica semplificata: gestiamo solo il default.target.
+  */
   async remove(chroot = '/') {
 
-    // --- SYSTEMD REMOVE & FIX ---
     if (Utils.isSystemd()) {
-      const systemdDir = `${chroot}/etc/systemd/system`
-
-      // 1. Pulizia e Ripristino TTY1 (Login manuale)
-      const tty1Dir = `${systemdDir}/getty@tty1.service.d`
-      const tty1File = `${tty1Dir}/override.conf`
-
-      if (fs.existsSync(tty1Dir)) shx.rm('-rf', tty1Dir)
-      shx.mkdir('-p', tty1Dir)
-
-      // Ripristina agetty standard (chiede user e password)
-      let content = '[Service]\nExecStart=\nExecStart=-/sbin/agetty -o \'-p -- \\u\' --noclear %I $TERM\n'
-      try {
-        fs.writeFileSync(tty1File, content)
-      } catch (err) {
-        Utils.error(`Failed to write TTY1 override: ${err}`)
-      }
-
-      // 2. Pulizia residui globali
-      const globalDir = `${systemdDir}/getty@.service.d`
-      if (fs.existsSync(globalDir)) shx.rm('-rf', globalDir)
-
-      // 3. Gestione TARGET di Boot (CLI vs GUI)
-      const defaultTarget = `${systemdDir}/default.target`
-
-      // Rimuoviamo il link attuale (qualunque esso sia)
-      if (fs.existsSync(defaultTarget)) shx.rm(defaultTarget)
-
-      if (Pacman.isInstalledGui()) {
-        // CASO GUI: Avviamo la grafica
-        Utils.warning("systemd: Desktop Environment detected -> setting default to graphical.target")
-        shx.ln('-sf', '/usr/lib/systemd/system/graphical.target', defaultTarget)
-      } else {
-        // CASO CLI: Solo testo
-        Utils.warning("systemd: CLI only detected -> setting default to multi-user.target")
-        shx.ln('-sf', '/usr/lib/systemd/system/multi-user.target', defaultTarget)
-      }
-
-      // Pulizia messaggi
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-
-      // --- OPENRC REMOVE ---
+      this.systemdRemove(chroot)
     } else if (Utils.isOpenRc()) {
-      // ... (il codice OpenRC rimane invariato)
-      const inittab = chroot + '/etc/inittab'
-      if (fs.existsSync(`${inittab}.bak`)) {
-        shx.cp(`${inittab}.bak`, inittab)
-        shx.rm(`${inittab}.bak`)
-      } else {
-        // Fallback replace manuale
-        const search = 'autologin'
-        const replace = `tty1::respawn:/sbin/getty 38400 tty1`
-        let content = ''
-        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes(search)) lines[i] = replace
-          content += lines[i] + '\n'
-        }
-        fs.writeFileSync(inittab, content, 'utf-8')
-      }
-
-      // Rimuovi script autologin e messaggi
-      const autologin = `${chroot}/bin/autologin`
-      if (fs.existsSync(autologin)) shx.rm(autologin)
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
-
-      // --- SYSVINIT REMOVE ---
+      this.openrcRemove(chroot)
     } else if (Utils.isSysvinit()) {
-      // ... (il codice SysVinit rimane invariato)
-      Utils.warning("sysvinit: restoring manual login")
-      const inittab = chroot + '/etc/inittab'
+      this.sysvinitRemove(chroot)
+    }
+    this.msgRemove(`${chroot}/etc/motd`)
+    this.msgRemove(`${chroot}/etc/issue`)
+  }
 
-      if (fs.existsSync(`${inittab}.bak`)) {
-        shx.cp(`${inittab}.bak`, inittab)
-        shx.rm(`${inittab}.bak`)
-      } else {
-        const search = '--autologin'
-        const replace = '1:2345:respawn:/sbin/getty 38400 tty1'
-        let content = ''
-        const lines = fs.readFileSync(inittab, 'utf8').split('\n')
-        for (let i = 0; i < lines.length; i++) {
-          if (lines[i].includes(search)) lines[i] = replace
-          content += lines[i] + '\n'
-        }
-        fs.writeFileSync(inittab, content, 'utf-8')
+  /**
+  * 
+  * @param chroot 
+  */
+  private async systemdAdd(chroot: string) {
+    Utils.warning("systemd: enabling CLI autologin on tty1")
+    const systemdDir = `${chroot}/etc/systemd/system`
+
+    // Definizioni per TTY1
+    const tty1Dir = `${systemdDir}/getty@tty1.service.d`
+
+    // 1. Pulizia Totale
+    const oldGlobalDir = `${systemdDir}/getty@.service.d`
+    if (fs.existsSync(oldGlobalDir)) {
+      shx.rm('-rf', oldGlobalDir)
+    }
+
+    // Ricreiamo la directory specifica per TTY1
+    if (fs.existsSync(tty1Dir)) {
+      shx.rm('-rf', tty1Dir)
+    }
+
+    // 3. Imposta default.target -> multi-user.target
+    const defaultTarget = `${systemdDir}/default.target`
+    if (fs.existsSync(defaultTarget)) shx.rm(defaultTarget)
+    shx.exec(`ln -sf ${chroot}/usr/lib/systemd/system/multi-user.target ${defaultTarget}`)
+  }
+
+
+  /**
+  * 
+  * @param chroot 
+  */
+  private async systemdRemove(chroot: string) {
+    const systemdDir = `${chroot}/etc/systemd/system`
+
+    // 1. Pulizia e Ripristino TTY1 (Login manuale)
+    const tty1Dir = `${systemdDir}/getty@tty1.service.d`
+    const tty1File = `${tty1Dir}/override.conf`
+
+    if (fs.existsSync(tty1Dir)) shx.rm('-rf', tty1Dir)
+    shx.mkdir('-p', tty1Dir)
+
+    // Ripristina agetty standard (chiede user e password)
+    let content = '[Service]\nExecStart=\nExecStart=-/sbin/agetty -o \'-p -- \\u\' --noclear %I $TERM\n'
+    try {
+      fs.writeFileSync(tty1File, content)
+    } catch (err) {
+      Utils.error(`Failed to write TTY1 override: ${err}`)
+    }
+
+    // 2. Pulizia residui globali
+    const globalDir = `${systemdDir}/getty@.service.d`
+    if (fs.existsSync(globalDir)) shx.rm('-rf', globalDir)
+
+    // 3. Gestione TARGET di Boot (CLI vs GUI)
+    const defaultTarget = `${systemdDir}/default.target`
+    if (fs.existsSync(defaultTarget)) shx.rm(defaultTarget)
+    // Non deve esistere il defaultTarget
+    // shx.ln('-sf', '/usr/lib/systemd/system/multi-user.target', defaultTarget)
+  }
+
+
+  /**
+   * 
+   * @param chroot 
+   */
+  private async sysvinitAdd(chroot: string, user: string) {
+
+    Utils.warning("sysvinit: creating CLI autologin and disabling GUI")
+    const inittab = chroot + '/etc/inittab'
+
+    // 1. Inittab Backup & Mod
+    if (fs.existsSync(inittab)) shx.cp(inittab, `${inittab}.bak`)
+
+    let content = fs.readFileSync(inittab, 'utf8')
+    const regex = /^([1-6c]+:[0-9]*:respawn:)(.*getty\s+.*tty1.*)$/gm;
+
+    if (regex.test(content)) {
+      regex.lastIndex = 0;
+      content = content.replace(regex, (match, prefix, oldCmd) => {
+        return `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`;
+      });
+    } else {
+      content += `\n# Autologin added by penguins-eggs\n1:2345:respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux\n`;
+    }
+    fs.writeFileSync(inittab, content, 'utf-8')
+
+    // 2. FIX DEVUAN: Disabilitare Display Manager per evitare conflitti video
+    const displayManagers = ['lightdm', 'sddm', 'gdm3', 'slim', 'lxdm', 'xdm'];
+    displayManagers.forEach(dm => {
+      const initScript = `${chroot}/etc/init.d/${dm}`;
+      if (fs.existsSync(initScript)) {
+        // Rimuove i link di avvio dai runlevel (rcX.d)
+        const rcDirs = shx.ls('-d', `${chroot}/etc/rc*.d`);
+        rcDirs.forEach(rcDir => shx.rm('-f', `${rcDir}/*${dm}`));
       }
+    });
+  }
 
-      // Per SysVinit manteniamo la logica di pulizia DM se necessario, 
-      // oppure la lasciamo gestire al pacchetto del DM stesso.
-      this.msgRemove(`${chroot}/etc/motd`)
-      this.msgRemove(`${chroot}/etc/issue`)
+  /**
+ * 
+ * @param chroot 
+ */
+  private async sysvinitRemove(chroot: string) {
+
+    Utils.warning("sysvinit: restoring manual login")
+    const inittab = chroot + '/etc/inittab'
+
+    if (fs.existsSync(`${inittab}.bak`)) {
+      shx.cp(`${inittab}.bak`, inittab)
+      shx.rm(`${inittab}.bak`)
+    } else {
+      const search = '--autologin'
+      const replace = '1:2345:respawn:/sbin/getty 38400 tty1'
+      let content = ''
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) lines[i] = replace
+        content += lines[i] + '\n'
+      }
+      fs.writeFileSync(inittab, content, 'utf-8')
     }
   }
+
+
 
   // ######################################################################
   // Funzioni private
@@ -309,5 +273,60 @@ export default class CliAutologin {
       Utils.error(`Failed to write ${fileMotd}: ${err}`)
     }
   }
+
+
+  /**
+   * 
+   * @param chroot 
+   */
+  private async openrcAdd(chroot: string, user: string) {
+    Utils.warning("openrc: creating CLI autologin")
+    const inittab = chroot + '/etc/inittab'
+    if (fs.existsSync(inittab)) shx.cp(inittab, `${inittab}.bak`)
+
+    let content = ''
+    const search = `tty1::respawn:/sbin/getty 38400 tty1`
+    const replace = `tty1::respawn:/sbin/getty -L 38400 tty1 -n -l /bin/autologin`
+    const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes(search)) lines[i] = replace
+      content += lines[i] + '\n'
+    }
+    fs.writeFileSync(inittab, content, 'utf-8')
+
+    const autologin = chroot + '/bin/autologin'
+    content = '#!/bin/sh\n'
+    content += `/bin/login -f ${user}\n`
+    fs.writeFileSync(autologin, content, 'utf-8')
+    shx.chmod('+x', autologin)
+
+    // --- SYSVINIT ADD (DEVUAN FIX) ---
+  }
+
+  async openrcRemove(chroot: string) {
+    // ... (il codice OpenRC rimane invariato)
+    const inittab = chroot + '/etc/inittab'
+    if (fs.existsSync(`${inittab}.bak`)) {
+      shx.cp(`${inittab}.bak`, inittab)
+      shx.rm(`${inittab}.bak`)
+    } else {
+      // Fallback replace manuale
+      const search = 'autologin'
+      const replace = `tty1::respawn:/sbin/getty 38400 tty1`
+      let content = ''
+      const lines = fs.readFileSync(inittab, 'utf8').split('\n')
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(search)) lines[i] = replace
+        content += lines[i] + '\n'
+      }
+      fs.writeFileSync(inittab, content, 'utf-8')
+    }
+
+    // Rimuovi script autologin e messaggi
+    const autologin = `${chroot}/bin/autologin`
+    if (fs.existsSync(autologin)) shx.rm(autologin)
+  }
+
 
 }

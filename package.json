@@ -56,7 +56,7 @@
         "eslint-config-prettier": "^10.1.8",
         "glob": "^13.0.0",
         "mocha": "^11.7.5",
-        "oclif": "^4.22.54",
+        "oclif": "^4.22.55",
         "perrisbrewery": "^25.9.16",
         "prettier": "^3.7.4",
         "shx": "^0.4.0",
