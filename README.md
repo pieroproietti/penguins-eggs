@@ -102,7 +102,7 @@ sudo ./fresh-eggs.sh
 And follow instructions.
 
 ### using Eggo - The Simpler Installer for Penguins Eggs
-From our fring [Brickboss](https://github.com/robert19066) [eggo](https://github.com/robert19066/Eggo) and read instructions [here](https://github.com/robert19066/Eggo).
+From our friend [Brickboss](https://github.com/robert19066) come [eggo](https://github.com/robert19066/Eggo) a simple installer for penguins-eggs. [Instructions](https://github.com/robert19066/Eggo).
 
 
 ### Manual installation
