@@ -5,9 +5,6 @@ echo "cheking for .deb file"
 if ls ./Eggo/*.deb 1> /dev/null 2>&1; then
     echo ".deb file found, installing,we dont know if its the latest version, if you want the latest version delete the .deb file and run the script again."
     #dowload the latest .deb file from the github releases page
-    LATEST_DEB_URL2=$(curl -s https://api.github.com/repos/pieroproietti/penguins-eggs/releases/latest | grep browser_download_url | grep .deb | cut -d '"' -f 4)
-    wget -P ./Eggo/ $LATEST_DEB_URL2
-    echo "Downloaded the latest .deb file."
     echo "Installing..."
     sudo dpkg -i ./Eggo/*.deb
     echo "Installation complete."
