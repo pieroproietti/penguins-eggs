@@ -319,6 +319,9 @@ export async function produce(
                 }
             }
 
+            /**
+             * configurazione homecrytp
+             */
             if (this.homecrypt) {
                 // Occorre forzare il login CLI
                 if (Utils.isSystemd()) {
@@ -340,33 +343,39 @@ export async function produce(
                 } else if (Utils.isSysvinit()) {
                     const inittabPath = `${this.settings.work_dir.merged}/etc/inittab`
 
-                    // Verifica se inittab esiste (dovrebbe sempre esserci in sysvinit)
                     if (fs.existsSync(inittabPath)) {
+                        // Non funziona per Devuan
                         let content = fs.readFileSync(inittabPath, 'utf-8')
 
-                        // REGEX: Cerca una riga che inizia con "1:" (l'ID per tty1), 
-                        // seguita da qualsiasi cosa fino alla fine della riga.
-                        // Il flag 'm' (multiline) è fondamentale.
-                        const tty1Regex = /^1:.*$/m
+                        // La riga standard per Devuan/Debian SysVinit.
+                        // 1: ID
+                        // 2345: Runlevels in cui attivarlo (Nota che il tuo boot è in runlevel 2)
+                        // respawn: Riavvia getty se muore
+                        // /sbin/getty 38400 tty1: Il comando
+                        const tty1Line = '1:2345:respawn:/sbin/agetty --noclear tty1 linux'
 
-                        // REPLACEMENT: La configurazione standard di Debian/SysVinit.
-                        // 1       = ID
-                        // 2345    = Runlevels
-                        // respawn = Riavvia il processo se muore
-                        // /sbin/getty 38400 tty1 = Il comando standard che chiede il login
-                        const standardGetty = '1:2345:respawn:/sbin/getty 38400 tty1'
+                        // Rimuoviamo vecchie definizioni di tty1 (anche se commentate o diverse)
+                        // Cerca righe che iniziano con "1:"
+                        const regex = /^1:.*$/gm
 
-                        if (tty1Regex.test(content)) {
-                            // Sostituisce la riga (che potrebbe avere l'autologin) con quella standard
-                            content = content.replace(tty1Regex, standardGetty)
+                        if (regex.test(content)) {
+                            // Sostituisce la riga esistente
+                            content = content.replace(regex, tty1Line)
+                            console.log('Fixed tty1 in inittab (replaced)')
                         } else {
-                            // Caso raro: se non c'è la riga per tty1, la aggiungiamo in fondo
-                            content += `\n${standardGetty}\n`
+                            // Se non c'è, la aggiunge in fondo (dopo i commenti iniziali)
+                            content += `\n${tty1Line}\n`
+                            console.log('Fixed tty1 in inittab (appended)')
                         }
+
+                        // FIX CRITICO PER --cryptedhome / LIVE:
+                        // A volte le live commentano tutte le tty per usare i propri hook.
+                        // Assicurati che non ci siano altre righe strane che confliggono.
 
                         fs.writeFileSync(inittabPath, content)
                     }
                 }
+
                 /**
                  * homecrypt: installa il supporto 
                  */
