@@ -24,12 +24,12 @@ import { exec } from '../../lib/utils.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-export async function editLiveFs(this: Ovary, clone = false) {
+export async function editLiveFs(this: Ovary) {
     if (this.verbose) console.log('Ovary: editLiveFs')
 
     const workDir = this.settings.work_dir.merged
 
-    if (clone) {
+    if (this.clone || this.homecrypt || this.fullcrypt) {
         await exec(`touch ${workDir}/etc/penguins-eggs.d/is_clone`, this.echo)
     }
 
@@ -93,18 +93,18 @@ export async function editLiveFs(this: Ovary, clone = false) {
         await exec(`rm ${workDir}/etc/crypttab`, this.echo)
     }
 
-
-    await exec(`rm ${workDir}/etc/machine-id`)
-    await exec(`rm ${workDir}/var/lib/dbus/machine-id`)
+    /**
+     * machine-id
+     */
+    await exec(`rm -f ${workDir}/etc/machine-id`)
+    await exec(`rm -f ${workDir}/var/lib/dbus/machine-id`)
     if (Utils.isSysvinit()) {
         const machineId = crypto.randomBytes(16).toString('hex')
         fs.writeFileSync(`${workDir}/etc/machine-id`, machineId + '\n')
         fs.writeFileSync(`${workDir}/var/lib/dbus/machine-id`, machineId + '\n')
-    }
-    if (Utils.isSystemd()) {
+    } else if (Utils.isSystemd()) {
         await exec(`touch ${workDir}/etc/machine-id`)
     }
-
 
 
     if (fs.existsSync(`${workDir}/boot/grub/fonts/unicode.pf2`)) {
@@ -181,4 +181,3 @@ export async function editLiveFs(this: Ovary, clone = false) {
         await exec(`chmod 1777 ${workDir}/tmp`, this.echo)
     }
 }
-
