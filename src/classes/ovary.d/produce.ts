@@ -11,7 +11,7 @@ import mustache from 'mustache'
 
 // packages
 import fs, { Dirent } from 'node:fs'
-import {shx} from '../../lib/utils.js'
+import { shx } from '../../lib/utils.js'
 import path from 'path'
 
 // interfaces
@@ -97,7 +97,7 @@ export async function produce(
         this.luksDevice = `/dev/mapper/${this.luksMappedName}`
         this.luksPassword = '0' // USARE UNA PASSWORD SICURA IN PRODUZIONE!
 
-        
+
         this.luksConfig = await this.interactiveCryptoConfig()
 
         Utils.warning("You choose an encrypted eggs")
@@ -290,42 +290,83 @@ export async function produce(
             // We don't need more
             await this.ubindVfs()
 
+            // mistero della Fede
+            await this.editLiveFs()
+
             /**
-             * special cases
+             * Autologin solse per non clone
              */
-            if (!(this.clone || this.fullcrypt)) {
+            if (!(this.clone || this.homecrypt || this.fullcrypt)) {
                 await this.usersRemove()
                 await this.userCreateLive()
                 if (Pacman.isInstalledGui()) {
-                    // GUI
+                    // add GUI autologin
                     await this.createXdgAutostart(
-                        this.settings.config.theme, 
-                        myAddons, 
-                        myLinks, 
+                        this.settings.config.theme,
+                        myAddons,
+                        myLinks,
                         noicons
                     )
-                    
                 } else {
-                    // CLI
-                    if (homecrypt) {
-                        await this.cliAutologin.remove()
-
-                    } else {
-                        // add autologin
-                        this.cliAutologin.add(
-                            this.settings.distro.distroId, 
-                            this.settings.distro.codenameId, 
-                            this.settings.config.user_opt, 
-                            this.settings.config.user_opt_passwd, 
-                            this.settings.config.root_passwd, 
-                            this.settings.work_dir.merged)
-                    }
+                    // add cli-autologin
+                    this.cliAutologin.add(
+                        this.settings.distro.distroId,
+                        this.settings.distro.codenameId,
+                        this.settings.config.user_opt,
+                        this.settings.config.user_opt_passwd,
+                        this.settings.config.root_passwd,
+                        this.settings.work_dir.merged)
                 }
             }
 
-            await this.editLiveFs()
-
             if (this.homecrypt) {
+                // Occorre forzare il login CLI
+                if (Utils.isSystemd()) {
+                    const systemdDir = `${this.settings.work_dir.merged}/etc/systemd/system`
+
+                    // remove eventuali autologin
+                    if (fs.existsSync(`${systemdDir}/getty@tty1.service.d`)) {
+                        await exec(`rm -rf ${systemdDir}/getty@tty1.service.d/*`)
+                    } else {
+                        await exec(`mkdir -p ${systemdDir}/getty@tty1.service.d`)
+                    }
+
+                    let content = ``
+                    content += `[Service]\n`
+                    content += `ExecStart=\n`
+                    content += `ExecStart=-/sbin/agetty -o '-p -- \\u' --noclear %I \$TERM\n`
+                    fs.writeFileSync(`${systemdDir}/getty@tty1.service.d/no-autologin.conf`, content)
+
+                } else if (Utils.isSysvinit()) {
+                    const inittabPath = `${this.settings.work_dir.merged}/etc/inittab`
+
+                    // Verifica se inittab esiste (dovrebbe sempre esserci in sysvinit)
+                    if (fs.existsSync(inittabPath)) {
+                        let content = fs.readFileSync(inittabPath, 'utf-8')
+
+                        // REGEX: Cerca una riga che inizia con "1:" (l'ID per tty1), 
+                        // seguita da qualsiasi cosa fino alla fine della riga.
+                        // Il flag 'm' (multiline) è fondamentale.
+                        const tty1Regex = /^1:.*$/m
+
+                        // REPLACEMENT: La configurazione standard di Debian/SysVinit.
+                        // 1       = ID
+                        // 2345    = Runlevels
+                        // respawn = Riavvia il processo se muore
+                        // /sbin/getty 38400 tty1 = Il comando standard che chiede il login
+                        const standardGetty = '1:2345:respawn:/sbin/getty 38400 tty1'
+
+                        if (tty1Regex.test(content)) {
+                            // Sostituisce la riga (che potrebbe avere l'autologin) con quella standard
+                            content = content.replace(tty1Regex, standardGetty)
+                        } else {
+                            // Caso raro: se non c'è la riga per tty1, la aggiungiamo in fondo
+                            content += `\n${standardGetty}\n`
+                        }
+
+                        fs.writeFileSync(inittabPath, content)
+                    }
+                }
                 /**
                  * homecrypt: installa il supporto 
                  */
