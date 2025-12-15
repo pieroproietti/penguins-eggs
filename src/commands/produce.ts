@@ -174,7 +174,7 @@ export default class Produce extends Command {
 
       const { noicon } = flags
 
-      // if clone or homecrypt includeRootHome = true
+      // if clone, homecrypt, fullcrypt
       const includeRootHome = flags.includeRootHome || clone || homecrypt
 
       let { kernel } = flags
