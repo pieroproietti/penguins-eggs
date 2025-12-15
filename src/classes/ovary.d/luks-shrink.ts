@@ -24,85 +24,94 @@ type ConditionalLoggers = {
 }
 
 /**
- * 
- * @param this 
+ * luksShrink
+ * Riduce in sicurezza un volume LUKS (root o home) minimizzando lo spazio
+ * ma garantendo l'integrità dei dati e l'allineamento dei blocchi.
  */
 export async function luksShrink(this: Ovary) {
 
-    const loggers: ConditionalLoggers = {
-        log: this.hidden ? noop : console.log,
-        warning: this.hidden ? noop : Utils.warning,
-        success: this.hidden ? noop : Utils.success,
-        info: this.hidden ? noop : Utils.info,
-    };
+  const loggers: ConditionalLoggers = {
+    log: this.hidden ? noop : console.log,
+    warning: this.hidden ? noop : Utils.warning,
+    success: this.hidden ? noop : Utils.success,
+    info: this.hidden ? noop : Utils.info,
+  };
 
-    const { log, warning, success, info } = loggers;
+  const { log, warning, success, info } = loggers;
 
-      warning(`Unmounting ${this.luksMountpoint} to perform shrinking...`)
-      await exec(`umount ${this.luksMountpoint}`, this.echo)
+  warning(`Unmounting ${this.luksMountpoint} to perform shrinking...`)
+  // Usa -l (lazy) se necessario, ma meglio umount pulito
+  await exec(`umount ${this.luksMountpoint}`, this.echo)
   
-      // 1. Controllo integrità (obbligatorio prima del resize)
-      warning(`Checking filesystem integrity...`)
-      await exec(`e2fsck -f -y ${this.luksDevice}`, this.echo)
+  // 1. Controllo integrità (CRUCIALE per homecrypt: ripara eventuali errori prima di ridimensionare)
+  warning(`Checking filesystem integrity...`)
+  await exec(`e2fsck -f -y ${this.luksDevice}`, this.echo)
   
-      // 2. Riduzione del filesystem al minimo
-      warning(`Shrinking filesystem to minimum size...`)
-      await exec(`resize2fs -M ${this.luksDevice}`, this.echo)
+  // 2. Riduzione del filesystem al minimo
+  warning(`Shrinking filesystem to minimum size...`)
+  // resize2fs -M è sicuro se poi lasciamo margine nel contenitore
+  await exec(`resize2fs -M ${this.luksDevice}`, this.echo)
   
-      // 3. Calcolo della nuova dimensione del filesystem
-      warning(`Calculating new sizes...`)
+  // 3. Calcolo della nuova dimensione del filesystem
+  warning(`Calculating new sizes...`)
   
-      // Usiamo tune2fs per ottenere block count e block size in modo pulito
-      const tuneOutput = (await exec(`tune2fs -l ${this.luksDevice}`, { capture: true })).data
+  const tuneOutput = (await exec(`tune2fs -l ${this.luksDevice}`, { capture: true })).data
   
-      const blockSizeMatch = tuneOutput.match(/Block size:\s+(\d+)/)
-      const blockCountMatch = tuneOutput.match(/Block count:\s+(\d+)/)
+  const blockSizeMatch = tuneOutput.match(/Block size:\s+(\d+)/)
+  const blockCountMatch = tuneOutput.match(/Block count:\s+(\d+)/)
   
-      if (!blockSizeMatch || !blockCountMatch) {
-        throw new Error("Could not determine filesystem size from tune2fs")
-      }
+  if (!blockSizeMatch || !blockCountMatch) {
+    throw new Error("Could not determine filesystem size from tune2fs")
+  }
   
-      const blockSize = parseInt(blockSizeMatch[1], 10)
-      const blockCount = parseInt(blockCountMatch[1], 10)
-      const fsSizeBytes = blockSize * blockCount
+  const blockSize = parseInt(blockSizeMatch[1], 10)
+  const blockCount = parseInt(blockCountMatch[1], 10)
+  const fsSizeBytes = blockSize * blockCount
   
-      // 4. Calcolo dell'offset LUKS (Header size) senza usare l'helper
-      // Eseguiamo cryptsetup status direttamente e catturiamo l'output
-      const statusOutput = (await exec(`cryptsetup status ${this.luksMappedName}`, { capture: true })).data
+  warning(`Actual Ext4 payload size: ${bytesToGB(fsSizeBytes)}`)
+
+  // 4. Calcolo dell'offset LUKS (Header size)
+  const statusOutput = (await exec(`cryptsetup status ${this.luksMappedName}`, { capture: true })).data
+  const offsetMatch = statusOutput.match(/offset:\s+(\d+)\s+sectors/)
   
-      // Cerchiamo la riga "offset:  4096 sectors"
-      const offsetMatch = statusOutput.match(/offset:\s+(\d+)\s+sectors/)
+  let luksHeaderBytes = 0
+  if (offsetMatch && offsetMatch[1]) {
+    luksHeaderBytes = parseInt(offsetMatch[1], 10) * 512
+    warning(`Detected LUKS header: ${bytesToGB(luksHeaderBytes)}`)
+  } else {
+    luksHeaderBytes = 32 * 1024 * 1024 // Fallback 32MB
+    warning(`Could not detect LUKS offset, using safe fallback: 32MB`)
+  }
   
-      let luksHeaderBytes = 0
-      if (offsetMatch && offsetMatch[1]) {
-        // I settori in questo contesto sono sempre 512 bytes
-        luksHeaderBytes = parseInt(offsetMatch[1], 10) * 512
-        warning(`Detected LUKS header: ${bytesToGB(luksHeaderBytes)}`)
-      } else {
-        // Fallback sicuro: LUKS2 usa max 16MB, mettiamo 32MB per stare larghi
-        luksHeaderBytes = 32 * 1024 * 1024
-        warning(`Could not detect LUKS offset, using safe fallback: 32MB`)
-      }
+  // 5. Calcolo dimensione finale SICURA
+  // Usiamo 200MB di margine. Su una ISO da 4GB è il 5%, un prezzo onesto per la stabilità.
+  // Questo spazio extra protegge sia lo squashfs (root) che i metadati sparsi (home).
+  const safetyMargin = 200 * 1024 * 1024 
   
-      // 5. Calcolo dimensione finale + Margine di sicurezza
-      // Aggiungiamo 50MB extra per evitare errori di arrotondamento o metadati
-      const safetyMargin = 50 * 1024 * 1024
-      const finalFileSize = fsSizeBytes + luksHeaderBytes + safetyMargin
+  let rawFinalSize = fsSizeBytes + luksHeaderBytes + safetyMargin
+
+  // ALLINEAMENTO A 1MB: Fondamentale per evitare errori di I/O su device fisici o loop
+  const alignBlock = 1024 * 1024; 
+  const finalFileSize = Math.ceil(rawFinalSize / alignBlock) * alignBlock;
   
-      warning(`Final minimized size: ${bytesToGB(finalFileSize)}`)
+  warning(`------------------------------------------------`)
+  warning(`SAFE SHRINK CALCULATION:`)
+  warning(`  FS Payload:   ${bytesToGB(fsSizeBytes)}`)
+  warning(`  LUKS Header:  ${bytesToGB(luksHeaderBytes)}`)
+  warning(`  SafetyMargin: ${bytesToGB(safetyMargin)}`)
+  warning(`  Alignment:    1 MB`)
+  warning(`  FINAL SIZE:   ${bytesToGB(finalFileSize)}`)
+  warning(`------------------------------------------------`)
+
+  // 6. Chiusura volume
+  warning(`Closing LUKS volume ${this.luksMappedName}...`)
+  await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
   
-      // 6. Chiusura volume
-      warning(`Closing LUKS volume ${this.luksMappedName}...`)
-      await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
-  
-      // 7. Truncate finale
-      warning(`Truncating ${this.luksFile} to release unused space...`)
-      await exec(`truncate -s ${finalFileSize} ${this.luksFile}`, this.echo)
+  // 7. Truncate finale
+  warning(`Truncating ${this.luksFile} to release unused space...`)
+  await exec(`truncate -s ${finalFileSize} ${this.luksFile}`, this.echo)
 }
 
-/**
- * Converte bytes in gigabytes per la visualizzazione.
- */
 function bytesToGB(bytes: number): string {
   if (bytes === 0) return '0.00 GB';
   const gigabytes = bytes / (1024 * 1024 * 1024);

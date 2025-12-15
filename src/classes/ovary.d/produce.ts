@@ -91,7 +91,7 @@ export async function produce(
             this.luksMappedName = 'root.img'
         }
 
-        this.luksFile = `/tmp/${this.luksMappedName}`
+        this.luksFile = `/var/tmp/${this.luksMappedName}`
         this.luksMappedName = this.luksMappedName
         this.luksMountpoint = `/tmp/mnt/${this.luksMappedName}`
         this.luksDevice = `/dev/mapper/${this.luksMappedName}`

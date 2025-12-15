@@ -8,7 +8,6 @@
 
 // packages
 import fs from 'fs'
-import { spawn, StdioOptions } from 'node:child_process'
 
 // classes
 import Ovary from '../ovary.js'
@@ -20,7 +19,7 @@ import {
   type CryptoConfig,
   type ArgonCryptoConfig,
   type Pbkdf2CryptoConfig
-} from './luks-interactive-crypto-config.js'; // Assicurati che il percorso sia corretto
+} from './luks-interactive-crypto-config.js';
 
 const noop = () => { };
 type ConditionalLoggers = {
@@ -32,8 +31,7 @@ type ConditionalLoggers = {
 
 /**
  * luksRoot()
- * 
- * create a container LUKS with the entire 
+ * * create a container LUKS with the entire 
  * filesystem.squashfs
  */
 export async function luksRoot(this: Ovary) {
@@ -50,11 +48,10 @@ export async function luksRoot(this: Ovary) {
   // filesystem.squashfs
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
 
-
   try {
     /**
      * this.luksMappedName = 'root.img';
-     * this.luksFile = `/tmp/${luksMappedName}`
+     * this.luksFile = `/var/tmp/${luksMappedName}`
      * this.luksDevice = `/dev/mapper/${luksMappedName}`
      * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
      * this.luksPassword = '0' 
@@ -73,13 +70,36 @@ export async function luksRoot(this: Ovary) {
       throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
     }
     const stats = fs.statSync(live_fs);
-    let size = stats.size; // Dimensione REALE del file in Byte
+    const size = stats.size; // Dimensione REALE del file in Byte
 
-    // Add overhead * 1.25 per più sicurezza con file grandi
-    const luksSize = Math.ceil(size * 1.25)
+    // -------------------------------------------------------------
+    // CALCOLO DIMENSIONE OTTIMIZZATA (No shrink, safe allocation)
+    // -------------------------------------------------------------
+    
+    // 1. Overhead Ext4: Inode, bitmap, superblocchi. ~3-4% è standard senza journal.
+    const fsOverhead = Math.ceil(size * 0.04); 
 
-    warning(`filesystem.squashfs size: ${bytesToGB(size)}`)
-    warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    // 2. Header LUKS: Solitamente 16MB per LUKS2, usiamo 32MB per sicurezza.
+    const luksHeader = 32 * 1024 * 1024;
+
+    // 3. Margine di sicurezza (Buffer): 120MB fissi.
+    // Questo spazio evita errori di "Disk full" durante la copia dei metadati.
+    // Viene compensato dall'uso di "-m 0" nella formattazione.
+    const safetyBuffer = 120 * 1024 * 1024;
+
+    // 4. Somma totale
+    let calculatedSize = size + fsOverhead + luksHeader + safetyBuffer;
+
+    // 5. Allineamento a 4MB (Performance storage)
+    const alignment = 4 * 1024 * 1024;
+    const luksSize = Math.ceil(calculatedSize / alignment) * alignment;
+
+    warning(`------------------------------------------`)
+    warning(`SAFE SIZE CALCULATION (No Shrink):`)
+    warning(`  Payload (SquashFS): ${bytesToGB(size)}`)
+    warning(`  Calc. Overhead:     ${bytesToGB(luksSize - size)}`)
+    warning(`  TOTAL CONTAINER:    ${bytesToGB(luksSize)}`)
+    warning(`------------------------------------------`)
 
     warning(`creating partition LUKS: ${this.luksFile}`)
     await this.luksExecuteCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
@@ -91,8 +111,13 @@ export async function luksRoot(this: Ovary) {
     warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await this.luksExecuteCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
-    warning(`formatting ext4 (without journal)...`);
-    await exec(`mkfs.ext4 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
+    // -------------------------------------------------------------
+    // FORMATTAZIONE EXT4
+    // -m 0 : Imposta i blocchi riservati a 0% (recupera spazio)
+    // -O ^has_journal : Disabilita il journal (risparmia spazio e scritture)
+    // -------------------------------------------------------------
+    warning(`formatting ext4 (without journal, 0% reserved)...`);
+    await exec(`mkfs.ext4 -m 0 -O ^has_journal -L live-root ${this.luksDevice}`, this.echo);
 
     warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
@@ -113,14 +138,20 @@ export async function luksRoot(this: Ovary) {
     await exec('sync', this.echo); // Forza scrittura dati su disco
 
     /**
-     * smonta this.luksMountpoint
-     * Shrink()
+     * SHRINK DISABILITATO
+     * Non eseguiamo this.luksShrink() per evitare corruzione dati.
+     * Abbiamo calcolato la dimensione corretta all'inizio.
      */
-    await this.luksShrink()
+    
+    // Procedura di chiusura manuale (sostituisce quella dentro shrink)
+    warning(`Unmounting ${this.luksMountpoint}...`)
+    await exec(`umount ${this.luksMountpoint}`, this.echo)
+
+    warning(`Closing LUKS volume ${this.luksMappedName}...`)
+    await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName])
 
     warning(`moving ${this.luksMappedName} on (ISO)/live.`)
-    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
-
+    await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live/root.img`, this.echo)
 
   } catch (error) {
     if (error instanceof Error) {
@@ -134,6 +165,11 @@ export async function luksRoot(this: Ovary) {
     }
     if (fs.existsSync(this.luksDevice)) {
       await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
+    }
+    
+    if (fs.existsSync(this.luksFile)) {
+       Utils.warning(`Removing temporary container: ${this.luksFile}`);
+       fs.unlinkSync(this.luksFile);
     }
     await Utils.pressKeyToExit()
     process.exit(1)

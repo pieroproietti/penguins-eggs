@@ -46,7 +46,7 @@ export async function luksHome(
   try {
     /**
      * this.luksMappedName = 'home.img';
-     * this.luksFile = `/tmp/${luksMappedName}`
+     * this.luksFile = `/var/tmp/${luksMappedName}`
      * this.luksDevice = `/dev/mapper/${luksMappedName}`
      * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
      * this.luksPassword = '0' 
@@ -65,21 +65,21 @@ export async function luksHome(
 
     let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
     let size = Number.parseInt(sizeString, 10)
-    const megabyte = 1048576*128
-    if (size < megabyte) {
-      size = megabyte
-    }
-    const luksSize = Math.ceil(size * 2)
+    const fsOverhead = Math.ceil(size * 0.05);
+    const luksHeader = 32 * 1024 * 1024;
+    const safetyBuffer = 100 * 1024 * 1024;
+    let calculatedSize = size + fsOverhead + luksHeader + safetyBuffer;
+    const minSize = 64 * 1024 * 1024;
+    if (calculatedSize < minSize) calculatedSize = minSize;
+    const alignment = 4 * 1024 * 1024;
+    const luksSize = Math.ceil(calculatedSize / alignment) * alignment;
 
-    /**
-     * E' più precisa ma equivalente grazie 
-     * al truncate
-     */
-    // const fsOverhead = Math.max(size * 0.1, 100 * 1024 * 1024)
-    // const luksSize = size * 1.25 + fsOverhead // +25% 
-
-    warning(`homes size: ${bytesToGB(size)}`)
-    warning(`partition LUKS ${this.luksFile} size: ${bytesToGB(luksSize)}`)
+    warning(`------------------------------------------`)
+    warning(`HOME CRYPT CALCULATION (Read-Only):`)
+    warning(`  Data Payload:   ${bytesToGB(size)}`)
+    warning(`  Overhead+Buf:   ${bytesToGB(luksSize - size)}`)
+    warning(`  TOTAL SIZE:     ${bytesToGB(luksSize)}`)
+    warning(`------------------------------------------`)
 
     warning(`creating partition LUKS: ${this.luksFile}`)
     await this.luksExecuteCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
@@ -164,6 +164,11 @@ export async function luksHome(
     }
     if (fs.existsSync(this.luksDevice)) {
       await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
+    }
+
+    if (fs.existsSync(this.luksFile)) {
+       Utils.warning(`Removing temporary container: ${this.luksFile}`);
+       fs.unlinkSync(this.luksFile);
     }
     await Utils.pressKeyToExit()
     process.exit(1)
