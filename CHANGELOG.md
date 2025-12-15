@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.15
+With some reluctance, I am releasing a new version, which is important for a number of reasons mainly related to `--homecrypt` and `--fullcrypt`, where I have completely recalculated the size of the encrypted partitions and moved their creation from /tmp to /var/tmp to avoid the 2 GB limit. A problem with `eggs dad` has also been fixed, which did not save all the data completely.
+
+Consider `--fullcrypt` and `--homecrypt` still in development. Feel free to use them to securely “carry around” all your data, but don't consider them a backup tool yet: `--fullscript` can be reinstalled with calamares, but not with krill, while the exact opposite is true for `--homecrypt`, reinstall it with krill.
+
+Please excuse me, eggs is running away everywhere, rebelling against its author. I will have to try to resize it a bit to make it more manageable on the developer side.
+
 # v25.12.8
 - **Smart Shrinking for LUKS**: Implemented a "shrink phase" for `home.img` creation. The system now allocates a 
   generous container, fills it with data, minimizes the internal filesystem using `resize2fs -M`, and finally truncates the image file to the exact size required (plus a safety margin). This guarantees the smallest possible ISO size for encrypted clones;
