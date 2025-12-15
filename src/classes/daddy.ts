@@ -10,7 +10,6 @@ import inquirer from 'inquirer';
 import yaml from 'js-yaml';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { exec } from '../lib/utils.js';
 
 import Pacman from '../classes/pacman.js';
 import Settings from '../classes/settings.js';
@@ -106,10 +105,14 @@ export default class Daddy {
       },
     ];
 
+    // occorre aggiungere ad answer 
+    // i campi mancanti
+
     try {
       // Prompt the user and return the typed config object
       const answers = await inquirer.prompt<IEggsConfig>(questions);
-      return answers;
+      return { ...config, ...answers };
+      //return answers;
     } catch (err) {
       console.error(chalk.red('Error editing configuration:'), err);
       throw err;
@@ -146,6 +149,7 @@ export default class Daddy {
         await this.applyResetOrCustomConfig(config, isCustom, fileCustom);
       } else {
         config = await this.editConfig(config);
+
       }
 
       // Step 4: Save final configuration
