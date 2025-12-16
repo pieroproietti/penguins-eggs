@@ -55,41 +55,81 @@ def serve_index():
 
 @app.route('/api/dad/stream', methods=['POST'])
 def eggs_dad_stream():
-    """Runs 'sudo eggs dad --script' for configuration reset."""
-    command = "sudo eggs dad --script"
-    return Response(stream_command_output(command, "Config Reset"), mimetype='application/json')
-
+    return Response(stream_command_output("sudo eggs dad --script", "Config Reset"), mimetype='application/json')
 
 @app.route('/api/produce/stream', methods=['POST'])
 def produce_iso_stream():
-    """Runs 'sudo eggs produce' with selected options."""
     data = request.json
-
-    # ISO name is MANDATORY for produce
-    iso_name = data.get('isoName', 'custom.iso')
+    iso_name = data.get('isoName', 'live-image.iso')
     mode = data.get('mode', '')
     exclude_data = data.get('excludeData', '')
 
-    command_parts = [
-        "sudo eggs produce",
-        f"--basename={iso_name}",
-        "--script"
-    ]
+    parts = ["sudo eggs produce", f"--basename={iso_name}", "--script"]
+    if mode: parts.append(mode)
+    if exclude_data: parts.append(exclude_data)
 
-    if mode:
-        command_parts.append(mode)
-    if exclude_data:
-        command_parts.append(exclude_data)
+    return Response(stream_command_output(" ".join(parts), "ISO Creation"), mimetype='application/json')
 
-    final_command = " ".join(command_parts)
+@app.route('/api/calamares', methods=['POST'])
+def calamares_action():
+    data = request.json
+    action = data.get('action', 'install')
+    theme = data.get('theme', '')
 
-    return Response(stream_command_output(final_command, "ISO Creation"), mimetype='application/json')
+    if action == 'theme':
+        # sudo eggs calamares --theme=/path
+        if not theme: return jsonify({"error": "No theme path provided"}), 400
+        cmd = f"sudo eggs calamares --theme={theme}"
+        task = "Set Calamares Theme"
+    elif action == 'remove':
+        cmd = "sudo eggs calamares --remove"
+        task = "Remove Calamares"
+    else:
+        cmd = "sudo eggs calamares --install"
+        task = "Install Calamares"
 
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    return jsonify({"status": "ok", "message": "Python Flask Backend is running"})
+    return Response(stream_command_output(cmd, task), mimetype='application/json')
 
-# --- Main Run ---
+@app.route('/api/kill', methods=['POST'])
+def kill_isos():
+    return Response(stream_command_output("sudo eggs kill -n", "Delete All ISOs"), mimetype='application/json')
+
+@app.route('/api/pods', methods=['POST'])
+def build_pod():
+    distro = request.json.get('distro', 'archlinux')
+    return Response(stream_command_output(f"sudo eggs pods {distro}", f"Pod Build: {distro}"), mimetype='application/json')
+
+@app.route('/api/cuckoo', methods=['POST'])
+def run_cuckoo():
+    """Starts PXE Host (Cuckoo)"""
+    return Response(stream_command_output("sudo eggs cuckoo", "PXE Host (Cuckoo)"), mimetype='application/json')
+
+@app.route('/api/yolk', methods=['POST'])
+def run_yolk():
+    """Configures Eggs for offline use"""
+    return Response(stream_command_output("sudo eggs tools yolk", "Yolk (Offline Mode)"), mimetype='application/json')
+
+@app.route('/api/wardrobe', methods=['POST'])
+def run_wardrobe():
+    """Wear a costume from wardrobe"""
+    data = request.json
+    repo = data.get('repo', '')
+    no_acc = data.get('no_accessories', False)
+    no_firm = data.get('no_firmwares', False)
+    wardrobe_path = data.get('wardrobe_path', '')
+
+    if not repo:
+        return jsonify({"error": "No repository specified"}), 400
+
+    parts = ["sudo eggs wardrobe wear", repo]
+
+    if no_acc: parts.append("--no_accessories")
+    if no_firm: parts.append("--no_firmwares")
+    if wardrobe_path: parts.append(f"--wardrobe={wardrobe_path}")
+
+    cmd = " ".join(parts)
+    return Response(stream_command_output(cmd, f"Wardrobe: {repo}"), mimetype='application/json')
+
+
 if __name__ == '__main__':
-    # ... (print statements remain the same) ...
     app.run(host='0.0.0.0', port=PORT, debug=False)
