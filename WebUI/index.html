@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguins' Eggs - WebUI</title>
+    <style>
+        /* Modern Dark Soft UI Styling */
+        :root {
+            --bg-color-dark: #1e2730;
+            --bg-color-light: #2c3942;
+            --text-primary: #e0e7ff;
+            --text-secondary: #a9b3d3;
+            --accent-green: #00bcd4; /* Dark Teal */
+            --accent-green-dark: #008e9b;
+            --shadow-light: rgba(255, 255, 255, 0.05);
+            --shadow-dark: rgba(0, 0, 0, 0.5);
+            --border-color: #384754;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-color-dark) 0%, var(--bg-color-light) 100%);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: auto;
+            padding: 40px 0;
+            transition: background 0.5s;
+        }
+
+        .container {
+            background-color: var(--bg-color-dark);
+            border-radius: 20px;
+            box-shadow:
+                8px 8px 16px var(--shadow-dark),
+                -8px -8px 16px var(--shadow-light);
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+            transition: box-shadow 0.3s;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2em;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h2 {
+            color: var(--text-secondary);
+            font-size: 1em;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* Forms and Inputs */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-color-dark);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                        inset -4px -4px 8px var(--shadow-light);
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+        input[type="text"]:focus, select:focus {
+            background: var(--bg-color-light);
+            outline: none;
+            box-shadow: inset 2px 2px 5px var(--shadow-dark),
+                        inset -2px -2px 5px var(--shadow-light),
+                        0 0 0 2px var(--accent-green); /* Subtle border glow */
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23a9b3d3" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 35px;
+        }
+
+        /* Buttons (Soft Neumorphism) */
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            background-color: var(--bg-color-dark);
+            box-shadow: 6px 6px 12px var(--shadow-dark),
+                        -6px -6px 12px var(--shadow-light);
+            color: var(--text-primary);
+        }
+
+        /* Primary Action Button (Produce) */
+        .btn-primary {
+            background: var(--accent-green);
+            color: var(--bg-color-dark);
+        }
+        .btn-primary:hover {
+            background: var(--accent-green-dark);
+            box-shadow: 4px 4px 10px var(--shadow-dark),
+                        -4px -4px 10px var(--shadow-light);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                        inset -4px -4px 8px var(--shadow-light);
+            transform: translateY(1px);
+        }
+
+        /* Secondary Action Button (Dad) */
+        .btn-secondary {
+            background: var(--bg-color-light);
+            color: var(--text-primary);
+        }
+        .btn-secondary:hover {
+            background: #3e4b57;
+            box-shadow: 4px 4px 10px var(--shadow-dark),
+                        -4px -4px 10px var(--shadow-light);
+            transform: translateY(-1px);
+        }
+        .btn-secondary:active {
+            box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                        inset -4px -4px 8px var(--shadow-light);
+            transform: translateY(1px);
+        }
+
+        /* Status Indicator Area */
+        #status-area {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 15px;
+            background: var(--bg-color-light);
+            box-shadow: inset 2px 2px 5px var(--shadow-dark),
+                        inset -2px -2px 5px var(--shadow-light);
+            min-height: 50px;
+        }
+
+        .status-message {
+            font-size: 0.9em;
+            font-weight: 400;
+            padding: 5px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+        .status-success { color: #81C784; }
+        .status-error { color: #EF5350; }
+        .status-running { color: #FFD54F; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Penguins' Eggs WebUI - A web-based ui for Penguins' Eggs</h1>
+        <h2>By BrickBoss</h2>
+
+        <div class="form-group" style="display:none;">
+            <label for="iso-name">Output ISO Filename (Hardcoded to live-image.iso)</label>
+            <input type="text" id="iso-name" value="live-image.iso">
+        </div>
+
+        <div class="form-group">
+            <label for="mode-select">Compression / Clone Mode</label>
+            <select id="mode-select">
+                <option value="">Default (zstd fast)</option>
+                <option value="--standard">Standard Compression (xz -b 1M)</option>
+                <option value="--max">Max Compression (xz -Xbcj...)</option>
+                <option value="--pendrive">Optimized for Pendrive (zstd)</option>
+                <option value="--clone">Clone (Exact Duplicate)</option>
+                <option value="--cryptedclone">Crypted Clone</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="exclude-select">Data Exclusion</label>
+            <select id="exclude-select">
+                <option value="">No Exclusions (Keep all data)</option>
+                <option value="--excludes static">Exclude static files</option>
+                <option value="--excludes homes">Exclude /home/* (all user data)</option>
+                <option value="--excludes home">Exclude ~/* (current user data)</option>
+            </select>
+        </div>
+
+        <button class="btn-primary" onclick="startCreation('produce')">▶️ Start ISO Production</button>
+        <button class="btn-secondary" onclick="startCreation('dad')">🔄 Reset Configuration (eggs dad)</button>
+
+        <div id="status-area">
+            <div class="status-message">System ready. Default ISO Name: live-image.iso</div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000/api/';
+        const DEFAULT_ISO_NAME = 'live-image.iso';
+        const statusArea = document.getElementById('status-area');
+        const modeSelect = document.getElementById('mode-select');
+        const excludeSelect = document.getElementById('exclude-select');
+        let isRunning = false;
+
+        function logStatus(message, type = 'default') {
+            const newMessage = document.createElement('div');
+            newMessage.className = `status-message status-${type}`;
+            newMessage.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+
+            if (statusArea.firstChild) {
+                statusArea.insertBefore(newMessage, statusArea.firstChild);
+            } else {
+                statusArea.appendChild(newMessage);
+            }
+            while (statusArea.children.length > 8) {
+                statusArea.removeChild(statusArea.lastChild);
+            }
+        }
+
+        async function startCreation(commandType) {
+            if (isRunning) {
+                logStatus("A task is already running. Please wait.", 'running');
+                return;
+            }
+
+            isRunning = true;
+            const endpoint = commandType === 'produce' ? 'produce/stream' : 'dad/stream';
+            const taskName = commandType === 'produce' ? 'ISO Production' : 'Config Reset (eggs dad)';
+
+            let mode = '';
+            let excludeData = '';
+            let bodyData = {};
+
+            if (commandType === 'produce') {
+                const isoName = DEFAULT_ISO_NAME;
+                mode = modeSelect.value;
+                excludeData = excludeSelect.value;
+                bodyData = { isoName, mode, excludeData };
+            }
+
+            logStatus(`Starting ${taskName}... Check the server terminal for output!`, 'running');
+
+            try {
+                const response = await fetch(API_BASE + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Read the response stream to get the final Exit Code
+                const reader = response.body.getReader();
+                let result = '';
+
+                while(true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    result += new TextDecoder().decode(value);
+                }
+
+                // Find the final JSON object in the stream containing the exit code
+                const lastLine = result.trim().split('\n').pop();
+                const finalStatus = JSON.parse(lastLine);
+                const exitCode = finalStatus.code;
+                const statusName = commandType === 'produce' ? DEFAULT_ISO_NAME : 'Configuration Reset';
+
+                if (exitCode === 0) {
+                    logStatus(`${statusName} successful! (Exit Code 0)`, 'success');
+                } else {
+                    logStatus(`${statusName} failed! Check server console (Exit Code ${exitCode}).`, 'error');
+                }
+
+            } catch (error) {
+                logStatus(`Connection Error: ${error.message}. Is the server running?`, 'error');
+                isRunning = false;
+                return;
+            }
+            isRunning = false;
+        }
+    </script>
+
+</body>
+</html>
