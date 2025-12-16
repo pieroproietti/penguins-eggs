@@ -137,8 +137,8 @@ importers:
         specifier: ^9.39.1
         version: 9.39.1
       eslint-config-oclif:
-        specifier: ^6.0.124
-        version: 6.0.124(eslint@9.39.1)(typescript@5.9.3)
+        specifier: ^6.0.126
+        version: 6.0.126(eslint@9.39.1)(typescript@5.9.3)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.1)
@@ -149,8 +149,8 @@ importers:
         specifier: ^11.7.5
         version: 11.7.5
       oclif:
-        specifier: ^4.22.55
-        version: 4.22.55(@types/node@22.19.2)
+        specifier: ^4.22.57
+        version: 4.22.57(@types/node@22.19.2)
       perrisbrewery:
         specifier: ^25.9.16
         version: 25.9.16
@@ -417,6 +417,10 @@ packages:
 
   '@eslint/js@9.39.1':
     resolution: {integrity: sha512-S26Stp4zCy88tH94QbBv3XCuzRQiZ9yXofEILmglYTh/Ug/a9/umqvgFtYBAo3Lp0nsI/5/qH1CCrbdK3AP1Tw==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/js@9.39.2':
+    resolution: {integrity: sha512-q1mjIoW1VX4IvSocvM/vbTiveKC4k9eLrajNEuSsmjymSDEbpGddtpfOoN7YGAqBK3NG+uqo8ia4PDTt8buCYA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/json@0.13.2':
@@ -1352,8 +1356,8 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
-  baseline-browser-mapping@2.9.6:
-    resolution: {integrity: sha512-v9BVVpOTLB59C9E7aSnmIF8h7qRsFpx+A2nugVMTszEOMcfjlZMsXRm4LF23I3Z9AJxc8ANpIvzbzONoX9VJlg==}
+  baseline-browser-mapping@2.9.7:
+    resolution: {integrity: sha512-k9xFKplee6KIio3IDbwj+uaCLpqzOwakOgmqzPezM0sFJlFKcg30vk2wOiAJtkTSfx0SSQDSe8q+mWA/fSH5Zg==}
     hasBin: true
 
   bcryptjs@3.0.3:
@@ -1719,8 +1723,8 @@ packages:
   end-of-stream@1.4.5:
     resolution: {integrity: sha512-ooEGc6HP26xXq/N+GCGOT0JKCLDGrq2bQUZrQ7gyrJiZANJ/8YDTxTpQBXGMn+WbIQXNVpyWymm7KYVICQnyOg==}
 
-  enhanced-resolve@5.18.3:
-    resolution: {integrity: sha512-d4lC8xfavMeBjzGr2vECC3fsGXziXZQyJxD868h2M/mBI3PwAuODxAkLkq5HYuvrPYcUtiLzsTo8U3PgX3Ocww==}
+  enhanced-resolve@5.18.4:
+    resolution: {integrity: sha512-LgQMM4WXU3QI+SYgEc2liRgznaD5ojbmY3sb8LxyguVkIg5FxdpTkvk72te2R38/TGKxH634oLxXRGY6d7AP+Q==}
     engines: {node: '>=10.13.0'}
 
   environment@1.1.0:
@@ -1730,8 +1734,8 @@ packages:
   error-ex@1.3.4:
     resolution: {integrity: sha512-sqQamAnR14VgCr1A618A3sGrygcpK+HEbenA/HiEAkkUwcZIIB/tgWqHFxWgOyDh4nB4JCRimh79dR5Ywc9MDQ==}
 
-  es-abstract@1.24.0:
-    resolution: {integrity: sha512-WSzPgsdLtTcQwm4CROfS5ju2Wa1QQcVeT37jFjYzdFz1r9ahadC8B8/a4qxJxM+09F18iumCdRmlr96ZYkQvEg==}
+  es-abstract@1.24.1:
+    resolution: {integrity: sha512-zHXBLhP+QehSSbsS9Pt23Gg964240DPd6QCf8WpkqEXxQ7fhdZzYsocOr5u7apWonsS5EjZDmTF+/slGMyasvw==}
     engines: {node: '>= 0.4'}
 
   es-define-property@1.0.1:
@@ -1790,8 +1794,8 @@ packages:
     resolution: {integrity: sha512-NNTyyolSmKJicgxtoWZ/hoy2Rw56WIoWCFxgnBkXqDgi9qPKMwZs2Nx2b6SHLJvCiWWhZhWr5V46CFPo3PSPag==}
     engines: {node: '>=18.0.0'}
 
-  eslint-config-oclif@6.0.124:
-    resolution: {integrity: sha512-7mEv6OKO8SZAlkm1po0gJbEQspiWb2sztU13pdmuw1I0op0+vGjxXegwHzdzFjN1PDb3DwPHxSphxWERBj7ckA==}
+  eslint-config-oclif@6.0.126:
+    resolution: {integrity: sha512-X9nixLhi7vd1el9lA4aIyWYx1akHoo0wfZjFDqo17iFxToZi2PKIPRnRJrFMH2Py80BocahWJhZloZ9eZUh3Lg==}
     engines: {node: '>=18.18.0'}
 
   eslint-config-prettier@10.1.8:
@@ -2902,8 +2906,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.22.55:
-    resolution: {integrity: sha512-yBObiRYe0taTJ7apBop0YkAZ7Ruul/TkgXhJ2Pc2srEtvIfg1CuNXB8RP9TlMkR6CjbYqdHuji4befZzrUoXNw==}
+  oclif@4.22.57:
+    resolution: {integrity: sha512-qJOdY71q5wdC65AkcyDaVKKGjD40lj4s+OvzJK4tl/u1PR3dNRPPT/shXqTTB+S7KT98PUmv9DUAxriQ7SFhjg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -4458,6 +4462,8 @@ snapshots:
 
   '@eslint/js@9.39.1': {}
 
+  '@eslint/js@9.39.2': {}
+
   '@eslint/json@0.13.2':
     dependencies:
       '@eslint/core': 0.15.2
@@ -5505,7 +5511,7 @@ snapshots:
       call-bind: 1.0.8
       call-bound: 1.0.4
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-object-atoms: 1.1.1
       get-intrinsic: 1.3.0
       is-string: 1.1.1
@@ -5516,7 +5522,7 @@ snapshots:
       call-bind: 1.0.8
       call-bound: 1.0.4
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
       es-shim-unscopables: 1.1.0
@@ -5525,14 +5531,14 @@ snapshots:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-shim-unscopables: 1.1.0
 
   array.prototype.flatmap@1.3.3:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-shim-unscopables: 1.1.0
 
   arraybuffer.prototype.slice@1.0.4:
@@ -5540,7 +5546,7 @@ snapshots:
       array-buffer-byte-length: 1.0.2
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
@@ -5575,7 +5581,7 @@ snapshots:
 
   balanced-match@1.0.2: {}
 
-  baseline-browser-mapping@2.9.6: {}
+  baseline-browser-mapping@2.9.7: {}
 
   bcryptjs@3.0.3: {}
 
@@ -5614,7 +5620,7 @@ snapshots:
 
   browserslist@4.28.1:
     dependencies:
-      baseline-browser-mapping: 2.9.6
+      baseline-browser-mapping: 2.9.7
       caniuse-lite: 1.0.30001760
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
@@ -5929,7 +5935,7 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  enhanced-resolve@5.18.3:
+  enhanced-resolve@5.18.4:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.3.0
@@ -5940,7 +5946,7 @@ snapshots:
     dependencies:
       is-arrayish: 0.2.1
 
-  es-abstract@1.24.0:
+  es-abstract@1.24.1:
     dependencies:
       array-buffer-byte-length: 1.0.2
       arraybuffer.prototype.slice: 1.0.4
@@ -6048,11 +6054,11 @@ snapshots:
     transitivePeerDependencies:
       - eslint
 
-  eslint-config-oclif@6.0.124(eslint@9.39.1)(typescript@5.9.3):
+  eslint-config-oclif@6.0.126(eslint@9.39.1)(typescript@5.9.3):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@9.39.1)
       '@eslint/eslintrc': 3.3.3
-      '@eslint/js': 9.39.1
+      '@eslint/js': 9.39.2
       '@stylistic/eslint-plugin': 3.1.0(eslint@9.39.1)(typescript@5.9.3)
       '@typescript-eslint/eslint-plugin': 8.49.0(@typescript-eslint/parser@8.49.0(eslint@9.39.1)(typescript@5.9.3))(eslint@9.39.1)(typescript@5.9.3)
       '@typescript-eslint/parser': 8.49.0(eslint@9.39.1)(typescript@5.9.3)
@@ -6211,7 +6217,7 @@ snapshots:
   eslint-plugin-n@17.23.1(eslint@9.39.1)(typescript@5.9.3):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.0(eslint@9.39.1)
-      enhanced-resolve: 5.18.3
+      enhanced-resolve: 5.18.4
       eslint: 9.39.1
       eslint-plugin-es-x: 7.8.0(eslint@9.39.1)
       get-tsconfig: 4.13.0
@@ -7297,14 +7303,14 @@ snapshots:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-object-atoms: 1.1.1
 
   object.groupby@1.0.3:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
 
   object.values@1.2.1:
     dependencies:
@@ -7313,7 +7319,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  oclif@4.22.55(@types/node@22.19.2):
+  oclif@4.22.57(@types/node@22.19.2):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.948.0
       '@aws-sdk/client-s3': 3.948.0
@@ -7602,7 +7608,7 @@ snapshots:
     dependencies:
       call-bind: 1.0.8
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
       get-intrinsic: 1.3.0
@@ -7974,7 +7980,7 @@ snapshots:
       call-bound: 1.0.4
       define-data-property: 1.1.4
       define-properties: 1.2.1
-      es-abstract: 1.24.0
+      es-abstract: 1.24.1
       es-object-atoms: 1.1.1
       has-property-descriptors: 1.0.2
 
