@@ -1,3 +1,8 @@
+# to run on Debian trixie:
+# sudo apt install python3-flask python3-flask-cors
+# sudo python3 backend.py
+# open browser at: http://127.0.0.1:5000
+
 import os
 import json
 import subprocess
