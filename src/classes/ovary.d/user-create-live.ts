@@ -29,7 +29,9 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
 
     // 2. DEFINIZIONE UTENTE LIVE
     const username = this.settings.config.user_opt || 'live'
-    const password = 'evolution' // Password default live
+    const password = this.settings.config.user_opt_passwd || 'evolution' 
+    // root passwd
+    const rootPassword = this.settings.config.root_passwd || 'evolution'
     
     // Shell detection
     let shell = '/bin/bash'
@@ -109,4 +111,8 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
     }
     
     console.log(`Live user '${username}' created successfully via SysUser Master.`)
+
+    // Importante: la password di root
+     await exec(`echo root:${rootPassword} | chroot ${target} chpasswd`)
+    console.log(`Set the root password via SysUser Master.`)
 }
