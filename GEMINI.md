@@ -8,7 +8,7 @@
 ## Tech Stack
 - **Language:** TypeScript
 - **Framework:** [oclif](https://oclif.io/)
-- **Package Manager:** npm (or pnpm)
+- **Package Manager:** pnpm
 - **Testing:** Mocha & Chai
 - **Key Libraries:** `execa` (for shell commands), `chalk` (for TUI colors), `inquirer` (for prompts).
 - **Compression:** SquashFS (supports zstd, xz, gzip).
@@ -29,14 +29,14 @@ The CLI organizes commands using a family metaphor:
 - **`eggs love`**: The "magic button". Automatically runs: `eggs dad -d` (reset), `eggs tools clean` (cleanup), and `eggs produce` (create ISO).
 - **`eggs produce --fast`**: Creates an ISO using lighter compression (faster build, larger file).
 - **`eggs produce --max`**: Creates an ISO using maximum compression (slower build, smallest file).
-- **`eggs produce --clone`**: Creates a backup of the current system *including* user data on clear.
-- **`eggs produce --homecrypt`**: Creates a backup of the current system *including* user data (encrypted via LUKS.
-- **`eggs produce ---homecrypt`**: Creates a backup of the current system *all the system* is encrypted via LUKS.
+- **`eggs produce --clone`**: Creates a backup of the current system *including* user data in clear text.
+- **`eggs produce --homecrypt`**: Creates a backup of the current system *including* user data (encrypted via LUKS).
+- **`eggs produce --fullcrypt`**: Creates a backup where *the entire system* is encrypted via LUKS.
 
 ## Project Ecosystem
 - **[penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe)**: A collection of scripts and assets (costumes) to transform a "naked" (minimal) CLI system into a "dressed" (full GUI) system automatically.
 - **[fresh-eggs](https://github.com/pieroproietti/fresh-eggs)**: Bootstrap scripts to install eggs on various distros.
-- **[penguins-eggs.net/repos](https://penguins-eggs.net/repos/rpm/)**: Official package repository.
+- **[penguins-eggs.net/repos](https://penguins-eggs.net/repos/)**: Official package repositories.
 
 ## Development
 - **Build:** `pnpm run build`
