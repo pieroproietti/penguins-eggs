@@ -21,21 +21,27 @@ const __dirname = dirname(__filename)
 
 /**
  * Installa i file necessari per sbloccare home.img LUKS durante il boot
+ * Supporta sia Systemd (Debian/Ubuntu) che SysVinit (Devuan)
  */
 export function installHomecryptSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
-  Utils.warning ('installing encrypted home support...')
-  // console.log("squashfsRoot:", squashfsRoot)
-  // console.log("homeImgPath:", homeImgPath)
+  Utils.warning('installing encrypted home support...')
 
-  // Leggi il template bash
-    const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
+  // 1. PREPARAZIONE SCRIPT DI MONTAGGIO (Il "Motore")
+  const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
   let bashScript = fs.readFileSync(templatePath, 'utf8')
-  
-  // Sostituisci il placeholder con il path reale
   bashScript = bashScript.replace('__HOME_IMG_PATH__', homeImgPath)
 
-  // Systemd service
-  const systemdService = `[Unit]
+  const mountScriptPath = path.join(squashfsRoot, 'usr/local/bin/mount-encrypted-home.sh')
+  
+  fs.mkdirSync(path.dirname(mountScriptPath), { recursive: true })
+  fs.writeFileSync(mountScriptPath, bashScript)
+  fs.chmodSync(mountScriptPath, 0o755)
+
+  // ---------------------------------------------------------
+  // RAMO SYSTEMD (Invariato - funziona bene con i .service)
+  // ---------------------------------------------------------
+  if (Utils.isSystemd()) { 
+      const systemdService = `[Unit]
 Description=Unlock and mount encrypted home.img
 DefaultDependencies=no
 After=systemd-udev-settle.service local-fs-pre.target
@@ -57,29 +63,104 @@ ExecStop=/bin/bash -c 'umount /home && cryptsetup close live-home'
 [Install]
 WantedBy=local-fs.target
 `
+      const servicePath = path.join(squashfsRoot, 'etc/systemd/system/mount-encrypted-home.service')
+      const symlinkDir = path.join(squashfsRoot, 'etc/systemd/system/local-fs.target.wants')
+      const symlinkPath = path.join(symlinkDir, 'mount-encrypted-home.service')
 
-  // Percorsi di destinazione
-  const scriptPath = path.join(squashfsRoot, 'usr/local/bin/mount-encrypted-home.sh')
-  const servicePath = path.join(squashfsRoot, 'etc/systemd/system/mount-encrypted-home.service')
-  const symlinkDir = path.join(squashfsRoot, 'etc/systemd/system/local-fs.target.wants')
-  const symlinkPath = path.join(symlinkDir, 'mount-encrypted-home.service')
+      fs.mkdirSync(path.dirname(servicePath), { recursive: true })
+      fs.mkdirSync(symlinkDir, { recursive: true })
+      fs.writeFileSync(servicePath, systemdService)
 
-  // Create dirs
-  fs.mkdirSync(path.dirname(scriptPath), { recursive: true })
-  fs.mkdirSync(path.dirname(servicePath), { recursive: true })
-  fs.mkdirSync(symlinkDir, { recursive: true })
+      if (fs.existsSync(symlinkPath)) fs.unlinkSync(symlinkPath)
+      fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
+      
+  } 
+  // ---------------------------------------------------------
+  // RAMO SYSVINIT (DEVUAN) - METODO INITTAB HIJACK
+  // ---------------------------------------------------------
+  else if (Utils.isSysvinit()) {
+      Utils.warning('Configuring SysVinit via /etc/inittab hijacking (Persistent Method)...')
 
-  // Scrivi lo script
-  fs.writeFileSync(scriptPath, bashScript)
-  fs.chmodSync(scriptPath, 0o755)
+      // A. Creiamo un Wrapper Script che fa: Sblocco -> Poi lancia Login
+      // Questo script prenderà il posto di 'agetty' su tty1
+      const wrapperScript = `#!/bin/sh
+# Wrapper per sbloccare la home prima del login su TTY1
 
-  // Scrivi il service
-  fs.writeFileSync(servicePath, systemdService)
+# 1. Setup ambiente minimale
+export TERM=linux
+export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-  // Crea il symlink per abilitare il service
-  if (fs.existsSync(symlinkPath)) {
-    fs.unlinkSync(symlinkPath)
+# 2. Pulizia schermo e stop Plymouth
+clear
+if [ -x /bin/plymouth ] && /bin/plymouth --ping; then
+    /bin/plymouth quit
+fi
+
+# 3. Attesa dispositivi (importante per USB)
+echo "Waiting for devices..."
+/sbin/udevadm settle
+
+# 4. Esecuzione script di sblocco
+echo "------------------------------------------------"
+echo " CHECKING ENCRYPTED HOME STORAGE"
+echo "------------------------------------------------"
+/usr/local/bin/mount-encrypted-home.sh
+
+# 5. Controllo esito (visivo)
+if mountpoint -q /home; then
+    echo ">> Home mounted successfully."
+    sleep 1
+else
+    echo ">> Home NOT mounted. Continuing unencrypted..."
+    sleep 2
+fi
+
+# 6. LANCIO DEL VERO LOGIN (Sostituisce questo processo)
+# Nota: --noclear evita di cancellare i messaggi di errore precedenti
+exec /sbin/agetty --noclear tty1 linux
+`
+      const wrapperPath = path.join(squashfsRoot, 'usr/local/bin/tty1-unlock-wrapper.sh')
+      fs.writeFileSync(wrapperPath, wrapperScript)
+      fs.chmodSync(wrapperPath, 0o755)
+
+      // B. Modifichiamo /etc/inittab per usare il nostro wrapper
+      const inittabPath = path.join(squashfsRoot, 'etc/inittab')
+      
+      if (fs.existsSync(inittabPath)) {
+          let content = fs.readFileSync(inittabPath, 'utf8')
+          
+          // La riga standard è solitamente: 1:2345:respawn:/sbin/getty 38400 tty1
+          // Oppure su Devuan: 1:2345:respawn:/sbin/agetty --noclear tty1 linux
+          
+          // Cerchiamo qualsiasi riga che inizia con "1:" (tty1)
+          const regexTTY1 = /^1:.*$/m
+          
+          // La nuova riga che lancia il nostro wrapper invece di agetty diretto
+          const newLine = `1:2345:respawn:/usr/local/bin/tty1-unlock-wrapper.sh`
+          
+          if (regexTTY1.test(content)) {
+              content = content.replace(regexTTY1, newLine)
+              Utils.warning('Patched /etc/inittab to run home unlock on TTY1')
+          } else {
+              // Se non la trova, la aggiungiamo in fondo (caso raro ma possibile)
+              content += `\n${newLine}\n`
+          }
+          
+          fs.writeFileSync(inittabPath, content)
+      }
+
+      // C. Pulizia vecchi tentativi (Rimuoviamo script init.d se presenti per evitare conflitti)
+      const badSymlinks = [
+          path.join(squashfsRoot, 'etc/rcS.d/S05mount-encrypted-home'),
+          path.join(squashfsRoot, 'etc/rcS.d/S20mount-encrypted-home'),
+          path.join(squashfsRoot, 'etc/rc2.d/S02mount-encrypted-home')
+      ]
+      badSymlinks.forEach(link => {
+          if (fs.existsSync(link)) fs.unlinkSync(link)
+      })
+      
+      // Rimuoviamo anche lo script init.d stesso se esiste, non serve più
+      const initdFile = path.join(squashfsRoot, 'etc/init.d/mount-encrypted-home')
+      if (fs.existsSync(initdFile)) fs.unlinkSync(initdFile)
   }
-  fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
 }
-

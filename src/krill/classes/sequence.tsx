@@ -50,6 +50,7 @@ import grubcfg from './sequence.d/grubcfg.js'
 import bootloader from './sequence.d/bootloader.js'
 import packages from './sequence.d/packages.js'
 import removeInstallerLink from './sequence.d/remove_installer_link.js'
+import removeHomecryptHack from './sequence.d/remove-homecrypt-hack.js'
 import initramfsCfg from './sequence.d/initramfs_cfg.js'
 import initramfs from './sequence.d/initramfs.js'
 import delLiveUser from './sequence.d/del_live_user.js'
@@ -86,6 +87,7 @@ export default class Sequence {
   bootloader = bootloader
   packages = packages
   removeInstallerLink = removeInstallerLink
+  removeHomecryptHack = removeHomecryptHack
   initramfsCfg = initramfsCfg
   initramfs = initramfs
   delLiveUser = delLiveUser
@@ -339,6 +341,10 @@ export default class Sequence {
         let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
         await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
       })
+
+      await this.executeStep("Remove Homecrypt hack", 91, async () => {
+        await this.removeHomecryptHack()
+      })
     }
 
     // 13. Custom final steps
@@ -346,7 +352,7 @@ export default class Sequence {
     const steps = await cfs.steps()
     if (steps.length > 0) {
       for (const step of steps) {
-        await this.executeStep(`running ${step}`, 91, () => this.execCalamaresModule(step))
+        await this.executeStep(`running ${step}`, 92, () => this.execCalamaresModule(step))
       }
     }
 

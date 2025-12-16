@@ -282,10 +282,15 @@ export default class Krill {
 
     // Set default installation device if empty
     if (oPartitions.installationDevice === '') {
-      const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
+      const cmd = `lsblk -d -n -p -o NAME,RM,RO,TYPE | awk '$2 == 0 && $3 == 0 && $4 == "disk" {print $1}'`
+      const result = shx.exec(cmd, { silent: true }).stdout.trim()
+      const drives = result ? result.split('\n') : []
       if (drives.length > 0) {
-        oPartitions.installationDevice = `/dev/` + drives[0]
+        oPartitions.installationDevice = drives[0]
       } else {
+        console.error("[Krll] No suitable disc found for installation. Debug info:")
+        shx.exec('lsblk -o NAME,RM,RO,TYPE,SIZE,MODEL', { silent: false }) 
+
         throw new Error("Unable to find installation drive")
       }
     }
