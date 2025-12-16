@@ -10,7 +10,7 @@ echo "[INFO] Running webui_createIso.sh with MODE=$MODE"
 echo "[INFO] Starting 'eggs' process..."
 
 # Base command options for all modes
-BASE_COMMAND="sudo /eggs produce" # Assuming you want a full system image
+BASE_COMMAND="sudo /eggs produce --nointeractive " # Assuming you want a full system image
 
 # --- LOGIC TO SELECT COMMAND BASED ON MODE ---
 case "$MODE" in
