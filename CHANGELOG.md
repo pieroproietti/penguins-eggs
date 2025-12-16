@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.16
+* krill: improved detection of disks suitable for installation on physical hardware;
+* devuan: finally, sysvinit has also been configured to allow ISO production with --homecrypt.
+* krill: added routine to remove the --homecrypt configuration on the installed system;
+
+Currently, clones encrypted with the `--homecrypt` option can only be reinstalled with `eggs krill`, while clones created with `--fullcrypt` can only be reinstalled with calamares.
+
 # v25.12.15
 With some reluctance, I am releasing a new version, which is important for a number of reasons mainly related to `--homecrypt` and `--fullcrypt`, where I have completely recalculated the size of the encrypted partitions and moved their creation from /tmp to /var/tmp to avoid the 2 GB limit. A problem with `eggs dad` has also been fixed, which did not save all the data completely.
 
