@@ -1,6 +1,12 @@
+# to run on Debian trixie:
+# sudo apt install python3-flask python3-flask-cors
+# sudo python3 backend.py
+# open browser at: http://127.0.0.1:5000
+
 import os
 import json
-from flask import Flask, request, Response, jsonify, send_from_directory
+import subprocess
+from flask import Flask, request, Response, jsonify, send_from_directory # FIX: Added send_from_directory
 from flask_cors import CORS
 import time
 
@@ -9,32 +15,33 @@ app = Flask(__name__)
 CORS(app)
 PORT = 5000
 
+# Define the absolute path to the directory containing this script for serving index.html
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# --- Core Logic ---
+# --- Core Logic for Command Execution (Using os.system for reliability) ---
 
 def stream_command_output(command, task_name="Task"):
     """
-    Executes a shell command.
-    Output is printed to server console, status sent to UI.
+    Executes a shell command using os.system() (blocks terminal).
+    Output is NOT streamed to the web UI; it is printed to the server console.
     """
-    print(f"\n[Task: {task_name}] Command: {command}")
-    yield json.dumps({"type": "stdout", "message": f"⚡ [SYSTEM] Executing: {command}"}) + '\n'
-    yield json.dumps({"type": "stderr", "message": "   (Check server terminal for detailed progress...)"}) + '\n'
+
+    # 1. Log command start
+    print(f"\n[TASK START: {task_name}] Executing command: {command}")
+    yield json.dumps({"type": "stdout", "message": f"[SYSTEM] Executing: {command}"}) + '\n'
+    yield json.dumps({"type": "stderr", "message": "NOTE: Output is being shown ONLY on the server terminal."}) + '\n'
 
     try:
-        # Simulate delay for animation sync
-        time.sleep(0.5)
-
-        # EXECUTE COMMAND (Blocks until finished)
+        # EXECUTE COMMAND DIRECTLY: Blocks the current Python thread until finished.
         exit_code = os.system(command)
 
-        print(f"[Task done: {task_name}] Command done with code: {exit_code}\n")
-        yield json.dumps({"type": "stdout", "message": f"✅ Command finished."}) + '\n'
+        # 2. Log command finish
+        print(f"[TASK FINISHED: {task_name}] Command finished with code {exit_code}\n")
+        yield json.dumps({"type": "stdout", "message": f"Command finished successfully on server console."}) + '\n'
         yield json.dumps({"type": "exit", "code": exit_code}) + '\n'
 
     except Exception as e:
-        yield json.dumps({"type": "stderr", "message": f"❌ Internal Error: {str(e)}"}) + '\n'
+        yield json.dumps({"type": "stderr", "message": f"CRITICAL BACKEND ERROR: {str(e)}"}) + '\n'
         yield json.dumps({"type": "exit", "code": 1}) + '\n'
 
 
@@ -42,6 +49,8 @@ def stream_command_output(command, task_name="Task"):
 
 @app.route('/')
 def serve_index():
+    """Serves the main index.html file from the BASE_DIR."""
+    # This now works because send_from_directory is imported!
     return send_from_directory(BASE_DIR, 'index.html')
 
 @app.route('/api/dad/stream', methods=['POST'])
