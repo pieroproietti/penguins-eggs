@@ -33,7 +33,7 @@
         "read": "^4.1.0",
         "systeminformation": "^5.27.14",
         "tftp": "^0.1.2",
-        "vite": "^4.4.9",
+        "vite": "^7.3.0",
         "ws": "^8.18.3"
     },
     "devDependencies": {
