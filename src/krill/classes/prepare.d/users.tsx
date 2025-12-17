@@ -24,15 +24,13 @@ import {shx} from '../../../lib/utils.js'
  */
 export async function users(this: Prepare): Promise<IUsers> {
 
+    let fullname = this.krillConfig.fullname
+
     let username = this.krillConfig.name
     if (username === '' || username === undefined) {
         username = 'artisan'
     }
 
-    let fullname = this.krillConfig.fullname
-    if (fullname === '' || fullname === undefined) {
-        fullname = username
-    }
 
     let password = this.krillConfig.password
     if (password === '' || password === undefined) {
@@ -59,8 +57,8 @@ export async function users(this: Prepare): Promise<IUsers> {
         if (await confirm(usersElem, "Confirm Users datas?")) {
             break
         }
-        username = await getUsername(username)
         fullname = await getUserfullname(fullname)
+        username = await getUsername(username)
         password = await getPassword(username, password)
         rootPassword = await getPassword('root', password)
         hostname = await getHostname(hostname)

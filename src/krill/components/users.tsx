@@ -86,8 +86,8 @@ export default function Users({ username, fullname, password, rootPassword, host
                     <Box flexDirection="row">
                         <Steps step={5} />
                         <Box flexDirection="column">
-                            <Box><Text>username     : </Text><Text color="cyan">{username}</Text></Box>
-                            <Box><Text>full username: </Text><Text color="cyan">{fullname}</Text></Box>
+                            <Box><Text>fullname     : </Text><Text color="cyan">{fullname}</Text></Box>
+                            <Box><Text>login        : </Text><Text color="cyan">{username}</Text></Box>
                             <Box><Text>user password: </Text><Text color="cyan">{password}</Text></Box>
                             <Box></Box>
                             <Box><Text>root password: </Text><Text color="cyan" >{rootPassword}</Text></Box>

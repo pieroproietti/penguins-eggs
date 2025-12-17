@@ -13,14 +13,14 @@ export default async function getUsername(initial: string): Promise<string> {
     const questions: any = [
       {
         default: initial,
-        message: 'What is your name? ',
-        name: 'name',
+        message: 'What name you want to use to log in? ',
+        name: 'username',
         type: 'input'
       }
     ]
 
     inquirer.prompt(questions).then((options: any) => {
-      resolve(options.name)
+      resolve(options.username)
     })
   })
 }

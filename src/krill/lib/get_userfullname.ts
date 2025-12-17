@@ -13,7 +13,7 @@ export default async function getUserfullname(initial: string): Promise<string> 
     const questions: any = [
       {
         default: initial,
-        message: 'What name do you want to use? ',
+        message: 'What is your name? ',
         name: 'fullname',
         type: 'input'
       }
