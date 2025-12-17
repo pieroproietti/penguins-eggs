@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.16-3
+* krill: The correspondence between ‘what is your name’ assigned to fullname and ‘what name do you want to use to log in’ assigned to username has been resolved.
+
 # v25.12.16-2
 * Password consistency fix: Resolved an issue where the root and live user passwords in the live environment did not match the values set in /etc/penguins-eggs.d/eggs.yaml.
 

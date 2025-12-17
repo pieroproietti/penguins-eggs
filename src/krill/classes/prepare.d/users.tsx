@@ -58,6 +58,7 @@ export async function users(this: Prepare): Promise<IUsers> {
             break
         }
         fullname = await getUserfullname(fullname)
+        if (fullname !=='') username = fullname.trim().split(' ')[0].toLowerCase();
         username = await getUsername(username)
         password = await getPassword(username, password)
         rootPassword = await getPassword('root', password)
