@@ -1,27 +1,32 @@
-#!/bin/sh
-###
-# Wrapper for running calamares on Debian live media
-###
+#!/bin/bash
 
-# Stale file left behind by live-build that messes with partitioning
-sudo mv /etc/fstab /etc/fstab.orig.calamares
+# 1. Pulizia fstab (tua logica originale)
+if [ -f /etc/fstab ]; then
+    sudo mv /etc/fstab /etc/fstab.orig.calamares
+fi
 
-# Allow Calamares to scale the window for hidpi displays
-# This is fixed in the Calamares 3.3.0 series, so we can remove this
-# once we switch to that
-# Upstream commit that will make this obsolete:
-#     https://github.com/calamares/calamares/commit/e9f011b686a0982fb7828e8ac02a8e0784d3b11f
-# Upstream bug:
-#     https://github.com/calamares/calamares/issues/1945
-# Debian bug:
-#     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=992162
+# 2. Scaling per HiDPI
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
-# Access control to run calamares as root for xwayland
-xhost +si:localuser:root
-#pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY calamares
-pkexec calamares
-xhost -si:localuser:root
+# 3. Variabili d'ambiente per il display
+export DISPLAY=${DISPLAY:-:0}
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export QT_QPA_PLATFORM="wayland;xcb"
 
-# Restore stale fstab, for what it's worth
-sudo mv /etc/fstab.orig.calamares /etc/fstab
+# 4. Accesso grafico per root (fondamentale per Wayland/XWayland)
+if command -v xhost >/dev/null 2>&1; then
+    xhost +si:localuser:root >/dev/null 2>&1
+fi
+
+# 5. Lancio con sudo -E (Invece di pkexec)
+# -E preserva le variabili QT e il display anche su Wayland
+sudo -E calamares "$@"
+
+# 6. Ripristino (tua logica originale)
+if command -v xhost >/dev/null 2>&1; then
+    xhost -si:localuser:root >/dev/null 2>&1
+fi
+
+if [ -f /etc/fstab.orig.calamares ]; then
+    sudo mv /etc/fstab.orig.calamares /etc/fstab
+fi
