@@ -380,6 +380,14 @@ export default class Incubator {
      */
     shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
     shx.chmod('+x', '/usr/sbin/install-system.sh')
+
+
+    /**
+     * /etc/sudoers.d/99-eggs-calamares
+     */
+    shx.cp(path.resolve(__dirname, '../../../assets/calamares/99-eggs-calamares'), '/etc/sudoers.d/99-eggs-calamares')
+    shx.chmod('440', '/etc/sudoers.d/99-eggs-calamares');
+
   }
 
   /**
