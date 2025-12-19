@@ -32,132 +32,113 @@ export default class Xdg {
    * @param newuser
    * @param chroot
    */
-  static async autologin(olduser: string, newuser: string, chroot = '/') {
+  /**
+   * Forza l'autologin per il nuovo utente (live) su diversi Display Manager
+   * @param newuser Nome dell'utente live da loggare automaticamente
+   * @param chroot Percorso della root (default '/')
+   */
+  // static async autologin(olduser: string, newuser: string, chroot = '/') {
+  static async autologin(newuser: string, chroot = '/') {
+    if (!Pacman.isInstalledGui()) return;
 
-    // console.log("old: " + olduser, "new: "  + newuser, "chroot: " + chroot)
-    if (Pacman.isInstalledGui()) {
-      /**
-       * SLIM & SLIMSKI
-       */
-      let slimConf = ''
-      if (Pacman.packageIsInstalled('slim')) {
-        slimConf = 'slim.conf'
-        if (fs.existsSync('/etc/slim.local.conf')) {
-          slimConf = 'slim.local.conf'
+    /**
+     * SLIM & SLIMSKI
+     */
+    let slimConf = '';
+    if (Pacman.packageIsInstalled('slim')) {
+      slimConf = fs.existsSync(`${chroot}/etc/slim.local.conf`) ? 'slim.local.conf' : 'slim.conf';
+    } else if (Pacman.packageIsInstalled('slimski')) {
+      slimConf = fs.existsSync(`${chroot}/etc/slimski.local.conf`) ? 'slimski.local.conf' : 'slimski.conf';
+    }
+
+    if (slimConf !== '') {
+      let content = fs.readFileSync(`${chroot}/etc/${slimConf}`, 'utf8');
+      content = content.replace(/^#?auto_login\s+.*/m, 'auto_login yes');
+      content = content.replace(/^#?default_user\s+.*/m, `default_user ${newuser}`);
+      fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8');
+    }
+
+    /**
+     * LIGHTDM
+     */
+    else if (Pacman.packageIsInstalled('lightdm')) {
+      const confPath = `${chroot}/etc/lightdm/lightdm.conf`;
+      if (fs.existsSync(confPath)) {
+        let content = fs.readFileSync(confPath, 'utf8');
+        if (!content.includes('[Seat:*]')) {
+          content += '\n[Seat:*]\n';
         }
+        // Rimuove eventuali righe esistenti e le aggiunge pulite sotto [Seat:*]
+        content = content.replace(/^autologin-user=.*/gm, '');
+        content = content.replace(/^autologin-user-timeout=.*/gm, '');
+        content = content.replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`);
+        fs.writeFileSync(confPath, content.replace(/\n\n+/g, '\n\n'), 'utf8');
+      }
+    }
+
+    /**
+     * LXDM
+     */
+    else if (Pacman.packageIsInstalled('lxdm')) {
+      const lxdmConf = `${chroot}/etc/lxdm/lxdm.conf`;
+      if (fs.existsSync(lxdmConf)) {
+        let content = fs.readFileSync(lxdmConf, 'utf8');
+        content = content.replace(/^#?\s*autologin=.*/m, `autologin=${newuser}`);
+        fs.writeFileSync(lxdmConf, content, 'utf8');
+      }
+    }
+
+    /**
+     * SDDM (Modern approach con file dedicato)
+     */
+    else if (Pacman.packageIsInstalled('sddm')) {
+      const confDir = `${chroot}/etc/sddm.conf.d`;
+      if (!fs.existsSync(confDir)) {
+        fs.mkdirSync(confDir, { recursive: true });
+      }
+      
+      let session = 'plasma';
+      if (Pacman.isInstalledWayland()) {
+        session = fs.existsSync(`${chroot}/usr/share/wayland-sessions/cosmic.desktop`) ? 'cosmic' : 'plasma-wayland';
       }
 
-      if (Pacman.packageIsInstalled('slimski')) {
-        slimConf = 'slimski.conf'
-        if (fs.existsSync('/etc/slimski.local.conf')) {
-          slimConf = 'slimski.local.conf'
-        }
+      const content = `[Autologin]\nUser=${newuser}\nSession=${session}\n`;
+      fs.writeFileSync(`${confDir}/eggs-autologin.conf`, content, 'utf8');
+    }
+
+    /**
+     * GDM / GDM3 (Pop!_OS, Ubuntu, Debian)
+     */
+    else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
+      let gdmFile = '';
+      const possiblePaths = [
+        `${chroot}/etc/gdm3/daemon.conf`,
+        `${chroot}/etc/gdm3/custom.conf`,
+        `${chroot}/etc/gdm/custom.conf`
+      ];
+
+      for (const p of possiblePaths) {
+        if (fs.existsSync(p)) { gdmFile = p; break; }
       }
 
-      if (slimConf !== '') {
-        let content = fs.readFileSync(`${chroot}/etc/${slimConf}`, 'utf8')
+      if (gdmFile) {
+        let content = fs.readFileSync(gdmFile, 'utf8');
+        if (!content.includes('[daemon]')) content = "[daemon]\n" + content;
 
-        const regexAutoLogin = new RegExp(`auto_login\\s*no`, 'g')
-        content = content.replaceAll(regexAutoLogin, 'auto_login yes')
-
-        const regexDefaultUser = new RegExp(`default_user\\s*${olduser}`, 'g')
-        content = content.replace(regexDefaultUser, `default_user ${newuser}`)
-        fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
-
-        /**
-         * LIGHTDM
-         */
-      } else if (Pacman.packageIsInstalled('lightdm')) {
-        const dc = `${chroot}/etc/lightdm/`
-        const files = fs.readdirSync(dc)
-        for (const elem of files) {
-          const curFile = dc + elem
-          if (!fs.statSync(`/${curFile}`).isDirectory()) {
-            let content = fs.readFileSync(curFile, 'utf8')
-            const find = '[Seat:*]'
-            if (content.includes(find)) {
-              const regex = new RegExp(`autologin-user\\s*=\\s*${olduser}`, 'g') // remove spaces
-              content = content.replace(regex, `autologin-user=${newuser}`)
-              fs.writeFileSync(curFile, content, 'utf8')
-            }
-          }
-        }
-      } else if (Pacman.packageIsInstalled('lxdm')) {
-        let lxdmConf = '/etc/lxdm/lxdm.conf'
-        if (fs.existsSync(lxdmConf)) {
-          let content = fs.readFileSync(lxdmConf, 'utf8')
-          const regex = new RegExp(`autologin\\s*=\\s*${olduser}`, 'g') // remove spaces            
-          content = content.replace(regex, `autologin=${newuser}`)
-          fs.writeFileSync(lxdmConf, content, 'utf8')
-        }
-      } else if (Pacman.packageIsInstalled('sddm')) {
-        /**
-         * SDDM
-         */
-        let sddmChanged = false
-        const curFile = `${chroot}/etc/sddm.conf`
-        if (fs.existsSync(curFile)) {
-          let content = fs.readFileSync(curFile, 'utf8')
-          const find = '[Autologin]'
-          if (content.includes(find)) {
-            const regex = new RegExp(`User\\s*=\\s*${olduser}`, 'g') // replace space
-            content = content.replace(regex, `User=${newuser}`)
-            fs.writeFileSync(curFile, content, 'utf8')
-            sddmChanged = true
-          }
-        }
-
-        if (!sddmChanged) {
-          const dc = `${chroot}/etc/sddm.conf.d/`
-          if (fs.existsSync(dc)) {
-            const files = fs.readdirSync(dc)
-            for (const elem of files) {
-              const curFile = dc + elem
-              let content = fs.readFileSync(curFile, 'utf8')
-              const find = '[Autologin]'
-              if (content.includes(find)) {
-                const regex = new RegExp(`User\\s*=\\s*${olduser}`, 'g') // replace space
-                content = content.replace(regex, `User=${newuser}`)
-                fs.writeFileSync(curFile, content, 'utf8')
-                sddmChanged = true
-              }
-            }
-          }
-        }
-
-        // sddm.conf don't exists, generate it
-        if (!sddmChanged) {
-          let session = 'plasma'
-          if (Pacman.isInstalledWayland()) {
-            session = 'plasma-wayland'
-          }
-
-          const content = `[Autologin]\nUser=${newuser}\nSession=${session}\n`
-          const curFile = `${chroot}/etc/sddm.conf`
-          fs.writeFileSync(curFile, content, 'utf8')
-        }
-      } else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
-        /**
-         * GDM/GDM3
-         * in manjaro è /etc/gdm/custom.conf
-         */
-        let gdmConf = `${chroot}/etc/gdm3`
-        if (Pacman.packageIsInstalled('gdm3')) {
-          gdmConf = `${chroot}/etc/gdm3`
-        } else if (Pacman.packageIsInstalled('gdm')) {
-          gdmConf = `${chroot}/etc/gdm`
-        }
-
-        if (fs.existsSync(`${gdmConf}/custom.conf`)) {
-          gdmConf += '/custom.conf'
-        } else if (fs.existsSync(`${gdmConf}/daemon.conf`)) {
-          gdmConf += '/daemon.conf'
+        // Abilitazione chirurgica
+        if (content.match(/^#?AutomaticLoginEnable=.*/m)) {
+          content = content.replace(/^#?AutomaticLoginEnable=.*/m, 'AutomaticLoginEnable=true');
         } else {
-          gdmConf = `}/etc/${gdmConf}/custom.conf`
+          content = content.replace('[daemon]', '[daemon]\nAutomaticLoginEnable=true');
         }
 
-        const content = `[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=${newuser}\n`
-        Utils.write(gdmConf, content)
+        if (content.match(/^#?AutomaticLogin=.*/m)) {
+          content = content.replace(/^#?AutomaticLogin=.*/m, `AutomaticLogin=${newuser}`);
+        } else {
+          content = content.replace('AutomaticLoginEnable=true', `AutomaticLoginEnable=true\nAutomaticLogin=${newuser}`);
+        }
+        
+        fs.writeFileSync(gdmFile, content, 'utf8');
       }
     }
   }

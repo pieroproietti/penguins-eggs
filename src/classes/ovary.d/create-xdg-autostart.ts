@@ -193,7 +193,8 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         await exec(`chmod a+x ${script}`, this.echo)
     }
 
-    await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
+    //await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
+    await Xdg.autologin(this.settings.config.user_opt, this.settings.work_dir.merged)
 }
 
 /**
