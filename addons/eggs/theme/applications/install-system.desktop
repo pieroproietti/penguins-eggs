@@ -2,7 +2,7 @@
 Type=Application
 Name=Install System
 Comment=Install the system to your disk
-Exec=calamares-launcher.sh
+Exec=install-system.sh
 Icon=install-system
 Terminal=false
 Categories=Qt;System;

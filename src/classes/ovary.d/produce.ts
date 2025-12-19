@@ -294,7 +294,7 @@ export async function produce(
             await this.editLiveFs()
 
             /**
-             * Autologin solse per non clone
+             * Autologin solo se per non clone
              */
             if (!(this.clone || this.homecrypt || this.fullcrypt)) {
                 await this.usersRemove()
@@ -320,7 +320,7 @@ export async function produce(
             }
 
             /**
-             * configurazione homecrytp
+             * configurazione homecrypt
              */
             if (this.homecrypt) {
                 // Occorre forzare il login CLI

@@ -15,7 +15,7 @@ const pjson = require('../../../package.json')
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import {shx} from '../../lib/utils.js'
+import { shx } from '../../lib/utils.js'
 import Diversions from '../diversions.js'
 
 import { IInstaller } from '../../interfaces/i-installer.js'
@@ -25,7 +25,7 @@ import Utils from '../utils.js'
 import { installer } from './installer.js'
 import { branding } from './branding.js'
 
-import {customizePartitions} from './customize/customize-partitions.js'
+import { customizePartitions } from './customize/customize-partitions.js'
 
 // incubator.d
 import { Alpine } from './incubator.d/alpine.js'
@@ -89,10 +89,9 @@ export default class Incubator {
     Utils.warning(`creating ${installer().name} configuration files on ${installer().configRoot}`)
     this.createInstallerDirs()
     this.createBranding()
-    // this.sudoers()
 
     const distroUniqueId = this.distro.distroUniqueId
-    
+
     try {
 
       /**
@@ -378,16 +377,14 @@ export default class Incubator {
     /**
      * install-system.sh
      */
-    shx.cp(path.resolve(__dirname, '../../../assets/calamares/install-system.sh'), '/usr/sbin/install-system.sh')
-    shx.chmod('+x', '/usr/sbin/install-system.sh')
-
-
-    /**
-     * /etc/sudoers.d/99-eggs-calamares
-     */
-    shx.cp(path.resolve(__dirname, '../../../assets/calamares/99-eggs-calamares'), '/etc/sudoers.d/99-eggs-calamares')
-    shx.chmod('440', '/etc/sudoers.d/99-eggs-calamares');
-
+    {
+      const sourceScript = path.resolve(__dirname, '../../../assets/calamares/install-system.sh');
+      const targetScript = '/usr/bin/install-system.sh';
+      fs.copyFileSync(sourceScript, targetScript);
+      fs.chmodSync(targetScript, 0o755);
+      fs.chownSync(targetScript, 0, 0);
+    }
+    this.sudoers()
   }
 
   /**
@@ -395,11 +392,19 @@ export default class Incubator {
    * 
    */
   private sudoers() {
-    let live = this.user_opt
-    let content = ''
-    content += `# grants the live user passwordless permission to run /usr/bin/calamare\n`
-    content += `${live} ALL=(ALL) NOPASSWD: /usr/bin/calamares\n`
-    let fname = '/etc/sudoers.d/calamares'
+    const live = this.user_opt;
+    if (!live) return;
+
+    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares';
+    // Nota il SETENV: prima di NOPASSWD
+    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`;
+
+    try {
+      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
+      fs.chownSync(sudoersPath, 0, 0);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 
