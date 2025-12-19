@@ -9,7 +9,7 @@
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import {shx} from '../lib/utils.js'
+import { shx } from '../lib/utils.js'
 
 
 import { IDistro } from '../interfaces/index.js'
@@ -100,13 +100,15 @@ class Distro implements IDistro {
       this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
       /**
-       * Fedora family: Almalinux, Fedora, Nobara. Rocky
+       * Fedora family: Almalinux, Fedora, Nobara. Rhel, Rocky
        */
     } else if (
-      this.distroId === 'Almalinux' ||
-      this.distroId === 'Fedora' ||
-      this.distroId === 'Nobara' ||
-      this.distroId === 'Rocky') {
+        this.distroId === 'Almalinux' ||
+        this.distroId === 'Fedora' ||
+        this.distroId === 'Nobara' ||
+        this.distroId === 'Rhel' ||
+        this.distroId === 'Rocky'
+    ) {
 
       this.familyId = 'fedora'
       this.distroLike = 'Fedora'
