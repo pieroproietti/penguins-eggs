@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.16-5
+Just a fix for RHEL. Thanks to [davidlevenstein](https://github.com/davidlevenstein).
+
 # v25.12.16-4
 **Fixed Calamares launching** on Wayland (Pop!_OS 24.04). Replaced pkexec with a custom sudo -E wrapper and added specific SETENV sudoers rules to correctly handle graphical display permissions in live sessions.
 
