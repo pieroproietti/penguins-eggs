@@ -31,7 +31,6 @@ export async function users(this: Prepare): Promise<IUsers> {
         username = 'artisan'
     }
 
-
     let password = this.krillConfig.password
     if (password === '' || password === undefined) {
         password = 'evolution'
@@ -47,7 +46,7 @@ export async function users(this: Prepare): Promise<IUsers> {
         hostname = shx.exec('cat /etc/hostname',{silent: true}).stdout.trim()
     }
 
-    let autologin = true
+    let autologin = false
 
     let sameUserPassword = true
 
@@ -63,6 +62,7 @@ export async function users(this: Prepare): Promise<IUsers> {
         password = await getPassword(username, password)
         rootPassword = await getPassword('root', password)
         hostname = await getHostname(hostname)
+        autologin = autologin
     }
 
     return {

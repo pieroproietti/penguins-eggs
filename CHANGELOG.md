@@ -20,22 +20,15 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-# v25.12.16-5
-Just a fix on RHEL. Thanks to [davidlevenstein](https://github.com/davidlevenstein).
-
-# v25.12.16-4
-**Fixed Calamares launching** on Wayland (Pop!_OS 24.04). Replaced pkexec with a custom sudo -E wrapper and added specific SETENV sudoers rules to correctly handle graphical display permissions in live sessions.
-
-# v25.12.16-3
-* krill: The correspondence between ‘what is your name’ assigned to fullname and ‘what name do you want to use to log in’ assigned to username has been resolved.
-
-# v25.12.16-2
-* Password consistency fix: Resolved an issue where the root and live user passwords in the live environment did not match the values set in /etc/penguins-eggs.d/eggs.yaml.
-
-# v25.12.16-1
-* krill: improved detection of disks suitable for installation on physical hardware;
-* devuan: finally, sysvinit has also been configured to allow ISO production with --homecrypt.
-* krill: added routine to remove the --homecrypt configuration on the installed system;
+# v25.12.16-6
+- **Improved Live Access**: Added auto-login functionality for live sessions as default to provide a seamless user experience.
+- **just a fix on RHEL**. Thanks to [davidlevenstein](https://github.com/davidlevenstein).
+- **Fixed Calamares launching**: on Wayland (Pop!_OS 24.04). Replaced pkexec with a custom sudo -E wrapper and added specific SETENV sudoers rules to correctly handle graphical display permissions in live sessions.
+- **krill**: the correspondence between ‘what is your name’ assigned to fullname and ‘what name do you want to use to log in’ assigned to username has been resolved.
+- **Password consistency fix**: tesolved an issue where the root and live user passwords in the live environment did not match the values set in /etc/penguins-eggs.d/eggs.yaml.
+- **krill** improved detection of disks suitable for installation on physical hardware;
+- **devuan**: finally `sysvinit` has also been configured to allow ISO production with `--homecrypt`;
+- **krill**: added routine to remove the --homecrypt configuration on the installed system.
 
 Currently, clones encrypted with the `--homecrypt` option can only be reinstalled with `eggs krill`, while clones created with `--fullcrypt` can only be reinstalled with calamares.
 

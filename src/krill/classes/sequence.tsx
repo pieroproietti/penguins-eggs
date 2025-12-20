@@ -300,7 +300,6 @@ export default class Sequence {
       if (Pacman.isInstalledGui()) {
         await this.executeStep("Autologin GUI", 78, async () => {
           if (this.users.autologin) {
-            // await Xdg.autologin(await Utils.getPrimaryUser(), this.users.username, this.installTarget)
             await Xdg.autologin(this.users.username, this.installTarget)
             if (this.distro.distroLike === 'Arch') {
               await exec(`chroot ${this.installTarget} groupadd autologin ${this.toNull}`)
