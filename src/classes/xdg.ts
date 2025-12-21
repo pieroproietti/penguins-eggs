@@ -9,7 +9,7 @@
 import os from 'os'
 import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
-import {shx} from '../lib/utils.js'
+import { shx } from '../lib/utils.js'
 
 // libraries
 import { exec } from '../lib/utils.js'
@@ -32,12 +32,12 @@ export default class Xdg {
    * @param newuser
    * @param chroot
    */
+
   /**
    * Forza l'autologin per il nuovo utente (live) su diversi Display Manager
    * @param newuser Nome dell'utente live da loggare automaticamente
    * @param chroot Percorso della root (default '/')
    */
-  // static async autologin(olduser: string, newuser: string, chroot = '/') {
   static async autologin(newuser: string, chroot = '/') {
     if (!Pacman.isInstalledGui()) return;
 
@@ -96,7 +96,7 @@ export default class Xdg {
       if (!fs.existsSync(confDir)) {
         fs.mkdirSync(confDir, { recursive: true });
       }
-      
+
       let session = 'plasma';
       if (Pacman.isInstalledWayland()) {
         session = fs.existsSync(`${chroot}/usr/share/wayland-sessions/cosmic.desktop`) ? 'cosmic' : 'plasma-wayland';
@@ -137,8 +137,45 @@ export default class Xdg {
         } else {
           content = content.replace('AutomaticLoginEnable=true', `AutomaticLoginEnable=true\nAutomaticLogin=${newuser}`);
         }
-        
+
         fs.writeFileSync(gdmFile, content, 'utf8');
+      }
+
+      /**
+       * GREETD / COSMIC (Pop!_OS COSMIC)
+       */
+    } else if (Pacman.packageIsInstalled('greetd')) {
+      const greetdPath = `${chroot}/etc/greetd/cosmic-greeter.toml`;
+
+      // Se esiste la configurazione specifica di COSMIC
+      if (fs.existsSync(greetdPath)) {
+        let content = fs.readFileSync(greetdPath, 'utf8');
+
+        // Se la sezione [initial_session] esiste già, la aggiorniamo, altrimenti la aggiungiamo
+        const initialSessionRegex = /\[initial_session\][^\[]*/;
+        const newInitialSession = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n\n`;
+
+        if (initialSessionRegex.test(content)) {
+          content = content.replace(initialSessionRegex, newInitialSession);
+        } else {
+          // La aggiungiamo in testa o dopo la sezione general
+          content = newInitialSession + content;
+        }
+
+        fs.writeFileSync(greetdPath, content, 'utf8');
+      }
+      // Fallback per greetd standard (config.toml) se non è COSMIC specifico
+      else if (fs.existsSync(`${chroot}/etc/greetd/config.toml`)) {
+        const configPath = `${chroot}/etc/greetd/config.toml`;
+        let content = fs.readFileSync(configPath, 'utf8');
+
+        // Configurazione per il login automatico su greetd generico
+        const autologinConfig = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n`;
+
+        if (!content.includes('[initial_session]')) {
+          content = autologinConfig + content;
+          fs.writeFileSync(configPath, content, 'utf8');
+        }
       }
     }
   }
