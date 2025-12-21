@@ -1,219 +1,193 @@
 /**
  * ./src/classes/ovary.d/create-xdg-autostart.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
+ * penguins-eggs v.25.12.x / ecmascript 2020
  * author: Piero Proietti
  * email: piero.proietti@gmail.com
  * license: MIT
  */
 
-
-// packages
-import fs, { Dirent } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
-import  {shx} from '../../lib/utils.js'
+import { fileURLToPath } from 'node:url'
 
 // classes
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
-import Utils from '../utils.js'
-import Xdg from '../xdg.js'
 import { exec } from '../../lib/utils.js'
 import PveLive from '../pve-live.js'
-
 import { IAddons } from '../../interfaces/index.js'
 
-// _dirname
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+// Setup __dirname per moduli ESM
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 /**
-   *
-   */
+ * Crea la configurazione XDG Autostart e gestisce l'autologin universale
+ */
 export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: IAddons, myLinks: string[] = [], noicons = false) {
     if (this.verbose) {
-        console.log('Ovary: createXdgAutostart')
+        console.log('Ovary: createXdgAutostart (Native TS implementation)')
     }
 
-    const pathHomeLive = `/home/${this.settings.config.user_opt}`
-
-    // VOGLIO le icone
-    // Copia icona penguins-eggs
-    shx.cp(path.resolve(__dirname, '../../../assets/eggs.png'), '/usr/share/icons/')
-    shx.cp(path.resolve(__dirname, '../../../assets/krill.svg'), '/usr/share/icons/')
-    shx.cp(path.resolve(__dirname, '../../../assets/leaves.svg'), '/usr/share/icons/')
+    const mergedRoot = this.settings.work_dir.merged
+    const newuser = this.settings.config.user_opt
 
     /**
-     * creazione dei link in /usr/share/applications
+     * Helper per gestire file e directory in modo nativo
      */
-    shx.cp(path.resolve(__dirname, '../../../assets/penguins-eggs.desktop'), '/usr/share/applications/')
+    const copyToMerged = (srcRelative: string, destRelative: string) => {
+        const src = path.resolve(__dirname, srcRelative)
+        const dest = path.join(mergedRoot, destRelative)
+        if (fs.existsSync(src)) {
+            fs.mkdirSync(path.dirname(dest), { recursive: true })
+            fs.copyFileSync(src, dest)
+        }
+    }
+
     /**
-     * Scrivania/install-system.desktop
+     * 1. ICONE & ASSETS
+     */
+    const assets = ['eggs.png', 'krill.svg', 'leaves.svg']
+    assets.forEach(asset => copyToMerged(`../../../assets/${asset}`, `/usr/share/icons/${asset}`))
+
+    copyToMerged('../../../assets/penguins-eggs.desktop', '/usr/share/applications/penguins-eggs.desktop')
+
+    /**
+     * 2. INSTALLER & POLKIT
      */
     let installerLink = 'install-system.desktop'
+
     if (Pacman.calamaresExists()) {
-        // 1. Copia il lanciatore .desktop STANDARD (quello con pkexec)
-        shx.cp(path.resolve(__dirname, `../../../addons/${theme}/theme/applications/install-system.desktop`), `${this.settings.work_dir.merged}/usr/share/applications/`)
-        // 2. Copia la TUA policy Polkit per Calamares
-        const policySource = path.resolve(__dirname, '../../../assets/calamares/io.calamares.calamares.policy')
-        const policyDest = '/usr/share/polkit-1/actions/'
-        shx.cp(policySource, policyDest)
-        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}io.calamares.calamares.policy`)
-        
+        copyToMerged(`../../../addons/${theme}/theme/applications/install-system.desktop`, '/usr/share/applications/install-system.desktop')
+        const policyPath = '/usr/share/polkit-1/actions/io.calamares.calamares.policy'
+        copyToMerged('../../../assets/calamares/io.calamares.calamares.policy', policyPath)
+        const fullPolicyPath = path.join(mergedRoot, policyPath)
+        if (fs.existsSync(fullPolicyPath)) {
+            let policy = fs.readFileSync(fullPolicyPath, 'utf8')
+            policy = policy.replace(/<(allow_any|allow_inactive|allow_active)>.*?<\/\1>/g, '<$1>yes</$1>')
+            fs.writeFileSync(fullPolicyPath, policy, 'utf8')
+        }
     } else if (Pacman.packageIsInstalled('live-installer')) {
-        /**
-         * LMD£ live-installer
-         */
-        const policySource = path.resolve(__dirname, '../../../assets/live-installer/com.github.pieroproietti.penguins-eggs.policy')
-        const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-        shx.cp(policySource, policyDest)
-        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
-
-        // carico in filesystem.live packages-remove
-        shx.cp(path.resolve(__dirname, '../../../assets/live-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
-        shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
-
         installerLink = 'penguins-live-installer.desktop'
-        shx.cp(path.resolve(__dirname, '../../../assets/penguins-live-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+        copyToMerged('../../../assets/penguins-live-installer.desktop', '/usr/share/applications/penguins-live-installer.desktop')
     } else if (Pacman.packageIsInstalled('ubiquity')) {
-
-        /**
-         * UBUNTU ubiquity
-         */
-        const policySource = path.resolve(__dirname, '../../../assets/ubiquity-installer/com.github.pieroproietti.penguins-eggs.policy')
-        const policyDest = '/usr/share/polkit-1/actions/com.github.pieroproietti.penguins-eggs.policy'
-        shx.cp(policySource, policyDest)
-        await exec(`sed -i 's/auth_admin/yes/' ${policyDest}`)
-
-        // carico in filesystem.live packages-remove
-        shx.cp(path.resolve(__dirname, '../../../assets/ubiquity-installer/filesystem.packages-remove'), `${this.settings.iso_work}/live/`)
-        shx.touch(`${this.settings.iso_work}/live/filesystem.packages`)
-
         installerLink = 'penguins-ubiquity-installer.desktop'
-        shx.cp(path.resolve(__dirname, '../../../assets/penguins-ubiquity-installer.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+        copyToMerged('../../../assets/penguins-ubiquity-installer.desktop', '/usr/share/applications/penguins-ubiquity-installer.desktop')
     } else {
         installerLink = 'penguins-krill.desktop'
-        shx.cp(path.resolve(__dirname, '../../../assets/penguins-krill.desktop'), `${this.settings.work_dir.merged}/usr/share/applications/`)
+        copyToMerged('../../../assets/penguins-krill.desktop', '/usr/share/applications/penguins-krill.desktop')
     }
 
     /**
-     * flags
+     * 3. ADDONS
      */
-
-    // adapt
-    if (myAddons.adapt) {
-        const dirAddon = path.resolve(__dirname, '../../../addons/eggs/adapt/')
-        shx.cp(`${dirAddon}/applications/eggs-adapt.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-    }
-
-    // pve
-    if (myAddons.pve) {
-        /**
-         * create service pve-live
-         */
-        const pve = new PveLive()
-        pve.create(this.settings.work_dir.merged)
-
-        /**
-         * adding a desktop link for pve
-         */
-        const dirAddon = path.resolve(__dirname, '../../../addons/eggs/pve')
-        shx.cp(`${dirAddon}/artwork/eggs-pve.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
-        shx.cp(`${dirAddon}/applications/eggs-pve.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-    }
-
-    // rsupport
+    if (myAddons.adapt) copyToMerged('../../../addons/eggs/adapt/applications/eggs-adapt.desktop', '/usr/share/applications/eggs-adapt.desktop')
     if (myAddons.rsupport) {
-        const dirAddon = path.resolve(__dirname, '../../../addons/eggs/rsupport')
-        shx.cp(`${dirAddon}/applications/eggs-rsupport.desktop`, `${this.settings.work_dir.merged}/usr/share/applications/`)
-        shx.cp(`${dirAddon}/artwork/eggs-rsupport.png`, `${this.settings.work_dir.merged}/usr/share/icons/`)
+        copyToMerged('../../../addons/eggs/rsupport/applications/eggs-rsupport.desktop', '/usr/share/applications/eggs-rsupport.desktop')
+        copyToMerged('../../../addons/eggs/rsupport/artwork/eggs-rsupport.png', '/usr/share/icons/eggs-rsupport.png')
+    }
+    if (myAddons.pve) {
+        const pve = new PveLive(); pve.create(mergedRoot)
+        copyToMerged('../../../addons/eggs/pve/artwork/eggs-pve.png', '/usr/share/icons/eggs-pve.png')
+        copyToMerged('../../../addons/eggs/pve/applications/eggs-pve.desktop', '/usr/share/applications/eggs-pve.desktop')
     }
 
     /**
-     * configuro add-penguins-desktop-icons in /etc/xdg/autostart
+     * 4. SCRIPT AUTOSTART (Icone Desktop)
      */
+    const autostartDir = path.join(mergedRoot, '/etc/xdg/autostart')
+    copyToMerged('../../../assets/penguins-links-add.desktop', '/etc/xdg/autostart/penguins-links-add.desktop')
 
-    const dirAutostart = `${this.settings.work_dir.merged}/etc/xdg/autostart`
-    if (fs.existsSync(dirAutostart)) {
-        // Creo l'avviatore xdg: DEVE essere add-penguins-links.desktop
-        shx.cp(path.resolve(__dirname, '../../../assets/penguins-links-add.desktop'), dirAutostart)
+    const scriptPath = path.join(mergedRoot, '/usr/bin/penguins-links-add.sh')
+    let scriptText = '#!/bin/sh\nDESKTOP=$(xdg-user-dir DESKTOP)\n'
+    scriptText += 'while [ ! -d "$DESKTOP" ]; do sleep 1; DESKTOP=$(xdg-user-dir DESKTOP); done\n'
+    scriptText += `cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
+    if (!noicons) scriptText += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
+    myLinks.forEach(link => scriptText += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`)
 
-        // create /usr/bin/penguins-links-add.sh
-        const script = '/usr/bin/penguins-links-add.sh'
-        let text = ''
-        text += '#!/bin/sh\n'
-        text += 'DESKTOP=$(xdg-user-dir DESKTOP)\n'
-        text += 'while [ ! -d "$DESKTOP" ]; do\n'
-        text += '  DESKTOP=$(xdg-user-dir DESKTOP)\n'
-        text += '  sleep 1\n'
-        text += 'done\n'
-        text += `cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
-        if (Pacman.packageIsInstalled('lxde-core')) {
-            if (!noicons) {
-                text += lxdeLink('penguins-eggs.desktop', "Penguins' eggs", 'eggs')
-            }
-
-            if (myAddons.adapt) text += lxdeLink('eggs-adapt.desktop', 'Adapt', 'video-display')
-            if (myAddons.pve) text += lxdeLink('eggs-pve.desktop', 'Proxmox VE', 'proxmox-ve')
-            if (myAddons.rsupport) text += lxdeLink('eggs-rsupport.desktop', 'Remote assistance', 'remote-assistance')
-        } else {
-            if (!noicons) {
-                text += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-            }
-
-            if (myLinks.length > 0) {
-                for (const link of myLinks) {
-                    text += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
-                }
-            }
-
-            if (myAddons.adapt) text += 'cp /usr/share/applications/eggs-adapt.desktop "$DESKTOP"\n'
-            if (myAddons.pve) text += 'cp /usr/share/applications/eggs-pve.desktop "$DESKTOP"\n'
-            if (myAddons.rsupport) text += 'cp /usr/share/applications/eggs-rsupport.desktop "$DESKTOP"\n'
-        }
-
-        /**
-         * enable desktop links
-         */
-        if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-            // GNOME
-            text += 'test -f /usr/share/applications/penguins-eggs.desktop && cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-            text += 'test -f "$DESKTOP"/op && chmod a+x "$DESKTOP"/penguins-eggs.desktop\n'
-            text += 'test -f "$DESKTOP"/penguins-eggs.desktop && gio set "$DESKTOP"/penguins-eggs.desktop metadata::trusted true\n'
-            text += `test -f /usr/share/applications/${installerLink} && cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
-            text += `test -f "$DESKTOP"/${installerLink} && chmod a+x "$DESKTOP"/${installerLink}\n`
-            text += `test -f "$DESKTOP"/${installerLink} && gio set "$DESKTOP"/${installerLink} metadata::trusted true\n`
-        } else if (Pacman.packageIsInstalled('xfce4-session')) {
-            text += `# xfce: enable-desktop-links\n`
-            text += `for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"; done\n`
-        } else {
-            text += `# others: enable-desktop-links\n`
-            text += 'chmod +x "$DESKTOP"/*.desktop\n'
-        }
-
-        fs.writeFileSync(script, text, 'utf8')
-        await exec(`chmod a+x ${script}`, this.echo)
+    if (Pacman.packageIsInstalled('cosmic-session') || Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        scriptText += 'chmod a+x "$DESKTOP"/*.desktop\n'
+        scriptText += 'for f in "$DESKTOP"/*.desktop; do gio set "$f" metadata::trusted true 2>/dev/null; done\n'
+    } else if (Pacman.packageIsInstalled('xfce4-session')) {
+        scriptText += 'for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk "{print $1}")"; done\n'
+    } else {
+        scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
     }
 
-    //await Xdg.autologin(await Utils.getPrimaryUser(), this.settings.config.user_opt, this.settings.work_dir.merged)
-    await Xdg.autologin(this.settings.config.user_opt, this.settings.work_dir.merged)
+    fs.mkdirSync(path.dirname(scriptPath), { recursive: true })
+    fs.writeFileSync(scriptPath, scriptText, 'utf8')
+    await exec(`chmod a+x ${scriptPath}`)
+
+    /**
+     * 5. LOGICA AUTOLOGIN UNIVERSALE (STRATEGIA BYPASS TTY)
+     */
+    
+    // Sblocco utente (Shadow & PAM)
+    try {
+        await exec(`chroot ${mergedRoot} usermod -p "" ${newuser}`)
+        await exec(`chroot ${mergedRoot} passwd -u ${newuser}`)
+    } catch (e) { if (this.verbose) console.log('Ovary: error unlocking') }
+
+    const pamServices = ['common-auth', 'greetd', 'gdm-password', 'login']
+    pamServices.forEach(s => {
+        const p = path.join(mergedRoot, `/etc/pam.d/${s}`)
+        if (fs.existsSync(p)) {
+            let c = fs.readFileSync(p, 'utf8')
+            c = c.replace(/pam_unix\.so(?!.*nullok)/g, 'pam_unix.so nullok')
+            fs.writeFileSync(p, c, 'utf8')
+        }
+    })
+
+    // CASO COSMIC/GREETD: Bypass totale del Display Manager
+    if (Pacman.packageIsInstalled('greetd')) {
+        // 1. Forza login automatico su TTY1 tramite Getty
+        const gettyDir = path.join(mergedRoot, '/etc/systemd/system/getty@tty1.service.d')
+        fs.mkdirSync(gettyDir, { recursive: true })
+        const gettyConf = `[Service]\nExecStart=\nExecStart=-/sbin/agetty --autologin ${newuser} --noclear %I $TERM\n`
+        fs.writeFileSync(path.join(gettyDir, 'override.conf'), gettyConf, 'utf8')
+
+        // 2. Script che lancia la sessione (quello che fai a mano)
+        const startScript = path.join(mergedRoot, '/usr/bin/eggs-start-cosmic')
+        const startContent = `#!/bin/bash\nif [[ -z $DISPLAY && $(tty) == /dev/tty1 ]]; then\n  exec dbus-run-session cosmic-session\nfi\n`
+        fs.writeFileSync(startScript, startContent, 'utf8')
+        await exec(`chmod a+x ${startScript}`)
+
+        // 3. Esegui lo script al login della shell
+        const userHome = path.join(mergedRoot, 'home', newuser)
+        if (!fs.existsSync(userHome)) fs.mkdirSync(userHome, { recursive: true })
+        const profilePath = path.join(userHome, '.bash_profile')
+        fs.writeFileSync(profilePath, `[[ -f /usr/bin/eggs-start-cosmic ]] && . /usr/bin/eggs-start-cosmic\n`, 'utf8')
+        
+        await exec(`chroot ${mergedRoot} chown -R ${newuser}:${newuser} /home/${newuser}`)
+        await exec(`chroot ${mergedRoot} usermod -aG video,render,input,tty,audio ${newuser}`)
+
+        // Disabilitiamo greetd per evitare che "rubi" il terminale
+        try { await exec(`chroot ${mergedRoot} systemctl disable greetd`) } catch (e) {}
+    } 
+
+    // Altri Display Manager
+    else if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
+        const gdmFile = fs.existsSync(path.join(mergedRoot, '/etc/gdm3/daemon.conf')) ? path.join(mergedRoot, '/etc/gdm3/daemon.conf') : path.join(mergedRoot, '/etc/gdm3/custom.conf')
+        if (fs.existsSync(gdmFile)) {
+            let c = fs.readFileSync(gdmFile, 'utf8')
+            c = c.replace(/#?AutomaticLoginEnable=.*/, 'AutomaticLoginEnable=true').replace(/#?AutomaticLogin=.*/, `AutomaticLogin=${newuser}`)
+            fs.writeFileSync(gdmFile, c, 'utf8')
+        }
+    }
+    else if (Pacman.packageIsInstalled('sddm')) {
+        const sddmConf = path.join(mergedRoot, '/etc/sddm.conf.d/eggs-autologin.conf')
+        fs.mkdirSync(path.dirname(sddmConf), { recursive: true })
+        fs.writeFileSync(sddmConf, `[Autologin]\nUser=${newuser}\nSession=cosmic\n`, 'utf8')
+    }
+    else if (Pacman.packageIsInstalled('lightdm')) {
+        const lPath = path.join(mergedRoot, '/etc/lightdm/lightdm.conf')
+        if (fs.existsSync(lPath)) {
+            let c = fs.readFileSync(lPath, 'utf8')
+            if (!c.includes('[Seat:*]')) c += '\n[Seat:*]\n'
+            c = c.replace(/autologin-user=.*/g, '').replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
+            fs.writeFileSync(lPath, c, 'utf8')
+        }
+    }
+
+    if (this.verbose) console.log(`Ovary: Autologin and Desktop links configured for user: ${newuser}`)
 }
-
-/**
- * Creazione link desktop per lxde
- * @param name
- * @param icon
- * was private
- */
-function lxdeLink(file: string, name: string, icon: string): string {
-
-    const lnk = `lnk-${file}`
-
-    let text = ''
-    text += `echo "[Desktop Entry]" >$DESKTOP/${lnk}\n`
-    text += `echo "Type=Link" >> $DESKTOP/${lnk}\n`
-    text += `echo "Name=${name}" >> $DESKTOP/${lnk}\n`
-    text += `echo "Icon=${icon}" >> $DESKTOP/${lnk}\n`
-    text += `echo "URL=/usr/share/applications/${file}" >> $DESKTOP/${lnk}\n\n`
-
-    return text
-}
-
