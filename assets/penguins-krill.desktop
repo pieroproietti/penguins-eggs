@@ -1,27 +1,9 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
 Type=Application
-Version=1.0
-Name=Krill Linux installer
-GenericName=krill Installer
-Exec=sudo /usr/bin/eggs install
-Comment=Krill — Linux system installer
-Keywords=krill;system;install;debian;installer
+Name=Install System CLI
+Comment=Install the system to your disk (CLI)
+Exec=x-terminal-emulator -e "sudo eggs krill"
 Icon=krill
-Terminal=true
-Categories=System;
-Name[it]=Krill Installer
-GenericName[it]=Installa sistema
-Comment[it]=Installazione sistema krill
-Name[en]=Install system
-GenericName[en]=Install the system
-Comment[en]=Install the system krill
-Name[es]=Instalación del sistema
-GenericName[es]=Instalación del sistema
-Comment[es]=Instalación del sistema krill
-Name[pt]=Instalação do sistema
-GenericName[pt]=Instalação do sistema
-Comment[pt]=Instalação do sistema krill
-Name[fr]=Installation du système
-GenericName[fr]=Installation du système
-Comment[fr]=Installation du système krill
+Terminal=false
+Categories=Qt;System;
