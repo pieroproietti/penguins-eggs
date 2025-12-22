@@ -20,7 +20,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
-# v25.12.21-1
+# v25.12.22-1
 ## Fixed
 
 **Live User Autologin**: Resolved an issue preventing automatic login for the live user on POP_OS Noble COSMIC. The environment now correctly initializes the graphical session without requiring manual credentials.
