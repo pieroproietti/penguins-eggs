@@ -26,6 +26,7 @@ The version is based on the year, month, day, and release number. They are liste
 **Live User Autologin**: Resolved an issue preventing automatic login for the live user on POP_OS Noble COSMIC. The environment now correctly initializes the graphical session without requiring manual credentials.
 
 ## Known Issues & Workarounds
+**AppImage**: On pop_up! cosmic AppImage is not working, use native package.
 
 **Calamares Installer Compatibility**: Identified a critical bug where Calamares fails to detect storage devices (reporting 0 devices detected). This is due to a conflict between the KPMCore backend and the Wayland security protocols/runtime directory permissions in the COSMIC desktop environment.
 
