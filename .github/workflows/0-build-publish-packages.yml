@@ -310,6 +310,12 @@ jobs:
       container:
         image: manjarolinux/base
       steps:
+      - name: Update Arch Linux & Manjaro Keyrings
+        run: |
+          sudo pacman -Sy --noconfirm archlinux-keyring manjaro-keyring
+          sudo pacman-key --init
+          sudo pacman-key --populate archlinux manjaro
+
       - name: 1. Checkout repository code
         uses: actions/checkout@v4
 
