@@ -20,6 +20,27 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v25.12.21-1
+## Fixed
+
+**Live User Autologin**: Resolved an issue preventing automatic login for the live user on POP_OS Noble COSMIC. The environment now correctly initializes the graphical session without requiring manual credentials.
+
+## Known Issues & Workarounds
+
+**Calamares Installer Compatibility**: Identified a critical bug where Calamares fails to detect storage devices (reporting 0 devices detected). This is due to a conflict between the KPMCore backend and the Wayland security protocols/runtime directory permissions in the COSMIC desktop environment.
+
+**Symptoms**: Calamares recognizes partitions via blkid but labels them as "unsuitable," preventing installation.
+
+**Solution**: Calamares has been deprecated for this release. Please use Krill (the CLI-based installer) for a reliable installation experience.
+
+**Recommended Installation Method**
+
+Switch to Krill: Users should now use the Krill installer, which bypasses Wayland graphical restrictions by operating directly through the terminal.
+
+How to run: Open the terminal and execute:
+```
+sudo eggs krill
+```
 # v25.12.16-6
 - **Improved Live Access**: Added auto-login functionality for live sessions as default to provide a seamless user experience.
 - **just a fix on RHEL**. Thanks to [davidlevenstein](https://github.com/davidlevenstein).
