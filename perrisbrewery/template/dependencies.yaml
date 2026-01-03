@@ -52,3 +52,6 @@ arch:
   - shim-signed
   - u-boot-tools
 
+  riscv64:
+    - grub-efi-riscv64-bin
+  
