@@ -59,7 +59,7 @@
         "glob": "^13.0.0",
         "mocha": "^11.7.5",
         "oclif": "^4.22.61",
-        "perrisbrewery": "../perrisbrewery",
+        "perrisbrewery": "^26.1.2",
         "prettier": "^3.7.4",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
