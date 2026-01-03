@@ -370,6 +370,8 @@ export default class Utils {
          arch = 'amd64'
       } else if (process.arch === 'arm64') {
          arch = 'arm64'
+      } else if (process.arch === 'riscv64') {
+         arch = 'riscv64'
       }
       return arch
    }
