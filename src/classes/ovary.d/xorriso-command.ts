@@ -78,7 +78,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
     let noemulboot = ''
     let bootloadsize = ''
     let bootinfotable = ''
-    if (process.arch !== 'arm64') {
+    if (process.arch !== 'arm64' && process.arch !=='riscv64') {
         isolinuxBin = `-b isolinux/isolinux.bin`
         isolinuxCat = `-c isolinux/boot.cat`
         noemulboot = '-no-emul-boot'
