@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 // packages
 import fs, { Dirent } from 'node:fs'
 import path from 'node:path'
@@ -27,7 +26,6 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
    */
 export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false, fullcrypt = false): Promise<string> {
     const prefix = this.settings.config.snapshot_prefix
-
 
     // typology is applied only with standard egg-of
     let typology = ''
@@ -54,14 +52,11 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
 
     const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
 
-
     let command = ''
-    // const appid = `-appid "${this.settings.distro.distroId}" `
-    // const publisher = `-publisher "${this.settings.distro.distroId}/${this.settings.distro.codenameId}" `
-    // const preparer = '-preparer "prepared by eggs <https://penguins-eggs.net>" '
 
+    // Isohybrid MBR: solo se non siamo su arm64 o riscv64
     let isoHybridMbr = ''
-    if (this.settings.config.make_isohybrid) {
+    if (this.settings.config.make_isohybrid && process.arch !== 'arm64' && process.arch !== 'riscv64') {
         const bootloaders = Diversions.bootloaders(this.familyId)
         const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
         if (fs.existsSync(isohybridFile)) {
@@ -72,18 +67,16 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
         }
     }
 
-    // su arm no isolinux
+    // Gestione parametri Bootloader x86
     let isolinuxBin = ''
     let isolinuxCat = ''
-    let noemulboot = ''
-    let bootloadsize = ''
-    let bootinfotable = ''
-    if (process.arch !== 'arm64' && process.arch !=='riscv64') {
+    let x86_boot_params = '' 
+
+    if (process.arch !== 'arm64' && process.arch !== 'riscv64') {
         isolinuxBin = `-b isolinux/isolinux.bin`
         isolinuxCat = `-c isolinux/boot.cat`
-        noemulboot = '-no-emul-boot'
-        bootloadsize = '-boot-load-size 4'
-        bootinfotable = '-boot-info-table'
+        // Questi sono i parametri che su RISC-V causano il fallimento di xorriso
+        x86_boot_params = '-no-emul-boot -boot-load-size 4 -boot-info-table'
     }
 
     if (Pacman.packageIsInstalled('xorriso')) {
@@ -98,23 +91,18 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
             uefi_noEmulBoot = '-no-emul-boot'
         }
 
-       // <<< INIZIO BLOCCO AGGIUNTO >>>
-        let luksPartitionParam = '' // Inizializziamo la variabile per il parametro LUKS
+        let luksPartitionParam = ''
         if (fullcrypt) {
-            // Costruiamo il percorso del file luks.img all'interno della directory di build
             const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksMappedName)
-            
-            // Verifichiamo che il file esista prima di aggiungerlo
             if (fs.existsSync(luksImagePath)) {
-                // Costruiamo il parametro per aggiungere la partizione 3
                 luksPartitionParam = `-append_partition 3 0x80 ${luksImagePath}`;
             } else {
                 Utils.warning(`Errore: impossibile creare l'ISO criptata, file non trovato: ${luksImagePath}`);
                 process.exit();
             }
         }
-        // <<< FINE BLOCCO AGGIUNTO >>>        
 
+        // Il comando ora usa x86_boot_params che sarà vuoto su RISC-V
         command = `xorriso -as mkisofs \
                     -J \
                     -joliet-long \
@@ -125,13 +113,12 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
                     -V ${this.volid} \
                     ${isolinuxBin} \
                     ${isolinuxCat} \
-                    -no-emul-boot \
-                    -boot-load-size 4 \
-                    -boot-info-table \
+                    ${x86_boot_params} \
                     ${uefi_elToritoAltBoot} \
                     ${uefi_e} \
                     ${uefi_isohybridGptBasdat} \
                     ${uefi_noEmulBoot} \
+                    ${luksPartitionParam} \
                     -o ${output} ${this.settings.iso_work}`
     }
     return command
