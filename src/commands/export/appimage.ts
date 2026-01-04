@@ -64,7 +64,8 @@ export default class ExportAppimage extends Command {
 
     let localPath = "$HOME/penguins-eggs"
     let remotePath = "/eggs/"
-    let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.AppImage`
+    let filter = `penguins-eggs-+([0-9.])-*.AppImage`
+    //let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.AppImage`
 
     let cmd = `#!/bin/bash\n`
     cmd += `set -e\n`
