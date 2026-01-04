@@ -1,5 +1,5 @@
 # RISCV64
-Questo progetto prende il nome da [bianbuOS](https://bianbu.spacemit.com/en/). ed è un tentativo che in veramente poco tempo, sta cercando di portare penguins-eggs sotto Ubuntu e bianbuOS per riscv.
+Questo progetto inizialmente aveva il nome di **a-bamboo-nest** essendo partito dalla ricerca su [bianbuOS](https://bianbu.spacemit.com/en/), poi sono passato ad Ubuntu ed è un tentativo di portare penguins-eggs sotto Ubuntu e bianbuOS per l'architettura RISCV64.
 
 Sto lavorando attualmente su una VM in proxmox VE, tra l'altro su un ormai vecchio i7 con 16GB di RAM.
 
