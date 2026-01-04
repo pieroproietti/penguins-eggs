@@ -1,20 +1,21 @@
-# ARCHITETTURE
-Normalmente siamo abituati a pensare l'architettura X86_64 come l'unica disponibile, non è così e le cose stanno cambiando, specialmente per ARM64 - praticamente tutti i telefoni ed i chromebook - e per RISCV che essendo una architettura opensource, permette alla casa costruttrice di non pagare royalty e di essere più libera.
+# Architetture
 
-penguins-eggs pur essendo un tool di sistema, è scritto interamente in typescript, questo ne rende relativamente semplice la portabilità sia tra distribuzioni che tra diverse architetture.
+## Oltre lo Standard x86_64
+Siamo spesso portati a considerare l'architettura x86_64 come l'unico standard possibile, ma il panorama tecnologico sta cambiando rapidamente. Oggi assistiamo alla massiccia diffusione di ARM64 — che muove la quasi totalità degli smartphone e dei Chromebook — e all'ascesa di RISC-V. Quest'ultima, essendo un'architettura open source, permette ai produttori di innovare liberamente senza il vincolo delle royalty.
 
+Sebbene penguins-eggs sia un tool di sistema, è scritto interamente in TypeScript. Questa scelta tecnica rende la portabilità estremamente semplice, facilitando la transizione non solo tra diverse distribuzioni Linux, ma anche tra architetture hardware differenti.
 
-Date le mie limitate risorse - avrei bisogno di sponsorizzazoni, almeno per l'hardware - utilizzo per il suo sviluppo una semplice stazione di lavoro Debian trixie, sulla quale ho installato Proxmox VE.
+# Il mio laboratorio
+Gestire un progetto di questa portata con risorse limitate richiede inventiva. Per lo sviluppo utilizzo una workstation con Debian Trixie su cui gira Proxmox VE. Questo setup mi permette di creare agevolmente sistemi minimi (naked) tramite QEMU per i test iniziali, anche se per la validazione definitiva delle ISO prodotte rimane indispensabile il test su hardware reale. In questo senso, il supporto di sponsor — specialmente per l'acquisto di hardware specifico — sarebbe fondamentale per accelerare ulteriormente lo sviluppo.
 
-E' relativamente semplice costruire dei sistemi minimale (naked) utilizzando qemu, mentre per testare le ISO prodotte è consigliabile disporre di hardware reale.
+## Genesi e Visione del Progetto
+Penguins-eggs è nato come una sfida personale dopo il mio pensionamento. Non volevo che il mio bagaglio di competenze tecniche andasse perduto e, in fondo, speravo di poter dare un contributo concreto alla community Linux.
 
-# Como sono arrivato qua
-Ho iniziato penguins-eggs come un progetto a livello di passatempo, dopo il mio pensionamento - non volevo buttare alle ortiche le mie conoscenze tecniche - e, in vero, un po' ci speravo di combinare qualcosa di buono.
+## Dalle origini al multi-architettura
+Le prime versioni erano dedicate esclusivamente a Debian, ma la mia visione è sempre stata agnostica: volevo creare uno strumento per Linux nel suo complesso, non limitato a una singola distribuzione o architettura.
 
-Le prime versioni di penguins-eggs erano escludivamente per Debian, ma ho sempre avuto chiara l'idea di lavorare per Linux in genere e non per una distribuzione ed architettura in particolare.
+Questo approccio mi ha spinto a estendere il supporto nel tempo:
 
-Questo mi ha portato a compilare penguins-eggs per amd64 ed i386, a cui successivamente, complice l'acquinsto di una Raspberry4 a realizzare la version [ARM64](ARM64.md), nonchè ad esternde il supporto ad Arch, Debian, Devuan, Fedora, Manjaro, Opensuse e RHEL.
+Architetture: Partendo da amd64 e i386, sono approdato ad [ARM64](ARM64.md) (grazie ai test su Raspberry Pi 4) fino alla recente sfida di [RISCV64](RISCV64.md), nata dalla mia costante curiosità per le innovazioni del settore.
 
-Sono sempre stato interessato alle novità informatiche e, nel corso di una ricersca sui processori RISCV, ho pensato di adattare il mio tool all'architettura [RISCV64](RISCV64.md).
-
-
+Distribuzioni: Oggi il tool supporta un ecosistema vastissimo, tra cui Arch, Debian, Devuan, Fedora, Manjaro, openSUSE e RHEL.
