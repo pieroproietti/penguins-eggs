@@ -8,7 +8,7 @@ Sto lavorando attualmente su una VM in proxmox VE, tra l'altro su un ormai vecch
 sudo wget -qO - "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF6ECB3762474EDA9D21B7022871920D1991BC93C" | sudo gpg --dearmor -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
 ```
 
-## Installare i paccetti 
+## Installare i pacchetti necessari
 ```
 apt install qemu-user-static binfmt-support mmdebstrap -y
 ```
