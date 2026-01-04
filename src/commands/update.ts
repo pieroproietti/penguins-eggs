@@ -185,7 +185,7 @@ export default class Update extends Command {
         */
       } else if (this.distro.familyId === "debian") {
         repo = 'debs'
-        filter = `penguins-eggs-??.*.*-?_${Utils.uefiArch()}.deb`
+        filter = `penguins-eggs-??.*.*-?-${Utils.uefiArch()}.deb`
         copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
         install = `apt reinstall /tmp/${filter}`
 
