@@ -52,7 +52,7 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
       ink:
-        specifier: ^5
+        specifier: ^5.2.1
         version: 5.2.1(@types/react@18.3.27)(react@18.3.1)
       ink-progress-bar:
         specifier: ^3.0.0
@@ -61,7 +61,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(ink@5.2.1(@types/react@18.3.27)(react@18.3.1))(react@18.3.1)
       inquirer:
-        specifier: ^12.11.0
+        specifier: ^12.11.1
         version: 12.11.1(@types/node@22.19.3)
       js-yaml:
         specifier: ^4.1.1
@@ -97,18 +97,12 @@ importers:
       '@oclif/test':
         specifier: ^4.1.15
         version: 4.1.15(@oclif/core@4.8.0)
-      '@types/bcryptjs':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/chai':
         specifier: ^5.2.3
         version: 5.2.3
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
-      '@types/glob':
-        specifier: ^9.0.0
-        version: 9.0.0
       '@types/inquirer':
         specifier: ^9.0.9
         version: 9.0.9
@@ -116,7 +110,7 @@ importers:
         specifier: ^4.0.9
         version: 4.0.9
       '@types/mocha':
-        specifier: ^10.0.8
+        specifier: ^10.0.10
         version: 10.0.10
       '@types/mustache':
         specifier: ^4.2.6
@@ -125,7 +119,7 @@ importers:
         specifier: ^2.0.6
         version: 2.0.6
       '@types/node':
-        specifier: ^22.15.30
+        specifier: ^22.19.3
         version: 22.19.3
       '@types/react':
         specifier: ^18.3.18
@@ -144,7 +138,7 @@ importers:
         version: 9.39.2
       eslint-config-oclif:
         specifier: ^6.0.128
-        version: 6.0.128(eslint@9.39.2)(typescript@5.9.3)
+        version: 6.0.129(eslint@9.39.2)(typescript@5.9.3)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.2)
@@ -156,10 +150,10 @@ importers:
         version: 11.7.5
       oclif:
         specifier: ^4.22.61
-        version: 4.22.61(@types/node@22.19.3)
+        version: 4.22.62(@types/node@22.19.3)
       perrisbrewery:
-        specifier: ^26.1.2
-        version: 26.1.2
+        specifier: ^26.1.3
+        version: 26.1.3
       prettier:
         specifier: ^3.7.4
         version: 3.7.4
@@ -1236,10 +1230,6 @@ packages:
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
-  '@types/bcryptjs@3.0.0':
-    resolution: {integrity: sha512-WRZOuCuaz8UcZZE4R5HXTco2goQSI2XxjGY3hbM/xDvwmqFWd4ivooImsMx65OKM6CtNKbnZ5YL+YwAwK7c1dg==}
-    deprecated: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
-
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
@@ -1263,10 +1253,6 @@ packages:
 
   '@types/express@5.0.6':
     resolution: {integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==}
-
-  '@types/glob@9.0.0':
-    resolution: {integrity: sha512-00UxlRaIUvYm4R4W9WYkN8/J+kV8fmOQ7okeH6YFtGWFMt3odD45tpG5yA5wnL7HE6lLgjaTW5n14ju2hl2NNA==}
-    deprecated: This is a stub types definition. glob provides its own type definitions, so you do not need this installed.
 
   '@types/hast@2.3.10':
     resolution: {integrity: sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==}
@@ -2075,8 +2061,8 @@ packages:
     resolution: {integrity: sha512-NNTyyolSmKJicgxtoWZ/hoy2Rw56WIoWCFxgnBkXqDgi9qPKMwZs2Nx2b6SHLJvCiWWhZhWr5V46CFPo3PSPag==}
     engines: {node: '>=18.0.0'}
 
-  eslint-config-oclif@6.0.128:
-    resolution: {integrity: sha512-ktbct5MAQMSEe2Jxqz0f4CdsDAVcLU1K5B9I1Vm4FfMiJhVxDtiqrm/6cByIFq9n1xoLgkoIiV25Rlbj+7u13w==}
+  eslint-config-oclif@6.0.129:
+    resolution: {integrity: sha512-gUL41BzraulUoPPy8pohJo2brIPG2YsLEF14ZJ/zuGw9m2t1/hs9173ThfcSDL85++B8d0xYwy3gYB3LCo1f6g==}
     engines: {node: '>=18.18.0'}
 
   eslint-config-prettier@10.1.8:
@@ -3197,8 +3183,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.22.61:
-    resolution: {integrity: sha512-fxjZTwg+4NLk6rshf7aI2J8W8Vl/MUePxzOHv3GEhmHlZgXfDD7dswWJ/Dqm/dRk+9oNu7PWH/h48r//RzALuQ==}
+  oclif@4.22.62:
+    resolution: {integrity: sha512-m9UK7yL4o5mWPjh+UkW0Ah0cXPoi7nJtROoAq1yAUo8Sidcy7p+PxRaX5kNExOdKwd/xsB3UGjA3X8Hl+S8qyw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -3327,8 +3313,8 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
-  perrisbrewery@26.1.2:
-    resolution: {integrity: sha512-gwqHHg/XEEiSFja8LmoWfq1U+Haq3zpfX2N2WuR4690OcDaaUhmJqhwC0rc2L537FHPReNBYUa8RAcG9mgJLvw==}
+  perrisbrewery@26.1.3:
+    resolution: {integrity: sha512-b7HcY/mcGdzTBSPEOHRCs484nMNQ2tGmVkSnV99viw0bLOWjvszuJmq5WOWZ0Th7rUsz6CSRCFdAkZklpzLZag==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -5667,10 +5653,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@types/bcryptjs@3.0.0':
-    dependencies:
-      bcryptjs: 3.0.3
-
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
@@ -5705,10 +5687,6 @@ snapshots:
       '@types/body-parser': 1.19.6
       '@types/express-serve-static-core': 5.1.0
       '@types/serve-static': 2.2.0
-
-  '@types/glob@9.0.0':
-    dependencies:
-      glob: 13.0.0
 
   '@types/hast@2.3.10':
     dependencies:
@@ -6576,7 +6554,7 @@ snapshots:
     transitivePeerDependencies:
       - eslint
 
-  eslint-config-oclif@6.0.128(eslint@9.39.2)(typescript@5.9.3):
+  eslint-config-oclif@6.0.129(eslint@9.39.2)(typescript@5.9.3):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@9.39.2)
       '@eslint/eslintrc': 3.3.3
@@ -6588,7 +6566,7 @@ snapshots:
       eslint-config-xo: 0.49.0(eslint@9.39.2)
       eslint-config-xo-space: 0.35.0(eslint@9.39.2)
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint@9.39.2))(eslint@9.39.2)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.2)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint@9.39.2))(eslint@9.39.2))(eslint@9.39.2)
       eslint-plugin-jsdoc: 50.8.0(eslint@9.39.2)
       eslint-plugin-mocha: 10.5.0(eslint@9.39.2)
       eslint-plugin-n: 17.23.1(eslint@9.39.2)(typescript@5.9.3)
@@ -6644,7 +6622,7 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.2)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint@9.39.2))(eslint@9.39.2))(eslint@9.39.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -6672,7 +6650,7 @@ snapshots:
       eslint-utils: 2.1.0
       regexpp: 3.2.0
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.2):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2)(typescript@5.9.3))(eslint@9.39.2))(eslint@9.39.2))(eslint@9.39.2):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -7846,7 +7824,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  oclif@4.22.61(@types/node@22.19.3):
+  oclif@4.22.62(@types/node@22.19.3):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.962.0
       '@aws-sdk/client-s3': 3.962.0
@@ -8006,7 +7984,7 @@ snapshots:
 
   path-type@4.0.0: {}
 
-  perrisbrewery@26.1.2:
+  perrisbrewery@26.1.3:
     dependencies:
       '@oclif/core': 4.8.0
       '@oclif/plugin-autocomplete': 3.2.39
