@@ -20,9 +20,19 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.3
+
+### Added
+* **Experimental RISC-V support** (riscv64): We can now build native packages for the RISC-V architecture.
+* **Tested on Ubuntu Noble** (riscv64) using a chroot environment on a Debian Trixie workstation.
+* **Warning**: This is highly experimental. The .deb package is created successfully, but we haven't tested if it actually boots or runs on real hardware yet.
+
+### Fixed
+* **Export filters refactoring:** Fixed a bug in export:pkg that caused exports to fail during months or days with a single digit (e.g., January 4th).
+* **Improved globbing patterns (+([0-9.]))** for all distributions (Debian, Arch, Manjaro, Fedora, Alpine, Opensuse, etc).
+
 # v25.12.22-1
 ## Fixed
-
 **Live User Autologin**: Resolved an issue preventing automatic login for the live user on POP_OS Noble COSMIC. The environment now correctly initializes the graphical session without requiring manual credentials.
 
 ## Known Issues & Workarounds
