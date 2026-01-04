@@ -1,41 +1,82 @@
-# bamboo-nest
+# RISC64
 Questo progetto prende il nome da [bianbuOS](https://bianbu.spacemit.com/en/). ed è un tentativo che in veramente poco tempo, sta cercando di portare penguins-eggs sotto Ubuntu e bianbuOS per riscv.
 
-
-# Ubuntu
 Sto lavorando attualmente su una VM in proxmox VE, tra l'altro su un ormai vecchio i7 con 16GB di RAM.
 
+## Installare ubuntu-archive-keyring
 ```
 sudo wget -qO - "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF6ECB3762474EDA9D21B7022871920D1991BC93C" | sudo gpg --dearmor -o /usr/share/keyrings/ubuntu-archive-keyring.gpg
+```
 
+## Installare i paccetti 
+```
+sudo apt install qemu-user-static binfmt-support mmdebstrap -y
+```
+
+## Creazione della chroot
+```
 sudo rm -rf ~/ubuntu-riscv
+
 sudo mmdebstrap --arch=riscv64 --variant=minbase \
 --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg \
 --components="main,universe" \
-noble ~/ubuntu-riscv [http://ports.ubuntu.com/ubuntu-ports/](http://ports.ubuntu.com/ubuntu-ports/)
+noble ~/ubuntu-riscv http://ports.ubuntu.com/ubuntu-ports
 ```
 
-Iniziamo:
+# Iniziamo in chroot
+
+## pnpm
 
 ```
 cd ubuntu-riscv
 sudo chroot .
-apt install -y nodejs npm git nano sudo
+apt install -y dialog nano sudo
+# nodejs npm git 
 ```
 
+## Installiamo 
 Installazione pnpm, I can't live without it!
 ```
 npm i pnpm -g
 ```
 
+# Installazione kernel, dialog e locales
+```
+apt install bash-completion dialog linux-image locales
+locale-gen en_US.UTF-8
+update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+```
+
+# installazione penguins-eggs
+```
+apt install penguins-eggs
+```
+
 # Installazione dei pacchetti prerequisiti per penguins-eggs
 
 ```
-apt install -y coreutils cryptsetup cryptsetup-bin cryptsetup-initramfs \
-curl dosfstools dpkg-dev git gpg jq lvm2 nodejs parted \
-rsync squashfs-tools sshfs xorriso live-boot live-boot-doc \
-live-boot-initramfs-tools live-config-systemd live-tools
-```
+apt install -y 
+    coreutils 
+    cryptsetup 
+    cryptsetup-bin 
+    cryptsetup-initramfs 
+    curl 
+    dosfstools 
+    dpkg-dev 
+    git 
+    gpg 
+    jq 
+    lvm2 
+    nodejs 
+    parted \
+    rsync \
+    squashfs-tools \
+    sshfs xorriso \
+    live-boot \
+    live-boot-doc \
+    live-boot-initramfs-tools \
+    live-config-systemd \
+    live-tools
 ```
 # quello che c'è
 - grub-efi-riscv64-bin
