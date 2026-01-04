@@ -81,7 +81,8 @@ export default class ExportPkg extends Command {
       Utils.warning(`exporting Alpine APK packages`)
       localPath = `/home/${this.user}/packages/aports/${arch}`
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
-      filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
+      filter = `penguins-eggs-+([0-9.])-*.apk`
+      // filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
 
       /**
        * Arch/Manjaro 
@@ -95,7 +96,8 @@ export default class ExportPkg extends Command {
         Utils.warning(`exporting Manjaro .pkg.tar.zst packages`)
         localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/manjaro"
-        filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`
+        filter = `penguins-eggs-+([0-9.])-*-any.pkg.tar.*`
+        // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`
 
         /**
          * Arch
@@ -104,7 +106,8 @@ export default class ExportPkg extends Command {
         Utils.warning(`exporting Arch .pkg.tar.zst packages`)
         localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
-        filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
+        filter = `penguins-eggs-+([0-9.])-*-any.pkg.tar.zst`
+        //filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
       }
 
       /**
@@ -118,7 +121,8 @@ export default class ExportPkg extends Command {
       if (this.all) {
         arch = '*'
       }
-      filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
+      //filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
+      filter = `penguins-eggs-+([0-9.])-*${arch}.deb`
 
       /**
        * fedora
@@ -130,12 +134,13 @@ export default class ExportPkg extends Command {
       if (distro.distroId !== 'Fedora') {
         repo = 'el9'
         ftype = `el?`
-        warning = `exporting Almalinux/Rocky RPM packages`
+        warning = `exporting Almalinux/RHEL/Rocky RPM packages`
       }
-      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
       Utils.warning(warning)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + `/` + repo
+      filter = `penguins-eggs-+([0-9.])-*.${ftype}.x86_64.rpm`
+      //filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
 
       /**
        * openmamba
@@ -144,7 +149,8 @@ export default class ExportPkg extends Command {
       Utils.warning(`exporting Openmamba RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
-      filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
+      filter = `penguins-eggs-+([0-9.])-*.mamba.*.rpm`
+      // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
 
       /**
        * opensuse
@@ -153,7 +159,8 @@ export default class ExportPkg extends Command {
       Utils.warning(`exporting OpenSuSE RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/opensuse"
-      filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
+      filter = `penguins-eggs-+([0-9.])-*.rpm`
+      // filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
     }
 
     let cmd = `#!/bin/bash\n`
@@ -175,6 +182,7 @@ export default class ExportPkg extends Command {
     }
 
     cmd += `# Export packages\n`
+    cmd += `shopt -s extglob\n`
     cmd += `cp ${localPath}/${filter} ${remoteMountpoint}\n`
     cmd += 'sync\n'
     cmd += `\n`
