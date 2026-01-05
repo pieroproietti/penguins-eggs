@@ -45,12 +45,6 @@ locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ```
 
-# Installazione penguins-eggs
-Assicurati di aver copiato il pacchetto `.deb` di penguins-eggs all'interno della cartella `~/ubuntu-arm64/tmp/` prima di eseguire il comando:
-```bash
-apt install /tmp/penguins-eggs*.deb -y
-```
-
 # Workaround per uname
 Poiché siamo in una chroot emulata, `uname -r` restituirebbe il kernel dell'host. Creiamo uno script per ingannare il sistema e fargli leggere la versione del kernel ARM64 installato:
 
@@ -70,6 +64,17 @@ EOF
 chmod +x /usr/local/bin/uname
 ```
 
+# Installazione penguins-eggs
+Dall'host copiamo il nostro pacchetto
+```
+artisan@colibri:~/ubuntu-arm64$ sudo cp ../penguins-eggs/releases/penguins-eggs-26.1.3-1-arm64.deb tmp/
+```
+
+Assicurati di aver copiato il pacchetto `.deb` di penguins-eggs all'interno della cartella `~/ubuntu-arm64/tmp/` prima di eseguire il comando:
+```bash
+apt install /tmp/penguins-eggs*.deb -y
+```
+
 # Settiamo un hostname
 ```bash
 echo "naked" > /etc/hostname
@@ -87,4 +92,18 @@ eggs produce
 ls /home/eggs
 ```
 
+## Avvio da ISO
+Per comodità ci posizioniamo sulla nostra chroot;
+
+```
+sudo qemu-system-aarch64 \
+  -machine virt \
+  -cpu cortex-a57 \
+  -m 2G \
+  -kernel home/eggs/.mnt/iso/live/vmlinuz-6.8.0-31-generic \
+  -initrd home/eggs/.mnt/iso/live/initrd.img-6.8.0-31-generic \
+  -append "boot=live components console=ttyAMA0" \
+  -drive file=home/eggs/.mnt/iso/live/filesystem.squashfs,format=raw,if=virtio \
+  -nographic
+```
 
