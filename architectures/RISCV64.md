@@ -69,6 +69,7 @@ apt install /tmp/penguins-eggs*
 
 # Settiamo un hostname
 ```
+echo "naked" > /etc/hostname
 hostname naked
 ```
 
@@ -108,3 +109,5 @@ qemu-system-riscv64 \
 
 ```
 
+# 1. Crea il link simbolico che il kernel si aspetta
+ln -s /lib/riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64.so.1
