@@ -10,14 +10,15 @@ sudo wget -qO - "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF6ECB37
 
 ## Installare i pacchetti necessari
 ```
-apt install qemu-user-static binfmt-support mmdebstrap -y
+sudo apt install qemu-user-static binfmt-support mmdebstrap -y
 ```
 
 ## Creazione della chroot
 ```
 sudo rm -rf ~/ubuntu-riscv
 
-sudo mmdebstrap --arch=riscv64 --variant=minbase \
+cd ~
+sudo mmdebstrap --arch=riscv64 --variant=important \
 --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg \
 --components="main,universe" \
 noble ~/ubuntu-riscv http://ports.ubuntu.com/ubuntu-ports
@@ -25,14 +26,16 @@ noble ~/ubuntu-riscv http://ports.ubuntu.com/ubuntu-ports
 
 # Iniziamo in chroot
 
+
 ```
-cd ubuntu-riscv
+cd ~/ubuntu-riscv
+g4mount-vfs-here
 sudo chroot .
 ```
 
 # Installazione kernel, dialog e locales
 ```
-apt install bash-completion dialog linux-image locales -y
+apt install bash-completion dialog linux-image locales nano -y
 locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ```
