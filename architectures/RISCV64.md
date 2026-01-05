@@ -82,25 +82,28 @@ eggs produce
 ls /home/eggs
 ```
 
+# Testiamo la ISO
+Installiamo qemu
 ```
-qemu-system-riscv64 \
+sudo apt install qemu
+```
+
+
+# Avviamo la iso
+
+Per comodità ci posizioniamo sulla nostra chroot
+```
+export ISO=/home/eggs/.mnt/egg-of_linuxmint-zena-cinnamon_amd64_2026-01-05_0841.iso
+
+sudo qemu-system-riscv64 \
   -machine virt \
   -cpu rv64 \
   -m 2G \
   -kernel ./boot/vmlinuz-6.8.0-31-generic \
   -initrd ./boot/initrd.img-6.8.0-31-generic \
-  -append "root=/dev/ram0 rw console=ttyS0" \
-  -nographic
-
-  ```
-
-qemu-system-riscv64 \
-  -machine virt \
-  -cpu rv64 \
-  -m 2G \
-  -kernel ./boot/vmlinuz-6.8.0-31-generic \
-  -initrd ./boot/initrd.img-6.8.0-31-generic \
-  -append "root=/dev/sr0 console=ttyS0" \
-  -drive /home/eggs/.mnt/egg-of_linuxmint-zena-cinnamon_amd64_2026-01-05_0841.iso,format=raw,if=none,id=drive0 \
+  -append "root=/dev/vda console=ttyS0" \
+  -drive file=$ISO,format=raw,if=none,id=drive0 \
   -device virtio-blk-device,drive=drive0 \
   -nographic
+
+```
