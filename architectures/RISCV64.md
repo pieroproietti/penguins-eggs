@@ -40,12 +40,6 @@ locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ```
 
-# installazione penguins-eggs
-Copiamo il pacchetto nella chroot in /tmp
-```
-apt install /tmp/penguins-eggs*
-```
-
 # workaround per uname
 dobbiamo creare un workaround per uname, visto che da chroot otterremmo
 
@@ -54,7 +48,7 @@ tee /usr/local/bin/uname << 'EOF'
 #!/bin/sh
 if [ "$1" = "-r" ]; then
     # Estrae la versione del kernel RISC-V dai file in /boot
-    ls /boot/vmlinuz-* | head -n 1 | sed 's/.*vmlinuz-//'
+    ls /boot/vmlinuz- | head -n 1 | sed 's/.*vmlinuz-//'
 else
     # Per tutti gli altri casi usa l'uname originale
     /bin/uname "$@"
@@ -65,6 +59,13 @@ EOF
 chmod +x /usr/local/bin/uname
 
 ```
+
+# installazione penguins-eggs
+Copiamo il pacchetto nella chroot in /tmp
+```
+apt install /tmp/penguins-eggs*
+```
+
 
 # Settiamo un hostname
 ```
@@ -93,17 +94,17 @@ sudo apt install qemu
 
 Per comodità ci posizioniamo sulla nostra chroot
 ```
-export ISO=/home/eggs/.mnt/egg-of_linuxmint-zena-cinnamon_amd64_2026-01-05_0841.iso
-
-sudo qemu-system-riscv64 \
+export ISO=./home/eggs/.mnt/egg-of_ubuntu-noble-naked_riscv64_2026-01-05_1216.iso
+qemu-system-riscv64 \
   -machine virt \
   -cpu rv64 \
   -m 2G \
   -kernel ./boot/vmlinuz-6.8.0-31-generic \
   -initrd ./boot/initrd.img-6.8.0-31-generic \
-  -append "root=/dev/vda console=ttyS0" \
+  -append "boot=live components live-media=/dev/vda console=ttyS0"
   -drive file=$ISO,format=raw,if=none,id=drive0 \
   -device virtio-blk-device,drive=drive0 \
   -nographic
 
 ```
+
