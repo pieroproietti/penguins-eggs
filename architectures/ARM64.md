@@ -33,6 +33,7 @@ noble ~/ubuntu-arm64 http://ports.ubuntu.com/ubuntu-ports
 
 ```bash
 cd ~/ubuntu-arm64
+g4mount-vfs-here
 sudo chroot .
 ```
 

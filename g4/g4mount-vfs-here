@@ -1,5 +1,5 @@
 # Definiamo il percorso del chroot
-export CHROOT_PATH=(pwd)
+export CHROOT_PATH=$(pwd)
 
 # Montaggio dei filesystem virtuali
 sudo mount --bind /proc $CHROOT_PATH/proc
