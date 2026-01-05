@@ -53,7 +53,7 @@ Think of it as a way to "hatch" a new system from an existing one. It is a syste
 * **Distribution Remastering:** Craft your own Linux distro (or a spin of an existing one). Tweak an existing system, strip or add components, and package it as a new ISO.
 * **System Backup & Cloning:** Create a snapshot of your current system, including installed packages and configurations.
 * **Distro-Agnostic:** Works across **Debian, Devuan, Ubuntu, Arch, Fedora, AlmaLinux, Rocky, OpenSuSE, and Alpine**.
-* **Multi-Architecture:** Works across `amd64`, `i386`, `arm64` and `riscv64`.
+* **Multi-Architecture:** Debian, Devuan, Ubuntu packages are relased for **`amd64`, `i386`, `arm64` and `riscv64`**.
 * **Fast & Efficient:** Uses `livefs` and `zstd` compression (up to 10x faster) to avoid copying the entire filesystem.
 * **Secure:** Supports LUKS encryption for user data within the ISO.
 
