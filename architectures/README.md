@@ -1,21 +1,21 @@
-# Architetture
+# Architectures
 
-## Oltre lo Standard x86_64
-Siamo spesso portati a considerare l'architettura x86_64 come l'unico standard possibile, ma il panorama tecnologico sta cambiando rapidamente. Oggi assistiamo alla massiccia diffusione di ARM64 — che muove la quasi totalità degli smartphone e dei Chromebook — e all'ascesa di RISC-V. Quest'ultima, essendo un'architettura open source, permette ai produttori di innovare liberamente senza il vincolo delle royalty.
+## Beyond the x86_64 Standard
+We often tend to consider the x86_64 architecture as the only possible standard, but the technological landscape is changing rapidly. Today we are witnessing the massive spread of ARM64 — which powers almost all smartphones and Chromebooks — and the rise of RISC-V. The latter, being an open source architecture, allows manufacturers to innovate freely without the constraint of royalties.
 
-Sebbene penguins-eggs sia un tool di sistema, è scritto interamente in TypeScript. Questa scelta tecnica rende la portabilità estremamente semplice, facilitando la transizione non solo tra diverse distribuzioni Linux, ma anche tra architetture hardware differenti.
+Although penguins-eggs is a system tool, it is written entirely in TypeScript. This technical choice makes portability extremely easy, facilitating the transition not only between different Linux distributions, but also between different hardware architectures.
 
-# Il mio laboratorio
-Gestire un progetto di questa portata con risorse limitate richiede inventiva. Per lo sviluppo utilizzo una workstation con Debian Trixie su cui gira Proxmox VE. Questo setup mi permette di creare agevolmente sistemi minimi (naked) tramite QEMU per i test iniziali, anche se per la validazione definitiva delle ISO prodotte rimane indispensabile il test su hardware reale. In questo senso, il supporto di sponsor — specialmente per l'acquisto di hardware specifico — sarebbe fondamentale per accelerare ulteriormente lo sviluppo.
+# My Laboratory
+Managing a project of this scale with limited resources requires inventiveness. For development, I use a workstation running Debian Trixie with Proxmox VE. This setup allows me to easily create minimal (naked) systems using QEMU for initial testing, although testing on real hardware remains essential for the final validation of the ISOs produced. In this sense, the support of sponsors—especially for the purchase of specific hardware—would be essential to further accelerate development.
 
-## Genesi e Visione del Progetto
-Penguins-eggs è nato come una sfida personale dopo il mio pensionamento. Non volevo che il mio bagaglio di competenze tecniche andasse perduto e, in fondo, speravo di poter dare un contributo concreto alla community Linux.
+## Project Genesis and Vision
+Penguins-eggs began as a personal challenge after my retirement. I didn't want my technical skills to go to waste, and deep down, I hoped to make a tangible contribution to the Linux community.
 
-## Dalle origini al multi-architettura
-Le prime versioni erano dedicate esclusivamente a Debian, ma la mia visione è sempre stata agnostica: volevo creare uno strumento per Linux nel suo complesso, non limitato a una singola distribuzione o architettura.
+## From Origins to Multi-Architecture
+The first versions were dedicated exclusively to Debian, but my vision has always been agnostic: I wanted to create a tool for Linux as a whole, not limited to a single distribution or architecture.
 
-Questo approccio mi ha spinto a estendere il supporto nel tempo:
+This approach prompted me to extend support over time:
 
-Architetture: Partendo da amd64 e i386, sono approdato ad [ARM64](ARM64.md) (grazie ai test su Raspberry Pi 4) fino alla recente sfida di [RISCV64](RISCV64.md), nata dalla mia costante curiosità per le innovazioni del settore.
+Architectures: Starting with amd64 and i386, I moved on to [ARM64](ARM64.md) (thanks to testing on Raspberry Pi 4) and the recent challenge of [RISCV64](RISCV64.md), born out of my constant curiosity about innovations in the field.
 
-Distribuzioni: Oggi il tool supporta un ecosistema vastissimo, tra cui Arch, Debian, Devuan, Fedora, Manjaro, openSUSE e RHEL.
+Distributions: Today, the tool supports a vast ecosystem, including Arch, Debian, Devuan, Fedora, Manjaro, openSUSE, and RHEL.
