@@ -61,7 +61,7 @@ update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ### Debian
 ```bash
 apt update
-apt install bash-completion console-setup dialog linux-image-generic locales setupcon zstd -y
+apt install bash-completion console-setup dialog linux-image-generic locales console-setup zstd -y
 locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ```
