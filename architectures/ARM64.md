@@ -38,7 +38,7 @@ mkdir -p ~/debian-arm64
 
 sudo mmdebstrap --arch=arm64 --variant=important \
 --include=ca-certificates,locales,sudo,network-manager,linux-image-arm64 \
-bookworm ~/debian-arm64 http://deb.debian.org/debian
+trixie ~/debian-arm64 http://deb.debian.org/debian
 ```
 
 # Iniziamo in chroot
@@ -118,14 +118,17 @@ ls /home/eggs
 Per comodità ci posizioniamo sulla nostra chroot;
 
 ```
-sudo qemu-system-aarch64 \
+qemu-system-aarch64 \
   -machine virt \
   -cpu cortex-a57 \
-  -m 2G \
-  -kernel home/eggs/.mnt/iso/live/vmlinuz-6.8.0-31-generic \
-  -initrd home/eggs/.mnt/iso/live/initrd.img-6.8.0-31-generic \
-  -append "boot=live components console=ttyAMA0" \
-  -drive file=home/eggs/.mnt/iso/live/filesystem.squashfs,format=raw,if=virtio \
-  -nographic
+  -m 4G \
+  -smp 4 \
+  -bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd \
+  -cdrom home/eggs/.mnt/egg-of_debian-bookworm-colibri-qemu_arm64_2026-01-06_1809.iso \
+  -device virtio-gpu-pci \
+  -display gtk,gl=on \
+  -device virtio-tablet-pci \
+  -device qemu-xhci \
+  -device usb-kbd \
+  -device usb-mouse
 ```
-
