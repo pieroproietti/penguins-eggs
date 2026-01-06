@@ -44,7 +44,6 @@ trixie ~/debian-arm64 http://deb.debian.org/debian
 # Iniziamo in chroot
 
 ```bash
-cd ~/ubuntu-arm64
 g4mount-vfs-here
 sudo chroot .
 ```
