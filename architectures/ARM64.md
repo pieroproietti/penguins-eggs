@@ -16,17 +16,29 @@ sudo wget -qO - "[https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF6ECB3
 ## Installare i pacchetti necessari
 ```bash
 sudo apt update
-sudo apt install qemu-user-static binfmt-support mmdebstrap -y
+sudo apt install -y qemu-user-static binfmt-support debian-archive-keyring
 ```
 
 ## Creazione della chroot
+
+### Ubuntu
 ```bash
 sudo rm -rf ~/ubuntu-arm64
 
-sudo mmdebstrap --arch=arm64 --variant=minbase \
+sudo mmdebstrap --arch=arm64 --variant=important \
 --keyring=/usr/share/keyrings/ubuntu-archive-keyring.gpg \
 --components="main,universe" \
 noble ~/ubuntu-arm64 http://ports.ubuntu.com/ubuntu-ports
+```
+
+## debian
+```
+sudo rm -rf ~/debian-arm64
+mkdir -p ~/debian-arm64
+
+sudo mmdebstrap --arch=arm64 --variant=important \
+--include=ca-certificates,locales,sudo,network-manager,linux-image-arm64 \
+bookworm ~/debian-arm64 http://deb.debian.org/debian
 ```
 
 # Iniziamo in chroot
@@ -38,9 +50,19 @@ sudo chroot .
 ```
 
 # Installazione kernel, dialog e locales
+
+### Ubuntu
 ```bash
 apt update
 apt install bash-completion dialog linux-image-generic locales -y
+locale-gen en_US.UTF-8
+update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+```
+
+### Debian
+```bash
+apt update
+apt install bash-completion console-setup dialog linux-image-generic locales setupcon zstd -y
 locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ```
@@ -53,7 +75,7 @@ tee /usr/local/bin/uname << 'EOF'
 #!/bin/sh
 if [ "$1" = "-r" ]; then
     # Estrae la versione del kernel ARM64 dai file in /boot
-    ls /boot/vmlinuz-6.8.0-31-generic | head -n 1 | sed 's/.*vmlinuz-//'
+    ls /boot/vmlinuz-* | head -n 1 | sed 's/.*vmlinuz-//'
 else
     # Per tutti gli altri casi usa l'uname originale
     /bin/uname "$@"
