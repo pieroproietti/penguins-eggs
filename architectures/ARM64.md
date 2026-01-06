@@ -123,11 +123,23 @@ qemu-system-aarch64 \
   -m 4G \
   -smp 4 \
   -bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd \
-  -cdrom home/eggs/.mnt/egg-of_debian-bookworm-colibri-qemu_arm64_2026-01-06_1809.iso \
-  -device virtio-gpu-pci \
+  -cdrom home/eggs/.mnt/egg-of_debian-trixie-colibri_arm64_2026-01-06_2045.iso \
+  -device ramfb \
   -display gtk,gl=on \
   -device virtio-tablet-pci \
   -device qemu-xhci \
   -device usb-kbd \
   -device usb-mouse
+```
+
+CLI
+```
+qemu-system-aarch64 \
+  -machine virt \
+  -cpu cortex-a57 \
+  -m 2G \
+  -smp 2 \
+  -bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd \
+  -cdrom home/eggs/.mnt/egg-of_debian-trixie-colibri_arm64_2026-01-06_2045.iso \
+  -nographic
 ```
