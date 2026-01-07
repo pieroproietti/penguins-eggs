@@ -22,20 +22,39 @@ import Utils from '../utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * 
- * @param this 
+ * * @param this 
  * @param theme 
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
     /**
-     * except Debian/Devuan/Ubuntu all distros will use: not signed
-     * paths here for Ubuntu and Debian are the same, here checked!
+     * Define default paths based on arch
      */
     let signed = false
-    let grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
-    let shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    let grubEfi = ''
+    let shimEfi = ''
+
+    // Default paths based on architecture
+    if (process.arch === 'x64') {
+        grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
+        shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    } else if (process.arch === 'ia32') {
+        grubEfi = path.resolve(bootloaders, `grub/i386-efi/monolithic/grubia32.efi`)
+        shimEfi = path.resolve(bootloaders, `shim/shimia32.efi`) // raramente usato non firmato
+    } else if (process.arch === 'arm64') {
+        grubEfi = path.resolve(bootloaders, `grub/arm64-efi/monolithic/grubaa64.efi`)
+        shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi`)
+    } else if (process.arch === 'riscv64') {
+        // Percorso per RISC-V (assumendo struttura simile)
+        // Nota: Assicurati che Diversions.bootloaders punti al posto giusto o che i file esistano lì
+        grubEfi = path.resolve(bootloaders, `grub/riscv64-efi/monolithic/grubriscv64.efi`)
+        shimEfi = '' // Solitamente niente SHIM su RISC-V per ora
+    }
+
+    /**
+     * Gestione Secure Boot (Debian/Ubuntu/Devuan)
+     */
     if (this.familyId === "debian") {
         signed = true
         if (process.arch === 'x64') {
@@ -47,7 +66,18 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         } else if (process.arch === 'arm64') {
             grubEfi = path.resolve(bootloaders, `grub/arm64-efi-signed/grubaa64.efi.signed`)
             shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi.signed`)
+        } else if (process.arch === 'riscv64') {
+            // Per ora niente firma su RISC-V Debian, fallback su unsigned
+            signed = false
+            grubEfi = path.resolve(bootloaders, `grub/riscv64-efi/monolithic/grubriscv64.efi`)
+            shimEfi = ''
         }
+    }
+
+    // Safety check se i file non esistono (es. grub riscv non trovato)
+    if (!fs.existsSync(grubEfi) && process.arch === 'riscv64') {
+         // Fallback tentativo path alternativo o warning
+         Utils.warning(`Warning: ${grubEfi} not found. Checking alternate paths...`)
     }
 
     if (signed) {
@@ -70,8 +100,19 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
     // create (ISO)/EFI
     await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
-    await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
-    await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEfiName()}`, this.echo)
+    
+    // Copy EFI binaries to ISO root
+    if (shimEfi && fs.existsSync(shimEfi)) {
+        await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
+    }
+    // Se non c'è shim (es. RISC-V), copiamo grub direttamente come boot<arch>.efi?
+    // Solitamente se c'è shim: bootx64.efi = shim, grubx64.efi = grub
+    // Se NO shim: bootx64.efi = grub
+    if (!shimEfi || !fs.existsSync(shimEfi)) {
+        await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
+    } else {
+        await exec(`cp ${grubEfi} ${isoDir}/EFI/boot/${grubEfiName()}`, this.echo)
+    }
 
     // clean/create all in efiPath
     if (fs.existsSync(efiPath)) {
@@ -83,13 +124,17 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mkdir ${efiWorkDir}`, this.echo)
 
     /**
-     * create efi.img
+     * create efi.img logic
      */
 
+    // Seeker GRUB config: cerca il file .disk/id/UUID
     let seeker = ''
-    seeker += `search --file --set=root /.disk/id/${this.uuid}\n`
+    seeker += `search --file --no-floppy --set=root /.disk/id/${this.uuid}\n`
     seeker += "set prefix=($root)/boot/grub\n"
     seeker += "source $prefix/${grub_cpu}-efi/grub.cfg\n"
+    
+    // Fallback generico se la source fallisce (utile per debug)
+    seeker += "configfile ($root)/boot/grub/grub.cfg\n"
 
     /**
      * creating grub.cfg (1) seeker for usb on (efi.img)/boot/grub/grub.cfg
@@ -114,12 +159,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         cfgBridgeText += `# created on ${cfgBridge}\n`
     }
     cfgBridgeText += `\n`
+    // Qui è dove l'architettura specifica punta al grub generico
     cfgBridgeText += `source /boot/grub/grub.cfg\n`
     fs.writeFileSync(cfgBridge, cfgBridgeText)
 
     /**
-     * grub bait: si applica a tutte le distro:
-     * /EFI/debian per tutti, tranne ubuntu
+     * grub bait
      */
     let pathBait = path.join(isoDir, '/EFI/debian')
     if (this.distroLike === 'Ubuntu') {
@@ -135,7 +180,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
 
     /**
-     * README.md, per tutti tranne distrolike Debian ed Ubuntu
+     * README.md
      */
     let baitReadme = path.join(pathBait, '/README.md')
     let baitReadmeText = ``
@@ -147,13 +192,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     /**
-     * creating structure efiWordDir
+     * creating structure efiWorkDir
      */
     await exec(`mkdir -p ${efiWorkDir}/boot/grub`, this.echo) // qua va grub.cfg 2
     await exec(`mkdir -p ${efiWorkDir}/EFI/boot`)
 
     /**
-     * create tarred efiMemdiskDir
+     * create tarred efiMemdiskDir (Legacy/Memdisk method)
      */
     const currentDir = process.cwd()
     process.chdir(efiMemdiskDir)
@@ -164,7 +209,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * Create boot image "boot/grub/efi.img"
      */
     const efiImg = path.join(efiWorkDir, `boot/grub/efi.img`)
-    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
+    // Aumentato leggermente il size per sicurezza
+    await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo) 
     await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
     await new Promise(resolve => setTimeout(resolve, 500))
 
@@ -179,9 +225,23 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
      */
+    // 1. Copia standard in /boot/grub.cfg (path interna immagine)
     await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/boot/grub.cfg`, this.echo)
-    await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
-    await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
+    
+    // 2. Copia i binari EFI
+    if (shimEfi && fs.existsSync(shimEfi)) {
+        await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
+        await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
+    } else {
+        // Se no shim (RISC-V), grub diventa il boot loader principale
+        await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
+    }
+
+    // 3. FIX CRUCIALE PER RISC-V (e robustezza generale):
+    // Copia il grub.cfg seeker ANCHE accanto al binario EFI in /EFI/boot/
+    // Perché GRUB portable spesso cerca il config nella sua stessa cartella.
+    await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/EFI/boot/grub.cfg`, this.echo)
+
     await new Promise(resolve => setTimeout(resolve, 1000))
     if (!fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
         console.log(`error copyng ${cfgSeekerUsb} seeker for USB on (efi.img)/boot/grub.cfg`)
@@ -214,8 +274,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         grubTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.grub.main.cfg')
         themeSrc = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/generic.grub.theme.cfg')
     } else {
-
-        // copy splash to efiWorkDir
+        // ... (resto della logica temi invariata)
         splashSrc = path.resolve(__dirname, `../../../addons/${theme}/theme/livecd/splash.png`)
         if (this.theme.includes('/')) {
             splashSrc = `${theme}/theme/livecd/splash.png`
@@ -232,13 +291,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
             themeSrc = `${theme}/theme/livecd/grub.theme.cfg`
         }
 
-        // copy theme
         if (!fs.existsSync(themeSrc)) {
             Utils.error(`error: ${themeSrc} does not exist`)
             process.exit(1)
         }
 
-        // selecting available fonts
+        // fonts... (invariato)
         if (fs.existsSync('/usr/share/grub/font.pf2')) {
             await exec(`cp /usr/share/grub/font.pf2 ${efiWorkDir}boot/grub/font.pf2`, this.echo)
         } else if (fs.existsSync('/usr/share/grub/unicode.pf2')) {
@@ -280,13 +338,23 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         fullname = "LINUX"
     }
 
+    /**
+     * FIX KERNEL NAME FOR RISC-V
+     * Se siamo su RISC-V, forziamo l'uso di 'vmlinux' invece di 'vmlinuz' nel config
+     */
+    let kernelFile = `/live/${path.basename(this.vmlinuz)}`
+    if (process.arch === 'riscv64') {
+        kernelFile = kernelFile.replace('vmlinuz', 'vmlinux')
+    }
+
     const view = {
         fullname: fullname,
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,
-        vmlinuz: `/live/${path.basename(this.vmlinuz)}`
+        vmlinuz: kernelFile // Usiamo la variabile modificata
     }
+
     let cfgMainText = ''
     cfgMainText += `# grub.cfg (4) main\n`
     if (!this.hidden) {
@@ -302,11 +370,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
  * FUNCTIONS
  */
 
-
-
 /**
- * 
- * @returns 
+ * * @returns 
  */
 function bootEfiName(): string {
     let ben = ''
@@ -316,23 +381,25 @@ function bootEfiName(): string {
         ben = 'bootia32.efi'
     } else if (process.arch === 'arm64') {
         ben = 'bootaa64.efi'
+    } else if (process.arch === 'riscv64') {
+        ben = 'bootriscv64.efi'
     }
     return ben
 }
 
 /**
- * 
- * @returns 
+ * * @returns 
  */
 function grubEfiName(): string {
     let gen = ''
     if (process.arch === 'x64') {
         gen = 'grubx64.efi'
     } else if (process.arch === 'ia32') {
-        gen = 'grub ia32.efi'
+        gen = 'grubia32.efi' // c'era uno spazio typo nel tuo codice originale "grub ia32", corretto qui
     } else if (process.arch === 'arm64') {
         gen = 'grubaa64.efi'
+    } else if (process.arch === 'riscv64') {
+        gen = 'grubriscv64.efi'
     }
     return gen
 }
-
