@@ -48,7 +48,7 @@ tee /usr/local/bin/uname << 'EOF'
 #!/bin/sh
 if [ "$1" = "-r" ]; then
     # Estrae la versione del kernel RISC-V dai file in /boot
-    ls /boot/vmlinuz- | head -n 1 | sed 's/.*vmlinuz-//'
+    ls /boot/vmlinux- | head -n 1 | sed 's/.*vmlinuz-//'
 else
     # Per tutti gli altri casi usa l'uname originale
     /bin/uname "$@"
@@ -111,3 +111,22 @@ qemu-system-riscv64 \
 
 # 1. Crea il link simbolico che il kernel si aspetta
 ln -s /lib/riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64.so.1
+
+
+# CLI
+qemu-system-riscv64 \
+    -machine virt \
+    -cpu rv64 \
+    -m 2G \
+    -smp 2 \
+    -bios /usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd \
+    -drive file=debian-riscv.img,format=qcow2,if=virtio \
+    -device virtio-net-device,netdev=net0 \
+    -netdev user,id=net0 \
+    -cdrom debian-13.2.0-riscv64-netinst.iso \
+    -nographic
+
+
+# compresione del kernel
+
+gzip -9 -c vmlinux-6.12.57+deb13-riscv64  > vmlinuz-6.12.57+deb13-riscv64
