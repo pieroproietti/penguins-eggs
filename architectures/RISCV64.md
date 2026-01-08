@@ -26,11 +26,10 @@ noble ~/ubuntu-riscv http://ports.ubuntu.com/ubuntu-ports
 
 # Iniziamo in chroot
 
-
 ```
 cd ~/ubuntu-riscv
 g4mount-vfs-here
-sudo chroot .
+sudo QEMU_UNAME="6.12.57+deb13-riscv64" chroot . /bin/bash
 ```
 
 # Installazione kernel, dialog e locales
@@ -38,26 +37,6 @@ sudo chroot .
 apt install bash-completion dialog linux-image locales nano -y
 locale-gen en_US.UTF-8
 update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-```
-
-# workaround per uname
-dobbiamo creare un workaround per uname, visto che da chroot otterremmo
-
-```
-tee /usr/local/bin/uname << 'EOF'
-#!/bin/sh
-if [ "$1" = "-r" ]; then
-    # Estrae la versione del kernel RISC-V dai file in /boot
-    ls /boot/vmlinux- | head -n 1 | sed 's/.*vmlinuz-//'
-else
-    # Per tutti gli altri casi usa l'uname originale
-    /bin/uname "$@"
-fi
-EOF
-
-# Rendi lo script eseguibile
-chmod +x /usr/local/bin/uname
-
 ```
 
 # installazione penguins-eggs
@@ -93,40 +72,29 @@ sudo apt install qemu
 
 # Avviamo la iso
 
+## 1. Crea il link simbolico che il kernel si aspetta
+```
+ln -s /lib/riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64.so.1
+```
+
+## avvio ISO
 Per comodità ci posizioniamo sulla nostra chroot
 ```
 export ISO=./home/eggs/.mnt/egg-of_ubuntu-noble-naked_riscv64_2026-01-05_1216.iso
-qemu-system-riscv64 \
-  -machine virt \
-  -cpu rv64 \
-  -m 2G \
-  -kernel ./boot/vmlinuz-6.8.0-31-generic \
-  -initrd ./boot/initrd.img-6.8.0-31-generic \
-  -append "boot=live components live-media=/dev/vda console=ttyS0"
-  -drive file=$ISO,format=raw,if=none,id=drive0 \
-  -device virtio-blk-device,drive=drive0 \
-  -nographic
-
-```
-
-# 1. Crea il link simbolico che il kernel si aspetta
-ln -s /lib/riscv64-linux-gnu/ld-linux-riscv64-lp64d.so.1 /lib/ld-linux-riscv64.so.1
-
-
-# CLI
-qemu-system-riscv64 \
+sudo qemu-system-riscv64 \
     -machine virt \
     -cpu rv64 \
     -m 2G \
     -smp 2 \
-    -bios /usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd \
-    -drive file=debian-riscv.img,format=qcow2,if=virtio \
+    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
+    -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
+    -device virtio-blk-device,drive=hd0 \
+    -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
+    -device virtio-blk-device,drive=cd0 \
+    -drive file=$ISO,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
     -device virtio-net-device,netdev=net0 \
     -netdev user,id=net0 \
-    -cdrom debian-13.2.0-riscv64-netinst.iso \
     -nographic
 
+```
 
-# compresione del kernel
-
-gzip -9 -c vmlinux-6.12.57+deb13-riscv64  > vmlinuz-6.12.57+deb13-riscv64
