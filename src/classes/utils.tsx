@@ -134,6 +134,40 @@ export default class Utils {
       }
    }
 
+
+   /**
+   * Detect if running inside a standard chroot environment
+   * (Distinguishes chroot from Containers/Host)
+   */
+   static isChroot(): boolean {
+      try {
+         // 1. Check for Debian specific chroot file
+         // Many Debian tools (debootstrap, schroot) create this file.
+         if (fs.existsSync('/etc/debian_chroot')) {
+            return true;
+         }
+
+         // 2. Inode comparison method
+         // We compare the Inode and Device ID of '/' vs '/proc/1/root'.
+         // In a chroot (sharing the host's PID namespace via bind-mounted /proc),
+         // PID 1 refers to the host's init process.
+         // Therefore, if '/' is NOT the same file as '/proc/1/root', we are in a chroot.
+
+         const rootStat = fs.statSync('/');
+         const procRootStat = fs.statSync('/proc/1/root');
+
+         // If dev or ino are different, we are inside a chroot
+         return (rootStat.dev !== procRootStat.dev) || (rootStat.ino !== procRootStat.ino);
+
+      } catch (error) {
+         // If /proc is not mounted or not accessible, detection via inode fails.
+         // However, usually in eggs /proc is mounted. 
+         // If strictly needed, one could assume that if /proc/1/root is unreadable 
+         // but / exists, it might be a weird chroot state, but returning false is safer.
+         return false;
+      }
+   }
+
    /**
     * Check if the system uses Systemd
     */
@@ -1138,12 +1172,12 @@ export default class Utils {
    }
 
 
-  /**
-   *
-   * @param cmd
-   */
-  static commandExists(cmd: string): boolean {
-   return !!shx.which(cmd);
-  }
+   /**
+    *
+    * @param cmd
+    */
+   static commandExists(cmd: string): boolean {
+      return !!shx.which(cmd);
+   }
 
 }
