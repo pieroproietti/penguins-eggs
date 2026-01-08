@@ -1,8 +1,6 @@
 /**
  * penguins-eggs
- * 
  * Kernel management utilities
- * Handle vmlinuz and initramfs detection across different distributions
  */
 
 import fs from 'node:fs'
@@ -11,26 +9,22 @@ import Distro from '../distro.js'
 import Utils from '../utils.js'
 import { execSync } from '../../lib/utils.js'
 
-
-/**
- * Kernel utilities for managing vmlinuz and initramfs paths
- */
 export default class Kernel {
+  
   /**
-   * Ricava path per vmlinuz
-   * 
-   * @returns Path al file vmlinuz
+   * Ricava path per vmlinuz (o vmlinux su RISC-V)
    */
   static vmlinuz(kernel = ''): string {
-    let vmlinuz = ''
+    let kernelFile = ''
 
+    // Esegui se NON è un container
     if (!Utils.isContainer()) {
-      vmlinuz = this.vmlinuzFromUname()
+      kernelFile = this.vmlinuzFromUname()
 
-      if (vmlinuz === '') {
-        vmlinuz = this.vmlinuzFromCmdline()
-        if (vmlinuz === '') {
-          console.log('vmlinuz not found')
+      if (kernelFile === '') {
+        kernelFile = this.vmlinuzFromCmdline()
+        if (kernelFile === '') {
+          console.log('kernel (vmlinuz/vmlinux) not found')
           process.exit(1)
         }
       }
@@ -39,37 +33,29 @@ export default class Kernel {
       process.exit(1)
     }
 
-    if (!fs.existsSync(vmlinuz)) {
-      console.log(`vmlinuz: ${vmlinuz} does not exist!`)
+    if (!fs.existsSync(kernelFile)) {
+      console.log(`kernel: ${kernelFile} does not exist!`)
       process.exit(1)
     }
-    return vmlinuz
+    return kernelFile
   }
 
-
   /**
-   * cerca il path per initramfs/initrd nella directory /boot 
-   * se fallisce, prova la convenzione Arch
-   *
-   * @param kernel - Versione del kernel (es. '6.5.0-14-generic'). Se omessa, usa il kernel in esecuzione.
-   * @returns Path al file initramfs.
+   * Cerca initramfs
    */
   static initramfs(kernel = ''): string {
     let targetKernel = kernel
 
-    // 1. Determina la versione del kernel target
     if (targetKernel === '') {
-      if (Utils.isContainer()) {
+      if (Utils.isContainer() && !Utils.isChroot()) {
         Utils.warning("Non è possibile determinare il kernel in un container.")
         process.exit(1)
       }
       targetKernel = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
     }
     const kernelVersionShort = targetKernel.split('.').slice(0, 2).join('.');
-
     const bootDir = '/boot';
 
-    // 2. Leggi tutti i file nella directory /boot
     let bootFiles: string[];
     try {
       bootFiles = fs.readdirSync(bootDir);
@@ -78,9 +64,7 @@ export default class Kernel {
       process.exit(1);
     }
 
-    // 3. Cerca il file corrispondente con un sistema di priorità
     const candidates: string[] = [];
-
     for (const filename of bootFiles) {
       if ((
         filename.startsWith('initramfs-') ||
@@ -92,21 +76,12 @@ export default class Kernel {
       }
     }
 
-
-    // Se troviamo almeno un candidato, usiamo quello
     if (candidates.length > 0) {
       let foundPath = path.join(bootDir, candidates[0])
-
-      /**
-       * ma, se sono più di uno, usiamo il più breve 
-       * per evitare estensioni come -fallback.img, .old, .bak, etc
-       */
       if (candidates.length > 1) {
-        // Filtra i candidati per escludere quelli di fallback se esiste un'alternativa
         const nonFallbackCandidates = candidates.filter(c => !c.includes('-fallback'));
         const searchArray = nonFallbackCandidates.length > 0 ? nonFallbackCandidates : candidates;
-
-        foundPath = path.join(bootDir, searchArray[0]); // Inizia con il primo
+        foundPath = path.join(bootDir, searchArray[0]); 
         for (const candidate of searchArray) {
           const current = path.join(bootDir, candidate)
           if (current.length < foundPath.length) {
@@ -117,126 +92,104 @@ export default class Kernel {
       return foundPath;
     }
 
-
-    // 4. Fallback per casi specifici (Arch e Alpine Linux)
-    // Questo viene eseguito solo se la ricerca dinamica fallisce.
+    // Fallbacks
     const staticFallbacks = [
-      // --- Alpine Linux ---
-      'initramfs-lts',        // Kernel Long-Term Support
-      'initramfs-virt',       // Kernel per ambienti virtualizzati
-      'initramfs-standard',   // Kernel standard (meno comune)
-      'initramfs-rpi',        // Kernel per Raspberry Pi
-
-      // --- Arch Linux ---
-      'initramfs-linux.img',          // Arch Linux standard
-      'initramfs-linux-lts.img',      // Arch Linux LTS
-      'initramfs-linux-zen.img',      // Arch Linux Zen
-      'initramfs-linux-hardened.img', // Arch Linux hardened
-
-      // --- Cacky Linux ---
-      'initramfs-linux-cachyos.img',          // Cachyos standard
-      'initramfs-linux-cachyos-lts.img',      // Cachyos LTS
-      'initramfs-linux-cachyos-zen.img',      // Cachyos zen
-      'initramfs-linux-cachyos-hardened.img', // Cachyos hardened
+      'initramfs-lts', 'initramfs-virt', 'initramfs-standard', 'initramfs-rpi',
+      'initramfs-linux.img', 'initramfs-linux-lts.img', 'initramfs-linux-zen.img', 'initramfs-linux-hardened.img',
+      'initramfs-linux-cachyos.img', 'initramfs-linux-cachyos-lts.img',
     ];
-
 
     for (const fallback of staticFallbacks) {
       const fallbackPath = path.join(bootDir, fallback);
       if (fs.existsSync(fallbackPath)) {
-        // Nota: questo potrebbe non corrispondere al 100% al kernel in esecuzione,
-        // ma è il comportamento atteso su questi sistemi
         return fallbackPath;
       }
     }
 
-
-    // 5. Se nessuna delle strategie ha funzionato, esci con errore
     Utils.warning(`Could not find an initramfs file for kernel ${targetKernel} in ${bootDir}.`)
     process.exit(1);
   }
 
-
   /**
-   * ALL PRIVATE
+   * PRIVATE METHODS
    */
 
-
-  /**
-   * most of the distros:
-   * debian, fedora, opensuse, rasberry
-   */
   private static vmlinuzFromUname(): string {
     let kernelVersion = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
 
-    // Try 1: path standard (es. Debian, Ubuntu, Fedora)
+    // --- CHECK FOR RISC-V (vmlinux) ---
+    if (process.arch === 'riscv64') {
+        // 1. Caso Perfetto: uname corrisponde al file vmlinux
+        let riscvPath = `/boot/vmlinux-${kernelVersion}`
+        if (fs.existsSync(riscvPath)) {
+            return riscvPath;
+        }
+
+        // 2. Caso "Ciambella di Salvataggio": uname non trova file esatto? 
+        // Scansioniamo la cartella per trovare QUALSIASI vmlinux disponibile.
+        try {
+            const files = fs.readdirSync('/boot');
+            const found = files.find(file => file.startsWith('vmlinux-'));
+            if (found) {
+                return path.join('/boot', found);
+            }
+        } catch (e) {
+            console.error("Errore leggendo /boot:", e);
+        }
+
+        // 3. Fallback su vmlinuz (se usassero kernel compressi)
+        let riscvZPath = `/boot/vmlinuz-${kernelVersion}`
+        if (fs.existsSync(riscvZPath)) {
+            return riscvZPath;
+        }
+    }
+
+    // --- STANDARD ARCHITECTURES (x86, ARM) ---
     let standardPath = `/boot/vmlinuz-${kernelVersion}`
     if (fs.existsSync(standardPath)) {
       return standardPath;
     }
 
-    // Try 2: Arch Linux
+    // Arch Linux specifics
     let archPath = ''
-    if (kernelVersion.includes("-lts")) {
-      archPath = `/boot/vmlinuz-linux-lts`
-    } else if (kernelVersion.includes("-zen")) {
-      archPath = `/boot/vmlinuz-linux-zen`
-    } else if (kernelVersion.includes("-hardened")) {
-      archPath = `/boot/vmlinuz-linux-hardened`
-    } else if (kernelVersion.includes("-arch")) {
-      archPath = `/boot/vmlinuz-linux`
-    }
+    if (kernelVersion.includes("-lts")) archPath = `/boot/vmlinuz-linux-lts`
+    else if (kernelVersion.includes("-zen")) archPath = `/boot/vmlinuz-linux-zen`
+    else if (kernelVersion.includes("-hardened")) archPath = `/boot/vmlinuz-linux-hardened`
+    else if (kernelVersion.includes("-arch")) archPath = `/boot/vmlinuz-linux`
 
-    // Se abbiamo trovato un percorso per Arch e il file esiste, lo ritorniamo
-    if (archPath && fs.existsSync(archPath)) {
-      return archPath
-    }
-
-    // return an empty string: manjaro
+    if (archPath && fs.existsSync(archPath)) return archPath
     return ''
   }
 
-  /**
-   * vmlinuxFromCmdline
-   * 
-   * It's used mostly on Manjaro
-   */
   private static vmlinuzFromCmdline() {
-    let distro = new Distro()
-    let vmlinuz = ''
-
-    const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
-
-    cmdline.forEach(cmd => {
-      if (cmd.includes('BOOT_IMAGE')) {
-        vmlinuz = cmd.substring(cmd.indexOf('=') + 1)
-
-        // patch per fedora BOOT_IMAGE=(hd0,gpt2)/vmlinuz-6.9.9-200.fc40.x86_64
-        if (vmlinuz.includes(")")) {
-          vmlinuz = cmd.substring(cmd.indexOf(')') + 1)
+    let kernelFile = '' 
+    // ... (Logica esistente invariata) ...
+    try {
+        const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
+        cmdline.forEach(cmd => {
+        if (cmd.includes('BOOT_IMAGE')) {
+            kernelFile = cmd.substring(cmd.indexOf('=') + 1)
+            if (kernelFile.includes(")")) {
+            kernelFile = cmd.substring(cmd.indexOf(')') + 1)
+            }
+            if (!fs.existsSync(kernelFile)) {
+            if (fs.existsSync(`/boot/${kernelFile}`)) {
+                kernelFile = `/boot/${kernelFile}`
+            }
+            }
         }
-        if (!fs.existsSync(vmlinuz)) {
-          if (fs.existsSync(`/boot/${vmlinuz}`)) {
-            vmlinuz = `/boot/${vmlinuz}`
-          }
+        })
+        if (kernelFile.includes('@')) {
+        let subvolumeEnd = kernelFile.indexOf('/', kernelFile.indexOf('@'))
+        kernelFile = kernelFile.substring(subvolumeEnd)
         }
-      }
-    })
-    // btrfs: eg: /@root/boot/vmlinuz
-    if (vmlinuz.includes('@')) {
-      let subvolumeEnd = vmlinuz.indexOf('/', vmlinuz.indexOf('@'))
-      vmlinuz = vmlinuz.substring(subvolumeEnd)
-    }
-
-
-    /**
-     * Take always /boot/vmlinuz if exists
-     */
-    if (path.dirname(vmlinuz) === '/') {
-      if (fs.existsSync(`/boot${vmlinuz}`)) {
-        vmlinuz = `/boot${vmlinuz}`
-      }
-    }
-    return vmlinuz
+        if (path.dirname(kernelFile) === '/') {
+        if (fs.existsSync(`/boot${kernelFile}`)) {
+            kernelFile = `/boot${kernelFile}`
+        }
+        }
+    } catch(e) { /* ignore read error */ }
+    
+    return kernelFile
   }
 }

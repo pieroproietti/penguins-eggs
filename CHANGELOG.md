@@ -20,6 +20,26 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.8
+## 🚀 New Features & Improvements
+
+### 🦒 RISC-V Support (Experimental)
+This release marks a significant milestone: **penguins-eggs now successfully builds and boots live systems on RISC-V (riscv64)!**
+tested on QEMU with Debian `sid`/`trixie`.
+
+* **Kernel Handling:** Added smart detection for uncompressed kernels (`vmlinux`), which are standard in many RISC-V boot scenarios, alongside the traditional `vmlinuz`.
+* **Cross-Build Masquerading:** Improved `uname` spoofing detection allowing seamless ISO creation for RISC-V from x86_64 hosts (via QEMU user static).
+
+### 🛠️ Core Fixes
+
+* **Usr Merge Compatibility (The "Golden Fix"):**
+    * Fixed a critical issue where the live filesystem layout caused Kernel Panics (`Attempted to kill init`) on modern Debian bases (Bookworm+).
+    * The build process now forcibly ensures the correct creation of `Usr Merge` symbolic links (`/bin`, `/sbin`, `/lib` → `/usr/...`) within the squashfs, ensuring `systemd` and `init` are correctly located by the kernel.
+    * Updated `uBindLiveFs` to intelligently handle cleanup of custom-created links that might not exist on the host system.
+
+### 🐧 Naked / Server Edition
+* Confirmed successful boot to login prompt on `naked` (CLI) editions for RISC-V. GUI editions are next!
+
 # v26.1.3
 
 ### Added

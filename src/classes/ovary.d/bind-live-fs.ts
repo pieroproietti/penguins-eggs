@@ -71,7 +71,7 @@ export async function bindLiveFs(this: Ovary) {
             if (dir !== 'ci' && dir !== 'lost+found') {
                 if (this.copied(dir)) {
                     cmds.push(`# /${dir} is copied if not exists on filesystem.squashfs`)
-                    let chkDir= path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
+                    let chkDir = path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
                     cmds.push(`if ! [ -d "${chkDir}" ]; then`)
                     cmds.push(await rexec(`   cp -a /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
                     cmds.push(`fi`)
@@ -115,11 +115,40 @@ export async function bindLiveFs(this: Ovary) {
         cmds.push(endLine)
     }
 
+
+    // ==============================================================================
+    // FIX CRUCIALE USR MERGE (Eseguito LIVE via rexec)
+    // ==============================================================================
+    cmds.push(
+        startLine,
+        '# FORCE USR MERGE LAYOUT (Fix for Debian 12+ / RISC-V)',
+        '# Ensures bin, sbin, lib, lib64 point to usr/... inside the merged dir'
+    )
+
+    const linkNames = ['bin', 'sbin', 'lib', 'lib64']
+    const mergedDir = this.settings.work_dir.merged
+
+    for (const link of linkNames) {
+        const linkPath = `${mergedDir}/${link}`
+
+        // 1. Se esiste una directory fisica (errore rsync), la rimuoviamo subito
+        if (fs.existsSync(linkPath) && !fs.lstatSync(linkPath).isSymbolicLink() && fs.lstatSync(linkPath).isDirectory()) {
+            // Usiamo exec normale per la pulizia, o rexec se vuoi loggarlo
+            cmds.push(await rexec(`rm -rf ${linkPath}`, this.verbose))
+        }
+
+        // 2. Creiamo il link se non esiste (o se l'abbiamo appena rimosso)
+        if (!fs.existsSync(linkPath)) {
+            // Eseguiamo SUBITO il comando e lo salviamo nella lista cmds
+            cmds.push(await rexec(`ln -sf usr/${link} ${linkPath}`, this.verbose))
+        }
+    }
+
+    cmds.push(endLine)
+
     // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
     Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
 }
-
-
 
 
 /**
@@ -132,11 +161,11 @@ export async function uBindLiveFs(this: Ovary) {
     }
 
     const startLine = '#############################################################'
-    const endLine = '#\n'
 
     const cmds: string[] = []
     cmds.push('# NOTE: home, cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just to be removed in ${this.settings.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
+
     if (fs.existsSync(this.settings.work_dir.merged)) {
         const bindDirs = fs.readdirSync(this.settings.work_dir.merged, {
             withFileTypes: true
@@ -144,13 +173,25 @@ export async function uBindLiveFs(this: Ovary) {
 
         for (const dir of bindDirs) {
             const dirname = dir.name
+            const hostPath = `/${dirname}`
+
             cmds.push(startLine)
-            if (fs.statSync(`/${dirname}`).isDirectory()) {
+
+            // FIX: Se il file/dir non esiste sull'HOST (es. lib64 che abbiamo creato noi),
+            // lo rimuoviamo semplicemente dalla destinazione e passiamo al prossimo.
+            if (!fs.existsSync(hostPath)) {
+                cmds.push(`\n# ${dirname} does not exist on host (custom created) -> remove`)
+                cmds.push(await rexec(`rm -rf ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
+                continue
+            }
+
+            // Da qui in poi siamo sicuri che hostPath esiste, quindi fs.statSync non crasherà
+            if (fs.statSync(hostPath).isDirectory()) {
                 cmds.push(`\n# directory: ${dirname}`)
                 if (this.copied(dirname)) {
                     cmds.push(`\n# ${dirname} was copied, do nothings`)
                     continue
-                    
+
                 } else if (this.mergedAndOverlay(dirname)) {
                     cmds.push(`\n# ${dirname} has overlay`, `\n# First, umount it from ${this.settings.config.snapshot_dir}`)
                     cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/${dirname}`, this.verbose), `\n# Second, umount it from ${this.settings.work_dir.lowerdir}`)
@@ -160,18 +201,16 @@ export async function uBindLiveFs(this: Ovary) {
                 }
 
                 cmds.push(`\n# remove in ${this.settings.work_dir.merged} and ${this.settings.work_dir.lowerdir}`)
-                /**
-                 * We can't remove the nest!!!
-                 */
+
                 const nest = this.settings.config.snapshot_dir.split('/')
                 // We can't remove first level nest
                 if (dirname !== nest[1]) {
                     cmds.push(await rexec(`rm -rf ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
                 }
-            } else if (fs.statSync(`/${dirname}`).isFile()) {
+            } else if (fs.statSync(hostPath).isFile()) {
                 cmds.push(`\n# ${dirname} = file`)
                 cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
-            } else if (fs.statSync(`/${dirname}`).isSymbolicLink()) {
+            } else if (fs.statSync(hostPath).isSymbolicLink()) {
                 cmds.push(`\n# ${dirname} = symbolicLink`)
                 cmds.push(await rexec(`rm -f ${this.settings.work_dir.merged}/${dirname}`, this.verbose))
             }
@@ -182,10 +221,8 @@ export async function uBindLiveFs(this: Ovary) {
         cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
     }
 
-    // Utils.writeXs(`${this.settings.config.snapshot_dir}ubind`, cmds)
     Utils.writeXs(`${this.settings.work_dir.ovarium}ubind`, cmds)
 }
-
 
 /**
 * Crea il path se non esiste

@@ -119,7 +119,8 @@ sudo qemu-system-riscv64 \
     -device virtio-blk-device,drive=hd0 \
     -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
     -device virtio-blk-device,drive=cd0 \
-    -drive file=egg-of_debian-trixie-naked_riscv64_2026-01-07_1157.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+    -drive file=egg-of_debian-trixie-colibri_riscv64_2026-01-08_0753.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
     -device virtio-net-device,netdev=net0 \
     -netdev user,id=net0 \
     -nographic
+```
