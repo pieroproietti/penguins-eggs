@@ -1,9 +1,20 @@
 # DEBIAN trixie riscv
+In questo README spiego come installare debian-13.2.0-riscv64-netinst.iso attraverso qemu, quindi installeremo eggs ed andremo a creare una ISO installabile.
 
-
-## Disco installazione
+# Installazione debian-13.2.0-riscv64-netinst.iso
+Avremo bisogno di creare un volume da 10 GB:
 ```
 qemu-img create -f qcow2 debian-riscv.img 10G
+```
+
+Installiamo, se non presente, il pacchetto qemu-efi-riscv64:
+```
+sudo apt install qemu-efi-riscv64
+```
+
+e copiamo /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd  in  efi-vars.fd
+```
+cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd efi-vars.fd
 ```
 
 ## Installazione
@@ -39,36 +50,22 @@ qemu-system-riscv64 \
     -nographic
 ```
 
-# 1. Crea il disco overlay (usa l'immagine base, scrive solo le differenze su test.qcow2)
-qemu-img create -f qcow2 -F qcow2 -b debian-riscv.img debian-test.qcow2
 
-# 2. Copia le variabili EFI (così se rompi il bootloader, l'originale è salvo)
-cp efi-vars.fd efi-vars-test.fd
-
-# Comando di avvio per test con ssh
+# Creazione della chroot
+Per far funzionare la chroot abbiamo bisogno del pacchetto  binfmt-support, se non gia installato:
 ```
-qemu-system-riscv64 \
-    -machine virt \
-    -cpu rv64 \
-    -m 4G \
-    -smp 2 \
-    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./efi-vars-test.fd \
-    -device virtio-blk-device,drive=hd0 \
-    -drive file=debian-test.qcow2,format=qcow2,id=hd0,if=none \
-    -device virtio-net-device,netdev=net0 \
-    -netdev user,id=net0,hostfwd=tcp::2222-:22 \
-    -nographic
+apt install binfmt-support
 ```
 
-# Usiamolo con 
 
+Copia ed incolla il seguente codice:
+```
 # --- CONFIGURAZIONE ---
-export IMG=~/debian-riscv/debian-riscv.img
+export IMG=~/riscv/debian-riscv.img
 # Cartella temporanea dove montare il disco QEMU
 export SRC=/var/tmp/debian-riscv-src
 # Cartella finale dove lavorerai
-export DEST=~/debian-riscv/chroot
+export DEST=~/riscv/chroot
 
 # --- 1. PREPARAZIONE ---
 echo "Caricamento modulo NBD e collegamento disco..."
@@ -96,10 +93,25 @@ sudo umount "$SRC"
 sudo qemu-nbd --disconnect /dev/nbd0
 
 echo "Fatto! Il filesystem è estratto in: $DEST"
-# 5. Monta i filesystem di sistema (Necessario per apt/proc)
-for i in /dev /dev/pts /proc /sys /run; do sudo mount -B $i $DEST/$i; done
-# 4. Entra (Senza copiare nulla!)
-sudo chroot $DEST
+```
+
+A questo punto la nostra chroot e pronta, per avviarla dobbiamo montare i file system virtuali ed avviarla.
+```
+cd chroot
+cd g4mount-vfs-here
+sudo QEMU_UNAME="6.12.57+deb13-riscv64" chroot . /bin/bash
+```
+Copiamo il pacchetto penguins-eggs della chroot sotto /tmp ed installiamo eggs:
+```
+apt install /tmp/penguins-eggs-...
+```
+
+Siamo pronti a creare la ISO con le solite modalita:
+```
+eggs love -n
+```
+
+Una volta che la ISO e pronta, proviamo ad installarla
 
 
 ## Disco installazione
@@ -108,19 +120,25 @@ qemu-img create -f qcow2 naked-riscv.img 10G
 ```
 
 ## Installazione
+Poiche eggs krill "vede" solo i /dev/sd* gli faremo vedere il disco come scsi
+
 ```
-sudo qemu-system-riscv64 \
-    -machine virt \
-    -cpu rv64 \
-    -m 2G \
-    -smp 2 \
-    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
-    -device virtio-blk-device,drive=hd0 \
-    -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
-    -device virtio-blk-device,drive=cd0 \
-    -drive file=egg-of_debian-trixie-colibri_riscv64_2026-01-08_0753.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
-    -device virtio-net-device,netdev=net0 \
-    -netdev user,id=net0 \
-    -nographic
-```
+qemu-system-riscv64 \
+  -nographic \
+  -machine virt \
+  -m 4G \
+  -smp 4 \
+  -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
+  -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
+  \
+  -device virtio-scsi-device,id=scsi0 \
+  \
+  -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
+  -device scsi-hd,drive=hd0,bus=scsi0.0 \
+  \
+  -drive file=egg-of_debian-trixie-naked_riscv64_2026-01-08_1149.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+  -device scsi-cd,drive=cd0,bus=scsi0.0 \
+  \
+  -device virtio-net-device,netdev=net0 \
+  -netdev user,id=net0  
+  ```
