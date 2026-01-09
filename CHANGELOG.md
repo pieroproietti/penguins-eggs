@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.9
+feat: add native support for RISC-V UEFI installation and fix sudoers creation
+
+- Bootloader: Added detection for `riscv64` architecture in the installation sequence.
+- Bootloader: Implemented `--removable` flag for `grub-install` on RISC-V targets. This ensures the bootloader is written to the default fallback path (/EFI/BOOT/BOOTRISCV64.EFI), fixing boot issues on QEMU and boards without persistent NVRAM.
+- Sudoers: Fixed `ENOENT` error during `99-eggs-calamares` creation. The code now checks and recursively creates the `/etc/sudoers.d/` directory if it is missing on minimal systems.
+
 # v26.1.8
 ## 🚀 New Features & Improvements
 
