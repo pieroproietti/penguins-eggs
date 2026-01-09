@@ -27,19 +27,23 @@ export default async function bootloader(this: Sequence) {
   if (this.efi) {
     /**
      * UEFI Installation
-     * This is the correct way to install GRUB for UEFI systems.
-     * --target: Specifies the EFI architecture (x86_64-efi or arm64-efi).
-     * --efi-directory: Tells GRUB where the EFI System Partition is mounted. CRITICAL.
-     * --bootloader-id: Creates the \EFI\fedora directory on the ESP and labels the NVRAM entry. CRITICAL.
-     * We do NOT specify the device (e.g., /dev/sda) for UEFI.
      */
-    let target = `x86_64-efi`
+    
+    // DEFAULT x86_64
+    let target = `x86_64-efi` 
+    let extraArgs = `` // Variabile per argomenti extra come --removable
+
+    // Rilevamento Architetture
     if (process.arch === 'arm64') {
       target = `arm64-efi`
+    } else if (process.arch === 'riscv64') {
+      target = `riscv64-efi`
+      extraArgs = `--removable` 
     }
 
     let bootloaderId = this.distro.distroLike.toLowerCase()
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${grubForce}`
+    
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${extraArgs} ${grubForce}`
 
   } else {
     /**

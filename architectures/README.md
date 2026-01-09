@@ -47,3 +47,5 @@ qemu-system-x86_64 \
   -display gtk,gl=on \
   -device virtio-tablet-pci
 ```
+
+Seguite [DEBIAN-RISCV](./DEBIAN-RISCV.md) per maggiori informazioni.
