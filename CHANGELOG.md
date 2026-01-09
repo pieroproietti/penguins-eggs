@@ -27,6 +27,8 @@ feat: add native support for RISC-V UEFI installation and fix sudoers creation
 - Bootloader: Implemented `--removable` flag for `grub-install` on RISC-V targets. This ensures the bootloader is written to the default fallback path (/EFI/BOOT/BOOTRISCV64.EFI), fixing boot issues on QEMU and boards without persistent NVRAM.
 - Sudoers: Fixed `ENOENT` error during `99-eggs-calamares` creation. The code now checks and recursively creates the `/etc/sudoers.d/` directory if it is missing on minimal systems.
 
+Look this [article](https://penguins-eggs.net/blog/the-recursive-egg-native-and-bootable-remastering-on-risc-v.md) on penguins-eggs.net.
+
 # v26.1.8
 ## 🚀 New Features & Improvements
 
