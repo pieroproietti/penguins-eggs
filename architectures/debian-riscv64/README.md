@@ -2,8 +2,13 @@
 In questo README spiego come installare debian-13.2.0-riscv64-netinst.iso attraverso qemu, quindi installeremo eggs ed andremo a creare una ISO installabile.
 
 # Installazione debian-13.2.0-riscv64-netinst.iso
+```
+```
+
 Avremo bisogno di creare un volume da 10 GB:
 ```
+mkdir ~/riscv
+cd ~/riscv
 qemu-img create -f qcow2 debian-riscv.img 10G
 ```
 
@@ -14,7 +19,7 @@ sudo apt install qemu-efi-riscv64
 
 e copiamo /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd  in  efi-vars.fd
 ```
-cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd efi-vars.fd
+cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd debian-efi-vars.fd
 ```
 
 ## Installazione
@@ -22,10 +27,10 @@ cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd efi-vars.fd
 qemu-system-riscv64 \
     -machine virt \
     -cpu rv64 \
-    -m 2G \
+    -m 4G \
     -smp 2 \
     -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
+    -drive if=pflash,format=raw,unit=1,file=./debian-efi-vars.fd \
     -device virtio-blk-device,drive=hd0 \
     -drive file=debian-riscv.img,format=qcow2,id=hd0,if=none \
     -device virtio-blk-device,drive=cd0 \
@@ -34,27 +39,12 @@ qemu-system-riscv64 \
     -netdev user,id=net0 \
     -nographic
 ```
-# comendo di avvio sistema installato
-```
-qemu-system-riscv64 \
-    -machine virt \
-    -cpu rv64 \
-    -m 2G \
-    -smp 2 \
-    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
-    -device virtio-blk-device,drive=hd0 \
-    -drive file=debian-riscv.img,format=qcow2,id=hd0,if=none \
-    -device virtio-net-device,netdev=net0 \
-    -netdev user,id=net0 \
-    -nographic
-```
 
 
 # Creazione della chroot
-Per far funzionare la chroot abbiamo bisogno del pacchetto  binfmt-support, se non gia installato:
+Per far funzionare la chroot abbiamo bisogno del pacchetto  `binfmt-support`, se non gia installato:
 ```
-apt install binfmt-support
+apt install binfmt-support qemu-user-static
 ```
 
 
@@ -98,7 +88,7 @@ echo "Fatto! Il filesystem è estratto in: $DEST"
 A questo punto la nostra chroot e pronta, per avviarla dobbiamo montare i file system virtuali ed avviarla.
 ```
 cd chroot
-cd g4mount-vfs-here
+g4mount-vfs-here
 sudo QEMU_UNAME="6.12.57+deb13-riscv64" chroot . /bin/bash
 ```
 Copiamo il pacchetto penguins-eggs della chroot sotto /tmp ed installiamo eggs:
@@ -116,6 +106,7 @@ Una volta che la ISO e pronta, proviamo ad installarla
 
 ## Disco installazione
 ```
+cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd naked-efi-vars.fd
 qemu-img create -f qcow2 naked-riscv.img 10G
 ```
 
@@ -126,17 +117,17 @@ Poiche eggs krill "vede" solo i /dev/sd* gli faremo vedere il disco come scsi
 qemu-system-riscv64 \
   -nographic \
   -machine virt \
-  -m 4G \
+  -m 2G \
   -smp 4 \
   -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-  -drive if=pflash,format=raw,unit=1,file=./efi-vars.fd \
+  -drive if=pflash,format=raw,unit=1,file=./naked-efi-vars.fd \
   \
   -device virtio-scsi-device,id=scsi0 \
   \
   -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
   -device scsi-hd,drive=hd0,bus=scsi0.0 \
   \
-  -drive file=egg-of_debian-trixie-naked_riscv64_2026-01-08_1149.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+  -drive file=egg-of_debian-trixie-naked_riscv64_2026-01-09_1126.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
   -device scsi-cd,drive=cd0,bus=scsi0.0 \
   \
   -device virtio-net-device,netdev=net0 \

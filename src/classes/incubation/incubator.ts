@@ -388,10 +388,40 @@ export default class Incubator {
   }
 
   /**
+  * soluzione tampone from Glenn
+  * */
+  private sudoers() {
+    const live = this.user_opt;
+    if (!live) return;
+
+    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares';
+    const sudoersDir = '/etc/sudoers.d'; // O usa path.dirname(sudoersPath)
+
+    // FIX: Crea la directory se non esiste
+    if (!fs.existsSync(sudoersDir)) {
+      try {
+        fs.mkdirSync(sudoersDir, { recursive: true, mode: 0o755 });
+      } catch (e) {
+        console.error(`Error creating ${sudoersDir}:`, e);
+      }
+    }
+
+    // Nota il SETENV: prima di NOPASSWD
+    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`;
+
+    try {
+      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
+      fs.chownSync(sudoersPath, 0, 0);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
    * soluzione tampone from Glenn
    * 
    */
-  private sudoers() {
+  private sudoersToRemove() {
     const live = this.user_opt;
     if (!live) return;
 
