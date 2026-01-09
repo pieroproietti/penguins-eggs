@@ -43,5 +43,25 @@ The CLI organizes commands using a family metaphor:
 - **Test:** `pnpm test`
 - **Local Run:** `./bin/run [COMMAND]`
 
-## Author
-- **Piero Proietti <piero.proietti@gmail.com>**
+## Recent Milestones & Architecture Specifics
+
+### [2026-01-09] RISC-V Native & Recursive Support
+**Status:** Full recursivity (Self-hosting) achieved on `riscv64` architecture.
+
+#### Technical Implementation Details
+1.  **Bootloader Logic (`eggs` core):**
+    * **Detection:** Automatic detection of `riscv64` architecture.
+    * **Flag Strategy:** Implemented `--removable` flag for `grub-install` on RISC-V targets.
+    * *Why:* This forces the creation of `/EFI/BOOT/BOOTRISCV64.EFI`, bypassing NVRAM volatility issues on QEMU and ensuring bootability on SBCs (Single Board Computers) that rely on the UEFI fallback path.
+
+2.  **Installer Fixes (`krill` / calamares setup):**
+    * **Recursive Directories:** Fixed `ENOENT` errors on `/etc/sudoers.d/` for minimal systems by implementing recursive directory creation.
+
+3.  **Virtualization & Testing (QEMU Best Practices):**
+    * **Storage Driver:** Use `virtio-scsi` (not `virtio-blk`) when installing the produced ISO.
+    * *Why:* Krill/Calamares expects devices as `/dev/sdX`. `virtio-blk` maps them as `/dev/vdX`, causing partitioning or bootloader failures if not explicitly handled.
+    * **Binfmt:** On Debian (Trixie+), `binfmt_misc` with flag `F` allows running chroot without copying `qemu-riscv64-static` binary inside.
+
+#### QEMU Command Memo (Booting produced ISO)
+```bash
+qemu-system-riscv64 ... -device virtio-scsi-device,id=scsi0 -device scsi-hd,drive=hd0,bus=scsi0.0 ...
