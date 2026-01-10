@@ -13,7 +13,7 @@ sudo apt install binfmt-support \
             qemu-utils 
 ```
 
-## 2. Installazione Base (Debian Netinst)
+## 2. Installazione Base (resolute-live-server-riscv64.iso)
 Prepariamo l'ambiente di lavoro e creiamo un disco virtuale:
 
 ```bash
@@ -21,32 +21,33 @@ mkdir -p ~/riscv
 cd ~/riscv
 
 # Creiamo un disco da 10GB
-qemu-img create -f qcow2 debian-riscv.img 10G
+qemu-img create -f qcow2 ubuntu-riscv.img 10G
 
 # Copiamo le variabili EFI (necessarie per il boot)
-cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd debian-efi-vars.fd
+cp /usr/share/qemu-efi-riscv64/RISCV_VIRT_VARS.fd ubuntu-efi-vars.fd
 ```
 
 Avviamo l'installazione della ISO originale:
-*(Assicurati di avere il file `debian-13.2.0-riscv64-netinst.iso` nella cartella)*
+*(Assicurati di avere il file `resolute-live-server-riscv64.iso` nella cartella)*
 
 ```bash
 qemu-system-riscv64 \
     -machine virt \
-    -cpu rv64 \
+    -cpu rva23s64 \
     -m 4G \
     -smp 2 \
     -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./debian-efi-vars.fd \
+    -drive if=pflash,format=raw,unit=1,file=./ubuntu-efi-vars.fd \
     -device virtio-blk-device,drive=hd0 \
-    -drive file=debian-riscv.img,format=qcow2,id=hd0,if=none \
+    -drive file=ubuntu-riscv.img,format=qcow2,id=hd0,if=none \
     -device virtio-blk-device,drive=cd0 \
-    -drive file=debian-13.2.0-riscv64-netinst.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+    -drive file=resolute-live-server-riscv64.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
     -device virtio-net-device,netdev=net0 \
     -netdev user,id=net0 \
     -nographic
 ```
-*Segui la procedura di installazione Debian standard.*
+
+*Segui la procedura di installazione.*
 
 ## 3. Creazione della Chroot
 Installato il sistema, usiamo `qemu-nbd` per montare il disco virtuale `.qcow2` ed estrarne il contenuto.
@@ -55,8 +56,8 @@ Crea ed esegui questo script (`extract.sh`):
 
 ```bash
 # --- CONFIGURAZIONE ---
-export IMG=~/riscv/debian-riscv.img
-export SRC=/var/tmp/debian-riscv-src
+export IMG=~/riscv/resolute-riscv.img
+export SRC=/var/tmp/resolute-riscv-src
 export DEST=~/riscv/chroot
 
 # --- 1. PREPARAZIONE ---
@@ -85,7 +86,7 @@ echo "Fatto! Il filesystem è pronto in: $DEST"
 ```
 
 ## 4. Ingresso in Chroot e Creazione Egg
-Entriamo nel sistema per installare eggs. Grazie al flag `F` di `binfmt_misc` su Debian, non serve copiare qemu-static dentro la chroot.
+Entriamo nel sistema per installare eggs. Grazie al flag `F` di `binfmt_misc` su UBUNTU, non serve copiare qemu-static dentro la chroot.
 
 ```bash
 cd ~/riscv/chroot
@@ -97,7 +98,8 @@ sudo mount --rbind /dev dev/
 
 # Entriamo in chroot emulato
 # Nota: La versione del kernel in QEMU_UNAME è fittizia per ingannare uname
-sudo QEMU_UNAME="6.12.57+deb13-riscv64" chroot . /bin/bash
+sudo QEMU_CPU="max" QEMU_UNAME="6.17.0-5-generic" \
+    chroot . /usr/bin/script -qc "/bin/bash --login" /dev/null
 ```
 
 Una volta dentro la chroot:
@@ -105,7 +107,7 @@ Una volta dentro la chroot:
 1.  **Installa eggs:** Copia il pacchetto `.deb` di penguins-eggs ed installalo.
 2.  **Crea la ISO:**
     ```bash
-    eggs produce --release -n
+    eggs produce -n
     ```
 
 ## 5. Test e Installazione della ISO prodotta
@@ -123,8 +125,8 @@ Avvio dell'installazione della nostra ISO (`egg-of_debian...iso`).
 qemu-system-riscv64 \
   -nographic \
   -machine virt \
-  -m 2G \
-  -smp 4 \
+  -m 4G \
+  -smp 3 \
   -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
   -drive if=pflash,format=raw,unit=1,file=./naked-efi-vars.fd \
   \
@@ -133,9 +135,23 @@ qemu-system-riscv64 \
   -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
   -device scsi-hd,drive=hd0,bus=scsi0.0 \
   \
-  -drive file=egg-of_debian-trixie-naked_riscv64_XXXX.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+  -drive file=egg-of_ubuntu-resolute-naked_riscv64_2026-01-10_.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
   -device scsi-cd,drive=cd0,bus=scsi0.0 \
   \
   -device virtio-net-device,netdev=net0 \
   -netdev user,id=net0  
 ```
+
+qemu-system-riscv64 \
+    -machine virt \
+    -cpu max,v=true,vlen=128,vext_spec=v1.0,zba=true,zbb=true,zbc=true,zbs=true,zicond=true \
+    -m 4G -smp 4 \
+    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
+    -drive if=pflash,format=raw,unit=1,file=./resolute-efi-vars.fd \
+    -device virtio-blk-device,drive=hd0 \
+    -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
+    -device virtio-blk-device,drive=cd0 \
+    -drive file=egg-of_ubuntu-resolute-naked_riscv64_2026-01-10_0949.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+    -netdev user,id=net0,hostfwd=tcp::2222-:22 \
+    -device virtio-net-device,netdev=net0 \
+    -nographic
