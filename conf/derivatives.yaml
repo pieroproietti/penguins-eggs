@@ -119,6 +119,7 @@
     - oracular # Ubuntu 24.10 
     - plucky # Ubuntu 25.04
     - questing # Ubuntu 25.10
+    - resolute # Ubuntu 26.04
     # others
     - abuntu # Abuntu
     - devel  # Rhino
