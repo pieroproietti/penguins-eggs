@@ -1,6 +1,6 @@
-# Debian Trixie su RISC-V con Penguins-Eggs
+# Ubuntu resolute su RISC-V con Penguins-Eggs
 
-In questo documento spiego come installare una `debian-13.2.0-riscv64-netinst.iso` tramite QEMU, estrarne il contenuto per installare `eggs` e creare una nuova ISO avviabile e installabile su architettura RISC-V.
+In questo documento spiego come installare una `resolute-live-server-riscv64.iso` tramite QEMU, installare `eggs` e creare una nuova ISO avviabile e installabile su architettura RISC-V.
 
 ## 1. Prerequisiti
 Assicurati di avere i pacchetti necessari sul sistema host:
@@ -142,16 +142,20 @@ qemu-system-riscv64 \
   -netdev user,id=net0  
 ```
 
+# comando per appiare la ISO generata da eggs
+
 qemu-system-riscv64 \
-    -machine virt \
-    -cpu max,v=true,vlen=128,vext_spec=v1.0,zba=true,zbb=true,zbc=true,zbs=true,zicond=true \
-    -m 4G -smp 4 \
-    -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
-    -drive if=pflash,format=raw,unit=1,file=./resolute-efi-vars.fd \
-    -device virtio-blk-device,drive=hd0 \
-    -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
-    -device virtio-blk-device,drive=cd0 \
-    -drive file=egg-of_ubuntu-resolute-naked_riscv64_2026-01-10_0949.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
-    -netdev user,id=net0,hostfwd=tcp::2222-:22 \
-    -device virtio-net-device,netdev=net0 \
-    -nographic
+  -nographic \
+  -machine virt \
+  -cpu max \
+  -m 4G \
+  -smp 3 \
+  -drive if=pflash,format=raw,unit=0,file=/usr/share/qemu-efi-riscv64/RISCV_VIRT_CODE.fd,readonly=on \
+  -drive if=pflash,format=raw,unit=1,file=./naked-efi-vars.fd \
+  -device virtio-scsi-device,id=scsi0 \
+  -drive file=naked-riscv.img,format=qcow2,id=hd0,if=none \
+  -device scsi-hd,drive=hd0,bus=scsi0.0 \
+  -drive file=egg-of_ubuntu-resolute-naked_riscv64_2026-01-10_1633.iso,format=raw,id=cd0,media=cdrom,readonly=on,if=none \
+  -device scsi-cd,drive=cd0,bus=scsi0.0 \
+  -device virtio-net-device,netdev=net0 \
+  -netdev user,id=net0

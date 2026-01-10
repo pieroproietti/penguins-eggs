@@ -328,7 +328,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // grub.theme.png
     fs.copyFileSync(themeSrc, themeDest)
 
-    // grub.main.png
+// grub.main.png
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
     const cfgMain = path.join(isoDir, '/boot/grub/grub.cfg')
     const template = fs.readFileSync(grubTemplate, 'utf8')
@@ -339,12 +339,27 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     /**
-     * FIX KERNEL NAME FOR RISC-V
-     * Se siamo su RISC-V, forziamo l'uso di 'vmlinux' invece di 'vmlinuz' nel config
+     * SMART KERNEL DETECTION FOR RISC-V
+     * Invece di forzare ciecamante 'vmlinux', controlliamo cosa c'è davvero 
+     * nella cartella /live della ISO.
+     * Questo supporta sia Debian (spesso vmlinux) che Ubuntu (vmlinuz).
      */
-    let kernelFile = `/live/${path.basename(this.vmlinuz)}`
+    let kernelName = path.basename(this.vmlinuz) // Nome originale rilevato dal sistema
+
     if (process.arch === 'riscv64') {
-        kernelFile = kernelFile.replace('vmlinuz', 'vmlinux')
+        const liveDir = path.join(isoDir, 'live')
+        
+        // Generiamo le due possibili varianti del nome
+        const nameX = kernelName.replace('vmlinuz', 'vmlinux') // variante uncompressed
+        const nameZ = kernelName.replace('vmlinux', 'vmlinuz') // variante compressed
+        
+        // Controllo esistenza fisica
+        if (fs.existsSync(path.join(liveDir, nameX))) {
+            kernelName = nameX // Abbiamo trovato vmlinux (Debian style)
+        } else if (fs.existsSync(path.join(liveDir, nameZ))) {
+            kernelName = nameZ // Abbiamo trovato vmlinuz (Ubuntu style)
+        }
+        // Se non trova nulla, mantiene l'originale kernelName come fallback
     }
 
     const view = {
@@ -352,7 +367,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,
-        vmlinuz: kernelFile // Usiamo la variabile modificata
+        vmlinuz: `/live/${kernelName}` // Usiamo il nome verificato
     }
 
     let cfgMainText = ''
@@ -364,7 +379,6 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     cfgMainText += mustache.render(template, view)
     fs.writeFileSync(cfgMain, cfgMainText)
 }
-
 
 /**
  * FUNCTIONS
