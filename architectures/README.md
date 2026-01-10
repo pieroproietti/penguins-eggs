@@ -21,31 +21,7 @@ Architectures: Starting with amd64 and i386, I moved on to [ARM64](ARM64.md) (th
 Distributions: Today, the tool supports a vast ecosystem, including Arch, Debian, Devuan, Fedora, Manjaro, openSUSE, and RHEL.
 
 
-# Installazione qemu su Colibri
-```
-sudo apt update && sudo apt install -y \
-  qemu-system \
-  qemu-utils \
-  libvirt-clients \
-  libvirt-daemon-system \
-  virt-manager \
-  ovmf \
-  qemu-efi-aarch64 \
-  qemu-system-gui
-```
 
-# Avvio della ISO
-```
-qemu-system-x86_64 \
-  -enable-kvm \
-  -cpu host \
-  -m 4G \
-  -smp 4 \
-  -bios /usr/share/ovmf/OVMF.fd \
-  -cdrom /home/eggs/*.iso \
-  -vga virtio \
-  -display gtk,gl=on \
-  -device virtio-tablet-pci
-```
-
-Seguite [DEBIAN-RISCV](./DEBIAN-RISCV.md) per maggiori informazioni.
+Read more on:
+- [DEBIAN-RISCV](./DEBIAN-RISCV.md)
+- [UBUNTU-RISCV](UBUNTU-RISCV.md)
