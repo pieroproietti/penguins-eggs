@@ -1042,7 +1042,7 @@ export default class Utils {
          } else if (process.arch === "ia32") {
             arch += "i386"
          } else if (process.arch === "arm64") {
-            arch += "arch64"
+            arch += "arm64"
          } else if (process.arch === "riscv64") {
             arch += "riscv64"
          }
