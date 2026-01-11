@@ -1035,16 +1035,26 @@ export default class Utils {
     * @returns flag
     */
    static flag(): string {
-      let type = ''
+      let arch = "-"
       if (!Utils.isAppImage()) {
-         type = ' native'
+         if (process.arch === "x64") {
+            arch += "x86_64"
+         } else if (process.arch === "ia32") {
+            arch += "i386"
+         } else if (process.arch === "arm64") {
+            arch += "arch64"
+         } else if (process.arch === "riscv64") {
+            arch += "riscv64"
+         }
+      } else {
+         arch += "AppImage"
       }
 
       let title = `${pjson.name}`
 
       let green = ` ${title}`.padEnd(25, " ")
       let white = ` Perri's brewery edition `.padEnd(25, " ")
-      let red = ` v${pjson.version}${type} `.padStart(25, " ")
+      let red = ` v${pjson.version}${arch} `.padStart(25, " ")
 
       return chalk.bgGreen.whiteBright(green) +
          chalk.bgWhite.blue(white) +

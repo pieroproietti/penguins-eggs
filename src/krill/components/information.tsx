@@ -25,7 +25,7 @@ export default async function information(verbose = false): Promise<void> {
             <Box marginRight={2}><Text> E G G S: the reproductive system of penguins</Text></Box>
         </Box>
     )
-    render (<Wait/>)
+    render(<Wait />)
     const Nest = () => (
         <Box borderStyle="round" marginRight={2}>
             <Box marginRight={2}><Text>nest: <Text color="cyan">{settings.config.snapshot_dir}</Text></Text></Box>
@@ -53,7 +53,7 @@ export default async function information(verbose = false): Promise<void> {
     const osInfo = Utils.getOsRelease()
     const codenameId = osInfo.VERSION_CODENAME
     const releaseId = osInfo.VERSION_ID
-    const  distroId = osInfo.ID
+    const distroId = osInfo.ID
 
     const Distro = () => (
         <Box flexDirection='column'>
@@ -96,6 +96,10 @@ export default async function information(verbose = false): Promise<void> {
         <Text color="cyan">container</Text>
     )
 
+    const Chroot = () => (
+        <Text color="cyan">chroot</Text>
+    )
+
     let initType = ''
     if (Utils.isSystemd()) {
         initType = 'systemd'
@@ -103,13 +107,22 @@ export default async function information(verbose = false): Promise<void> {
         initType = 'openrc'
     } else if (Utils.isSysvinit()) {
         initType = 'sysvinit'
-    } 
+    }
 
     const RunningOn = () => (
         <Box borderStyle="round" marginRight={2} flexDirection="row">
             <Box marginRight={2}><Text>configuration: {configurations ? <Ok /> : <Ko />}</Text></Box>
+            <Box marginRight={2}><Text>arch: {process.arch}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
-            <Box marginRight={2}><Text>running on: {Utils.isContainer() ? <Container /> : <Host />}</Text></Box>
+            <Box marginRight={2}>
+                <Text>
+                    running on: {
+                        Utils.isContainer() ? <Container /> :
+                            Utils.isChroot() ? <Chroot /> :
+                                <Host />
+                    }
+                </Text>
+            </Box>
             <Box marginRight={2}><Text>init: <Text color="cyan">{initType}</Text></Text></Box>
             <Box marginRight={2}><Text>installer: {installer ? <GUI /> : <CLI />}</Text></Box>
         </Box>
