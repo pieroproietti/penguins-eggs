@@ -20,6 +20,21 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.11
+## New Features & Architecture Support:
+
+- **RISC-V Native Support**: Full recursive remastering capability on riscv64.
+
+- **Ubuntu Resolute (26.04) Ready**: Verified support for the upcoming Ubuntu LTS on RISC-V.
+
+- **Smart Kernel Detection**: Implemented logic to automatically detect compressed (vmlinuz, Ubuntu-style) vs uncompressed (vmlinux, Debian-style) kernels in the generated ISO. No more manual GRUB edits needed.
+
+Fixes:
+
+- **GRUB/UEFI**: Fixed bootloader path issues on RISC-V boards and QEMU. Now correctly installs to the fallback path (/EFI/BOOT/BOOTRISCV64.EFI) ensuring bootability on generic UEFI implementations (U-Boot).
+
+- **Krill Installer**: Solved ENOENT issues for sudoers configuration on minimal systems.
+
 # v26.1.9
 feat: add native support for RISC-V UEFI installation and fix sudoers creation
 
