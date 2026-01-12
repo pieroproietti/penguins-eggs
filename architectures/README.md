@@ -16,12 +16,11 @@ The first versions were dedicated exclusively to Debian, but my vision has alway
 
 This approach prompted me to extend support over time:
 
-Architectures: Starting with amd64 and i386, I moved on to [ARM64](ARM64.md) (thanks to testing on Raspberry Pi 4) and the recent challenge of [RISCV64](RISCV64.md), born out of my constant curiosity about innovations in the field.
-
-Distributions: Today, the tool supports a vast ecosystem, including Arch, Debian, Devuan, Fedora, Manjaro, openSUSE, and RHEL.
-
-
+- **Architectures**: Starting with amd64 and i386, I moved on to **ARM64** (thanks to testing on Raspberry Pi 4) and the recent challenge of **RISCV64**, born out of my constant curiosity about innovations in the field.
+. **Distributions**: Today, the tool supports a vast ecosystem, including Arch, Debian, Devuan, Fedora, Manjaro, openSUSE, and RHEL9.
 
 Read more on:
 - [DEBIAN-RISCV](./DEBIAN-RISCV.md)
 - [UBUNTU-RISCV](UBUNTU-RISCV.md)
+- [DEBIAN-ARM64](./DEBIAN-ARM64.md)
+- [UBUNTU-ARM64](UBUNTU-ARM64.md)
