@@ -1,5 +1,7 @@
 # Ubuntu Resolute su ARM64 con Penguins-Eggs
 
+**Nota**: Ho dovuto interrompere questa procedura per eccessiva lentezza. Sto un un 8 x Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz (1 Socket) ed utilizzo una VM con 8 GB RAM e x86-64-v2-AES 2 Sockets e 2 Cores.
+
 In questo documento spiego come installare una `resolute-live-server-arm64.iso` tramite QEMU, estrarne il contenuto, installare `eggs` e creare una nuova ISO avviabile e installabile su architettura ARM64 (AArch64).
 
 ## 1. Prerequisiti
