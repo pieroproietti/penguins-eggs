@@ -1,5 +1,7 @@
 # README
+
 # Penguin&#39;s eggs are generated and new birds are ready to fly...
+
 [![sources](https://img.shields.io/badge/github-sources-cyan)](https://github.com/pieroproietti/penguins-eggs)
 [![www](https://img.shields.io/badge/www-blog-cyan)](https://penguins-eggs.net)
 [![telegram](https://img.shields.io/badge/telegram-group-cyan)](https://t.me/penguins_eggs)
@@ -13,58 +15,79 @@
   <img src="https://raw.githubusercontent.com/pieroproietti/penguins-eggs/master/images/penguins-eggs-300x300.png" width="280" height="300" alt="CD-ROM">
 </a>
 
-It took years of work to create the penguins-eggs, and I also incurred expenses for renting the site and subscribing to Google Gemini, for the artificial intelligence that is now indispensable.
+It took years of work to create the penguins-eggs, and I also incurred expenses
+for renting the site and subscribing to Google Gemini, for the artificial
+intelligence that is now indispensable.
 
 [![donate](https://img.shields.io/badge/Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/penguinseggs)
 
 ## Index
+
 <!-- toc -->
-* [README](#readme)
-* [Penguin&#39;s eggs are generated and new birds are ready to fly...](#penguin39s-eggs-are-generated-and-new-birds-are-ready-to-fly)
-* [penguins-eggs](#penguins-eggs)
-* [Installation](#installation)
-* [Usage](#usage)
-* [The Aviary: Tools & Terminology](#the-aviary-tools--terminology)
-* [Supported Distributions](#supported-distributions)
-* [Links & Documentation](#links--documentation)
-* [Commands](#commands)
-* [GUI](#gui)
-* [Book](#book)
-* [Copyright and licenses](#copyright-and-licenses)
+
+- [README](#readme)
+- [Penguin&#39;s eggs are generated and new birds are ready to fly...](#penguin39s-eggs-are-generated-and-new-birds-are-ready-to-fly)
+- [penguins-eggs](#penguins-eggs)
+- [Installation](#installation)
+- [Usage](#usage)
+- [The Aviary: Tools & Terminology](#the-aviary-tools--terminology)
+- [Supported Distributions](#supported-distributions)
+- [Links & Documentation](#links--documentation)
+- [Commands](#commands)
+- [GUI](#gui)
+- [Book](#book)
+- [Copyright and licenses](#copyright-and-licenses)
+
 <!-- tocstop -->
 
 ## Links
- - [Blog](https://penguins-eggs.net/blog)
- - [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
- - [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
- - [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
- - [FAQ](https://penguins-eggs.net/docs/faq)
- - [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
+- [Blog](https://penguins-eggs.net/blog)
+- [Cook eggs in 5 minutes!](https://penguins-eggs.net/docs/Tutorial/eggs5)
+- [Users guide](https://penguins-eggs.net/docs/Tutorial/eggs-users-guide)
+- [Wardrobe users' guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+- [FAQ](https://penguins-eggs.net/docs/faq)
+- [Changelog](https://github.com/pieroproietti/penguins-eggs/blob/master/CHANGELOG.md#changelog)
 
 # penguins-eggs
 
-**penguins-eggs** (or simply `eggs`) is a console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE.
+**penguins-eggs** (or simply `eggs`) is a console tool that allows you to
+remaster your system and redistribute it as live images on USB sticks or via
+PXE.
 
-Think of it as a way to "hatch" a new system from an existing one. It is a system cloning and distribution remastering tool primarily designed for Linux. It allows users to create customized live ISO images or backups of a Linux system, replicating the setup easily.
+Think of it as a way to "hatch" a new system from an existing one. It is a
+system cloning and distribution remastering tool primarily designed for Linux.
+It allows users to create customized live ISO images or backups of a Linux
+system, replicating the setup easily.
 
 ### Key Capabilities
 
-* **Distribution Remastering:** Craft your own Linux distro (or a spin of an existing one). Tweak an existing system, strip or add components, and package it as a new ISO.
-* **System Backup & Cloning:** Create a snapshot of your current system, including installed packages and configurations.
-* **Distro-Agnostic:** Works across **Debian, Devuan, Ubuntu, Arch, Fedora, AlmaLinux, Rocky, OpenSuSE, and Alpine**.
-* **Multi-Architecture:** Debian/Ubuntu packages are relased for `i386`, `amd64`, `arm64` and  `riscv64` ([more info](./architectures/README.md)).
-* **Fast & Efficient:** Leverages OverlayFS to avoid physically copying the entire filesystem, combined with zstd compression (up to 10x faster).
-* **Secure:** Supports LUKS encryption for user data within the ISO.
+- **Distribution Remastering:** Craft your own Linux distro (or a spin of an
+  existing one). Tweak an existing system, strip or add components, and package
+  it as a new ISO.
+- **System Backup & Cloning:** Create a snapshot of your current system,
+  including installed packages and configurations.
+- **Distro-Agnostic:** Works across **Debian, Devuan, Ubuntu, Arch, Fedora,
+  AlmaLinux, Rocky, OpenSuSE, and Alpine**.
+- **Multi-Architecture:** Debian/Ubuntu packages are relased for `i386`,
+  `amd64`, `arm64` and `riscv64` ([more info](./architectures/README.md)).
+- **Fast & Efficient:** Leverages OverlayFS to avoid physically copying the
+  entire filesystem, combined with zstd compression (up to 10x faster).
+- **Secure:** Supports LUKS encryption for user data within the ISO.
 
 ---
 
 # Installation
 
-There are three main ways to install `eggs`. Choose the one that fits your workflow.
+There are three main ways to install `eggs`. Choose the one that fits your
+workflow.
 
 ### Method 1: The "Fresh Eggs" Script (Recommended)
-This is the most practical way suitable for all [supported distros](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md). It automatically configures necessary repositories (like NodeSource) and installs dependencies.
+
+This is the most practical way suitable for all
+[supported distros](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md).
+It automatically configures necessary repositories (like NodeSource) and
+installs dependencies.
 
 ```bash
 git clone [https://github.com/pieroproietti/fresh-eggs](https://github.com/pieroproietti/fresh-eggs)
@@ -73,29 +96,35 @@ sudo ./fresh-eggs.sh
 ```
 
 ### Method 2: AppImage (Universal)
-Download the latest AppImage from [Releases](https://github.com/pieroproietti/penguins-eggs/releases).
+
+Download the latest AppImage from
+[Releases](https://github.com/pieroproietti/penguins-eggs/releases).
 
 **Prerequisites:** Depending on your distro, you may need FUSE:
-* **Debian/Ubuntu:** `sudo apt-get install fuse libfuse2`
-* **Arch:** `sudo pacman -S fuse2`
-* **Fedora:** `sudo dnf install fuse fuse-libs`
+
+- **Debian/Ubuntu:** `sudo apt-get install fuse libfuse2`
+- **Arch:** `sudo pacman -S fuse2`
+- **Fedora:** `sudo dnf install fuse fuse-libs`
 
 **Run:**
+
 ```bash
 chmod +x penguins-eggs-*.AppImage
 sudo ./penguins-eggs-*.AppImage
 ```
-*The AppImage will automatically configure itself as `/usr/bin/eggs`.*
+
+_The AppImage will automatically configure itself as `/usr/bin/eggs`._
 
 ### Method 3: Native Packages
+
 If you prefer native package managers, specific repositories are available.
 
-| Family | Instructions |
-| :--- | :--- |
-| **Debian/Ubuntu** | [Install Guide](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md) / [PPA Info](https://pieroproietti.github.io/penguins-eggs-ppa) |
-| **Arch/Manjaro** | Available in **AUR** and **Manjaro Community**. Use `yay penguins-eggs` or `pamac install penguins-eggs`. |
-| **Fedora/RHEL** | [Fedora Guide](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md) / [Enterprise Linux](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md) |
-| **Alpine** | Available in the [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) repo. |
+| Family            | Instructions                                                                                                                                                                                                        |
+| :---------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Debian/Ubuntu** | [Install Guide](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-DEBIAN-DEVUAN-UBUNTU.md) / [PPA Info](https://pieroproietti.github.io/penguins-eggs-ppa)                                    |
+| **Arch/Manjaro**  | Available in **AUR** and **Manjaro Community**. Use `yay penguins-eggs` or `pamac install penguins-eggs`.                                                                                                           |
+| **Fedora/RHEL**   | [Fedora Guide](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-FEDORA.md) / [Enterprise Linux](https://github.com/pieroproietti/penguins-eggs/blob/master/DOCS/INSTALL-ENTERPRISE-LINUX.md) |
+| **Alpine**        | Available in the [penguins-alpine](https://github.com/pieroproietti/penguins-alpine) repo.                                                                                                                          |
 
 ---
 
@@ -104,24 +133,29 @@ If you prefer native package managers, specific repositories are available.
 Once installed, simply run `eggs` to see the available commands.
 
 ### Basic: Create a Clean ISO
-This creates a distributable live ISO *without* user data. Perfect for sharing your custom distro.
+
+This creates a distributable live ISO _without_ user data. Perfect for sharing
+your custom distro.
+
 ```bash
 sudo eggs produce
 ```
 
 ### Cloning: Backup Your System
+
 To keep your user data, configurations, and files:
 
-| Goal | Command | Description |
-| :--- | :--- | :--- |
-| **Standard Clone** | `eggs produce --clone` | Copies user data unencrypted. **Do not share publicly.** |
-| **Home Encryption** | `eggs produce --homecrypt` | Encrypts `/home` data inside the ISO using LUKS. |
-| **Full Encryption** | `eggs produce --fullcrypt` | Encrypts the entire system (Debian/Devuan only). |
+| Goal                | Command                    | Description                                              |
+| :------------------ | :------------------------- | :------------------------------------------------------- |
+| **Standard Clone**  | `eggs produce --clone`     | Copies user data unencrypted. **Do not share publicly.** |
+| **Home Encryption** | `eggs produce --homecrypt` | Encrypts `/home` data inside the ISO using LUKS.         |
+| **Full Encryption** | `eggs produce --fullcrypt` | Encrypts the entire system (Debian/Devuan only).         |
 
 ### Compression Options
-* `--pendrive`: Optimized for USBs (zstd level 15).
-* `--standard`: Uses `xz` compression.
-* `--max`: Maximum compression (`xz -Xbcj`).
+
+- `--pendrive`: Optimized for USBs (zstd level 15).
+- `--standard`: Uses `xz` compression.
+- `--max`: Maximum compression (`xz -Xbcj`).
 
 ---
 
@@ -129,70 +163,86 @@ To keep your user data, configurations, and files:
 
 `penguins-eggs` uses a bird-themed naming convention for its internal tools:
 
-* **Wardrobe:** A tool to organize customizations, scripts, and themes. It allows you to switch between configurations (e.g., from a bare CLI system to a full GUI). See [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe).
-* **Cuckoo:** A PXE boot server feature. It allows you to boot your generated ISO on other computers over the local network without needing a USB drive.
-* **Yolk:** A local repository bundled inside the ISO containing essential packages, allowing offline installation.
-* **Krill:** The internal CLI/TUI system installer. Essential for server installs or when no GUI is available.
-* **Calamares:** The industry-standard GUI installer, automatically configured by `eggs` for desktop environments.
-* **Mom & Dad:**
-    * `eggs mom`: Interactive help and documentation assistant.
-    * `eggs dad`: Configuration wizard. Run `sudo eggs dad -d` to reset configuration.
+- **Wardrobe:** A tool to organize customizations, scripts, and themes. It
+  allows you to switch between configurations (e.g., from a bare CLI system to a
+  full GUI). See
+  [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe).
+- **Cuckoo:** A PXE boot server feature. It allows you to boot your generated
+  ISO on other computers over the local network without needing a USB drive.
+- **Yolk:** A local repository bundled inside the ISO containing essential
+  packages, allowing offline installation.
+- **Krill:** The internal CLI/TUI system installer. Essential for server
+  installs or when no GUI is available.
+- **Calamares:** The industry-standard GUI installer, automatically configured
+  by `eggs` for desktop environments.
+- **Mom & Dad:**
+  - `eggs mom`: Interactive help and documentation assistant.
+  - `eggs dad`: Configuration wizard. Run `sudo eggs dad -d` to reset
+    configuration.
 
 ---
 
 # Supported Distributions
 
-`eggs` is designed to be distro-agnostic. It respects the original package manager and repository lists.
+`eggs` is designed to be distro-agnostic. It respects the original package
+manager and repository lists.
 
-* **Debian Family:** Debian, Devuan, Ubuntu, Linux Mint, Kali, KDE Neon, Pop!_OS.
-* **Arch Family:** Arch Linux, Manjaro, Biglinux, EndeavourOS, Garuda.
-* **RPM Family:** Fedora, AlmaLinux, Rocky Linux, OpenSUSE.
-* **Others:** Alpine Linux.
+- **Debian Family:** Debian, Devuan, Ubuntu, Linux Mint, Kali, KDE Neon,
+  Pop!_OS.
+- **Arch Family:** Arch Linux, Manjaro, Biglinux, EndeavourOS, Garuda.
+- **RPM Family:** Fedora, AlmaLinux, Rocky Linux, OpenSUSE.
+- **Others:** Alpine Linux.
 
 > [!NOTE]
-> For a complete and updated list, please consult [SUPPORTED-DISTROS](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md).
+> For a complete and updated list, please consult
+> [SUPPORTED-DISTROS](https://github.com/pieroproietti/fresh-eggs/blob/main/SUPPORTED-DISTROS.md).
 
 ---
 
 # Links & Documentation
 
-* **Official Website:** [penguins-eggs.net](https://penguins-eggs.net)
-* **Blog & News:** [The Triple Somersault](https://penguins-eggs.net/blog/triple-somersault)
-* **SourceForge ISOs:** [Download Examples](https://sourceforge.net/projects/penguins-eggs/files/ISOS/)
-* **User Guide:** [Wardrobe User Guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
+- **Official Website:** [penguins-eggs.net](https://penguins-eggs.net)
+- **Blog & News:**
+  [The Triple Somersault](https://penguins-eggs.net/blog/triple-somersault)
+- **SourceForge ISOs:**
+  [Download Examples](https://sourceforge.net/projects/penguins-eggs/files/ISOS/)
+- **User Guide:**
+  [Wardrobe User Guide](https://penguins-eggs.net/docs/Tutorial/wardrobe-users-guide)
 
 # Commands
+
 <!-- commands -->
-* [`eggs adapt`](#eggs-adapt)
-* [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
-* [`eggs calamares`](#eggs-calamares)
-* [`eggs config`](#eggs-config)
-* [`eggs cuckoo`](#eggs-cuckoo)
-* [`eggs dad`](#eggs-dad)
-* [`eggs export appimage`](#eggs-export-appimage)
-* [`eggs export iso`](#eggs-export-iso)
-* [`eggs export pkg`](#eggs-export-pkg)
-* [`eggs export tarballs`](#eggs-export-tarballs)
-* [`eggs help [COMMAND]`](#eggs-help-command)
-* [`eggs kill`](#eggs-kill)
-* [`eggs krill`](#eggs-krill)
-* [`eggs love`](#eggs-love)
-* [`eggs mom`](#eggs-mom)
-* [`eggs produce`](#eggs-produce)
-* [`eggs setup install`](#eggs-setup-install)
-* [`eggs setup purge`](#eggs-setup-purge)
-* [`eggs status`](#eggs-status)
-* [`eggs tools clean`](#eggs-tools-clean)
-* [`eggs tools repo`](#eggs-tools-repo)
-* [`eggs tools skel`](#eggs-tools-skel)
-* [`eggs tools stat`](#eggs-tools-stat)
-* [`eggs tools yolk`](#eggs-tools-yolk)
-* [`eggs update`](#eggs-update)
-* [`eggs version`](#eggs-version)
-* [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
-* [`eggs wardrobe list [REPO]`](#eggs-wardrobe-list-repo)
-* [`eggs wardrobe show [REPO]`](#eggs-wardrobe-show-repo)
-* [`eggs wardrobe wear [REPO]`](#eggs-wardrobe-wear-repo)
+
+- [`eggs adapt`](#eggs-adapt)
+- [`eggs autocomplete [SHELL]`](#eggs-autocomplete-shell)
+- [`eggs calamares`](#eggs-calamares)
+- [`eggs config`](#eggs-config)
+- [`eggs cuckoo`](#eggs-cuckoo)
+- [`eggs dad`](#eggs-dad)
+- [`eggs export appimage`](#eggs-export-appimage)
+- [`eggs export iso`](#eggs-export-iso)
+- [`eggs export pkg`](#eggs-export-pkg)
+- [`eggs export tarballs`](#eggs-export-tarballs)
+- [`eggs help [COMMAND]`](#eggs-help-command)
+- [`eggs kill`](#eggs-kill)
+- [`eggs krill`](#eggs-krill)
+- [`eggs love`](#eggs-love)
+- [`eggs mom`](#eggs-mom)
+- [`eggs produce`](#eggs-produce)
+- [`eggs setup install`](#eggs-setup-install)
+- [`eggs setup purge`](#eggs-setup-purge)
+- [`eggs status`](#eggs-status)
+- [`eggs tools clean`](#eggs-tools-clean)
+- [`eggs tools repo`](#eggs-tools-repo)
+- [`eggs tools skel`](#eggs-tools-skel)
+- [`eggs tools stat`](#eggs-tools-stat)
+- [`eggs tools yolk`](#eggs-tools-yolk)
+- [`eggs update`](#eggs-update)
+- [`eggs version`](#eggs-version)
+- [`eggs wardrobe get [REPO]`](#eggs-wardrobe-get-repo)
+- [`eggs wardrobe list [REPO]`](#eggs-wardrobe-list-repo)
+- [`eggs wardrobe show [REPO]`](#eggs-wardrobe-show-repo)
+- [`eggs wardrobe wear [REPO]`](#eggs-wardrobe-wear-repo)
 
 ## `eggs adapt`
 
@@ -213,7 +263,8 @@ EXAMPLES
   $ eggs adapt
 ```
 
-_See code: [src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/adapt.ts)_
+_See code:
+[src/commands/adapt.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/adapt.ts)_
 
 ## `eggs autocomplete [SHELL]`
 
@@ -244,7 +295,8 @@ EXAMPLES
   $ eggs autocomplete --refresh-cache
 ```
 
-_See code: [@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.39/src/commands/autocomplete/index.ts)_
+_See code:
+[@oclif/plugin-autocomplete](https://github.com/oclif/plugin-autocomplete/blob/v3.2.39/src/commands/autocomplete/index.ts)_
 
 ## `eggs calamares`
 
@@ -277,7 +329,8 @@ EXAMPLES
   sudo eggs calamares --remove
 ```
 
-_See code: [src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/calamares.ts)_
+_See code:
+[src/commands/calamares.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/calamares.ts)_
 
 ## `eggs config`
 
@@ -304,7 +357,8 @@ EXAMPLES
   sudo eggs config --clean --nointeractive
 ```
 
-_See code: [src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/config.ts)_
+_See code:
+[src/commands/config.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/config.ts)_
 
 ## `eggs cuckoo`
 
@@ -325,7 +379,8 @@ EXAMPLES
   sudo eggs cuckoo
 ```
 
-_See code: [src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/cuckoo.ts)_
+_See code:
+[src/commands/cuckoo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/cuckoo.ts)_
 
 ## `eggs dad`
 
@@ -354,7 +409,8 @@ EXAMPLES
   sudo dad --default
 ```
 
-_See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/dad.ts)_
+_See code:
+[src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/dad.ts)_
 
 ## `eggs export appimage`
 
@@ -380,7 +436,8 @@ EXAMPLES
   $ eggs export pkg --all
 ```
 
-_See code: [src/commands/export/appimage.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/appimage.ts)_
+_See code:
+[src/commands/export/appimage.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/appimage.ts)_
 
 ## `eggs export iso`
 
@@ -405,7 +462,8 @@ EXAMPLES
   $ eggs export iso --clean
 ```
 
-_See code: [src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/iso.ts)_
+_See code:
+[src/commands/export/iso.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/iso.ts)_
 
 ## `eggs export pkg`
 
@@ -432,7 +490,8 @@ EXAMPLES
   $ eggs export pkg --all
 ```
 
-_See code: [src/commands/export/pkg.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/pkg.ts)_
+_See code:
+[src/commands/export/pkg.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/pkg.ts)_
 
 ## `eggs export tarballs`
 
@@ -456,7 +515,8 @@ EXAMPLES
   $ eggs export tarballs --clean
 ```
 
-_See code: [src/commands/export/tarballs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/tarballs.ts)_
+_See code:
+[src/commands/export/tarballs.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/export/tarballs.ts)_
 
 ## `eggs help [COMMAND]`
 
@@ -476,7 +536,8 @@ DESCRIPTION
   Display help for eggs.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.36/src/commands/help.ts)_
+_See code:
+[@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.36/src/commands/help.ts)_
 
 ## `eggs kill`
 
@@ -499,7 +560,8 @@ EXAMPLES
   sudo eggs kill
 ```
 
-_See code: [src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/kill.ts)_
+_See code:
+[src/commands/kill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/kill.ts)_
 
 ## `eggs krill`
 
@@ -540,7 +602,8 @@ EXAMPLES
   sudo eggs install --chroot
 ```
 
-_See code: [src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/krill.ts)_
+_See code:
+[src/commands/krill.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/krill.ts)_
 
 ## `eggs love`
 
@@ -566,7 +629,8 @@ EXAMPLES
   $ eggs auto
 ```
 
-_See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/love.ts)_
+_See code:
+[src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/love.ts)_
 
 ## `eggs mom`
 
@@ -586,7 +650,8 @@ EXAMPLES
   $ eggs mom
 ```
 
-_See code: [src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/mom.ts)_
+_See code:
+[src/commands/mom.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/mom.ts)_
 
 ## `eggs produce`
 
@@ -639,7 +704,8 @@ EXAMPLES
   sudo eggs produce --basename=colibri
 ```
 
-_See code: [src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/produce.ts)_
+_See code:
+[src/commands/produce.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/produce.ts)_
 
 ## `eggs setup install`
 
@@ -660,7 +726,8 @@ EXAMPLES
   sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
 ```
 
-_See code: [src/commands/setup/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/setup/install.ts)_
+_See code:
+[src/commands/setup/install.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/setup/install.ts)_
 
 ## `eggs setup purge`
 
@@ -681,7 +748,8 @@ EXAMPLES
   sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage
 ```
 
-_See code: [src/commands/setup/purge.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/setup/purge.ts)_
+_See code:
+[src/commands/setup/purge.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/setup/purge.ts)_
 
 ## `eggs status`
 
@@ -702,7 +770,8 @@ EXAMPLES
   $ eggs status
 ```
 
-_See code: [src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/status.ts)_
+_See code:
+[src/commands/status.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/status.ts)_
 
 ## `eggs tools clean`
 
@@ -724,7 +793,8 @@ EXAMPLES
   sudo eggs tools clean
 ```
 
-_See code: [src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/clean.ts)_
+_See code:
+[src/commands/tools/clean.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/clean.ts)_
 
 ## `eggs tools repo`
 
@@ -750,7 +820,8 @@ EXAMPLES
   sudo eggs tools repo --remove
 ```
 
-_See code: [src/commands/tools/repo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/repo.ts)_
+_See code:
+[src/commands/tools/repo.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/repo.ts)_
 
 ## `eggs tools skel`
 
@@ -774,7 +845,8 @@ EXAMPLES
   sudo eggs tools skel --user user-to-be-copied
 ```
 
-_See code: [src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/skel.ts)_
+_See code:
+[src/commands/tools/skel.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/skel.ts)_
 
 ## `eggs tools stat`
 
@@ -800,7 +872,8 @@ EXAMPLES
   $ eggs tools stat --year
 ```
 
-_See code: [src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/stat.ts)_
+_See code:
+[src/commands/tools/stat.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/stat.ts)_
 
 ## `eggs tools yolk`
 
@@ -821,7 +894,8 @@ EXAMPLES
   sudo eggs tools yolk
 ```
 
-_See code: [src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/yolk.ts)_
+_See code:
+[src/commands/tools/yolk.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/tools/yolk.ts)_
 
 ## `eggs update`
 
@@ -842,7 +916,8 @@ EXAMPLES
   $ eggs update
 ```
 
-_See code: [src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/update.ts)_
+_See code:
+[src/commands/update.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/update.ts)_
 
 ## `eggs version`
 
@@ -862,7 +937,8 @@ FLAG DESCRIPTIONS
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.36/src/commands/version.ts)_
+_See code:
+[@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v2.2.36/src/commands/version.ts)_
 
 ## `eggs wardrobe get [REPO]`
 
@@ -888,7 +964,8 @@ EXAMPLES
   $ eggs wardrobe get your-wardrobe
 ```
 
-_See code: [src/commands/wardrobe/get.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/get.ts)_
+_See code:
+[src/commands/wardrobe/get.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/get.ts)_
 
 ## `eggs wardrobe list [REPO]`
 
@@ -917,7 +994,8 @@ EXAMPLES
   $ eggs wardrobe list --distro arch
 ```
 
-_See code: [src/commands/wardrobe/list.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/list.ts)_
+_See code:
+[src/commands/wardrobe/list.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/list.ts)_
 
 ## `eggs wardrobe show [REPO]`
 
@@ -947,7 +1025,8 @@ EXAMPLES
   $ eggs wardrobe show accessories/
 ```
 
-_See code: [src/commands/wardrobe/show.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/show.ts)_
+_See code:
+[src/commands/wardrobe/show.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/show.ts)_
 
 ## `eggs wardrobe wear [REPO]`
 
@@ -978,57 +1057,98 @@ EXAMPLES
   sudo eggs wardrobe wear wagtail/waydroid
 ```
 
-_See code: [src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/wear.ts)_
+_See code:
+[src/commands/wardrobe/wear.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.11/src/commands/wardrobe/wear.ts)_
+
 <!-- commandsstop -->
 
 # GUI
+
 There are two GUIs for penguins-eggs at the moment: eggsmaker and penGUI.
 
 ## eggsmaker
+
 ### A project by [Jorge Luis Endres](https://github.com/jlendres/eggsmaker).
 
 ![eggsmaker](https://github.com/jlendres/eggsmaker/raw/main/images/eggsmaker-running.png)
 
 eggsmaker is a graphical interface for penguins-eggs.
 
-Written by my friend Jorge Luis Endres, it is essential and functional. It doesn’t cover all the possibilities of penguins-eggs, but in the end, a GUI should be simple and intuitive.
+Written by my friend Jorge Luis Endres, it is essential and functional. It
+doesn’t cover all the possibilities of penguins-eggs, but in the end, a GUI
+should be simple and intuitive.
 
-I like it, I hope you like it too, and I thank Jorge for his daring. 
+I like it, I hope you like it too, and I thank Jorge for his daring.
 
-eggsmaker packages are available on [Jorge gdrive](https://drive.google.com/drive/folders/1hK8OB3e5sM2M9Z_vy1uR3_X7gPdNFYdO).
+eggsmaker packages are available on
+[Jorge gdrive](https://drive.google.com/drive/folders/1hK8OB3e5sM2M9Z_vy1uR3_X7gPdNFYdO).
 
 # Book
 
-My friend [Hosein Seilany](https://predator-store.com/about-us/)  founder of [predator-os](https://predator-os.ir/), has written a book on Penguins's eggs, with my partecipation. It's a remarkable work - even in size and weight - so it's a great honor to [announce](https://predator-store.com/product/penguins-eggs-tool) it here!
+My friend [Hosein Seilany](https://predator-store.com/about-us/) founder of
+[predator-os](https://predator-os.ir/), has written a book on Penguins's eggs,
+with my partecipation. It's a remarkable work - even in size and weight - so
+it's a great honor to
+[announce](https://predator-store.com/product/penguins-eggs-tool) it here!
 
 [![book](https://predator-store.com/wp-content/uploads/2025/05/final1-copy-2-1450x2048.jpg?raw=true)](https://predator-store.com/product/penguins-eggs-tool/)
 
 ## That's all, Folks!
 
- One of the standout features of Penguins Eggs' is its hassle-free setup. It comes with all the necessary configurations, making it a convenient choice for users. Just like in real life, the magic of Penguins Eggs' lies within - no additional setup required! 
+One of the standout features of Penguins Eggs' is its hassle-free setup. It
+comes with all the necessary configurations, making it a convenient choice for
+users. Just like in real life, the magic of Penguins Eggs' lies within - no
+additional setup required!
 
 ## More Information
 
-In addition to the official guide, there are other resources available for Penguins Eggs' users, particularly developers. These resources can be found in the [penguins-eggs repository](https://github.com/pieroproietti/penguins-eggs) under the [documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents) section.
+In addition to the official guide, there are other resources available for
+Penguins Eggs' users, particularly developers. These resources can be found in
+the [penguins-eggs repository](https://github.com/pieroproietti/penguins-eggs)
+under the
+[documents](https://github.com/pieroproietti/penguins-eggs/tree/master/documents)
+section.
 
 Some noteworthy documents include:
-- [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master//hens-different-species.md): A brief guide on using Penguins Eggs' in Debian, Arch, and Manjaro.
-- [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html): A blog post detailing how to create an Arch naked live, install it, and customize the resulting system into a graphics development station.
- 
-If you have any questions or need further assistance, feel free to contact me via email at pieroproietti@gmail.com. You can also stay updated by following my [blog](https://penguins-eggs.net) or connecting with me on , [Telegram](https://t.me/penguins_eggs), [Mastodom](https://social.treehouse.systems/@artisan), [Facebook](https://www.facebook.com/groups/128861437762355/), [GitHub](https://github.com/pieroproietti/penguins-krill), [Jitsi](https://meet.jit.si/PenguinsEggsMeeting), [Reddit](https://www.reddit.com/user/Artisan61) or [Twitter](https://twitter.com/pieroproietti), 
+
+- [Hens: Different Species](https://github.com/pieroproietti/penguins-eggs/blob/master//hens-different-species.md):
+  A brief guide on using Penguins Eggs' in Debian, Arch, and Manjaro.
+- [Arch-naked](https://penguins-eggs.net/docs/Tutorial/archlinux-naked.html): A
+  blog post detailing how to create an Arch naked live, install it, and
+  customize the resulting system into a graphics development station.
+
+If you have any questions or need further assistance, feel free to contact me
+via email at pieroproietti@gmail.com. You can also stay updated by following my
+[blog](https://penguins-eggs.net) or connecting with me on ,
+[Telegram](https://t.me/penguins_eggs),
+[Mastodom](https://social.treehouse.systems/@artisan),
+[Facebook](https://www.facebook.com/groups/128861437762355/),
+[GitHub](https://github.com/pieroproietti/penguins-krill),
+[Jitsi](https://meet.jit.si/PenguinsEggsMeeting),
+[Reddit](https://www.reddit.com/user/Artisan61) or
+[Twitter](https://twitter.com/pieroproietti),
 [Mastodom](https://social.treehouse.systems/@artisan).
 
 ## A word of thanks
-* This README would not be so well cared for if not for the work of [Hosein Seilain](https://github.com/hosseinseilani) who spent his time revising and supplementing the text;
-* The eggs icon was designed by [Charlie Martinez](https://github.com/quirinux-so);
-* and a word of thanks to all of you who are using it and providing feedback and motivation to continue it. 
+
+- This README would not be so well cared for if not for the work of
+  [Hosein Seilain](https://github.com/hosseinseilani) who spent his time
+  revising and supplementing the text;
+- The eggs icon was designed by
+  [Charlie Martinez](https://github.com/quirinux-so);
+- and a word of thanks to all of you who are using it and providing feedback and
+  motivation to continue it.
 
 Thank you!
 
 ## Star History
-This project collects stars, look to the sky... contribute! 
+
+This project collects stars, look to the sky... contribute!
 
 [![Star History Chart](https://api.star-history.com/svg?repos=pieroproietti/penguins-eggs&type=Date)](https://star-history.com/#pieroproietti/penguins-eggs&Date)
 
 # Copyright and licenses
-Copyright (c) 2017, 2025 [Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under the MIT or GPL Version 2 licenses.
+
+Copyright (c) 2017, 2026
+[Piero Proietti](https://penguins-eggs.net/about-me.html), dual licensed under
+the MIT or GPL Version 2 licenses.

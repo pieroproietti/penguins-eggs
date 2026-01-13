@@ -3,7 +3,7 @@
 #
 # Spec file per il pacchetto penguins-eggs
 # 
-# Copyright (c) 2025 Piero Proietti
+# Copyright (c) 2025-2026 Piero Proietti
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
