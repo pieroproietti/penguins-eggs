@@ -20,6 +20,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.15
+* added Parrot 7.0 (echo) on [`derivarives.yaml`](./conf/derivatives.yaml);
+* uniformated all the extensions of YAML files to `.yaml`
+* uniformated all the extensions of YAML files to `.yaml` on [penguins-wardrobe](https://github.com/pieroproietti/penguins-wardrobe).
+
 # v26.1.11
 ## New Features & Architecture Support:
 
