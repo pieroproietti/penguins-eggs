@@ -88,7 +88,7 @@ export default class List extends Command {
       index = flags.distro
     }
 
-    index += '.yml'
+    index += '.yaml'
 
     console.log(chalk.green('wardrobe: ') + wardrobe)
     console.log()

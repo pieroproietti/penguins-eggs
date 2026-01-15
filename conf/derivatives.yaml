@@ -27,18 +27,19 @@
   family: debian
   ids:
     - kali-rolling # kali
-    - faye    # LMDE 6
+    - faye # LMDE 6
     - orion-belt # SparkyLinux 7
-    - ara     # Parrot ara
+    - ara # Parrot ara
 
 # trixie
 - id: trixie
   distroLike: Debian
   family: debian
   ids:
-    - gigi    # LMDE 7
-    - lory    # Parrot lory
-    - orchid  # VanillaOS
+    - gigi # LMDE 7
+    - lory # Parrot lory
+    - echo # Parrot 7.0
+    - orchid # VanillaOS
     - yirmibes # pardus-25
 
 # forky
@@ -46,7 +47,7 @@
   distroLike: Debian
   family: debian
   ids:
-    - nobody  # for now
+    - nobody # for now
 
 #
 # DEVUAN
@@ -116,21 +117,21 @@
   distroLike: Ubuntu
   family: debian
   ids:
-    - oracular # Ubuntu 24.10 
+    - oracular # Ubuntu 24.10
     - plucky # Ubuntu 25.04
     - questing # Ubuntu 25.10
     - resolute # Ubuntu 26.04
     # others
     - abuntu # Abuntu
-    - devel  # Rhino
-    - wilma  # Linuxmint 22
+    - devel # Rhino
+    - wilma # Linuxmint 22
     - xia # Linuxmint 22.1
     - zara # Linuxmint 22.2
     - zena # Linuxmint 22.3
     - nexalinux # Nexa LInux
     - crimson # Deepin 25 crimson
 
-- id: 
+- id:
 #
 # ARCH
 #
@@ -143,5 +144,5 @@
     # BluestarLinux
     - bluestarlinux
 
-    # Manjaro 
+    # Manjaro
     - zetar

@@ -67,7 +67,7 @@ export default class Fisherman {
       fs.mkdirSync(moduleDest)
     }
 
-    shx.cp(`${moduleTemplate}/module.yml`, `${moduleDest}/module.desc`)
+    shx.cp(`${moduleTemplate}/module.yaml`, `${moduleDest}/module.desc`)
     if (isScript) {
       shx.cp(`${moduleTemplate}/${name}.sh`, moduleScript)
       await exec(`chmod +x ${moduleScript}`)
@@ -89,8 +89,8 @@ export default class Fisherman {
       fs.mkdirSync(moduleDest)
     }
 
-    shx.cp(`${moduleSource}/module.yml`, `${moduleDest}/module.desc`)
-    shx.cp(`${moduleSource}/${name}.yml`, `${moduleDest}/${name}.conf`)
+    shx.cp(`${moduleSource}/module.yaml`, `${moduleDest}/module.desc`)
+    shx.cp(`${moduleSource}/${name}.yaml`, `${moduleDest}/${name}.conf`)
     shx.cp(`${moduleSource}/main.py`, moduleDest)
     await exec(`chmod +x ${moduleSource}/main.py`)
   }
@@ -101,7 +101,7 @@ export default class Fisherman {
    * @param replaces [['search','replace']]
    */
   async buildModule(name: string, vendor = 'eggs') {
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yml')
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yaml')
 
     /**
      * We need vendor here to have possibility to load custom modules for calamares
@@ -118,9 +118,9 @@ export default class Fisherman {
      *
      */
     if (vendor !== 'eggs') {
-      let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yml`)
+      let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yaml`)
       if (vendor.includes('/')) {
-        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yml`
+        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yaml`
       }
 
       if (fs.existsSync(customModuleSource)) {
@@ -145,7 +145,7 @@ export default class Fisherman {
    * @param name
    */
   async contextualprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yml')
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yaml')
     const moduleDest = this.installer.modules + name + '_context.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
@@ -167,7 +167,7 @@ export default class Fisherman {
    * @param name
    */
   async shellprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yml')
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yaml')
     const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'shellprocess', moduleDest)
