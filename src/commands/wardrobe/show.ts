@@ -84,20 +84,20 @@ export default class Show extends Command {
     let index = ''
     switch (distro.distroLike) {
       case 'Arch': {
-        index = 'arch.yml'
+        index = 'arch.yaml'
 
         break
       }
 
       case 'Debian':
       case 'Devuan': {
-        index = 'debian.yml'
+        index = 'debian.yaml'
 
         break
       }
 
       case 'Debian': {
-        index = 'ubuntu.yml'
+        index = 'ubuntu.yaml'
 
         break
       }
@@ -106,7 +106,7 @@ export default class Show extends Command {
 
     const tailorList = `${costume}/${index}`
     if (!fs.existsSync(tailorList)) {
-      Utils.warning(`index.yml not found in : ${costume}!`)
+      Utils.warning(`index.yaml not found in : ${costume}!`)
       process.exit()
     }
 

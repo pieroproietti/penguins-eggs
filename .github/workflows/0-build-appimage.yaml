@@ -24,9 +24,9 @@ jobs:
           chmod +x pkg2appimage-*.AppImage
 
       - name: Build AppImage using Recipe
-        # Supponendo che tu abbia salvato la ricetta come 'AppImage/Recipe.yml' nel repo
+        # Supponendo che tu abbia salvato la ricetta come 'AppImage/Recipe.yaml' nel repo
         run: |
-          ./pkg2appimage-*.AppImage AppImage/Recipe.yml
+          ./pkg2appimage-*.AppImage AppImage/Recipe.yaml
 
       - name: Rename AppImage
         run: |

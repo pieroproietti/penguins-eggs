@@ -76,11 +76,11 @@ export default class Tailor {
 
     switch (distro.distroLike) {
       case 'Debian': {
-        tailorList = `${this.costume}/debian.yml`
+        tailorList = `${this.costume}/debian.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/devuan.yml`
+          tailorList = `${this.costume}/devuan.yaml`
           if (!fs.existsSync(tailorList)) {
-            tailorList = `${this.costume}/ubuntu.yml`
+            tailorList = `${this.costume}/ubuntu.yaml`
             if (!fs.existsSync(tailorList)) {
               console.log(`no costume definition found compatible Debian`)
               process.exit()
@@ -91,11 +91,11 @@ export default class Tailor {
       }
 
       case 'Devuan': {
-        tailorList = `${this.costume}/devuan.yml`
+        tailorList = `${this.costume}/devuan.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           if (!fs.existsSync(tailorList)) {
-            tailorList = `${this.costume}/ubuntu.yml`
+            tailorList = `${this.costume}/ubuntu.yaml`
             if (!fs.existsSync(tailorList)) {
               console.log(`no costume definition found compatible Devuan`)
               process.exit()
@@ -106,12 +106,12 @@ export default class Tailor {
       }
 
       case 'Ubuntu': {
-        tailorList = `${this.costume}/ubuntu.yml`
+        tailorList = `${this.costume}/ubuntu.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           console.log(`trying ` + tailorList)
           if (!fs.existsSync(tailorList)) {
-            tailorList = `${this.costume}/devuan.yml`
+            tailorList = `${this.costume}/devuan.yaml`
             console.log(`trying ` + tailorList)
             if (!fs.existsSync(tailorList)) {
               console.log(`no costume definition found compatible Ubuntu`)
@@ -123,9 +123,9 @@ export default class Tailor {
       }
 
       case 'Alpine': {
-        tailorList = `${this.costume}/alpine.yml`
+        tailorList = `${this.costume}/alpine.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           if (!fs.existsSync(tailorList)) {
             console.log(`no costume definition found compatible Alpine`)
             process.exit()
@@ -135,9 +135,9 @@ export default class Tailor {
       }
 
       case 'Arch': {
-        tailorList = `${this.costume}/arch.yml`
+        tailorList = `${this.costume}/arch.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           if (!fs.existsSync(tailorList)) {
             console.log(`no costume definition found compatible Arch`)
             process.exit()
@@ -149,9 +149,9 @@ export default class Tailor {
       case 'Fedora': 
       case 'Almalinux':
       case 'Rocky': {
-        tailorList = `${this.costume}/fedora.yml`
+        tailorList = `${this.costume}/fedora.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           if (!fs.existsSync(tailorList)) {
             console.log(`no costume definition found compatible Fedora`)
             process.exit()
@@ -161,9 +161,9 @@ export default class Tailor {
       }
 
       case 'Opensuse': {
-        tailorList = `${this.costume}/opensuse.yml`
+        tailorList = `${this.costume}/opensuse.yaml`
         if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yml`
+          tailorList = `${this.costume}/debian.yaml`
           if (!fs.existsSync(tailorList)) {
             console.log(`no costume definition found compatible opensuse`)
             process.exit()

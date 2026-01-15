@@ -50,7 +50,7 @@ interface CalamaresConfig {
  */
 export async function settings(src: string, dest: string, theme = 'eggs', isClone = false) {
   let branding = theme
-  const settingsSrc = src + 'settings.yml'
+  const settingsSrc = src + 'settings.yaml'
   if (theme.includes('/')) {
     branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
   }
@@ -64,7 +64,7 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   const execSequenceItem = yamlDest.sequence.find(item => item.exec);
 
   if (!showSequenceItem || !execSequenceItem) {
-    throw new Error("Impossibile trovare le sezioni 'show' o 'exec' nel file settings.yml");
+    throw new Error("Impossibile trovare le sezioni 'show' o 'exec' nel file settings.yaml");
   }
   
   // Il '!' dice a TS: "sono sicuro che non è undefined"
@@ -120,7 +120,7 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   /**
    * cfsAppend
    */
-  const cfsPath = `${theme}/theme/calamares/cfs.yml`
+  const cfsPath = `${theme}/theme/calamares/cfs.yaml`
   if (fs.existsSync(cfsPath)) {
     cfsAppend(cfsPath)
   }
