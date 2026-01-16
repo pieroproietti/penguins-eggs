@@ -8,7 +8,7 @@
 
 import fs from 'node:fs'
 
-import {exec, shx } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -56,7 +56,7 @@ export default class Alpine {
     'calamares-mod-unpackfs',
     'calamares-mod-users',
     'calamares-mod-welcome',
-    'calamares-mod-welcomeq',
+    'calamares-mod-welcomeq'
   ]
 
   /**
@@ -83,9 +83,8 @@ export default class Alpine {
     }
   }
 
-
   /**
-   * 
+   *
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {

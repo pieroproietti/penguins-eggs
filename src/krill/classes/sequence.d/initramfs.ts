@@ -20,61 +20,56 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default async function initramfs(this: Sequence) {
   switch (this.distro.familyId) {
-  case 'alpine': {
-    /**
-     * Alpine
-     */
-    const cmd=`chroot ${this.installTarget} mkinitfs`
-    await exec(cmd, this.echo)
+    case 'alpine': {
+      /**
+       * Alpine
+       */
+      const cmd = `chroot ${this.installTarget} mkinitfs`
+      await exec(cmd, this.echo)
 
-  
-  break;
+      break
+    }
+
+    case 'archlinux': {
+      /**
+       * Archlinux
+       */
+      const initrdImg = path.basename(Utils.initrdImg())
+      const cmd = `chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
+      await exec(cmd, this.echo)
+
+      break
+    }
+
+    case 'debian': {
+      /**
+       * Debian
+       */
+      const cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/initrd.img-$(uname -r)`
+      await exec(cmd, this.echo)
+
+      break
+    }
+
+    case 'fedora': {
+      /**
+       * Fedora
+       */
+      const cmd = `chroot ${this.installTarget} dracut -f`
+      await exec(cmd, this.echo)
+
+      break
+    }
+
+    case 'opensuse': {
+      /**
+       * Opensuse
+       */
+      const cmd = `chroot ${this.installTarget} dracut -f`
+      await exec(cmd, this.echo)
+
+      break
+    }
+    // No default
   }
-
-  case 'archlinux': {
-    /**
-     * Archlinux
-     */
-    const initrdImg = path.basename(Utils.initrdImg())
-    const cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
-    await exec(cmd, this.echo)
-
-  
-  break;
-  }
-
-  case 'debian': {
-    /**
-     * Debian
-     */
-    const cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/initrd.img-$(uname -r)`
-    await exec(cmd, this.echo)
-
-  
-  break;
-  }
-
-  case 'fedora': {    
-    /**
-     * Fedora
-     */
-    const cmd=`chroot ${this.installTarget} dracut -f`
-    await exec(cmd, this.echo)
-
-  
-  break;
-  }
-
-  case 'opensuse': {    
-    /**
-     * Opensuse
-     */
-    const cmd=`chroot ${this.installTarget} dracut -f`
-    await exec(cmd, this.echo)
-
-  
-  break;
-  }
-  // No default
-  }
-} 
+}

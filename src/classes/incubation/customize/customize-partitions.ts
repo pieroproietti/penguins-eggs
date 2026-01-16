@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
@@ -22,7 +21,6 @@ export async function customizePartitions() {
   const filePartition = '/etc/calamares/modules/partition.conf'
   const partition = yaml.load(fs.readFileSync(filePartition, 'utf8')) as ICalamaresPartitions
 
-
   // detect filesystem type
   const test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
   partition.defaultFileSystemType = test.data.trim()
@@ -32,10 +30,7 @@ export async function customizePartitions() {
    */
   partition.availableFileSystemTypes = ['ext4']
 
-  if (Pacman.packageIsInstalled('progs') ||
-    Pacman.packageIsInstalled('btrfsprogs') ||
-    Pacman.packageIsInstalled('btrfs-progs')) {
-
+  if (Pacman.packageIsInstalled('progs') || Pacman.packageIsInstalled('btrfsprogs') || Pacman.packageIsInstalled('btrfs-progs')) {
     partition.availableFileSystemTypes.push('btrfs')
   }
 
@@ -55,5 +50,4 @@ export async function customizePartitions() {
   // }
 
   fs.writeFileSync(filePartition, yaml.dump(partition), 'utf-8')
-
 }

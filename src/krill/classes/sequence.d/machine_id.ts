@@ -7,7 +7,6 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-
 import fs from 'node:fs'
 
 import Utils from '../../../classes/utils.js'
@@ -27,7 +26,7 @@ export default async function machineId(this: Sequence): Promise<void> {
   }
 
   /**
-   * machine/id ALWAYS new 
+   * machine/id ALWAYS new
    */
   if (Utils.isSystemd()) {
     await exec(`chroot ${this.installTarget} systemd-machine-id-setup`)

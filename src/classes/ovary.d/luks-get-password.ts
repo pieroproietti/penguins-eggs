@@ -14,7 +14,6 @@ import { spawn, StdioOptions } from 'node:child_process'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 
-
 /**
  * Ottiene la password LUKS dall'utente
  */
@@ -22,12 +21,14 @@ export async function luksGetPassword(this: Ovary): Promise<void> {
   const inquirer = (await import('inquirer')).default
 
   // Chiedi se usare password di default
-  const useDefault = await inquirer.prompt([{
-    default: false,
-    message: `Use default password "${this.luksPassword}" for LUKS encryption?`,
-    name: 'useDefault',
-    type: 'confirm'
-  }])
+  const useDefault = await inquirer.prompt([
+    {
+      default: false,
+      message: `Use default password "${this.luksPassword}" for LUKS encryption?`,
+      name: 'useDefault',
+      type: 'confirm'
+    }
+  ])
 
   if (useDefault.useDefault) {
     Utils.warning(`Using default password: ${this.luksPassword}`)
@@ -70,4 +71,4 @@ export async function luksGetPassword(this: Ovary): Promise<void> {
   }
 
   this.luksPassword = password
-}  
+}

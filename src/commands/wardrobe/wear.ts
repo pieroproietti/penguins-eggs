@@ -22,9 +22,9 @@ export default class Wear extends Command {
   static args = {
     repo: Args.string({ description: 'costume to wear', name: 'costume', required: false })
   }
-static description = 'wear costume/accessories from wardrobe'
+  static description = 'wear costume/accessories from wardrobe'
   static examples = ['sudo eggs wardrobe wear duck', 'sudo eggs wardrobe wear accessories/firmwares', 'sudo eggs wardrobe wear wagtail/waydroid']
-static flags = {
+  static flags = {
     help: Flags.help({ char: 'h' }),
     no_accessories: Flags.boolean({ char: 'a', description: 'not install accessories' }),
     no_firmwares: Flags.boolean({ char: 'f', description: 'not install firmwares' }),

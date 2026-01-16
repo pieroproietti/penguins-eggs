@@ -23,10 +23,9 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     let text = ''
     if (SwapChoice.None) {
       text += `#RESUME=none\n`
-
     } else if (this.partitions.userSwapChoice === SwapChoice.File) {
-      const swap_uuid= (await exec(`findmnt -no UUID -T /swapfile`)).data.trim()
-      const swap_offset= (await exec(`filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\..*//'`)).data.trim()
+      const swap_uuid = (await exec(`findmnt -no UUID -T /swapfile`)).data.trim()
+      const swap_offset = (await exec(`filefrag -v /swapfile | awk 'NR==4 {print $4}' | sed 's/\..*//'`)).data.trim()
       text += `RESUME=UUID=${swap_uuid}\n`
       text += `RESUME_OFFSET=${swap_offset}\n`
     } else {

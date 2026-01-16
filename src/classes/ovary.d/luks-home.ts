@@ -14,34 +14,29 @@ import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-const noop = () => {}; 
+const noop = () => {}
 type ConditionalLoggers = {
-    info: (msg: string) => void;
-    log: (...args: any[]) => void;
-    success: (msg: string) => void;
-    warning: (msg: string) => void;
+  info: (msg: string) => void
+  log: (...args: any[]) => void
+  success: (msg: string) => void
+  warning: (msg: string) => void
 }
-
 
 /**
  * luksHome()
- * 
- * create a container LUKS with the entire 
+ *
+ * create a container LUKS with the entire
  * filesystem.squashfs
  */
-export async function luksHome(
-  this: Ovary, 
-  clone = false, 
-  homecrypt = false) {
+export async function luksHome(this: Ovary, clone = false, homecrypt = false) {
   const loggers: ConditionalLoggers = {
-      info: this.hidden ? noop : Utils.info,
-      log: this.hidden ? noop : console.log,
-      success: this.hidden ? noop : Utils.success,
-      warning: this.hidden ? noop : Utils.warning,
-  };
+    info: this.hidden ? noop : Utils.info,
+    log: this.hidden ? noop : console.log,
+    success: this.hidden ? noop : Utils.success,
+    warning: this.hidden ? noop : Utils.warning
+  }
 
-  const { info, log, success, warning } = loggers;
-
+  const { info, log, success, warning } = loggers
 
   try {
     /**
@@ -49,30 +44,30 @@ export async function luksHome(
      * this.luksFile = `/var/tmp/${luksMappedName}`
      * this.luksDevice = `/dev/mapper/${luksMappedName}`
      * this.luksMountpoint = `/tmp/mnt/${luksMappedName}`
-     * this.luksPassword = '0' 
+     * this.luksPassword = '0'
      */
 
     if (this.hidden) {
-      Utils.warning("intentionally blank. System is working, please wait")
+      Utils.warning('intentionally blank. System is working, please wait')
     }
 
     log()
     log('====================================')
     log(` Creating ${this.luksMappedName}`)
     log('====================================')
-    
+
     // Utils.warning('1. Calculation of space requirements...')
 
-    const sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
+    const sizeString = (await exec('du -sb --exclude=/home/eggs /home', { capture: true })).data.trim().split(/\s+/)[0]
     const size = Number.parseInt(sizeString, 10)
-    const fsOverhead = Math.ceil(size * 0.05);
-    const luksHeader = 32 * 1024 * 1024;
-    const safetyBuffer = 100 * 1024 * 1024;
-    let calculatedSize = size + fsOverhead + luksHeader + safetyBuffer;
-    const minSize = 64 * 1024 * 1024;
-    if (calculatedSize < minSize) calculatedSize = minSize;
-    const alignment = 4 * 1024 * 1024;
-    const luksSize = Math.ceil(calculatedSize / alignment) * alignment;
+    const fsOverhead = Math.ceil(size * 0.05)
+    const luksHeader = 32 * 1024 * 1024
+    const safetyBuffer = 100 * 1024 * 1024
+    let calculatedSize = size + fsOverhead + luksHeader + safetyBuffer
+    const minSize = 64 * 1024 * 1024
+    if (calculatedSize < minSize) calculatedSize = minSize
+    const alignment = 4 * 1024 * 1024
+    const luksSize = Math.ceil(calculatedSize / alignment) * alignment
 
     warning(`------------------------------------------`)
     warning(`HOME CRYPT CALCULATION (Read-Only):`)
@@ -86,15 +81,14 @@ export async function luksHome(
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
     // await this.luksExecuteCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
-    const luksFormatArgs = this.buildLuksFormatArgs(this.luksConfig, this.luksFile);
-    await this.luksExecuteCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
-
+    const luksFormatArgs = this.buildLuksFormatArgs(this.luksConfig, this.luksFile)
+    await this.luksExecuteCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`)
 
     warning(`opening the LUKS volume. It will be mapped to ${this.luksDevice}`)
     await this.luksExecuteCommand('cryptsetup', ['luksOpen', this.luksFile, this.luksMappedName], `${this.luksPassword}\n`)
 
     warning(`formatting ext4 `)
-    await exec(`mkfs.ext4 -L live-home ${this.luksDevice}`,this.echo)
+    await exec(`mkfs.ext4 -L live-home ${this.luksDevice}`, this.echo)
 
     warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
@@ -111,13 +105,12 @@ export async function luksHome(
     warning(`copying /home on  ${this.luksMountpoint}`)
     await exec(`rsync -ah --exclude='eggs' /home/ ${this.luksMountpoint}`, this.echo)
 
-
     /**
      * utenti e gruppi in .system-backup
      */
     warning(`saving user accounts info...`)
     await exec(`mkdir -p ${this.luksMountpoint}/.system-backup`, this.echo)
-    
+
     // passwd/shadow: solo utenti con UID >= 1000
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/passwd > ${this.luksMountpoint}/.system-backup/passwd`, this.echo)
     await exec(`awk -F: '$3 >= 1000 {print}' /etc/shadow > ${this.luksMountpoint}/.system-backup/shadow`, this.echo)
@@ -141,8 +134,8 @@ export async function luksHome(
     await exec(`[ -e /etc/sddm.conf ] && cp -a /etc/sddm.conf ${this.luksMountpoint}/.system-backup/`, this.echo)
     await exec(`[ -e /etc/sddm.conf.d ] && cp -a /etc/sddm.conf.d ${this.luksMountpoint}/.system-backup/`, this.echo)
 
-    warning(`Syncing filesystem on ${this.luksMountpoint}...`);
-    await exec('sync', this.echo); // Forza scrittura dati su disco
+    warning(`Syncing filesystem on ${this.luksMountpoint}...`)
+    await exec('sync', this.echo) // Forza scrittura dati su disco
 
     // Shrink()
     await this.luksShrink()
@@ -151,8 +144,6 @@ export async function luksHome(
     await exec(`mv ${this.luksFile} ${this.settings.iso_work}/live`, this.echo)
 
     warning('encryption process successfully completed!')
-
-
   } catch (error) {
     if (error instanceof Error) {
       Utils.error(`ERROR: ${error.message}`)
@@ -162,16 +153,16 @@ export async function luksHome(
 
     Utils.warning('Cleaning performed following the error...')
     if (fs.existsSync(this.luksMountpoint)) {
-      await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
+      await exec(`umount -lf ${this.luksMountpoint}`).catch(() => {})
     }
 
     if (fs.existsSync(this.luksDevice)) {
-      await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
+      await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => {})
     }
 
     if (fs.existsSync(this.luksFile)) {
-       Utils.warning(`Removing temporary container: ${this.luksFile}`);
-       fs.unlinkSync(this.luksFile);
+      Utils.warning(`Removing temporary container: ${this.luksFile}`)
+      fs.unlinkSync(this.luksFile)
     }
 
     await Utils.pressKeyToExit()
@@ -179,12 +170,11 @@ export async function luksHome(
   }
 }
 
-
 /**
  * Converte bytes in gigabytes per la visualizzazione.
  */
 function bytesToGB(bytes: number): string {
-  if (bytes === 0) return '0.00 GB';
-  const gigabytes = bytes / (1024 * 1024 * 1024);
-  return gigabytes.toFixed(2) + ' GB';
+  if (bytes === 0) return '0.00 GB'
+  const gigabytes = bytes / (1024 * 1024 * 1024)
+  return gigabytes.toFixed(2) + ' GB'
 }

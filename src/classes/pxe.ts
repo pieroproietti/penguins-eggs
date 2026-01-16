@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import express from 'express';
+import express from 'express'
 import fs from 'node:fs'
 import path, { dirname } from 'node:path'
 // @ts-ignore
@@ -22,14 +22,13 @@ import Utils from './utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
- 
 
 /**
  * Pxe:
  */
 export default class Pxe {
   bootLabel = ''
-distro = {} as Distro
+  distro = {} as Distro
   echo = {}
   eggRoot = ''
   initrdImg = ''
@@ -89,7 +88,6 @@ distro = {} as Distro
     await this.bios()
     await this.uefi()
     await this.http()
-
   }
 
   /**
@@ -166,25 +164,24 @@ distro = {} as Distro
     console.log(`initrd: ${this.initrdImg}`)
   }
 
-
   /**
    * start http server for images
    */
   async httpStart() {
-    const port = 80;
-    const httpRoot = this.pxeRoot + '/';
+    const port = 80
+    const httpRoot = this.pxeRoot + '/'
 
     // 1. Crea un'applicazione Express
-    const app = express();
+    const app = express()
 
     // 2. Usa il middleware di Express per servire i file statici.
-    app.use(express.static(httpRoot));
+    app.use(express.static(httpRoot))
 
     // 3. Avvia il server
     app.listen(port, () => {
-      console.log(`HTTP server (Express) listening on 0.0.0.0:${port}`);
-      console.log(`Serving files from ${httpRoot}`);
-    });
+      console.log(`HTTP server (Express) listening on 0.0.0.0:${port}`)
+      console.log(`Serving files from ${httpRoot}`)
+    })
   }
 
   /**
@@ -219,13 +216,12 @@ distro = {} as Distro
     let lp = ''
     // .replaceAll(/\s\s+/g, ' ')
     switch (this.distro.familyId) {
-
       case 'alpine': {
-        lp =  `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
+        lp = `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
                modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
                acpi=off \
                ip=dhcp`
-      break
+        break
       }
 
       case 'archlinux': {
@@ -235,29 +231,28 @@ distro = {} as Distro
           basedir = ''
           hook = 'miso_http_srv'
         }
- 
-        lp =  `${hook}=http://${Utils.address()}/ \
+
+        lp = `${hook}=http://${Utils.address()}/ \
               ${basedir} \
               ip=dhcp \
               copytoram=n`
-      break
+        break
       }
 
       case 'debian': {
-        lp =  `fetch=http://${Utils.address()}/live/filesystem.squashfs \
+        lp = `fetch=http://${Utils.address()}/live/filesystem.squashfs \
                 boot=live \
                 config \
                 noswap \
                 noprompt \
                 ip=dhcp`
-      break
+        break
       }
 
-      case 'fedora' :
+      case 'fedora':
       case 'openmamba':
       case 'opensuse': {
-
-        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+        lp = `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
                root=live:http://${Utils.address()}/live/filesystem.squashfs \
                rootfstype=auto \
                ro \
@@ -265,11 +260,11 @@ distro = {} as Distro
                rd.luks=0 \
                rd.md=0 \
                rd.dm=0\n`
-      break
+        break
       }
 
       default: {
-        console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
+        console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`)
       }
     }
 
@@ -281,7 +276,7 @@ distro = {} as Distro
    */
   private async bios() {
     const bootloaders = Diversions.bootloaders(this.distro.familyId)
-   
+
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`, this.echo)
     await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
 
@@ -318,8 +313,8 @@ distro = {} as Distro
     content += `label ${this.distro.distroId}\n`
     content += `menu label ${this.bootLabel.replace('.iso', '')}\n`
     content += `kernel http://${Utils.address()}/live/${path.basename(this.vmlinuz)}\n`
-    const kernelParams = this._getKernelParameters();
-    content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} ${kernelParams}\n`;
+    const kernelParams = this._getKernelParameters()
+    content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} ${kernelParams}\n`
 
     const file = `${this.pxeRoot}/pxelinux.cfg/default`
     fs.writeFileSync(file, content)
@@ -327,54 +322,54 @@ distro = {} as Distro
 
   /**
    * grubCfg
-   * @param familyId 
+   * @param familyId
    */
   private async grubCfg() {
     const bootloaders = Diversions.bootloaders(this.distro.familyId)
-    const echoYes = Utils.setEcho(true);
+    const echoYes = Utils.setEcho(true)
 
     /**
      * On Debian bookworm:
      */
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
-    
+
     if (this.distro.familyId === 'debian') {
       switch (process.arch) {
-      case 'arm64': {
-        await exec(`cp ${bootloaders}/grub/arm64-efi-signed/grubnetaa64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/arm64-efi ${this.pxeRoot}/grub`, this.echo)
-      
-      break;
-      }
+        case 'arm64': {
+          await exec(`cp ${bootloaders}/grub/arm64-efi-signed/grubnetaa64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+          await exec(`cp -r ${bootloaders}/grub/arm64-efi ${this.pxeRoot}/grub`, this.echo)
 
-      case 'ia32': {
-        await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
-      
-      break;
-      }
+          break
+        }
 
-      case 'x64': {
-        await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
-      
-      break;
-      }
-      // No default
+        case 'ia32': {
+          await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+          await exec(`cp -r ${bootloaders}/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
+
+          break
+        }
+
+        case 'x64': {
+          await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+          await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+
+          break
+        }
+        // No default
       }
     } else {
       /**
        * le altre distribuzione not signed
        */
-        await exec(`cp ${bootloaders}grub/x86_64-efi/monolithic/grubnetx64.efi ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+      await exec(`cp ${bootloaders}grub/x86_64-efi/monolithic/grubnetx64.efi ${this.pxeRoot}/grub.efi`, this.echo)
+      await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
     }
 
     // Genera il file grub.cfg
-    const grubName = `${this.pxeRoot}/grub/grub.cfg`; // Il file deve chiamarsi grub.cfg
-    let grubContent = '';
-    grubContent += `set timeout=10\n`;
-    grubContent += `set default=0\n\n`;
+    const grubName = `${this.pxeRoot}/grub/grub.cfg` // Il file deve chiamarsi grub.cfg
+    let grubContent = ''
+    grubContent += `set timeout=10\n`
+    grubContent += `set default=0\n\n`
 
     // Titolo del menu dinamico
     grubContent += `menuentry "${this.bootLabel.replace('.iso', '')} via PXE" {\n`
@@ -386,9 +381,9 @@ distro = {} as Distro
     grubContent += `  echo "Loading Initial Ramdisk..."\n`
     grubContent += `  initrd (http,${Utils.address()})/live/${path.basename(this.initrdImg)}\n`
 
-    grubContent += `}\n`;
+    grubContent += `}\n`
 
-    fs.writeFileSync(grubName, grubContent, 'utf-8');
+    fs.writeFileSync(grubName, grubContent, 'utf-8')
   }
 
   /**
@@ -422,12 +417,11 @@ distro = {} as Distro
    * uefi: uso ipxe solo per chainload di grub
    */
   private async uefi() {
-    let content = '#!ipxe\n';
-    content += 'dhcp\n';
+    let content = '#!ipxe\n'
+    content += 'dhcp\n'
     content += `chain http://${Utils.address()}/grub.efi\n`
 
-    const file = `${this.pxeRoot}/autoexec.ipxe`;
-    fs.writeFileSync(file, content);
+    const file = `${this.pxeRoot}/autoexec.ipxe`
+    fs.writeFileSync(file, content)
   }
-
 }

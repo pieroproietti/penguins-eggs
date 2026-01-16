@@ -29,13 +29,12 @@ export default class Openmamba {
   }
 
   /**
-   * 
+   *
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
     // nothing
   }
-
 
   /**
    *
@@ -45,7 +44,7 @@ export default class Openmamba {
     let success = false
     try {
       await exec('dnf -y remove calamares', echo)
-      success=true
+      success = true
     } catch {
       Utils.error(`Cannot remove calamares`)
     }

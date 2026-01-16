@@ -23,22 +23,19 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param echo
  */
 export default async function rexec(cmd: string, verbose = false): Promise<string> {
+  if (verbose) {
+    console.log(`Ovary: rexec(${cmd})`)
+  }
 
-    if (verbose) {
-        console.log(`Ovary: rexec(${cmd})`)
-    }
+  const echo = Utils.setEcho(verbose)
 
-    const echo = Utils.setEcho(verbose)
+  /**
+   * skip umount errors
+   */
+  const check = await exec(cmd, echo)
+  if (!cmd.startsWith('umount') && check.code !== 0) {
+    console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
+  }
 
-    /**
-     * skip umount errors
-     */
-    const check = await exec(cmd, echo)
-    if (
-        !cmd.startsWith('umount') && check.code !== 0
-    ) {
-        console.log(`eggs >>> error on command: ` + chalk.cyan(cmd) + ', code: ' + chalk.cyan(check.code))
-    }
-
-    return cmd
+  return cmd
 }

@@ -19,7 +19,7 @@ import Utils from './utils.js'
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-/** 
+/**
  * Classe
  */
 class Distro implements IDistro {
@@ -42,7 +42,6 @@ class Distro implements IDistro {
    * Costruttore
    */
   constructor() {
-
     // Tutti i default sono per Debian
     this.bugReportUrl = 'https://github.com-pieroproietti/penguins-eggs/issue'
     this.codenameId = ''
@@ -72,364 +71,357 @@ class Distro implements IDistro {
     }
 
     if (this.distroId.includes('Biglinux')) {
-      this.distroId = "Biglinux"
+      this.distroId = 'Biglinux'
     }
 
     if (this.distroId.includes('Bigcommunity')) {
-      this.distroId = "Bigcommunity"
+      this.distroId = 'Bigcommunity'
     }
 
-
     /**
-     * Alpine, Fedora, openmamba, opensuse analyze **distroId** 
-     * 
+     * Alpine, Fedora, openmamba, opensuse analyze **distroId**
+     *
      * Arch, Debian, Devuan, Ubuntu and derivatives we analyze **codebaseId**
-     * 
+     *
      */
 
     switch (this.distroId) {
-    case 'Almalinux':
-    case 'Fedora': 
-    case 'Nobara': 
-    case 'Rhel': 
-    case 'Rocky': {
-
-      this.familyId = 'fedora'
-      this.distroLike = 'Fedora'
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/'
-
-      /**
-       * openmamba
-       */
-    
-    break;
-    }
- 
-    case 'Alpine': {
-      /**
-       * Alpine compatible
-       */
-
-      this.familyId = 'alpine'
-      this.distroLike = this.distroId
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/mnt/' // Qua è deciso da noi
-
-      /**
-       * Fedora family: Almalinux, Fedora, Nobara. Rhel, Rocky
-       */
-    
-    break;
-    }
-
-    case 'Openmamba': {
-      this.familyId = 'openmamba'
-      this.distroLike = 'Openmamba'
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/'
-
-      /**
-       * opensuse compatible
-       */
-    
-    break;
-    }
-
-    default: { if (this.distroId.includes('Opensuse')) {
-      this.familyId = 'opensuse'
-      this.distroLike = 'Opensuse' // this.distroId
-      this.codenameId = 'rolling' // sistemare non 
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/' // check
-
-    } else {
-
-      /**
-       * Debian/ARCH: we  analize **codenameId**
-       */
-
-      /**
-       * Arch 
-       */
-      switch (this.codenameId) {
-      case 'beowulf': {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'beowulf'
+      case 'Almalinux':
+      case 'Fedora':
+      case 'Nobara':
+      case 'Rhel':
+      case 'Rocky': {
+        this.familyId = 'fedora'
+        this.distroLike = 'Fedora'
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.distroUniqueId = this.familyId // per krill
+        this.liveMediumPath = '/run/initramfs/live/'
 
         /**
-         * Devuan chimaera
+         * openmamba
          */
-      
-      break;
+
+        break
       }
- 
-      case 'bookworm': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'bookworm'
+
+      case 'Alpine': {
+        /**
+         * Alpine compatible
+         */
+
+        this.familyId = 'alpine'
+        this.distroLike = this.distroId
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.distroUniqueId = this.familyId // per krill
+        this.liveMediumPath = '/mnt/' // Qua è deciso da noi
 
         /**
-         * Debian 13 trixie
+         * Fedora family: Almalinux, Fedora, Nobara. Rhel, Rocky
          */
-      
-      break;
+
+        break
       }
 
-      case 'bullseye': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'bullseye'
+      case 'Openmamba': {
+        this.familyId = 'openmamba'
+        this.distroLike = 'Openmamba'
+        this.codenameId = 'rolling' // viene rimosso dal nome
+        this.distroUniqueId = this.familyId // per krill
+        this.liveMediumPath = '/run/initramfs/live/'
 
         /**
-         * Debian 12 bookworm
+         * opensuse compatible
          */
-      
-      break;
-      }
 
-      case 'buster': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'buster'
-
-        /**
-         * Debian 11 bullseye
-         */
-      
-      break;
-      }
-
-      case 'chimaera': {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'chimaera'
-
-        /**
-         * Devuan daedalus
-         */
-      
-      break;
-      }
-
-      case 'daedalus': {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'daedalus'
-
-        /**
-         * Devuan excalibur
-         */
-      
-      break;
-      }
-
-      case 'devel': {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'devel'
-
-      
-      break;
-      }
-
-      case 'excalibur': {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'excalibur'
-
-        /**
-         * Ubuntu focal
-         */
-      
-      break;
-      }
-
-      case 'focal': {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'focal'
-
-        /**
-         * Ubuntu jammy
-         */
-      
-      break;
-      }
-
-      case 'forky': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'forky'
-
-        /**
-         * Devuan beowulf
-         */
-      
-      break;
-      }
-
-      case 'jammy': {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'jammy'
-
-        /**
-         * Ubuntu noble
-         */
-      
-      break;
-      }
-
-      case 'jessie': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'jessie'
-        this.liveMediumPath = '/lib/live/mount/medium/'
-        this.isCalamaresAvailable = false
-
-        /**
-         * Debian 9 stretch
-         */
-      
-      break;
-      }
-
-      case 'n/a':
-
-      case 'rolling': {
-        this.familyId = 'archlinux'
-        this.distroLike = 'Arch'
-        this.codenameId = 'rolling'
-        this.distroUniqueId = 'archlinux'
-        this.liveMediumPath = '/run/archiso/bootmnt/'
-        this.squashfs = `arch/x86_64/airootfs.sfs`
-
-        /**
-         * Debian 8 jessie
-         */
-      
-      break;
-      }
-
-      case 'noble': {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'noble'
-
-        /**
-         * Ubuntu devel
-         */
-      
-      break;
-      }
-
-      case 'stretch': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'stretch'
-        this.liveMediumPath = '/lib/live/mount/medium/'
-        this.isCalamaresAvailable = false
-
-        /**
-         * Debian 10 buster
-         */
-      
-      break;
-      }
-
-      case 'trixie': {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'trixie'
-        this.liveMediumPath = '/run/live/medium/'  // initramfs
-
-        /**
-         * Debian 14 forky
-         */
-      
-      break;
+        break
       }
 
       default: {
-        /**
-         * we must to check derivatives
-         */
-        interface IDistros {
-          distroLike: string
-          family: string
-          id: string // codenameId
-          ids: string[]
-        }
+        if (this.distroId.includes('Opensuse')) {
+          this.familyId = 'opensuse'
+          this.distroLike = 'Opensuse' // this.distroId
+          this.codenameId = 'rolling' // sistemare non
+          this.distroUniqueId = this.familyId // per krill
+          this.liveMediumPath = '/run/initramfs/live/' // check
+        } else {
+          /**
+           * Debian/ARCH: we  analize **codenameId**
+           */
 
-        /**
-         * derivatives
-         */
-        let found = false
+          /**
+           * Arch
+           */
+          switch (this.codenameId) {
+            case 'beowulf': {
+              this.distroLike = 'Devuan'
+              this.distroUniqueId = 'beowulf'
 
-        /**
-         * derivatives: families archlinux, debian
-         */
-        let archDebianDerivatives = path.resolve(__dirname, '../../conf/derivatives.yaml')
-        if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
-          archDebianDerivatives = '/etc/penguins-eggs.d/derivatives.yaml'
-        }
+              /**
+               * Devuan chimaera
+               */
 
-        const content = fs.readFileSync(archDebianDerivatives, 'utf8')
-        const distros = yaml.load(content) as IDistros[]
-        for (const distro of distros) {
-          if (distro.ids !== undefined) {
-            for (let n = 0; n < distro.ids.length; n++) {
-              if (this.codenameId === distro.ids[n]) {
-                found = true
-                this.distroLike = distro.distroLike
-                this.distroUniqueId = distro.id
-                this.familyId = distro.family
-                found = true
+              break
+            }
+
+            case 'bookworm': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'bookworm'
+
+              /**
+               * Debian 13 trixie
+               */
+
+              break
+            }
+
+            case 'bullseye': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'bullseye'
+
+              /**
+               * Debian 12 bookworm
+               */
+
+              break
+            }
+
+            case 'buster': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'buster'
+
+              /**
+               * Debian 11 bullseye
+               */
+
+              break
+            }
+
+            case 'chimaera': {
+              this.distroLike = 'Devuan'
+              this.distroUniqueId = 'chimaera'
+
+              /**
+               * Devuan daedalus
+               */
+
+              break
+            }
+
+            case 'daedalus': {
+              this.distroLike = 'Devuan'
+              this.distroUniqueId = 'daedalus'
+
+              /**
+               * Devuan excalibur
+               */
+
+              break
+            }
+
+            case 'devel': {
+              this.distroLike = 'Ubuntu'
+              this.distroUniqueId = 'devel'
+
+              break
+            }
+
+            case 'excalibur': {
+              this.distroLike = 'Devuan'
+              this.distroUniqueId = 'excalibur'
+
+              /**
+               * Ubuntu focal
+               */
+
+              break
+            }
+
+            case 'focal': {
+              this.distroLike = 'Ubuntu'
+              this.distroUniqueId = 'focal'
+
+              /**
+               * Ubuntu jammy
+               */
+
+              break
+            }
+
+            case 'forky': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'forky'
+
+              /**
+               * Devuan beowulf
+               */
+
+              break
+            }
+
+            case 'jammy': {
+              this.distroLike = 'Ubuntu'
+              this.distroUniqueId = 'jammy'
+
+              /**
+               * Ubuntu noble
+               */
+
+              break
+            }
+
+            case 'jessie': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'jessie'
+              this.liveMediumPath = '/lib/live/mount/medium/'
+              this.isCalamaresAvailable = false
+
+              /**
+               * Debian 9 stretch
+               */
+
+              break
+            }
+
+            case 'n/a':
+
+            case 'rolling': {
+              this.familyId = 'archlinux'
+              this.distroLike = 'Arch'
+              this.codenameId = 'rolling'
+              this.distroUniqueId = 'archlinux'
+              this.liveMediumPath = '/run/archiso/bootmnt/'
+              this.squashfs = `arch/x86_64/airootfs.sfs`
+
+              /**
+               * Debian 8 jessie
+               */
+
+              break
+            }
+
+            case 'noble': {
+              this.distroLike = 'Ubuntu'
+              this.distroUniqueId = 'noble'
+
+              /**
+               * Ubuntu devel
+               */
+
+              break
+            }
+
+            case 'stretch': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'stretch'
+              this.liveMediumPath = '/lib/live/mount/medium/'
+              this.isCalamaresAvailable = false
+
+              /**
+               * Debian 10 buster
+               */
+
+              break
+            }
+
+            case 'trixie': {
+              this.distroLike = 'Debian'
+              this.distroUniqueId = 'trixie'
+              this.liveMediumPath = '/run/live/medium/' // initramfs
+
+              /**
+               * Debian 14 forky
+               */
+
+              break
+            }
+
+            default: {
+              /**
+               * we must to check derivatives
+               */
+              interface IDistros {
+                distroLike: string
+                family: string
+                id: string // codenameId
+                ids: string[]
+              }
+
+              /**
+               * derivatives
+               */
+              let found = false
+
+              /**
+               * derivatives: families archlinux, debian
+               */
+              let archDebianDerivatives = path.resolve(__dirname, '../../conf/derivatives.yaml')
+              if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
+                archDebianDerivatives = '/etc/penguins-eggs.d/derivatives.yaml'
+              }
+
+              const content = fs.readFileSync(archDebianDerivatives, 'utf8')
+              const distros = yaml.load(content) as IDistros[]
+              for (const distro of distros) {
+                if (distro.ids !== undefined) {
+                  for (let n = 0; n < distro.ids.length; n++) {
+                    if (this.codenameId === distro.ids[n]) {
+                      found = true
+                      this.distroLike = distro.distroLike
+                      this.distroUniqueId = distro.id
+                      this.familyId = distro.family
+                      found = true
+                    }
+                  }
+                }
+              }
+
+              /**
+               * derivatives: family fedora
+               */
+              if (!found) {
+                let fedoraDerivatives = path.resolve(__dirname, '../../conf/derivatives_fedora.yaml')
+                if (fs.existsSync('/etc/penguins-eggs.d/derivatives_fedora.yaml')) {
+                  fedoraDerivatives = '/etc/penguins-eggs.d/derivatives_fedora.yaml'
+                }
+
+                const content = fs.readFileSync(fedoraDerivatives, 'utf8')
+                const elem = yaml.load(content) as string[]
+                if (elem.includes(this.distroId)) {
+                  this.familyId = 'fedora'
+                  this.distroLike = 'Fedora'
+                  this.codenameId = 'rolling'
+                  this.distroUniqueId = this.familyId
+                  this.liveMediumPath = '/run/initramfs/live/'
+                  found = true
+                }
+              }
+
+              if (!found) {
+                console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
+                console.log('')
+                console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
+                console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
+                console.log('If you can create your new iso, you can contribute to the project')
+                console.log('by suggesting your modification.')
+                process.exit(0)
               }
             }
           }
         }
-
-        /**
-         * derivatives: family fedora
-         */
-        if (!found) {
-          let fedoraDerivatives = path.resolve(__dirname, '../../conf/derivatives_fedora.yaml')
-          if (fs.existsSync('/etc/penguins-eggs.d/derivatives_fedora.yaml')) {
-            fedoraDerivatives = '/etc/penguins-eggs.d/derivatives_fedora.yaml'
-          }
-
-          const content = fs.readFileSync(fedoraDerivatives, 'utf8')
-          const elem = yaml.load(content) as string[]
-          if (elem.includes(this.distroId)) {
-            this.familyId = 'fedora'
-            this.distroLike = 'Fedora'
-            this.codenameId = 'rolling'
-            this.distroUniqueId = this.familyId
-            this.liveMediumPath = '/run/initramfs/live/'
-            found = true
-          }
-
-        }
-
-        if (!found) {
-          console.log(`This distro ${this.distroId}/${this.codenameId} is not yet recognized!`)
-          console.log('')
-          console.log('You can edit /usr/lib/penguins-eggs/conf/derivatives.yaml to add it -')
-          console.log('after that - run: sudo eggs dad -d to re-configure eggs.')
-          console.log('If you can create your new iso, you can contribute to the project')
-          console.log('by suggesting your modification.')
-          process.exit(0)
-        }
-      }
       }
     }
-    }
-    }
-
 
     /**
      * Ultimi ritocchi
      */
 
-
     /**
      * Debian: /usr/lib/x86_64-linux-gnu
      *         /usr/lib/aarch64-linux-gnu
      */
-    if (this.familyId === "debian") {
+    if (this.familyId === 'debian') {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
-    } else if (this.familyId === "opensuse") {
+    } else if (this.familyId === 'opensuse') {
       this.usrLibPath = '/usr/lib64/'
     }
 

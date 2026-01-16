@@ -12,12 +12,11 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'
-import {exec, shx } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import { settings } from './fisherman-helper/settings.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-
 
 // pjson
 import { createRequire } from 'node:module'
@@ -34,8 +33,8 @@ interface IReplaces {
 
 export default class Fisherman {
   distro: IDistro
-installer = {} as IInstaller
-verbose = false
+  installer = {} as IInstaller
+  verbose = false
 
   constructor(distro: IDistro, installer: IInstaller, verbose = false) {
     this.distro = distro
@@ -133,7 +132,6 @@ verbose = false
     } else if (this.verbose) {
       console.log('unchanged: ' + chalk.greenBright(name))
     }
-
   }
 
   /**
@@ -166,7 +164,7 @@ verbose = false
   }
 
   async buildModuleInitcpio() {
-    const { initcpio } = await import('./fisherman-helper/initcpio.js');
+    const { initcpio } = await import('./fisherman-helper/initcpio.js')
     const preset = await initcpio()
     const name = 'initcpio'
     const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
@@ -182,30 +180,30 @@ verbose = false
   async buildModulePackages(distro: IDistro, release = false) {
     let backend = 'apt'
     switch (distro.familyId) {
-    case 'alpine': {
-      backend = 'apk'
-    
-    break;
-    }
+      case 'alpine': {
+        backend = 'apk'
 
-    case 'archlinux': {
-      backend = 'pacman'
-    
-    break;
-    }
+        break
+      }
 
-    case 'fedora': {
-      backend = 'dnf'
-    
-    break;
-    }
+      case 'archlinux': {
+        backend = 'pacman'
 
-    case 'fedora': {
-      backend = 'zypper'
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        backend = 'dnf'
+
+        break
+      }
+
+      case 'fedora': {
+        backend = 'zypper'
+
+        break
+      }
+      // No default
     }
 
     const yamlInstall = tryInstall(distro)
@@ -228,7 +226,6 @@ verbose = false
       operations
     }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
-
   }
 
   /**
@@ -284,7 +281,6 @@ verbose = false
     await settings(this.installer.template, this.installer.configRoot, theme, isClone)
   }
 
-
   /**
    *
    * @param name
@@ -316,12 +312,10 @@ verbose = false
       let fileContent = fs.readFileSync(moduleSource, 'utf8')
       fileContent = fileContent.replaceAll('__LIVE_MEDIUM_PATH__', this.distro.liveMediumPath)
       fs.writeFileSync(moduleDest, fileContent, 'utf-8')
-      
     } else if (this.verbose) {
       console.log(`calamares: ${name} shellprocess, nothing to do`)
     }
   }
-
 
   /**
    *
@@ -357,5 +351,4 @@ verbose = false
       // No default
     }
   }
-
 }

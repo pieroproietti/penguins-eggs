@@ -15,13 +15,13 @@ import Fisherman from '../fisherman.js'
  */
 export class Archlinux {
   distro: IDistro
-installer = {} as IInstaller
-isClone = false
-release = false
-remix: IRemix
-theme: string
-user_opt: string
-verbose = false
+  installer = {} as IInstaller
+  isClone = false
+  release = false
+  remix: IRemix
+  theme: string
+  user_opt: string
+  verbose = false
 
   /**
    * @param remix
@@ -54,7 +54,7 @@ verbose = false
     await fisherman.buildModule('mount')
     await fisherman.buildModuleUnpackfs()
     await fisherman.buildModule('machineid')
-    await fisherman.buildModule('networkcfg')    
+    await fisherman.buildModule('networkcfg')
     await fisherman.buildModule('locale', this.theme)
     await fisherman.buildModule('keyboard')
     await fisherman.buildModule('localecfg', this.theme)
@@ -74,7 +74,7 @@ verbose = false
     await fisherman.buildModule('luksbootkeyfile')
     await fisherman.buildModule('plymouthcfg')
     await fisherman.buildModuleRemoveuser(this.user_opt)
-    
+
     /**
      * cfs: custom final steps
      */

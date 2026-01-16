@@ -48,7 +48,7 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
   } else {
     bootloaderEntryName = distro.distroId
   }
-  
+
   const productLogo = `${remix.branding}-logo.png`
   const productIcon = `${remix.branding}-logo.png`
   const productWelcome = 'welcome.png'

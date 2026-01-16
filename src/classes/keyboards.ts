@@ -16,11 +16,11 @@ import { exec } from '../lib/utils.js'
  * Keyboard class - reads and manages X11 keyboard configuration
  */
 export default class Keyboard {
-  layouts: IXkbLayout[] = []        // New change #1: store typed objects instead of raw strings
-  models: IXkbModel[] = []          // New change #1
-  options: IXkbOption[] = []        // New change #1
-  variants: IXkbVariant[] = []      // New change #1
-private defaultKeyboardFile = '/etc/default/keyboard'   // New change #2: store default keyboard file path
+  layouts: IXkbLayout[] = [] // New change #1: store typed objects instead of raw strings
+  models: IXkbModel[] = [] // New change #1
+  options: IXkbOption[] = [] // New change #1
+  variants: IXkbVariant[] = [] // New change #1
+  private defaultKeyboardFile = '/etc/default/keyboard' // New change #2: store default keyboard file path
   private xorgLstFile = '/usr/share/X11/xkb/rules/xorg.lst'
 
   constructor() {
@@ -72,13 +72,13 @@ private defaultKeyboardFile = '/etc/default/keyboard'   // New change #2: store 
 
   // Get variants for a specific layout
   getVariants(layout: string): IXkbVariant[] {
-    return this.variants.filter(v => v.lang === layout)
+    return this.variants.filter((v) => v.lang === layout)
   }
 
   // New change #4: parse xorg.lst with regex instead of fixed slicing
   private parseXorgLst(content: string) {
     const sections = ['model', 'layout', 'variant', 'option'] as const
-    let currentSection: null | typeof sections[number] = null
+    let currentSection: (typeof sections)[number] | null = null
 
     for (let line of content.split('\n')) {
       line = line.trim()
@@ -86,7 +86,7 @@ private defaultKeyboardFile = '/etc/default/keyboard'   // New change #2: store 
       if (line.startsWith('!')) {
         const sectionName = line.slice(2).toLowerCase()
         if (sections.includes(sectionName as any)) {
-          currentSection = sectionName as typeof sections[number]
+          currentSection = sectionName as (typeof sections)[number]
         } else {
           currentSection = null
         }

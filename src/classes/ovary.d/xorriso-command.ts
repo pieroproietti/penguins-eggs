@@ -24,86 +24,86 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * @param fullcrypt
  * @returns cmd 4 mkiso
  */
-export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false, fullcrypt = false): Promise<string> {
-    const prefix = this.settings.config.snapshot_prefix
+export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = false, fullcrypt = false): Promise<string> {
+  const prefix = this.settings.config.snapshot_prefix
 
-    // typology is applied only with standard egg-of
-    let typology = ''
+  // typology is applied only with standard egg-of
+  let typology = ''
 
-    if (prefix.slice(0, 7) === 'egg-of_') {
-        if (clone) {
-            typology = '_clone'
-        } else if (homecrypt) {
-            typology = '_clone-home-crypted'
-        } else if (fullcrypt) {
-            typology = '_clone-full-crypted'
-        }
-
-        if (fs.existsSync('/usr/bin/eui-start.sh')) {
-            typology += '_EUI'
-        }
+  if (prefix.slice(0, 7) === 'egg-of_') {
+    if (clone) {
+      typology = '_clone'
+    } else if (homecrypt) {
+      typology = '_clone-home-crypted'
+    } else if (fullcrypt) {
+      typology = '_clone-full-crypted'
     }
 
-    // postfix (data)
-    const postfix = Utils.getPostfix()
-    console.log('postfix:', postfix)
-    this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
-    console.log('isoFilename:', this.settings.isoFilename)
+    if (fs.existsSync('/usr/bin/eui-start.sh')) {
+      typology += '_EUI'
+    }
+  }
 
-    const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
+  // postfix (data)
+  const postfix = Utils.getPostfix()
+  console.log('postfix:', postfix)
+  this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
+  console.log('isoFilename:', this.settings.isoFilename)
 
-    let command = ''
+  const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
 
-    // Isohybrid MBR: solo se non siamo su arm64 o riscv64
-    let isoHybridMbr = ''
-    if (this.settings.config.make_isohybrid && process.arch !== 'arm64' && process.arch !== 'riscv64') {
-        const bootloaders = Diversions.bootloaders(this.familyId)
-        const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
-        if (fs.existsSync(isohybridFile)) {
-            isoHybridMbr = `-isohybrid-mbr ${isohybridFile}`
-        } else {
-            Utils.warning(`Can't create isohybrid image, file: ${isohybridFile} not found!`)
-            process.exit()
-        }
+  let command = ''
+
+  // Isohybrid MBR: solo se non siamo su arm64 o riscv64
+  let isoHybridMbr = ''
+  if (this.settings.config.make_isohybrid && process.arch !== 'arm64' && process.arch !== 'riscv64') {
+    const bootloaders = Diversions.bootloaders(this.familyId)
+    const isohybridFile = path.resolve(bootloaders, `ISOLINUX/isohdpfx.bin`)
+    if (fs.existsSync(isohybridFile)) {
+      isoHybridMbr = `-isohybrid-mbr ${isohybridFile}`
+    } else {
+      Utils.warning(`Can't create isohybrid image, file: ${isohybridFile} not found!`)
+      process.exit()
+    }
+  }
+
+  // Gestione parametri Bootloader x86
+  let isolinuxBin = ''
+  let isolinuxCat = ''
+  let x86_boot_params = ''
+
+  if (process.arch !== 'arm64' && process.arch !== 'riscv64') {
+    isolinuxBin = `-b isolinux/isolinux.bin`
+    isolinuxCat = `-c isolinux/boot.cat`
+    // Questi sono i parametri che su RISC-V causano il fallimento di xorriso
+    x86_boot_params = '-no-emul-boot -boot-load-size 4 -boot-info-table'
+  }
+
+  if (Pacman.packageIsInstalled('xorriso')) {
+    let uefi_elToritoAltBoot = ''
+    let uefi_e = ''
+    let uefi_isohybridGptBasdat = ''
+    let uefi_noEmulBoot = ''
+    if (this.settings.config.make_efi) {
+      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      uefi_e = '-e boot/grub/efi.img'
+      uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
+      uefi_noEmulBoot = '-no-emul-boot'
     }
 
-    // Gestione parametri Bootloader x86
-    let isolinuxBin = ''
-    let isolinuxCat = ''
-    let x86_boot_params = '' 
-
-    if (process.arch !== 'arm64' && process.arch !== 'riscv64') {
-        isolinuxBin = `-b isolinux/isolinux.bin`
-        isolinuxCat = `-c isolinux/boot.cat`
-        // Questi sono i parametri che su RISC-V causano il fallimento di xorriso
-        x86_boot_params = '-no-emul-boot -boot-load-size 4 -boot-info-table'
+    let luksPartitionParam = ''
+    if (fullcrypt) {
+      const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksMappedName)
+      if (fs.existsSync(luksImagePath)) {
+        luksPartitionParam = `-append_partition 3 0x80 ${luksImagePath}`
+      } else {
+        Utils.warning(`Errore: impossibile creare l'ISO criptata, file non trovato: ${luksImagePath}`)
+        process.exit()
+      }
     }
 
-    if (Pacman.packageIsInstalled('xorriso')) {
-        let uefi_elToritoAltBoot = ''
-        let uefi_e = ''
-        let uefi_isohybridGptBasdat = ''
-        let uefi_noEmulBoot = ''
-        if (this.settings.config.make_efi) {
-            uefi_elToritoAltBoot = '-eltorito-alt-boot'
-            uefi_e = '-e boot/grub/efi.img'
-            uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
-            uefi_noEmulBoot = '-no-emul-boot'
-        }
-
-        let luksPartitionParam = ''
-        if (fullcrypt) {
-            const luksImagePath = path.join(this.settings.iso_work, 'live', this.luksMappedName)
-            if (fs.existsSync(luksImagePath)) {
-                luksPartitionParam = `-append_partition 3 0x80 ${luksImagePath}`;
-            } else {
-                Utils.warning(`Errore: impossibile creare l'ISO criptata, file non trovato: ${luksImagePath}`);
-                process.exit();
-            }
-        }
-
-        // Il comando ora usa x86_boot_params che sarà vuoto su RISC-V
-        command = `xorriso -as mkisofs \
+    // Il comando ora usa x86_boot_params che sarà vuoto su RISC-V
+    command = `xorriso -as mkisofs \
                     -J \
                     -joliet-long \
                     -l \
@@ -120,7 +120,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
                     ${uefi_noEmulBoot} \
                     ${luksPartitionParam} \
                     -o ${output} ${this.settings.iso_work}`
-    }
+  }
 
-    return command
+  return command
 }

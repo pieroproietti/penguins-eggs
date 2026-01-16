@@ -30,52 +30,47 @@ export default class Bleach {
 
     const distro = new Distro()
     switch (distro.familyId) {
-    case 'alpine': {
-      await exec('apk cache clean', echo)
-      await exec('apk cache purge', echo)
+      case 'alpine': {
+        await exec('apk cache clean', echo)
+        await exec('apk cache purge', echo)
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'archlinux': {
-      await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
+      case 'archlinux': {
+        await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'debian': {
-      await exec('apt-get clean', echo)
-      await exec('apt-get autoclean', echo)
-      await exec(`rm /var/lib/apt/lists/lock -rf`, echo)
+      case 'debian': {
+        await exec('apt-get clean', echo)
+        await exec('apt-get autoclean', echo)
+        await exec(`rm /var/lib/apt/lists/lock -rf`, echo)
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'fedora': 
-    case 'openmamba': {
-      await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
-      await exec(`dnf clean all`, echo)
+      case 'fedora':
+      case 'openmamba': {
+        await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
+        await exec(`dnf clean all`, echo)
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'opensuse': {
-      await exec(`zypper clean`, echo)
-      
-    
-    break;
-    }
+      case 'opensuse': {
+        await exec(`zypper clean`, echo)
 
-    case 'voidlinux': {
-      await exec(`xbps-remove -O`, echo)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'voidlinux': {
+        await exec(`xbps-remove -O`, echo)
+
+        break
+      }
+      // No default
     }
 
     await this.cleanFastpack(verbose)
@@ -84,12 +79,11 @@ export default class Bleach {
     await this.cleanSystemCache(verbose)
   }
 
-
   /**
-   * 
-   * @param verbose 
+   *
+   * @param verbose
    */
-  private async cleanFastpack(verbose=false) {
+  private async cleanFastpack(verbose = false) {
     let echo = { capture: false, echo: false, ignore: true }
     if (verbose) {
       echo = { capture: false, echo: true, ignore: true }

@@ -6,20 +6,20 @@
  */
 
 export interface ICalamaresBootloader {
-  efiBootLoaderVar?: string;
-  efiBootLoader?: string;
-  kernelSearchPath?: string;
-  kernelName?: string;
-  kernelParams?: string[];
-  kernelPattern?: string;
-  loaderEntries?: string[];
-  refindKernelList?: string[];
-  grubInstall?: string;
-  grubMkconfig?: string;
-  grubCfg?: string;
-  grubProbe?: string;
-  efiBootMgr?: string;
-  efiBootloaderId?: string;
-  installEFIFallback?: boolean;
-  installHybridGRUB?: boolean;
+  efiBootLoaderVar?: string
+  efiBootLoader?: string
+  kernelSearchPath?: string
+  kernelName?: string
+  kernelParams?: string[]
+  kernelPattern?: string
+  loaderEntries?: string[]
+  refindKernelList?: string[]
+  grubInstall?: string
+  grubMkconfig?: string
+  grubCfg?: string
+  grubProbe?: string
+  efiBootMgr?: string
+  efiBootloaderId?: string
+  installEFIFallback?: boolean
+  installHybridGRUB?: boolean
 }

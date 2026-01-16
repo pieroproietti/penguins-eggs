@@ -7,12 +7,11 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-
 import Pacman from '../../../classes/pacman.js'
 import Utils from '../../../classes/utils.js'
-import {shx} from '../../../lib/utils.js'
+import { shx } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
-import { InstallationMode , SwapChoice } from '../krill_enums.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
 
 /**
  * fstab()
@@ -43,8 +42,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `${this.luksRootName} UUID=${Utils.uuid(this.devices.root.cryptedFrom)} none luks,discard\n`
     Utils.write(crypttab, text)
   }
-
-
 
   /**
    * fstab
@@ -126,29 +123,27 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     if (this.devices.swap.name === undefined) {
       text += `# swap undefined\n`
     } else if (this.devices.swap.name === `none`) {
-        text += `# swap none\n`
-      } else if (this.partitions.userSwapChoice == SwapChoice.None) {
-          text += `# swap None ${this.partitions.userSwapChoice}\n`
-          text += `# no swap configured\n`
-          text += `\n`
+      text += `# swap none\n`
+    } else if (this.partitions.userSwapChoice == SwapChoice.None) {
+      text += `# swap None ${this.partitions.userSwapChoice}\n`
+      text += `# no swap configured\n`
+      text += `\n`
 
-          // file
-        } else if (this.partitions.userSwapChoice == SwapChoice.File) {
-          text += `# swap File ${this.partitions.userSwapChoice}\n`
-          const swapFile = ``
-          text += `# /swapfile none swap sw 0 0\n`
-          text += `/swapfile none swap sw 0 0\n`
-          text += `\n`
+      // file
+    } else if (this.partitions.userSwapChoice == SwapChoice.File) {
+      text += `# swap File ${this.partitions.userSwapChoice}\n`
+      const swapFile = ``
+      text += `# /swapfile none swap sw 0 0\n`
+      text += `/swapfile none swap sw 0 0\n`
+      text += `\n`
 
-          // others 
-        } else {
-          text += `# swap ${this.partitions.userSwapChoice}\n`
-          text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-          text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
-          text += `\n`
-        }
-
-
+      // others
+    } else {
+      text += `# swap ${this.partitions.userSwapChoice}\n`
+      text += `# ${this.devices.swap.name} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
+      text += `\n`
+    }
 
     /**
      * btrfs
@@ -181,7 +176,7 @@ async function isRotational(device: string): Promise<boolean> {
   // Check if the selected disk is a software raid
   if (device.startsWith('md')) {
     // Get the first disk from which the raid is composed
-    device = shx.exec(`cat /proc/mdstat | grep ${device} | cut -f 5 -d " " | cut -f 1 -d "["`, {silent: true}).stdout.trim()
+    device = shx.exec(`cat /proc/mdstat | grep ${device} | cut -f 5 -d " " | cut -f 1 -d "["`, { silent: true }).stdout.trim()
   }
 
   response = shx.exec(`cat /sys/block/${device}/queue/rotational`, { silent: true }).stdout.trim()

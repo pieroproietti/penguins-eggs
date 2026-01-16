@@ -13,8 +13,8 @@ import Utils from '../../classes/utils.js'
 
 export default class Clean extends Command {
   static description = 'clean system log, apt, etc'
-static examples = ['sudo eggs tools clean']
-static flags = {
+  static examples = ['sudo eggs tools clean']
+  static flags = {
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })

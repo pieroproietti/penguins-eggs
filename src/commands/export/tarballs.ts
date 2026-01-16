@@ -10,34 +10,34 @@ import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import { globSync } from 'glob'
 // pjson
-import { createRequire } from 'module';
+import { createRequire } from 'module'
 import os, { version } from 'node:os'
 import path from 'path'
 
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import { exec , execSync } from '../../lib/utils.js'
-const require = createRequire(import.meta.url);
+import { exec, execSync } from '../../lib/utils.js'
+const require = createRequire(import.meta.url)
 import { exists, existsSync } from 'node:fs'
 
-const pjson = require('../../../package.json');
+const pjson = require('../../../package.json')
 
 export default class ExportTarballs extends Command {
   static description = 'export pkg/iso/tarballs to the destination host'
-static examples = ['eggs export tarballs', 'eggs export tarballs --clean']
-static flags = {
+  static examples = ['eggs export tarballs', 'eggs export tarballs --clean']
+  static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-clean = false
-echo = {}
-Tu = new Tools()
-user = ''
-verbose = false
+  clean = false
+  echo = {}
+  Tu = new Tools()
+  user = ''
+  verbose = false
 
   /**
-   * 
+   *
    */
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ExportTarballs)
@@ -62,9 +62,9 @@ verbose = false
     const localPath = `/home/${this.user}/penguins-eggs/dist/`
     const remotePath = `${this.Tu.config.remotePathPackages}/tarballs/`
     const tarNamePattern = `penguins-eggs_[0-9][0-9].[0-9]*.[0-9]*-*-linux-x64.tar.gz`
-    
-    const searchPattern = path.join(localPath, tarNamePattern);
-    const matchingFiles = globSync(searchPattern);
+
+    const searchPattern = path.join(localPath, tarNamePattern)
+    const matchingFiles = globSync(searchPattern)
     if (matchingFiles.length === 0) {
       console.log(`No ${searchPattern} exists!`)
       console.log(`Create it using: pnpm tarballs`)
@@ -82,8 +82,8 @@ verbose = false
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
     if (!this.verbose && this.clean) {
-        console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/${tarNamePattern}`)
-      }
+      console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/${tarNamePattern}`)
+    }
 
     await exec(cmd, this.echo)
   }

@@ -7,35 +7,35 @@
  */
 
 /**
- * 
+ *
  */
 export enum InstallationMode {
-    EraseDisk = "Erase disk",
-    Luks = "Erase disk/Encrypted",
-    Replace = "Replace partition",
+  EraseDisk = 'Erase disk',
+  Luks = 'Erase disk/Encrypted',
+  Replace = 'Replace partition'
 }
 
 /**
- * 
+ *
  */
 export enum SwapChoice {
-    File = "file",
-    None = "none",
-    Small = "small",
-    Suspend = "suspend",
+  File = 'file',
+  None = 'none',
+  Small = 'small',
+  Suspend = 'suspend'
 }
 
 export enum Bios {
-    EFI = "efi",
-    Legacy = "legacy"
+  EFI = 'efi',
+  Legacy = 'legacy'
 }
 
 export enum FsType {
-    btrfs = "btrfs",
-    ext2 = "ext2",
-    ext3 = "ext3",
-    ext4 = "ext4",
-    ntfs = "ntfs",
-    xfs = "xfs",
-    zfs = "zfs",
+  btrfs = 'btrfs',
+  ext2 = 'ext2',
+  ext3 = 'ext3',
+  ext4 = 'ext4',
+  ntfs = 'ntfs',
+  xfs = 'xfs',
+  zfs = 'zfs'
 }

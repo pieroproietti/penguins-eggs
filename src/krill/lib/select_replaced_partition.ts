@@ -8,16 +8,16 @@
 
 import inquirer from 'inquirer'
 
-import {shx} from '../../lib/utils.js'
+import { shx } from '../../lib/utils.js'
 
 export default async function selectReplacedPartition(): Promise<string> {
-  const partitions = shx.exec('lsblk -l -o NAME,TYPE | grep part | cut -d" " -f1', { silent: true }).stdout.trim().split('\n');
+  const partitions = shx.exec('lsblk -l -o NAME,TYPE | grep part | cut -d" " -f1', { silent: true }).stdout.trim().split('\n')
 
-  const partitionsList: string[] = [];
+  const partitionsList: string[] = []
 
   // Add partition to partitionsList
   partitions.forEach((element: string) => {
-    partitionsList.push("/dev/" + element)
+    partitionsList.push('/dev/' + element)
   })
 
   const questions: any = [

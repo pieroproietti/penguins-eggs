@@ -15,8 +15,8 @@ import Information from '../krill/components/information.js'
  */
 export default class Status extends Command {
   static description = 'informations about eggs status'
-static examples = ['eggs status']
-static flags = {
+  static examples = ['eggs status']
+  static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }

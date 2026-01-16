@@ -27,13 +27,13 @@ interface IReplaces {
  */
 export class Noble {
   distro: IDistro
-installer = {} as IInstaller
-isClone: boolean
-release = false
-remix: IRemix
-theme: string // theme comprende il path
-user_opt: string
-verbose = false
+  installer = {} as IInstaller
+  isClone: boolean
+  release = false
+  remix: IRemix
+  theme: string // theme comprende il path
+  user_opt: string
+  verbose = false
 
   /**
    * @param remix
@@ -98,15 +98,14 @@ verbose = false
     await fisherman.shellprocess('nomodeset')
 
     // libexec recreate
-    await exec (`rm -rf /usr/libexec/calamares`)
-    await exec (`mkdir -p /usr/libexec/calamares`)
+    await exec(`rm -rf /usr/libexec/calamares`)
+    await exec(`mkdir -p /usr/libexec/calamares`)
     // const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
     // await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
     await fisherman.helper('calamares-aptsources')
     await fisherman.helper('calamares-l10n-helper')
     await fisherman.helper('calamares-logs-helper') // Sostituzione __LIVE_MEDIUM_PATH__
     await fisherman.helper('calamares-nomodeset')
-
 
     /**
      * cfs: custom final steps

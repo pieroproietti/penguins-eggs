@@ -52,7 +52,6 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
     }
 
     await exec(cmd, this.echo)
-
   } else if (this.distro.familyId === 'alpine') {
     /**
      * Alpine dovrebbe fare tutto con `setup-keymap us us`

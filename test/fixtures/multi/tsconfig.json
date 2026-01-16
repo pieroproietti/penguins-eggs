@@ -8,13 +8,9 @@
     "noUnusedParameters": true,
     "outDir": "./lib",
     "pretty": true,
-    "rootDirs": [
-      "./src"
-    ],
+    "rootDirs": ["./src"],
     "strict": true,
     "target": "es2017"
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["./src/**/*"]
 }

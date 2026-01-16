@@ -23,7 +23,7 @@ export default class Opensuse {
    */
   static async calamaresInstall(verbose = true): Promise<void> {
     const echo = Utils.setEcho(true)
-    console.log("Install calamares from penguins-eggs-repo")
+    console.log('Install calamares from penguins-eggs-repo')
     try {
       await exec(`zypper install -y calamares`, echo)
     } catch {
@@ -31,25 +31,23 @@ export default class Opensuse {
     }
   }
 
-
   /**
-   * 
+   *
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
     // nothing
   }
-  
 
   /**
    *
    */
   static async calamaresRemove(verbose = true): Promise<boolean> {
-    let success=false
+    let success = false
     const echo = Utils.setEcho(verbose)
     try {
       await exec('zypper remove -y calamares calamares', echo)
-      success=true
+      success = true
     } catch {
       Utils.error(`Cannot remove calamares`)
     }
@@ -113,8 +111,8 @@ export default class Opensuse {
    */
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
-    const cmd= `rpm -q ${packageName}`
-    const {code} = shx.exec(cmd, { silent: true })
+    const cmd = `rpm -q ${packageName}`
+    const { code } = shx.exec(cmd, { silent: true })
     if (code === 0) {
       installed = true
     }

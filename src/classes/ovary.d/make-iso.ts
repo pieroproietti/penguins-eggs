@@ -22,34 +22,34 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * cmd: cmd 4 xorriso
  */
 export async function makeIso(this: Ovary, cmd: string, scriptOnly = false) {
-    // echo = { echo: true, ignore: false }
-    if (this.verbose) {
-        console.log('Ovary: makeIso')
+  // echo = { echo: true, ignore: false }
+  if (this.verbose) {
+    console.log('Ovary: makeIso')
+  }
+
+  Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
+
+  // Create link to iso ALLWAYS
+  const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
+  const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
+  await exec(`ln -s ${src} ${dest}`)
+
+  if (!scriptOnly) {
+    const test = (await exec(cmd, Utils.setEcho(true))).code
+    if (test !== 0) {
+      process.exit()
     }
 
-    Utils.writeX(`${this.settings.work_dir.ovarium}mkisofs`, cmd)
-
-    // Create link to iso ALLWAYS
+    // Create link to iso
     const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
     const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
     await exec(`ln -s ${src} ${dest}`)
 
-    if (!scriptOnly) {
-        const test = (await exec(cmd, Utils.setEcho(true))).code
-        if (test !== 0) {
-            process.exit()
-        }
-
-        // Create link to iso
-        const src = this.settings.config.snapshot_mnt + this.settings.isoFilename
-        const dest = this.settings.config.snapshot_dir + this.settings.isoFilename
-        await exec(`ln -s ${src} ${dest}`)
-
-        // Create md5sum, sha256sum
-        if (this.settings.config.make_md5sum) {
-            Utils.warning('creating md5, sha256')
-            await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
-            await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
-        }
+    // Create md5sum, sha256sum
+    if (this.settings.config.make_md5sum) {
+      Utils.warning('creating md5, sha256')
+      await exec(`md5sum ${src} > ${dest.replace('.iso', '.md5')}`)
+      await exec(`sha256sum ${src} > ${dest.replace('.iso', '.sha256')}`)
     }
+  }
 }

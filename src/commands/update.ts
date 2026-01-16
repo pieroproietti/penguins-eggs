@@ -25,12 +25,12 @@ const agent = new https.Agent({
  */
 export default class Update extends Command {
   static description = "update the Penguins' eggs tool"
-static examples = ['eggs update']
-static flags = {
+  static examples = ['eggs update']
+  static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-distro = new Distro()
+  distro = new Distro()
 
   /**
    *
@@ -86,39 +86,39 @@ distro = new Distro()
   }
 
   /**
-   * 
-   * @param url 
-   * @param outputFilename 
-   * @returns 
+   *
+   * @param url
+   * @param outputFilename
+   * @returns
    */
   async downloadWithCurl(url: string, outputFilename: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log(`Avvio download di: ${outputFilename}...`);
+      console.log(`Avvio download di: ${outputFilename}...`)
 
       // Spawniamo il processo curl
       // -L: segue i redirect (fondamentale per GitHub)
       // -o: specifica il file di output
       const curl = spawn('curl', ['-L', '-o', outputFilename, url], {
         stdio: 'inherit' // Questo mostra la progress bar di curl direttamente nel tuo terminale!
-      });
+      })
 
       curl.on('close', (code) => {
         if (code === 0) {
-          console.log('\nDownload completato con successo!');
-          resolve();
+          console.log('\nDownload completato con successo!')
+          resolve()
         } else {
-          reject(new Error(`Curl è uscito con codice errore: ${code}`));
+          reject(new Error(`Curl è uscito con codice errore: ${code}`))
         }
-      });
+      })
 
       curl.on('error', (err) => {
-        reject(new Error(`Impossibile avviare curl. È installato? ${err.message}`));
-      });
-    });
+        reject(new Error(`Impossibile avviare curl. È installato? ${err.message}`))
+      })
+    })
   }
 
   /**
-   * 
+   *
    */
   getFromSource() {
     console.log('Use the following commands to use penguins-eggs from source:')
@@ -134,13 +134,13 @@ distro = new Distro()
   }
 
   /**
-   * 
+   *
    */
   async getLatestAppImage() {
     const url = await this.getLatestAppImageUrl()
     console.log(`Downloading AppImage from ${url}`)
-    const AppFile= '/tmp/eggs.AppImage'
-    if (url !== null ) {
+    const AppFile = '/tmp/eggs.AppImage'
+    if (url !== null) {
       await this.downloadWithCurl(url, AppFile)
     }
 
@@ -148,27 +148,26 @@ distro = new Distro()
     await exec(`chmod +x /usr/bin/eggs`)
   }
 
-
   /**
-   * 
+   *
    */
   async getLatestAppImageUrl(): Promise<null | string> {
-    const repo = 'pieroproietti/penguins-eggs';
-    const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
+    const repo = 'pieroproietti/penguins-eggs'
+    const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`
 
     try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error(`Errore API GitHub: ${response.statusText}`);
+      const response = await fetch(apiUrl)
+      if (!response.ok) throw new Error(`Errore API GitHub: ${response.statusText}`)
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any
 
       // Cerchiamo l'asset che finisce per .AppImage
-      const asset = data.assets.find((a: any) => a.name.endsWith('.AppImage'));
+      const asset = data.assets.find((a: any) => a.name.endsWith('.AppImage'))
 
-      return asset ? asset.browser_download_url : null;
+      return asset ? asset.browser_download_url : null
     } catch (error) {
-      console.error(" :", error);
-      return null;
+      console.error(' :', error)
+      return null
     }
   }
 
@@ -186,107 +185,100 @@ distro = new Distro()
     let repo = ''
 
     if (Utils.isAppImage()) {
-      console.log("AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/bin/eggs")
+      console.log('AppImage: penguins-eggs-*-x86_64.AppImage will be installed as /usr/bin/eggs')
       filter = `penguins-eggs-*-x86_64.AppImage`
       copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${filter} /tmp`
       install = `mv /tmp/${filter} /usr/bin/eggs`
-
-
     } else {
       /**
        * Alpine
        */
       switch (this.distro.familyId) {
-      case 'alpine': {
-        repo = `alpine/x86_64`
-        filter = `penguins-eggs-*-*.*.?-r?.apk`
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `apk add /tmp/${filter}`
+        case 'alpine': {
+          repo = `alpine/x86_64`
+          filter = `penguins-eggs-*-*.*.?-r?.apk`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `apk add /tmp/${filter}`
 
+          /**
+           * Arch
+           */
 
-        /**
-         * Arch
-         */
-      
-      break;
-      }
-
-      case 'archlinux': {
-        repo = "aur"
-        filter = `penguins-eggs-??.*.*-?-any.pkg.tar.zst`
-        if (Diversions.isManjaroBased(this.distro.distroId)) {
-          repo = 'manjaro'
-          filter = `penguins-eggs-??.*.*-?-any.pkg.tar.*`
+          break
         }
 
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `pacman -U /tmp/${filter}`
+        case 'archlinux': {
+          repo = 'aur'
+          filter = `penguins-eggs-??.*.*-?-any.pkg.tar.zst`
+          if (Diversions.isManjaroBased(this.distro.distroId)) {
+            repo = 'manjaro'
+            filter = `penguins-eggs-??.*.*-?-any.pkg.tar.*`
+          }
 
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `pacman -U /tmp/${filter}`
 
-        /**
-         * Devuan/Debian/Ubuntu
-         */
-      
-      break;
-      }
+          /**
+           * Devuan/Debian/Ubuntu
+           */
 
-      case "debian": {
-        repo = 'debs'
-        filter = `penguins-eggs-??.*.*-?-${Utils.uefiArch()}.deb`
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `apt reinstall /tmp/${filter}`
-
-
-        /**
-         * fedora/el9
-         */
-      
-      break;
-      }
-
-      case "fedora": {
-        repo = 'fedora'
-        let ftype = 'fc??'
-        if (this.distro.distroId !== 'Fedora') {
-          repo = 'el9'
-          ftype = 'el?'
+          break
         }
 
-        filter = `penguins-eggs-??.*.*-?.${ftype}.x86_64.rpm`
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+        case 'debian': {
+          repo = 'debs'
+          filter = `penguins-eggs-??.*.*-?-${Utils.uefiArch()}.deb`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `apt reinstall /tmp/${filter}`
 
+          /**
+           * fedora/el9
+           */
 
-        /**
-         * openmamba
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case "openmamba": {
-        repo = 'openmamba'
-        filter = `penguins-eggs-??.*.*-?mamba.x86_64.rpm`
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+        case 'fedora': {
+          repo = 'fedora'
+          let ftype = 'fc??'
+          if (this.distro.distroId !== 'Fedora') {
+            repo = 'el9'
+            ftype = 'el?'
+          }
 
+          filter = `penguins-eggs-??.*.*-?.${ftype}.x86_64.rpm`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
 
-        /**
-         * opensuse
-         */
-      
-      break;
-      }
+          /**
+           * openmamba
+           */
 
-      case "opensuse": {
-        repo = 'opensuse'
-        filter = `penguins-eggs-*.*.*-?.opensuse.x86_64.rpm`
-        copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
-        install = `zypper install --force /tmp/${filter} || zypper install /tmp/${filter}`
-      
-      break;
-      }
-      // No default
+          break
+        }
+
+        case 'openmamba': {
+          repo = 'openmamba'
+          filter = `penguins-eggs-??.*.*-?mamba.x86_64.rpm`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `dnf reinstall /tmp/${filter} || dnf install /tmp/${filter}`
+
+          /**
+           * opensuse
+           */
+
+          break
+        }
+
+        case 'opensuse': {
+          repo = 'opensuse'
+          filter = `penguins-eggs-*.*.*-?.opensuse.x86_64.rpm`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `zypper install --force /tmp/${filter} || zypper install /tmp/${filter}`
+
+          break
+        }
+        // No default
       }
     }
 
@@ -299,50 +291,49 @@ distro = new Distro()
     }
   }
 
-
   /**
    *
    */
   async getPkgFromPackageManager() {
     Utils.titles(`update from package Manager`)
-    let cmd = ""
+    let cmd = ''
     switch (this.distro.familyId) {
-    case 'alpine': {
-      cmd = `doas apk add penguins-egga`
-    
-    break;
-    }
+      case 'alpine': {
+        cmd = `doas apk add penguins-egga`
 
-    case 'archlinux': {
-      cmd = 'sudo pacman -S penguins-eggs'
-    
-    break;
-    }
+        break
+      }
 
-    case "debian": {
-      cmd = 'sudo apt install penguins-eggs\nsudo apt reinstall penguins-eggs'
-    
-    break;
-    }
+      case 'archlinux': {
+        cmd = 'sudo pacman -S penguins-eggs'
 
-    case "fedora": {
-      cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
-    
-    break;
-    }
+        break
+      }
 
-    case "openmamba": {
-      cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
-    
-    break;
-    }
+      case 'debian': {
+        cmd = 'sudo apt install penguins-eggs\nsudo apt reinstall penguins-eggs'
 
-    case "opensuse": {
-      cmd = String.raw`sudo zypper install penguins-eggs\zypper install --force penguins-eggs`
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
+
+        break
+      }
+
+      case 'openmamba': {
+        cmd = 'sudo dnf install penguins-eggs\nsudo dnf reinstall penguins-eggs'
+
+        break
+      }
+
+      case 'opensuse': {
+        cmd = String.raw`sudo zypper install penguins-eggs\zypper install --force penguins-eggs`
+
+        break
+      }
+      // No default
     }
 
     Utils.warning(`To install/update penguins-eggs cut and copy one of the follow commands`)
@@ -391,12 +382,10 @@ distro = new Distro()
     url += request
 
     const res = await axios.get(url, { httpsAgent: agent })
-    console.log("\nStatistics to get an idea: yesterday downloads")
+    console.log('\nStatistics to get an idea: yesterday downloads')
     console.log()
     for (const country of res.data.countries) {
       console.log('- ' + country[0] + ': ' + country[1])
     }
   }
-
-
 }

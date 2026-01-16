@@ -16,13 +16,13 @@ import Fisherman from '../fisherman.js'
  */
 export class Fedora {
   distro: IDistro
-installer = {} as IInstaller
-isClone = false
-release = false
-remix: IRemix
-theme: string
-user_opt: string
-verbose = false
+  installer = {} as IInstaller
+  isClone = false
+  release = false
+  remix: IRemix
+  theme: string
+  user_opt: string
+  verbose = false
 
   /**
    * @param remix
@@ -48,7 +48,6 @@ verbose = false
   async create() {
     const fisherman = new Fisherman(this.distro, this.installer, this.verbose)
 
-    
     await fisherman.createCalamaresSettings(this.theme, this.isClone)
 
     await fisherman.buildModule('welcome')

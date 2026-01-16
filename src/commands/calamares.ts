@@ -18,8 +18,8 @@ import { IRemix } from '../interfaces/index.js'
 
 export default class Calamares extends Command {
   static description = 'a GUI system installer - install and configure calamares'
-static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
-static flags = {
+  static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
+  static flags = {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: 'install calamares and its dependencies' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
@@ -29,13 +29,13 @@ static flags = {
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
     verbose: Flags.boolean({ char: 'v' })
   }
-incubator = {} as Incubator
-remix = {} as IRemix
-settings = {} as Settings
+  incubator = {} as Incubator
+  remix = {} as IRemix
+  settings = {} as Settings
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
-  
+
     this.settings = new Settings()
 
     const { flags } = await this.parse(Calamares)
@@ -80,7 +80,6 @@ settings = {} as Settings
     }
 
     if (Utils.isRoot(this.id)) {
-
       if (!nointeractive || (await Utils.customConfirm('Select yes to continue...'))) {
         if (remove) {
           if (Pacman.calamaresExists()) {
@@ -88,7 +87,7 @@ settings = {} as Settings
             if (await this.settings.load()) {
               this.settings.config.force_installer = false
               this.settings.save(this.settings.config)
-              installer = "krill"
+              installer = 'krill'
             }
           }
 
@@ -105,7 +104,7 @@ settings = {} as Settings
             this.settings.config.force_installer = true
             this.settings.save(this.settings.config)
             policies = true
-            installer = "calamares"
+            installer = 'calamares'
           }
         }
       }

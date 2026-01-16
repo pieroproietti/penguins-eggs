@@ -6,9 +6,9 @@
  * license: MIT
  */
 
-import fs from 'fs';
+import fs from 'fs'
 
-import { execSync } from '../lib/utils.js'; // Assicurati che il path sia corretto
+import { execSync } from '../lib/utils.js' // Assicurati che il path sia corretto
 
 export default class Compressors {
   dest = '/tmp/eggs-mksquash-dest'
@@ -21,7 +21,7 @@ export default class Compressors {
     xz: false,
     zstd: false
   }
-source = '/tmp/eggs-mksquash-test'
+  source = '/tmp/eggs-mksquash-test'
 
   /**
    * fast compression
@@ -71,7 +71,7 @@ source = '/tmp/eggs-mksquash-test'
    */
   async populate() {
     this.prepareCheck()
-    
+
     // Non serve await perché check ora è sincrono
     this.isEnabled.error = this.check('error')
     this.isEnabled.lzma = this.check('lzma')
@@ -79,7 +79,7 @@ source = '/tmp/eggs-mksquash-test'
     this.isEnabled.lz4 = this.check('lz4')
     this.isEnabled.xz = this.check('xz')
     this.isEnabled.zstd = this.check('zstd')
-    
+
     this.removeCheck()
   }
 
@@ -99,13 +99,13 @@ source = '/tmp/eggs-mksquash-test'
     try {
       // ignore: true silenzia output (stdio='ignore')
       // Se mksquashfs fallisce (exit code != 0), execSync lancia un errore
-      execSync(`mksquashfs ${this.source} ${this.dest} -comp ${compressor} -no-xattrs -ef ${this.dest}`, { ignore: true });
+      execSync(`mksquashfs ${this.source} ${this.dest} -comp ${compressor} -no-xattrs -ef ${this.dest}`, { ignore: true })
       result = true
     } catch {
       // Fallito (comando non trovato o compressore non supportato)
       result = false
     }
-    
+
     return result
   }
 
@@ -115,11 +115,11 @@ source = '/tmp/eggs-mksquash-test'
   private prepareCheck() {
     // rm -rf
     if (fs.existsSync(this.source)) {
-      fs.rmSync(this.source, { force: true, recursive: true });
+      fs.rmSync(this.source, { force: true, recursive: true })
     }
 
     // mkdir -p
-    fs.mkdirSync(this.source, { recursive: true });
+    fs.mkdirSync(this.source, { recursive: true })
   }
 
   /**
@@ -128,12 +128,12 @@ source = '/tmp/eggs-mksquash-test'
   private removeCheck() {
     // rm -rf source
     if (fs.existsSync(this.source)) {
-      fs.rmSync(this.source, { force: true, recursive: true });
+      fs.rmSync(this.source, { force: true, recursive: true })
     }
 
     // rm -f dest
     if (fs.existsSync(this.dest)) {
-      fs.rmSync(this.dest, { force: true, recursive: true });
+      fs.rmSync(this.dest, { force: true, recursive: true })
     }
   }
 }

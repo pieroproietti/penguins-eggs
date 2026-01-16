@@ -49,7 +49,6 @@ export default class Debian {
     await exec(`sed -i 's/auth_admin/yes/' ${policyFile}`, echo)
   }
 
-
   /**
    * Debian: calamaresRemove
    */

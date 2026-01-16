@@ -16,8 +16,8 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Mom extends Command {
   static description = 'ask help from mommy - TUI helper'
-static examples = ['eggs mom']
-static flags = {
+  static examples = ['eggs mom']
+  static flags = {
     help: Flags.help({ char: 'h' })
   }
 

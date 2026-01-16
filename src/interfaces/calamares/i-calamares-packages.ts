@@ -6,34 +6,21 @@
  * license: MIT
  */
 export interface ICalamaresPackages {
-  backend:
-    | "apk"
-    | "apt"
-    | "dnf5"
-    | "dnf"
-    | "dummy"
-    | "entropy"
-    | "luet"
-    | "packagekit"
-    | "pacman"
-    | "pamac"
-    | "portage"
-    | "yum"
-    | "zypp";
+  backend: 'apk' | 'apt' | 'dnf5' | 'dnf' | 'dummy' | 'entropy' | 'luet' | 'packagekit' | 'pacman' | 'pamac' | 'portage' | 'yum' | 'zypp'
   operations?: {
-    install?: unknown[];
-    localInstall?: unknown[];
-    remove?: unknown[];
-    source?: string;
-    try_install?: unknown[];
-    try_remove?: unknown[];
-  }[];
+    install?: unknown[]
+    localInstall?: unknown[]
+    remove?: unknown[]
+    source?: string
+    try_install?: unknown[]
+    try_remove?: unknown[]
+  }[]
   pacman?: {
-    disable_download_timeout?: boolean;
-    needed_only?: boolean;
-    num_retries?: number;
-  };
-  skip_if_no_internet?: boolean;
-  update_db?: boolean;
-  update_system?: boolean;
+    disable_download_timeout?: boolean
+    needed_only?: boolean
+    num_retries?: number
+  }
+  skip_if_no_internet?: boolean
+  update_db?: boolean
+  update_system?: boolean
 }
