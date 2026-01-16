@@ -1,6 +1,6 @@
 # Maintainer: Piero Proietti <piero.proietti@gmail.com>
 #
-_bootloadersver=25.11.27
+_bootloadersver=26.1.16
 
 pkgname=penguins-eggs
 pkgver=25.9.8
