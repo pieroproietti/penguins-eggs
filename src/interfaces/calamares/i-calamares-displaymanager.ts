@@ -6,24 +6,23 @@
  * license: MIT
  */
 export interface ICalamaresDisplaymanager {
+  basicSetup?: boolean;
+  defaultDesktopEnvironment?: {
+    [k: string]: unknown;
+    desktopFile: string;
+    executable: string;
+  };
   /**
    * @minItems 1
    */
   displaymanagers?: [
-    "slim" | "sddm" | "lightdm" | "gdm" | "mdm" | "lxdm" | "greetd",
-    ...("slim" | "sddm" | "lightdm" | "gdm" | "mdm" | "lxdm" | "greetd")[]
+    "gdm" | "greetd" | "lightdm" | "lxdm" | "mdm" | "sddm" | "slim",
+    ...("gdm" | "greetd" | "lightdm" | "lxdm" | "mdm" | "sddm" | "slim")[]
   ];
-  defaultDesktopEnvironment?: {
-    executable: string;
-    desktopFile: string;
-    [k: string]: unknown;
-  };
-  basicSetup?: boolean;
-  sysconfigSetup?: boolean;
   greetd?: {
-    greeter_user?: string;
-    greeter_group?: string;
     greeter_css_location?: string;
+    greeter_group?: string;
+    greeter_user?: string;
   };
   lightdm?: {
     preferred_greeters?: string[];
@@ -31,4 +30,5 @@ export interface ICalamaresDisplaymanager {
   sddm?: {
     configuration_file?: string;
   };
+  sysconfigSetup?: boolean;
 }

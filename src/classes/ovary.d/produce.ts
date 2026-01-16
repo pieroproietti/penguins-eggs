@@ -7,30 +7,26 @@
  */
 
 import chalk from 'chalk'
+import e from 'express'
 import mustache from 'mustache'
-
 // packages
 import fs, { Dirent } from 'node:fs'
-import { shx } from '../../lib/utils.js'
 import path from 'path'
 
 // interfaces
 import { IAddons, IExcludes } from '../../interfaces/index.js'
-
+import { shx } from '../../lib/utils.js'
 // libraries
 import { exec } from '../../lib/utils.js'
 import Bleach from './../bleach.js'
-import Incubator from './../incubation/incubator.js'
-import Pacman from './../pacman.js'
 import Diversions from './../diversions.js'
-
+import Incubator from './../incubation/incubator.js'
+import Ovary from './../ovary.js'
+import Pacman from './../pacman.js'
 // classes
 import Utils from './../utils.js'
 import Repo from './../yolk.js'
-import Ovary from './../ovary.js'
-
 import { CryptoConfig } from './luks-interactive-crypto-config.js'
-import e from 'express'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -117,8 +113,8 @@ export async function produce(
             this.kernel = moduleDirs[0]
 
         } else { // debian, fedora, openmamba, opensuse, voidlinux
-            let vmlinuz = path.basename(Utils.vmlinuz())
-            this.kernel = vmlinuz.substring(vmlinuz.indexOf('-') + 1)
+            const vmlinuz = path.basename(Utils.vmlinuz())
+            this.kernel = vmlinuz.slice(Math.max(0, vmlinuz.indexOf('-') + 1))
         }
     }
 
@@ -272,20 +268,35 @@ export async function produce(
              */
             if (fullcrypt) {
                 await this.luksRootInitrd()
-            } else {
-                if (this.familyId === 'alpine') {
+            } else switch (this.familyId) {
+ case 'alpine': {
                     await this.initrdAlpine()
-                } else if (this.familyId === 'archlinux') {
+                
+ break;
+ }
+
+ case 'archlinux': {
                     await this.initrdArch()
-                } else if (this.familyId === 'debian') {
+                
+ break;
+ }
+
+ case 'debian': {
                     await this.initrdDebian()
-                } else if (this.familyId === 'fedora' ||
-                    this.familyId === 'openmamba' ||
-                    this.familyId === 'opensuse' ||
-                    this.familyId === 'voidlinux') {
+                
+ break;
+ }
+
+ case 'fedora': 
+ case 'openmamba': 
+ case 'opensuse': 
+ case 'voidlinux': {
                     await this.initrdDracut()
-                }
-            }
+                
+ break;
+ }
+ // No default
+ }
 
             // We don't need more
             await this.ubindVfs()
@@ -345,7 +356,7 @@ export async function produce(
 
                     if (fs.existsSync(inittabPath)) {
                         // Non funziona per Devuan
-                        let content = fs.readFileSync(inittabPath, 'utf-8')
+                        let content = fs.readFileSync(inittabPath, 'utf8')
 
                         // La riga standard per Devuan/Debian SysVinit.
                         // 1: ID
@@ -360,7 +371,7 @@ export async function produce(
 
                         if (regex.test(content)) {
                             // Sostituisce la riga esistente
-                            content = content.replace(regex, tty1Line)
+                            content = content.replaceAll(regex, tty1Line)
                             console.log('Fixed tty1 in inittab (replaced)')
                         } else {
                             // Se non c'è, la aggiunge in fondo (dopo i commenti iniziali)
@@ -411,7 +422,7 @@ export async function produce(
 
 
         // need syslinux?
-        const arch = process.arch
+        const {arch} = process
         if (arch === 'ia32' || arch === 'x64') {
             await this.syslinux(this.theme)
         }
@@ -462,13 +473,14 @@ export async function produce(
                 hashCmd = `md5sum`
                 hashExt = '.md5'
             }
+
             await exec(`mkdir ${this.settings.iso_work}${path.dirname(filesystemName)} -p`, this.echo)
             await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
 
             /**
              * patch 4 mksquashfs
              */
-            let fname = `${this.settings.work_dir.ovarium}mksquashfs`
+            const fname = `${this.settings.work_dir.ovarium}mksquashfs`
             let content = fs.readFileSync(fname, 'utf8')
             const patched = '# Arch and Manjaro based distro need this link'
             // not need check, is always clean here... but OK

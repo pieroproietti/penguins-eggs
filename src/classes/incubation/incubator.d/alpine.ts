@@ -15,20 +15,13 @@ import Fisherman from '../fisherman.js'
  */
 export class Alpine {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone: boolean
-
-  release = false
-
-  remix: IRemix
-
-  theme: string
-
-  user_opt: string // theme comprende il path
-
-  verbose = false
+installer = {} as IInstaller
+isClone: boolean
+release = false
+remix: IRemix
+theme: string
+user_opt: string // theme comprende il path
+verbose = false
 
   /**
    * @param remix

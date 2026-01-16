@@ -20,13 +20,10 @@ export default class Get extends Command {
   static args = {
     repo: Args.string({ description: 'repository to get', name: 'repo', required: false })
   }
-
-  // static args ={name: 'repo', description: 'repository to get', required: false}
+// static args ={name: 'repo', description: 'repository to get', required: false}
   static description = 'get warorobe'
-
-  static examples = ['eggs wardrobe get', 'eggs wardrobe get your-wardrobe']
-
-  static flags = {
+static examples = ['eggs wardrobe get', 'eggs wardrobe get your-wardrobe']
+static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }

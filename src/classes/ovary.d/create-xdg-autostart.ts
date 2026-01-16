@@ -10,12 +10,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { IAddons } from '../../interfaces/index.js'
+import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
-import { exec } from '../../lib/utils.js'
 import PveLive from '../pve-live.js'
-import { IAddons } from '../../interfaces/index.js'
 
 // Setup __dirname per moduli ESM
 const __filename = fileURLToPath(import.meta.url)
@@ -48,7 +48,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
      * 1. ICONE & ASSETS
      */
     const assets = ['eggs.png', 'krill.svg', 'leaves.svg']
-    assets.forEach(asset => copyToMerged(`../../../assets/${asset}`, `/usr/share/icons/${asset}`))
+    for (const asset of assets) copyToMerged(`../../../assets/${asset}`, `/usr/share/icons/${asset}`)
 
     copyToMerged('../../../assets/penguins-eggs.desktop', '/usr/share/applications/penguins-eggs.desktop')
 
@@ -64,7 +64,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         const fullPolicyPath = path.join(mergedRoot, policyPath)
         if (fs.existsSync(fullPolicyPath)) {
             let policy = fs.readFileSync(fullPolicyPath, 'utf8')
-            policy = policy.replace(/<(allow_any|allow_inactive|allow_active)>.*?<\/\1>/g, '<$1>yes</$1>')
+            policy = policy.replaceAll(/<(allow_any|allow_inactive|allow_active)>.*?<\/\1>/g, '<$1>yes</$1>')
             fs.writeFileSync(fullPolicyPath, policy, 'utf8')
         }
     } else if (Pacman.packageIsInstalled('live-installer')) {
@@ -86,6 +86,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         copyToMerged('../../../addons/eggs/rsupport/applications/eggs-rsupport.desktop', '/usr/share/applications/eggs-rsupport.desktop')
         copyToMerged('../../../addons/eggs/rsupport/artwork/eggs-rsupport.png', '/usr/share/icons/eggs-rsupport.png')
     }
+
     if (myAddons.pve) {
         const pve = new PveLive(); pve.create(mergedRoot)
         copyToMerged('../../../addons/eggs/pve/artwork/eggs-pve.png', '/usr/share/icons/eggs-pve.png')
@@ -103,7 +104,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     scriptText += 'while [ ! -d "$DESKTOP" ]; do sleep 1; DESKTOP=$(xdg-user-dir DESKTOP); done\n'
     scriptText += `cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
     if (!noicons) scriptText += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
-    myLinks.forEach(link => scriptText += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`)
+    for (const link of myLinks) scriptText += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
 
     if (Pacman.packageIsInstalled('cosmic-session') || Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
         scriptText += 'chmod a+x "$DESKTOP"/*.desktop\n'
@@ -126,17 +127,17 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     try {
         await exec(`chroot ${mergedRoot} usermod -p "" ${newuser}`)
         await exec(`chroot ${mergedRoot} passwd -u ${newuser}`)
-    } catch (e) { if (this.verbose) console.log('Ovary: error unlocking') }
+    } catch { if (this.verbose) console.log('Ovary: error unlocking') }
 
     const pamServices = ['common-auth', 'greetd', 'gdm-password', 'login']
-    pamServices.forEach(s => {
+    for (const s of pamServices) {
         const p = path.join(mergedRoot, `/etc/pam.d/${s}`)
         if (fs.existsSync(p)) {
             let c = fs.readFileSync(p, 'utf8')
-            c = c.replace(/pam_unix\.so(?!.*nullok)/g, 'pam_unix.so nullok')
+            c = c.replaceAll(/pam_unix\.so(?!.*nullok)/g, 'pam_unix.so nullok')
             fs.writeFileSync(p, c, 'utf8')
         }
-    })
+    }
 
     // CASO COSMIC/GREETD: Bypass totale del Display Manager
     if (Pacman.packageIsInstalled('greetd')) {
@@ -162,7 +163,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         await exec(`chroot ${mergedRoot} usermod -aG video,render,input,tty,audio ${newuser}`)
 
         // Disabilitiamo greetd per evitare che "rubi" il terminale
-        try { await exec(`chroot ${mergedRoot} systemctl disable greetd`) } catch (e) {}
+        try { await exec(`chroot ${mergedRoot} systemctl disable greetd`) } catch {}
     } 
 
     // Altri Display Manager
@@ -184,7 +185,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
         if (fs.existsSync(lPath)) {
             let c = fs.readFileSync(lPath, 'utf8')
             if (!c.includes('[Seat:*]')) c += '\n[Seat:*]\n'
-            c = c.replace(/autologin-user=.*/g, '').replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
+            c = c.replaceAll(/autologin-user=.*/g, '').replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
             fs.writeFileSync(lPath, c, 'utf8')
         }
     }

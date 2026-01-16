@@ -7,6 +7,7 @@
  */
 
 import inquirer from 'inquirer'
+
 import { InstallationMode } from '../classes/krill_enums.js'
 
 export default async function selectInstallationMode(): Promise<InstallationMode> {

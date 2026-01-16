@@ -8,7 +8,8 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import { shx, exec } from '../lib/utils.js'
+
+import { exec, shx } from '../lib/utils.js'
 import Bleach from './bleach.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
@@ -18,10 +19,8 @@ import Utils from './utils.js'
  */
 export default class Yolk {
   echo = {}
-
-  verbose = false
-
-  yolkDir = '/var/local/yolk'
+verbose = false
+yolkDir = '/var/local/yolk'
 
   /**
    *

@@ -19,23 +19,23 @@ export interface IMateria {
 
   description: string
   distributions: string[]
+  finalize: {
+    cmds: string[]
+    customize: boolean
+  }
   name: string
+  reboot: boolean
   release: string
   sequence: {
+    accessories: string[]
+    cmds: string[]
+    packages: string[]
+    packages_python: string[]
     repositories: {
       sources_list: string[]
       sources_list_d: string[]
       update: boolean
       upgrade: boolean
     }
-    cmds: string[]
-    packages: string[]
-    packages_python: string[]
-    accessories: string[]
   }
-  finalize: {
-    customize: boolean
-    cmds: string[]
-  }
-  reboot: boolean
 }

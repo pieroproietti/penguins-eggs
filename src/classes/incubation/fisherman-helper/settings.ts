@@ -14,30 +14,30 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-import {shx} from '../../../lib/utils.js'
 
 import { ISettings } from '../../../interfaces/i-settings.js'
+import {shx} from '../../../lib/utils.js'
 import Utils from '../../utils.js'
 import { installer } from '../installer.js'
 
 
 
 interface SequenceItem {
-  show?: string[];
   exec?: string[];
+  show?: string[];
 }
 
 // Definisce la struttura dell'intero file di configurazione
 interface CalamaresConfig {
-  'modules-search': string[];
-  'oem-setup': boolean;
+  branding: string;
   'disable-cancel': boolean;
   'disable-cancel-during-exec': boolean;
+  'dont-chroot': boolean;
+  'modules-search': string[];
+  'oem-setup': boolean;
+  'prompt-install': boolean;
   'quit-at-end': boolean;
   sequence: SequenceItem[];
-  branding: string;
-  'prompt-install': boolean;
-  'dont-chroot': boolean;
 }
 
 
@@ -56,7 +56,7 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   }
 
   const settingsDest = dest + 'settings.conf'
-  const contentSrc = fs.readFileSync(settingsSrc, "utf-8")
+  const contentSrc = fs.readFileSync(settingsSrc, "utf8")
   const yamlDest = yaml.load(contentSrc) as CalamaresConfig
 
   // Trova gli elementi in modo sicuro

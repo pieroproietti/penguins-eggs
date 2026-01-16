@@ -46,14 +46,14 @@ export default async function removeHomecryptHack(this: Sequence): Promise<void>
     'etc/systemd/system/local-fs.target.wants/mount-encrypted-home.service'
   ]
 
-  systemdFiles.forEach(fileRelPath => {
+  for (const fileRelPath of systemdFiles) {
     const fullPath = path.join(targetRoot, fileRelPath)
     if (fs.existsSync(fullPath)) {
        try {
          fs.unlinkSync(fullPath)
-       } catch (e) { /* ignore */ }
+       } catch { /* ignore */ }
     }
-  })
+  }
 
   // -------------------------------------------------------
   // 3. RIMOZIONE SCRIPT COMUNI
@@ -63,12 +63,12 @@ export default async function removeHomecryptHack(this: Sequence): Promise<void>
     'usr/local/bin/mount-encrypted-home.sh'
   ]
 
-  scriptFiles.forEach(fileRelPath => {
+  for (const fileRelPath of scriptFiles) {
     const fullPath = path.join(targetRoot, fileRelPath)
     if (fs.existsSync(fullPath)) {
       try {
         fs.unlinkSync(fullPath)
-      } catch (e) { /* ignore */ }
+      } catch { /* ignore */ }
     }
-  })
+  }
 }

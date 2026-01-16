@@ -7,22 +7,21 @@
  */
 
 import mustache from 'mustache'
-
 // packages
 import fs from 'node:fs'
 import path from 'node:path'
 
 // classes
 import { exec } from '../../lib/utils.js'
-import Ovary from '../ovary.js'
 import Diversions from '../diversions.js'
+import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * * @param this 
+ * @param this 
  * @param theme 
  */
 export async function makeEfi(this: Ovary, theme = 'eggs') {
@@ -36,20 +35,37 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     let shimEfi = ''
 
     // Default paths based on architecture
-    if (process.arch === 'x64') {
-        grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
-        shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
-    } else if (process.arch === 'ia32') {
-        grubEfi = path.resolve(bootloaders, `grub/i386-efi/monolithic/grubia32.efi`)
-        shimEfi = path.resolve(bootloaders, `shim/shimia32.efi`) // raramente usato non firmato
-    } else if (process.arch === 'arm64') {
+    switch (process.arch) {
+    case 'arm64': {
         grubEfi = path.resolve(bootloaders, `grub/arm64-efi/monolithic/grubaa64.efi`)
         shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi`)
-    } else if (process.arch === 'riscv64') {
+    
+    break;
+    }
+
+    case 'ia32': {
+        grubEfi = path.resolve(bootloaders, `grub/i386-efi/monolithic/grubia32.efi`)
+        shimEfi = path.resolve(bootloaders, `shim/shimia32.efi`) // raramente usato non firmato
+    
+    break;
+    }
+
+    case 'riscv64': {
         // Percorso per RISC-V (assumendo struttura simile)
         // Nota: Assicurati che Diversions.bootloaders punti al posto giusto o che i file esistano lì
         grubEfi = path.resolve(bootloaders, `grub/riscv64-efi/monolithic/grubriscv64.efi`)
         shimEfi = '' // Solitamente niente SHIM su RISC-V per ora
+    
+    break;
+    }
+
+    case 'x64': {
+        grubEfi = path.resolve(bootloaders, `grub/x86_64-efi/monolithic/grubx64.efi`)
+        shimEfi = path.resolve(bootloaders, `shim/shimx64.efi`)
+    
+    break;
+    }
+    // No default
     }
 
     /**
@@ -57,20 +73,37 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      */
     if (this.familyId === "debian") {
         signed = true
-        if (process.arch === 'x64') {
-            grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
-            shimEfi = path.resolve(bootloaders, `shim/shimx64.efi.signed`)
-        } else if (process.arch === 'ia32') {
-            grubEfi = path.resolve(bootloaders, `grub/i386-efi-signed/grubia32.efi.signed`)
-            shimEfi = path.resolve(bootloaders, `shim/shimia32.efi.signed`)
-        } else if (process.arch === 'arm64') {
+        switch (process.arch) {
+        case 'arm64': {
             grubEfi = path.resolve(bootloaders, `grub/arm64-efi-signed/grubaa64.efi.signed`)
             shimEfi = path.resolve(bootloaders, `shim/shimaa64.efi.signed`)
-        } else if (process.arch === 'riscv64') {
+        
+        break;
+        }
+
+        case 'ia32': {
+            grubEfi = path.resolve(bootloaders, `grub/i386-efi-signed/grubia32.efi.signed`)
+            shimEfi = path.resolve(bootloaders, `shim/shimia32.efi.signed`)
+        
+        break;
+        }
+
+        case 'riscv64': {
             // Per ora niente firma su RISC-V Debian, fallback su unsigned
             signed = false
             grubEfi = path.resolve(bootloaders, `grub/riscv64-efi/monolithic/grubriscv64.efi`)
             shimEfi = ''
+        
+        break;
+        }
+
+        case 'x64': {
+            grubEfi = path.resolve(bootloaders, `grub/x86_64-efi-signed/grubx64.efi.signed`)
+            shimEfi = path.resolve(bootloaders, `shim/shimx64.efi.signed`)
+        
+        break;
+        }
+        // No default
         }
     }
 
@@ -85,6 +118,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     } else {
         Utils.warning(`You must disable Secure Boot to boot live system ${this.distroId}/${process.arch}`)
     }
+
     // 2 secondi per leggere...    
     await new Promise(resolve => setTimeout(resolve, 2000))
 
@@ -105,6 +139,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     if (shimEfi && fs.existsSync(shimEfi)) {
         await exec(`cp ${shimEfi} ${isoDir}/EFI/boot/${bootEfiName()}`, this.echo)
     }
+
     // Se non c'è shim (es. RISC-V), copiamo grub direttamente come boot<arch>.efi?
     // Solitamente se c'è shim: bootx64.efi = shim, grubx64.efi = grub
     // Se NO shim: bootx64.efi = grub
@@ -118,6 +153,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     if (fs.existsSync(efiPath)) {
         await exec(`rm -rf ${efiPath}`)
     }
+
     await exec(`mkdir ${efiPath}`, this.echo)
     await exec(`mkdir ${efiMemdiskDir}`, this.echo)
     await exec(`mkdir ${efiImgMnt}`, this.echo)
@@ -153,11 +189,12 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
      * create grub.cfg (bridge) on (ISO)/boot/grub/x86_64-efi/grub.cfg
      */
     Utils.warning(`creating grub.cfg bridge to main. (ISO)/boot/grub/${Utils.uefiFormat()}`)
-    let cfgBridge = path.join(isoDir, '/boot/grub/', Utils.uefiFormat(), '/grub.cfg')
+    const cfgBridge = path.join(isoDir, '/boot/grub/', Utils.uefiFormat(), '/grub.cfg')
     let cfgBridgeText = `# grub.cfg bridge\n`
     if (!this.hidden) {
         cfgBridgeText += `# created on ${cfgBridge}\n`
     }
+
     cfgBridgeText += `\n`
     // Qui è dove l'architettura specifica punta al grub generico
     cfgBridgeText += `source /boot/grub/grub.cfg\n`
@@ -170,9 +207,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     if (this.distroLike === 'Ubuntu') {
         pathBait = path.join(isoDir, '/EFI/ubuntu')
     }
+
     await exec(`mkdir ${pathBait} -p`, this.echo)
     Utils.warning(`creating grub.cfg seeker ISO/DVD on (ISO)/EFI/${path.basename(pathBait)}`)
-    let cfgBait = path.join(pathBait, '/grub.cfg')
+    const cfgBait = path.join(pathBait, '/grub.cfg')
     let cfgBaitText = ''
     cfgBaitText += `\n`
     cfgBaitText += seeker
@@ -182,7 +220,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     /**
      * README.md
      */
-    let baitReadme = path.join(pathBait, '/README.md')
+    const baitReadme = path.join(pathBait, '/README.md')
     let baitReadmeText = ``
     if (this.distroLike !== 'Debian' && this.distroLike !== 'Ubuntu') {
         baitReadmeText += `# penguins-eggs\n`
@@ -247,6 +285,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
         console.log(`error copyng ${cfgSeekerUsb} seeker for USB on (efi.img)/boot/grub.cfg`)
         process.exit(1)
     }
+
     await new Promise(resolve => setTimeout(resolve, 500))
 
     await exec(`umount ${efiImgMnt}`, this.echo)
@@ -363,7 +402,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     }
 
     const view = {
-        fullname: fullname,
+        fullname,
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,
@@ -375,6 +414,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     if (!this.hidden) {
         cfgMainText += `# created on ${cfgMain}`
     }
+
     cfgMainText += `\n`
     cfgMainText += mustache.render(template, view)
     fs.writeFileSync(cfgMain, cfgMainText)
@@ -385,35 +425,71 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
  */
 
 /**
- * * @returns 
+ * @returns 
  */
 function bootEfiName(): string {
     let ben = ''
-    if (process.arch === 'x64') {
-        ben = 'bootx64.efi'
-    } else if (process.arch === 'ia32') {
-        ben = 'bootia32.efi'
-    } else if (process.arch === 'arm64') {
+    switch (process.arch) {
+    case 'arm64': {
         ben = 'bootaa64.efi'
-    } else if (process.arch === 'riscv64') {
-        ben = 'bootriscv64.efi'
+    
+    break;
     }
+
+    case 'ia32': {
+        ben = 'bootia32.efi'
+    
+    break;
+    }
+
+    case 'riscv64': {
+        ben = 'bootriscv64.efi'
+    
+    break;
+    }
+
+    case 'x64': {
+        ben = 'bootx64.efi'
+    
+    break;
+    }
+    // No default
+    }
+
     return ben
 }
 
 /**
- * * @returns 
+ * @returns 
  */
 function grubEfiName(): string {
     let gen = ''
-    if (process.arch === 'x64') {
-        gen = 'grubx64.efi'
-    } else if (process.arch === 'ia32') {
-        gen = 'grubia32.efi' // c'era uno spazio typo nel tuo codice originale "grub ia32", corretto qui
-    } else if (process.arch === 'arm64') {
+    switch (process.arch) {
+    case 'arm64': {
         gen = 'grubaa64.efi'
-    } else if (process.arch === 'riscv64') {
-        gen = 'grubriscv64.efi'
+    
+    break;
     }
+
+    case 'ia32': {
+        gen = 'grubia32.efi' // c'era uno spazio typo nel tuo codice originale "grub ia32", corretto qui
+    
+    break;
+    }
+
+    case 'riscv64': {
+        gen = 'grubriscv64.efi'
+    
+    break;
+    }
+
+    case 'x64': {
+        gen = 'grubx64.efi'
+    
+    break;
+    }
+    // No default
+    }
+
     return gen
 }

@@ -1,5 +1,6 @@
-import Utils from '../../../classes/utils.js'
 import { render, RenderOptions } from 'ink'
+
+import Utils from '../../../classes/utils.js'
 
 /**
  * confirm
@@ -15,6 +16,7 @@ export async function confirm(elem: JSX.Element, msg = "Confirm") {
     } else if (result.confirm === 'Abort') {
       process.exit()
     }
+
     return retval
   }
 
@@ -25,7 +27,7 @@ export async function confirm(elem: JSX.Element, msg = "Confirm") {
  * forceUpdate
  */
 function redraw(elem: JSX.Element) {
-    let opt: RenderOptions = {}
+    const opt: RenderOptions = {}
     opt.patchConsole = true
     opt.debug = false
     console.clear()

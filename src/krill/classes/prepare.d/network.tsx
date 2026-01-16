@@ -7,30 +7,27 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import React from 'react'
-import {confirm} from './confirm.js'
-
-import Network from '../../components/network.js'
-import { INet } from '../../../interfaces/index.js'
-import Prepare from '../prepare.js'
-import Utils from '../../../classes/utils.js'
-
-import selectInterface from '../../lib/select_interface.js'
-import selectAddressType from '../../lib/select_address_type.js'
-import getAddress from '../../lib/get_address.js'
-import getNetmask from '../../lib/get_netmask.js'
-import getGateway from '../../lib/get_gateway.js'
-import getDomain from '../../lib/get_domain.js'
-import getDns from '../../lib/get_dns.js'
-
-
 import fs from 'fs'
+import React from 'react'
+
+import Utils from '../../../classes/utils.js'
+import { INet } from '../../../interfaces/index.js'
+import Network from '../../components/network.js'
+import getAddress from '../../lib/get_address.js'
+import getDns from '../../lib/get_dns.js'
+import getDomain from '../../lib/get_domain.js'
+import getGateway from '../../lib/get_gateway.js'
+import getNetmask from '../../lib/get_netmask.js'
+import selectAddressType from '../../lib/select_address_type.js'
+import selectInterface from '../../lib/select_interface.js'
+import Prepare from '../prepare.js'
+import {confirm} from './confirm.js'
 
 
 
 /**
-   * Network
-   */
+ * Network
+ */
 export async function network(this: Prepare): Promise<INet> {
     const i = {} as INet
 
@@ -52,7 +49,7 @@ export async function network(this: Prepare): Promise<INet> {
 
     let networkElem: JSX.Element
     while (true) {
-        networkElem = <Network iface={i.iface} addressType={i.addressType} address={i.address} netmask={i.netmask} gateway={i.gateway} domain={i.domain} dns={dnsString} />
+        networkElem = <Network address={i.address} addressType={i.addressType} dns={dnsString} domain={i.domain} gateway={i.gateway} iface={i.iface} netmask={i.netmask} />
         if (await confirm(networkElem, "Confirm Network datas?")) {
             break
         }
@@ -67,6 +64,7 @@ export async function network(this: Prepare): Promise<INet> {
             if (i.domain.at(0) !== '.') {
                 i.domain = '.' + i.domain
             }
+
             i.dns = (await getDns(dnsString)).split(';')
             dnsString = ''
             for (let c = 0; c < i.dns.length; c++) {
@@ -77,5 +75,6 @@ export async function network(this: Prepare): Promise<INet> {
             }
         }
     }
+
     return i
 }

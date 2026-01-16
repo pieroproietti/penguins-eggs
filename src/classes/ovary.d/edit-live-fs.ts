@@ -9,17 +9,15 @@
 // packages
 import crypto from 'crypto'
 import fs from 'fs'
-import os from 'os'
 import path from 'node:path'
-import {shx} from '../../lib/utils.js'
+import os from 'os'
 
+import {exec, shx } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
-import Utils from '../utils.js'
 import Pacman from '../pacman.js'
 import Systemctl from '../systemctl.js'
-
-import { exec } from '../../lib/utils.js'
+import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -142,13 +140,13 @@ export async function editLiveFs(this: Ovary) {
         }
 
         const devNodes = [
-            { path: 'console', m: '622', type: 'c', major: 5, minor: 1 },
-            { path: 'null',    m: '666', type: 'c', major: 1, minor: 3 },
-            { path: 'zero',    m: '666', type: 'c', major: 1, minor: 5 },
-            { path: 'ptmx',    m: '666', type: 'c', major: 5, minor: 2 },
-            { path: 'tty',     m: '666', type: 'c', major: 5, minor: 0 },
-            { path: 'random',  m: '444', type: 'c', major: 1, minor: 8 },
-            { path: 'urandom', m: '444', type: 'c', major: 1, minor: 9 },
+            { m: '622', major: 5, minor: 1, path: 'console', type: 'c' },
+            { m: '666',    major: 1, minor: 3, path: 'null', type: 'c' },
+            { m: '666',    major: 1, minor: 5, path: 'zero', type: 'c' },
+            { m: '666',    major: 5, minor: 2, path: 'ptmx', type: 'c' },
+            { m: '666',     major: 5, minor: 0, path: 'tty', type: 'c' },
+            { m: '444',  major: 1, minor: 8, path: 'random', type: 'c' },
+            { m: '444', major: 1, minor: 9, path: 'urandom', type: 'c' },
         ]
 
         for (const node of devNodes) {
@@ -162,11 +160,11 @@ export async function editLiveFs(this: Ovary) {
         }
 
         const links = [
-             { src: '/proc/self/fd', dest: 'fd' },
-             { src: '/proc/self/fd/0', dest: 'stdin' },
-             { src: '/proc/self/fd/1', dest: 'stdout' },
-             { src: '/proc/self/fd/2', dest: 'stderr' },
-             { src: '/proc/kcore', dest: 'core' }
+             { dest: 'fd', src: '/proc/self/fd' },
+             { dest: 'stdin', src: '/proc/self/fd/0' },
+             { dest: 'stdout', src: '/proc/self/fd/1' },
+             { dest: 'stderr', src: '/proc/self/fd/2' },
+             { dest: 'core', src: '/proc/kcore' }
         ];
 
         for (const link of links) {

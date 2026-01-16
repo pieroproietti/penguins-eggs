@@ -7,18 +7,14 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import React from 'react';
 import { render, RenderOptions } from 'ink'
-
-import {confirm} from './confirm.js'
+import React from 'react';
 
 import Summary from '../../components/summary.js'
-import { IKeyboard } from '../../interfaces/i_krill.js'
-import Prepare from '../prepare.js'
-
-import { ILocation, IPartitions, IUsers} from '../../interfaces/i_krill.js'
-
+import { IKeyboard , ILocation, IPartitions, IUsers} from '../../interfaces/i_krill.js'
 import { InstallationMode } from '../krill_enums.js'
+import Prepare from '../prepare.js'
+import {confirm} from './confirm.js'
 
 /**
  * SUMMARY
@@ -43,7 +39,7 @@ export async function summary(this: Prepare, location: ILocation, keyboard: IKey
 
     while (true) {
 
-        summaryElem = <Summary username={users.username} password={users.password} rootPassword={users.rootPassword} hostname={users.hostname} region={location.region} zone={location.zone} language={location.language} keyboardModel={keyboard.keyboardModel} keyboardLayout={keyboard.keyboardLayout} installationDevice={partitions.installationDevice} filesystemType={partitions.filesystemType} message={message} erase={erase} />
+        summaryElem = <Summary erase={erase} filesystemType={partitions.filesystemType} hostname={users.hostname} installationDevice={partitions.installationDevice} keyboardLayout={keyboard.keyboardLayout} keyboardModel={keyboard.keyboardModel} language={location.language} message={message} password={users.password} region={location.region} rootPassword={users.rootPassword} username={users.username} zone={location.zone} />
         if (this.unattended && this.nointeractive) {
             redraw(summaryElem)
             await sleep(5000)
@@ -68,7 +64,7 @@ export async function summary(this: Prepare, location: ILocation, keyboard: IKey
  * forceUpdate
  */
 function redraw(elem: JSX.Element) {
-    let opt: RenderOptions = {}
+    const opt: RenderOptions = {}
     opt.patchConsole = true
     opt.debug = false
     console.clear()

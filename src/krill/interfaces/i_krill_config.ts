@@ -20,7 +20,6 @@ export interface IKrillConfig {
   hostname: string
   iface: string
   installationDevice: string
-  replacedPartition: string
   installationMode: string
   keyboardLayout: string
   keyboardModel: string
@@ -31,6 +30,7 @@ export interface IKrillConfig {
   netmask: string
   password: string
   region: string
+  replacedPartition: string
   rootPassword: string
   userSwapChoice: SwapChoice
   zone: string

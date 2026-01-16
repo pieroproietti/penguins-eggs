@@ -7,11 +7,11 @@
  */
 
 export interface IInstall {
+  addEfi: boolean
   calamares: boolean
   configurationInstall: boolean
   configurationRefresh: boolean
   distroTemplate: boolean
-  addEfi: boolean
   needUpdate: boolean
   prerequisites: boolean
 }

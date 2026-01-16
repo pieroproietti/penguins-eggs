@@ -23,10 +23,10 @@ export async function luksGetPassword(this: Ovary): Promise<void> {
 
   // Chiedi se usare password di default
   const useDefault = await inquirer.prompt([{
-    type: 'confirm',
-    name: 'useDefault',
+    default: false,
     message: `Use default password "${this.luksPassword}" for LUKS encryption?`,
-    default: false
+    name: 'useDefault',
+    type: 'confirm'
   }])
 
   if (useDefault.useDefault) {
@@ -41,20 +41,21 @@ export async function luksGetPassword(this: Ovary): Promise<void> {
   while (!confirmed) {
     const answers = await inquirer.prompt([
       {
-        type: 'password',
-        name: 'password',
         message: 'Enter LUKS encryption password:',
-        validate: (input: string) => {
+        name: 'password',
+        type: 'password',
+        validate(input: string) {
           if (input.length < 8) {
             return 'Password must be at least 8 characters'
           }
+
           return true
         }
       },
       {
-        type: 'password',
+        message: 'Confirm password:',
         name: 'confirm',
-        message: 'Confirm password:'
+        type: 'password'
       }
     ])
 

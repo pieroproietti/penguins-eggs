@@ -8,9 +8,9 @@
  */
 
 import Utils from '../../../classes/utils.js'
-import Sequence from '../sequence.js'
 import { exec } from '../../../lib/utils.js'
 import { SwapChoice } from '../krill_enums.js'
+import Sequence from '../sequence.js'
 
 /**
  *
@@ -32,6 +32,7 @@ export default async function initramfsCfg(this: Sequence, installDevice: string
     } else {
       text += 'RESUME=UUID=' + Utils.uuid(this.devices.swap.name)
     }
+
     Utils.write(file, text)
   }
 }

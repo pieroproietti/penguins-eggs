@@ -18,10 +18,8 @@ import { IRemix } from '../interfaces/index.js'
 
 export default class Calamares extends Command {
   static description = 'a GUI system installer - install and configure calamares'
-
-  static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
-
-  static flags = {
+static examples = ['sudo eggs calamares', 'sudo eggs calamares --install', 'sudo eggs calamares --install --theme=/path/to/theme', 'sudo eggs calamares --remove']
+static flags = {
     help: Flags.help({ char: 'h' }),
     install: Flags.boolean({ char: 'i', description: 'install calamares and its dependencies' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
@@ -31,12 +29,9 @@ export default class Calamares extends Command {
     theme: Flags.string({ description: 'theme/branding for eggs and calamares' }),
     verbose: Flags.boolean({ char: 'v' })
   }
-
-  incubator = {} as Incubator
-
-  remix = {} as IRemix
-
-  settings = {} as Settings
+incubator = {} as Incubator
+remix = {} as IRemix
+settings = {} as Settings
 
   async run(): Promise<void> {
     Utils.titles(this.id + ' ' + this.argv)
@@ -124,8 +119,8 @@ export default class Calamares extends Command {
       }
 
       /**
-      * configure
-      */
+       * configure
+       */
       if (await this.settings.load()) {
         await this.settings.loadRemix(theme)
         const isClone = false

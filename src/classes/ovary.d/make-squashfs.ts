@@ -9,11 +9,11 @@
 // packages
 import fs from 'fs'
 import path from 'node:path'
-import { shx } from '../../lib/utils.js'
-import Diversions from '../diversions.js'
 
+import { shx } from '../../lib/utils.js'
 // classes
 import { exec } from '../../lib/utils.js'
+import Diversions from '../diversions.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 
@@ -97,7 +97,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
      * [-ef exclude.list]
      * [-e list of exclude dirs/files]
      */
-    let sfsName = "filesystem.squashfs"
+    const sfsName = "filesystem.squashfs"
     let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/${sfsName} ${compression} ${limit} -no-xattrs -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
     cmd = cmd.replaceAll(/\s\s+/g, ' ')
@@ -129,6 +129,7 @@ export function addExclusion(this: Ovary, exclusion: string): void {
     if (exclusion.startsWith('/')) {
         exclusion = exclusion.slice(1) // remove / initial Non compatible with rsync
     }
+
     this.settings.session_excludes += this.settings.session_excludes === '' ? `-e '${exclusion}' ` : ` '${exclusion}' `
 
 }

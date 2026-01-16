@@ -6,12 +6,13 @@
  * license: MIT
  */
 
+import { Box, render, Text } from 'ink'
 import React from 'react'
-import Settings from '../../classes/settings.js'
+
 import Pacman from '../../classes/pacman.js'
+import Settings from '../../classes/settings.js'
 import Utils from '../../classes/utils.js'
 import Title from './title.js'
-import { render, Text, Box } from 'ink'
 
 export default async function information(verbose = false): Promise<void> {
     const echo = Utils.setEcho(verbose)
@@ -57,7 +58,7 @@ export default async function information(verbose = false): Promise<void> {
 
     const Distro = () => (
         <Box flexDirection='column'>
-            <Box borderStyle="round" marginRight={2} flexDirection='row' >
+            <Box borderStyle="round" flexDirection='row' marginRight={2} >
                 <Box marginRight={2}><Text>distro: <Text color="cyan">{distroId} {releaseId} {codenameId}</Text></Text></Box>
                 <Box marginRight={2}><Text>compatible: <Text color="cyan">{settings.distro.distroLike} {settings.distro.distroUniqueId}</Text></Text></Box>
             </Box>
@@ -65,7 +66,7 @@ export default async function information(verbose = false): Promise<void> {
     )
 
     const configurations = Pacman.configurationCheck()
-    let uefi = Pacman.isUefi()
+    const uefi = Pacman.isUefi()
 
     let installer = false
     if (Pacman.isInstalledGui()) {
@@ -110,7 +111,7 @@ export default async function information(verbose = false): Promise<void> {
     }
 
     const RunningOn = () => (
-        <Box borderStyle="round" marginRight={2} flexDirection="row">
+        <Box borderStyle="round" flexDirection="row" marginRight={2}>
             <Box marginRight={2}><Text>configuration: {configurations ? <Ok /> : <Ko />}</Text></Box>
             <Box marginRight={2}><Text>arch: {process.arch}</Text></Box>
             <Box marginRight={2}><Text>uefi: {uefi ? <Ok /> : <Ko />}</Text></Box>
@@ -131,7 +132,7 @@ export default async function information(verbose = false): Promise<void> {
     const Presentation = () => (
         <>
             <Box ><Text> </Text></Box>
-            <Box borderStyle="round" marginRight={2} flexDirection="column">
+            <Box borderStyle="round" flexDirection="column" marginRight={2}>
                 <Box ><Text color="cyan">eggs krill</Text><Text> install your CLI system with TUI installer krill, on GUI use calamares</Text></Box>
                 <Box><Text color="cyan">eggs wardrobe</Text><Text> build your personal system starting from cli</Text></Box>
                 <Box ><Text> </Text></Box>

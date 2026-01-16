@@ -79,13 +79,13 @@ export function branding(remix: IRemix, distro: IDistro, theme = '', verbose = f
     style: {
       // 3.3.x
       SidebarBackground: '#292F34',
-      SidebarBackgroundCurrent: '#D35400',
-      SidebarText: '#FFFFFF',
-      SidebarTextCurrent: '#292F34',
       // 3.2.x
       sidebarBackground: '#292F34',
+      SidebarBackgroundCurrent: '#D35400',
       sidebarBackgroundCurrent: '#D35400',
+      SidebarText: '#FFFFFF',
       sidebarText: '#FFFFFF',
+      SidebarTextCurrent: '#292F34',
       sidebarTextCurrent: '#292F34'
     },
     welcomeStyleCalamares: true

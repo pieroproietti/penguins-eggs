@@ -10,20 +10,20 @@
 import fs, { Dirent } from 'node:fs'
 import path from 'node:path'
 
+import Diversions from '../diversions.js'
 // classes
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
 import Utils from '../utils.js'
-import Diversions from '../diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-   *
-   * @param fullcrypt
-   * @returns cmd 4 mkiso
-   */
+ *
+ * @param fullcrypt
+ * @returns cmd 4 mkiso
+ */
 export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false, fullcrypt = false): Promise<string> {
     const prefix = this.settings.config.snapshot_prefix
 
@@ -121,5 +121,6 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt=false
                     ${luksPartitionParam} \
                     -o ${output} ${this.settings.iso_work}`
     }
+
     return command
 }

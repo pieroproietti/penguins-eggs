@@ -7,6 +7,7 @@
  */
 
 import inquirer from 'inquirer'
+
 import {shx} from '../../lib/utils.js'
 
 export default async function selectInstallationDevice(): Promise<string> {

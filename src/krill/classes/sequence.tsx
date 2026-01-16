@@ -10,127 +10,125 @@
 import path from 'path'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-import { IRemix, IDistro, INet } from '../../interfaces/index.js'
-import Settings from '../../classes/settings.js'
-import React from 'react'
-import { render, RenderOptions, Box, Text } from 'ink'
-import Install from '../components/install.js'
-import Finished from '../components/finished.js'
+import cliCursor from 'cli-cursor'
 import fs from 'fs'
+import { Box, render, RenderOptions, Text } from 'ink'
 import yaml from 'js-yaml'
-import { installer } from '../../classes/incubation/installer.js'
+import React from 'react'
+
 import CliAutologin from '../../classes/cli-autologin.js'
 import Distro from '../../classes/distro.js'
+import { installer } from '../../classes/incubation/installer.js'
 import Pacman from '../../classes/pacman.js'
+import Settings from '../../classes/settings.js'
 import Utils from '../../classes/utils.js'
 import Xdg from '../../classes/xdg.js'
-import { IInstaller, IDevices, IDevice } from '../../interfaces/index.js'
-import { ICalamaresModule, ILocation, IKeyboard, IPartitions, IUsers } from '../interfaces/i_krill.js'
+import { IDevice, IDevices, IDistro , IInstaller, INet, IRemix } from '../../interfaces/index.js'
 import { exec, spawnSync } from '../../lib/utils.js'
-
-// Import all modules (unchanged)
-import partition from './sequence.d/partition.js'
-import biosStandard from './sequence.d/partition.d/bios_standard.js'
-import biosLuks from './sequence.d/partition.d/bios_luks.js'
-import uefiStandard from './sequence.d/partition.d/uefi_standard.js'
-import uefiLuks from './sequence.d/partition.d/uefi_luks.js'
+import Finished from '../components/finished.js'
+import Install from '../components/install.js'
+import Title from '../components/title.js'
+import { ICalamaresModule, IKeyboard, ILocation, IPartitions, IUsers } from '../interfaces/i_krill.js'
+import CFS from './cfs.js'
+import addUser from './sequence.d/add_user.js'
+import bootloader from './sequence.d/bootloader.js'
+import bootloaderConfig from './sequence.d/bootloader_config.js'
+import changePassword from './sequence.d/change_password.js'
+import delLiveUser from './sequence.d/del_live_user.js'
+import fstab from './sequence.d/fstab.js'
+import grubcfg from './sequence.d/grubcfg.js'
+import hostname from './sequence.d/hostname.js'
+import initramfs from './sequence.d/initramfs.js'
+import initramfsCfg from './sequence.d/initramfs_cfg.js'
+import locale from './sequence.d/locale.js'
+import localeCfg from './sequence.d/locale_cfg.js'
+import mKeyboard from './sequence.d/m_keyboard.js'
+import machineId from './sequence.d/machine_id.js'
+import mkfs from './sequence.d/mkfs.js'
 import { mountFs, umountFs } from './sequence.d/mount_fs.js'
 import { mountVfs, umountVfs } from './sequence.d/mount_vfs.js'
-import unpackfs from './sequence.d/unpackfs.js'
-import machineId from './sequence.d/machine_id.js'
-import fstab from './sequence.d/fstab.js'
-import locale from './sequence.d/locale.js'
-import mKeyboard from './sequence.d/m_keyboard.js'
-import localeCfg from './sequence.d/locale_cfg.js'
-import addUser from './sequence.d/add_user.js'
-import changePassword from './sequence.d/change_password.js'
 import networkCfg from './sequence.d/network_cfg.js'
-import bootloaderConfig from './sequence.d/bootloader_config.js'
-import grubcfg from './sequence.d/grubcfg.js'
-import bootloader from './sequence.d/bootloader.js'
 import packages from './sequence.d/packages.js'
-import removeInstallerLink from './sequence.d/remove_installer_link.js'
+import biosLuks from './sequence.d/partition.d/bios_luks.js'
+import biosStandard from './sequence.d/partition.d/bios_standard.js'
+import uefiLuks from './sequence.d/partition.d/uefi_luks.js'
+import uefiStandard from './sequence.d/partition.d/uefi_standard.js'
+// Import all modules (unchanged)
+import partition from './sequence.d/partition.js'
 import removeHomecryptHack from './sequence.d/remove-homecrypt-hack.js'
-import initramfsCfg from './sequence.d/initramfs_cfg.js'
-import initramfs from './sequence.d/initramfs.js'
-import delLiveUser from './sequence.d/del_live_user.js'
+import removeInstallerLink from './sequence.d/remove_installer_link.js'
 import umount from './sequence.d/umount.js'
-import mkfs from './sequence.d/mkfs.js'
-import hostname from './sequence.d/hostname.js'
-import CFS from './cfs.js'
-import Title from '../components/title.js'
-import cliCursor from 'cli-cursor'
+import unpackfs from './sequence.d/unpackfs.js'
 
 /**
  * Main Sequence class - Simple Refactoring
  */
 export default class Sequence {
-  // All module references (unchanged)
-  partition = partition
-  partitionBiosStandard = biosStandard
-  partitionUefiStandard = uefiStandard
-  partitionBiosLuks = biosLuks
-  partitionUefiLuks = uefiLuks
-  mountFs = mountFs
-  mountVfs = mountVfs
-  unpackfs = unpackfs
-  machineId = machineId
-  fstab = fstab
-  locale = locale
-  keyboard = mKeyboard
-  localeCfg = localeCfg
   addUser = addUser
-  changePassword = changePassword
-  networkCfg = networkCfg
-  bootloaderConfig = bootloaderConfig
-  grubcfg = grubcfg
   bootloader = bootloader
-  packages = packages
-  removeInstallerLink = removeInstallerLink
-  removeHomecryptHack = removeHomecryptHack
-  initramfsCfg = initramfsCfg
-  initramfs = initramfs
+  bootloaderConfig = bootloaderConfig
+  changePassword = changePassword
+  chroot = false
+  cliAutologin = new CliAutologin()
+  cryptedHomeDevice = '/dev/mapper/live-home'
   delLiveUser = delLiveUser
-  umountFs = umountFs
-  umountVfs = umountVfs
-  umount = umount
-  mkfs = mkfs
+  devices = {} as IDevices
+  distro = {} as IDistro
+  echo = {}
+  efi = false
+  fstab = fstab
+  grubcfg = grubcfg
+  halt = false
   hostname = hostname
-
+  initramfs = initramfs
+  initramfsCfg = initramfsCfg
   // All properties (unchanged)
   installer = {} as IInstaller
   installTarget = '/tmp/calamares-krill-root'
-  verbose = false
-  echo = {}
-  efi = false
-  devices = {} as IDevices
-  users = {} as IUsers
-  network = {} as INet
-  partitions = {} as IPartitions
-  swapSize: number = 0
-  language = ''
-  region = ''
-  zone = ''
-  keyboardModel = ''
+  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone')
+  keyboard = mKeyboard
   keyboardLayout = ''
+  keyboardModel = ''
   keyboardVariant = ''
-  toNull = ' > /dev/null 2>&1'
-  spinner = true
-  settings = {} as Settings
-  remix = {} as IRemix
-  distro = {} as IDistro
+  language = ''
+  locale = locale
+  localeCfg = localeCfg
   // luksMappedName = 'luks-volume'                    // encrypted ISOs
   // luksFile = ``                                     // encrypted ISOs
   // luksDevice = `/dev/mapper/${this.luksMappedName}` // encrypted ISOs
   // luksMountpoint = `/mnt`
   luksRootName = ''
-  cryptedHomeDevice = '/dev/mapper/live-home'
-  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone')
-  unattended = false
+  machineId = machineId
+mkfs = mkfs
+  mountFs = mountFs
+  mountVfs = mountVfs
+  network = {} as INet
+  networkCfg = networkCfg
   nointeractive = false
-  chroot = false
-  halt = false
-  cliAutologin = new CliAutologin()
+  packages = packages
+  // All module references (unchanged)
+  partition = partition
+  partitionBiosLuks = biosLuks
+  partitionBiosStandard = biosStandard
+  partitions = {} as IPartitions
+  partitionUefiLuks = uefiLuks
+  partitionUefiStandard = uefiStandard
+  region = ''
+  remix = {} as IRemix
+  removeHomecryptHack = removeHomecryptHack
+  removeInstallerLink = removeInstallerLink
+  settings = {} as Settings
+  spinner = true
+  swapSize: number = 0
+  toNull = ' > /dev/null 2>&1'
+  umount = umount
+  umountFs = umountFs
+  umountVfs = umountVfs
+  unattended = false
+  unpackfs = unpackfs
+  users = {} as IUsers
+  verbose = false
+  zone = ''
 
   /**
    * Constructor (unchanged)
@@ -159,15 +157,53 @@ export default class Sequence {
     this.luksRootName = this.luksRootName.toLowerCase() // installation encrypted
   }
 
-  /**
-   * Helper method to execute a step with standard error handling
-   */
-  private async executeStep(message: string, percent: number, action: () => Promise<any>): Promise<void> {
-    await redraw(<Install message={message} percent={percent} spinner={this.spinner} />)
+  async emergencyShell(message: string) {
     try {
-      await action()
+      await redraw(
+        <>
+          <Title />
+          <Box>
+            <Text>{message}</Text>
+          </Box>
+        </>
+      )
+      cliCursor.show()
+      await exec(`chroot ${this.installTarget} /bin/bash`)
+      cliCursor.hide()
     } catch (error) {
-      await this.showProblem(message, error)
+      await Utils.pressKeyToExit(JSON.stringify(error))
+    }
+  }
+
+  // Keep all existing methods unchanged
+  async execCalamaresModule(name: string) {
+    const moduleName = this.installer.multiarchModules + name + '/module.desc'
+    if (fs.existsSync(moduleName)) {
+      const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
+      let {command} = calamaresModule
+      if (command !== '' || command !== undefined) {
+        command += this.toNull
+        await exec(command, this.echo)
+      }
+    }
+  }
+
+  async showProblem(message: string, currErr: any) {
+    message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
+    try {
+      await redraw(
+        <>
+          <Title />
+          <Box>
+            <Text>{message}</Text>
+          </Box>
+        </>
+      )
+      cliCursor.show()
+      await exec("/bin/bash")
+      cliCursor.hide()
+    } catch (error) {
+      await Utils.pressKeyToExit(JSON.stringify(error))
     }
   }
 
@@ -186,45 +222,43 @@ export default class Sequence {
   }
 
   /**
-   * Setup installation parameters and environment
+   * Complete installation with reboot/halt
    */
-  private async setupInstallation(domain: string, unattended: boolean, nointeractive: boolean, chroot: boolean, halt: boolean, verbose: boolean): Promise<void> {
-    // Set domain
-    if (domain !== '') {
-      if (domain.at(0) !== '.') {
-        domain = '.' + domain
-      }
-      this.network.domain = domain
+  private async completeInstallation(): Promise<void> {
+    await sleep(500)
+
+    const cmd = this.halt ? "poweroff" : "reboot"
+    let message = `Press a key to ${cmd}`
+
+    if (this.unattended && this.nointeractive) {
+      message = `System will ${cmd} in 5 seconds...`
     }
 
-    // Arch-specific setup
-    if (this.distro.familyId === 'archlinux') {
-      if (this.distro.distroId === 'Manjarolinux') {
-        await exec(`ln -s /run/miso/bootmnt/live/ /live`)
-      } else {
-        await exec(`ln -s /run/archiso/bootmnt/live/ /live`)
-      }
+    await redraw(<Finished
+      hostName={this.users.hostname}
+      installationDevice={this.partitions.installationDevice}
+      message={message}
+      userName={this.users.username} />)
+
+    if (this.unattended && this.nointeractive) {
+      await sleep(5000)
+    } else {
+      spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
     }
 
-    // OpenSUSE-specific setup
-    if (this.distro.familyId === 'opensuse') {
-      await exec('dmsetup remove_all')
+    await exec(cmd, { echo: false })
+  }
+
+  /**
+   * Helper method to execute a step with standard error handling
+   */
+  private async executeStep(message: string, percent: number, action: () => Promise<any>): Promise<void> {
+    await redraw(<Install message={message} percent={percent} spinner={this.spinner} />)
+    try {
+      await action()
+    } catch (error) {
+      await this.showProblem(message, error)
     }
-
-    // Set flags
-    this.unattended = unattended
-    this.nointeractive = nointeractive
-    this.chroot = chroot
-    this.halt = halt
-    this.verbose = verbose
-    this.echo = Utils.setEcho(this.verbose)
-
-    if (this.verbose) {
-      this.toNull = ''
-      this.spinner = false
-    }
-
-    await this.settings.load()
   }
 
   /**
@@ -338,7 +372,7 @@ export default class Sequence {
     // 6. homecrypt clone restoration
     if (fs.existsSync(this.cryptedHomeDevice)) {
       await this.executeStep("Restoring data from homecrypt", 90, async () => {
-        let restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
+        const restoreHomeCrypt = path.resolve(__dirname, '../../../scripts/restore_homecrypt_krill.sh')
         await exec(`${restoreHomeCrypt} ${this.cryptedHomeDevice} ${this.installTarget}`)
       })
 
@@ -372,87 +406,52 @@ export default class Sequence {
   }
 
   /**
-   * Complete installation with reboot/halt
+   * Setup installation parameters and environment
    */
-  private async completeInstallation(): Promise<void> {
-    await sleep(500)
+  private async setupInstallation(domain: string, unattended: boolean, nointeractive: boolean, chroot: boolean, halt: boolean, verbose: boolean): Promise<void> {
+    // Set domain
+    if (domain !== '') {
+      if (domain.at(0) !== '.') {
+        domain = '.' + domain
+      }
 
-    const cmd = this.halt ? "poweroff" : "reboot"
-    let message = `Press a key to ${cmd}`
-
-    if (this.unattended && this.nointeractive) {
-      message = `System will ${cmd} in 5 seconds...`
+      this.network.domain = domain
     }
 
-    await redraw(<Finished
-      installationDevice={this.partitions.installationDevice}
-      hostName={this.users.hostname}
-      userName={this.users.username}
-      message={message} />)
-
-    if (this.unattended && this.nointeractive) {
-      await sleep(5000)
-    } else {
-      spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
-    }
-
-    await exec(cmd, { echo: false })
-  }
-
-  // Keep all existing methods unchanged
-  async execCalamaresModule(name: string) {
-    const moduleName = this.installer.multiarchModules + name + '/module.desc'
-    if (fs.existsSync(moduleName)) {
-      const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-      let command = calamaresModule.command
-      if (command !== '' || command !== undefined) {
-        command += this.toNull
-        await exec(command, this.echo)
+    // Arch-specific setup
+    if (this.distro.familyId === 'archlinux') {
+      if (this.distro.distroId === 'Manjarolinux') {
+        await exec(`ln -s /run/miso/bootmnt/live/ /live`)
+      } else {
+        await exec(`ln -s /run/archiso/bootmnt/live/ /live`)
       }
     }
-  }
 
-  async emergencyShell(message: string) {
-    try {
-      await redraw(
-        <>
-          <Title />
-          <Box>
-            <Text>{message}</Text>
-          </Box>
-        </>
-      )
-      cliCursor.show()
-      await exec(`chroot ${this.installTarget} /bin/bash`)
-      cliCursor.hide()
-    } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
+    // OpenSUSE-specific setup
+    if (this.distro.familyId === 'opensuse') {
+      await exec('dmsetup remove_all')
     }
-  }
 
-  async showProblem(message: string, currErr: any) {
-    message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
-    try {
-      await redraw(
-        <>
-          <Title />
-          <Box>
-            <Text>{message}</Text>
-          </Box>
-        </>
-      )
-      cliCursor.show()
-      await exec("/bin/bash")
-      cliCursor.hide()
-    } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
+    // Set flags
+    this.unattended = unattended
+    this.nointeractive = nointeractive
+    this.chroot = chroot
+    this.halt = halt
+    this.verbose = verbose
+    this.echo = Utils.setEcho(this.verbose)
+
+    if (this.verbose) {
+      this.toNull = ''
+      this.spinner = false
     }
+
+    await this.settings.load()
   }
 }
 
 // Helper functions (unchanged)
 async function redraw(elem: JSX.Element) {
-  let opt: RenderOptions = {}
+  const opt: RenderOptions = {}
   opt.patchConsole = false
   opt.debug = true
   console.clear()

@@ -19,41 +19,62 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * initramfs()
  */
 export default async function initramfs(this: Sequence) {
-  if (this.distro.familyId === 'debian') {
-    /**
-     * Debian
-     */
-    let cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/initrd.img-$(uname -r)`
-    await exec(cmd, this.echo)
-
-  } else if (this.distro.familyId === 'archlinux') {
-    /**
-     * Archlinux
-     */
-    let initrdImg = path.basename(Utils.initrdImg())
-    let cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
-    await exec(cmd, this.echo)
-
-  } else if (this.distro.familyId === 'alpine') {
+  switch (this.distro.familyId) {
+  case 'alpine': {
     /**
      * Alpine
      */
-    let cmd=`chroot ${this.installTarget} mkinitfs`
+    const cmd=`chroot ${this.installTarget} mkinitfs`
     await exec(cmd, this.echo)
 
-  } else if (this.distro.familyId === 'fedora') {    
+  
+  break;
+  }
+
+  case 'archlinux': {
+    /**
+     * Archlinux
+     */
+    const initrdImg = path.basename(Utils.initrdImg())
+    const cmd=`chroot ${this.installTarget} mkinitcpio -g /boot/${initrdImg}}`
+    await exec(cmd, this.echo)
+
+  
+  break;
+  }
+
+  case 'debian': {
+    /**
+     * Debian
+     */
+    const cmd = `chroot ${this.installTarget} mkinitramfs -o /boot/initrd.img-$(uname -r)`
+    await exec(cmd, this.echo)
+
+  
+  break;
+  }
+
+  case 'fedora': {    
     /**
      * Fedora
      */
-    let cmd=`chroot ${this.installTarget} dracut -f`
+    const cmd=`chroot ${this.installTarget} dracut -f`
     await exec(cmd, this.echo)
 
-  } else if (this.distro.familyId === 'opensuse') {    
+  
+  break;
+  }
+
+  case 'opensuse': {    
     /**
      * Opensuse
      */
-    let cmd=`chroot ${this.installTarget} dracut -f`
+    const cmd=`chroot ${this.installTarget} dracut -f`
     await exec(cmd, this.echo)
 
+  
+  break;
+  }
+  // No default
   }
 } 

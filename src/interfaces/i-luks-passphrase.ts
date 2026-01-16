@@ -7,6 +7,6 @@
  */
 
 export interface ILuksPassphrase {
-  passphrase: string
   confirm: string
+  passphrase: string
 }

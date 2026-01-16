@@ -10,14 +10,14 @@ import { Command, Flags } from '@oclif/core'
 import fs from 'node:fs'
 
 import Distro from '../../classes/distro.js'
+import Diversions from '../../classes/diversions.js'
 import Utils from '../../classes/utils.js'
 import { exec } from '../../lib/utils.js'
-import Diversions from '../../classes/diversions.js'
 
 const repoUrl = `https://penguins-eggs.net/repos`       // no slash at end
 const repoKeyUrl = repoUrl + '/KEY.asc'
 
-let repoPath = '/etc/apt/sources.list.d/penguins-repos' // Base path without extension
+const repoPath = '/etc/apt/sources.list.d/penguins-repos' // Base path without extension
 const repoKeyPath = '/usr/share/keyrings/penguins-repos.gpg'
 
 // Alpine
@@ -47,10 +47,8 @@ const opensuseKeyOwner = rpmKeyOwner // RIUTILIZZA
  */
 export default class Repo extends Command {
   static description = 'add/remove penguins-repos'
-
-  static examples = ['sudo eggs tools repo --add', 'sudo eggs tools repo --remove']
-
-  static flags = {
+static examples = ['sudo eggs tools repo --add', 'sudo eggs tools repo --remove']
+static flags = {
     add: Flags.boolean({ char: 'a', description: 'add penguins-repos' }),
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
@@ -72,7 +70,8 @@ export default class Repo extends Command {
       const msgReposAdd = 'Are you sure you want to add https://penguins-eggs.net/repos to your repositories?'
       const msgReposRemove = 'Are you sure to remove https://penguins-eggs.net/repos to your repositories?'
 
-      if (distro.familyId === 'alpine') {
+      switch (distro.familyId) {
+      case 'alpine': {
         /**
          * Alpine
          */
@@ -87,9 +86,14 @@ export default class Repo extends Command {
             await alpineRepoRemove()
           }
         }
+
         await exec('apk update')
 
-      } else if (distro.familyId === 'archlinux') {
+      
+      break;
+      }
+
+      case 'archlinux': {
         if (flags.add) {
           Utils.warning(msgReposAdd)
           if (await Utils.customConfirm('Select yes to continue')) {
@@ -103,7 +107,11 @@ export default class Repo extends Command {
         }
 
 
-      } else if (distro.familyId === 'debian') {
+      
+      break;
+      }
+
+      case 'debian': {
         /**
          * Debian
          */
@@ -122,10 +130,15 @@ export default class Repo extends Command {
           if (nointeractive || (await Utils.customConfirm('Select yes to continue'))) {
             await debianRemove()
           }
+
           await exec('apt-get update')
         }
 
-      } else if (distro.familyId === 'fedora') {
+      
+      break;
+      }
+
+      case 'fedora': {
         /**
          * RPM (Fedora/EL)
          */
@@ -146,9 +159,14 @@ export default class Repo extends Command {
             await rpmRepoRemove(rpmRepoFilePath, rpmKeyOwner)
           }
         }
+
         await exec('dnf check-update')
 
-      } else if (distro.familyId === 'opensuse') {
+      
+      break;
+      }
+
+      case 'opensuse': {
         /**
          * openSUSE
          */
@@ -165,14 +183,20 @@ export default class Repo extends Command {
             await rpmRepoRemove(opensuseRepoFilePath, opensuseKeyOwner)
           }
         }
+
         // Aggiungiamo un refresh finale
         await exec('zypper refresh')
 
-      } else {
+      
+      break;
+      }
+
+      default: {
         /**
          * All the others
          */
         Utils.warning(`Distro: ${distro.distroId}/${distro.codenameId}, cannot use penguins-eggs.net/repos nor chaotic-aur!`)
+      }
       }
     }
   }
@@ -181,7 +205,8 @@ export default class Repo extends Command {
 
 
 
-/** ===============================================
+/**
+ * ===============================================
  *  ALPINE
  *  ===============================================
  */
@@ -206,6 +231,7 @@ async function alpineRepoAdd() {
     fs.appendFileSync(alpineRepoFile, `\n${alpineRepoUrl}\n`)
     console.log('Repository aggiunto.')
   }
+
   console.log('Esegui "apk update" per aggiornare i repository.')
 }
 
@@ -226,7 +252,7 @@ async function alpineRepoRemove() {
 
   // Rimuovi da /etc/apk/repositories
   if (fs.existsSync(alpineRepoFile)) {
-    let content = fs.readFileSync(alpineRepoFile, 'utf8')
+    const content = fs.readFileSync(alpineRepoFile, 'utf8')
     if (content.includes(alpineRepoUrl)) {
       const newLines = content.split('\n').filter(line => line.trim() !== alpineRepoUrl)
       fs.writeFileSync(alpineRepoFile, newLines.join('\n'))
@@ -235,13 +261,15 @@ async function alpineRepoRemove() {
       console.log('Linea del repository non trovata in /etc/apk/repositories.')
     }
   }
+
   console.log('Esegui "apk update" per aggiornare i repository.')
 }
 
 
 
 
-/** ===============================================
+/**
+ * ===============================================
  *  ARCH
  *  ===============================================
  */
@@ -259,6 +287,7 @@ async function archlinuxRepoAdd(distroId = "Arch") {
   if (Diversions.isManjaroBased(distroId)) {
     serverUrl = repoUrl + '/manjaro'
   }
+
   const pacmanConfPath = '/etc/pacman.conf'
   const echo = Utils.setEcho(true)
 
@@ -283,6 +312,7 @@ async function archlinuxRepoAdd(distroId = "Arch") {
   if (Diversions.isManjaroBased(distroId)) {
     message = 'Run “sudo pamac update --force-refresh" to update pacman databases.'
   }
+
   console.log('Repository successfully removed!');
   console.log(message);
 }
@@ -301,6 +331,7 @@ async function archlinuxRepoRemove(distroId = 'Arch') {
   if (Diversions.isManjaroBased(distroId)) {
     serverUrl = repoUrl + '/manjaro'
   }
+
   const pacmanConfPath = '/etc/pacman.conf'
 
   let pacmanConfContent = fs.readFileSync(pacmanConfPath, 'utf8');
@@ -323,6 +354,7 @@ async function archlinuxRepoRemove(distroId = 'Arch') {
     if (Diversions.isManjaroBased(distroId)) {
       message = 'Run “sudo pamac update --force-refresh" to update pacman databases.'
     }
+
     console.log('Repository successfully removed!');
     console.log(message);
 
@@ -377,7 +409,8 @@ async function archlinuxAurRemove() {
 
 
 
-/** ===============================================
+/**
+ * ===============================================
  *  DEBIAN
  *  ===============================================
  */
@@ -402,16 +435,15 @@ async function debianRemove() {
 
 /**
  * debianIs822()
- **/
+ */
 async function debianIs822(): Promise<boolean> {
   let retval = false
   const test = `([ -f /etc/apt/sources.list.d/ubuntu.sources ] || [ -f /etc/apt/sources.list.d/debian.sources ]) && echo "1" || echo "0"`
   const is822Result = (await exec(test, { capture: true, echo: false }))
-  if (is822Result.code === 0) {
-    if (is822Result.data.trim() === '1') {
+  if (is822Result.code === 0 && is822Result.data.trim() === '1') {
       retval = true
     }
-  }
+
   return retval
 }
 
@@ -432,7 +464,8 @@ async function debianAdd822() {
 }
 
 
-/** ===============================================
+/**
+ * ===============================================
  *  Fedora/EL9
  *  ===============================================
  */
@@ -522,7 +555,8 @@ async function rpmRepoRemove(repoFilePath: string, keyOwner: string) {
 
 
 
-/** ===============================================
+/**
+ * ===============================================
  * Opensuse
  * ===============================================
  */

@@ -6,50 +6,51 @@
  * license: MIT
  */
 
-import React from 'react'
-import Title from './title.js'
-import Steps from './steps.js'
-import { render, Text, Box, Newline } from 'ink'
-import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../../interfaces/index.js'
-
+import { Box, Newline, render, Text } from 'ink'
+import yaml from 'js-yaml'
 // pjson
 import { createRequire } from 'module';
+import React from 'react'
+
+import { IBranding, ISettings } from '../../interfaces/index.js'
+import Steps from './steps.js'
+import Title from './title.js'
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json');
 
 
 type keyboardProps = {
-    keyboardModel?: string,
     keyboardLayout?: string,
-    keyboardVariant?: string,
+    keyboardModel?: string,
     keyboardOptions?: string,
+    keyboardVariant?: string,
 }
 
-export default function Keyboard({ keyboardModel = '', keyboardLayout = '', keyboardVariant = '', keyboardOptions = '' }: keyboardProps) {
+export default function Keyboard({ keyboardLayout = '', keyboardModel = '', keyboardOptions = '', keyboardVariant = '' }: keyboardProps) {
     let productName = ""
     let version = ""
     let configRoot = '/etc/penguins-eggs.d/krill/'
     if (fs.existsSync('/etc/calamares/settings.conf')) {
         configRoot = '/etc/calamares/'
     }
-    const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
-    const branding = settings.branding
-    const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
+
+    const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf8')) as unknown as ISettings
+    const {branding} = settings
+    const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf8')) as unknown as IBranding
     productName = calamares.strings.productName
     version = calamares.strings.version
 
     /**
-    * totale width=75
-    * step width=15
-    * finestra with=59
-    */
+     * totale width=75
+     * step width=15
+     * finestra with=59
+     */
 
     return (
         <>
             <Title />
-            <Box width={75} height={11} borderStyle="round" flexDirection="column">
+            <Box borderStyle="round" flexDirection="column" height={11} width={75}>
                 <Box flexDirection="column">
                     <Box flexDirection="row">
                         <Steps step={3} />

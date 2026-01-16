@@ -10,24 +10,23 @@
 import fs from 'fs'
 import { spawn, StdioOptions } from 'node:child_process'
 
+import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
-
 import {
-  interactiveCryptoConfig,
-  type CryptoConfig,
   type ArgonCryptoConfig,
+  type CryptoConfig,
+  interactiveCryptoConfig,
   type Pbkdf2CryptoConfig
 } from './luks-interactive-crypto-config.js'; // Assicurati che il percorso sia corretto
 
 const noop = () => { };
 type ConditionalLoggers = {
-  log: (...args: any[]) => void;
-  warning: (msg: string) => void;
-  success: (msg: string) => void;
   info: (msg: string) => void;
+  log: (...args: any[]) => void;
+  success: (msg: string) => void;
+  warning: (msg: string) => void;
 }
 
 
@@ -97,16 +96,19 @@ export function buildLuksFormatArgs(
 
   // Aggiungi i parametri condizionali del PBKDF
   switch (config.pbkdf) {
-    case 'argon2id':
     case 'argon2i':
+    case 'argon2id': {
       const argonConfig = config as ArgonCryptoConfig;
       args.push('--pbkdf-memory', argonConfig['pbkdf-memory (KiB)'].toString());
       args.push('--pbkdf-parallel', argonConfig['pbkdf-parallel (threads)'].toString());
       break;
-    case 'pbkdf2':
+    }
+
+    case 'pbkdf2': {
       const pbkdf2Config = config as Pbkdf2CryptoConfig;
       args.push('--iter-time', pbkdf2Config['iter-time (ms)'].toString());
       break;
+    }
   }
 
   // Aggiungi il file di destinazione

@@ -44,12 +44,12 @@ export interface IBrandingImages {
  */
 export interface IBrandingStyle {
     SidebarBackground: string;
-    SidebarBackgroundCurrent: string;
-    SidebarText: string;
-    SidebarTextCurrent: string;
     sidebarBackground: string;
+    SidebarBackgroundCurrent: string;
     sidebarBackgroundCurrent: string;
+    SidebarText: string;
     sidebarText: string;
+    SidebarTextCurrent: string;
     sidebarTextCurrent: string;
 }
 
@@ -61,14 +61,14 @@ export interface IBrandingStyle {
 export interface IBranding {
     // Campi di primo livello trovati:
     componentName: string;
-    slideshow: string;
-    slideshowAPI: number;
-    welcomeStyleCalamares: boolean;
-
     // Sezioni complesse:
     images: IBrandingImages;
+    slideshow: string;
+    slideshowAPI: number;
+
     strings: IBrandingStrings;
     style: IBrandingStyle;
+    welcomeStyleCalamares: boolean;
 
     // Se ci fossero altri campi non presenti nel tuo YAML ma che Calamares potrebbe usare,
     // andrebbero aggiunti qui come opzionali (es. window_width?: number).

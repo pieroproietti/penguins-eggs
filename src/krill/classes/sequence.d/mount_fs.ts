@@ -9,10 +9,10 @@
 
 import fs from 'node:fs'
 
-import { exec } from '../../../lib/utils.js'
-import Sequence from '../sequence.js'
-import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Utils from '../../../classes/utils.js'
+import { exec } from '../../../lib/utils.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
+import Sequence from '../sequence.js'
 
 /**
  * mountFs

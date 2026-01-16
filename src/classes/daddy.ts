@@ -42,15 +42,20 @@ export default class Daddy {
     // Determine default compression option
     let compressionOpt: number;
     switch (config.compression) {
-      case 'xz':
+      case 'xz': {
         compressionOpt = 1;
         break;
-      case 'xz -Xbcj x86':
+      }
+
+      case 'xz -Xbcj x86': {
         compressionOpt = 2;
         break;
-      default:
+      }
+
+      default: {
         compressionOpt = 0;
         break;
+      }
     }
 
     // Provide a default snapshot prefix if empty
@@ -67,41 +72,41 @@ export default class Daddy {
      */
     const questions: any = [
     {
-        type: 'input',
-        name: 'snapshot_prefix',
-        message: 'LiveCD iso prefix: ',
         default: config.snapshot_prefix,
+        message: 'LiveCD iso prefix: ',
+        name: 'snapshot_prefix',
+        type: 'input',
       },
       {
-        type: 'input',
-        name: 'snapshot_basename',
-        message: 'LiveCD iso basename: ',
         default: config.snapshot_basename,
+        message: 'LiveCD iso basename: ',
+        name: 'snapshot_basename',
+        type: 'input',
       },
       {
-        type: 'input',
-        name: 'user_opt',
-        message: 'LiveCD user:',
         default: config.user_opt,
+        message: 'LiveCD user:',
+        name: 'user_opt',
+        type: 'input',
       },
       {
-        type: 'input',
-        name: 'user_opt_passwd',
-        message: 'LiveCD user password:',
         default: config.user_opt_passwd,
-      },
-      {
+        message: 'LiveCD user password:',
+        name: 'user_opt_passwd',
         type: 'input',
-        name: 'root_passwd',
-        message: 'LiveCD root password:',
-        default: config.root_passwd,
       },
       {
-        type: 'list',
-        name: 'compression',
-        message: 'LiveCD compression: ',
+        default: config.root_passwd,
+        message: 'LiveCD root password:',
+        name: 'root_passwd',
+        type: 'input',
+      },
+      {
         choices: ['fast', 'max'],
         default: compressionOpt,
+        message: 'LiveCD compression: ',
+        name: 'compression',
+        type: 'list',
       },
     ];
 
@@ -112,10 +117,10 @@ export default class Daddy {
       // Prompt the user and return the typed config object
       const answers = await inquirer.prompt<IEggsConfig>(questions);
       return { ...config, ...answers };
-      //return answers;
-    } catch (err) {
-      console.error(chalk.red('Error editing configuration:'), err);
-      throw err;
+      // return answers;
+    } catch (error) {
+      console.error(chalk.red('Error editing configuration:'), error);
+      throw error;
     }
   }
 
@@ -158,26 +163,31 @@ export default class Daddy {
       // Step 5: Display help messages
       this.displayFinalHelp();
 
-    } catch (err) {
-      console.error(chalk.red('An error occurred in helpMe:'), err);
+    } catch (error) {
+      console.error(chalk.red('An error occurred in helpMe:'), error);
     }
   }
 
   /**
-   * Check and install Pacman configuration and templates if missing
+   * Load and apply a custom YAML configuration
+   * [CHANGE 3] Async reading of file and type-safe parsing
    */
-  private async checkPacman(verbose: boolean) {
-    if (!Pacman.configurationCheck()) {
-      console.log('- creating configuration directory...');
-      await Pacman.configurationInstall(verbose);
-    }
-    if (!Pacman.distroTemplateCheck()) {
-      console.log('- installing distro template...');
-      await Pacman.distroTemplateInstall(verbose);
-    }
+  private async applyCustomYAML(config: IEggsConfig, fileCustom: string) {
+    try {
+      const conf = await fs.readFile(fileCustom, 'utf8');
+      const confCustom = yaml.load(conf) as EditConf;
 
-    if (!Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
-      console.log('- GUI system detected, calamares is available but not installed.');
+      // Safely copy fields from YAML to config
+      config.snapshot_basename = confCustom.snapshot_basename ?? config.snapshot_basename;
+      config.snapshot_prefix = confCustom.snapshot_prefix ?? config.snapshot_prefix;
+      config.user_opt = confCustom.user_opt ?? config.user_opt;
+      config.user_opt_passwd = confCustom.user_opt_passwd ?? config.user_opt_passwd;
+      config.root_passwd = confCustom.root_passwd ?? config.root_passwd;
+      config.theme = confCustom.theme ?? config.theme;
+
+    } catch (error) {
+      console.error(chalk.red('Failed to load custom YAML config:'), error);
+      throw error;
     }
   }
 
@@ -215,25 +225,21 @@ export default class Daddy {
   }
 
   /**
-   * Load and apply a custom YAML configuration
-   * [CHANGE 3] Async reading of file and type-safe parsing
+   * Check and install Pacman configuration and templates if missing
    */
-  private async applyCustomYAML(config: IEggsConfig, fileCustom: string) {
-    try {
-      const conf = await fs.readFile(fileCustom, 'utf8');
-      const confCustom = yaml.load(conf) as EditConf;
+  private async checkPacman(verbose: boolean) {
+    if (!Pacman.configurationCheck()) {
+      console.log('- creating configuration directory...');
+      await Pacman.configurationInstall(verbose);
+    }
 
-      // Safely copy fields from YAML to config
-      config.snapshot_basename = confCustom.snapshot_basename ?? config.snapshot_basename;
-      config.snapshot_prefix = confCustom.snapshot_prefix ?? config.snapshot_prefix;
-      config.user_opt = confCustom.user_opt ?? config.user_opt;
-      config.user_opt_passwd = confCustom.user_opt_passwd ?? config.user_opt_passwd;
-      config.root_passwd = confCustom.root_passwd ?? config.root_passwd;
-      config.theme = confCustom.theme ?? config.theme;
+    if (!Pacman.distroTemplateCheck()) {
+      console.log('- installing distro template...');
+      await Pacman.distroTemplateInstall(verbose);
+    }
 
-    } catch (err) {
-      console.error(chalk.red('Failed to load custom YAML config:'), err);
-      throw err;
+    if (!Pacman.calamaresExists() && Pacman.isInstalledGui() && Pacman.isCalamaresAvailable()) {
+      console.log('- GUI system detected, calamares is available but not installed.');
     }
   }
 

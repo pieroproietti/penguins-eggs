@@ -10,11 +10,10 @@ import { Command, Flags, flush } from '@oclif/core'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import https from 'node:https'
-import {shx} from '../lib/utils.js'
-
 
 import Utils from '../classes/utils.js'
 import Krill from '../krill/classes/prepare.js'
+import {shx} from '../lib/utils.js'
 const agent = new https.Agent({
   rejectUnauthorized: false
 })
@@ -26,10 +25,8 @@ import { IKrillConfig } from '../krill/interfaces/i_krill_config.js'
  */
 export default class KrillCommand extends Command {
   static description = 'a TUI system installer - install the system'
-
-  static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
-
-  static flags = {
+static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
+static flags = {
     btrfs: Flags.boolean({ char: 'b', description: 'Format btrfs' }),
     chroot: Flags.boolean({ char: 'c', description: 'chroot before to end' }),
     crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
@@ -87,14 +84,14 @@ export default class KrillCommand extends Command {
       const minSizeBytes = 1024 * 1024 * 1024
       try {
         const sizeInBytesString = shx.exec(`lsblk -b -n -o SIZE ${replace}`).stdout.trim();
-        const partitionSize = parseInt(sizeInBytesString, 10);
+        const partitionSize = Number.parseInt(sizeInBytesString, 10);
 
         if (partitionSize < minSizeBytes) {
           console.log(`partition to replace ${replace}, is too little`)
           replaceExit = true
         }
 
-      } catch (error) {
+      } catch {
         console.log(`partition ${replace} does not exists!`)
         replaceExit = true
       }

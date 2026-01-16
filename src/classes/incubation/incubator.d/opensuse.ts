@@ -8,28 +8,21 @@
 
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
-import Fisherman from '../fisherman.js'
 import Kernel from '../../utils.d/kernel.js'
+import Fisherman from '../fisherman.js'
 
 /**
  *
  */
 export class Opensuse {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone = false
-
-  release = false
-
-  remix: IRemix
-
-  theme: string
-
-  user_opt: string 
-
-  verbose = false
+installer = {} as IInstaller
+isClone = false
+release = false
+remix: IRemix
+theme: string
+user_opt: string
+verbose = false
 
   /**
    * @param remix

@@ -8,6 +8,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+
 import { IXkbLayout, IXkbModel, IXkbOption, IXkbVariant } from '../interfaces/i-xkb-model.js'
 import { exec } from '../lib/utils.js'
 
@@ -19,8 +20,7 @@ export default class Keyboard {
   models: IXkbModel[] = []          // New change #1
   options: IXkbOption[] = []        // New change #1
   variants: IXkbVariant[] = []      // New change #1
-
-  private defaultKeyboardFile = '/etc/default/keyboard'   // New change #2: store default keyboard file path
+private defaultKeyboardFile = '/etc/default/keyboard'   // New change #2: store default keyboard file path
   private xorgLstFile = '/usr/share/X11/xkb/rules/xorg.lst'
 
   constructor() {
@@ -30,80 +30,6 @@ export default class Keyboard {
       this.parseXorgLst(content)
     } else {
       this.setDefaults()
-    }
-  }
-
-  // New change #4: parse xorg.lst with regex instead of fixed slicing
-  private parseXorgLst(content: string) {
-    const sections = ['model', 'layout', 'variant', 'option'] as const
-    let currentSection: typeof sections[number] | null = null
-
-    content.split('\n').forEach(line => {
-      line = line.trim()
-      if (!line) return
-      if (line.startsWith('!')) {
-        const sectionName = line.slice(2).toLowerCase()
-        if (sections.includes(sectionName as any)) {
-          currentSection = sectionName as typeof sections[number]
-        } else {
-          currentSection = null
-        }
-        return
-      }
-
-      if (!currentSection) return
-
-      // Separate code and description with regex
-      const match = line.match(/^(\S+)\s+(.*)$/)
-      if (!match) return
-
-      const [_, code, description] = match
-      const desc = description || ''
-
-      switch (currentSection) {
-        case 'model':
-          this.models.push({ code, description: desc })
-          break
-        case 'layout':
-          this.layouts.push({ code, description: desc })
-          break
-        case 'variant':
-          // Extract language if possible
-          const langMatch = desc.match(/^(\S+):\s*(.*)$/)
-          this.variants.push({
-            code,
-            lang: langMatch ? langMatch[1] : '',
-            description: langMatch ? langMatch[2] : desc
-          })
-          break
-        case 'option':
-          this.options.push({ code, description: desc })
-          break
-      }
-    })
-  }
-
-  // New change #5: set default keyboard data if xorg.lst not found
-  private setDefaults() {
-    this.models.push({ code: 'pc105', description: 'Generic 105-key PC' })
-    const defaultLayouts = ['us', 'fr', 'de', 'gb', 'es', 'it', 'ru', 'jp'] // shortened for example
-    defaultLayouts.forEach(l => this.layouts.push({ code: l, description: '' }))
-    this.variants.push({ code: 'none', lang: '', description: 'none' })
-    this.options.push({ code: 'none', description: 'none' })
-  }
-
-  // New change #6: read keyboard configuration from file safely
-  private async readKeyboardConfig(variable: string): Promise<string> {
-    if (!fs.existsSync(this.defaultKeyboardFile)) return ''
-    try {
-      const cmd = `grep ^${variable}= ${this.defaultKeyboardFile} | cut -d= -f2 | tr -d '"'`
-      const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-      if (result.code === 0) {
-        return result.data.trim()
-      }
-      return ''
-    } catch {
-      return ''
     }
   }
 
@@ -147,5 +73,88 @@ export default class Keyboard {
   // Get variants for a specific layout
   getVariants(layout: string): IXkbVariant[] {
     return this.variants.filter(v => v.lang === layout)
+  }
+
+  // New change #4: parse xorg.lst with regex instead of fixed slicing
+  private parseXorgLst(content: string) {
+    const sections = ['model', 'layout', 'variant', 'option'] as const
+    let currentSection: null | typeof sections[number] = null
+
+    for (let line of content.split('\n')) {
+      line = line.trim()
+      if (!line) continue
+      if (line.startsWith('!')) {
+        const sectionName = line.slice(2).toLowerCase()
+        if (sections.includes(sectionName as any)) {
+          currentSection = sectionName as typeof sections[number]
+        } else {
+          currentSection = null
+        }
+
+        continue
+      }
+
+      if (!currentSection) continue
+
+      // Separate code and description with regex
+      const match = line.match(/^(\S+)\s+(.*)$/)
+      if (!match) continue
+
+      const [_, code, description] = match
+      const desc = description || ''
+
+      switch (currentSection) {
+        case 'layout': {
+          this.layouts.push({ code, description: desc })
+          break
+        }
+
+        case 'model': {
+          this.models.push({ code, description: desc })
+          break
+        }
+
+        case 'option': {
+          this.options.push({ code, description: desc })
+          break
+        }
+
+        case 'variant': {
+          // Extract language if possible
+          const langMatch = desc.match(/^(\S+):\s*(.*)$/)
+          this.variants.push({
+            code,
+            description: langMatch ? langMatch[2] : desc,
+            lang: langMatch ? langMatch[1] : ''
+          })
+          break
+        }
+      }
+    }
+  }
+
+  // New change #6: read keyboard configuration from file safely
+  private async readKeyboardConfig(variable: string): Promise<string> {
+    if (!fs.existsSync(this.defaultKeyboardFile)) return ''
+    try {
+      const cmd = `grep ^${variable}= ${this.defaultKeyboardFile} | cut -d= -f2 | tr -d '"'`
+      const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+      if (result.code === 0) {
+        return result.data.trim()
+      }
+
+      return ''
+    } catch {
+      return ''
+    }
+  }
+
+  // New change #5: set default keyboard data if xorg.lst not found
+  private setDefaults() {
+    this.models.push({ code: 'pc105', description: 'Generic 105-key PC' })
+    const defaultLayouts = ['us', 'fr', 'de', 'gb', 'es', 'it', 'ru', 'jp'] // shortened for example
+    for (const l of defaultLayouts) this.layouts.push({ code: l, description: '' })
+    this.variants.push({ code: 'none', description: 'none', lang: '' })
+    this.options.push({ code: 'none', description: 'none' })
   }
 }

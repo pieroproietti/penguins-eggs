@@ -7,12 +7,13 @@
  */
 
 import inquirer from 'inquirer'
+
 import {shx} from '../../lib/utils.js'
 
 export default async function selectReplacedPartition(): Promise<string> {
   const partitions = shx.exec('lsblk -l -o NAME,TYPE | grep part | cut -d" " -f1', { silent: true }).stdout.trim().split('\n');
 
-  let partitionsList: string[] = [];
+  const partitionsList: string[] = [];
 
   // Add partition to partitionsList
   partitions.forEach((element: string) => {

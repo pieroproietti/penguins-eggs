@@ -16,10 +16,8 @@ import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
-
-  static examples = ['sudo eggs cuckoo']
-
-  static flags = {
+static examples = ['sudo eggs cuckoo']
+static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -47,12 +45,12 @@ export default class Cuckoo extends Command {
        */
       const dhcpOptions: IDhcpOptions = {
         bios_filename: 'lpxelinux.0',
+        broadcast: Utils.broadcast(),
         efi32_filename: 'ipxe32.efi',
         efi64_filename: 'ipxe.pxe',     // era ipxe.efi
         host: n.address,
         subnet: n.cidr,
-        tftpserver: n.address,
-        broadcast: Utils.broadcast()
+        tftpserver: n.address
       }
       pxe.dhcpdStart(dhcpOptions)
 

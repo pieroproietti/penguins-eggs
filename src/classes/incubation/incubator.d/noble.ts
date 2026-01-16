@@ -6,12 +6,13 @@
  * license: MIT
  */
 
+import path from 'path'
+
 import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
 import CFS from '../../../krill/classes/cfs.js'
-import Fisherman from '../fisherman.js'
-import path from 'path'
 // libraries
 import { exec } from '../../../lib/utils.js'
+import Fisherman from '../fisherman.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -26,20 +27,13 @@ interface IReplaces {
  */
 export class Noble {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone: boolean
-
-  release = false
-
-  remix: IRemix
-
-  theme: string // theme comprende il path
-
-  user_opt: string
-
-  verbose = false
+installer = {} as IInstaller
+isClone: boolean
+release = false
+remix: IRemix
+theme: string // theme comprende il path
+user_opt: string
+verbose = false
 
   /**
    * @param remix
@@ -94,7 +88,7 @@ export class Noble {
     await fisherman.contextualprocess('after_bootloader_context')
 
     // shellprocess
-    //const spSrc = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yml')
+    // const spSrc = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yml')
     await fisherman.shellprocess('mkinitramfs')
     await fisherman.shellprocess('aptsources')
     await fisherman.shellprocess('boot_deploy')

@@ -7,40 +7,30 @@
  */
 
 import { Command, Flags } from '@oclif/core'
+import os from 'node:os'
 
 import Distro from '../../classes/distro.js'
 import Diversions from '../../classes/diversions.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
-import os from 'node:os'
-
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
-import { execSync } from '../../lib/utils.js'
+import { exec , execSync } from '../../lib/utils.js'
 
 export default class ExportPkg extends Command {
   static description = 'export penguins-eggs package to the destination host'
-
-  static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
-
-  static flags = {
+static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
+static flags = {
     all: Flags.boolean({ char: 'a', description: 'export all archs' }),
     clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
-  user = ''
-
-  all = false
-
-  clean = false
-
-  verbose = false
-
-  echo = {}
-
-  Tu = new Tools()
+all = false
+clean = false
+echo = {}
+Tu = new Tools()
+user = ''
+verbose = false
 
   /**
    * 
@@ -58,26 +48,29 @@ export default class ExportPkg extends Command {
         this.user = (execSync('echo $DOAS_USER') || '').trim()
       }
     }
+
     this.all = flags.all
     this.clean = flags.clean
     this.verbose = flags.verbose
     this.echo = Utils.setEcho(this.verbose)
     await this.Tu.loadSettings()
 
-    let distro = new Distro()
-    const familyId = distro.familyId
-    const distroId = distro.distroId
+    const distro = new Distro()
+    const {familyId} = distro
+    const {distroId} = distro
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
 
     let localPath = ''
     let remotePath = ''
     let filter = ''
 
-    if (familyId === 'alpine') {
+    switch (familyId) {
+    case 'alpine': {
       let arch = 'x86_64'
       if (process.arch === 'ia32') {
         arch = 'i386'
       }
+
       Utils.warning(`exporting Alpine APK packages`)
       localPath = `/home/${this.user}/packages/aports/${arch}`
       remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
@@ -87,7 +80,11 @@ export default class ExportPkg extends Command {
       /**
        * Arch/Manjaro 
        */
-    } else if (familyId === 'archlinux') {
+    
+    break;
+    }
+
+    case 'archlinux': {
 
       /**
        * Manjaro
@@ -107,13 +104,17 @@ export default class ExportPkg extends Command {
         localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
         remotePath = this.Tu.config.remotePathPackages + "/aur"
         filter = `penguins-eggs-+([0-9.])-*-any.pkg.tar.zst`
-        //filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
+        // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
       }
 
       /**
        * Debian
        */
-    } else if (familyId === "debian") {
+    
+    break;
+    }
+
+    case "debian": {
       Utils.warning(`exporting Devuan/Debian/Ubuntu DEB packages`)
       localPath = `/home/${this.user}/penguins-eggs/releases`
       remotePath = this.Tu.config.remotePathPackages + "/debs"
@@ -121,13 +122,18 @@ export default class ExportPkg extends Command {
       if (this.all) {
         arch = '*'
       }
-      //filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
+
+      // filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
       filter = `penguins-eggs-+([0-9.])-*${arch}.deb`
 
       /**
        * fedora
        */
-    } else if (familyId === 'fedora') {
+    
+    break;
+    }
+
+    case 'fedora': {
       let repo = 'fedora'
       let ftype = 'fc??'
       let warning = `exporting Fedora RPM packages`
@@ -136,16 +142,21 @@ export default class ExportPkg extends Command {
         ftype = `el?`
         warning = `exporting Almalinux/RHEL/Rocky RPM packages`
       }
+
       Utils.warning(warning)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + `/` + repo
       filter = `penguins-eggs-+([0-9.])-*.${ftype}.x86_64.rpm`
-      //filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
+      // filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
 
       /**
        * openmamba
        */
-    } else if (familyId === 'openmamba') {
+    
+    break;
+    }
+
+    case 'openmamba': {
       Utils.warning(`exporting Openmamba RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/openmamba"
@@ -155,12 +166,20 @@ export default class ExportPkg extends Command {
       /**
        * opensuse
        */
-    } else if (familyId === 'opensuse') {
+    
+    break;
+    }
+
+    case 'opensuse': {
       Utils.warning(`exporting OpenSuSE RPM packages`)
       localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
       remotePath = this.Tu.config.remotePathPackages + "/opensuse"
       filter = `penguins-eggs-+([0-9.])-*.rpm`
       // filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
+    
+    break;
+    }
+    // No default
     }
 
     let cmd = `#!/bin/bash\n`
@@ -168,15 +187,16 @@ export default class ExportPkg extends Command {
     cmd += 'shopt -s extglob\n'
     cmd += `mkdir ${remoteMountpoint}\n`
     cmd += `sshfs ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath} ${remoteMountpoint}\n`
-    let archDest = 'x86_64'
+    const archDest = 'x86_64'
     if (this.clean) {
-      let archDest = ''
+      const archDest = ''
       if (distro.familyId === 'alpine') {
         let archDest = 'x86_64/'
         if (process.arch === 'ia32') {
           archDest = 'i386/'
         }
       }
+
       cmd += `# Delete old packages\n`
       cmd += `rm -f ${remoteMountpoint}/${archDest}${filter}\n`
     }
@@ -195,8 +215,10 @@ export default class ExportPkg extends Command {
       if (this.clean) {
         console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filter}`)
       }
+
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
+
     await exec(cmd, this.echo)
   }
 }

@@ -6,11 +6,12 @@
  * license: MIT
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
+
 import Distro from '../classes/distro.js';
 import Diversions from '../classes/diversions.js';
 import { execSync } from '../lib/utils.js';
-import * as fs from 'fs';
-import * as path from 'path';
 
 const ALPINE_PACKAGES = [
   'alp-conf', 'apk-tools', 'bash', 'cryptsetup', 'curl', 'dosfstools',
@@ -25,9 +26,9 @@ const META_PACKAGE_NAME = 'penguins-eggs-deps';
 const ALPINE_VIRTUAL_PKG = '.penguins-eggs-deps'; // Nota il punto iniziale
 
 export class DependencyManager {
+  familyId: string;
   private appRoot: string;
   private distro: Distro;
-  familyId: string;
   
   constructor() {
     this.distro = new Distro();
@@ -45,125 +46,6 @@ export class DependencyManager {
     } else {
       // In sviluppo locale, cerchiamo nella cartella corrente o una di fallback
       this.appRoot = process.cwd(); 
-    }
-  }
-
-  /**
-   * Verifica se i distro-meta-pacchetto sono già installati nel sistema.
-   * @returns true se installati, false altrimenti
-   */
-  public isInstalled(): boolean {
-    try {
-      switch (this.familyId) {
-        case 'alpine':
-          // apk info -e esce con 0 se esiste, 1 se no
-          execSync(`apk info -e ${ALPINE_VIRTUAL_PKG}`, { stdio: 'ignore' });
-          return true;
-
-        case 'archlinux':
-        case 'manjaro':
-          // pacman -Q esce con 0 se trovato, 1 se no
-          execSync(`pacman -Q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
-          return true;
-
-        case 'debian':
-          // dpkg -s verifica lo stato del pacchetto
-          execSync(`dpkg -s ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
-          return true;
-
-        case 'el9':
-        case 'fedora':
-        case 'opensuse':
-          // rpm -q funziona per tutte le distro RPM
-          execSync(`rpm -q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
-          return true;
-
-        default:
-          return false;
-      }
-    } catch (e) {
-      // Se il comando fallisce (exit code != 0), il pacchetto non è installato
-      return false;
-    }
-  }
-
-  /**
-   * Reinstalla i distro-meta-pacchetti: Rimuove e poi Installa.
-   * Utile per forzare un aggiornamento delle dipendenze o riparare un'installazione.
-   */
-  public reinstallDistroPackages(): boolean {
-    console.log(`[eggs] Reinstallazione distro meta-packages per: ${this.familyId}...`);
-    // Tentiamo la rimozione (ignoriamo errori se non era installato)
-    try {
-      this.removeDistroPackages();
-    } catch (e) {
-      console.log(`[eggs] No previous versions found or removal not necessary.`);
-    }
-    // Procediamo con l'installazione pulita
-    return this.installDistroPackages();
-  }
-
-  /**
-   * Rimuove i distro meta-pacchetti e pulisce le dipendenze.
-   */
-  public removeDistroPackages(): boolean {
-    console.log(`[eggs] Removing distro meta-packages for: ${this.familyId}...`);
-
-    try {
-      switch (this.familyId) {
-        // ==========================================
-        // ALPINE LINUX
-        // ==========================================
-        case 'alpine':
-          console.log('[eggs] Removing Alpine dependencies...');
-          execSync(`apk del ${ALPINE_VIRTUAL_PKG}`, { stdio: 'inherit' });
-          return true;
-
-        // ==========================================
-        // ARCHLINUX/MANJARO
-        // ==========================================
-        case 'archlinux':
-          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Arch/Manjaro)...`);
-          // -Rns: Rimuove pacchetto, configurazioni e dipendenze non usate da altri
-          execSync(`pacman -Rns --noconfirm ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
-          return true;
-
-
-        // ==========================================
-        // DEBIAN / UBUNTU FAMILY
-        // ==========================================
-        case 'debian':
-          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Debian/Devuan/Ubuntu)...`);
-          // Purge rimuove anche i file di configurazione
-          // autoremove pulisce le dipendenze installate dal meta-pacchetto
-          execSync(`apt-get purge -y ${META_PACKAGE_NAME} && apt-get autoremove -y`, { stdio: 'inherit' });
-          return true;
-
-        // ==========================================
-        // RPM FAMILY (EL9 / FEDORA / OPENSUSE)
-        // ==========================================
-        case 'el9':
-        case 'fedora':
-          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (RPM/DNF)...`);
-          execSync(`dnf remove -y ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
-          return true;
-
-        case 'opensuse':
-          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Zypper)...`);
-          // -u (--clean-deps) rimuove anche le dipendenze non più necessarie
-          execSync(`zypper rm -y -u ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
-          return true;
-
-        default:
-          console.warn(`[eggs] Removal not supported automatically for '${this.familyId}'.`);
-          return false;
-      }
-
-    } catch (error: any) {
-      // Spesso la rimozione fallisce semplicemente perché il pacchetto non c'è.
-      // Logghiamo warning invece di errore fatale.
-      console.warn(`[eggs] Warning removing: ${error.message}`);
-      return false;
     }
   }
 
@@ -203,6 +85,7 @@ export class DependencyManager {
             execSync(`pacman -Sy --noconfirm && pacman -U --noconfirm "${archFile}"`, { stdio: 'inherit' });
             return true;
           }
+
           break;
         }
         
@@ -225,8 +108,10 @@ export class DependencyManager {
                     fs.unlinkSync(tempDebPath);
                 }
             }
+
             return true;
           }
+
           break;
         }
 
@@ -241,6 +126,7 @@ export class DependencyManager {
             execSync(`dnf install -y "${elFile}"`, { stdio: 'inherit' });
             return true;
           }
+
           break;
         }
 
@@ -255,6 +141,7 @@ export class DependencyManager {
             execSync(`dnf install -y "${fedoraFile}"`, { stdio: 'inherit' });
             return true;
           }
+
           break;
         }
 
@@ -268,6 +155,7 @@ export class DependencyManager {
             execSync(`pacman -Sy --noconfirm && pacman -U --noconfirm "${manjaroFile}"`, { stdio: 'inherit' });
             return true;
           }
+
           break;
         }
 
@@ -282,12 +170,14 @@ export class DependencyManager {
              execSync(`zypper install -y --allow-unsigned-rpm "${suseFile}"`, { stdio: 'inherit' });
              return true;
           }
+
           break;
         }
 
-        default:
+        default: {
           console.warn(`[eggs] Distribuzione '${this.familyId}' non supportata dai meta-pacchetti automatici.`);
           return false;
+        }
       }
 
     } catch (error: any) {
@@ -301,13 +191,144 @@ export class DependencyManager {
     return false;
   }
 
+  /**
+   * Verifica se i distro-meta-pacchetto sono già installati nel sistema.
+   * @returns true se installati, false altrimenti
+   */
+  public isInstalled(): boolean {
+    try {
+      switch (this.familyId) {
+        case 'alpine': {
+          // apk info -e esce con 0 se esiste, 1 se no
+          execSync(`apk info -e ${ALPINE_VIRTUAL_PKG}`, { stdio: 'ignore' });
+          return true;
+        }
+
+        case 'archlinux':
+        case 'manjaro': {
+          // pacman -Q esce con 0 se trovato, 1 se no
+          execSync(`pacman -Q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+        }
+
+        case 'debian': {
+          // dpkg -s verifica lo stato del pacchetto
+          execSync(`dpkg -s ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+        }
+
+        case 'el9':
+        case 'fedora':
+        case 'opensuse': {
+          // rpm -q funziona per tutte le distro RPM
+          execSync(`rpm -q ${META_PACKAGE_NAME}`, { stdio: 'ignore' });
+          return true;
+        }
+
+        default: {
+          return false;
+        }
+      }
+    } catch {
+      // Se il comando fallisce (exit code != 0), il pacchetto non è installato
+      return false;
+    }
+  }
+
+  /**
+   * Reinstalla i distro-meta-pacchetti: Rimuove e poi Installa.
+   * Utile per forzare un aggiornamento delle dipendenze o riparare un'installazione.
+   */
+  public reinstallDistroPackages(): boolean {
+    console.log(`[eggs] Reinstallazione distro meta-packages per: ${this.familyId}...`);
+    // Tentiamo la rimozione (ignoriamo errori se non era installato)
+    try {
+      this.removeDistroPackages();
+    } catch {
+      console.log(`[eggs] No previous versions found or removal not necessary.`);
+    }
+
+    // Procediamo con l'installazione pulita
+    return this.installDistroPackages();
+  }
+
+  /**
+   * Rimuove i distro meta-pacchetti e pulisce le dipendenze.
+   */
+  public removeDistroPackages(): boolean {
+    console.log(`[eggs] Removing distro meta-packages for: ${this.familyId}...`);
+
+    try {
+      switch (this.familyId) {
+        // ==========================================
+        // ALPINE LINUX
+        // ==========================================
+        case 'alpine': {
+          console.log('[eggs] Removing Alpine dependencies...');
+          execSync(`apk del ${ALPINE_VIRTUAL_PKG}`, { stdio: 'inherit' });
+          return true;
+        }
+
+        // ==========================================
+        // ARCHLINUX/MANJARO
+        // ==========================================
+        case 'archlinux': {
+          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Arch/Manjaro)...`);
+          // -Rns: Rimuove pacchetto, configurazioni e dipendenze non usate da altri
+          execSync(`pacman -Rns --noconfirm ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
+          return true;
+        }
+
+
+        // ==========================================
+        // DEBIAN / UBUNTU FAMILY
+        // ==========================================
+        case 'debian': {
+          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Debian/Devuan/Ubuntu)...`);
+          // Purge rimuove anche i file di configurazione
+          // autoremove pulisce le dipendenze installate dal meta-pacchetto
+          execSync(`apt-get purge -y ${META_PACKAGE_NAME} && apt-get autoremove -y`, { stdio: 'inherit' });
+          return true;
+        }
+
+        // ==========================================
+        // RPM FAMILY (EL9 / FEDORA / OPENSUSE)
+        // ==========================================
+        case 'el9':
+        case 'fedora': {
+          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (RPM/DNF)...`);
+          execSync(`dnf remove -y ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
+          return true;
+        }
+
+        case 'opensuse': {
+          console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Zypper)...`);
+          // -u (--clean-deps) rimuove anche le dipendenze non più necessarie
+          execSync(`zypper rm -y -u ${META_PACKAGE_NAME}`, { stdio: 'inherit' });
+          return true;
+        }
+
+        default: {
+          console.warn(`[eggs] Removal not supported automatically for '${this.familyId}'.`);
+          return false;
+        }
+      }
+
+    } catch (error: any) {
+      // Spesso la rimozione fallisce semplicemente perché il pacchetto non c'è.
+      // Logghiamo warning invece di errore fatale.
+      console.warn(`[eggs] Warning removing: ${error.message}`);
+      return false;
+    }
+  }
+
 }
 
 /**
  * Helper Function (fuori classe, come richiesto)
  * Cerca un file pacchetto in una directory specifica.
  */
-function findPackage(dir: string, ext: string, pattern: string = ''): string | null {
+function findPackage(dir: string, ext: string, pattern: string = ''): null | string {
   try {
     if (!fs.existsSync(dir)) {
       // console.warn(`[DependencyManager] Directory non trovata: ${dir}`);

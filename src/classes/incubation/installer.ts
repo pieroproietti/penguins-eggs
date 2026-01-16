@@ -41,6 +41,7 @@ export function installer(): IInstaller {
     installer.configRoot = '/etc/penguins-eggs.d/krill/'
     installer.multiarch = Pacman.distro().usrLibPath + '/krill/'
   }
+
   installer.modules = installer.configRoot + 'modules/'
   installer.multiarchModules = installer.multiarch + 'modules/'
 

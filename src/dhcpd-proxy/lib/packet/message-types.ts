@@ -1,12 +1,12 @@
 // etrick/src/lib/packet/message-types.ts
 
 export enum DhcpMessageType {
-    DHCPDISCOVER = 1,
-    DHCPOFFER    = 2,
-    DHCPREQUEST  = 3,
-    DHCPDECLINE  = 4,
     DHCPACK      = 5,
-    DHCPNAK      = 6,
-    DHCPRELEASE  = 7,
+    DHCPDECLINE  = 4,
+    DHCPDISCOVER = 1,
     DHCPINFORM   = 8,
+    DHCPNAK      = 6,
+    DHCPOFFER    = 2,
+    DHCPRELEASE  = 7,
+    DHCPREQUEST  = 3,
 }

@@ -5,41 +5,13 @@
 
 import fs from 'node:fs'
 import path from 'path'
+
+import { execSync } from '../../lib/utils.js'
 import Distro from '../distro.js'
 import Utils from '../utils.js'
-import { execSync } from '../../lib/utils.js'
 
 export default class Kernel {
   
-  /**
-   * Ricava path per vmlinuz (o vmlinux su RISC-V)
-   */
-  static vmlinuz(kernel = ''): string {
-    let kernelFile = ''
-
-    // Esegui se NON è un container
-    if (!Utils.isContainer()) {
-      kernelFile = this.vmlinuzFromUname()
-
-      if (kernelFile === '') {
-        kernelFile = this.vmlinuzFromCmdline()
-        if (kernelFile === '') {
-          console.log('kernel (vmlinuz/vmlinux) not found')
-          process.exit(1)
-        }
-      }
-    } else {
-      Utils.warning("cannot work on containers actually!")
-      process.exit(1)
-    }
-
-    if (!fs.existsSync(kernelFile)) {
-      console.log(`kernel: ${kernelFile} does not exist!`)
-      process.exit(1)
-    }
-    return kernelFile
-  }
-
   /**
    * Cerca initramfs
    */
@@ -51,15 +23,17 @@ export default class Kernel {
         Utils.warning("Non è possibile determinare il kernel in un container.")
         process.exit(1)
       }
+
       targetKernel = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
     }
+
     const kernelVersionShort = targetKernel.split('.').slice(0, 2).join('.');
     const bootDir = '/boot';
 
     let bootFiles: string[];
     try {
       bootFiles = fs.readdirSync(bootDir);
-    } catch (error) {
+    } catch {
       console.error(`ERRORE: Impossibile leggere la directory ${bootDir}.`);
       process.exit(1);
     }
@@ -89,6 +63,7 @@ export default class Kernel {
           }
         }
       }
+
       return foundPath;
     }
 
@@ -111,16 +86,77 @@ export default class Kernel {
   }
 
   /**
+   * Ricava path per vmlinuz (o vmlinux su RISC-V)
+   */
+  static vmlinuz(kernel = ''): string {
+    let kernelFile = ''
+
+    // Esegui se NON è un container
+    if (Utils.isContainer()) {
+      Utils.warning("cannot work on containers actually!")
+      process.exit(1)
+    } else {
+      kernelFile = this.vmlinuzFromUname()
+
+      if (kernelFile === '') {
+        kernelFile = this.vmlinuzFromCmdline()
+        if (kernelFile === '') {
+          console.log('kernel (vmlinuz/vmlinux) not found')
+          process.exit(1)
+        }
+      }
+    }
+
+    if (!fs.existsSync(kernelFile)) {
+      console.log(`kernel: ${kernelFile} does not exist!`)
+      process.exit(1)
+    }
+
+    return kernelFile
+  }
+
+  /**
    * PRIVATE METHODS
    */
 
+  private static vmlinuzFromCmdline() {
+    let kernelFile = '' 
+    // ... (Logica esistente invariata) ...
+    try {
+        const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
+        for (const cmd of cmdline) {
+        if (cmd.includes('BOOT_IMAGE')) {
+            kernelFile = cmd.slice(Math.max(0, cmd.indexOf('=') + 1))
+            if (kernelFile.includes(")")) {
+            kernelFile = cmd.slice(Math.max(0, cmd.indexOf(')') + 1))
+            }
+
+            if (!fs.existsSync(kernelFile) && fs.existsSync(`/boot/${kernelFile}`)) {
+                kernelFile = `/boot/${kernelFile}`
+            }
+        }
+        }
+
+        if (kernelFile.includes('@')) {
+        const subvolumeEnd = kernelFile.indexOf('/', kernelFile.indexOf('@'))
+        kernelFile = kernelFile.slice(Math.max(0, subvolumeEnd))
+        }
+
+        if (path.dirname(kernelFile) === '/' && fs.existsSync(`/boot${kernelFile}`)) {
+            kernelFile = `/boot${kernelFile}`
+        }
+    } catch{ /* ignore read error */ }
+    
+    return kernelFile
+  }
+
   private static vmlinuzFromUname(): string {
-    let kernelVersion = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
+    const kernelVersion = (execSync('uname -r', { stdio: 'ignore' }) || '').trim()
 
     // --- CHECK FOR RISC-V (vmlinux) ---
     if (process.arch === 'riscv64') {
         // 1. Caso Perfetto: uname corrisponde al file vmlinux
-        let riscvPath = `/boot/vmlinux-${kernelVersion}`
+        const riscvPath = `/boot/vmlinux-${kernelVersion}`
         if (fs.existsSync(riscvPath)) {
             return riscvPath;
         }
@@ -133,19 +169,19 @@ export default class Kernel {
             if (found) {
                 return path.join('/boot', found);
             }
-        } catch (e) {
-            console.error("Errore leggendo /boot:", e);
+        } catch (error) {
+            console.error("Errore leggendo /boot:", error);
         }
 
         // 3. Fallback su vmlinuz (se usassero kernel compressi)
-        let riscvZPath = `/boot/vmlinuz-${kernelVersion}`
+        const riscvZPath = `/boot/vmlinuz-${kernelVersion}`
         if (fs.existsSync(riscvZPath)) {
             return riscvZPath;
         }
     }
 
     // --- STANDARD ARCHITECTURES (x86, ARM) ---
-    let standardPath = `/boot/vmlinuz-${kernelVersion}`
+    const standardPath = `/boot/vmlinuz-${kernelVersion}`
     if (fs.existsSync(standardPath)) {
       return standardPath;
     }
@@ -159,37 +195,5 @@ export default class Kernel {
 
     if (archPath && fs.existsSync(archPath)) return archPath
     return ''
-  }
-
-  private static vmlinuzFromCmdline() {
-    let kernelFile = '' 
-    // ... (Logica esistente invariata) ...
-    try {
-        const cmdline = fs.readFileSync('/proc/cmdline', 'utf8').split(" ")
-        cmdline.forEach(cmd => {
-        if (cmd.includes('BOOT_IMAGE')) {
-            kernelFile = cmd.substring(cmd.indexOf('=') + 1)
-            if (kernelFile.includes(")")) {
-            kernelFile = cmd.substring(cmd.indexOf(')') + 1)
-            }
-            if (!fs.existsSync(kernelFile)) {
-            if (fs.existsSync(`/boot/${kernelFile}`)) {
-                kernelFile = `/boot/${kernelFile}`
-            }
-            }
-        }
-        })
-        if (kernelFile.includes('@')) {
-        let subvolumeEnd = kernelFile.indexOf('/', kernelFile.indexOf('@'))
-        kernelFile = kernelFile.substring(subvolumeEnd)
-        }
-        if (path.dirname(kernelFile) === '/') {
-        if (fs.existsSync(`/boot${kernelFile}`)) {
-            kernelFile = `/boot${kernelFile}`
-        }
-        }
-    } catch(e) { /* ignore read error */ }
-    
-    return kernelFile
   }
 }

@@ -19,10 +19,8 @@ import { exec } from '../lib/utils.js'
  */
 export default class Config extends Command {
   static description = 'Configure eggs to run it'
-
-  static examples = ['sudo eggs config', 'sudo eggs config --clean', 'sudo eggs config --clean --nointeractive']
-
-  static flags = {
+static examples = ['sudo eggs config', 'sudo eggs config --clean', 'sudo eggs config --clean --nointeractive']
+static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create new one' }),
     help: Flags.help({ char: 'h' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),

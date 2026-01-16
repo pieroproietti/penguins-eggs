@@ -6,9 +6,9 @@
  * license: MIT
  */
 
+import chalk from 'chalk'
 // packages
 import path from 'node:path'
-import chalk from 'chalk'
 
 // classes
 import { exec } from '../../lib/utils.js'

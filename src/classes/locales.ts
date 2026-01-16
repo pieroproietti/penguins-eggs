@@ -22,8 +22,30 @@ export default class Locales {
     const result = await exec(cmd, { capture: true, echo: false, ignore: false })
     if (result.code === 0) {
       defaultLanguage = result.data.trim()
-    }    
+    }
+    
     return defaultLanguage
+  }
+
+  /**
+   * getEnabled
+   */
+  async getEnabled(): Promise<string[]> {
+    let cmd="locale -a"
+    if (Utils.isSystemd()) {
+      cmd="localectl list-locales"
+    }
+
+    const enabledLocales: string[] = []
+    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+    if (result.code === 0) {
+      const lines = result.data.split('\n')
+      for (const line of lines) {
+        enabledLocales.push(line.trim())
+      }
+    }
+
+    return enabledLocales
   }
 
   /**
@@ -65,26 +87,6 @@ export default class Locales {
     }
 
     return elements
-  }
-
-  /**
-   * getEnabled
-   */
-  async getEnabled(): Promise<string[]> {
-    let cmd="locale -a"
-    if (Utils.isSystemd()) {
-      cmd="localectl list-locales"
-    }
-
-    const enabledLocales: string[] = []
-    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-    if (result.code === 0) {
-      const lines = result.data.split('\n')
-      for (const line of lines) {
-        enabledLocales.push(line.trim())
-      }
-    }
-    return enabledLocales
   }
 
 }

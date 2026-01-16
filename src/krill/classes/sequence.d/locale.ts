@@ -8,6 +8,7 @@
  */
 
 import fs from 'node:fs'
+
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
@@ -51,6 +52,7 @@ export default async function locale(this: Sequence) {
       const cmd = `chroot ${this.installTarget} unlink /etc/localtime ${this.toNull}`
       await exec(cmd, this.echo)
     }
+
     const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime ${this.toNull}`
     await exec(cmd, this.echo)
 
@@ -87,7 +89,7 @@ export default async function locale(this: Sequence) {
      * timezone
      * 
      */
-    let tz = `/etc/zoneinfo/${this.region}/${this.zone}`
+    const tz = `/etc/zoneinfo/${this.region}/${this.zone}`
     await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/* ${this.toNull}`, this.echo)
     await exec(`chroot ${this.installTarget} mkdir -p ${tz} ${this.toNull}`, this.echo)
 

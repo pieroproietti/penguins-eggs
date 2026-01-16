@@ -6,8 +6,8 @@
  * license: MIT
  */
 
+import { Box, render, Text } from 'ink'
 import React from 'react'
-import { render, Text, Box } from 'ink'
 
 
 type stepsPros = {
@@ -26,29 +26,66 @@ export default function Steps({ step = 1 }: stepsPros) {
     let activeInstall = false
     let activeFinish = false
 
-    if (step === 1) {
+    switch (step) {
+    case 1: {
         activeWelcome = true
-    } else if (step === 2) {
+    
+    break;
+    }
+
+    case 2: {
         activeLocation = true
-    } else if (step === 3) {
+    
+    break;
+    }
+
+    case 3: {
         activeKeyboard = true
-    } else if (step === 4) {
+    
+    break;
+    }
+
+    case 4: {
         activePartitions = true
-    } else if (step === 5) {
+    
+    break;
+    }
+
+    case 5: {
         activeUsers = true
-    } else if (step === 6) {
+    
+    break;
+    }
+
+    case 6: {
         activeNetwork = true
-    } else if (step === 7) {
+    
+    break;
+    }
+
+    case 7: {
         activeSummary = true
-    } else if (step === 8) {
+    
+    break;
+    }
+
+    case 8: {
         activeInstall = true
-    } else if (step === 9) {
+    
+    break;
+    }
+
+    case 9: {
         activeFinish = true
+    
+    break;
+    }
+    // No default
     }
 
     return (
         <>
-            <Box width={13} height={9} flexDirection="column">
+            <Box flexDirection="column" height={9} width={13}>
                 <WelcomeTab active={activeWelcome} />
                 <LocationTab active={activeLocation} />
                 <KeyboardTab active={activeKeyboard} />
@@ -75,7 +112,8 @@ function WelcomeTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Welcome    </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Welcome    </Text></Box>
 }
 
 function LocationTab({ active = false }): JSX.Element {
@@ -85,7 +123,8 @@ function LocationTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Location   </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Location   </Text></Box>
 }
 
 function KeyboardTab({ active = false }): JSX.Element {
@@ -95,7 +134,8 @@ function KeyboardTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Keyboard   </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Keyboard   </Text></Box>
 }
 
 
@@ -106,7 +146,8 @@ function PartitionTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Partitions </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Partitions </Text></Box>
 }
 
 function UsersTab({ active = false }): JSX.Element {
@@ -116,7 +157,8 @@ function UsersTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Users      </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Users      </Text></Box>
 }
 
 function NetworkTab({ active = false }): JSX.Element {
@@ -126,7 +168,8 @@ function NetworkTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Network    </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Network    </Text></Box>
 }
 
 function SummaryTab({ active = false }): JSX.Element {
@@ -136,7 +179,8 @@ function SummaryTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Summary    </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Summary    </Text></Box>
 }
 
 function InstallTab({ active = false }): JSX.Element {
@@ -146,7 +190,8 @@ function InstallTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Install    </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Install    </Text></Box>
 }
 
 function FinishTab({ active = false }): JSX.Element {
@@ -156,5 +201,6 @@ function FinishTab({ active = false }): JSX.Element {
         backgroundColor = 'black'
         color = 'white'
     }
-    return <Box><Text color={color} backgroundColor={backgroundColor}> Finish     </Text></Box>
+
+    return <Box><Text backgroundColor={backgroundColor} color={color}> Finish     </Text></Box>
 }

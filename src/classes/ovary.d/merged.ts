@@ -31,7 +31,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 export function copied(this: Ovary, dir: string): boolean {
     let copied = false
 
-    let copiedDirs = [
+    const copiedDirs = [
         'boot',
         'etc'
     ]
@@ -41,6 +41,7 @@ export function copied(this: Ovary, dir: string): boolean {
             copied = true
         }
     }
+
     return copied
 }
 
@@ -56,6 +57,7 @@ export function mergedAndOverlay(this: Ovary, dir: string): boolean {
             mergedOverlay = true
         }
     }
+
     return mergedOverlay
 }
 

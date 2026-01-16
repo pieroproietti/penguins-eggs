@@ -14,10 +14,8 @@ import Xdg from '../../classes/xdg.js'
 
 export default class Skel extends Command {
   static description = 'update skel from home configuration'
-
-  static examples = ['sudo eggs tools skel', 'sudo eggs tools skel --user user-to-be-copied']
-
-  static flags = {
+static examples = ['sudo eggs tools skel', 'sudo eggs tools skel --user user-to-be-copied']
+static flags = {
     help: Flags.help({ char: 'h' }),
     user: Flags.string({ char: 'u', description: 'user to be used' }),
     verbose: Flags.boolean({ char: 'v' })

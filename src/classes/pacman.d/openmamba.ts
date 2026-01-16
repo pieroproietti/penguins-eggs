@@ -7,6 +7,7 @@
  */
 
 import fs from 'node:fs'
+
 import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
@@ -28,9 +29,9 @@ export default class Openmamba {
   }
 
   /**
-  * 
-  * calamaresPolicies
-  */
+   * 
+   * calamaresPolicies
+   */
   static async calamaresPolicies(verbose = false) {
     // nothing
   }
@@ -52,6 +53,7 @@ export default class Openmamba {
     if (success && fs.existsSync('/etc/calamares')) {
       await exec('rm /etc/calamares -rf', echo)
     }
+
     return success
   }
 

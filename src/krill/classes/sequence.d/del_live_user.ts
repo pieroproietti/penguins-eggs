@@ -1,16 +1,17 @@
 /**
  * src/krill/classes/sequence.d/del_live_user.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Uses "The SysUser Master" class.
+ * REFACTORED: Uses "The SysUser Master" class.
  * Removes the live user from the installed target safely (SELinux friendly).
  */
+
+import fs from 'fs'
+import path from 'path'
 
 import SysUsers from '../../../classes/sys-users.js'
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
-import fs from 'fs'
-import path from 'path'
 
 /**
  * delLiveUser
@@ -24,7 +25,7 @@ export default async function delLiveUser(this: Sequence) {
     // Recuperiamo il nome utente live (default: 'live' o quello impostato in build)
     const liveUsername = this.settings.config.user_opt || 'live'
     const target = this.installTarget
-    const familyId = this.distro.familyId
+    const {familyId} = this.distro
 
     console.log(`Removing live user '${liveUsername}' from target via SysUsers...`)
 

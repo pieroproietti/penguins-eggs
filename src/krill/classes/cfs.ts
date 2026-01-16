@@ -9,8 +9,8 @@
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
-import { ISettings } from '../../interfaces/i-settings.js'
 import Pacman from '../../classes/pacman.js'
+import { ISettings } from '../../interfaces/i-settings.js'
 
 /**
  * cfs

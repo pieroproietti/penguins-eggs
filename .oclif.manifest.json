@@ -242,17 +242,17 @@
           "multiple": false,
           "type": "option"
         },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "help": {
           "char": "h",
           "description": "Show CLI help.",
           "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
           "allowNo": false,
           "type": "boolean"
         },
@@ -485,16 +485,24 @@
         "eggs auto"
       ],
       "flags": {
+        "clone": {
+          "char": "c",
+          "description": "clone (uncrypted)",
+          "name": "clone",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "fullcrypt": {
+          "char": "f",
+          "description": "clone crypted full",
+          "name": "fullcrypt",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "help": {
           "char": "h",
           "description": "Show CLI help.",
           "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
           "allowNo": false,
           "type": "boolean"
         },
@@ -505,20 +513,6 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "clone": {
-          "char": "c",
-          "description": "clone (uncrypted)",
-          "name": "clone",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "homecrypt": {
           "char": "k",
           "description": "clone crypted home",
@@ -526,10 +520,16 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "fullcrypt": {
-          "char": "f",
-          "description": "clone crypted full",
-          "name": "fullcrypt",
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
           "allowNo": false,
           "type": "boolean"
         }
@@ -614,12 +614,12 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "homecrypt": {
-          "char": "k",
-          "description": "clone crypted home",
-          "name": "homecrypt",
-          "allowNo": false,
-          "type": "boolean"
+        "excludes": {
+          "description": "use: static, homes, home",
+          "name": "excludes",
+          "hasDynamicHelp": false,
+          "multiple": true,
+          "type": "option"
         },
         "fullcrypt": {
           "char": "f",
@@ -627,13 +627,6 @@
           "name": "fullcrypt",
           "allowNo": false,
           "type": "boolean"
-        },
-        "excludes": {
-          "description": "use: static, homes, home",
-          "name": "excludes",
-          "hasDynamicHelp": false,
-          "multiple": true,
-          "type": "option"
         },
         "help": {
           "char": "h",
@@ -646,6 +639,20 @@
           "char": "H",
           "description": "stealth mode",
           "name": "hidden",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "homecrypt": {
+          "char": "k",
+          "description": "clone crypted home",
+          "name": "homecrypt",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "includeRootHome": {
+          "char": "i",
+          "description": "folder /root is included on live",
+          "name": "includeRootHome",
           "allowNo": false,
           "type": "boolean"
         },
@@ -726,13 +733,6 @@
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
-        },
-        "includeRootHome": {
-          "char": "i",
-          "description": "folder /root is included on live",
-          "name": "includeRootHome",
-          "allowNo": false,
-          "type": "boolean"
         },
         "verbose": {
           "char": "v",

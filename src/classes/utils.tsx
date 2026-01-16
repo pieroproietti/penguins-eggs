@@ -8,24 +8,21 @@
  * Refactored Utils class - imports from modular utilities
  */
 
-import { shx, execSync, spawnSync } from '../lib/utils.js'
-import fs from 'fs'
-import dns from 'dns'
-import path from 'path'
-import os from 'os'
-import inquirer from 'inquirer'
 import chalk from 'chalk'
-
-import Kernel from './utils.d/kernel.js'
-
-// libraries
-import Distro from './distro.js'
+import dns from 'dns'
+import fs from 'fs'
+import inquirer from 'inquirer'
+// pjson
+import { createRequire } from 'module';
+import os from 'os'
+import path from 'path'
 
 // interfaces
 import IOsRelease from '../interfaces/i-os-release.js'
-
-// pjson
-import { createRequire } from 'module';
+import { execSync, shx, spawnSync } from '../lib/utils.js'
+// libraries
+import Distro from './distro.js'
+import Kernel from './utils.d/kernel.js'
 const require = createRequire(import.meta.url);
 const pjson = require('../../package.json');
 
@@ -37,282 +34,239 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
  * @remarks all the utilities
  */
 export default class Utils {
-   static vmlinuz(kernel = ''): string {
-      return Kernel.vmlinuz(kernel)
-   }
-
    /**
-    * @deprecated Use Kernel.initramfs() instead  
+    * address
     */
-   static initrdImg(kernel = ''): string {
-      return Kernel.initramfs(kernel)
-   }
-
-   /**
-   * Custom function to sort object keys
-   * @param obj 
-   * @returns 
-   */
-   static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
-      const sorted: { [key: string]: any } = {};
-      Object.keys(obj)
-         .sort()
-         .forEach(key => {
-            sorted[key] = obj[key];
-         });
-      return sorted;
-   }
-
-
-   /**
-    * 
-    * @param file 
-    * @param search 
-    * @returns value
-    */
-   static searchOnFile(file = '', search = ''): string {
-      const lines = fs.readFileSync(file, 'utf8').split("\n")
-      let value = ''
-      lines.forEach(line => {
-         line = line.replace(/\s+/g, ' ') // Remove multiple spaces with single space
-         if (line.includes(search)) {
-            value = line.substring(line.indexOf('=') + 1)
-         }
-      })
-      value = value.replaceAll('"', '') // Remove "
-      return value.trim()
-   }
-
-   /**
-    * Restituisce il prefisso della iso
-    * @param distroId
-    * @param codenameId
-    */
-   static snapshotPrefix(distroId: string, codenameId: string): string {
-      let result = `egg-of_${distroId.toLowerCase()}-`
-
-      if (codenameId === 'rolling' || codenameId === '') {
-         const releaseId = Utils.getOsRelease().VERSION_ID.trim()
-         if (releaseId !== '') {
-            result += releaseId
-         }
-      } else {
-         result += `${codenameId.toLowerCase()}`
-      }
-
-      if (!result.endsWith('-')) {
-         result += '-'
-      }
-
-      return result
-   }
-
-   /**
-    * isAppImage
-    */
-   static isAppImage(): boolean {
-      return !!process.env.APPIMAGE ||
-         process.execPath.includes('.AppImage') ||
-         process.execPath.includes('/tmp/.mount_');
-   }
-
-   /**
-    * Detect if running inside a container (Docker or LXC)
-    */
-   static isContainer(): boolean {
-      // Check for Docker's specific file
-      if (fs.existsSync('/.dockerenv')) {
-         return true;
-      }
-
-      // Check the cgroup file, which works for Docker, Podman, LXC, etc.
-      try {
-         const cgroupContent = fs.readFileSync('/proc/1/cgroup', 'utf8');
-         return cgroupContent.includes('/docker/') || cgroupContent.includes('/kubepods/');
-      } catch (e) {
-         return false;
-      }
-   }
-
-
-   /**
-   * Detect if running inside a standard chroot environment
-   * (Distinguishes chroot from Containers/Host)
-   */
-   static isChroot(): boolean {
-      try {
-         // 1. Check for Debian specific chroot file
-         // Many Debian tools (debootstrap, schroot) create this file.
-         if (fs.existsSync('/etc/debian_chroot')) {
-            return true;
-         }
-
-         // 2. Inode comparison method
-         // We compare the Inode and Device ID of '/' vs '/proc/1/root'.
-         // In a chroot (sharing the host's PID namespace via bind-mounted /proc),
-         // PID 1 refers to the host's init process.
-         // Therefore, if '/' is NOT the same file as '/proc/1/root', we are in a chroot.
-
-         const rootStat = fs.statSync('/');
-         const procRootStat = fs.statSync('/proc/1/root');
-
-         // If dev or ino are different, we are inside a chroot
-         return (rootStat.dev !== procRootStat.dev) || (rootStat.ino !== procRootStat.ino);
-
-      } catch (error) {
-         // If /proc is not mounted or not accessible, detection via inode fails.
-         // However, usually in eggs /proc is mounted. 
-         // If strictly needed, one could assume that if /proc/1/root is unreadable 
-         // but / exists, it might be a weird chroot state, but returning false is safer.
-         return false;
-      }
-   }
-
-   /**
-    * Check if the system uses Systemd
-    */
-   static isSystemd(): boolean {
-      let isSystemd = false
-      if (!this.isContainer()) {
-         isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
-      } else {
-         isSystemd = true
-         let distro = new Distro()
-         if (distro.distroId === "Devuan") {
-            isSystemd = false
+   static address(): string {
+      const interfaces = os.networkInterfaces()
+      let address = ''
+      if (interfaces !== undefined) {
+         for (const devName in interfaces) {
+            const iface = interfaces[devName]
+            if (iface !== undefined) {
+               for (const alias of iface) {
+                  if (
+                     alias.family === 'IPv4' &&
+                     alias.address !== '127.0.0.1' &&
+                     !alias.internal
+                   && // take just the first!
+                     address === '') {
+                        address = alias.address
+                     }
+               }
+            }
          }
       }
-      return isSystemd
+
+      return address
+   }
+
+   static broadcast(): string {
+      const netmask = Utils.netmask()
+      const ip = Utils.address()
+
+      const ipParts = ip.split('.').map(Number);
+      const maskParts = netmask.split('.').map(Number);
+
+      const broadcastParts = ipParts.map((part, index) => 
+         // Bitwise OR tra il blocco IP e il blocco Netmask invertito (255 - mask)
+          part | (255 - maskParts[index])
+      );
+
+      return broadcastParts.join('.');
+   }
+
+   /**
+    * chpasswdPath
+    * @returns 
+    */
+   static chpasswdPath() {
+      let chpasswdPath = '/usr/sbin/chpasswd'
+      if (fs.existsSync(chpasswdPath)) {
+         chpasswdPath = '/usr/bin/chpasswd'
+      }
+
+      return chpasswdPath
    }
 
 
    /**
-    * Check if the system uses SysVinit
+    * cidr
     */
-   static isSysvinit(): boolean {
-      let isSysvinit = false
-      if (!this.isContainer()) {
-         isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
-      } else {
-         let distro = new Distro()
-         if (distro.distroId === "Devuan") {
-            isSysvinit = true
+   static cidr(): string {
+      const interfaces = os.networkInterfaces()
+      let cidr = ''
+      if (interfaces !== undefined) {
+         for (const devName in interfaces) {
+            const iface = interfaces[devName]
+            if (iface !== undefined) {
+               for (const alias of iface) {
+                  if (
+                     alias.family === 'IPv4' &&
+                     alias.address !== '127.0.0.1' &&
+                     !alias.internal
+                   && // take just the first!
+                     cidr === '' && alias.cidr !== null) {
+                           cidr = alias.cidr
+                        }
+               }
+            }
          }
       }
-      return isSysvinit
+
+      return cidr
    }
 
    /**
-    * Check if the system uses OpenRC
+    *
+    * @param cmd
     */
-   static isOpenRc(): boolean {
-      let isOpenRc = false
-      if (!this.isContainer()) {
-         isOpenRc = Utils.commandExists('openrc')
-      }
-      return isOpenRc
-   }
-
-   /**
-    * Usata da pacman e config credo non serva affatto
-    */
-   static machineId(): string {
-      let result = ''
-      if (fs.existsSync('/etc/machine-id')) {
-         result = fs.readFileSync('/etc/machine-id', 'utf-8').trim()
-      } else if (fs.existsSync('/var/lib/dbus/machine-id')) {
-         result = fs.readFileSync('/var/lib/dbus/machine-id', 'utf-8').trim()
-      }
-      return result
+   static commandExists(cmd: string): boolean {
+      return Boolean(shx.which(cmd));
    }
 
    /**
     *
     * @param msg
     */
-   static warning(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg))
+   static async customConfirm(msg = 'Select yes to continue... '): Promise<boolean> {
+      const varResult = await Utils.customConfirmCompanion(msg)
+      const result = JSON.parse(varResult)
+      if (result.confirm === 'Yes') {
+         return true
+      }
+ 
+         return false
+      
    }
 
-   static info(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.white(msg))
+   /**
+    *
+    * @param msg
+    */
+   static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
+      return new Promise((resolve) => {
+         const questions: any = [
+            {
+               choices: ['No', 'Yes', 'Abort'],
+               default: 'Yes',
+               message: msg,
+               name: 'confirm',
+               type: 'list'
+            }
+         ]
+
+         inquirer.prompt(questions).then((options: any) => {
+            resolve(JSON.stringify(options))
+         })
+      })
    }
 
-   static success(msg = '') {
-      console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg))
+
+   /**
+    *
+    * @param msg
+    */
+   static async customConfirmCompanion(msg = 'Select yes to continue... '): Promise<any> {
+      return new Promise((resolve) => {
+         const questions: any = [
+            {
+               choices: ['No', 'Yes'],
+               default: 'No',
+               message: msg,
+               name: 'confirm',
+               type: 'list'
+            }
+         ]
+
+         inquirer.prompt(questions).then((options: any) => {
+            resolve(JSON.stringify(options))
+         })
+      })
    }
+
+   static async debug(cmd = 'cmd', procContinue = true) {
+      console.log(chalk.redBright('DEBUG >>> ') + cmd + '\n')
+      let msg = 'Press a key to exit...'
+      if (procContinue) {
+         msg = 'Press a key to continue...'
+      }
+
+      console.log(msg)
+
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
+      if (!procContinue) {
+         process.exit(0)
+      }
+   }
+
 
    static error(msg = '') {
       console.error(pjson.shortName + ' >>> ' + chalk.bgRed(chalk.whiteBright(msg)))
    }
 
-
    /**
-    * Return the primary user's name
+    *
+    * @returns flag
     */
-   static async getPrimaryUser(): Promise<string> {
-      const { execSync } = require('child_process');
+   static flag(): string {
+      let arch = "-"
+      if (Utils.isAppImage()) {
+         arch += "AppImage"
+      } else switch (process.arch) {
+ case "arm64": {
+            arch += "arm64"
+         
+ break;
+ }
 
-      let primaryUser = '';
-      try {
-         // Attempt to get the user from logname
-         primaryUser = execSync('/usr/bin/logname 2>/dev/null', { encoding: 'utf-8' }).trim();
-      } catch (error) {
-         // console.log("logname failed, so we continue with other methods")
-      }
-      if (primaryUser === 'root') {
-         primaryUser = ''
-      }
+ case "ia32": {
+            arch += "i386"
+         
+ break;
+ }
 
-      if (primaryUser === '') {
-         try {
-            // Check if doas is installed and get the DOAS_USER
-            execSync('command -v doas', { stdio: 'ignore' });
-            primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
-         } catch (error) {
-            // console.log("doas is not installed or DOAS_USER is not set, continue with the next method")
-         }
-      }
+ case "riscv64": {
+            arch += "riscv64"
+         
+ break;
+ }
 
-      if (primaryUser === '') {
-         try {
-            // Check for the SUDO_USER
-            primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
-         } catch (error) {
-            // console.log("SUDO_USER is not set, continue with the next method")
-         }
-      }
+ case "x64": {
+            arch += "x86_64"
+         
+ break;
+ }
+ // No default
+ }
 
-      if (primaryUser === '') {
-         // console.log("Fallback to the USER environment variable")
-         primaryUser = process.env.USER || '';
-      }
+      const title = `${pjson.name}`
 
-      if (primaryUser === '') {
-         primaryUser = 'dummy'
-         // console.error('Cannot determine the primary user.');
-         // process.exit(1);
-      }
-      return primaryUser
+      const green = ` ${title}`.padEnd(25, " ")
+      const white = ` Perri's brewery edition `.padEnd(25, " ")
+      const red = ` v${pjson.version}${arch} `.padStart(25, " ")
+
+      return chalk.bgGreen.whiteBright(green) +
+         chalk.bgWhite.blue(white) +
+         chalk.bgRed.whiteBright(red)
    }
 
    /**
-    * restituisce uuid
-    * @param device
+    *
+    * @param bytes
+    * @param decimals
+    * @returns
     */
-   static uuid(device: string): string {
-      const uuid = shx.exec(`blkid -p -s UUID -o value ${device}`, { silent: true }).stdout.trim()
-      return uuid
-   }
+   static formatBytes(bytes: number, decimals = 2): string {
+      if (bytes === 0) return '0 Bytes';
 
-   /**
-    * 
-    * @param device 
-    * @returns 
-    */
-   static uuidGen(): string {
-      const uuid = shx.exec(`uuidgen`, { silent: true }).stdout.trim()
-      return uuid
+      const k = 1024;
+      const dm = Math.max(decimals, 0);
+      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return Number.parseFloat((bytes / k**i).toFixed(dm)) + sizes[i];
    }
 
    /**
@@ -347,174 +301,59 @@ export default class Utils {
    }
 
    /**
-    * return the name of the package: penguins-eggs
-    * @returns penguins-eggs
+    * @returns gateway
     */
-   static getPackageName(): string {
+   static gateway(): string {
+      return shx.exec(`ip r | grep 'default' | awk '{print $3}'`, { silent: true }).stdout.trim()
+      // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+   }
+
+   /**
+    * Get author name
+    */
+   static getAuthorName(): string {
+      return 'Piero Proietti piero.proietti@gmail.com'
+   }
+
+   /**
+    * Return the Debian version
+    * @returns {number} Versione di Debian
+    */
+   static getDebianVersion(): number {
+      const cmd = "cat /etc/debian_version | /usr/bin/cut -f1 -d'.'"
+      const version = Number(shx.exec(cmd, { silent: true }).stdout)
+      return version
+   }
+
+
+   /**
+    * dns
+    */
+   static getDns(): string[] {
+      return dns.getServers()
+   }
+
+   /**
+    * getDomain
+    */
+   static getDomain(): string {
+      return shx.exec('domainname', { silent: true }).stdout.trim()
+      // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+   }
+
+   /**
+    * return the short name of the package: eggs
+    * @returns eggs
+    */
+   static getFriendName(): string {
       return pjson.shortName
    }
 
    /**
-    * Count the eggs present in the nest
-    * @returns {number} Numero degli snapshot presenti
+    * Estimate the linuxfs dimension
+    * (Refactored to use native FS instead of dd/od)
+    * @returns {number} GB
     */
-   static getSnapshotCount(snapshot_dir = '/'): number {
-      if (fs.existsSync(snapshot_dir)) {
-         const files = fs.readdirSync(snapshot_dir)
-         let nIsos = 0
-         for (const f of files) {
-            if (f.endsWith('.iso')) {
-               nIsos++
-            }
-         }
-         return nIsos
-      }
-      return 0
-   }
-
-   /**
-    * Get the syze of the snapshot
-    * @returns {string} grandezza dello snapshot in Byte
-    */
-   static getSnapshotSize(snapshot_dir = '/'): number {
-      let fileSizeInBytes = 0
-      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
-
-      if (size === '') {
-         fileSizeInBytes = 0
-      } else {
-         fileSizeInBytes = Number(size)
-      }
-      return fileSizeInBytes
-   }
-
-   /**
-    * uefiArch
-    * @returns arch
-    */
-   static uefiArch(): string {
-      let arch = ''
-      if (process.arch === 'ia32') {
-         arch = 'i386'
-         // 
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
-            arch = 'amd64'
-         }
-      } else if (process.arch === 'x64') {
-         arch = 'amd64'
-      } else if (process.arch === 'arm64') {
-         arch = 'arm64'
-      } else if (process.arch === 'riscv64') {
-         arch = 'riscv64'
-      }
-      return arch
-   }
-
-   /**
-    * i386-pc,
-    * i386-efi,
-    * x86_64-efi, 
-    * arm64-efi,
-    * 
-    * ATTEMZIONE: install efibootmgr
-    * 
-    * Fedora/RHEL have i386-pc
-    */
-   static uefiFormat(): string {
-      let format = ''
-
-      if (process.arch === 'ia32') {
-         format = 'i386-efi'
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
-            format = 'x86_64-efi'
-         }
-      } else if (process.arch === 'x64') {
-         format = 'x86_64-efi'
-      } else if (process.arch === 'arm64') {
-         format = 'arm64-efi'
-      }
-      return format
-   }
-
-
-
-   /**
-    * 
-    * @returns 
-    */
-   static usrLibPath() {
-      let path = ''
-      if (process.arch === 'x64') {
-         path = 'x86_64-linux-gnu'
-      } else if (process.arch === 'arm64') {
-         path = 'aarch64-linux-gnu'
-      }
-      return path
-   }
-
-
-   /**
-    *
-    * @param prefix
-    * @param backup
-    * @returns
-    */
-   static getPrefix(prefix: string, backup = false) {
-      if (backup) {
-         if (prefix.substring(0, 7) === 'egg-of_') {
-            prefix = 'egg-bk_' + prefix.substring(7)
-         } else {
-            prefix = 'egg-bk_' + prefix
-         }
-      }
-      return prefix
-   }
-
-   /**
-    *
-    * @param volid
-    */
-   static VolidTrim(volid = 'unknown') {
-      // // 28 +  4 .iso = 32 lunghezza max di volid
-      if (volid.length >= 32) {
-         volid = volid.substring(0, 32)
-      }
-      return volid
-   }
-
-   /**
-    * Return postfix
-    * @param basename
-    * @returns eggName
-    */
-   static getPostfix(): string {
-      let postfix = '_' + Utils.formatDate(new Date()) + '.iso'
-      return postfix
-   }
-
-   /**
-    * Calculate the space used on the disk
-    * @return {void}
-    */
-   static getUsedSpace(): number {
-      let fileSizeInBytes = 0
-      if (this.isLive()) {
-         fileSizeInBytes = 0 // this.getLiveRootSpace()
-      } else {
-         fileSizeInBytes = Number(
-            shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {
-               silent: true
-            }).stdout
-         )
-      }
-      return fileSizeInBytes
-   }
-
-   /**
-   * Estimate the linuxfs dimension
-   * (Refactored to use native FS instead of dd/od)
-   * @returns {number} GB
-   */
    static getLiveRootSpace(type = 'debian-live'): number {
       let squashFs = '/run/live/medium/live/filesystem.squashfs'
       if (type === 'mx') {
@@ -535,34 +374,47 @@ export default class Utils {
             fs.closeSync(fd);
             compressionId = buffer.readUInt16LE(0);
          }
-      } catch (e) {
-         console.error("Error reading squashfs header:", e);
+      } catch (error) {
+         console.error("Error reading squashfs header:", error);
       }
 
       // 2. Determiniamo il fattore di compressione in base all'ID letto
       let compression_factor = 30; // Default conservative
 
       switch (compressionId) {
-         case 1: // gzip
+         case 1: { // gzip
             compression_factor = 37;
             break;
-         case 2: // lzo
+         }
+
+         case 2: { // lzo
             compression_factor = 52;
             break;
-         case 3: // lzma
+         }
+
+         case 3: { // lzma
             compression_factor = 52;
             break;
-         case 4: // xz
+         }
+
+         case 4: { // xz
             compression_factor = 31;
             break;
-         case 5: // lz4
+         }
+
+         case 5: { // lz4
             compression_factor = 52;
             break;
-         case 6: // zstd (aggiunto per completezza)
+         }
+
+         case 6: { // zstd (aggiunto per completezza)
             compression_factor = 37; // simile a gzip come ratio medio
             break;
-         default:
+         }
+
+         default: {
             compression_factor = 30;
+         }
       }
 
       // 3. Calcolo dimensione Linux FS
@@ -589,62 +441,81 @@ export default class Utils {
          rootSpaceNeeded = linuxfs_file_size;
       }
 
-      return rootSpaceNeeded / 1073741824.0; // Converte in GB
+      return rootSpaceNeeded / 1_073_741_824; // Converte in GB
    }
 
-   /**
-    * Return true if i686 architecture
-    * @remarks to move in Utils
-    * @returns {boolean} true se l'architettura è i686
-    */
-   static isi686(): boolean {
-      return process.arch === 'ia32'
-   }
+   // Se il metodo fa parte di una classe, usa `static`. Altrimenti, rimuovilo.
+   static getOsRelease(): IOsRelease {
+      const osReleasePath = path.join('/etc', 'os-release');
 
-   /**
-    * Controlla se è un pacchetto deb
-    * /usr/lib/penguins-eggs/bin/node
-    */
-   static isPackage(): boolean {
-      let ret = false
-      //if (process.execPath !== '/usr/bin/node') {
-      if (process.execPath === '/usr/lib/penguins-eggs/bin/node') {
-         ret = true
+      // Inizializza l'oggetto con valori predefiniti
+      const osInfo: IOsRelease = {
+         ID: '',
+         VERSION_CODENAME: 'n/a',
+         VERSION_ID: ''
+      };
+
+      // Verifica se il file esiste
+      if (!fs.existsSync(osReleasePath)) {
+         console.error('/etc/os-release file does not exist.');
+         return osInfo;
       }
-      return ret
-   }
 
-   /**
-    * Controlla se è un pacchetto sorgente
-    */
-   static isSources(): boolean {
-      let ret = false
-      if (__dirname.substring(0, 6) === '/home/') {
-         ret = true
+      // Leggi il contenuto del file
+      let fileContent: string;
+      try {
+         fileContent = fs.readFileSync(osReleasePath, 'utf8');
+      } catch (error) {
+         console.error('Error reading /etc/os-release:', error);
+         return osInfo;
       }
-      return ret
+
+      // Analizza ogni linea
+      const lines = fileContent.split('\n');
+      for (const line of lines) {
+         if (line.startsWith('#') || line.trim() === '') continue;
+
+         const [key, value] = line.split('=')
+         if (key && value) {
+            const trimmedKey = key.trim();
+            const trimmedValue = value.trim().replaceAll('"', '');
+
+            // Popola solo le chiavi desiderate
+            switch (trimmedKey) {
+            case 'ID': {
+               osInfo.ID = trimmedValue
+            
+            break;
+            }
+
+            case 'VERSION_CODENAME': {
+               osInfo.VERSION_CODENAME = trimmedValue
+            
+            break;
+            }
+
+            case 'VERSION_ID': {
+               osInfo.VERSION_ID = trimmedValue
+            
+            break;
+            }
+            // No default
+            }
+         }
+      }
+
+      // capitalize distroId
+      osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
+      osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
+
+      return osInfo
    }
 
-
    /**
-    * Controlla se è un pacchetto npm
+    * return the name of the package: penguins-eggs
+    * @returns penguins-eggs
     */
-   static isNpmPackage(): boolean {
-      return !(this.isPackage() || this.isSources())
-   }
-
-   /**
-    *
-    */
-   static rootPenguin(): string {
-      return path.resolve(__dirname, '../../')
-   }
-
-   /**
-    * return the short name of the package: eggs
-    * @returns eggs
-    */
-   static getFriendName(): string {
+   static getPackageName(): string {
       return pjson.shortName
    }
 
@@ -657,20 +528,249 @@ export default class Utils {
    }
 
    /**
-    * Get author name
+    * Return postfix
+    * @param basename
+    * @returns eggName
     */
-   static getAuthorName(): string {
-      return 'Piero Proietti piero.proietti@gmail.com'
+   static getPostfix(): string {
+      const postfix = '_' + Utils.formatDate(new Date()) + '.iso'
+      return postfix
    }
 
    /**
-    * Return the Debian version
-    * @returns {number} Versione di Debian
+    *
+    * @param prefix
+    * @param backup
+    * @returns
     */
-   static getDebianVersion(): number {
-      const cmd = "cat /etc/debian_version | /usr/bin/cut -f1 -d'.'"
-      const version = Number(shx.exec(cmd, { silent: true }).stdout)
-      return version
+   static getPrefix(prefix: string, backup = false) {
+      if (backup) {
+         if (prefix.slice(0, 7) === 'egg-of_') {
+            prefix = 'egg-bk_' + prefix.slice(7)
+         } else {
+            prefix = 'egg-bk_' + prefix
+         }
+      }
+
+      return prefix
+   }
+
+
+
+   /**
+    * Return the primary user's name
+    */
+   static async getPrimaryUser(): Promise<string> {
+      const { execSync } = require('child_process');
+
+      let primaryUser = '';
+      try {
+         // Attempt to get the user from logname
+         primaryUser = execSync('/usr/bin/logname 2>/dev/null', { encoding: 'utf-8' }).trim();
+      } catch {
+         // console.log("logname failed, so we continue with other methods")
+      }
+
+      if (primaryUser === 'root') {
+         primaryUser = ''
+      }
+
+      if (primaryUser === '') {
+         try {
+            // Check if doas is installed and get the DOAS_USER
+            execSync('command -v doas', { stdio: 'ignore' });
+            primaryUser = execSync('echo $DOAS_USER', { encoding: 'utf-8' }).trim();
+         } catch {
+            // console.log("doas is not installed or DOAS_USER is not set, continue with the next method")
+         }
+      }
+
+      if (primaryUser === '') {
+         try {
+            // Check for the SUDO_USER
+            primaryUser = execSync('echo $SUDO_USER', { encoding: 'utf-8' }).trim();
+         } catch {
+            // console.log("SUDO_USER is not set, continue with the next method")
+         }
+      }
+
+      if (primaryUser === '') {
+         // console.log("Fallback to the USER environment variable")
+         primaryUser = process.env.USER || '';
+      }
+
+      if (primaryUser === '') {
+         primaryUser = 'dummy'
+         // console.error('Cannot determine the primary user.');
+         // process.exit(1);
+      }
+
+      return primaryUser
+   }
+
+
+   /**
+    * Count the eggs present in the nest
+    * @returns {number} Numero degli snapshot presenti
+    */
+   static getSnapshotCount(snapshot_dir = '/'): number {
+      if (fs.existsSync(snapshot_dir)) {
+         const files = fs.readdirSync(snapshot_dir)
+         let nIsos = 0
+         for (const f of files) {
+            if (f.endsWith('.iso')) {
+               nIsos++
+            }
+         }
+
+         return nIsos
+      }
+
+      return 0
+   }
+
+   /**
+    * Get the syze of the snapshot
+    * @returns {string} grandezza dello snapshot in Byte
+    */
+   static getSnapshotSize(snapshot_dir = '/'): number {
+      let fileSizeInBytes = 0
+      const size = shx.exec(`/usr/bin/find ${snapshot_dir} -maxdepth 1 -type f -name '*.iso' -exec du -sc {} + | tail -1 | awk '{print $1}'`, { silent: true }).stdout.trim()
+
+      if (size === '') {
+         fileSizeInBytes = 0
+      } else {
+         fileSizeInBytes = Number(size)
+      }
+
+      return fileSizeInBytes
+   }
+
+   /**
+    * Calculate the space used on the disk
+    * @returns {void}
+    */
+   static getUsedSpace(): number {
+      let fileSizeInBytes = 0
+      if (this.isLive()) {
+         fileSizeInBytes = 0 // this.getLiveRootSpace()
+      } else {
+         fileSizeInBytes = Number(
+            shx.exec(`df /home | /usr/bin/awk 'NR==2 {print $3}'`, {
+               silent: true
+            }).stdout
+         )
+      }
+
+      return fileSizeInBytes
+   }
+
+   /**
+    * return the name of network device
+    */
+   static async iface(): Promise<string> {
+      // return shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
+      const interfaces: any = Object.keys(os.networkInterfaces())
+      let netDeviceName = ''
+      for (const k in interfaces) {
+         if (interfaces[k] != 'lo') {
+            netDeviceName = interfaces[k]
+         }
+      }
+
+      return netDeviceName
+   }
+
+   static info(msg = '') {
+      console.log(pjson.shortName + ' >>> ' + chalk.white(msg))
+   }
+
+   /**
+    * @deprecated Use Kernel.initramfs() instead  
+    */
+   static initrdImg(kernel = ''): string {
+      return Kernel.initramfs(kernel)
+   }
+
+   /**
+    * isAppImage
+    */
+   static isAppImage(): boolean {
+      return Boolean(process.env.APPIMAGE) ||
+         process.execPath.includes('.AppImage') ||
+         process.execPath.includes('/tmp/.mount_');
+   }
+
+   /**
+    * 
+    * @param device 
+    * @returns 
+    */
+   static isBlockDevice(device = ''): boolean { // /dev/sda
+      const cmd = `lsblk -d -o name | grep ${device}`
+      const result: number = shx.exec(cmd, { silent: true }).code
+      return result === 0
+   }
+
+
+   /**
+    * Detect if running inside a standard chroot environment
+    * (Distinguishes chroot from Containers/Host)
+    */
+   static isChroot(): boolean {
+      try {
+         // 1. Check for Debian specific chroot file
+         // Many Debian tools (debootstrap, schroot) create this file.
+         if (fs.existsSync('/etc/debian_chroot')) {
+            return true;
+         }
+
+         // 2. Inode comparison method
+         // We compare the Inode and Device ID of '/' vs '/proc/1/root'.
+         // In a chroot (sharing the host's PID namespace via bind-mounted /proc),
+         // PID 1 refers to the host's init process.
+         // Therefore, if '/' is NOT the same file as '/proc/1/root', we are in a chroot.
+
+         const rootStat = fs.statSync('/');
+         const procRootStat = fs.statSync('/proc/1/root');
+
+         // If dev or ino are different, we are inside a chroot
+         return (rootStat.dev !== procRootStat.dev) || (rootStat.ino !== procRootStat.ino);
+
+      } catch {
+         // If /proc is not mounted or not accessible, detection via inode fails.
+         // However, usually in eggs /proc is mounted. 
+         // If strictly needed, one could assume that if /proc/1/root is unreadable 
+         // but / exists, it might be a weird chroot state, but returning false is safer.
+         return false;
+      }
+   }
+
+   /**
+    * Detect if running inside a container (Docker or LXC)
+    */
+   static isContainer(): boolean {
+      // Check for Docker's specific file
+      if (fs.existsSync('/.dockerenv')) {
+         return true;
+      }
+
+      // Check the cgroup file, which works for Docker, Podman, LXC, etc.
+      try {
+         const cgroupContent = fs.readFileSync('/proc/1/cgroup', 'utf8');
+         return cgroupContent.includes('/docker/') || cgroupContent.includes('/kubepods/');
+      } catch {
+         return false;
+      }
+   }
+
+   /**
+    * Return true if i686 architecture
+    * @remarks to move in Utils
+    * @returns {boolean} true se l'architettura è i686
+    */
+   static isi686(): boolean {
+      return process.arch === 'ia32'
    }
 
    /**
@@ -690,11 +790,12 @@ export default class Utils {
          '/run/rootfsbase' // Fedora
       ]
 
-      for (let i = 0; i < paths.length; i++) {
-         if (Utils.isMountpoint(paths[i])) {
+      for (const path_ of paths) {
+         if (Utils.isMountpoint(path_)) {
             retVal = true
          }
       }
+
       return retVal
    }
 
@@ -711,17 +812,37 @@ export default class Utils {
    }
 
    /**
-    * 
-    * @param device 
-    * @returns 
+    * Controlla se è un pacchetto npm
     */
-   static isBlockDevice(device = ''): boolean { // /dev/sda
-      const cmd = `lsblk -d -o name | grep ${device}`
-      const result: number = shx.exec(cmd, { silent: true }).code
-      return result === 0
+   static isNpmPackage(): boolean {
+      return !(this.isPackage() || this.isSources())
    }
 
+   /**
+    * Check if the system uses OpenRC
+    */
+   static isOpenRc(): boolean {
+      let isOpenRc = false
+      if (!this.isContainer()) {
+         isOpenRc = Utils.commandExists('openrc')
+      }
 
+      return isOpenRc
+   }
+
+   /**
+    * Controlla se è un pacchetto deb
+    * /usr/lib/penguins-eggs/bin/node
+    */
+   static isPackage(): boolean {
+      let ret = false
+      // if (process.execPath !== '/usr/bin/node') {
+      if (process.execPath === '/usr/lib/penguins-eggs/bin/node') {
+         ret = true
+      }
+
+      return ret
+   }
 
    /**
     * return true if eggs run as root
@@ -731,15 +852,57 @@ export default class Utils {
       if (process.getuid && process.getuid() === 0) {
          return true
       }
+
       return false
    }
 
+
+
    /**
-    *
-    * @param command
+    * Controlla se è un pacchetto sorgente
     */
-   static useRoot(command = ''): void {
-      Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
+   static isSources(): boolean {
+      let ret = false
+      if (__dirname.slice(0, 6) === '/home/') {
+         ret = true
+      }
+
+      return ret
+   }
+
+   /**
+    * Check if the system uses Systemd
+    */
+   static isSystemd(): boolean {
+      let isSystemd = false
+      if (this.isContainer()) {
+         isSystemd = true
+         const distro = new Distro()
+         if (distro.distroId === "Devuan") {
+            isSystemd = false
+         }
+      } else {
+         isSystemd = fs.readFileSync("/proc/1/comm").includes('systemd')
+      }
+
+      return isSystemd
+   }
+
+   /**
+    * Check if the system uses SysVinit
+    */
+   static isSysvinit(): boolean {
+      let isSysvinit = false
+      if (this.isContainer()) {
+         const distro = new Distro()
+         if (distro.distroId === "Devuan") {
+            isSysvinit = true
+         }
+      } else {
+         isSysvinit = fs.readFileSync("/proc/1/comm").includes('init')
+      }
+
+      return isSysvinit
    }
 
    /**
@@ -750,46 +913,17 @@ export default class Utils {
    }
 
    /**
-    * return the name of network device
+    * Usata da pacman e config credo non serva affatto
     */
-   static async iface(): Promise<string> {
-      // return shx.exec(`ifconfig | awk 'FNR==1 { print $1 }' | tr --d :`, { silent: true }).stdout.trim()
-      const interfaces: any = Object.keys(os.networkInterfaces())
-      let netDeviceName = ''
-      for (const k in interfaces) {
-         if (interfaces[k] != 'lo') {
-            netDeviceName = interfaces[k]
-         }
+   static machineId(): string {
+      let result = ''
+      if (fs.existsSync('/etc/machine-id')) {
+         result = fs.readFileSync('/etc/machine-id', 'utf8').trim()
+      } else if (fs.existsSync('/var/lib/dbus/machine-id')) {
+         result = fs.readFileSync('/var/lib/dbus/machine-id', 'utf8').trim()
       }
-      return netDeviceName
-   }
 
-   /**
-    * address
-    */
-   static address(): string {
-      const interfaces = os.networkInterfaces()
-      let address = ''
-      if (interfaces !== undefined) {
-         for (const devName in interfaces) {
-            const iface = interfaces[devName]
-            if (iface !== undefined) {
-               for (const alias of iface) {
-                  if (
-                     alias.family === 'IPv4' &&
-                     alias.address !== '127.0.0.1' &&
-                     !alias.internal
-                  ) {
-                     // take just the first!
-                     if (address === '') {
-                        address = alias.address
-                     }
-                  }
-               }
-            }
-         }
-      }
-      return address
+      return result
    }
 
    /**
@@ -807,86 +941,303 @@ export default class Utils {
                      alias.family === 'IPv4' &&
                      alias.address !== '127.0.0.1' &&
                      !alias.internal
-                  ) {
-                     // take just the first!
-                     if (netmask === '') {
+                   && // take just the first!
+                     netmask === '') {
                         netmask = alias.netmask
                      }
-                  }
                }
             }
          }
       }
+
       return netmask
    }
 
    /**
-    * cidr
+    *
     */
-   static cidr(): string {
-      const interfaces = os.networkInterfaces()
-      let cidr = ''
-      if (interfaces !== undefined) {
-         for (const devName in interfaces) {
-            const iface = interfaces[devName]
-            if (iface !== undefined) {
-               for (const alias of iface) {
-                  if (
-                     alias.family === 'IPv4' &&
-                     alias.address !== '127.0.0.1' &&
-                     !alias.internal
-                  ) {
-                     // take just the first!
-                     if (cidr === '') {
-                        if (alias.cidr !== null) {
-                           cidr = alias.cidr
-                        }
-                     }
-                  }
-               }
-            }
+   static async pressKeyToExit(warning = 'Process will end', procContinue = true) {
+      Utils.warning(warning)
+      let msg = 'Press a key to exit...'
+      if (procContinue) {
+         msg = 'Press a key to continue...'
+      }
+
+      console.log(msg)
+      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
+      if (!procContinue) {
+         process.exit(0)
+      }
+   }
+
+   /**
+    *
+    */
+   static rootPenguin(): string {
+      return path.resolve(__dirname, '../../')
+   }
+
+   /**
+    * 
+    * @param file 
+    * @param search 
+    * @returns value
+    */
+   static searchOnFile(file = '', search = ''): string {
+      const lines = fs.readFileSync(file, 'utf8').split("\n")
+      let value = ''
+      for (let line of lines) {
+         line = line.replaceAll(/\s+/g, ' ') // Remove multiple spaces with single space
+         if (line.includes(search)) {
+            value = line.slice(Math.max(0, line.indexOf('=') + 1))
          }
       }
-      return cidr
-   }
 
-   static broadcast(): string {
-      const netmask = Utils.netmask()
-      const ip = Utils.address()
-
-      const ipParts = ip.split('.').map(Number);
-      const maskParts = netmask.split('.').map(Number);
-
-      const broadcastParts = ipParts.map((part, index) => {
-         // Bitwise OR tra il blocco IP e il blocco Netmask invertito (255 - mask)
-         return part | (255 - maskParts[index]);
-      });
-
-      return broadcastParts.join('.');
+      value = value.replaceAll('"', '') // Remove "
+      return value.trim()
    }
 
    /**
-    * dns
+    *
+    * @param verbose
     */
-   static getDns(): string[] {
-      return dns.getServers()
+   static setEcho(verbose = false): object {
+      let echo = { echo: false, ignore: true }
+      if (verbose) {
+         echo = { echo: true, ignore: false }
+      }
+
+      return echo
+   }
+
+
+   /* Funzione helper che crea una pausa non bloccante.
+   * @param ms Millisecondi da attendere
+   */
+   static sleep(ms: number = 60_000): Promise<void> {
+      // console.log('wait...')
+      return new Promise(resolve => setTimeout(resolve, ms));
    }
 
    /**
-    * getDomain
+    * Restituisce il prefisso della iso
+    * @param distroId
+    * @param codenameId
     */
-   static getDomain(): string {
-      return shx.exec('domainname', { silent: true }).stdout.trim()
-      // return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+   static snapshotPrefix(distroId: string, codenameId: string): string {
+      let result = `egg-of_${distroId.toLowerCase()}-`
+
+      if (codenameId === 'rolling' || codenameId === '') {
+         const releaseId = Utils.getOsRelease().VERSION_ID.trim()
+         if (releaseId !== '') {
+            result += releaseId
+         }
+      } else {
+         result += `${codenameId.toLowerCase()}`
+      }
+
+      if (!result.endsWith('-')) {
+         result += '-'
+      }
+
+      return result
+   }
+
+   /**
+    * Custom function to sort object keys
+    * @param obj 
+    * @returns 
+    */
+   static sortObjectKeys(obj: { [key: string]: any }): { [key: string]: any } {
+      const sorted: { [key: string]: any } = {};
+      for (const key of Object.keys(obj)
+         .sort()) {
+            sorted[key] = obj[key];
+         }
+
+      return sorted;
+   }
+
+   static success(msg = '') {
+      console.log(pjson.shortName + ' >>> ' + chalk.greenBright(msg))
+   }
+
+   /**
+    * titles
+    * Penguin's are gettings alive!
+    */
+   static titles(command = '') {
+      console.clear()
+      console.log('')
+      console.log(' E G G S: the reproductive system of penguins')
+      console.log('')
+      console.log(Utils.flag())
+      console.log('command: ' + chalk.bgBlack.white(command) + '\n')
+   }
+
+   /**
+    * uefiArch
+    * @returns arch
+    */
+   static uefiArch(): string {
+      let arch = ''
+      switch (process.arch) {
+      case 'arm64': {
+         arch = 'arm64'
+      
+      break;
+      }
+
+      case 'ia32': {
+         arch = 'i386'
+         // 
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+            arch = 'amd64'
+         }
+      
+      break;
+      }
+
+      case 'riscv64': {
+         arch = 'riscv64'
+      
+      break;
+      }
+
+      case 'x64': {
+         arch = 'amd64'
+      
+      break;
+      }
+      // No default
+      }
+
+      return arch
+   }
+
+   /**
+    * i386-pc,
+    * i386-efi,
+    * x86_64-efi, 
+    * arm64-efi,
+    * 
+    * ATTEMZIONE: install efibootmgr
+    * 
+    * Fedora/RHEL have i386-pc
+    */
+   static uefiFormat(): string {
+      let format = ''
+
+      switch (process.arch) {
+      case 'arm64': {
+         format = 'arm64-efi'
+      
+      break;
+      }
+
+      case 'ia32': {
+         format = 'i386-efi'
+         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+            format = 'x86_64-efi'
+         }
+      
+      break;
+      }
+
+      case 'x64': {
+         format = 'x86_64-efi'
+      
+      break;
+      }
+      // No default
+      }
+
+      return format
    }
 
 
    /**
-    * @returns gateway
+    *
+    * @param command
     */
-   static gateway(): string {
-      return shx.exec(`ip r | grep 'default' | awk '{print $3}'`, { silent: true }).stdout.trim()
-      //return shx.exec(`route -n | grep 'UG[ \t]' | awk '{print $2}'`, { silent: true }).stdout.trim()
+   static useRoot(command = ''): void {
+      Utils.titles(pjson.shortName + ' ' + command + ` need to run with root privileges. Please, prefix it with sudo`)
+   }
+
+   /**
+    * 
+    * @returns 
+    */
+   static usrLibPath() {
+      let path = ''
+      if (process.arch === 'x64') {
+         path = 'x86_64-linux-gnu'
+      } else if (process.arch === 'arm64') {
+         path = 'aarch64-linux-gnu'
+      }
+
+      return path
+   }
+
+   /**
+    * restituisce uuid
+    * @param device
+    */
+   static uuid(device: string): string {
+      const uuid = shx.exec(`blkid -p -s UUID -o value ${device}`, { silent: true }).stdout.trim()
+      return uuid
+   }
+
+   /**
+    * 
+    * @param device 
+    * @returns 
+    */
+   static uuidGen(): string {
+      const uuid = shx.exec(`uuidgen`, { silent: true }).stdout.trim()
+      return uuid
+   }
+
+
+   static vmlinuz(kernel = ''): string {
+      return Kernel.vmlinuz(kernel)
+   }
+
+   /**
+    *
+    * @param volid
+    */
+   static VolidTrim(volid = 'unknown') {
+      // // 28 +  4 .iso = 32 lunghezza max di volid
+      if (volid.length >= 32) {
+         volid = volid.slice(0, 32)
+      }
+
+      return volid
+   }
+
+   /**
+    *
+    * @returns wardrobe
+    */
+   static async wardrobe(): Promise<string> {
+      let wardrobe = `${os.homedir()}/.wardrobe`
+      if (Utils.isRoot()) {
+         wardrobe = `/home/${await Utils.getPrimaryUser()}/.wardrobe`
+      }
+
+      return wardrobe
+   }
+
+
+
+
+   /**
+    *
+    * @param msg
+    */
+   static warning(msg = '') {
+      console.log(pjson.shortName + ' >>> ' + chalk.cyanBright(msg))
    }
 
    /**
@@ -915,6 +1266,7 @@ export default class Utils {
       shx.chmod('+x', file)
    }
 
+
    /**
     *
     * @param file
@@ -925,269 +1277,8 @@ export default class Utils {
       for (const elem of cmds) {
          cmd += elem + '\n'
       }
+
       Utils.writeX(file, cmd)
-   }
-
-   /**
-    *
-    * @param msg
-    */
-   static async customConfirm(msg = 'Select yes to continue... '): Promise<boolean> {
-      const varResult = await Utils.customConfirmCompanion(msg)
-      const result = JSON.parse(varResult)
-      if (result.confirm === 'Yes') {
-         return true
-      } else {
-         return false
-      }
-   }
-
-   /**
-    *
-    * @param msg
-    */
-   static async customConfirmCompanion(msg = 'Select yes to continue... '): Promise<any> {
-      return new Promise(function (resolve) {
-         const questions: any = [
-            {
-               type: 'list',
-               name: 'confirm',
-               message: msg,
-               choices: ['No', 'Yes'],
-               default: 'No'
-            }
-         ]
-
-         inquirer.prompt(questions).then(function (options: any) {
-            resolve(JSON.stringify(options))
-         })
-      })
-   }
-
-   /**
-    *
-    * @param msg
-    */
-   static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
-      return new Promise(function (resolve) {
-         const questions: any = [
-            {
-               type: 'list',
-               name: 'confirm',
-               message: msg,
-               choices: ['No', 'Yes', 'Abort'],
-               default: 'Yes'
-            }
-         ]
-
-         inquirer.prompt(questions).then(function (options: any) {
-            resolve(JSON.stringify(options))
-         })
-      })
-   }
-
-
-   /**
-    *
-    */
-   static async pressKeyToExit(warning = 'Process will end', procContinue = true) {
-      Utils.warning(warning)
-      let msg = 'Press a key to exit...'
-      if (procContinue) {
-         msg = 'Press a key to continue...'
-      }
-      console.log(msg)
-      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
-      if (!procContinue) {
-         process.exit(0)
-      }
-   }
-
-   static async debug(cmd = 'cmd', procContinue = true) {
-      console.log(chalk.redBright('DEBUG >>> ') + cmd + '\n')
-      let msg = 'Press a key to exit...'
-      if (procContinue) {
-         msg = 'Press a key to continue...'
-      }
-      console.log(msg)
-
-      const pressKeyToExit = spawnSync('read _ ', [], { shell: true, stdio: [0, 1, 2] })
-      if (!procContinue) {
-         process.exit(0)
-      }
-   }
-
-   /**
-    * titles
-    * Penguin's are gettings alive!
-    */
-   static titles(command = '') {
-      console.clear()
-      console.log('')
-      console.log(' E G G S: the reproductive system of penguins')
-      console.log('')
-      console.log(Utils.flag())
-      console.log('command: ' + chalk.bgBlack.white(command) + '\n')
-   }
-
-   /**
-    *
-    * @returns flag
-    */
-   static flag(): string {
-      let arch = "-"
-      if (!Utils.isAppImage()) {
-         if (process.arch === "x64") {
-            arch += "x86_64"
-         } else if (process.arch === "ia32") {
-            arch += "i386"
-         } else if (process.arch === "arm64") {
-            arch += "arm64"
-         } else if (process.arch === "riscv64") {
-            arch += "riscv64"
-         }
-      } else {
-         arch += "AppImage"
-      }
-
-      let title = `${pjson.name}`
-
-      let green = ` ${title}`.padEnd(25, " ")
-      let white = ` Perri's brewery edition `.padEnd(25, " ")
-      let red = ` v${pjson.version}${arch} `.padStart(25, " ")
-
-      return chalk.bgGreen.whiteBright(green) +
-         chalk.bgWhite.blue(white) +
-         chalk.bgRed.whiteBright(red)
-   }
-
-
-   /**
-    *
-    * @param verbose
-    */
-   static setEcho(verbose = false): object {
-      let echo = { echo: false, ignore: true }
-      if (verbose) {
-         echo = { echo: true, ignore: false }
-      }
-      return echo
-   }
-
-   /**
-    *
-    * @param bytes
-    * @param decimals
-    * @returns
-    */
-   static formatBytes(bytes: number, decimals = 2): string {
-      if (bytes === 0) return '0 Bytes';
-
-      const k = 1024;
-      const dm = decimals < 0 ? 0 : decimals;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
-   }
-
-   /**
-    *
-    * @returns wardrobe
-    */
-   static async wardrobe(): Promise<string> {
-      let wardrobe = `${os.homedir()}/.wardrobe`
-      if (Utils.isRoot()) {
-         wardrobe = `/home/${await Utils.getPrimaryUser()}/.wardrobe`
-      }
-      return wardrobe
-   }
-
-
-
-
-   // Se il metodo fa parte di una classe, usa `static`. Altrimenti, rimuovilo.
-   static getOsRelease(): IOsRelease {
-      const osReleasePath = path.join('/etc', 'os-release');
-
-      // Inizializza l'oggetto con valori predefiniti
-      const osInfo: IOsRelease = {
-         ID: '',
-         VERSION_ID: '',
-         VERSION_CODENAME: 'n/a'
-      };
-
-      // Verifica se il file esiste
-      if (!fs.existsSync(osReleasePath)) {
-         console.error('/etc/os-release file does not exist.');
-         return osInfo;
-      }
-
-      // Leggi il contenuto del file
-      let fileContent: string;
-      try {
-         fileContent = fs.readFileSync(osReleasePath, 'utf8');
-      } catch (error) {
-         console.error('Error reading /etc/os-release:', error);
-         return osInfo;
-      }
-
-      // Analizza ogni linea
-      const lines = fileContent.split('\n');
-      lines.forEach(line => {
-         if (line.startsWith('#') || line.trim() === '') return;
-
-         const [key, value] = line.split('=')
-         if (key && value) {
-            const trimmedKey = key.trim();
-            const trimmedValue = value.trim().replace(/"/g, '');
-
-            // Popola solo le chiavi desiderate
-            if (trimmedKey === 'ID') {
-               osInfo.ID = trimmedValue
-            } else if (trimmedKey === 'VERSION_ID') {
-               osInfo.VERSION_ID = trimmedValue
-            } else if (trimmedKey === 'VERSION_CODENAME') {
-               osInfo.VERSION_CODENAME = trimmedValue
-            }
-         }
-      });
-
-      // capitalize distroId
-      osInfo.ID = osInfo.ID[0].toUpperCase() + osInfo.ID.slice(1).toLowerCase()
-      osInfo.VERSION_CODENAME = osInfo.VERSION_CODENAME.toLowerCase()
-
-      return osInfo
-   }
-
-   /* Funzione helper che crea una pausa non bloccante.
-   * @param ms Millisecondi da attendere
-   */
-   static sleep(ms: number = 60000): Promise<void> {
-      // console.log('wait...')
-      return new Promise(resolve => setTimeout(resolve, ms));
-   }
-
-   /**
-    * chpasswdPath
-    * @returns 
-    */
-   static chpasswdPath() {
-      let chpasswdPath = '/usr/sbin/chpasswd'
-      if (fs.existsSync(chpasswdPath)) {
-         chpasswdPath = '/usr/bin/chpasswd'
-      }
-      return chpasswdPath
-   }
-
-
-   /**
-    *
-    * @param cmd
-    */
-   static commandExists(cmd: string): boolean {
-      return !!shx.which(cmd);
    }
 
 }

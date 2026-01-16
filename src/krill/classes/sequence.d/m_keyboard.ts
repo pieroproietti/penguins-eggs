@@ -50,12 +50,13 @@ export default async function mKeyboard(this: Sequence): Promise<void> {
       content += 'FONT_MAP=\n'
       Utils.write(this.installTarget + '/etc/vconsole.conf', content)
     }
+
     await exec(cmd, this.echo)
 
   } else if (this.distro.familyId === 'alpine') {
     /**
-    * Alpine dovrebbe fare tutto con `setup-keymap us us`
-    */
+     * Alpine dovrebbe fare tutto con `setup-keymap us us`
+     */
     await exec(`chroot ${this.installTarget} setup-keymap ${this.keyboardLayout} ${this.keyboardLayout}`)
   }
 }

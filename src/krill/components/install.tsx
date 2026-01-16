@@ -6,17 +6,15 @@
  * license: MIT
  */
 
-import React, { useState } from 'react'
-import Spinner from 'ink-spinner'
-
-import yaml from 'js-yaml'
 import fs from 'fs'
-
-import { ISettings, IBranding } from '../../interfaces/index.js'
-
 import { Box, Newline, Text } from 'ink'
-import Title from './title.js'
+import Spinner from 'ink-spinner'
+import yaml from 'js-yaml'
+import React, { useState } from 'react'
+
+import { IBranding, ISettings } from '../../interfaces/index.js'
 import Steps from './steps.js'
+import Title from './title.js'
 
 
 type InstallProps = {
@@ -34,18 +32,18 @@ export default function Install({ message = "Install", percent = 0, spinner = fa
     configRoot = '/etc/calamares/'
   }
 
-  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as ISettings
-  const branding = settings.branding
+  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf8')) as ISettings
+  const {branding} = settings
 
-  const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
+  const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf8')) as unknown as IBranding
   productName = calamares.strings.productName
   version = calamares.strings.version
 
-  let barLen = 53
-  let progress = Math.round(barLen * percent / 100)
-  let todo = barLen - progress
-  let clean: string = "·".repeat(todo)
-  let progressBar: string = "[" + "█".repeat(progress) + clean + "] " + percent + "%"
+  const barLen = 53
+  const progress = Math.round(barLen * percent / 100)
+  const todo = barLen - progress
+  const clean: string = "·".repeat(todo)
+  const progressBar: string = "[" + "█".repeat(progress) + clean + "] " + percent + "%"
 
   /**
    * totale width=75
@@ -56,7 +54,7 @@ export default function Install({ message = "Install", percent = 0, spinner = fa
   return (
     <>
       <Title />
-      <Box width={75} height={11} borderStyle="round" flexDirection="column">
+      <Box borderStyle="round" flexDirection="column" height={11} width={75}>
         <Box flexDirection="column">
           <Box flexDirection="row">
             <Steps step={8} />

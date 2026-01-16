@@ -20,10 +20,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const noop = () => {}; 
 
 type ConditionalLoggers = {
-    log: (...args: any[]) => void;
-    warning: (msg: string) => void;
-    success: (msg: string) => void;
     info: (msg: string) => void;
+    log: (...args: any[]) => void;
+    success: (msg: string) => void;
+    warning: (msg: string) => void;
 }
 
 /**
@@ -36,13 +36,13 @@ type ConditionalLoggers = {
  */
 export async function luksRootInitrd(this: Ovary, verbose = false) {
     const loggers: ConditionalLoggers = {
-        log: this.hidden ? noop : console.log,
-        warning: this.hidden ? noop : Utils.warning,
-        success: this.hidden ? noop : Utils.success,
         info: this.hidden ? noop : Utils.info,
+        log: this.hidden ? noop : console.log,
+        success: this.hidden ? noop : Utils.success,
+        warning: this.hidden ? noop : Utils.warning,
     };    
 
-    const { log, warning, success, info } = loggers;
+    const { info, log, success, warning } = loggers;
 
     if (this.hidden) {
       Utils.warning("intentionally blank. System is working, please wait")
@@ -77,6 +77,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
             if (!fs.existsSync(srcbootEncryptedRootPath)) {
                 throw new Error(`Unlock script source not found: ${srcbootEncryptedRootPath}`);
             }
+
             await exec(`mkdir -p "${hostDestbootEncryptedRootDir}"`);
             await exec(`cp "${srcbootEncryptedRootPath}" "${hostDestbootEncryptedRootPath}"`);
             await exec(`chmod +x "${hostDestbootEncryptedRootPath}"`);
@@ -87,12 +88,12 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         {
             const chrootCrypttabPath = '/etc/crypttab';
             const hostCrypttabPath = path.join(chrootPath, chrootCrypttabPath);
-            if (!fs.existsSync(hostCrypttabPath)) {
+            if (fs.existsSync(hostCrypttabPath)) {
+                info(`${hostCrypttabPath} already exists.`);
+            } else {
                 const crypttabContent = "# Dummy entry to ensure cryptsetup is included\ncryptroot UUID=none none luks\n";
                 fs.writeFileSync(hostCrypttabPath, crypttabContent, 'utf-8');
                 success(`Created crypttab on ${path.dirname(hostCrypttabPath)}`);
-            } else {
-                info(`${hostCrypttabPath} already exists.`);
             }
         }
 
@@ -142,6 +143,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
         if (error instanceof Error && error.message.includes('mkinitramfs inside chroot failed')) {
             Utils.warning(`Check mkinitramfs log: ${logFilePath}`);
         }
+
         throw error; // Re-throw error
     }
 
@@ -156,7 +158,7 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
  * @param chrootPath Path assoluto alla radice del chroot
  */
 async function addHook(cmdPath: string, chrootPath: string, loggers: ConditionalLoggers) {
-    const { log, warning, success, info } = loggers;
+    const { info, log, success, warning } = loggers;
 
     const chrootHooksDirPath = '/etc/initramfs-tools/hooks';
     const hostHooksDirPath = path.join(chrootPath, chrootHooksDirPath);
@@ -201,13 +203,13 @@ exit 0
     try {
         await exec(`mkdir -p "${hostHooksDirPath}"`);
         // Scrive il file e lo rende eseguibile (mode 0o755)
-        fs.writeFileSync(hostHookPath, hookContent, { mode: 0o755, encoding: 'utf-8' });
+        fs.writeFileSync(hostHookPath, hookContent, { encoding: 'utf-8', mode: 0o755 });
         // console.log(hookContent)
         success(`Generated and set executable hook: ${hookScriptName}`);
-    } catch (err: any) {
-        Utils.error(`Failed to write hook script ${hostHookPath}: ${err.message}`);
+    } catch (error: any) {
+        Utils.error(`Failed to write hook script ${hostHookPath}: ${error.message}`);
         process.exit(1)
-        throw err; // Lancia l'errore per fermare il processo
+        throw error; // Lancia l'errore per fermare il processo
     }
 }
 
@@ -218,7 +220,7 @@ exit 0
  * @param chrootPath 
  */
 function addModules(module: string, chrootPath: string, loggers: ConditionalLoggers) {
-    const { log, warning, success, info } = loggers;
+    const { info, log, success, warning } = loggers;
 
     const chrootModulesFilePath = '/etc/initramfs-tools/modules'; // Relative inside chroot
     const hostModulesFilePath = path.join(chrootPath, chrootModulesFilePath); // Absolute on host fs
@@ -226,7 +228,7 @@ function addModules(module: string, chrootPath: string, loggers: ConditionalLogg
     let needsUpdate = false;
 
     if (fs.existsSync(hostModulesFilePath)) {
-        modulesContent = fs.readFileSync(hostModulesFilePath, 'utf-8');
+        modulesContent = fs.readFileSync(hostModulesFilePath, 'utf8');
     } else {
         // inizializzazione modules
         modulesContent = '\n';
@@ -239,6 +241,7 @@ function addModules(module: string, chrootPath: string, loggers: ConditionalLogg
         if (!modulesContent.endsWith('\n')) {
             modulesContent += '\n';
         }
+
         modulesContent += `${module}\n`;
         needsUpdate = true;
     }

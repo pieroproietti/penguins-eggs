@@ -29,8 +29,8 @@ export interface IPartitions {
   filesystemType: string
   installationDevice: string
   installationMode: string
-  userSwapChoice: SwapChoice
   replacedPartition: string
+  userSwapChoice: SwapChoice
 }
 
 

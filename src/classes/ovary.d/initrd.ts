@@ -6,16 +6,16 @@
  * license: MIT
  */
 
+import fs from 'fs'
 // packages
 import mustache from 'mustache'
-import fs from 'fs'
 import path from 'node:path'
 
 // classes
 import { exec } from '../../lib/utils.js'
+import Diversions from '../diversions.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import Diversions from '../diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -60,20 +60,22 @@ export async function initrdArch(this: Ovary) {
     const restore = fs.existsSync(hookDest)
     const pathConf = path.resolve(__dirname, `../../../mkinitcpio/${dirConf}`)
     const fileConf = pathConf + '/live.conf'
-    let hookSaved = `/tmp/${path.basename(hookSrc)}`
+    const hookSaved = `/tmp/${path.basename(hookSrc)}`
     if (hookSrc !== hookDest) {
         await exec(`cp ${hookSrc} ${hookDest}`)
     }
+
     await exec(`cp ${hookSrc} ${hookSaved}`)
     await exec(edit, this.echo)
     const prefix = this.settings.config.snapshot_prefix
     const log = `> ${this.settings.iso_work}${prefix}mkinitcpio.log.txt 2>&1`
-    let cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel} ${log}`
+    const cmd = `mkinitcpio -c ${fileConf} -g ${this.settings.iso_work}live/${path.basename(this.initrd)} -k ${this.kernel} ${log}`
     await exec(cmd, this.echo)
     await exec(`rm -f ${hookDest}`)
     if (restore) {
         await exec(`cp ${hookSaved} ${hookDest}`)
     }
+
     await exec(`rm -f ${hookSaved}`)
 }
 

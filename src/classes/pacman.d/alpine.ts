@@ -8,9 +8,7 @@
 
 import fs from 'node:fs'
 
-import {shx} from '../../lib/utils.js'
-
-import { exec } from '../../lib/utils.js'
+import {exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**

@@ -6,33 +6,31 @@
  * license: MIT
  */
 
-import React, { useState } from 'react'
-
-import Title from './title.js'
-import Steps from './steps.js'
-import {Text, Box, Newline } from 'ink'
-
-import yaml from 'js-yaml'
 import fs from 'fs'
-import { ISettings, IBranding } from '../../interfaces/index.js'
-
+import {Box, Newline, Text } from 'ink'
+import yaml from 'js-yaml'
 // pjson
 import { createRequire } from 'module';
+import React, { useState } from 'react'
+
+import { IBranding, ISettings } from '../../interfaces/index.js'
+import Steps from './steps.js'
+import Title from './title.js'
 const require = createRequire(import.meta.url);
 const pjson = require('../../../package.json');
 
 type NetworkProps = {
-  iface?: string,
-  addressType?: string,
   address?: string,
-  netmask?: string,
-  gateway?: string,
-  domain?: string
+  addressType?: string,
   dns?: string,
+  domain?: string
+  gateway?: string,
+  iface?: string,
+  netmask?: string,
 }
 
 
-export default function Network({ iface, addressType, address, netmask, gateway, domain, dns }: NetworkProps) {
+export default function Network({ address, addressType, dns, domain, gateway, iface, netmask }: NetworkProps) {
 
   let productName = ''
   let version = ''
@@ -40,26 +38,27 @@ export default function Network({ iface, addressType, address, netmask, gateway,
   if (fs.existsSync('/etc/calamares/settings.conf')) {
     configRoot = '/etc/calamares/'
    }
-  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf-8')) as unknown as ISettings
-  const branding = settings.branding
-  const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf-8')) as unknown as IBranding
+
+  const settings = yaml.load(fs.readFileSync(configRoot + 'settings.conf', 'utf8')) as unknown as ISettings
+  const {branding} = settings
+  const calamares = yaml.load(fs.readFileSync(configRoot + 'branding/' + branding + '/branding.desc', 'utf8')) as unknown as IBranding
   productName = calamares.strings.productName
   version = calamares.strings.version
 
    /**
-   * totale width=75
-   * step width=15
-   * finestra with=59
-   */
+    * totale width=75
+    * step width=15
+    * finestra with=59
+    */
 
   const [activeField, setActiveField] = React.useState(0)
   const [submission, setSubmission] = React.useState()
   return (
     <>
       <Title />
-      <Box width={75} height={11} borderStyle="round" flexDirection="column">
+      <Box borderStyle="round" flexDirection="column" height={11} width={75}>
 
-        <Box width={74} height={8} flexDirection="column">
+        <Box flexDirection="column" height={8} width={74}>
           <Box flexDirection="row">
             <Steps step={6} />
             <Box flexDirection="column">

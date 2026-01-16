@@ -6,13 +6,13 @@
  * license: MIT
  */
 
-import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
-import CFS from '../../../krill/classes/cfs.js'
-import Fisherman from '../fisherman.js'
 import path from 'path'
 
+import { IDistro, IInstaller, IRemix } from '../../../interfaces/index.js'
+import CFS from '../../../krill/classes/cfs.js'
 // libraries
 import { exec } from '../../../lib/utils.js'
+import Fisherman from '../fisherman.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -22,20 +22,13 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export class Buster {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone: boolean
-
-  release = false
-
-  remix: IRemix
-
-  theme: string
-
-  user_opt: string // theme comprende il path
-
-  verbose = false
+installer = {} as IInstaller
+isClone: boolean
+release = false
+remix: IRemix
+theme: string
+user_opt: string // theme comprende il path
+verbose = false
 
   /**
    * @param remix

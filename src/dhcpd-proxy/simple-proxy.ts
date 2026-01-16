@@ -4,11 +4,13 @@
  * solo per i client PXE, per aggirare le protezioni di rete.
  */
 
-import { createSocket, Socket, RemoteInfo } from 'dgram';
 import ansis from 'ansis';
-import { Packet } from '../dhcpd-proxy/classes/packet.js';
-import { DhcpMessageType } from '../dhcpd-proxy//lib/packet/message-types.js';
+import { createSocket, RemoteInfo, Socket } from 'dgram';
+
 import type { IDhcpOptions } from '../dhcpd-proxy//interfaces/i-pxe.js';
+
+import { DhcpMessageType } from '../dhcpd-proxy//lib/packet/message-types.js';
+import { Packet } from '../dhcpd-proxy/classes/packet.js';
 
 // Un semplice Map in memoria per tracciare gli IP offerti
 const offeredIPs = new Map<string, string>();
@@ -19,7 +21,7 @@ const offeredIPs = new Map<string, string>();
  */
 export function startSimpleProxy(options: IDhcpOptions): void {
   
-  const socket = createSocket({ type: 'udp4', reuseAddr: true });
+  const socket = createSocket({ reuseAddr: true, type: 'udp4' });
 
   socket.on('error', (err) => {
     console.error(ansis.red.bold(`ERRORE SOCKET: ${err.stack}`));
@@ -43,7 +45,7 @@ export function startSimpleProxy(options: IDhcpOptions): void {
       } else if (packet.op === 1 && messageType === DhcpMessageType.DHCPREQUEST) {
         handleRequest(packet, options);
       }
-    } catch (err) {
+    } catch {
       // Ignoriamo errori di parsing
     }
   });
@@ -63,14 +65,17 @@ export function startSimpleProxy(options: IDhcpOptions): void {
         // CASO 1: Il client è iPXE e anche UEFI. Offriamo lo script!
         console.log(ansis.magenta.bold(`<- Rilevato client iPXE su UEFI! Offro script autoexec...`));
         return `http://${opts.host}/autoexec.ipxe`;
-    } else if (isUefi64) {
+    }
+
+ if (isUefi64) {
         // CASO 2: Il client è UEFI ma non è ancora iPXE. Offriamo il bootloader iPXE per UEFI.
         return opts.efi64_filename;
-    } else {
+    }
+ 
         // CASO 3: Il client è BIOS. Offriamo il bootloader iPXE per BIOS.
         // (Aggiunta logica per altri tipi di architettura se necessario)
         return opts.bios_filename;
-    }
+    
   }
 
   function handleDiscover(packet: Packet, opts: IDhcpOptions): void {
@@ -84,7 +89,7 @@ export function startSimpleProxy(options: IDhcpOptions): void {
       offerPacket.op = 2; // BOOTREPLY
       
       const ipParts = opts.host.split('.');
-      ipParts[3] = (parseInt(ipParts[3]) + 10).toString(); 
+      ipParts[3] = (Number.parseInt(ipParts[3]) + 10).toString(); 
       const offeredIp = ipParts.join('.');
       offeredIPs.set(packet.chaddr, offeredIp); 
 

@@ -10,7 +10,7 @@
 import os from 'node:os'
 
 import Utils from '../../../classes/utils.js'
-import { SwapChoice, InstallationMode } from '../krill_enums.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../sequence.js'
 
 
@@ -24,7 +24,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
   let retVal = false
 
   const installDevice = this.partitions.installationDevice
-  const replacedPartition = this.partitions.replacedPartition
+  const {replacedPartition} = this.partitions
 
 
   let p: string = ""
@@ -38,10 +38,15 @@ export default async function partition(this: Sequence): Promise<boolean> {
     p = "p"
   }
 
-  const installationMode = this.partitions.installationMode
+  const {installationMode} = this.partitions
   this.swapSize = Math.round(os.totalmem() / (1024 * 1024 * 1024)) // In GB
 
   switch (this.partitions.userSwapChoice) {
+    case SwapChoice.File: {
+      // total mem
+      break
+    }
+
     case SwapChoice.None: {
       this.swapSize = 0
       break
@@ -54,11 +59,6 @@ export default async function partition(this: Sequence): Promise<boolean> {
     case SwapChoice.Suspend: {
       this.swapSize *= 2
 
-      break
-    }
-
-    case SwapChoice.File: {
-      // total mem
       break
     }
     // No default
@@ -92,7 +92,7 @@ export default async function partition(this: Sequence): Promise<boolean> {
  */
 function detectDeviceType(device: string): string {
   if (device.includes('nvme')) return 'nvme'
-  if (device.match(/^\/dev\/md\d+/)) return 'raid'
+  if (/^\/dev\/md\d+/.test(device)) return 'raid'
   if (device.includes('mmcblk')) return 'mmc'
   return 'standard'
 }

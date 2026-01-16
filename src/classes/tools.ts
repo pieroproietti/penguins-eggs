@@ -16,8 +16,8 @@ import Utils from './utils.js'
 interface IEggsConfigTools {
   localPathIso: string
   remoteHost: string
-  remotePathPackages: string
   remotePathIso: string
+  remotePathPackages: string
   remoteUser: string
 }
 
@@ -27,12 +27,9 @@ interface IEggsConfigTools {
  */
 export default class Tools {
   config = {} as IEggsConfigTools
-
-  snapshot_dir = ''
-
-  snapshot_name = ''
-
-  tools_yaml = '/etc/penguins-eggs.d/tools.yaml'
+snapshot_dir = ''
+snapshot_name = ''
+tools_yaml = '/etc/penguins-eggs.d/tools.yaml'
 
   /*
    * Load configuration from /etc/penguins-eggs.yaml

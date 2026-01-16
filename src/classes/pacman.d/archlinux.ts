@@ -7,9 +7,8 @@
  */
 
 import fs from 'node:fs'
-import {shx} from '../../lib/utils.js'
 
-import { exec } from '../../lib/utils.js'
+import {exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -25,7 +24,7 @@ export default class Archlinux {
   static async calamaresInstall(verbose = false): Promise<void> {
     verbose = true // serve per pacman
     const echo = Utils.setEcho(verbose)
-    let cmd = `pacman -S calamares --noconfirm`
+    const cmd = `pacman -S calamares --noconfirm`
     try {
       await exec(cmd, echo)
     } catch {

@@ -10,13 +10,13 @@ import chalk from 'chalk'
 import yaml from 'js-yaml'
 // packages
 import fs from 'node:fs'
-import os from 'node:os'
-import {shx} from '../lib/utils.js'
 // pjson
 import { createRequire } from 'node:module'
+import os from 'node:os'
+
+import {shx} from '../lib/utils.js'
 const require = createRequire(import.meta.url)
 const pjson = require('../../package.json')
-
 // interfaces
 import { IApp, IDistro, IRemix, IWorkDir } from '../interfaces/index.js'
 import { IEggsConfig } from '../interfaces/index.js'
@@ -33,36 +33,23 @@ const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
  */
 export default class Settings {
   app = {} as IApp
-
-  config = {} as IEggsConfig
-
-  distro = {} as IDistro
+config = {} as IEggsConfig
+distro = {} as IDistro
 
   // efi_work = ''
 
   i686 = false
-
-  incubator = {} as Incubator
-
-  initrd_image = ''
-
-  initrdImg = ''
-
-  isLive = false
-
-  iso_work = ''
-
-  isoFilename = ''
-
-  kernel_image = ''
-
-  remix = {} as IRemix
-
-  session_excludes = ''
-
-  vmlinuz = ''
-
-  work_dir = {} as IWorkDir // resulting name of the iso
+incubator = {} as Incubator
+initrd_image = ''
+initrdImg = ''
+isLive = false
+iso_work = ''
+isoFilename = ''
+kernel_image = ''
+remix = {} as IRemix
+session_excludes = ''
+vmlinuz = ''
+work_dir = {} as IWorkDir // resulting name of the iso
 
   constructor(compression = '') {
     this.config.compression = compression
@@ -89,7 +76,8 @@ export default class Settings {
       }
     }
 
-    /** Lo spazio usato da SquashFS non è stimabile da live
+    /**
+     * Lo spazio usato da SquashFS non è stimabile da live
      * errore buffer troppo piccolo
      */
     const gb = 1_048_576

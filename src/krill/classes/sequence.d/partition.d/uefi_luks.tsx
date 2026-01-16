@@ -7,15 +7,15 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import { exec } from '../../../../lib/utils.js'
-import Sequence from '../../sequence.js'
-import Utils from '../../../../classes/utils.js'
-import getLuksPassphrase from '../../../lib/get_luks_passphrase.js'
-
+import { Box, render, RenderOptions, Text } from 'ink'
 // React
 import React from 'react';
-import { render, RenderOptions, Box, Text } from 'ink'
+
+import Utils from '../../../../classes/utils.js'
+import { exec } from '../../../../lib/utils.js'
 import Install from '../../../components/install.js'
+import getLuksPassphrase from '../../../lib/get_luks_passphrase.js'
+import Sequence from '../../sequence.js'
 
 /**
  * 
@@ -44,7 +44,7 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
     this.devices.boot.mountPoint = '/boot'
 
     // disabilito spinner per introduzione passphrase
-    let message = "Creating partitions"
+    const message = "Creating partitions"
     await redraw(<Install message={message} percent={0} />)
     const passphrase = await getLuksPassphrase('evolution', 'evolution')
     await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
@@ -82,7 +82,7 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
  * @param elem
  */
 async function redraw(elem: JSX.Element) {
-    let opt: RenderOptions = {}
+    const opt: RenderOptions = {}
     opt.patchConsole = false
     opt.debug = true
     console.clear()

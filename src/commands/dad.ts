@@ -16,15 +16,13 @@ import { exec } from '../lib/utils.js'
 
 export default class Dad extends Command {
   static description = 'ask help from daddy - TUI configuration helper'
-
-  static examples = ['sudo dad', 'sudo dad --clean', 'sudo dad --default']
-
-  static flags = {
+static examples = ['sudo dad', 'sudo dad --clean', 'sudo dad --default']
+static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'reset to default values' }),
     file: Flags.string({ char: 'f', description: 'use a file configuration custom' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),    
-    help: Flags.help({ char: 'h' }),
+    help: Flags.help({ char: 'h' }),    
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     verbose: Flags.boolean({ char: 'v' })
   }
 

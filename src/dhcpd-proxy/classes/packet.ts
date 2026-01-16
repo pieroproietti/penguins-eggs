@@ -1,11 +1,12 @@
+import { Buffer } from 'buffer'; // Import Buffer type
+
+import get_convert from "../lib/packet/converters.js";
 /* packet.ts
  *
  * author: Piero Proietti <piero.proietti@gmail.com>
  * refactored for modern TypeScript
  */
 import { readIp, readMacAddress } from "../lib/utils.js";
-import get_convert from "../lib/packet/converters.js";
-import { Buffer } from 'buffer'; // Import Buffer type
 
 // Definiamo un'interfaccia per le opzioni, così il codice è più pulito
 interface DhcpOptions {
@@ -14,22 +15,22 @@ interface DhcpOptions {
 
 // Mettiamo 'export' direttamente davanti alla classe
 export class Packet {
-    // Aggiunto '!' per il "Definite Assignment Assertion"
-    op!: number;
-    htype!: number;
+    chaddr!: string;
+    ciaddr!: string;
+    flags!: number;
+    fname!: string;
+    giaddr!: string;
     hlen!: number;
     hops!: number;
-    xid!: number;
-    secs!: number;
-    flags!: number;
-    ciaddr!: string;
-    yiaddr!: string;
-    siaddr!: string;
-    giaddr!: string;
-    chaddr!: string;
-    sname!: string;
-    fname!: string;
+    htype!: number;
+    // Aggiunto '!' per il "Definite Assignment Assertion"
+    op!: number;
     options!: DhcpOptions;
+    secs!: number;
+    siaddr!: string;
+    sname!: string;
+    xid!: number;
+    yiaddr!: string;
 
     constructor(init: Partial<Packet>) { // Usiamo Partial<Packet> per l'inizializzazione
         Object.assign(this, init);
@@ -44,21 +45,21 @@ export class Packet {
      */
     public static fromBuffer(b: Buffer): Packet {
         const ret: any = {
-            op: b[0],
-            htype: b[1],
+            chaddr: readMacAddress(b.slice(28, 28 + b.readUInt8(2))),
+            ciaddr: readIp(b, 12),
+            flags: b.readUInt16BE(10),
+            fname: stripBinNull(b.toString("ascii", 108, 236)),
+            giaddr: readIp(b, 24),
             hlen: b.readUInt8(2),
             hops: b.readUInt8(3),
-            xid: b.readUInt32BE(4),
-            secs: b.readUInt16BE(8),
-            flags: b.readUInt16BE(10),
-            ciaddr: readIp(b, 12),
-            yiaddr: readIp(b, 16),
-            siaddr: readIp(b, 20),
-            giaddr: readIp(b, 24),
-            chaddr: readMacAddress(b.slice(28, 28 + b.readUInt8(2))),
-            sname: stripBinNull(b.toString("ascii", 44, 108)),
-            fname: stripBinNull(b.toString("ascii", 108, 236)),
+            htype: b[1],
+            op: b[0],
             options: {},
+            secs: b.readUInt16BE(8),
+            siaddr: readIp(b, 20),
+            sname: stripBinNull(b.toString("ascii", 44, 108)),
+            xid: b.readUInt32BE(4),
+            yiaddr: readIp(b, 16),
         };
 
         let i = 240;
@@ -72,6 +73,7 @@ export class Packet {
             ret.options[optNum] = optVal;
             i += optLen;
         }
+
         return new Packet(ret);
     }
 
@@ -107,33 +109,34 @@ export class Packet {
         buffer.writeUInt16BE(this.flags, 10);
 
         let pos = 12;
-        [this.ciaddr, this.yiaddr, this.siaddr, this.giaddr].forEach(addr => {
-            (addr || "0.0.0.0").split(".").forEach(octet => {
-                buffer.writeUInt8(parseInt(octet, 10), pos++);
-            });
-        });
+        for (const addr of [this.ciaddr, this.yiaddr, this.siaddr, this.giaddr]) {
+            for (const octet of (addr || "0.0.0.0").split(".")) {
+                buffer.writeUInt8(Number.parseInt(octet, 10), pos++);
+            }
+        }
         
-        this.chaddr.split(":").forEach(hex => {
-            buffer[pos++] = parseInt(hex, 16);
-        });
+        for (const hex of this.chaddr.split(":")) {
+            buffer[pos++] = Number.parseInt(hex, 16);
+        }
 
         buffer.fill(0, pos, 236); // Pulisce il resto dell'header
         buffer.write(this.sname || '', 44, 64, "ascii");
         buffer.write(this.fname || '', 108, 128, "ascii");
 
         pos = 236;
-        [99, 130, 83, 99].forEach(magicCookieByte => {
+        for (const magicCookieByte of [99, 130, 83, 99]) {
             buffer[pos++] = magicCookieByte;
-        });
+        }
 
         pos = 240;
         for (const opt in this.options) {
             if (this.options.hasOwnProperty(opt)) {
                 const value = this.options[opt];
-                const converter = get_convert(parseInt(opt));
-                pos = converter.encode(buffer, parseInt(opt), value, pos);
+                const converter = get_convert(Number.parseInt(opt));
+                pos = converter.encode(buffer, Number.parseInt(opt), value, pos);
             }
         }
+
         buffer[pos++] = 255; // End Option
 
         return buffer.slice(0, pos);
@@ -143,5 +146,5 @@ export class Packet {
 // Funzione helper, può rimanere qui o essere spostata in un file di utility
 function stripBinNull(str: string): string {
     const pos = str.indexOf("\u0000");
-    return pos === -1 ? str : str.substr(0, pos);
+    return pos === -1 ? str : str.slice(0, Math.max(0, pos));
 }
