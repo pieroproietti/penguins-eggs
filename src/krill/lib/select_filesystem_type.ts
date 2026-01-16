@@ -26,11 +26,12 @@ export default async function selectFileSystemType(): Promise<string> {
     Pacman.packageIsInstalled('btrfsprogs')) {
     choices.push('btrfs')
   }
+
   partitions.defaultFileSystemType = 'ext4'
 
   const questions: any = [
     {
-      choices: choices,
+      choices,
       default: partitions.defaultFileSystemType,
       message: 'Select file system type',
       name: 'fileSystemChoices',

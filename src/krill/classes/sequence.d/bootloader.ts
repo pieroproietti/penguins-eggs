@@ -8,20 +8,21 @@
  */
 
 import { up } from 'inquirer/lib/utils/readline.js'
+import fs from 'node:fs'
+import path from 'node:path'
+
 import Diversion from '../../../classes/diversions.js'
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
-import fs from 'node:fs'
-import path from 'node:path'
 
 /**
  *
  * @param this
  */
 export default async function bootloader(this: Sequence) {
-  let grubName = Diversion.grubName(this.distro.familyId)
-  let grubForce = Diversion.grubForce(this.distro.familyId)
+  const grubName = Diversion.grubName(this.distro.familyId)
+  const grubForce = Diversion.grubForce(this.distro.familyId)
 
   let cmd = ''
   if (this.efi) {
@@ -41,7 +42,7 @@ export default async function bootloader(this: Sequence) {
       extraArgs = `--removable` 
     }
 
-    let bootloaderId = this.distro.distroLike.toLowerCase()
+    const bootloaderId = this.distro.distroLike.toLowerCase()
     
     cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${extraArgs} ${grubForce}`
 
@@ -106,8 +107,8 @@ async function updateEntries(installTarget: string, rootUUID: string, resumeUUID
   if (entries.length > 0) {
     for (const entry of entries) {
       const currentEntry = path.join(entriesPath, entry)
-      let source = fs.readFileSync(currentEntry, 'utf8')
-      let lines = source.split('\n')
+      const source = fs.readFileSync(currentEntry, 'utf8')
+      const lines = source.split('\n')
       let content = ''
       for (let line of lines) {
         line = searchAndReplace(line, 'root=UUID=', rootUUID)
@@ -115,6 +116,7 @@ async function updateEntries(installTarget: string, rootUUID: string, resumeUUID
 
         content += line + '\n'
       }
+
       fs.writeFileSync(`${currentEntry}`, content, 'utf-8')
     }
   }
@@ -133,10 +135,11 @@ function searchAndReplace(line: string, search: string, replace: string): string
     const lenReplace = replace.length
 
     const at = line.indexOf(search)
-    const first = line.substring(0, at + lenSearch)
-    const last = line.substring(at + lenSearch + lenReplace)
+    const first = line.slice(0, Math.max(0, at + lenSearch))
+    const last = line.slice(Math.max(0, at + lenSearch + lenReplace))
     line = first + replace + last
   }
+
   return line
 }
 

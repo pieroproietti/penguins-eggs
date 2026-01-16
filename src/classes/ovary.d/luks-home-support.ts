@@ -8,9 +8,8 @@
 
 // packages
 import fs from 'fs'
-import path from 'path'
+import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
 
 // classes
 import Ovary from '../ovary.js'
@@ -155,9 +154,9 @@ exec /sbin/agetty --noclear tty1 linux
           path.join(squashfsRoot, 'etc/rcS.d/S20mount-encrypted-home'),
           path.join(squashfsRoot, 'etc/rc2.d/S02mount-encrypted-home')
       ]
-      badSymlinks.forEach(link => {
+      for (const link of badSymlinks) {
           if (fs.existsSync(link)) fs.unlinkSync(link)
-      })
+      }
       
       // Rimuoviamo anche lo script init.d stesso se esiste, non serve più
       const initdFile = path.join(squashfsRoot, 'etc/init.d/mount-encrypted-home')

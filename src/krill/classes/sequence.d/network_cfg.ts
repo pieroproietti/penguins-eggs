@@ -45,7 +45,7 @@ export default async function networkCfg(this: Sequence) {
 
     try {
       fs.writeFileSync(file, content, 'utf8')
-    } catch (e) {
+    } catch {
       console.log("error on write: " + file)
     }
 
@@ -68,9 +68,10 @@ export default async function networkCfg(this: Sequence) {
     for (const element of this.network.dns) {
       content += 'nameserver ' + element + '\n'
     }
+
     try {
       fs.writeFileSync(resolvFile, content, 'utf8')
-    } catch (e) {
+    } catch {
       console.log("error on write: " + resolvFile)
     }
   }

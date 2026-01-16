@@ -1,13 +1,14 @@
 /**
  * ./src/krill/modules/unpackfs.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * CLEANED: Just unpacks. SELinux is handled via autorelabel on first boot.
+ * CLEANED: Just unpacks. SELinux is handled via autorelabel on first boot.
  */
+
+import path from 'path'
 
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
-import path from 'path'
 
 /**
  * unpackfs

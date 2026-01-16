@@ -37,6 +37,8 @@
         "ws": "^8.18.3"
     },
     "devDependencies": {
+        "@eslint/eslintrc": "^3.3.3",
+        "@eslint/js": "^9.39.2",
         "@oclif/prettier-config": "^0.2.1",
         "@oclif/test": "^4.1.15",
         "@types/chai": "^5.2.3",
@@ -55,6 +57,7 @@
         "eslint-config-oclif": "^6.0.130",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^13.0.0",
+        "globals": "^17.0.0",
         "mocha": "^11.7.5",
         "oclif": "^4.22.65",
         "perrisbrewery": "^26.1.3",
@@ -62,10 +65,11 @@
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.53.0"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.22.0"
     },
     "files": [
         ".oclif.manifest.json",
@@ -114,7 +118,7 @@
         "clean": "rm -rf build dist *.AppImage AppDir",
         "deb": "pnpm build && pb deb --release $(cat ./release)",
         "format": "prettier --write \"+(src|test)/**/*.+(ts|js|json)\"",
-        "lint": "eslint . --ext .ts",
+        "lint": "eslint .",
         "manifest": "oclif manifest",
         "postbuild": "shx cp -r bin dist/",
         "posttest": "pnpm run lint",

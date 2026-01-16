@@ -479,12 +479,6 @@ export default async function selectRegions(region = ''): Promise<string> {
   let zone = [] as string[]
 
   switch (region) {
-    case 'Atlantic': {
-      zone = atlantic
-
-      break
-    }
-
     case 'Africa': {
       zone = africa
 
@@ -505,6 +499,12 @@ export default async function selectRegions(region = ''): Promise<string> {
 
     case 'Artic': {
       zone = artic
+
+      break
+    }
+
+    case 'Atlantic': {
+      zone = atlantic
 
       break
     }

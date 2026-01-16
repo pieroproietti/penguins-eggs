@@ -10,11 +10,11 @@
 // packages
 import path from 'node:path'
 
+import Distro from '../distro.js'
 // classes
 import Ovary from '../ovary.js'
 import Settings from '../settings.js'
 import Utils from '../utils.js'
-import Distro from '../distro.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -38,7 +38,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
 
         this.uuid = Utils.uuidGen()
 
-        //this.familyId = this.settings.distro.familyId
+        // this.familyId = this.settings.distro.familyId
         this.nest = this.settings.config.snapshot_mnt
 
         if (snapshot_prefix !== '') {

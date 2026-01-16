@@ -6,17 +6,18 @@
  * license: MIT
  */
 
-import fs from 'fs';
-import path from 'path';
 // Importiamo con alias per poter wrappare
 import { 
+  ChildProcess, 
   spawn as nodeSpawn, 
   spawnSync as nodeSpawnSync, 
   SpawnOptions, 
   SpawnSyncOptions, 
-  SpawnSyncReturns, 
-  ChildProcess 
+  SpawnSyncReturns 
 } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+
 import { IExec } from '../interfaces/index.js';
 
 /**
@@ -37,21 +38,22 @@ const APPIMAGE_ENV_BLACKLIST = [
 function getCleanEnv(): NodeJS.ProcessEnv {
   const env = { ...process.env };
   if (process.env.APPIMAGE) {
-    APPIMAGE_ENV_BLACKLIST.forEach((key) => delete env[key]);
+    for (const key of APPIMAGE_ENV_BLACKLIST) delete env[key];
   }
+
   return env;
 }
 
 interface ShellExecResult {
   code: number;
-  stdout: string;
   stderr: string;
+  stdout: string;
 }
 
 interface ExecSyncOptions {
   echo?: boolean;
   ignore?: boolean;
-  stdio?: 'pipe' | 'ignore' | 'inherit';
+  stdio?: 'ignore' | 'inherit' | 'pipe';
 }
 
 /**
@@ -61,7 +63,7 @@ interface ExecSyncOptions {
  * 2. (command, options) -> args diventa []
  * Pulisce automaticamente l'ambiente.
  */
-export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, arg3?: SpawnSyncOptions): SpawnSyncReturns<string | Buffer> {
+export function spawnSync(command: string, arg2?: SpawnSyncOptions | string[], arg3?: SpawnSyncOptions): SpawnSyncReturns<Buffer | string> {
   let args: string[] = [];
   let options: SpawnSyncOptions = {};
 
@@ -75,7 +77,7 @@ export function spawnSync(command: string, arg2?: string[] | SpawnSyncOptions, a
   }
 
   const env = getCleanEnv();
-  const finalEnv = { ...env, ...(options.env || {}) };
+  const finalEnv = { ...env, ...options.env };
 
   return nodeSpawnSync(command, args, {
     ...options,
@@ -104,7 +106,7 @@ export function spawn(command: string, arg2?: readonly string[] | SpawnOptions, 
   }
 
   const env = getCleanEnv();
-  const finalEnv = { ...env, ...(options.env || {}) };
+  const finalEnv = { ...env, ...options.env };
 
   return nodeSpawn(command, args, {
     ...options,
@@ -118,26 +120,18 @@ export function spawn(command: string, arg2?: readonly string[] | SpawnOptions, 
  */
 export const shx = {
 
-  sed: (flag: string, regex: string | RegExp, replacement: string, file: string): void => {
+  chmod(mode: number | string, file: string): void {
     if (!fs.existsSync(file)) return;
-
-    const content = fs.readFileSync(file, 'utf8');
-    const searchRegex = typeof regex === 'string' ? new RegExp(regex, 'g') : regex;
-    const newContent = content.replace(searchRegex, replacement);
-
-    fs.writeFileSync(file, newContent, 'utf8');
-  },
-
-  touch: (file: string): void => {
-    const time = new Date();
-    try {
-      fs.utimesSync(file, time, time);
-    } catch (err) {
-      fs.closeSync(fs.openSync(file, 'w'));
+    let finalMode = mode;
+    if (mode === '+x') finalMode = 0o755;
+    if (typeof mode === 'string' && !isNaN(Number.parseInt(mode, 8))) {
+       finalMode = Number.parseInt(mode, 8);
     }
+
+    fs.chmodSync(file, finalMode as fs.Mode);
   },
 
-  cp: (arg1: string, arg2: string, arg3?: string): void => {
+  cp(arg1: string, arg2: string, arg3?: string): void {
     const src = arg3 ? arg2 : arg1;
     const dest = arg3 ? arg3 : arg2;
 
@@ -148,11 +142,12 @@ export const shx = {
       if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
 
       const items = fs.readdirSync(srcDir);
-      items.forEach(item => {
+      for (const item of items) {
         const s = path.join(srcDir, item);
         const d = path.join(dest, item);
-        fs.cpSync(s, d, { recursive: true, force: true });
-      });
+        fs.cpSync(s, d, { force: true, recursive: true });
+      }
+
       return;
     }
     // ----------------------------
@@ -163,59 +158,38 @@ export const shx = {
     }
 
     if (fs.existsSync(src)) {
-      fs.cpSync(src, finalDest, { recursive: true, force: true });
+      fs.cpSync(src, finalDest, { force: true, recursive: true });
     }
   },
 
-  rm: (arg1: string, arg2?: string): void => {
-    const target = arg2 ? arg2 : arg1;
-    fs.rmSync(target, { recursive: true, force: true });
+  exec(command: string, options: { silent?: boolean } = {}): ShellExecResult {
+    const env = getCleanEnv();
+    const spawnOpts: SpawnSyncOptions = {
+      encoding: 'utf-8',
+      env,
+      shell: '/bin/bash',
+      stdio: options.silent ? 'pipe' : 'inherit'
+    };
+
+    // Usiamo nodeSpawnSync perché calcoliamo l'env qui sopra
+    const result = nodeSpawnSync(command, [], spawnOpts);
+
+    return {
+      code: result.status ?? 1,
+      stderr: result.stderr ? result.stderr.toString() : '',
+      stdout: result.stdout ? result.stdout.toString() : ''
+    };
   },
 
-  mkdir: (arg1: string, arg2?: string): void => {
-    const dir = arg2 ? arg2 : arg1;
-    fs.mkdirSync(dir, { recursive: true });
-  },
-
-  mv: (src: string, dest: string): void => {
-    if (!fs.existsSync(src)) return;
-    fs.renameSync(src, dest);
-  },
-
-  chmod: (mode: string | number, file: string): void => {
-    if (!fs.existsSync(file)) return;
-    let finalMode = mode;
-    if (mode === '+x') finalMode = 0o755;
-    if (typeof mode === 'string' && !isNaN(parseInt(mode, 8))) {
-       finalMode = parseInt(mode, 8);
-    }
-    fs.chmodSync(file, finalMode as fs.Mode);
-  },
-
-  test: (flag: string, pathToCheck: string): boolean => {
-    try {
-      const stats = fs.statSync(pathToCheck);
-      if (flag === '-f') return stats.isFile();
-      if (flag === '-d') return stats.isDirectory();
-      return true; // -e
-    } catch (e) {
-      return false;
-    }
-  },
-
-  which: (cmd: string): string | null => {
-    const result = shx.exec(`command -v ${cmd}`, { silent: true });
-    return result.code === 0 ? result.stdout.trim() : null;
-  },
-
-  ln: (flag: string, target: string, link: string): void => {
+  ln(flag: string, target: string, link: string): void {
     if (fs.existsSync(link) || fs.lstatSync(link, {throwIfNoEntry: false})) {
       fs.rmSync(link, { force: true });
     }
+
     fs.symlinkSync(target, link);
   },
 
-  ls: (arg1?: string | string[], arg2?: string | string[]): string[] => {
+  ls(arg1?: string | string[], arg2?: string | string[]): string[] {
     let options = '';
     let paths: string[] = [];
 
@@ -232,8 +206,8 @@ export const shx = {
     const recursive = options.includes('R');
     let results: string[] = [];
 
-    paths.forEach(p => {
-      if (!fs.existsSync(p)) return;
+    for (const p of paths) {
+      if (!fs.existsSync(p)) continue;
 
       const stat = fs.statSync(p);
       if (stat.isDirectory()) {
@@ -241,14 +215,15 @@ export const shx = {
           // Funzione ricorsiva interna
           const walk = (dir: string) => {
             const files = fs.readdirSync(dir);
-            files.forEach(f => {
+            for (const f of files) {
               const fullPath = path.join(dir, f);
               results.push(fullPath); // Aggiunge il path completo
               if (fs.statSync(fullPath).isDirectory()) {
                 walk(fullPath);
               }
-            });
+            }
           };
+
           walk(p);
         } else {
           // Comportamento standard: ritorna solo i nomi dei file nella cartella
@@ -258,35 +233,66 @@ export const shx = {
         // È un file singolo
         results.push(p);
       }
-    });
+    }
 
     return results;
   },
 
-  exec: (command: string, options: { silent?: boolean } = {}): ShellExecResult => {
-    const env = getCleanEnv();
-    const spawnOpts: SpawnSyncOptions = {
-      stdio: options.silent ? 'pipe' : 'inherit',
-      env: env,
-      shell: '/bin/bash',
-      encoding: 'utf-8'
-    };
+  mkdir(arg1: string, arg2?: string): void {
+    const dir = arg2 ? arg2 : arg1;
+    fs.mkdirSync(dir, { recursive: true });
+  },
 
-    // Usiamo nodeSpawnSync perché calcoliamo l'env qui sopra
-    const result = nodeSpawnSync(command, [], spawnOpts);
+  mv(src: string, dest: string): void {
+    if (!fs.existsSync(src)) return;
+    fs.renameSync(src, dest);
+  },
 
-    return {
-      code: result.status ?? 1,
-      stdout: result.stdout ? result.stdout.toString() : '',
-      stderr: result.stderr ? result.stderr.toString() : ''
-    };
+  rm(arg1: string, arg2?: string): void {
+    const target = arg2 ? arg2 : arg1;
+    fs.rmSync(target, { force: true, recursive: true });
+  },
+
+  sed(flag: string, regex: RegExp | string, replacement: string, file: string): void {
+    if (!fs.existsSync(file)) return;
+
+    const content = fs.readFileSync(file, 'utf8');
+    const searchRegex = typeof regex === 'string' ? new RegExp(regex, 'g') : regex;
+    const newContent = content.replace(searchRegex, replacement);
+
+    fs.writeFileSync(file, newContent, 'utf8');
+  },
+
+  test(flag: string, pathToCheck: string): boolean {
+    try {
+      const stats = fs.statSync(pathToCheck);
+      if (flag === '-f') return stats.isFile();
+      if (flag === '-d') return stats.isDirectory();
+      return true; // -e
+    } catch {
+      return false;
+    }
+  },
+
+  touch(file: string): void {
+    const time = new Date();
+    try {
+      fs.utimesSync(file, time, time);
+    } catch {
+      fs.closeSync(fs.openSync(file, 'w'));
+    }
+  },
+
+  which(cmd: string): null | string {
+    const result = shx.exec(`command -v ${cmd}`, { silent: true });
+    return result.code === 0 ? result.stdout.trim() : null;
   }
 };
 
 /**
  * execSync
  */
-export function execSync(command: string, options: ExecSyncOptions = {}): string | null {
+export function execSync(command: string, options: ExecSyncOptions = {}): null | string {
   const { echo = false, ignore = false, stdio } = options;
   if (echo) console.log(command);
   const isSilent = ignore || stdio === 'ignore'; 
@@ -295,22 +301,23 @@ export function execSync(command: string, options: ExecSyncOptions = {}): string
   if (result.code !== 0) {
     throw new Error(`Command failed: ${command}\nExit Code: ${result.code}\nStderr: ${result.stderr}`);
   }
+
   return result.stdout.trim();
 }
 
 /**
  * exec (Async)
  */
-export async function exec(command: string, { echo = false, ignore = false, capture = false } = {}): Promise<IExec> {
+export async function exec(command: string, { capture = false, echo = false, ignore = false } = {}): Promise<IExec> {
   return new Promise((resolve, reject) => {
     if (echo) console.log(command);
     
     const env = getCleanEnv();
     // Usiamo nodeSpawn direttamente qui per coerenza
     const child = nodeSpawn(command, [], {
-      stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit'),
-      env: env,
-      shell: '/bin/bash'
+      env,
+      shell: '/bin/bash',
+      stdio: ignore ? 'ignore' : (capture ? 'pipe' : 'inherit')
     });
 
     let stdout = '';
@@ -327,7 +334,7 @@ export async function exec(command: string, { echo = false, ignore = false, capt
       resolve({ 
         code: code || 0, 
         data: stdout.trim(), 
-        error: code !== 0 ? stderr.trim() : undefined 
+        error: code === 0 ? undefined : stderr.trim() 
       });
     });
   });

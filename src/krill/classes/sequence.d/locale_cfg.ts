@@ -8,8 +8,8 @@
  */
 
 import fs from 'node:fs'
-import {shx} from '../../../lib/utils.js'
 
+import {shx} from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
 
 /* localeCfg
@@ -32,6 +32,7 @@ export default async function localeCfg(this: Sequence) {
         // se non è un commento
         line = line.slice(1) // Rimuove #
       }
+
       supporteds.push(line)
     }
   }

@@ -10,13 +10,12 @@
 import fs from 'fs'
 import path from 'node:path'
 import os from 'os'
-import Diversions from '../diversions.js'
 
 // classes
 import { exec } from '../../lib/utils.js'
+import Diversions from '../diversions.js'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-
 // functions
 import rexec from './rexec.js'
 
@@ -40,14 +39,14 @@ export async function bindLiveFs(this: Ovary) {
     const endLine = '#\n'
 
     let lnkDest = ''
-    let cmd = ''
+    const cmd = ''
     const cmds: string[] = []
     cmds.push('# NOTE: cdrom, dev, live, media, mnt, proc, run, sys and tmp', `#       need just a mkdir in ${this.settings.work_dir.merged}`)
     cmds.push(`# host: ${os.hostname()} user: ${await Utils.getPrimaryUser()}\n`)
 
     for (const dir of dirs) {
         cmds.push(startLine)
-        let statDir = fs.lstatSync(`/${dir}`)
+        const statDir = fs.lstatSync(`/${dir}`)
 
         if (statDir.isSymbolicLink()) {
             /**
@@ -71,10 +70,9 @@ export async function bindLiveFs(this: Ovary) {
             if (dir !== 'ci' && dir !== 'lost+found') {
                 if (this.copied(dir)) {
                     cmds.push(`# /${dir} is copied if not exists on filesystem.squashfs`)
-                    let chkDir = path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
+                    const chkDir = path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
                     cmds.push(`if ! [ -d "${chkDir}" ]; then`)
-                    cmds.push(await rexec(`   cp -a /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose))
-                    cmds.push(`fi`)
+                    cmds.push(await rexec(`   cp -a /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose), `fi`)
                     continue
 
                 } else if (this.mergedAndOverlay(dir)) {
@@ -100,8 +98,8 @@ export async function bindLiveFs(this: Ovary) {
             }
 
             /**
-           * File
-           */
+             * File
+             */
         } else if (statDir.isFile()) {
 
             cmds.push(`# /${dir} is just a file`)
@@ -225,9 +223,9 @@ export async function uBindLiveFs(this: Ovary) {
 }
 
 /**
-* Crea il path se non esiste
-* @param path
-*/
+ * Crea il path se non esiste
+ * @param path
+ */
 async function makeIfNotExist(path: string, verbose = false): Promise<string> {
     if (verbose) {
         console.log(`Ovary: makeIfNotExist(${path})`)

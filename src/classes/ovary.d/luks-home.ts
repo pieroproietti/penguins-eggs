@@ -10,16 +10,16 @@
 import fs from 'fs'
 import { spawn, StdioOptions } from 'node:child_process'
 
+import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
 const noop = () => {}; 
 type ConditionalLoggers = {
-    log: (...args: any[]) => void;
-    warning: (msg: string) => void;
-    success: (msg: string) => void;
     info: (msg: string) => void;
+    log: (...args: any[]) => void;
+    success: (msg: string) => void;
+    warning: (msg: string) => void;
 }
 
 
@@ -34,13 +34,13 @@ export async function luksHome(
   clone = false, 
   homecrypt = false) {
   const loggers: ConditionalLoggers = {
-      log: this.hidden ? noop : console.log,
-      warning: this.hidden ? noop : Utils.warning,
-      success: this.hidden ? noop : Utils.success,
       info: this.hidden ? noop : Utils.info,
+      log: this.hidden ? noop : console.log,
+      success: this.hidden ? noop : Utils.success,
+      warning: this.hidden ? noop : Utils.warning,
   };
 
-  const { log, warning, success, info } = loggers;
+  const { info, log, success, warning } = loggers;
 
 
   try {
@@ -63,8 +63,8 @@ export async function luksHome(
     
     // Utils.warning('1. Calculation of space requirements...')
 
-    let sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
-    let size = Number.parseInt(sizeString, 10)
+    const sizeString = (await exec('du -sb --exclude=/home/eggs /home',{capture: true})).data.trim().split(/\s+/)[0]
+    const size = Number.parseInt(sizeString, 10)
     const fsOverhead = Math.ceil(size * 0.05);
     const luksHeader = 32 * 1024 * 1024;
     const safetyBuffer = 100 * 1024 * 1024;
@@ -85,7 +85,7 @@ export async function luksHome(
     await this.luksExecuteCommand('truncate', ['--size', `${luksSize}`, this.luksFile])
 
     warning(`formatting ${this.luksFile} as a LUKS volume...`)
-    //await this.luksExecuteCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
+    // await this.luksExecuteCommand('cryptsetup', ['--batch-mode', 'luksFormat', this.luksFile], `${this.luksPassword}\n`);
     const luksFormatArgs = this.buildLuksFormatArgs(this.luksConfig, this.luksFile);
     await this.luksExecuteCommand('cryptsetup', luksFormatArgs, `${this.luksPassword}\n`);
 
@@ -98,12 +98,13 @@ export async function luksHome(
 
     warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
-      if (!Utils.isMountpoint(this.luksMountpoint)) {
-        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
-      } else {
+      if (Utils.isMountpoint(this.luksMountpoint)) {
         throw new Error(`${this.luksMountpoint} is already mounted, process will abort!`)
+      } else {
+        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
       }
     }
+
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
     await exec(`mount /dev/mapper/${this.luksMappedName} ${this.luksMountpoint}`, this.echo)
 
@@ -158,10 +159,12 @@ export async function luksHome(
     } else {
       Utils.error(`An unknown error has occurred.`)
     }
+
     Utils.warning('Cleaning performed following the error...')
     if (fs.existsSync(this.luksMountpoint)) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
+
     if (fs.existsSync(this.luksDevice)) {
       await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
     }
@@ -170,6 +173,7 @@ export async function luksHome(
        Utils.warning(`Removing temporary container: ${this.luksFile}`);
        fs.unlinkSync(this.luksFile);
     }
+
     await Utils.pressKeyToExit()
     process.exit(1)
   }

@@ -12,7 +12,6 @@ import path from 'node:path'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-
 // functions
 import rexec from './rexec.js'
 
@@ -20,8 +19,8 @@ import rexec from './rexec.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-   * bind dei virtual file system
-   */
+ * bind dei virtual file system
+ */
 export async function bindVfs(this: Ovary) {
     if (this.verbose) {
         console.log('Ovary: bindVfs')

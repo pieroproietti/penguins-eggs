@@ -9,24 +9,20 @@
 // pjson
 import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
-const pjson = require('../../../package.json')
-
 // partition
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import { shx } from '../../lib/utils.js'
-import Diversions from '../diversions.js'
 
+const pjson = require('../../../package.json')
 import { IInstaller } from '../../interfaces/i-installer.js'
 import { IDistro, IRemix } from '../../interfaces/index.js'
+import { shx } from '../../lib/utils.js'
+import Diversions from '../diversions.js'
 import Pacman from '../pacman.js'
 import Utils from '../utils.js'
-import { installer } from './installer.js'
 import { branding } from './branding.js'
-
 import { customizePartitions } from './customize/customize-partitions.js'
-
 // incubator.d
 import { Alpine } from './incubator.d/alpine.js'
 import { Archlinux } from './incubator.d/archlinux.js'
@@ -37,6 +33,7 @@ import { Noble } from './incubator.d/noble.js'
 import { Openmamba } from './incubator.d/openmamba.js'
 import { Opensuse } from './incubator.d/opensuse.js'
 import { Trixie } from './incubator.d/trixie.js'
+import { installer } from './installer.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -46,18 +43,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Incubator {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone: boolean
-
-  remix: IRemix
-
-  theme: string
-
-  user_opt: string
-
-  verbose = false
+installer = {} as IInstaller
+isClone: boolean
+remix: IRemix
+theme: string
+user_opt: string
+verbose = false
 
   /**
    *
@@ -90,14 +81,15 @@ export default class Incubator {
     this.createInstallerDirs()
     this.createBranding()
 
-    const distroUniqueId = this.distro.distroUniqueId
+    const {distroUniqueId} = this.distro
 
     try {
 
       /**
        * Alpine
        */
-      if (distroUniqueId === 'alpine') {
+      switch (distroUniqueId) {
+      case 'alpine': {
         const alpine = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await alpine.create()
 
@@ -105,89 +97,165 @@ export default class Incubator {
         /**
          * Archlinux
          */
-      } else if (distroUniqueId === 'archlinux') {
+      
+      break;
+      }
+
+      case 'archlinux': {
         const archlinux = new Archlinux(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await archlinux.create()
 
         /**
          * Manjaro ex rolling
          */
-      } else if (distroUniqueId === 'manjaro') {
-        const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await manjaro.create()
+      
+      break;
+      }
 
-        /**
-         * Debian
-         */
-      } else if (distroUniqueId === 'buster') {
-        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await buster.create()
-      } else if (distroUniqueId === 'bullseye') {
-        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await bullseye.create()
-      } else if (distroUniqueId === 'bookworm') {
-        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await bookworm.create()
-      } else if (distroUniqueId === 'trixie') {
-        const trixie = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await trixie.create()
-      } else if (distroUniqueId === 'forky') {
-        const forky = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await forky.create()
-
-        /**
-         * Devuan
-         */
-      } else if (distroUniqueId === 'beowulf') {
+      case 'beowulf': {
         const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await beowulf.create()
-      } else if (distroUniqueId === 'chimaera') {
+      
+      break;
+      }
+
+      case 'bookworm': {
+        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await bookworm.create()
+      
+      break;
+      }
+
+      case 'bullseye': {
+        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await bullseye.create()
+      
+      break;
+      }
+
+      case 'buster': {
+        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await buster.create()
+      
+      break;
+      }
+
+      case 'chimaera': {
         const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await chimaera.create()
-      } else if (distroUniqueId === 'daedalus') {
+      
+      break;
+      }
+
+      case 'daedalus': {
         const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await daedalus.create()
-      } else if (distroUniqueId === 'excalibur') {
+      
+      break;
+      }
+
+      case 'devel': {
+        const devel = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await devel.create()
+
+      
+      break;
+      }
+
+      case 'excalibur': {
         const excalibur = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await excalibur.create()
 
         /**
          * fedora
          */
-      } else if (distroUniqueId === 'fedora') {
+      
+      break;
+      }
+
+      case 'fedora': {
         const fedora = new Fedora(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await fedora.create()
 
         /**
          * openmamba
          */
-      } else if (distroUniqueId === 'openmamba') {
+      
+      break;
+      }
+
+      case 'focal': {
+        const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await focal.create()
+      
+      break;
+      }
+
+      case 'forky': {
+        const forky = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await forky.create()
+
+        /**
+         * Devuan
+         */
+      
+      break;
+      }
+
+      case 'jammy': {
+        const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await jammy.create()
+      
+      break;
+      }
+
+      case 'manjaro': {
+        const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await manjaro.create()
+
+        /**
+         * Debian
+         */
+      
+      break;
+      }
+
+      case 'noble': {
+        const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await noble.create()
+      
+      break;
+      }
+
+      case 'openmamba': {
         const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await mamba.create()
 
         /**
          * opensuse
          */
-      } else if (distroUniqueId === 'opensuse') {
+      
+      break;
+      }
+
+      case 'opensuse': {
         const suse = new Opensuse(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
         await suse.create()
 
         /**
          * Ubuntu
          */
-      } else if (distroUniqueId === 'focal') {
-        const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await focal.create()
-      } else if (distroUniqueId === 'jammy') {
-        const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await jammy.create()
-      } else if (distroUniqueId === 'noble') {
-        const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await noble.create()
-      } else if (distroUniqueId === 'devel') {
-        const devel = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await devel.create()
+      
+      break;
+      }
 
+      case 'trixie': {
+        const trixie = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+        await trixie.create()
+      
+      break;
+      }
+      // No default
       }
     } catch (error) {
       console.error('--- ERRORE FATALE CATTURATO ---');
@@ -214,9 +282,9 @@ export default class Incubator {
     const elements = fs.readdirSync(this.installer.modules)
     elements.sort()
     for (const elem of elements) {
-      let file = this.installer.modules + elem
-      let fileContent = fs.readFileSync(file, 'utf8')
-      let yamlContent = yaml.load(fileContent)
+      const file = this.installer.modules + elem
+      const fileContent = fs.readFileSync(file, 'utf8')
+      const yamlContent = yaml.load(fileContent)
       let destContent = `# ${elem} on ${this.distro.distroId}, penguins-eggs ${pjson.version}\n`
       destContent += '---\n'
       destContent += yaml.dump(yamlContent)
@@ -224,9 +292,9 @@ export default class Incubator {
     }
 
     // settings
-    let file = this.installer.configRoot + '/settings.conf'
-    let fileContent = fs.readFileSync(file, 'utf8')
-    let yamlContent = yaml.load(fileContent)
+    const file = this.installer.configRoot + '/settings.conf'
+    const fileContent = fs.readFileSync(file, 'utf8')
+    const yamlContent = yaml.load(fileContent)
     let destContent = `# settings.conf on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
     destContent += yaml.dump(yamlContent)
@@ -351,6 +419,7 @@ export default class Incubator {
     if (this.theme.includes('/')) {
       calamaresIcon = `${this.theme}/theme/artwork/install-system.png`
     }
+
     if (Pacman.calamaresExists()) {
       if (fs.existsSync(calamaresIcon)) {
         shx.cp(calamaresIcon, '/usr/share/icons/')
@@ -367,6 +436,7 @@ export default class Incubator {
     if (this.theme.includes('/')) {
       calamaresLauncher = `${this.theme}/theme/applications/install-system.desktop`
     }
+
     if (fs.existsSync(calamaresLauncher)) {
       shx.cp(calamaresLauncher, '/usr/share/applications/')
     } else {
@@ -384,12 +454,13 @@ export default class Incubator {
       fs.chmodSync(targetScript, 0o755);
       fs.chownSync(targetScript, 0, 0);
     }
+
     this.sudoers()
   }
 
   /**
-  * soluzione tampone from Glenn
-  * */
+   * soluzione tampone from Glenn
+   */
   private sudoers() {
     const live = this.user_opt;
     if (!live) return;
@@ -400,9 +471,9 @@ export default class Incubator {
     // FIX: Crea la directory se non esiste
     if (!fs.existsSync(sudoersDir)) {
       try {
-        fs.mkdirSync(sudoersDir, { recursive: true, mode: 0o755 });
-      } catch (e) {
-        console.error(`Error creating ${sudoersDir}:`, e);
+        fs.mkdirSync(sudoersDir, { mode: 0o755, recursive: true });
+      } catch (error) {
+        console.error(`Error creating ${sudoersDir}:`, error);
       }
     }
 
@@ -412,8 +483,8 @@ export default class Incubator {
     try {
       fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
       fs.chownSync(sudoersPath, 0, 0);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -432,8 +503,8 @@ export default class Incubator {
     try {
       fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
       fs.chownSync(sudoersPath, 0, 0);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
     }
   }
 }

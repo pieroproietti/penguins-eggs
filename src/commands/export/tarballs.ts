@@ -7,42 +7,34 @@
  */
 
 import { Command, Flags } from '@oclif/core'
+import fs from 'fs'
+import { globSync } from 'glob'
+// pjson
+import { createRequire } from 'module';
+import os, { version } from 'node:os'
+import path from 'path'
 
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
-import os, { version } from 'node:os'
-import fs from 'fs'
-import { globSync } from 'glob'
-import path from 'path'
-
-// pjson
-import { createRequire } from 'module';
+import { exec , execSync } from '../../lib/utils.js'
 const require = createRequire(import.meta.url);
-const pjson = require('../../../package.json');
-import { execSync } from '../../lib/utils.js'
 import { exists, existsSync } from 'node:fs'
+
+const pjson = require('../../../package.json');
 
 export default class ExportTarballs extends Command {
   static description = 'export pkg/iso/tarballs to the destination host'
-
-  static examples = ['eggs export tarballs', 'eggs export tarballs --clean']
-
-  static flags = {
+static examples = ['eggs export tarballs', 'eggs export tarballs --clean']
+static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old .deb before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
-  user = ''
-
-  clean = false
-
-  verbose = false
-
-  echo = {}
-
-  Tu = new Tools()
+clean = false
+echo = {}
+Tu = new Tools()
+user = ''
+verbose = false
 
   /**
    * 
@@ -60,6 +52,7 @@ export default class ExportTarballs extends Command {
         this.user = (execSync('echo $DOAS_USER') || '').trim()
       }
     }
+
     this.clean = flags.clean
     this.verbose = flags.verbose
     this.echo = Utils.setEcho(this.verbose)
@@ -88,11 +81,10 @@ export default class ExportTarballs extends Command {
     cmd += 'sync\n'
     cmd += `umount ${remoteMountpoint}\n`
     cmd += `rm -rf ${remoteMountpoint}\n`
-    if (!this.verbose) {
-      if (this.clean) {
+    if (!this.verbose && this.clean) {
         console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}/${tarNamePattern}`)
       }
-    }
+
     await exec(cmd, this.echo)
   }
 }

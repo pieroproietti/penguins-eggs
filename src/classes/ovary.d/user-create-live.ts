@@ -1,12 +1,13 @@
 /**
  * src/classes/ovary.d/user-create-live.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Uses "The SysUser Master" class.
+ * REFACTORED: Uses "The SysUser Master" class.
  * Creates the live user directly in the merged filesystem safely.
  */
 
 import fs from 'fs'
 import path from 'path'
+
 import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import SysUsers, { IPasswdEntry } from '../sys-users.js'
@@ -14,7 +15,7 @@ import SysUsers, { IPasswdEntry } from '../sys-users.js'
 export default async function userCreateLive(this: Ovary): Promise<void> {
     
     // Target: la directory "merged" dell'overlayfs
-    let target = this.settings.work_dir.merged
+    const target = this.settings.work_dir.merged
     if (!target || !fs.existsSync(target)) {
         console.error(`SysUsers Error: Target directory not found at: ${target}`)
         return
@@ -38,13 +39,13 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
     }
 
     const liveUser: IPasswdEntry = {
-        username: username,
-        password: 'x',
-        uid: '1000', // Live user è sempre 1000
-        gid: '1000',
         gecos: 'Live User,,,',
+        gid: '1000',
         home: `/home/${username}`,
-        shell: shell
+        password: 'x',
+        shell,
+        uid: '1000', // Live user è sempre 1000
+        username
     }
 
     // 3. CREAZIONE LOGICA (IN MEMORIA)
@@ -53,11 +54,12 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
 
     // Aggiungi ai gruppi amministrativi
     let adminGroup = 'wheel'
-    if (['debian', 'ubuntu', 'linuxmint', 'pop', 'neon'].includes(familyId)) {
+    if (['debian', 'linuxmint', 'neon', 'pop', 'ubuntu'].includes(familyId)) {
         adminGroup = 'sudo'
     } else if (familyId === 'openmamba') {
         adminGroup = 'sysadmin'
     }
+
     sysUsers.addUserToGroup(username, adminGroup)
 
     // GRUPPO AUTOLOGIN (Fondamentale per la live!)
@@ -68,9 +70,9 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
     sysUsers.addUserToGroup(username, 'autologin'); // <--- PUNTO E VIRGOLA FONDAMENTALE QUI!
     
     // Aggiungiamo anche ai gruppi standard audio/video/network se esistono
-    ['video', 'audio', 'network', 'input', 'lp', 'storage', 'optical'].forEach(grp => {
+    for (const grp of ['video', 'audio', 'network', 'input', 'lp', 'storage', 'optical']) {
         sysUsers.addUserToGroup(username, grp)
-    })
+    }
 
 
 
@@ -99,14 +101,14 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
     await exec(`chmod 755 ${homeDir}`, this.echo)
 
     // 6. FIX SELINUX SPECIFICO PER HOME LIVE
-    if (['fedora', 'rhel', 'centos', 'almalinux', 'rocky'].includes(familyId)) {
+    if (['almalinux', 'centos', 'fedora', 'rhel', 'rocky'].includes(familyId)) {
         try {
             await exec(`chcon -R -t user_home_t ${homeDir}`, { echo: false }).catch(()=>{})
             // Nota: .autorelabel nella root della live potrebbe rallentare il boot, 
             // ma è meglio averlo se i contesti sono dubbi.
             // await exec(`touch ${target}/.autorelabel`, { echo: false }) 
-        } catch (e) {
-            console.error('SELinux home fix warning:', e)
+        } catch (error) {
+            console.error('SELinux home fix warning:', error)
         }
     }
     

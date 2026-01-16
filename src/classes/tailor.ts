@@ -7,12 +7,12 @@
  */
 
 import chalk from 'chalk'
-import fs from 'node:fs'
 import yaml from 'js-yaml'
+import fs from 'node:fs'
 import path from 'node:path'
 
-import { exec } from '../lib/utils.js'
 import { IMateria } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Pacman from './pacman.js'
 import SourcesList from './sources_list.js'
@@ -26,10 +26,10 @@ export default class Tailor {
   private category = 'costume'
   private costume = ''
   private echo = {}
+  private log = ''
   private toNull = ' > /dev/null 2>&1'
   private verbose = false
   private wardrobe = ''
-  private log = ''
 
   /**
    * @param wardrobe
@@ -41,6 +41,128 @@ export default class Tailor {
     this.log = path.dirname(this.wardrobe) + "/wardrobe.log"
     this.category = category
   }
+
+  /**
+   *
+   * @param packages
+   * @param verbose
+   * @param section
+   * @returns
+   */
+  async packagesExists(wanted: string[]): Promise<string[]> {
+    Utils.warning(`checking packages exists ${this.costume}`)
+    wanted.sort()
+
+    const distro = new Distro()
+    let cmd = ""
+    switch (distro.familyId) {
+    case "alpine": {
+      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
+
+    
+    break;
+    }
+
+    case "archlinux": {
+      cmd = `pacman -S --list | awk '{print $2}'`
+
+    
+    break;
+    }
+
+    case "debian": {
+      // cmd=`apt-cache --no-generate pkgnames`
+      cmd = `apt-cache pkgnames`
+
+    
+    break;
+    }
+
+    case 'fedora': {
+      cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+
+    
+    break;
+    }
+
+    case 'opensuse': { // controllare
+      // questo funziona diretto
+      cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
+    
+    break;
+    }
+    // No default
+    }
+
+    let available: string[] = []
+    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
+    // trim di tutto per eseguire il confronto
+    available = result.data.split('\n').map(line => line.trim())
+    // precedente
+    // available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
+    available.sort()
+    wanted.sort()
+    const exists: string[] = []
+    const not_exists: string[] = []
+    for (const elem of wanted) {
+      if (available.includes(elem)) {
+        exists.push(elem)
+      } else {
+        not_exists.push(elem)
+        fs.appendFileSync(this.log, `- ${elem}\n`)
+      }
+    }
+
+    if (not_exists.length > 0) {
+      console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
+      for (const elem of not_exists) {
+        console.log(`-${elem}`)
+      }
+
+      console.log()
+      console.log("Wait 3 seconds")
+      await sleep(3000)
+    }
+
+    return exists
+  }
+
+  /**
+   * - check if every package if installed
+   * - if find any packages to install, install it
+   */
+  async packagesInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
+    Utils.warning(`installing existing packages ${this.costume}`)
+    if (packages[0] !== null) {
+      const elements: string[] = []
+      let strElements = ''
+      for (const elem of packages) {
+        elements.push(elem)
+        cmd += ` ${elem}`
+        strElements += `, ${elem}`
+      }
+
+      if (elements.length > 0) {
+        let step = `installing ${comment}: `
+        if (!this.verbose) {
+          step += strElements.slice(2)
+        }
+
+        /**
+         * prova 3 volte
+         */
+        const limit = 3
+        for (let tempts = 1; tempts < limit; tempts++) {
+          Utils.titles(step)
+          Utils.warning(`tempts ${tempts} of ${limit}`)
+          if (await this.tryCheckSuccess(cmd, this.echo)) {
+            break
+          }
+        }
+      }
+    }
+  }
+
 
   /**
    *
@@ -57,6 +179,7 @@ export default class Tailor {
     if (!fs.existsSync(this.log)) {
       fs.writeFileSync(this.log, "# eggs wardrobe wear\n\n")
     }
+
     fs.appendFileSync(this.log, `## ${this.costume}\n`)
     fs.appendFileSync(this.log, `Packages not found:\n`)
 
@@ -75,6 +198,49 @@ export default class Tailor {
     let tailorList = ''
 
     switch (distro.distroLike) {
+      case 'Almalinux':
+
+      case 'Fedora':
+
+      case 'Rocky': {
+        tailorList = `${this.costume}/fedora.yaml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yaml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Fedora`)
+            process.exit()
+          }
+        }
+
+        break
+      }
+
+      case 'Alpine': {
+        tailorList = `${this.costume}/alpine.yaml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yaml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Alpine`)
+            process.exit()
+          }
+        }
+
+        break
+      }
+
+      case 'Arch': {
+        tailorList = `${this.costume}/arch.yaml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yaml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible Arch`)
+            process.exit()
+          }
+        }
+
+        break
+      }
+
       case 'Debian': {
         tailorList = `${this.costume}/debian.yaml`
         if (!fs.existsSync(tailorList)) {
@@ -87,9 +253,10 @@ export default class Tailor {
             }
           }
         }
+
         break
       }
-
+ 
       case 'Devuan': {
         tailorList = `${this.costume}/devuan.yaml`
         if (!fs.existsSync(tailorList)) {
@@ -102,6 +269,20 @@ export default class Tailor {
             }
           }
         }
+
+        break
+      }
+
+      case 'Opensuse': {
+        tailorList = `${this.costume}/opensuse.yaml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/debian.yaml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible opensuse`)
+            process.exit()
+          }
+        }
+
         break
       }
 
@@ -119,56 +300,7 @@ export default class Tailor {
             }
           }
         }
-        break
-      }
 
-      case 'Alpine': {
-        tailorList = `${this.costume}/alpine.yaml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yaml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Alpine`)
-            process.exit()
-          }
-        }
-        break
-      }
-
-      case 'Arch': {
-        tailorList = `${this.costume}/arch.yaml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yaml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Arch`)
-            process.exit()
-          }
-        }
-        break
-      }
-
-      case 'Fedora': 
-      case 'Almalinux':
-      case 'Rocky': {
-        tailorList = `${this.costume}/fedora.yaml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yaml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible Fedora`)
-            process.exit()
-          }
-        }
-        break
-      }
-
-      case 'Opensuse': {
-        tailorList = `${this.costume}/opensuse.yaml`
-        if (!fs.existsSync(tailorList)) {
-          tailorList = `${this.costume}/debian.yaml`
-          if (!fs.existsSync(tailorList)) {
-            console.log(`no costume definition found compatible opensuse`)
-            process.exit()
-          }
-        }
         break
       }
     } // end analyze
@@ -181,15 +313,6 @@ export default class Tailor {
       this.materials = yaml.load(fs.readFileSync(tailorList, 'utf8')) as IMateria
     } else {
       switch (this.category) {
-        case 'costume': {
-          Utils.titles(`${this.category}: ${this.costume}`)
-          console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
-          console.log('Costume will not be installed, operations will abort.\n')
-          Utils.pressKeyToExit()
-          process.exit()
-          break
-        }
-
         case 'accessory': {
           Utils.titles(`${this.category}: ${this.costume}`)
           console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
@@ -199,6 +322,15 @@ export default class Tailor {
           console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
           sleep(3000)
           return
+        }
+
+        case 'costume': {
+          Utils.titles(`${this.category}: ${this.costume}`)
+          console.log("Tailor's list " + chalk.cyan(tailorList) + ' is not found \non your wardrobe ' + chalk.cyan(this.wardrobe) + '.\n')
+          console.log('Costume will not be installed, operations will abort.\n')
+          Utils.pressKeyToExit()
+          process.exit()
+          break
         }
       }
     }
@@ -403,8 +535,7 @@ export default class Tailor {
       /**
        * sequence/accessories
        */
-      if (!no_accessories) {
-        if (this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
+      if (!no_accessories && this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
           step = 'wearing accessories'
           for (const elem of this.materials.sequence.accessories) {
             if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
@@ -421,8 +552,7 @@ export default class Tailor {
               await tailor.prepare(verbose)
             }
           }
-        }
-      } // no-accessories
+        } // no-accessories
     } // end sequence
 
     /**
@@ -489,105 +619,6 @@ export default class Tailor {
       await exec('reboot')
     } else {
       console.log(`You look good with: ${this.materials.name}`)
-    }
-  }
-
-  /**
-   *
-   * @param packages
-   * @param verbose
-   * @param section
-   * @returns
-   */
-  async packagesExists(wanted: string[]): Promise<string[]> {
-    Utils.warning(`checking packages exists ${this.costume}`)
-    wanted.sort()
-
-    const distro = new Distro()
-    let cmd = ""
-    if (distro.familyId === "alpine") {
-      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
-
-    } else if (distro.familyId === "archlinux") {
-      cmd = `pacman -S --list | awk '{print $2}'`
-
-    } else if (distro.familyId === "debian") {
-      // cmd=`apt-cache --no-generate pkgnames`
-      cmd = `apt-cache pkgnames`
-
-    } else if (distro.familyId === 'fedora') {
-      cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
-
-    } else if (distro.familyId === 'opensuse') { //controllare
-      // questo funziona diretto
-      cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
-    }
-    let available: string[] = []
-    const result = await exec(cmd, { capture: true, echo: false, ignore: false })
-    // trim di tutto per eseguire il confronto
-    available = result.data.split('\n').map(line => line.trim())
-    // precedente
-    // available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
-    available.sort()
-    wanted.sort()
-    let exists: string[] = []
-    let not_exists: string[] = []
-    for (const elem of wanted) {
-      if (available.includes(elem)) {
-        exists.push(elem)
-      } else {
-        not_exists.push(elem)
-        fs.appendFileSync(this.log, `- ${elem}\n`)
-      }
-    }
-
-    if (not_exists.length > 0) {
-      console.log(`${this.materials.name}, ${not_exists.length} following packages was not found:`)
-      for (const elem of not_exists) {
-        console.log(`-${elem}`)
-      }
-      console.log()
-      console.log("Wait 3 seconds")
-      await sleep(3000)
-    }
-
-    return exists
-  }
-
-
-  /**
- * - check if every package if installed
- * - if find any packages to install, install it
- */
-  async packagesInstall(packages: string[], comment = 'packages', cmd = 'apt-get install -yqq ') {
-    Utils.warning(`installing existing packages ${this.costume}`)
-    if (packages[0] !== null) {
-      const elements: string[] = []
-      let strElements = ''
-      for (const elem of packages) {
-        elements.push(elem)
-        cmd += ` ${elem}`
-        strElements += `, ${elem}`
-      }
-
-      if (elements.length > 0) {
-        let step = `installing ${comment}: `
-        if (!this.verbose) {
-          step += strElements.slice(2)
-        }
-
-        /**
-         * prova 3 volte
-         */
-        const limit = 3
-        for (let tempts = 1; tempts < limit; tempts++) {
-          Utils.titles(step)
-          Utils.warning(`tempts ${tempts} of ${limit}`)
-          if (await this.tryCheckSuccess(cmd, this.echo)) {
-            break
-          }
-        }
-      }
     }
   }
 

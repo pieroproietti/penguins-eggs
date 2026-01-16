@@ -9,41 +9,40 @@
 // packages
 import fs from 'fs'
 
+import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
-
 import {
-  interactiveCryptoConfig,
-  type CryptoConfig,
   type ArgonCryptoConfig,
+  type CryptoConfig,
+  interactiveCryptoConfig,
   type Pbkdf2CryptoConfig
 } from './luks-interactive-crypto-config.js';
 
 const noop = () => { };
 type ConditionalLoggers = {
-  log: (...args: any[]) => void;
-  warning: (msg: string) => void;
-  success: (msg: string) => void;
   info: (msg: string) => void;
+  log: (...args: any[]) => void;
+  success: (msg: string) => void;
+  warning: (msg: string) => void;
 }
 
 /**
  * luksRoot()
- * * create a container LUKS with the entire 
+ * create a container LUKS with the entire 
  * filesystem.squashfs
  */
 export async function luksRoot(this: Ovary) {
 
   const loggers: ConditionalLoggers = {
-    log: this.hidden ? noop : console.log,
-    warning: this.hidden ? noop : Utils.warning,
-    success: this.hidden ? noop : Utils.success,
     info: this.hidden ? noop : Utils.info,
+    log: this.hidden ? noop : console.log,
+    success: this.hidden ? noop : Utils.success,
+    warning: this.hidden ? noop : Utils.warning,
   };
 
-  const { log, warning, success, info } = loggers;
+  const { info, log, success, warning } = loggers;
 
   // filesystem.squashfs
   const live_fs = `${this.settings.iso_work}live/filesystem.squashfs`;
@@ -69,8 +68,9 @@ export async function luksRoot(this: Ovary) {
     if (!fs.existsSync(live_fs)) {
       throw new Error(`filesystem.squashfs not found at: ${live_fs}`);
     }
+
     const stats = fs.statSync(live_fs);
-    const size = stats.size; // Dimensione REALE del file in Byte
+    const {size} = stats; // Dimensione REALE del file in Byte
 
     // -------------------------------------------------------------
     // CALCOLO DIMENSIONE OTTIMIZZATA (No shrink, safe allocation)
@@ -88,7 +88,7 @@ export async function luksRoot(this: Ovary) {
     const safetyBuffer = 120 * 1024 * 1024;
 
     // 4. Somma totale
-    let calculatedSize = size + fsOverhead + luksHeader + safetyBuffer;
+    const calculatedSize = size + fsOverhead + luksHeader + safetyBuffer;
 
     // 5. Allineamento a 4MB (Performance storage)
     const alignment = 4 * 1024 * 1024;
@@ -121,12 +121,13 @@ export async function luksRoot(this: Ovary) {
 
     warning(`mounting ${this.luksDevice} on ${this.luksMountpoint}`)
     if (fs.existsSync(this.luksMountpoint)) {
-      if (!Utils.isMountpoint(this.luksMountpoint)) {
-        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
-      } else {
+      if (Utils.isMountpoint(this.luksMountpoint)) {
         throw new Error(`${this.luksMountpoint} is already mounted, process will abort!`)
+      } else {
+        await exec(`rm -rf ${this.luksMountpoint}`, this.echo)
       }
     }
+
     await exec(`mkdir -p ${this.luksMountpoint}`, this.echo)
 
     await exec(`mount /dev/mapper/${this.luksMappedName} ${this.luksMountpoint}`, this.echo);
@@ -159,10 +160,12 @@ export async function luksRoot(this: Ovary) {
     } else {
       Utils.error(`An unknown error has occurred.`)
     }
+
     Utils.warning('Cleaning performed following the error...')
     if (fs.existsSync(this.luksMountpoint)) {
       await exec(`umount -lf ${this.luksMountpoint}`).catch(() => { })
     }
+
     if (fs.existsSync(this.luksDevice)) {
       await this.luksExecuteCommand('cryptsetup', ['close', this.luksMappedName]).catch(() => { })
     }
@@ -171,6 +174,7 @@ export async function luksRoot(this: Ovary) {
        Utils.warning(`Removing temporary container: ${this.luksFile}`);
        fs.unlinkSync(this.luksFile);
     }
+
     await Utils.pressKeyToExit()
     process.exit(1)
   }

@@ -7,12 +7,11 @@
  */
 
 import fs from 'fs';
+
 import { execSync } from '../lib/utils.js'; // Assicurati che il path sia corretto
 
 export default class Compressors {
   dest = '/tmp/eggs-mksquash-dest'
-  source = '/tmp/eggs-mksquash-test'
-
   isEnabled = {
     error: false,
     gzip: true,
@@ -22,6 +21,7 @@ export default class Compressors {
     xz: false,
     zstd: false
   }
+source = '/tmp/eggs-mksquash-test'
 
   /**
    * fast compression
@@ -101,10 +101,11 @@ export default class Compressors {
       // Se mksquashfs fallisce (exit code != 0), execSync lancia un errore
       execSync(`mksquashfs ${this.source} ${this.dest} -comp ${compressor} -no-xattrs -ef ${this.dest}`, { ignore: true });
       result = true
-    } catch (error: any) {
+    } catch {
       // Fallito (comando non trovato o compressore non supportato)
       result = false
-    }    
+    }
+    
     return result
   }
 
@@ -114,8 +115,9 @@ export default class Compressors {
   private prepareCheck() {
     // rm -rf
     if (fs.existsSync(this.source)) {
-      fs.rmSync(this.source, { recursive: true, force: true });
+      fs.rmSync(this.source, { force: true, recursive: true });
     }
+
     // mkdir -p
     fs.mkdirSync(this.source, { recursive: true });
   }
@@ -126,11 +128,12 @@ export default class Compressors {
   private removeCheck() {
     // rm -rf source
     if (fs.existsSync(this.source)) {
-      fs.rmSync(this.source, { recursive: true, force: true });
+      fs.rmSync(this.source, { force: true, recursive: true });
     }
+
     // rm -f dest
     if (fs.existsSync(this.dest)) {
-      fs.rmSync(this.dest, { recursive: true, force: true });
+      fs.rmSync(this.dest, { force: true, recursive: true });
     }
   }
 }

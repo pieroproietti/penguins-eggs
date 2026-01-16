@@ -6,18 +6,19 @@
  * license: MIT
  */
 
+import express from 'express';
 import fs from 'node:fs'
 import path, { dirname } from 'node:path'
-import { startSimpleProxy } from '../dhcpd-proxy/simple-proxy.js'
-import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
-import express from 'express';
 // @ts-ignore
 import tftp from 'tftp'
+
+import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
+import { startSimpleProxy } from '../dhcpd-proxy/simple-proxy.js'
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
+import Diversions from './diversions.js'
 import Settings from './settings.js'
 import Utils from './utils.js'
-import Diversions from './diversions.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -28,14 +29,13 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Pxe {
   bootLabel = ''
-
+distro = {} as Distro
   echo = {}
   eggRoot = ''
   initrdImg = ''
   isos: string[] = [] // cuckoo's eggs
   nest = ''
   pxeRoot = ''
-  distro = {} as Distro
   settings = {} as Settings
   vmlinuz = ''
 
@@ -48,6 +48,56 @@ export default class Pxe {
     this.nest = nest
     this.pxeRoot = pxeRoot
     this.echo = Utils.setEcho(verbose)
+  }
+
+  /**
+   * build
+   */
+  async build() {
+    const echoYes = Utils.setEcho(true)
+
+    // pxeRoot erase
+    if (fs.existsSync(this.pxeRoot)) {
+      await exec(`rm ${this.pxeRoot} -rf`, this.echo)
+    }
+
+    // Struttura
+    await exec(`mkdir ${this.pxeRoot} -p`, this.echo)
+    await exec(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`, this.echo)
+    await exec(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`, this.echo)
+
+    // Link supplementari distro
+    if (this.distro.familyId === 'archlinux') {
+      let filesystemName = `arch/x86_64/airootfs.sfs`
+      if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
+        filesystemName = `manjaro/x86_64/livefs.sfs`
+      }
+
+      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
+      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, this.echo)
+    }
+
+    // Firewall per fedora
+    if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
+      await exec(`firewall-cmd --add-service=dhcp --permanent`, this.echo)
+      await exec(`firewall-cmd --add-service=tftp --permanent`, this.echo)
+      await exec(`firewall-cmd --add-service=http --permanent`, this.echo)
+      await exec(`firewall-cmd --reload`, this.echo)
+    }
+
+    await this.grubCfg()
+    await this.bios()
+    await this.uefi()
+    await this.http()
+
+  }
+
+  /**
+   *
+   * @param dhcpOptions
+   */
+  dhcpdStart(dhcpOptions: IDhcpOptions) {
+    startSimpleProxy(dhcpOptions)
   }
 
   /**
@@ -93,6 +143,7 @@ export default class Pxe {
       if (path.basename(file).slice(0, 7) === 'vmlinuz') {
         this.vmlinuz = path.basename(file)
       }
+
       if (path.basename(file).slice(0, 4) === 'init') {
         this.initrdImg = path.basename(file)
       }
@@ -113,55 +164,6 @@ export default class Pxe {
     console.log(`bootLabel: ${this.bootLabel}`)
     console.log(`vmlinuz: ${this.vmlinuz}`)
     console.log(`initrd: ${this.initrdImg}`)
-  }
-
-  /**
-   * build
-   */
-  async build() {
-    const echoYes = Utils.setEcho(true)
-
-    // pxeRoot erase
-    if (fs.existsSync(this.pxeRoot)) {
-      await exec(`rm ${this.pxeRoot} -rf`, this.echo)
-    }
-
-    // Struttura
-    await exec(`mkdir ${this.pxeRoot} -p`, this.echo)
-    await exec(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`, this.echo)
-    await exec(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`, this.echo)
-
-    // Link supplementari distro
-    if (this.distro.familyId === 'archlinux') {
-      let filesystemName = `arch/x86_64/airootfs.sfs`
-      if (Diversions.isManjaroBased(this.settings.distro.distroId)) {
-        filesystemName = `manjaro/x86_64/livefs.sfs`
-      }
-      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
-      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, this.echo)
-    }
-
-    // Firewall per fedora
-    if (this.distro.familyId === 'fedora' || this.distro.familyId === 'opensuse') {
-      await exec(`firewall-cmd --add-service=dhcp --permanent`, this.echo)
-      await exec(`firewall-cmd --add-service=tftp --permanent`, this.echo)
-      await exec(`firewall-cmd --add-service=http --permanent`, this.echo)
-      await exec(`firewall-cmd --reload`, this.echo)
-    }
-
-    await this.grubCfg()
-    await this.bios()
-    await this.uefi()
-    await this.http()
-
-  }
-
-  /**
-   *
-   * @param dhcpOptions
-   */
-  dhcpdStart(dhcpOptions: IDhcpOptions) {
-    startSimpleProxy(dhcpOptions)
   }
 
 
@@ -210,30 +212,68 @@ export default class Pxe {
   }
 
   /**
-   * configure PXE http server
+   * Metodo helper per ottenere i parametri corretti per GRUB
+   * in base alla famiglia della distribuzione.
    */
-  private async http() {
-    const file = `${this.pxeRoot}/index.html`
-    let content = ''
-    content += "<html><title>Penguin's eggs PXE server</title>"
-    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
-    content += '<h1>Cuckoo PXE server</h1>'
-    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
-    if (Utils.isLive()) {
-      content += 'started from live iso image<br/>'
-    } else {
-      content += 'Serving:<li>'
-      for (const iso of this.isos) {
-        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
+  private _getKernelParameters(): string {
+    let lp = ''
+    // .replaceAll(/\s\s+/g, ' ')
+    switch (this.distro.familyId) {
+
+      case 'alpine': {
+        lp =  `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
+               modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
+               acpi=off \
+               ip=dhcp`
+      break
       }
 
-      content += '</li>'
+      case 'archlinux': {
+        let basedir = 'archisobasedir=arch'
+        let hook = 'archiso_http_srv'
+        if (Diversions.isManjaroBased(this.distro.distroId)) {
+          basedir = ''
+          hook = 'miso_http_srv'
+        }
+ 
+        lp =  `${hook}=http://${Utils.address()}/ \
+              ${basedir} \
+              ip=dhcp \
+              copytoram=n`
+      break
+      }
+
+      case 'debian': {
+        lp =  `fetch=http://${Utils.address()}/live/filesystem.squashfs \
+                boot=live \
+                config \
+                noswap \
+                noprompt \
+                ip=dhcp`
+      break
+      }
+
+      case 'fedora' :
+      case 'openmamba':
+      case 'opensuse': {
+
+        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
+               root=live:http://${Utils.address()}/live/filesystem.squashfs \
+               rootfstype=auto \
+               ro \
+               rd.live.image \
+               rd.luks=0 \
+               rd.md=0 \
+               rd.dm=0\n`
+      break
+      }
+
+      default: {
+        console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
+      }
     }
 
-    content += "source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>"
-    content += "manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>"
-    content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
-    fs.writeFileSync(file, content)
+    return lp.replaceAll(/\s\s+/g, ' ')
   }
 
   /**
@@ -286,18 +326,6 @@ export default class Pxe {
   }
 
   /**
-  * uefi: uso ipxe solo per chainload di grub
-  */
-  private async uefi() {
-    let content = '#!ipxe\n';
-    content += 'dhcp\n';
-    content += `chain http://${Utils.address()}/grub.efi\n`
-
-    const file = `${this.pxeRoot}/autoexec.ipxe`;
-    fs.writeFileSync(file, content);
-  }
-
-  /**
    * grubCfg
    * @param familyId 
    */
@@ -311,15 +339,28 @@ export default class Pxe {
     await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
     
     if (this.distro.familyId === 'debian') {
-      if (process.arch === 'x64') {
-        await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
-      } else if (process.arch === 'ia32') {
-        await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-        await exec(`cp -r ${bootloaders}/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
-      } else if (process.arch === 'arm64') {
+      switch (process.arch) {
+      case 'arm64': {
         await exec(`cp ${bootloaders}/grub/arm64-efi-signed/grubnetaa64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
         await exec(`cp -r ${bootloaders}/grub/arm64-efi ${this.pxeRoot}/grub`, this.echo)
+      
+      break;
+      }
+
+      case 'ia32': {
+        await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+        await exec(`cp -r ${bootloaders}/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
+      
+      break;
+      }
+
+      case 'x64': {
+        await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
+        await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+      
+      break;
+      }
+      // No default
       }
     } else {
       /**
@@ -351,61 +392,42 @@ export default class Pxe {
   }
 
   /**
-   * Metodo helper per ottenere i parametri corretti per GRUB
-   * in base alla famiglia della distribuzione.
+   * configure PXE http server
    */
-  private _getKernelParameters(): string {
-    let lp = ''
-    // .replaceAll(/\s\s+/g, ' ')
-    switch (this.distro.familyId) {
+  private async http() {
+    const file = `${this.pxeRoot}/index.html`
+    let content = ''
+    content += "<html><title>Penguin's eggs PXE server</title>"
+    content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
+    content += '<h1>Cuckoo PXE server</h1>'
+    content += `<body>address: <a href=http://${Utils.address()}>${Utils.address()}</a><br/>`
+    if (Utils.isLive()) {
+      content += 'started from live iso image<br/>'
+    } else {
+      content += 'Serving:<li>'
+      for (const iso of this.isos) {
+        content += `<ul><a href='http://${Utils.address()}/${iso}'>${iso}</a></ul>`
+      }
 
-      case 'alpine':
-        lp =  `alpine_repo=http://${Utils.address()}/live/filesystem.squashfs \
-               modules=loop,squashfs,sd-mod,usb-storage,virtio-net,e1000e \
-               acpi=off \
-               ip=dhcp`
-      break
-
-      case 'archlinux':
-        let basedir = 'archisobasedir=arch'
-        let hook = 'archiso_http_srv'
-        if (Diversions.isManjaroBased(this.distro.distroId)) {
-          basedir = ''
-          hook = 'miso_http_srv'
-        } 
-        lp =  `${hook}=http://${Utils.address()}/ \
-              ${basedir} \
-              ip=dhcp \
-              copytoram=n`
-      break
-
-      case 'debian':
-        lp =  `fetch=http://${Utils.address()}/live/filesystem.squashfs \
-                boot=live \
-                config \
-                noswap \
-                noprompt \
-                ip=dhcp`
-      break
-
-      case 'fedora' :
-      case 'openmamba':
-      case 'opensuse':
-
-        lp=   `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \
-               root=live:http://${Utils.address()}/live/filesystem.squashfs \
-               rootfstype=auto \
-               ro \
-               rd.live.image \
-               rd.luks=0 \
-               rd.md=0 \
-               rd.dm=0\n`
-      break
-
-      default:
-        console.warn(`Attenzione: famiglia distro '${this.distro.familyId}' non riconosciuta per GRUB.`);
+      content += '</li>'
     }
-    return lp.replaceAll(/\s\s+/g, ' ')
+
+    content += "source: <a href='https://github.com/pieroproietti/penguins-eggs'>https://github.com/pieroproietti/penguins-eggs</a><br/>"
+    content += "manual: <a href='https://penguins-eggs.net/book/italiano9.2.html'>italiano</a>, <a href='https://penguins--eggs-net.translate.goog/book/italiano9.2?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en'>translated</a><br/>"
+    content += "discuss: <a href='https://t.me/penguins_eggs'>Telegram group<br/></body</html>"
+    fs.writeFileSync(file, content)
+  }
+
+  /**
+   * uefi: uso ipxe solo per chainload di grub
+   */
+  private async uefi() {
+    let content = '#!ipxe\n';
+    content += 'dhcp\n';
+    content += `chain http://${Utils.address()}/grub.efi\n`
+
+    const file = `${this.pxeRoot}/autoexec.ipxe`;
+    fs.writeFileSync(file, content);
   }
 
 }

@@ -6,34 +6,34 @@
  * license: MIT
  */
 export interface ICalamaresPartitions {
-  efiSystemPartition?: string;
-  efiSystemPartitionSize?: string;
-  efiSystemPartitionName?: string;
+  allowManualPartitioning?: boolean;
+  allowZfsEncryption?: boolean;
+  alwaysShowPartitionLabels?: boolean;
+  armInstall?: boolean;
+  availableFileSystemTypes?: string[];
+  defaultFileSystemType?: string;
+  drawNestedPartitions?: boolean;
   efi?: {
-    recommendedSize?: string;
-    minimumSize?: string;
     label?: string;
+    minimumSize?: string;
     mountPoint?: string;
+    recommendedSize?: string;
   };
+  efiSystemPartition?: string;
+  efiSystemPartitionName?: string;
+  efiSystemPartitionSize?: string;
+  enableLuksAutomatedPartitioning?: boolean;
+  essentialMounts?: string[];
+  initialPartitioningChoice?: "alongside" | "erase" | "manual" | "none" | "replace";
+  initialSwapChoice?: "file" | "none" | "reuse" | "small" | "suspend";
+  luksGeneration?: "luks1" | "luks2";
   lvm?: {
     enable?: boolean;
   };
-  userSwapChoices: ("none" | "reuse" | "small" | "suspend" | "file")[];
-  armInstall?: boolean;
-  allowZfsEncryption?: boolean;
-  drawNestedPartitions?: boolean;
-  alwaysShowPartitionLabels?: boolean;
-  defaultFileSystemType?: string;
-  availableFileSystemTypes?: string[];
   mountpointFilesystemRestrictions?: unknown[];
-  luksGeneration?: "luks1" | "luks2";
-  enableLuksAutomatedPartitioning?: boolean;
-  preCheckEncryption?: boolean;
-  essentialMounts?: string[];
-  allowManualPartitioning?: boolean;
-  showNotEncryptedBootMessage?: boolean;
   partitionLayout?: unknown[];
-  initialPartitioningChoice?: "none" | "erase" | "replace" | "alongside" | "manual";
-  initialSwapChoice?: "none" | "small" | "suspend" | "reuse" | "file";
+  preCheckEncryption?: boolean;
   requiredStorage?: number;
+  showNotEncryptedBootMessage?: boolean;
+  userSwapChoices: ("file" | "none" | "reuse" | "small" | "suspend")[];
 }

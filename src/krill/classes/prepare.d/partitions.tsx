@@ -8,20 +8,18 @@
  */
 
 import React from 'react'
-import {confirm} from './confirm.js'
-
-import Partitions from '../../components/partitions.js'
-import { IPartitions } from '../../interfaces/i_krill.js'
-import { SwapChoice, InstallationMode } from '../krill_enums.js'
-import Prepare from '../prepare.js'
-import selectFileSystemType from '../../lib/select_filesystem_type.js'
-import selectInstallationDevice from '../../lib/select_installation_device.js'
-import selectReplacedPartition from '../../lib/select_replaced_partition.js'
-import selectUserSwapChoice from '../../lib/select_user_swap_choice.js'
 
 import {shx} from '../../../lib/utils.js'
-
+import Partitions from '../../components/partitions.js'
+import { IPartitions } from '../../interfaces/i_krill.js'
+import selectFileSystemType from '../../lib/select_filesystem_type.js'
+import selectInstallationDevice from '../../lib/select_installation_device.js'
 import selectInstallationMode from '../../lib/select_installation_mode.js'
+import selectReplacedPartition from '../../lib/select_replaced_partition.js'
+import selectUserSwapChoice from '../../lib/select_user_swap_choice.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
+import Prepare from '../prepare.js'
+import {confirm} from './confirm.js'
 
 
 /**
@@ -31,7 +29,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
 
     // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
-    let driveList: string[] = []
+    const driveList: string[] = []
     drives.forEach((element: string) => {
         if (!element.includes('zram')) {
             driveList.push('/dev/' + element)
@@ -39,12 +37,12 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
     })
     installationDevice = driveList[0] // Solo per selezionare il default
 
-    let replacedPartition = this.krillConfig.replacedPartition
+    let {replacedPartition} = this.krillConfig
 
-    let installationMode = this.krillConfig.installationMode
+    let {installationMode} = this.krillConfig
 
-    let knownInstallationModes = Object.values(InstallationMode) as Array<string>
-    let knownSwapChoices = Object.values(SwapChoice) as Array<string>
+    const knownInstallationModes = Object.values(InstallationMode) as Array<string>
+    const knownSwapChoices = Object.values(SwapChoice) as Array<string>
 
 
     if (!knownInstallationModes.includes(installationMode)) {
@@ -66,7 +64,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
 
     let partitionsElem: JSX.Element
     while (true) {
-        partitionsElem = <Partitions installationDevice={installationDevice} installationMode={installationMode} filesystemType={filesystemType} userSwapChoice={userSwapChoice} replacedPartition={replacedPartition} />
+        partitionsElem = <Partitions filesystemType={filesystemType} installationDevice={installationDevice} installationMode={installationMode} replacedPartition={replacedPartition} userSwapChoice={userSwapChoice} />
         if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
             break
         } else {
@@ -79,29 +77,42 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
             installationDevice = await selectInstallationDevice()
             installationMode = await selectInstallationMode()
 
-            if (installationMode === InstallationMode.Replace) {
-                replacedPartition = await selectReplacedPartition()
-                filesystemType = await selectFileSystemType()
-                userSwapChoice = SwapChoice.File
-
-            } else if (installationMode === InstallationMode.EraseDisk) {
+            switch (installationMode) {
+            case InstallationMode.EraseDisk: {
                 replacedPartition = ""
                 filesystemType = await selectFileSystemType()
                 userSwapChoice = await selectUserSwapChoice(userSwapChoice)
 
-            } else if (installationMode === InstallationMode.Luks) {
+            
+            break;
+            }
+
+            case InstallationMode.Luks: {
                 replacedPartition = ""
                 userSwapChoice = SwapChoice.File
+            
+            break;
+            }
+
+            case InstallationMode.Replace: {
+                replacedPartition = await selectReplacedPartition()
+                filesystemType = await selectFileSystemType()
+                userSwapChoice = SwapChoice.File
+
+            
+            break;
+            }
+            // No default
             }
         }
     }
 
     return {
-        installationDevice: installationDevice,
-        installationMode: installationMode,
-        filesystemType: filesystemType,
-        userSwapChoice: userSwapChoice,
-        replacedPartition: replacedPartition
+        filesystemType,
+        installationDevice,
+        installationMode,
+        replacedPartition,
+        userSwapChoice
     }
 }
 

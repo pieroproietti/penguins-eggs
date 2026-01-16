@@ -7,11 +7,12 @@
  */
 
 
-import fs from 'node:fs'
-import Pacman from '../../pacman.js'
 import yaml from 'js-yaml'
-import { exec } from '../../../lib/utils.js'
+import fs from 'node:fs'
+
 import { ICalamaresPartitions } from '../../../interfaces/calamares/i-calamares-partitions.js'
+import { exec } from '../../../lib/utils.js'
+import Pacman from '../../pacman.js'
 
 /**
  * customize module partition
@@ -23,7 +24,7 @@ export async function customizePartitions() {
 
 
   // detect filesystem type
-  let test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
+  const test = await exec(`df -T / | awk 'NR==2 {print $2}'`, { capture: true, echo: false })
   partition.defaultFileSystemType = test.data.trim()
 
   /**

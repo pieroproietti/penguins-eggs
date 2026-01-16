@@ -7,17 +7,17 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
+import axios from 'axios'
 import React from 'react'
-import {confirm} from './confirm.js'
 
+import Utils from '../../../classes/utils.js'
+import {shx} from '../../../lib/utils.js'
 import Location from '../../components/location.js'
 import { ILocation } from '../../interfaces/i_krill.js'
-import Prepare from '../prepare.js'
-import Utils from '../../../classes/utils.js'
 import selectRegions from '../../lib/select_regions.js'
 import selectZones from '../../lib/select_zones.js'
-import axios from 'axios'
-import {shx} from '../../../lib/utils.js'
+import Prepare from '../prepare.js'
+import {confirm} from './confirm.js'
 
 
 /**
@@ -28,11 +28,12 @@ import {shx} from '../../../lib/utils.js'
  */
 
 export async function location(this: Prepare, language: string): Promise<ILocation> {
-    let region = this.krillConfig.region
+    let {region} = this.krillConfig
     if (region === '' || region === undefined) {
-        let region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
+        const region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
-    let zone = this.krillConfig.zone
+
+    let {zone} = this.krillConfig
     if (zone === '' || zone === undefined) {
         zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
@@ -44,8 +45,8 @@ export async function location(this: Prepare, language: string): Promise<ILocati
         if (response.statusText === 'OK') {
             const data = JSON.stringify(response.data)
             const obj = JSON.parse(data)
-            region = obj.time_zone.substring(0, obj.time_zone.indexOf('/'))
-            zone = obj.time_zone.substring(obj.time_zone.indexOf('/') + 1)
+            region = obj.time_zone.slice(0, Math.max(0, obj.time_zone.indexOf('/')))
+            zone = obj.time_zone.slice(Math.max(0, obj.time_zone.indexOf('/') + 1))
         }
     } catch (error) {
         console.error('error: ' + error)
@@ -57,13 +58,14 @@ export async function location(this: Prepare, language: string): Promise<ILocati
         if (await confirm(locationElem, "Confirm location datas?")) {
             break
         }
+
         region = await selectRegions(region)
         zone = await selectZones(region)
     }
 
     return {
-        language: language,
-        region: region,
-        zone: zone
+        language,
+        region,
+        zone
     }
 }

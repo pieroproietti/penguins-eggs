@@ -6,17 +6,16 @@
  * license: MIT
  */
 
-import os from 'os'
 import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
-import { shx } from '../lib/utils.js'
+import os from 'os'
 
+import { execSync , shx } from '../lib/utils.js'
 // libraries
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
-import { execSync } from '../lib/utils.js'
 
 const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS', 'MUSIC', 'PICTURES', 'VIDEOS']
 
@@ -68,11 +67,12 @@ export default class Xdg {
         if (!content.includes('[Seat:*]')) {
           content += '\n[Seat:*]\n';
         }
+
         // Rimuove eventuali righe esistenti e le aggiunge pulite sotto [Seat:*]
-        content = content.replace(/^autologin-user=.*/gm, '');
-        content = content.replace(/^autologin-user-timeout=.*/gm, '');
+        content = content.replaceAll(/^autologin-user=.*/gm, '');
+        content = content.replaceAll(/^autologin-user-timeout=.*/gm, '');
         content = content.replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`);
-        fs.writeFileSync(confPath, content.replace(/\n\n+/g, '\n\n'), 'utf8');
+        fs.writeFileSync(confPath, content.replaceAll(/\n\n+/g, '\n\n'), 'utf8');
       }
     }
 
@@ -126,13 +126,13 @@ export default class Xdg {
         if (!content.includes('[daemon]')) content = "[daemon]\n" + content;
 
         // Abilitazione chirurgica
-        if (content.match(/^#?AutomaticLoginEnable=.*/m)) {
+        if (/^#?AutomaticLoginEnable=.*/m.test(content)) {
           content = content.replace(/^#?AutomaticLoginEnable=.*/m, 'AutomaticLoginEnable=true');
         } else {
           content = content.replace('[daemon]', '[daemon]\nAutomaticLoginEnable=true');
         }
 
-        if (content.match(/^#?AutomaticLogin=.*/m)) {
+        if (/^#?AutomaticLogin=.*/m.test(content)) {
           content = content.replace(/^#?AutomaticLogin=.*/m, `AutomaticLogin=${newuser}`);
         } else {
           content = content.replace('AutomaticLoginEnable=true', `AutomaticLoginEnable=true\nAutomaticLogin=${newuser}`);

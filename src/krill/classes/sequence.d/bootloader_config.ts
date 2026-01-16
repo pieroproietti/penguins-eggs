@@ -20,9 +20,10 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
   let cmd = ''
 
   /**
-  * alpine
-  */
-  if (this.distro.familyId === 'alpine') {
+   * alpine
+   */
+  switch (this.distro.familyId) {
+  case 'alpine': {
     if (this.efi) {
       try {
         cmd = `chroot ${this.installTarget} apk add grub grub-efi efibootmgr shim} ${this.toNull}`
@@ -42,7 +43,11 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * archlinux
      */
-  } else if (this.distro.familyId === 'archlinux') {
+  
+  break;
+  }
+
+  case 'archlinux': {
     if (this.efi) {
       try {
         cmd = `chroot ${this.installTarget} pacman -Sy grub efibootmgr shim} ${this.toNull}`
@@ -63,7 +68,11 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * debian
      */
-  } else if (this.distro.familyId === 'debian') {
+  
+  break;
+  }
+
+  case 'debian': {
     try {
       cmd = `chroot ${this.installTarget} apt-get -y update ${this.toNull}`
       await exec(cmd, this.echo)
@@ -94,7 +103,11 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * fedora
      */
-  } else if (this.distro.familyId === 'fedora') {
+  
+  break;
+  }
+
+  case 'fedora': {
 
     if (this.efi) {
       try {
@@ -127,7 +140,11 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * openmamba
      */
-  } else if (this.distro.familyId === 'openmamba') {
+  
+  break;
+  }
+
+  case 'openmamba': {
 
     if (this.efi) {
       try {
@@ -158,7 +175,11 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
     /**
      * opensuse
      */
-  } else if (this.distro.familyId === 'opensuse') {
+  
+  break;
+  }
+
+  case 'opensuse': {
     if (this.efi) {
       try {
         cmd = `chroot ${this.installTarget} zypper install -y grub2 grub2-x86_64-efi efibootmgr shim} ${this.toNull}`
@@ -174,6 +195,10 @@ export default async function bootloaderConfig(this: Sequence): Promise<void> {
         await showError(cmd, error)
       }
     }
+  
+  break;
+  }
+  // No default
   }
   // await Utils.debug(`grub packages install cmd: ${cmd}`)
 }

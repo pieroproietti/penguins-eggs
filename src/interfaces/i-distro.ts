@@ -9,9 +9,9 @@
 export interface IDistro {
   bugReportUrl: string
   codenameId: string
-  distroUniqueId: string
   distroId: string
   distroLike: string
+  distroUniqueId: string
   familyId: string
   homeUrl: string
   isCalamaresAvailable: boolean

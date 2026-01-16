@@ -10,17 +10,17 @@
 import fs from 'fs'
 import { spawn, StdioOptions } from 'node:child_process'
 
+import { exec } from '../../lib/utils.js'
 // classes
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import { exec } from '../../lib/utils.js'
 
 const noop = () => { };
 type ConditionalLoggers = {
-  log: (...args: any[]) => void;
-  warning: (msg: string) => void;
-  success: (msg: string) => void;
   info: (msg: string) => void;
+  log: (...args: any[]) => void;
+  success: (msg: string) => void;
+  warning: (msg: string) => void;
 }
 
 /**
@@ -31,13 +31,13 @@ type ConditionalLoggers = {
 export async function luksShrink(this: Ovary) {
 
   const loggers: ConditionalLoggers = {
-    log: this.hidden ? noop : console.log,
-    warning: this.hidden ? noop : Utils.warning,
-    success: this.hidden ? noop : Utils.success,
     info: this.hidden ? noop : Utils.info,
+    log: this.hidden ? noop : console.log,
+    success: this.hidden ? noop : Utils.success,
+    warning: this.hidden ? noop : Utils.warning,
   };
 
-  const { log, warning, success, info } = loggers;
+  const { info, log, success, warning } = loggers;
 
   warning(`Unmounting ${this.luksMountpoint} to perform shrinking...`)
   // Usa -l (lazy) se necessario, ma meglio umount pulito
@@ -64,8 +64,8 @@ export async function luksShrink(this: Ovary) {
     throw new Error("Could not determine filesystem size from tune2fs")
   }
   
-  const blockSize = parseInt(blockSizeMatch[1], 10)
-  const blockCount = parseInt(blockCountMatch[1], 10)
+  const blockSize = Number.parseInt(blockSizeMatch[1], 10)
+  const blockCount = Number.parseInt(blockCountMatch[1], 10)
   const fsSizeBytes = blockSize * blockCount
   
   warning(`Actual Ext4 payload size: ${bytesToGB(fsSizeBytes)}`)
@@ -76,7 +76,7 @@ export async function luksShrink(this: Ovary) {
   
   let luksHeaderBytes = 0
   if (offsetMatch && offsetMatch[1]) {
-    luksHeaderBytes = parseInt(offsetMatch[1], 10) * 512
+    luksHeaderBytes = Number.parseInt(offsetMatch[1], 10) * 512
     warning(`Detected LUKS header: ${bytesToGB(luksHeaderBytes)}`)
   } else {
     luksHeaderBytes = 32 * 1024 * 1024 // Fallback 32MB
@@ -88,7 +88,7 @@ export async function luksShrink(this: Ovary) {
   // Questo spazio extra protegge sia lo squashfs (root) che i metadati sparsi (home).
   const safetyMargin = 200 * 1024 * 1024 
   
-  let rawFinalSize = fsSizeBytes + luksHeaderBytes + safetyMargin
+  const rawFinalSize = fsSizeBytes + luksHeaderBytes + safetyMargin
 
   // ALLINEAMENTO A 1MB: Fondamentale per evitare errori di I/O su device fisici o loop
   const alignBlock = 1024 * 1024; 

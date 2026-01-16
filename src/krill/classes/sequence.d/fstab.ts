@@ -8,13 +8,11 @@
  */
 
 
-import {shx} from '../../../lib/utils.js'
-import { InstallationMode } from '../krill_enums.js'
-
 import Pacman from '../../../classes/pacman.js'
 import Utils from '../../../classes/utils.js'
+import {shx} from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
-import { SwapChoice } from '../krill_enums.js'
+import { InstallationMode , SwapChoice } from '../krill_enums.js'
 
 /**
  * fstab()
@@ -125,10 +123,11 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     /**
      * swap can be none, file, defined, undefined
      */
-    if (this.devices.swap.name !== undefined) {
-      if (this.devices.swap.name !== `none`) {
-
-        if (this.partitions.userSwapChoice == SwapChoice.None) {
+    if (this.devices.swap.name === undefined) {
+      text += `# swap undefined\n`
+    } else if (this.devices.swap.name === `none`) {
+        text += `# swap none\n`
+      } else if (this.partitions.userSwapChoice == SwapChoice.None) {
           text += `# swap None ${this.partitions.userSwapChoice}\n`
           text += `# no swap configured\n`
           text += `\n`
@@ -136,7 +135,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
           // file
         } else if (this.partitions.userSwapChoice == SwapChoice.File) {
           text += `# swap File ${this.partitions.userSwapChoice}\n`
-          let swapFile = ``
+          const swapFile = ``
           text += `# /swapfile none swap sw 0 0\n`
           text += `/swapfile none swap sw 0 0\n`
           text += `\n`
@@ -148,12 +147,6 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
           text += `UUID=${Utils.uuid(this.devices.swap.name)} ${this.devices.swap.mountPoint} ${this.devices.swap.fsType} ${mountOptsSwap}\n`
           text += `\n`
         }
-      } else {
-        text += `# swap none\n`
-      }
-    } else {
-      text += `# swap undefined\n`
-    }
 
 
 
@@ -172,6 +165,7 @@ export default async function fstab(this: Sequence, installDevice: string, crypt
     text += `# swapfile\n`
     text += `/swapfile   none  swap  sw  0  0`
   }
+
   Utils.write(fstab, text)
 }
 

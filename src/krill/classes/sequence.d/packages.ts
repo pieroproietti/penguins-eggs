@@ -51,6 +51,31 @@ export default async function packages(this: Sequence): Promise<void> {
     }
 
     switch (packages.backend) {
+      case 'apk': {
+        /**
+         * apk
+         */
+        if (packagesToRemove != undefined && packagesToRemove.length > 0) {
+          let cmd = `chroot ${this.installTarget} apk del `
+          for (const elem of packagesToRemove) {
+            cmd += elem + ' '
+          }
+
+          await exec(`${cmd} ${this.toNull}`, this.echo)
+        }
+
+        if (packagesToInstall != undefined && packagesToInstall.length > 0) {
+          let cmd = `chroot ${this.installTarget} apk add `
+          for (const elem of packagesToInstall) {
+            cmd += elem + ' '
+          }
+
+          await exec(`${cmd} ${this.toNull}`, this.echo)
+        }
+
+        break
+      }
+
       case 'apt': {
         /**
          * apt
@@ -99,31 +124,6 @@ export default async function packages(this: Sequence): Promise<void> {
           for (const elem of packagesToInstall) {
             await exec(`chroot ${this.installTarget} pacman -S ${elem}`, echoYes)
           }
-        }
-
-        break
-      }
-
-      case 'apk': {
-        /**
-         * apk
-         */
-        if (packagesToRemove != undefined && packagesToRemove.length > 0) {
-          let cmd = `chroot ${this.installTarget} apk del `
-          for (const elem of packagesToRemove) {
-            cmd += elem + ' '
-          }
-
-          await exec(`${cmd} ${this.toNull}`, this.echo)
-        }
-
-        if (packagesToInstall != undefined && packagesToInstall.length > 0) {
-          let cmd = `chroot ${this.installTarget} apk add `
-          for (const elem of packagesToInstall) {
-            cmd += elem + ' '
-          }
-
-          await exec(`${cmd} ${this.toNull}`, this.echo)
         }
 
         break

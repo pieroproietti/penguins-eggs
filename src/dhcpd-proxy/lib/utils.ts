@@ -21,9 +21,11 @@ export const writeBytes = (_buffer: any, byteArray: any, offset: number) => {
     _buffer[offset++] = byteArray[i];
     i++;
   }
+
   if (offset > _bytesWritten) {
     _bytesWritten = offset;
   }
+
   return this;
 };
 
@@ -86,9 +88,10 @@ export function readBytes(
     bufCopy = new Buffer(length);
     _buffer.copy(bufCopy, 0, offset, (offset += length));
     return bufCopy;
-  } else {
-    return _buffer.slice(offset, (offset += length));
   }
+ 
+    return _buffer.slice(offset, (offset += length));
+  
 }
 
 /**
@@ -132,13 +135,14 @@ export function readInt8(_buffer: any, offset: number) {
  * @returns
  */
 export function readString(buf: any) {
-  let j, s;
+  let j; let s;
   s = "";
   j = 0;
   while (j < buf.length) {
     s += String.fromCharCode(buf[j]);
     j++;
   }
+
   return s;
 }
 
@@ -148,7 +152,7 @@ export function readString(buf: any) {
  * @returns
  */
 export function readHex(buf: any) {
-  let j, s;
+  let j; let s;
   s = "";
   j = 0;
   while (j < buf.length) {
@@ -156,6 +160,7 @@ export function readHex(buf: any) {
     s += sprintf("%02x", buf[j]);
     j++;
   }
+
   return s;
 }
 
@@ -165,13 +170,14 @@ export function readHex(buf: any) {
  * @returns
  */
 export function readHexAddress(buf: any) {
-  let j, s;
+  let j; let s;
   s = [];
   j = 0;
   while (j < buf.length) {
     s.push(sprintf("%02d", buf[j]));
     j++;
   }
+
   return s.join(":");
 }
 
@@ -186,21 +192,25 @@ export function readIp(buffer: any, offset: number) {
   if (offset === null) {
     offset = 0;
   }
+
   if (offset > buffer.length) {
-    return undefined;
+    return;
   }
-  if (0 === buffer.readUInt8(offset)) {
-    return undefined;
-  } else {
+
+  if (buffer.readUInt8(offset) === 0) {
+    return;
+  }
+ 
     stop = offset + 4;
     return (function () {
       const _results = [];
       while (offset < stop) {
         _results.push(buffer.readUInt8(offset++));
       }
+
       return _results;
     })().join(".");
-  }
+  
 }
 
 /**
@@ -211,12 +221,13 @@ export function readIp(buffer: any, offset: number) {
 export function readMacAddress(buffer: any) {
   let byte;
   return (function () {
-    let _i, _len;
+    let _i; let _len;
     const _results = [];
     for (_i = 0, _len = buffer.length; _i < _len; _i++) {
       byte = buffer[_i];
-      _results.push((byte + 0x100).toString(16).substr(-2));
+      _results.push((byte + 0x1_00).toString(16).slice(-2));
     }
+
     return _results;
   })().join(":");
 }
@@ -252,11 +263,12 @@ export function writeIp(buf: any, num: string, ip: any, offset: number) {
   buf[offset++] = 4;
   if (
     (typeof ip !== "string" && !(ip instanceof String)) ||
-    ip.indexOf(".") === -1
+    !ip.includes(".")
   ) {
     ip = "0.0.0.0";
   }
-  ip.split(".").forEach(function (item: any) {
+
+  ip.split(".").forEach((item: any) => {
     buf[offset++] = item;
   });
   return offset;
@@ -280,10 +292,11 @@ export function writeString(
   charArr = hostname.split("");
   buf[offset++] = num;
   buf[offset++] = charArr.length;
-  charArr.forEach(function (chr) {
+  for (const chr of charArr) {
     // charCodeAt(index: number): number
-    //buf[offset++] = chr.charCodeAt() original
+    // buf[offset++] = chr.charCodeAt() original
     buf[offset++] = chr.charCodeAt(0);
-  });
+  }
+
   return offset;
 }

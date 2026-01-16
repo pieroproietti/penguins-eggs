@@ -1,12 +1,13 @@
 /**
  * src/classes/ovary.d/users-remove.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Uses "The SysUser Master" class.
+ * REFACTORED: Uses "The SysUser Master" class.
  * Cleans up host users from the ISO filesystem safely.
  */
 
 import fs from 'fs'
 import path from 'path'
+
 import { exec } from '../../lib/utils.js'
 import Ovary from '../ovary.js'
 import SysUsers from '../sys-users.js'
@@ -14,7 +15,7 @@ import SysUsers from '../sys-users.js'
 export default async function usersRemove(this: Ovary): Promise<void> {
     
     // Il target corretto in Ovary è la directory "merged" dell'overlayfs
-    let target = this.settings.work_dir.merged
+    const target = this.settings.work_dir.merged
 
     // Assicuriamoci che il target esista per sicurezza
     if (!target || !fs.existsSync(target)) {
@@ -43,7 +44,7 @@ export default async function usersRemove(this: Ovary): Promise<void> {
         for (const line of lines) {
             const parts = line.split(':')
             if (parts.length > 2) {
-                const uid = parseInt(parts[2])
+                const uid = Number.parseInt(parts[2])
                 const username = parts[0]
                 
                 // Logica di rimozione standard di eggs

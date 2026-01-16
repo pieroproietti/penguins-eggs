@@ -6,27 +6,25 @@
  * license: MIT
  */
 import chalk from 'chalk'
+import yaml from 'js-yaml'
 import mustache from 'mustache'
 import fs from 'node:fs'
 import path from 'node:path'
-import {shx} from '../../lib/utils.js'
-import yaml from 'js-yaml'
 
 import { IDistro, IInstaller, IRemix } from '../../interfaces/index.js'
-import { exec } from '../../lib/utils.js'
+import {exec, shx } from '../../lib/utils.js'
 import { settings } from './fisherman-helper/settings.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 
-import { ICalamaresFinished } from '../../interfaces/calamares/i-calamares-finished.js'
-
 // pjson
 import { createRequire } from 'node:module'
+
+import { ICalamaresFinished } from '../../interfaces/calamares/i-calamares-finished.js'
 const require = createRequire(import.meta.url)
 const pjson = require('../../../package.json')
-
 import { remove, remove as removePackages, tryInstall } from './fisherman-helper/packages.js'
 
 interface IReplaces {
@@ -36,10 +34,8 @@ interface IReplaces {
 
 export default class Fisherman {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  verbose = false
+installer = {} as IInstaller
+verbose = false
 
   constructor(distro: IDistro, installer: IInstaller, verbose = false) {
     this.distro = distro
@@ -128,7 +124,7 @@ export default class Fisherman {
       }
     }
 
-    let moduleDest = this.installer.modules + name + '.conf'
+    const moduleDest = this.installer.modules + name + '.conf'
     if (fs.existsSync(moduleSource)) {
       shx.cp(moduleSource, moduleDest)
       if (this.verbose) {
@@ -138,6 +134,132 @@ export default class Fisherman {
       console.log('unchanged: ' + chalk.greenBright(name))
     }
 
+  }
+
+  /**
+   * buildModuleDracut
+   */
+  async buildModuleDracut(initrd: string) {
+    const name = 'dracut'
+
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    const moduleDest = this.installer.modules + name + '.conf'
+    const template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { initrd }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+  }
+
+  /**
+   * buildModuleFinished
+   */
+  async buildModuleFinished() {
+    const name = 'finished'
+    await this.buildModule(name)
+    const file = this.installer.modules + name + '.conf'
+    const fileContent = fs.readFileSync(file, 'utf8')
+    const values = yaml.load(fileContent) as ICalamaresFinished
+    values.restartNowCommand = 'reboot'
+    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
+    destContent += '---\n'
+    destContent += yaml.dump(values)
+    fs.writeFileSync(file, destContent, 'utf8')
+  }
+
+  async buildModuleInitcpio() {
+    const { initcpio } = await import('./fisherman-helper/initcpio.js');
+    const preset = await initcpio()
+    const name = 'initcpio'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    const moduleDest = this.installer.modules + name + '.conf'
+    const template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { preset }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+  }
+
+  /**
+   * buildModulePackages
+   */
+  async buildModulePackages(distro: IDistro, release = false) {
+    let backend = 'apt'
+    switch (distro.familyId) {
+    case 'alpine': {
+      backend = 'apk'
+    
+    break;
+    }
+
+    case 'archlinux': {
+      backend = 'pacman'
+    
+    break;
+    }
+
+    case 'fedora': {
+      backend = 'dnf'
+    
+    break;
+    }
+
+    case 'fedora': {
+      backend = 'zypper'
+    
+    break;
+    }
+    // No default
+    }
+
+    const yamlInstall = tryInstall(distro)
+    let yamlRemove = ''
+    if (release) {
+      yamlRemove = removePackages(distro)
+    }
+
+    let operations = ''
+    if (yamlRemove !== '' || yamlInstall !== '') {
+      operations = 'operations:\n' + yamlRemove + yamlInstall
+    }
+
+    const name = 'packages'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    const moduleDest = this.installer.modules + name + '.conf'
+    const template = fs.readFileSync(moduleSource, 'utf8')
+    const view = {
+      backend,
+      operations
+    }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+
+  }
+
+  /**
+   * buildModuleRemoveuser
+   */
+  async buildModuleRemoveuser(username: string) {
+    const name = 'removeuser'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    const moduleDest = this.installer.modules + name + '.conf'
+    const template = fs.readFileSync(moduleSource, 'utf8')
+    const view = { username }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
+  }
+
+  /**
+   * ====================================================================================
+   * buildModule...
+   * ====================================================================================
+   */
+
+  /**
+   * buildModuleUnpackfs
+   */
+  async buildModuleUnpackfs() {
+    const name = 'unpackfs'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
+    const moduleDest = this.installer.modules + name + '.conf'
+    const template = fs.readFileSync(moduleSource, 'utf8')
+    const source = path.join(this.distro.liveMediumPath, this.distro.squashfs)
+    const view = { source }
+    fs.writeFileSync(moduleDest, mustache.render(template, view))
   }
 
   /**
@@ -162,24 +284,6 @@ export default class Fisherman {
     await settings(this.installer.template, this.installer.configRoot, theme, isClone)
   }
 
-  /**
-   *
-   * @param name
-   */
-  async shellprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yaml')
-    const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
-    if (fs.existsSync(moduleSource)) {
-      if (this.verbose) this.show(name, 'shellprocess', moduleDest)
-
-      let fileContent = fs.readFileSync(moduleSource, 'utf-8')
-      fileContent = fileContent.replace(/__LIVE_MEDIUM_PATH__/g, this.distro.liveMediumPath)
-      fs.writeFileSync(moduleDest, fileContent, 'utf-8')
-      
-    } else if (this.verbose) {
-      console.log(`calamares: ${name} shellprocess, nothing to do`)
-    }
-  }
 
   /**
    *
@@ -191,13 +295,33 @@ export default class Fisherman {
     if (fs.existsSync(helperSource)) {
       if (this.verbose) this.show(name, 'helper', helperDest)
 
-      let fileContent = fs.readFileSync(helperSource, 'utf-8')
-      fileContent = fileContent.replace(/__LIVE_MEDIUM_PATH__/g, this.distro.liveMediumPath)
+      let fileContent = fs.readFileSync(helperSource, 'utf8')
+      fileContent = fileContent.replaceAll('__LIVE_MEDIUM_PATH__', this.distro.liveMediumPath)
       fs.writeFileSync(helperDest, fileContent, { encoding: 'utf-8', mode: 0o755 })
     } else if (this.verbose) {
       console.log(`calamares: ${name} helper, nothing to do`)
     }
   }
+
+  /**
+   *
+   * @param name
+   */
+  async shellprocess(name: string) {
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yaml')
+    const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
+    if (fs.existsSync(moduleSource)) {
+      if (this.verbose) this.show(name, 'shellprocess', moduleDest)
+
+      let fileContent = fs.readFileSync(moduleSource, 'utf8')
+      fileContent = fileContent.replaceAll('__LIVE_MEDIUM_PATH__', this.distro.liveMediumPath)
+      fs.writeFileSync(moduleDest, fileContent, 'utf-8')
+      
+    } else if (this.verbose) {
+      console.log(`calamares: ${name} shellprocess, nothing to do`)
+    }
+  }
+
 
   /**
    *
@@ -207,20 +331,8 @@ export default class Fisherman {
    */
   show(name: string, type: string, path: string) {
     switch (type) {
-      case 'module': {
-        console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
-
-        break
-      }
-
       case 'calamares_module': {
         console.log('fisherman: ' + chalk.cyanBright(name) + ' calamares_module in ' + chalk.cyanBright(path))
-
-        break
-      }
-
-      case 'shellprocess': {
-        console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
 
         break
       }
@@ -230,119 +342,20 @@ export default class Fisherman {
 
         break
       }
+
+      case 'module': {
+        console.log('fisherman: ' + chalk.yellow(name) + ' module in ' + chalk.yellow(path))
+
+        break
+      }
+
+      case 'shellprocess': {
+        console.log('fisherman: ' + chalk.green(name) + ' shellprocess in ' + chalk.green(path))
+
+        break
+      }
       // No default
     }
-  }
-
-  /**
-  * ====================================================================================
-  * buildModule...
-  * ====================================================================================
-  */
-
-  /**
-   * buildModuleDracut
-   */
-  async buildModuleDracut(initrd: string) {
-    const name = 'dracut'
-
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    let moduleDest = this.installer.modules + name + '.conf'
-    let template = fs.readFileSync(moduleSource, 'utf8')
-    const view = { initrd: initrd }
-    fs.writeFileSync(moduleDest, mustache.render(template, view))
-  }
-
-  async buildModuleInitcpio() {
-    const { initcpio } = await import('./fisherman-helper/initcpio.js');
-    const preset = await initcpio()
-    const name = 'initcpio'
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    let moduleDest = this.installer.modules + name + '.conf'
-    let template = fs.readFileSync(moduleSource, 'utf8')
-    const view = { preset: preset }
-    fs.writeFileSync(moduleDest, mustache.render(template, view))
-  }
-
-  /**
-   * buildModuleFinished
-   */
-  async buildModuleFinished() {
-    const name = 'finished'
-    await this.buildModule(name)
-    let file = this.installer.modules + name + '.conf'
-    let fileContent = fs.readFileSync(file, 'utf8')
-    let values = yaml.load(fileContent) as ICalamaresFinished
-    values.restartNowCommand = 'reboot'
-    let destContent = `# ${name}.conf, created by penguins-eggs ${pjson.version}\n`
-    destContent += '---\n'
-    destContent += yaml.dump(values)
-    fs.writeFileSync(file, destContent, 'utf8')
-  }
-
-
-  /**
-   * buildModulePackages
-   */
-  async buildModulePackages(distro: IDistro, release = false) {
-    let backend = 'apt'
-    if (distro.familyId === 'alpine') {
-      backend = 'apk'
-    } else if (distro.familyId === 'archlinux') {
-      backend = 'pacman'
-    } else if (distro.familyId === 'fedora') {
-      backend = 'dnf'
-    } else if (distro.familyId === 'fedora') {
-      backend = 'zypper'
-    }
-
-    const yamlInstall = tryInstall(distro)
-    let yamlRemove = ''
-    if (release) {
-      yamlRemove = removePackages(distro)
-    }
-
-    let operations = ''
-    if (yamlRemove !== '' || yamlInstall !== '') {
-      operations = 'operations:\n' + yamlRemove + yamlInstall
-    }
-
-    const name = 'packages'
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    let moduleDest = this.installer.modules + name + '.conf'
-    let template = fs.readFileSync(moduleSource, 'utf8')
-    const view = {
-      backend: backend,
-      operations: operations
-    }
-    fs.writeFileSync(moduleDest, mustache.render(template, view))
-
-  }
-
-  /**
-   * buildModuleRemoveuser
-   */
-  async buildModuleRemoveuser(username: string) {
-    const name = 'removeuser'
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    let moduleDest = this.installer.modules + name + '.conf'
-    let template = fs.readFileSync(moduleSource, 'utf8')
-    const view = { username: username }
-    fs.writeFileSync(moduleDest, mustache.render(template, view))
-  }
-
-
-  /**
-   * buildModuleUnpackfs
-   */
-  async buildModuleUnpackfs() {
-    const name = 'unpackfs'
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    let moduleDest = this.installer.modules + name + '.conf'
-    let template = fs.readFileSync(moduleSource, 'utf8')
-    let source = path.join(this.distro.liveMediumPath, this.distro.squashfs)
-    const view = { source: source }
-    fs.writeFileSync(moduleDest, mustache.render(template, view))
   }
 
 }

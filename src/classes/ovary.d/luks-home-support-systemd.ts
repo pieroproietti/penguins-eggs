@@ -8,9 +8,8 @@
 
 // packages
 import fs from 'fs'
-import path from 'path'
+import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { dirname } from 'path'
 
 // classes
 import Ovary from '../ovary.js'
@@ -80,6 +79,7 @@ WantedBy=local-fs.target
   if (fs.existsSync(symlinkPath)) {
     fs.unlinkSync(symlinkPath)
   }
+
   fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
 }
 

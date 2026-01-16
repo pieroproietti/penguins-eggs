@@ -6,18 +6,18 @@
  * license: MIT
  */
 
-import Distro from '../../classes/distro.js'
-import Utils from '../../classes/utils.js'
-import Pacman from '../../classes/pacman.js'
 import { Command, Flags } from '@oclif/core'
+
 import { DependencyManager } from '../../appimage/dependency-manager.js'
+import Distro from '../../classes/distro.js'
+import Pacman from '../../classes/pacman.js'
+import Utils from '../../classes/utils.js'
 import { execSync } from '../../lib/utils.js'
 
 
 export default class Install extends Command {
   static description = 'Automatically check and install system prerequisites'
-
-  static examples = [
+static examples = [
     'eggs setup                           # this help',
     'sudo eggs setup install              # install native dependencies, autocomplete, man, etc',
     'sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage',
@@ -68,6 +68,7 @@ export default class Install extends Command {
           execSync(`mv ${appImagePath} /usr/bin/eggs`)
           console.log(`${appImagePath} moved to /usr/bin/eggs`)
         }
+
         await Pacman.autocompleteInstall()
         await Pacman.manpageInstall()
         await Pacman.configurationInstall()

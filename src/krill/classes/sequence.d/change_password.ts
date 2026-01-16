@@ -1,13 +1,14 @@
 /**
  * src/krill/modules/change-password.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Uses "The SysUser Master" class.
+ * REFACTORED: Uses "The SysUser Master" class.
  * Changes user password directly in /etc/shadow safely (No binaries, SELinux safe).
  */
 
+import fs from 'fs'
+
 import SysUsers from '../../../classes/sys-users.js'
 import Sequence from '../sequence.js'
-import fs from 'fs'
 
 /**
  * changePassword
@@ -17,7 +18,7 @@ import fs from 'fs'
 export default async function changePassword(this: Sequence, name = 'live', newPassword = 'evolution') {
   
   const target = this.installTarget
-  const familyId = this.distro.familyId
+  const {familyId} = this.distro
 
   console.log(`Changing password for user '${name}' via SysUsers...`)
 

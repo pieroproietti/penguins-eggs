@@ -24,12 +24,10 @@ export default class Show extends Command {
   static args = {
     repo: Args.string({ description: 'costume to show', name: 'costume', required: false })
   }
-
-  static description = 'show costumes/accessories in wardrobe'
+static description = 'show costumes/accessories in wardrobe'
   // static args = [{ name: 'costume', description: 'costume', required: false }]
   static example = ['eggs wardrobe show colibri', 'eggs wardrobe show accessories/firmwares', 'eggs wardrobe show accessories/']
-
-  static flags = {
+static flags = {
     help: Flags.help({ char: 'h' }),
     json: Flags.boolean({ char: 'j', description: 'output JSON' }),
     verbose: Flags.boolean({ char: 'v' }),

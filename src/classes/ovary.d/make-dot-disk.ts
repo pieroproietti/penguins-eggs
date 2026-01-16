@@ -8,31 +8,29 @@
 
 import chalk from 'chalk'
 import mustache from 'mustache'
-
 // packages
 import fs, { Dirent } from 'node:fs'
-import {shx} from '../../lib/utils.js'
 import path from 'path'
 
+import {shx} from '../../lib/utils.js'
 // interfaces
-
 // libraries
-
+import Ovary from './../ovary.js'
 // classes
 import Utils from './../utils.js'
-import Ovary from './../ovary.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-   * makeDotDisk
-   */
+ * makeDotDisk
+ */
 export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '') {
     const dotDisk = this.settings.iso_work + '.disk';
     if (fs.existsSync(dotDisk)) {
         shx.rm('-rf', dotDisk);
     }
+
     shx.mkdir('-p', dotDisk);
 
     

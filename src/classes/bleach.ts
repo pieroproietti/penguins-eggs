@@ -29,27 +29,53 @@ export default class Bleach {
     }
 
     const distro = new Distro()
-    if (distro.familyId === 'alpine') {
+    switch (distro.familyId) {
+    case 'alpine': {
       await exec('apk cache clean', echo)
       await exec('apk cache purge', echo)
 
-    } else if (distro.familyId === 'archlinux') {
+    
+    break;
+    }
+
+    case 'archlinux': {
       await exec('yes | sudo pacman -Scc', Utils.setEcho(true))
 
-    } else if (distro.familyId === 'debian') {
+    
+    break;
+    }
+
+    case 'debian': {
       await exec('apt-get clean', echo)
       await exec('apt-get autoclean', echo)
       await exec(`rm /var/lib/apt/lists/lock -rf`, echo)
 
-    } else if (distro.familyId === 'fedora' || distro.familyId === 'openmamba') {
+    
+    break;
+    }
+
+    case 'fedora': 
+    case 'openmamba': {
       await exec(`dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)`)
       await exec(`dnf clean all`, echo)
 
-    } else if (distro.familyId === 'opensuse') {
+    
+    break;
+    }
+
+    case 'opensuse': {
       await exec(`zypper clean`, echo)
       
-    } else if (distro.familyId === 'voidlinux') {
+    
+    break;
+    }
+
+    case 'voidlinux': {
       await exec(`xbps-remove -O`, echo)
+    
+    break;
+    }
+    // No default
     }
 
     await this.cleanFastpack(verbose)
@@ -69,6 +95,7 @@ export default class Bleach {
       echo = { capture: false, echo: true, ignore: true }
       Utils.warning('cleaning fastpack')
     }
+
     await exec(`rm /var/tmp/flatpak-cache-* -rf`, echo)
   }
 
@@ -108,7 +135,7 @@ export default class Bleach {
     } else {
       // Truncate logs, remove archived logs.
       await exec('find /var/log -name "*gz" -print0 | xargs -0r rm -f', echo)
-      await exec('find /var/log/ -type f -exec truncate -s 0 {} \\;', echo)
+      await exec(String.raw`find /var/log/ -type f -exec truncate -s 0 {} \;`, echo)
     }
   }
 

@@ -25,13 +25,10 @@ export default class List extends Command {
   static args = {
     repo: Args.string({ description: 'wardrobe to get', name: 'wardrobe', required: false })
   }
-
-  // static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
+// static args = [{ name: 'wardrobe', description: 'wardrobe', required: false }]
   static description = 'list costumes and accessoires in wardrobe'
-
-  static examples = ['eggs wardrobe list', 'eggs wardrobe list your-wardrobe', 'eggs wardrobe list --distro arch']
-
-  static flags = {
+static examples = ['eggs wardrobe list', 'eggs wardrobe list your-wardrobe', 'eggs wardrobe list --distro arch']
+static flags = {
     distro: Flags.string({ char: 'd', description: 'distro' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })

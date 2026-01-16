@@ -9,13 +9,12 @@
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 import path from 'node:path'
-import { shx } from '../lib/utils.js'
-
 
 import { IDistro } from '../interfaces/index.js'
-import Utils from './utils.js'
+import { shx } from '../lib/utils.js'
 import Diversions from './diversions.js'
 import Pacman from './pacman.js'
+import Utils from './utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -26,9 +25,9 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 class Distro implements IDistro {
   bugReportUrl: string
   codenameId: string
-  distroUniqueId: string
   distroId: string
   distroLike: string
+  distroUniqueId: string
   familyId: string
   homeUrl: string
   isCalamaresAvailable: boolean
@@ -88,7 +87,27 @@ class Distro implements IDistro {
      * 
      */
 
-    if (this.distroId === 'Alpine') {
+    switch (this.distroId) {
+    case 'Almalinux':
+    case 'Fedora': 
+    case 'Nobara': 
+    case 'Rhel': 
+    case 'Rocky': {
+
+      this.familyId = 'fedora'
+      this.distroLike = 'Fedora'
+      this.codenameId = 'rolling' // viene rimosso dal nome
+      this.distroUniqueId = this.familyId // per krill
+      this.liveMediumPath = '/run/initramfs/live/'
+
+      /**
+       * openmamba
+       */
+    
+    break;
+    }
+ 
+    case 'Alpine': {
       /**
        * Alpine compatible
        */
@@ -102,24 +121,11 @@ class Distro implements IDistro {
       /**
        * Fedora family: Almalinux, Fedora, Nobara. Rhel, Rocky
        */
-    } else if (
-        this.distroId === 'Almalinux' ||
-        this.distroId === 'Fedora' ||
-        this.distroId === 'Nobara' ||
-        this.distroId === 'Rhel' ||
-        this.distroId === 'Rocky'
-    ) {
+    
+    break;
+    }
 
-      this.familyId = 'fedora'
-      this.distroLike = 'Fedora'
-      this.codenameId = 'rolling' // viene rimosso dal nome
-      this.distroUniqueId = this.familyId // per krill
-      this.liveMediumPath = '/run/initramfs/live/'
-
-      /**
-       * openmamba
-       */
-    } else if (this.distroId === 'Openmamba') {
+    case 'Openmamba': {
       this.familyId = 'openmamba'
       this.distroLike = 'Openmamba'
       this.codenameId = 'rolling' // viene rimosso dal nome
@@ -129,7 +135,11 @@ class Distro implements IDistro {
       /**
        * opensuse compatible
        */
-    } else if (this.distroId.includes('Opensuse')) {
+    
+    break;
+    }
+
+    default: { if (this.distroId.includes('Opensuse')) {
       this.familyId = 'opensuse'
       this.distroLike = 'Opensuse' // this.distroId
       this.codenameId = 'rolling' // sistemare non 
@@ -145,7 +155,141 @@ class Distro implements IDistro {
       /**
        * Arch 
        */
-      if (this.codenameId === 'rolling' || this.codenameId === 'n/a') {
+      switch (this.codenameId) {
+      case 'beowulf': {
+        this.distroLike = 'Devuan'
+        this.distroUniqueId = 'beowulf'
+
+        /**
+         * Devuan chimaera
+         */
+      
+      break;
+      }
+ 
+      case 'bookworm': {
+        this.distroLike = 'Debian'
+        this.distroUniqueId = 'bookworm'
+
+        /**
+         * Debian 13 trixie
+         */
+      
+      break;
+      }
+
+      case 'bullseye': {
+        this.distroLike = 'Debian'
+        this.distroUniqueId = 'bullseye'
+
+        /**
+         * Debian 12 bookworm
+         */
+      
+      break;
+      }
+
+      case 'buster': {
+        this.distroLike = 'Debian'
+        this.distroUniqueId = 'buster'
+
+        /**
+         * Debian 11 bullseye
+         */
+      
+      break;
+      }
+
+      case 'chimaera': {
+        this.distroLike = 'Devuan'
+        this.distroUniqueId = 'chimaera'
+
+        /**
+         * Devuan daedalus
+         */
+      
+      break;
+      }
+
+      case 'daedalus': {
+        this.distroLike = 'Devuan'
+        this.distroUniqueId = 'daedalus'
+
+        /**
+         * Devuan excalibur
+         */
+      
+      break;
+      }
+
+      case 'devel': {
+        this.distroLike = 'Ubuntu'
+        this.distroUniqueId = 'devel'
+
+      
+      break;
+      }
+
+      case 'excalibur': {
+        this.distroLike = 'Devuan'
+        this.distroUniqueId = 'excalibur'
+
+        /**
+         * Ubuntu focal
+         */
+      
+      break;
+      }
+
+      case 'focal': {
+        this.distroLike = 'Ubuntu'
+        this.distroUniqueId = 'focal'
+
+        /**
+         * Ubuntu jammy
+         */
+      
+      break;
+      }
+
+      case 'forky': {
+        this.distroLike = 'Debian'
+        this.distroUniqueId = 'forky'
+
+        /**
+         * Devuan beowulf
+         */
+      
+      break;
+      }
+
+      case 'jammy': {
+        this.distroLike = 'Ubuntu'
+        this.distroUniqueId = 'jammy'
+
+        /**
+         * Ubuntu noble
+         */
+      
+      break;
+      }
+
+      case 'jessie': {
+        this.distroLike = 'Debian'
+        this.distroUniqueId = 'jessie'
+        this.liveMediumPath = '/lib/live/mount/medium/'
+        this.isCalamaresAvailable = false
+
+        /**
+         * Debian 9 stretch
+         */
+      
+      break;
+      }
+
+      case 'n/a':
+
+      case 'rolling': {
         this.familyId = 'archlinux'
         this.distroLike = 'Arch'
         this.codenameId = 'rolling'
@@ -156,16 +300,22 @@ class Distro implements IDistro {
         /**
          * Debian 8 jessie
          */
-      } else if (this.codenameId === 'jessie') {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'jessie'
-        this.liveMediumPath = '/lib/live/mount/medium/'
-        this.isCalamaresAvailable = false
+      
+      break;
+      }
+
+      case 'noble': {
+        this.distroLike = 'Ubuntu'
+        this.distroUniqueId = 'noble'
 
         /**
-         * Debian 9 stretch
+         * Ubuntu devel
          */
-      } else if (this.codenameId === 'stretch') {
+      
+      break;
+      }
+
+      case 'stretch': {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'stretch'
         this.liveMediumPath = '/lib/live/mount/medium/'
@@ -174,96 +324,23 @@ class Distro implements IDistro {
         /**
          * Debian 10 buster
          */
-      } else if (this.codenameId === 'buster') {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'buster'
+      
+      break;
+      }
 
-        /**
-         * Debian 11 bullseye
-         */
-      } else if (this.codenameId === 'bullseye') {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'bullseye'
-
-        /**
-         * Debian 12 bookworm
-         */
-      } else if (this.codenameId === 'bookworm') {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'bookworm'
-
-        /**
-         * Debian 13 trixie
-         */
-      } else if (this.codenameId === 'trixie') {
+      case 'trixie': {
         this.distroLike = 'Debian'
         this.distroUniqueId = 'trixie'
-        this.liveMediumPath = '/run/live/medium/'  //initramfs
+        this.liveMediumPath = '/run/live/medium/'  // initramfs
 
         /**
          * Debian 14 forky
          */
-      } else if (this.codenameId === 'forky') {
-        this.distroLike = 'Debian'
-        this.distroUniqueId = 'forky'
+      
+      break;
+      }
 
-        /**
-         * Devuan beowulf
-         */
-      } else if (this.codenameId === 'beowulf') {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'beowulf'
-
-        /**
-         * Devuan chimaera
-         */
-      } else if (this.codenameId === 'chimaera') {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'chimaera'
-
-        /**
-         * Devuan daedalus
-         */
-      } else if (this.codenameId === 'daedalus') {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'daedalus'
-
-        /**
-         * Devuan excalibur
-         */
-      } else if (this.codenameId === 'excalibur') {
-        this.distroLike = 'Devuan'
-        this.distroUniqueId = 'excalibur'
-
-        /**
-         * Ubuntu focal
-         */
-      } else if (this.codenameId === 'focal') {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'focal'
-
-        /**
-         * Ubuntu jammy
-         */
-      } else if (this.codenameId === 'jammy') {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'jammy'
-
-        /**
-         * Ubuntu noble
-         */
-      } else if (this.codenameId === 'noble') {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'noble'
-
-        /**
-         * Ubuntu devel
-         */
-      } else if (this.codenameId === 'devel') {
-        this.distroLike = 'Ubuntu'
-        this.distroUniqueId = 'devel'
-
-      } else {
+      default: {
         /**
          * we must to check derivatives
          */
@@ -286,6 +363,7 @@ class Distro implements IDistro {
         if (fs.existsSync('/etc/penguins-eggs.d/derivatives.yaml')) {
           archDebianDerivatives = '/etc/penguins-eggs.d/derivatives.yaml'
         }
+
         const content = fs.readFileSync(archDebianDerivatives, 'utf8')
         const distros = yaml.load(content) as IDistros[]
         for (const distro of distros) {
@@ -334,6 +412,9 @@ class Distro implements IDistro {
           process.exit(0)
         }
       }
+      }
+    }
+    }
     }
 
 

@@ -1,10 +1,11 @@
 /**
  * ./src/krill/modules/grubcfg.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Adds SELinux permissive mode for RHEL family
+ * REFACTORED: Adds SELinux permissive mode for RHEL family
  */
 
 import fs from 'node:fs'
+
 import Utils from '../../../classes/utils.js'
 import Sequence from '../../classes/sequence.js'
 import { InstallationMode } from '../krill_enums.js'
@@ -27,15 +28,13 @@ export default async function grubcfg(this: Sequence) {
   const grubs = fs.readFileSync(file, 'utf8').split('\n')
   
   // Cache per la verifica della famiglia
-  const isRhelFamily = ['fedora', 'rhel', 'centos', 'almalinux', 'rocky'].includes(this.distro.familyId)
+  const isRhelFamily = ['almalinux', 'centos', 'fedora', 'rhel', 'rocky'].includes(this.distro.familyId)
 
-  for (let i = 0; i < grubs.length; i++) {
-    let line = grubs[i]
+  for (let line of grubs) {
 
     // 1. LOGICA ESISTENTE (BTRFS / LUKS)
     // Questa logica riscrive completamente la riga DEFAULT se necessario
-    if (line.trim().startsWith('GRUB_CMDLINE_LINUX_DEFAULT=')) {
-      if (this.partitions.filesystemType === 'btrfs'){
+    if (line.trim().startsWith('GRUB_CMDLINE_LINUX_DEFAULT=') && this.partitions.filesystemType === 'btrfs') {
         const uuid = Utils.uuid(this.devices.swap.name)
         if (this.partitions.installationMode === InstallationMode.Luks) {
             line = `GRUB_CMDLINE_LINUX_DEFAULT="resume=UUID=${uuid}"`
@@ -43,20 +42,15 @@ export default async function grubcfg(this: Sequence) {
             line = `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash rootflags=subvol=@"`
         }
       }
-    }
 
     // 2. LOGICA SELINUX (RHEL/FEDORA)
     // Applichiamo la modifica sia se la riga è stata appena toccata, sia se è originale.
     // Fedora usa spesso anche GRUB_CMDLINE_LINUX (senza DEFAULT), quindi controlliamo entrambe.
-    if (isRhelFamily) {
-        if (line.trim().startsWith('GRUB_CMDLINE_LINUX_DEFAULT=') || line.trim().startsWith('GRUB_CMDLINE_LINUX=')) {
-            // Se non c'è già il parametro, lo iniettiamo subito dopo la prima virgoletta
-            if (!line.includes('enforcing=0')) {
+    if (isRhelFamily && (line.trim().startsWith('GRUB_CMDLINE_LINUX_DEFAULT=') || line.trim().startsWith('GRUB_CMDLINE_LINUX=')) && // Se non c'è già il parametro, lo iniettiamo subito dopo la prima virgoletta
+            !line.includes('enforcing=0')) {
                 line = line.replace('="', '="enforcing=0 ')
                 console.log(`- GRUB: injected enforcing=0 into ${line.split('=')[0]}`)
             }
-        }
-    }
 
     content += line + '\n'
   }

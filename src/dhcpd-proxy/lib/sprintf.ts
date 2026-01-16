@@ -9,7 +9,7 @@ export default function sprintf(format: string, ...args: any[]): string {
     /%%|%(\d+\$)?([-+'#0 ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([scboxXuidfegEG])/g;
 
   const pad = (str: string, len: number, chr: string, leftJustify: boolean): string => {
-    const padding = str.length >= len ? "" : Array(1 + len - str.length).join(chr || ' ');
+    const padding = str.length >= len ? "" : Array.from({length: 1 + len - str.length}).join(chr || ' ');
     return leftJustify ? str + padding : padding + str;
   };
 
@@ -32,6 +32,7 @@ export default function sprintf(format: string, ...args: any[]): string {
           value.slice(prefix.length);
       }
     }
+
     return value;
   };
 
@@ -45,8 +46,8 @@ export default function sprintf(format: string, ...args: any[]): string {
     zeroPad: boolean,
   ): string => {
     const number = value >>> 0;
-    let p = (prefix && number && ({ 2: "0b", 8: "0", 16: "0x" } as const)[base]) || "";
-    let val = p + pad(number.toString(base), precision || 0, "0", false);
+    const p = (prefix && number && ({ 2: "0b", 8: "0", 16: "0x" } as const)[base]) || "";
+    const val = p + pad(number.toString(base), precision || 0, "0", false);
     return justify(val, p, leftJustify, minWidth, zeroPad);
   };
 
@@ -61,6 +62,7 @@ export default function sprintf(format: string, ...args: any[]): string {
     if (precision !== null && precision !== undefined) {
       value = value.slice(0, precision);
     }
+
     return justify(value, "", leftJustify, minWidth, zeroPad, customPadChar);
   };
 
@@ -84,12 +86,23 @@ export default function sprintf(format: string, ...args: any[]): string {
     let customPadChar = " ";
     for (let j = 0; flags && j < flags.length; j++) {
         switch (flags.charAt(j)) {
-            case " ": positivePrefix = " "; break;
-            case "+": positivePrefix = "+"; break;
-            case "-": leftJustify = true; break;
-            case "'": customPadChar = flags.charAt(j + 1); break;
-            case "0": zeroPad = true; break;
-            case "#": prefixBaseX = true; break;
+            case " ": { positivePrefix = " "; break;
+            }
+
+            case "0": { zeroPad = true; break;
+            }
+
+            case "#": { prefixBaseX = true; break;
+            }
+
+            case "'": { customPadChar = flags.charAt(j + 1); break;
+            }
+
+            case "+": { positivePrefix = "+"; break;
+            }
+
+            case "-": { leftJustify = true; break;
+            }
         }
     }
     
@@ -97,44 +110,53 @@ export default function sprintf(format: string, ...args: any[]): string {
     if (minWidthStr === "*") {
         minWidth = +args[i++];
     } else if (minWidthStr?.charAt(0) === "*") {
-        minWidth = +args[parseInt(minWidthStr.slice(1, -1)) - 1];
+        minWidth = +args[Number.parseInt(minWidthStr.slice(1, -1)) - 1];
     }
+
     if (minWidth < 0) {
         minWidth = -minWidth;
         leftJustify = true;
     }
+
     if (!isFinite(minWidth)) {
-        throw new Error("sprintf: (minimum-)width must be finite");
+        throw new TypeError("sprintf: (minimum-)width must be finite");
     }
 
     let precision: number | undefined = precisionStr ? +precisionStr : undefined;
     if (precisionStr === "*") {
         precision = +args[i++];
     } else if (precisionStr?.charAt(0) === "*") {
-        precision = +args[parseInt(precisionStr.slice(1, -1)) - 1];
-    }
-    if (precision === undefined) {
-        precision = "fFeE".indexOf(type) > -1 ? 6 : type === "d" ? 0 : undefined;
+        precision = +args[Number.parseInt(precisionStr.slice(1, -1)) - 1];
     }
 
-    let value = valueIndex ? args[parseInt(valueIndex.slice(0, -1)) - 1] : args[i++];
+    if (precision === undefined) {
+        precision = "fFeE".includes(type) ? 6 : type === "d" ? 0 : undefined;
+    }
+
+    const value = valueIndex ? args[Number.parseInt(valueIndex.slice(0, -1)) - 1] : args[i++];
 
     switch (type) {
-        case "s": return formatString(String(value), leftJustify, minWidth, precision, zeroPad, customPadChar);
-        case "c": return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
-        case "b": return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-        case "o": return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-        case "x": return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-        case "X": return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad).toUpperCase();
-        case "u": return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
-        case "i":
-        case "d": {
+        case "b": { return formatBaseX(value, 2, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        }
+
+        case "c": { return formatString(String.fromCharCode(+value), leftJustify, minWidth, precision, zeroPad);
+        }
+
+        case "d":
+        case "i": {
             const number = +value | 0;
             const prefix = number < 0 ? "-" : positivePrefix;
             const val = prefix + pad(String(Math.abs(number)), precision || 0, "0", false);
             return justify(val, prefix, leftJustify, minWidth, zeroPad);
         }
-        case "e": case "E": case "f": case "F": case "g": case "G": {
+
+        case "e":
+        case "E":
+        case "f":
+        case "F":
+        case "g":
+
+        case "G": { {
             const number = +value;
             const prefix = number < 0 ? "-" : positivePrefix;
             const method = ["toExponential", "toFixed", "toPrecision"]["efg".indexOf(type.toLowerCase())] as 'toExponential' | 'toFixed' | 'toPrecision';
@@ -142,10 +164,42 @@ export default function sprintf(format: string, ...args: any[]): string {
             const val = prefix + (Math.abs(number) as any)[method](precision);
             return (justify(val, prefix, leftJustify, minWidth, zeroPad) as any)[textTransform]();
         }
-        default:
+
+;
+        }
+
+ case "o": { { return formatBaseX(value, 8, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        }
+
+;
+ }
+
+ case "s": { { return formatString(String(value), leftJustify, minWidth, precision, zeroPad, customPadChar);
+        }
+
+;
+ }
+
+ case "u": { { return formatBaseX(value, 10, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        }
+
+;
+ }
+
+ case "x": { { return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad);
+        }
+
+;
+ }
+
+ case "X": { return formatBaseX(value, 16, prefixBaseX, leftJustify, minWidth, precision, zeroPad).toUpperCase();
+        }
+
+        default: {
             return substring;
+        }
     }
   };
 
-  return format.replace(regex, doFormat);
+  return format.replaceAll(regex, doFormat);
 }

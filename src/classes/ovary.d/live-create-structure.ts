@@ -8,26 +8,23 @@
 
 import chalk from 'chalk'
 import mustache from 'mustache'
-
 // packages
 import fs from 'node:fs'
 import path from 'path'
 
 // interfaces
-
 // libraries
 import { exec } from '../../lib/utils.js'
-
+import Ovary from './../ovary.js'
 // classes
 import Utils from './../utils.js'
-import Ovary from './../ovary.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
-   * Crea la struttura della workdir
-   */
+ * Crea la struttura della workdir
+ */
 export async function liveCreateStructure(this: Ovary) {
     Utils.warning(`creating live structure on ${this.nest}`)
 
@@ -78,7 +75,7 @@ export async function liveCreateStructure(this: Ovary) {
  */
 async function tryCatch(cmd = '', verbose = false) {
     try {
-        let echo = Utils.setEcho(verbose)
+        const echo = Utils.setEcho(verbose)
         // console.log(cmd)
         await exec(cmd, echo)
     } catch (error) {

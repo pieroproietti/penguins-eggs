@@ -18,7 +18,7 @@ import Sequence from '../../classes/sequence.js'
 export default async function umount(this: Sequence, mountPoint = '') {
   let message = 'umount: ' + mountPoint
   if (Utils.isMountpoint(mountPoint)) {
-    let cmd = `umount ${mountPoint} ${this.toNull}`
+    const cmd = `umount ${mountPoint} ${this.toNull}`
     try {
       await exec(cmd, this.echo)
       await exec('sleep 1', this.echo)

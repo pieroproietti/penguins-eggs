@@ -7,6 +7,7 @@
  */
 
 import fs from 'node:fs'
+
 import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
@@ -113,10 +114,11 @@ export default class Opensuse {
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
     const cmd= `rpm -q ${packageName}`
-    const code = shx.exec(cmd, { silent: true }).code
+    const {code} = shx.exec(cmd, { silent: true })
     if (code === 0) {
       installed = true
     }
+
     return installed
   }
 }

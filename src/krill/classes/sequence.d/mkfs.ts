@@ -7,11 +7,12 @@
  * https://stackoverflow.com/questions/23876782/how-do-i-split-a-typescript-class-into-multiple-files
  */
 
-import { exec, shx } from '../../../lib/utils.js'
-import { InstallationMode, SwapChoice } from '../krill_enums.js'
-import Sequence from '../../classes/sequence.js'
-import Utils from '../../../classes/utils.js'
 import { execFileSync } from 'node:child_process'
+
+import Utils from '../../../classes/utils.js'
+import { exec, shx } from '../../../lib/utils.js'
+import Sequence from '../../classes/sequence.js'
+import { InstallationMode, SwapChoice } from '../krill_enums.js'
 
 
 /**
@@ -63,6 +64,7 @@ export default async function mkfs(this: Sequence): Promise<boolean> {
         this.devices.boot.fsType = 'ext2'
         this.devices.boot.mountPoint = '/boot'
       }
+
       // await exec(`mke2fs -Ft ${this.devices.boot.fsType} ${this.devices.boot.name} ${this.toNull}`, this.echo)
       await exec(`mkfs.${this.devices.boot.fsType} -F ${this.devices.boot.name} ${this.toNull}`, this.echo)
     }

@@ -7,36 +7,32 @@
  */
 
 import mustache from 'mustache'
-
 // packages
 import fs from 'node:fs'
 import path from 'node:path'
 
 // backup
-
 // interfaces
-
 // libraries
 import { exec } from '../../lib/utils.js'
 import Diversions from './../diversions.js'
-
 // classes
 import Ovary from './../ovary.js'
 import Utils from './../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-let bootloaders = '/usr/lib/'
+const bootloaders = '/usr/lib/'
 
 
 /**
-   * syslinux: da syspath
-   */
+ * syslinux: da syspath
+ */
 export async function syslinux(this: Ovary, theme = 'eggs') {
     const bootloaders = Diversions.bootloaders(this.familyId)
 
-    let sysPath = path.join(bootloaders, 'syslinux/modules/bios')
-    let isoPath = path.join(bootloaders, 'ISOLINUX')
+    const sysPath = path.join(bootloaders, 'syslinux/modules/bios')
+    const isoPath = path.join(bootloaders, 'ISOLINUX')
 
     await exec(`cp ${sysPath}/chain.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
     await exec(`cp ${isoPath}/isohdpfx.bin ${this.settings.iso_work}/isolinux/`, this.echo)
@@ -98,6 +94,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
             process.exit()
         }
     }
+
     // Splash
     fs.copyFileSync(splashSrc, splashDest)
 
@@ -106,7 +103,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
 
     // isolinux.main.cfg
     const kernel_parameters = Diversions.kernelParameters(this.familyId, this.volid, this.fullcrypt)
-    let template = fs.readFileSync(isolinuxTemplate, 'utf8')
+    const template = fs.readFileSync(isolinuxTemplate, 'utf8')
 
     let fullname = this.settings.remix.fullname.toUpperCase() 
     if (this.hidden) {
@@ -114,7 +111,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     }
 
     const view = {
-        fullname: fullname,
+        fullname,
         initrdImg: `/live/${path.basename(this.initrd)}`,
         kernel: this.kernel,
         kernel_parameters,

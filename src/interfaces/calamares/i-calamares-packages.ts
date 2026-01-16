@@ -9,8 +9,9 @@ export interface ICalamaresPackages {
   backend:
     | "apk"
     | "apt"
-    | "dnf"
     | "dnf5"
+    | "dnf"
+    | "dummy"
     | "entropy"
     | "luet"
     | "packagekit"
@@ -18,22 +19,21 @@ export interface ICalamaresPackages {
     | "pamac"
     | "portage"
     | "yum"
-    | "zypp"
-    | "dummy";
-  update_db?: boolean;
-  update_system?: boolean;
-  skip_if_no_internet?: boolean;
-  pacman?: {
-    num_retries?: number;
-    disable_download_timeout?: boolean;
-    needed_only?: boolean;
-  };
+    | "zypp";
   operations?: {
     install?: unknown[];
+    localInstall?: unknown[];
     remove?: unknown[];
+    source?: string;
     try_install?: unknown[];
     try_remove?: unknown[];
-    localInstall?: unknown[];
-    source?: string;
   }[];
+  pacman?: {
+    disable_download_timeout?: boolean;
+    needed_only?: boolean;
+    num_retries?: number;
+  };
+  skip_if_no_internet?: boolean;
+  update_db?: boolean;
+  update_system?: boolean;
 }

@@ -10,7 +10,7 @@ export interface IEggsConfigTools {
   filterPackages: string
   localPathIso: string
   remoteHost: string
-  remotePathPackages: string
   remotePathIso: string
+  remotePathPackages: string
   remoteUser: string
 }

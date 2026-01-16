@@ -1,17 +1,18 @@
 /**
  * ./src/krill/classes/secquence.d/add-user.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
- * * REFACTORED: Uses "The SysUser Master" class.
+ * REFACTORED: Uses "The SysUser Master" class.
  * Replaces chroot/binary dependencies with pure Node.js manipulation.
  */
+
+import fs from 'fs'
+import yaml from 'js-yaml'
+import path from 'path'
 
 import SysUsers, { IPasswdEntry } from '../../../classes/sys-users.js'
 import Utils from '../../../classes/utils.js'
 import { exec } from '../../../lib/utils.js'
 import Sequence from '../sequence.js'
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
 
 interface IUserCalamares {
     defaultGroups: string[]
@@ -21,7 +22,7 @@ interface IUserCalamares {
 export default async function addUser(this: Sequence, username = 'live', password = 'evolution', fullusername = '', roomNumber = '', workPhone = '', homePhone = ''): Promise<void> {
     
     const target = this.installTarget
-    const familyId = this.distro.familyId
+    const {familyId} = this.distro
     
     // --- 1. INIZIALIZZAZIONE SYSUSERS ---
     const sysUsers = new SysUsers(target, familyId)
@@ -39,13 +40,13 @@ export default async function addUser(this: Sequence, username = 'live', passwor
 
     // Definizione oggetto utente
     const newUser: IPasswdEntry = {
-        username: username,
-        password: 'x',
-        uid: '1000', // Hardcoded per il primo utente (standard installer)
-        gid: '1000',
         gecos: `${fullusername},${roomNumber},${workPhone},${homePhone}`,
+        gid: '1000',
         home: `/home/${username}`,
-        shell: shell
+        password: 'x',
+        shell,
+        uid: '1000', // Hardcoded per il primo utente (standard installer)
+        username
     }
 
     // --- 3. MODIFICHE LOGICHE (IN MEMORIA) ---
@@ -55,11 +56,12 @@ export default async function addUser(this: Sequence, username = 'live', passwor
 
     // Aggiungi ai gruppi amministrativi (logica distro)
     let adminGroup = 'wheel'
-    if (['debian', 'ubuntu', 'linuxmint', 'pop', 'neon'].includes(familyId)) {
+    if (['debian', 'linuxmint', 'neon', 'pop', 'ubuntu'].includes(familyId)) {
         adminGroup = 'sudo'
     } else if (familyId === 'openmamba') {
         adminGroup = 'sysadmin'
     }
+
     sysUsers.addUserToGroup(username, adminGroup)
 
     // Aggiungi ai gruppi definiti in Calamares/Eggs config
@@ -77,8 +79,8 @@ export default async function addUser(this: Sequence, username = 'live', passwor
                     sysUsers.addUserToGroup(username, grp)
                 }
             }
-        } catch (e) { 
-            console.error('Warning: Error parsing users.conf, skipping extra groups.', e) 
+        } catch (error) { 
+            console.error('Warning: Error parsing users.conf, skipping extra groups.', error) 
         }
     }
 
@@ -117,7 +119,7 @@ export default async function addUser(this: Sequence, username = 'live', passwor
     // --- 6. FIX SELINUX FINALE (HOME & RELABEL) ---
     // SysUsers ha sistemato /etc/*, ma la home directory è appena stata creata
     // e potrebbe avere contesti errati.
-    if (['fedora', 'rhel', 'centos', 'almalinux', 'rocky'].includes(familyId)) {
+    if (['almalinux', 'centos', 'fedora', 'rhel', 'rocky'].includes(familyId)) {
         try {
             console.log('Applying SELinux contexts to home directory...')
             // Fix contesto home
@@ -125,8 +127,8 @@ export default async function addUser(this: Sequence, username = 'live', passwor
             
             // Fix "Nuclear Option": forza relabel al boot se qualcosa fosse sfuggito
             await exec(`touch ${target}/.autorelabel`, { echo: false })
-        } catch (e) {
-            console.error('SELinux home fix warning:', e)
+        } catch (error) {
+            console.error('SELinux home fix warning:', error)
         }
     }
 

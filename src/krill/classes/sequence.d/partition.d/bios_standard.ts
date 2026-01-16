@@ -11,7 +11,7 @@ import { exec } from '../../../../lib/utils.js'
 import Sequence from '../../sequence.js'
 
 /**
- * * @param this 
+ * @param this 
  * @param installDevice 
  * @param p 
  * @returns 

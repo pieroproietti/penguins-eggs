@@ -7,37 +7,28 @@
  */
 
 import { Command, Flags } from '@oclif/core'
+import os from 'node:os'
 
 import Distro from '../../classes/distro.js'
 import Diversions from '../../classes/diversions.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
-import { exec } from '../../lib/utils.js'
-import os from 'node:os'
-
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
-import { execSync } from '../../lib/utils.js'
+import { exec , execSync } from '../../lib/utils.js'
 
 export default class ExportAppimage extends Command {
   static description = 'export penguins-eggs AppImage to the destination host'
-
-  static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
-
-  static flags = {
+static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
+static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old .AppImage before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-
-  user = ''
-
-  clean = false
-
-  verbose = false
-
-  echo = {}
-
-  Tu = new Tools()
+clean = false
+echo = {}
+Tu = new Tools()
+user = ''
+verbose = false
 
   /**
    * 
@@ -55,6 +46,7 @@ export default class ExportAppimage extends Command {
         this.user = (execSync('echo $DOAS_USER') || '').trim()
       }
     }
+
     this.clean = flags.clean
     this.verbose = flags.verbose
     this.echo = Utils.setEcho(this.verbose)
@@ -62,10 +54,10 @@ export default class ExportAppimage extends Command {
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
 
-    let localPath = "$HOME/penguins-eggs"
-    let remotePath = "/eggs/"
-    let filter = `penguins-eggs-+([0-9.])-*.AppImage`
-    //let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.AppImage`
+    const localPath = "$HOME/penguins-eggs"
+    const remotePath = "/eggs/"
+    const filter = `penguins-eggs-+([0-9.])-*.AppImage`
+    // let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.AppImage`
 
     let cmd = `#!/bin/bash\n`
     cmd += `set -e\n`
@@ -90,8 +82,10 @@ export default class ExportAppimage extends Command {
       if (this.clean) {
         console.log(`remove: ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${filter}`)
       }
+
       console.log(`copy: ${localPath}/${filter} to ${this.Tu.config.remoteUser}@${this.Tu.config.remoteHost}:${remotePath}`)
     }
+
     await exec(cmd, this.echo)
   }
 }

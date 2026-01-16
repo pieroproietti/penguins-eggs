@@ -21,10 +21,8 @@ import yaml from 'js-yaml'
  */
 export default class ToolsStat extends Command {
   static description = 'get statistics from sourceforge'
-
-  static examples = ['eggs tools stat', 'eggs tools stat --month', 'eggs tools stat --year']
-
-  static flags = {
+static examples = ['eggs tools stat', 'eggs tools stat --month', 'eggs tools stat --year']
+static flags = {
     help: Flags.help({ char: 'h' }),
     month: Flags.boolean({ char: 'm', description: 'current month' }),
     year: Flags.boolean({ char: 'y', description: 'current year' })

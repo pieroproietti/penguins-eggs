@@ -15,20 +15,13 @@ import Fisherman from '../fisherman.js'
  */
 export class Manjaro {
   distro: IDistro
-
-  installer = {} as IInstaller
-
-  isClone = false
-
-  release = false
-
-  remix: IRemix
-
-  theme: string
-
-  user_opt: string
-
-  verbose = false
+installer = {} as IInstaller
+isClone = false
+release = false
+remix: IRemix
+theme: string
+user_opt: string
+verbose = false
 
   /**
    * @param remix

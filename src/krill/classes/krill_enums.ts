@@ -19,23 +19,23 @@ export enum InstallationMode {
  * 
  */
 export enum SwapChoice {
+    File = "file",
     None = "none",
     Small = "small",
     Suspend = "suspend",
-    File = "file",
 }
 
 export enum Bios {
-    Legacy = "legacy",
-    EFI = "efi"
+    EFI = "efi",
+    Legacy = "legacy"
 }
 
 export enum FsType {
+    btrfs = "btrfs",
     ext2 = "ext2",
     ext3 = "ext3",
     ext4 = "ext4",
-    btrfs = "btrfs",
+    ntfs = "ntfs",
     xfs = "xfs",
     zfs = "zfs",
-    ntfs = "ntfs",
 }

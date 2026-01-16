@@ -12,22 +12,16 @@ export interface ISettings {
   branding: string;
 
   /**
-   * Se impostato a `true`, chiede una conferma all'utente prima di avviare
-   * la fase di installazione vera e propria.
-   */
-  'prompt-install'?: boolean;
-
-  /**
-   * Controlla la visibilità della barra laterale sinistra che elenca i passaggi
-   * dell'installazione.
-   */
-  'show-sidebar'?: boolean;
-
-  /**
    * Controlla se la finestra può essere chiusa durante l'installazione.
    * `true` permette la chiusura, `false` la impedisce.
    */
   'enable-close-button-during-install'?: boolean;
+
+  /**
+   * Se impostato a `true`, chiede una conferma all'utente prima di avviare
+   * la fase di installazione vera e propria.
+   */
+  'prompt-install'?: boolean;
 
   /**
    * La sequenza principale dei moduli da eseguire. È un array di oggetti,
@@ -35,4 +29,10 @@ export interface ISettings {
    * una lista di nomi di moduli da caricare in quella fase.
    */
   sequence: { [phase: string]: string[] }[];
+
+  /**
+   * Controlla la visibilità della barra laterale sinistra che elenca i passaggi
+   * dell'installazione.
+   */
+  'show-sidebar'?: boolean;
 }

@@ -1,27 +1,27 @@
 export interface ITftpOptions {
+  denyPUT: boolean;
   host: string;
   port: number;
   root: string;
-  denyPUT: boolean;
 }
 
 export interface IDhcpOptions {
-  subnet: string;
-  host: string;
-  tftpserver: string;
   bios_filename: string;
+  broadcast: string;
   efi32_filename: string;
   efi64_filename: string;
-  broadcast: string;
+  host: string;
+  subnet: string;
+  tftpserver: string;
 }
 
 export interface IDhcpd {
+  discover: (pkt: IPacket) => void;
+  inform: (pkt: IPacket) => void;
   // constructor(opts)
   pre_init: (pkt: IPacket) => void;
-  discover: (pkt: IPacket) => void;
-  request: (pkt: IPacket) => void;
-  inform: (pkt: IPacket) => void;
   proxy_request: (pkt: IPacket) => IPacket;
+  request: (pkt: IPacket) => void;
 }
 
 export interface IProxy {
@@ -35,19 +35,19 @@ export interface IServer {
 }
 
 export interface IPacket {
+  chaddr: (chaddr: any) => IPacket; // set chaddr
+  ciaddr: (ciaddr: string) => IPacket; // set coaddr
+  flags: (flags: any) => IPacket; // set flags
+  fname: (fname: any) => IPacket; // set fname
   getRequestedIPAddress: () => string; // this.options[50]
-  op: (op: any) => IPacket; // set op
-  htype: (htype: any) => IPacket; // set htype
+  giaddr: (giaddr: string) => IPacket; // set giaddr
   hlen: (hlen: any) => IPacket; // set hlen
   hops: (hops: any) => IPacket; // set hops
-  xid: (xid: any) => IPacket; // set xid
-  secs: (secs: any) => IPacket; // set secs
-  flags: (flags: any) => IPacket; // set flags
-  ciaddr: (ciaddr: string) => IPacket; // set coaddr
-  siaddr: (siaddr: string) => IPacket; // set siaddr
-  giaddr: (giaddr: string) => IPacket; // set giaddr
-  chaddr: (chaddr: any) => IPacket; // set chaddr
-  sname: (sname: any) => IPacket; // set snme
-  fname: (fname: any) => IPacket; // set fname
+  htype: (htype: any) => IPacket; // set htype
+  op: (op: any) => IPacket; // set op
   options: (options: any) => IPacket;
+  secs: (secs: any) => IPacket; // set secs
+  siaddr: (siaddr: string) => IPacket; // set siaddr
+  sname: (sname: any) => IPacket; // set snme
+  xid: (xid: any) => IPacket; // set xid
 }

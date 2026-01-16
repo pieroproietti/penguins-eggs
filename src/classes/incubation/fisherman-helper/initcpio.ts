@@ -1,3 +1,5 @@
+import { access } from 'fs/promises';
+
 /**
  * ./src/classes/incubation/fisherman-helper/initcpio.ts
  * penguins-eggs v.25.7.x / ecmascript 2020
@@ -6,7 +8,6 @@
  * license: MIT
  */
 import { exec } from '../../../lib/utils.js'
-import { access } from 'fs/promises';
 
 /**
  * Cerca il file .preset per mkinitcpio appropriato per il kernel corrente.
@@ -29,7 +30,7 @@ export async function initcpio(): Promise<string> {
         await access(manjaroPreset);
         return manjaroPreset;
 
-      } catch (e) {
+      } catch {
         try {
           const parts = version.split('.');
           const kernelName = `linux${parts[0]}${parts[1]}`;
@@ -38,7 +39,7 @@ export async function initcpio(): Promise<string> {
           await access(manjaroPresetArch);
           return manjaroPresetArch;
 
-        } catch (e) {
+        } catch {
           // Fallito, si procede al FALLBACK ARCH
         }
       }
@@ -53,6 +54,7 @@ export async function initcpio(): Promise<string> {
         } else if (version.includes('hardened')) {
           kernelType = 'linux-hardened';
         }
+
         const cachyPreset = `/etc/mkinitcpio.d/${kernelType}.preset`
         await access(cachyPreset);
         return cachyPreset;
@@ -78,7 +80,7 @@ export async function initcpio(): Promise<string> {
     await access(archPreset);
     return archPreset;
 
-  } catch (error) {
+  } catch {
     // Lancia un errore se tutti i tentativi falliscono.
     throw new Error(`Impossibile trovare un file .preset valido in /etc/mkinitcpio.d/.`);
   }

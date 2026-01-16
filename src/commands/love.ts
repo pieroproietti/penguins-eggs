@@ -22,17 +22,15 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Love extends Command {
   static description = 'the simplest way to get an egg!'
-
-  static examples = ['eggs auto']
-
-  static flags = {
-    help: Flags.help({ char: 'h' }),
-    verbose: Flags.boolean({ char: 'v' }),
-    hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
-    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+static examples = ['eggs auto']
+static flags = {
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
-    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
+    help: Flags.help({ char: 'h' }),
+    hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
+    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
+    nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
+    verbose: Flags.boolean({ char: 'v' }),
   }
 
   async run(): Promise<void> {
@@ -104,6 +102,7 @@ export default class Love extends Command {
     if (!fs.existsSync(loveConf)) {
       loveConf = __dirname + '/../../conf/love.yaml'
     }
+
     const cmds = yaml.load(fs.readFileSync(loveConf, 'utf8')) as string[]
 
     console.log('The following commands will be executed:')

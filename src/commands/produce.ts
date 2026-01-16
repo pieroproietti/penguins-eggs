@@ -12,19 +12,18 @@ import fs, { link } from 'node:fs'
 import path from 'node:path'
 
 import Compressors from '../classes/compressors.js'
+import Distro from '../classes/distro.js'
 import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
 import Config from './config.js'
-import Distro from '../classes/distro.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Produce extends Command {
   static description = 'produce a live image from your system'
-
-  static examples = [
+static examples = [
     'sudo eggs produce                    # zstd fast compression',
     'sudo eggs produce --pendrive         # zstd compression optimized pendrive',
     'sudo eggs produce --clone            # clear clone (unencrypted)',
@@ -32,16 +31,16 @@ export default class Produce extends Command {
     'sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)',
     'sudo eggs produce --basename=colibri',
   ]
-
-  static flags = {
+static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
-    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
-    fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
+    fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     help: Flags.help({ char: 'h' }),
     hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
+    homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
+    includeRootHome: Flags.boolean({ char: 'i', description: 'folder /root is included on live' }),
     kernel: Flags.string({ char: 'K', description: 'kernel version' }),
     links: Flags.string({ description: 'desktop links', multiple: true }),
     max: Flags.boolean({ char: 'm', description: 'max compression: xz -Xbcj ...' }),
@@ -53,7 +52,6 @@ export default class Produce extends Command {
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
-    includeRootHome: Flags.boolean({ char: 'i', description: 'folder /root is included on live' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
   }
@@ -181,21 +179,22 @@ export default class Produce extends Command {
       if (kernel === undefined) {
         kernel = ''
       }
-      if (kernel !== '') {
-        if (!fs.existsSync(`/usr/lib/modules/${kernel}`)) {
+
+      if (kernel !== '' && !fs.existsSync(`/usr/lib/modules/${kernel}`)) {
           let kernelModules = `/usr/lib/modules/`
           if (!fs.existsSync(kernelModules)) {
             kernelModules = `/lib/modules/`
           }
-          let kernels = fs.readdirSync(kernelModules)
+
+          const kernels = fs.readdirSync(kernelModules)
           console.log("modules available:")
           for (const k of kernels) {
             console.log(`- ${k}`)
           }
+
           console.log(`\nNo available modules for kernel version "${kernel}" in /usr/lib/modules/`)
           process.exit(1)
         }
-      }
 
       /**
        * theme: if not defined will use eggs
@@ -244,7 +243,7 @@ export default class Produce extends Command {
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (i.calamares) {
-        let message = "this is a GUI system, calamares is available, but NOT installed\n"
+        const message = "this is a GUI system, calamares is available, but NOT installed\n"
         Utils.warning(message)
       }
 
