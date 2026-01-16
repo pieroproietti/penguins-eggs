@@ -46,9 +46,8 @@ export default async function networkCfg(this: Sequence) {
     try {
       fs.writeFileSync(file, content, 'utf8')
     } catch {
-      console.log("error on write: " + file)
+      console.log('error on write: ' + file)
     }
-
   } else if (this.distro.familyId === 'debian' && Pacman.packageIsInstalled('netplan.io')) {
     // netplan: to do
   } else if (this.distro.familyId === 'arch') {
@@ -72,7 +71,7 @@ export default async function networkCfg(this: Sequence) {
     try {
       fs.writeFileSync(resolvFile, content, 'utf8')
     } catch {
-      console.log("error on write: " + resolvFile)
+      console.log('error on write: ' + resolvFile)
     }
   }
 }

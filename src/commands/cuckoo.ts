@@ -12,12 +12,12 @@ import network from '../classes/network.js'
 import Pxe from '../classes/pxe.js'
 import Settings from '../classes/settings.js'
 import Utils from '../classes/utils.js'
-import {IDhcpOptions, ITftpOptions} from '../dhcpd-proxy/interfaces/i-pxe.js'
+import { IDhcpOptions, ITftpOptions } from '../dhcpd-proxy/interfaces/i-pxe.js'
 
 export default class Cuckoo extends Command {
   static description = 'PXE start with proxy-dhcp'
-static examples = ['sudo eggs cuckoo']
-static flags = {
+  static examples = ['sudo eggs cuckoo']
+  static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
@@ -26,7 +26,7 @@ static flags = {
     const { args, flags } = await this.parse(Cuckoo)
 
     Utils.titles(this.id + ' ' + this.argv)
-    
+
     if (Utils.isRoot()) {
       const settings = new Settings()
       settings.load()
@@ -47,7 +47,7 @@ static flags = {
         bios_filename: 'lpxelinux.0',
         broadcast: Utils.broadcast(),
         efi32_filename: 'ipxe32.efi',
-        efi64_filename: 'ipxe.pxe',     // era ipxe.efi
+        efi64_filename: 'ipxe.pxe', // era ipxe.efi
         host: n.address,
         subnet: n.cidr,
         tftpserver: n.address

@@ -22,15 +22,15 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Love extends Command {
   static description = 'the simplest way to get an egg!'
-static examples = ['eggs auto']
-static flags = {
+  static examples = ['eggs auto']
+  static flags = {
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
     help: Flags.help({ char: 'h' }),
     hidden: Flags.boolean({ char: 'H', description: 'stealth mode' }),
     homecrypt: Flags.boolean({ char: 'k', description: 'clone crypted home' }),
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
-    verbose: Flags.boolean({ char: 'v' }),
+    verbose: Flags.boolean({ char: 'v' })
   }
 
   async run(): Promise<void> {
@@ -70,11 +70,11 @@ static flags = {
 
     let flagClone = ''
     if (clone) {
-      flagClone = "--clone"
+      flagClone = '--clone'
     } else if (homecrypt) {
-      flagClone = "--homecrypt"
+      flagClone = '--homecrypt'
     } else if (fullcrypt) {
-      flagClone = "--fullcrypt"
+      flagClone = '--fullcrypt'
     }
 
     let nointeractive = false
@@ -83,8 +83,6 @@ static flags = {
       flagNointeractive = '--nointeractive'
       nointeractive = true
     }
-
-
 
     const echo = Utils.setEcho(verbose)
     Utils.titles(this.id + ' ' + this.argv)
@@ -116,7 +114,7 @@ static flags = {
     }
 
     console.log()
-    if (nointeractive || await Utils.customConfirm()) {
+    if (nointeractive || (await Utils.customConfirm())) {
       for (const cmd of cmds) {
         if (cmd.includes('produce')) {
           await exec(`${cmdSudo} ${cmd} ${flagHidden} ${flagVerbose} ${flagClone} ${flagNointeractive}`)

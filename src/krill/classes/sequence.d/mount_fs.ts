@@ -21,7 +21,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   if (!fs.existsSync(this.installTarget)) {
     await exec(`mkdir ${this.installTarget} ${this.toNull}`, this.echo)
   }
-  
+
   // root
   await exec(`mount -t ${this.devices.root.fsType} ${this.devices.root.name} ${this.installTarget}${this.devices.root.mountPoint} ${this.toNull}`, this.echo)
   await exec(`tune2fs -c 0 -i 0 ${this.devices.root.name} ${this.toNull}`, this.echo)
@@ -44,7 +44,7 @@ export async function mountFs(this: Sequence): Promise<boolean> {
   // efi
   if (this.efi && !fs.existsSync(this.installTarget + this.devices.efi.mountPoint)) {
     await exec(`mkdir ${this.installTarget}${this.devices.efi.mountPoint} -p ${this.toNull}`, this.echo)
-    
+
     // utilizzare vfat per evitare errori
     await exec(`mount -t vfat ${this.devices.efi.name} ${this.installTarget}${this.devices.efi.mountPoint} ${this.toNull}`, this.echo)
   }

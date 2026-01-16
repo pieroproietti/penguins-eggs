@@ -16,20 +16,20 @@ import Sequence from '../sequence.js'
  * removeHomecryptHack
  */
 export default async function removeHomecryptHack(this: Sequence): Promise<void> {
-  const targetRoot= this.installTarget
-  
+  const targetRoot = this.installTarget
+
   // -------------------------------------------------------
   // 1. PULIZIA SYSVINIT (Critica per il boot)
   // -------------------------------------------------------
   const inittabPath = path.join(targetRoot, 'etc/inittab')
-  
+
   if (fs.existsSync(inittabPath)) {
     let content = fs.readFileSync(inittabPath, 'utf8')
     // Cerca la riga modificata dal nostro hack
     const hackRegex = /^1:.*tty1-unlock-wrapper\.sh.*$/m
     // Ripristina la riga standard (adatta questa stringa se usi parametri diversi per agetty)
     const standardLine = '1:2345:respawn:/sbin/agetty --noclear tty1 linux'
-    
+
     if (hackRegex.test(content)) {
       content = content.replace(hackRegex, standardLine)
       fs.writeFileSync(inittabPath, content)
@@ -41,34 +41,32 @@ export default async function removeHomecryptHack(this: Sequence): Promise<void>
   // 2. PULIZIA SYSTEMD (Cosmetica / Best Practice)
   // -------------------------------------------------------
   // Anche se non rompe il boot, rimuoviamo i file inutili
-  const systemdFiles = [
-    'etc/systemd/system/mount-encrypted-home.service',
-    'etc/systemd/system/local-fs.target.wants/mount-encrypted-home.service'
-  ]
+  const systemdFiles = ['etc/systemd/system/mount-encrypted-home.service', 'etc/systemd/system/local-fs.target.wants/mount-encrypted-home.service']
 
   for (const fileRelPath of systemdFiles) {
     const fullPath = path.join(targetRoot, fileRelPath)
     if (fs.existsSync(fullPath)) {
-       try {
-         fs.unlinkSync(fullPath)
-       } catch { /* ignore */ }
+      try {
+        fs.unlinkSync(fullPath)
+      } catch {
+        /* ignore */
+      }
     }
   }
 
   // -------------------------------------------------------
   // 3. RIMOZIONE SCRIPT COMUNI
   // -------------------------------------------------------
-  const scriptFiles = [
-    'usr/local/bin/tty1-unlock-wrapper.sh',
-    'usr/local/bin/mount-encrypted-home.sh'
-  ]
+  const scriptFiles = ['usr/local/bin/tty1-unlock-wrapper.sh', 'usr/local/bin/mount-encrypted-home.sh']
 
   for (const fileRelPath of scriptFiles) {
     const fullPath = path.join(targetRoot, fileRelPath)
     if (fs.existsSync(fullPath)) {
       try {
         fs.unlinkSync(fullPath)
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
   }
 }

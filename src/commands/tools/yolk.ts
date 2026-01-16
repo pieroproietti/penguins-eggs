@@ -11,16 +11,16 @@ import fs from 'node:fs'
 
 import Utils from '../../classes/utils.js'
 import Yolk from '../../classes/yolk.js'
-import {shx} from '../../lib/utils.js'
+import { shx } from '../../lib/utils.js'
 
 /**
  *
  */
 export default class ToolsYolk extends Command {
   static description = 'configure eggs to install without internet'
-static dir = '/var/local/yolk'
+  static dir = '/var/local/yolk'
   static examples = ['sudo eggs tools yolk']
-static flags = {
+  static flags = {
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v' })
   }

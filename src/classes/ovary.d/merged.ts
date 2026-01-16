@@ -6,7 +6,6 @@
  * license: MIT
  */
 
-
 // packages
 import path from 'node:path'
 
@@ -29,66 +28,53 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 
 export function copied(this: Ovary, dir: string): boolean {
-    let copied = false
+  let copied = false
 
-    const copiedDirs = [
-        'boot',
-        'etc'
-    ]
+  const copiedDirs = ['boot', 'etc']
 
-    for (const copiedDir of copiedDirs) {
-        if (dir === copiedDir) {
-            copied = true
-        }
+  for (const copiedDir of copiedDirs) {
+    if (dir === copiedDir) {
+      copied = true
     }
+  }
 
-    return copied
+  return copied
 }
 
 /**
- * 
+ *
  */
 export function mergedAndOverlay(this: Ovary, dir: string): boolean {
-    // per Alpine ho agginto bin
-    const moDirs = ['bin', 'usr', 'var']
-    let mergedOverlay = false
-    for (const moDir of moDirs) {
-        if (moDir === dir) {
-            mergedOverlay = true
-        }
+  // per Alpine ho agginto bin
+  const moDirs = ['bin', 'usr', 'var']
+  let mergedOverlay = false
+  for (const moDir of moDirs) {
+    if (moDir === dir) {
+      mergedOverlay = true
     }
+  }
 
-    return mergedOverlay
+  return mergedOverlay
 }
 
 /**
  * merged
  */
 export function merged(this: Ovary, dir: string): boolean {
-    let merged = true
-    if (dir === 'home') {
-        merged = this.clone || this.fullcrypt
-    } else {
-        const onlyFolders = [
-            'cdrom',
-            'dev',
-            'media',
-            'mnt',
-            'proc',
-            'run',
-            'swapfile',
-            'sys',
-            'tmp'
-        ]
-        // deepiin
-        onlyFolders.push('data', 'recovery')
+  let merged = true
+  if (dir === 'home') {
+    merged = this.clone || this.fullcrypt
+  } else {
+    const onlyFolders = ['cdrom', 'dev', 'media', 'mnt', 'proc', 'run', 'swapfile', 'sys', 'tmp']
+    // deepiin
+    onlyFolders.push('data', 'recovery')
 
-        for (const onlyFolder of onlyFolders) {
-            if (dir === onlyFolder) {
-                merged = false
-            }
-        }
+    for (const onlyFolder of onlyFolders) {
+      if (dir === onlyFolder) {
+        merged = false
+      }
     }
+  }
 
-    return merged
+  return merged
 }

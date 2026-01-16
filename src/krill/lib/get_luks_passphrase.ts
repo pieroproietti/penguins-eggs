@@ -14,14 +14,14 @@ export default async function getLuksPassphrase(passphrase = '', confirm = ''): 
       default: passphrase,
       message: `I often use "evolution"\nChoose a passphrase to encrypt device: `,
       name: 'passphrase',
-      type: 'password',
+      type: 'password'
       // validate: requireLetterAndNumber
     },
     {
       default: confirm,
       message: `Confirm your passphrase: `,
       name: 'confirm',
-      type: 'password',
+      type: 'password'
       // validate: requireLetterAndNumber
     }
   ]

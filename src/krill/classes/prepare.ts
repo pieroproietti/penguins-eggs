@@ -16,7 +16,7 @@ import Locales from '../../classes/locales.js'
 import Systemctl from '../../classes/systemctl.js'
 import Utils from '../../classes/utils.js'
 import { IDevices, INet } from '../../interfaces/index.js'
-import {exec, shx } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import { IKeyboard, ILocation, IPartitions, IUsers, IWelcome } from '../interfaces/i_krill.js'
 import { IKrillConfig } from '../interfaces/i_krill_config.js'
 import { FsType, InstallationMode, SwapChoice } from './krill_enums.js'
@@ -44,10 +44,10 @@ export default class Krill {
   krillConfig = {} as IKrillConfig
   locales = new Locales()
   location = location
-network = network
+  network = network
   nointeractive = false
   partitions = partitions
-summary = summary
+  summary = summary
   // Installation flags
   unattended = false
   users = users
@@ -67,43 +67,26 @@ summary = summary
   /**
    * Main prepare method - Simplified and cleaner
    */
-  async prepare(
-    krillConfig = {} as IKrillConfig,
-    ip = false,
-    random = false,
-    domain = '',
-    suspend = false,
-    small = false,
-    none = false,
-    crypted = false,
-    pve = false,
-    btrfs = false,
-    replace = '',
-    testing = false,
-    verbose = false
-  ) {
+  async prepare(krillConfig = {} as IKrillConfig, ip = false, random = false, domain = '', suspend = false, small = false, none = false, crypted = false, pve = false, btrfs = false, replace = '', testing = false, verbose = false) {
     try {
       // System validation
       await this.checkSystemRequirements()
-      
+
       // Configuration setup
       this.krillConfig = krillConfig
       await this.setupConfiguration()
-      
+
       // Stop services
       await this.stopSystemServices(verbose, testing)
-      
+
       // Build configurations
       const configs = await this.buildConfigurations(ip, random, suspend, small, none)
-      
+
       // Interactive or unattended mode
-      const finalConfigs = this.unattended 
-        ? this.applyUnattendedOptions(configs, crypted, pve, btrfs, replace)
-        : await this.runInteractiveMode(crypted, pve, btrfs, replace)
-      
+      const finalConfigs = this.unattended ? this.applyUnattendedOptions(configs, crypted, pve, btrfs, replace) : await this.runInteractiveMode(crypted, pve, btrfs, replace)
+
       // Install
       await this.performInstallation(finalConfigs, domain, testing, verbose)
-      
     } catch (error) {
       await Utils.pressKeyToExit(`${(error as Error).message}\nkrill installer refuses to continue`)
       process.exit()
@@ -118,12 +101,11 @@ summary = summary
 
     // Set defaults for unattended
     oPartitions.installationMode = InstallationMode.EraseDisk
-    if (replace!='') {
+    if (replace != '') {
       oPartitions.installationMode = InstallationMode.Replace
       oPartitions.replacedPartition = replace
       oPartitions.filesystemType = 'ext4'
     }
-    
 
     // Apply options
     if (btrfs) oPartitions.filesystemType = FsType.btrfs
@@ -137,10 +119,10 @@ summary = summary
       if (drives.length > 0) {
         oPartitions.installationDevice = drives[0]
       } else {
-        console.error("[Krll] No suitable disc found for installation. Debug info:")
-        shx.exec('lsblk -o NAME,RM,RO,TYPE,SIZE,MODEL', { silent: false }) 
+        console.error('[Krll] No suitable disc found for installation. Debug info:')
+        shx.exec('lsblk -o NAME,RM,RO,TYPE,SIZE,MODEL', { silent: false })
 
-        throw new Error("Unable to find installation drive")
+        throw new Error('Unable to find installation drive')
       }
     }
 
@@ -172,7 +154,7 @@ summary = summary
 
     // Build configuration objects
     const oWelcome: IWelcome = { language: this.krillConfig.language }
-    
+
     const oLocation: ILocation = {
       language: this.krillConfig.language,
       region: this.krillConfig.region,
@@ -186,7 +168,7 @@ summary = summary
       keyboardVariant: this.krillConfig.keyboardVariant
     }
 
-    let {userSwapChoice} = this.krillConfig
+    let { userSwapChoice } = this.krillConfig
     if (suspend) userSwapChoice = SwapChoice.Suspend
     else if (small) userSwapChoice = SwapChoice.Small
     else if (none) userSwapChoice = SwapChoice.None
@@ -242,8 +224,8 @@ summary = summary
    * Create script to remove LVM partitions
    */
   private async createLvmRemovalScript(): Promise<void> {
-    const scriptName = "removeLvmPartitions"
-    let cmds = "#!/bin/bash\n"
+    const scriptName = 'removeLvmPartitions'
+    let cmds = '#!/bin/bash\n'
     cmds += `# remove LV (Logical Volumes)\n`
     cmds += `vg=$(vgs --noheadings -o vg_name| awk '{$1=$1};1')\n`
     cmds += `lvs -o lv_name --noheadings | awk '{$1=$1};1' | while read -r lv; do\n`
@@ -261,7 +243,7 @@ summary = summary
     cmds += `# clean device\n`
     cmds += `sgdisk --zap-all $pv\n`
     cmds += `dd if=/dev/zero of=$pv bs=1M count=10\n`
-    
+
     fs.writeFileSync(scriptName, cmds)
     await exec(`chmod +x ${scriptName}`)
   }
@@ -270,7 +252,7 @@ summary = summary
    * Generate hostname based on options
    */
   private generateHostname(ip: boolean, random: boolean): string {
-    let {hostname} = this.krillConfig
+    let { hostname } = this.krillConfig
     if (hostname === '') {
       hostname = shx.exec('cat /etc/hostname', { silent: true }).stdout.trim()
     }
@@ -299,9 +281,9 @@ summary = summary
 
     if (testing) {
       console.log()
-      Utils.titles("install --testing")
-      console.log("Just testing krill, the process will end!")
-      console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+      Utils.titles('install --testing')
+      console.log('Just testing krill, the process will end!')
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
       console.log(oPartitions)
       process.exit()
     } else {
@@ -360,7 +342,7 @@ summary = summary
    */
   private async stopSystemServices(verbose: boolean, testing: boolean): Promise<void> {
     const systemdCtl = new Systemctl(verbose)
-    if (await systemdCtl.isActive('udisks2.service') && !testing) {
+    if ((await systemdCtl.isActive('udisks2.service')) && !testing) {
       await systemdCtl.stop('udisks2.service')
     }
   }
@@ -373,10 +355,10 @@ function netmask2CIDR(mask: string) {
   const countCharOccurences = (string: string, char: string) => string.split(char).length - 1
   const decimalToBinary = (dec: number) => (dec >>> 0).toString(2)
   const getNetMaskParts = (nmask: string) => nmask.split('.').map(Number)
-  
+
   return countCharOccurences(
     getNetMaskParts(mask)
-      .map(part => decimalToBinary(part))
+      .map((part) => decimalToBinary(part))
       .join(''),
     '1'
   )

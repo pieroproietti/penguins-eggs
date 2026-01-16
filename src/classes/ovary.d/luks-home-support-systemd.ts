@@ -22,14 +22,14 @@ const __dirname = dirname(__filename)
  * Installa i file necessari per sbloccare home.img LUKS durante il boot
  */
 export function installHomecryptSupport(this: Ovary, squashfsRoot: string, homeImgPath: string): void {
-  Utils.warning ('installing encrypted home support...')
+  Utils.warning('installing encrypted home support...')
   // console.log("squashfsRoot:", squashfsRoot)
   // console.log("homeImgPath:", homeImgPath)
 
   // Leggi il template bash
-    const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
+  const templatePath = path.join(__dirname, '../../../scripts/mount-encrypted-home.sh')
   let bashScript = fs.readFileSync(templatePath, 'utf8')
-  
+
   // Sostituisci il placeholder con il path reale
   bashScript = bashScript.replace('__HOME_IMG_PATH__', homeImgPath)
 
@@ -82,4 +82,3 @@ WantedBy=local-fs.target
 
   fs.symlinkSync('../mount-encrypted-home.service', symlinkPath)
 }
-

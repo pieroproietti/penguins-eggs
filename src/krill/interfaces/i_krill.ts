@@ -33,7 +33,6 @@ export interface IPartitions {
   userSwapChoice: SwapChoice
 }
 
-
 export interface IUsers {
   autologin: boolean
   fullname: string
@@ -50,4 +49,3 @@ export interface ICalamaresModule {
   timeout: number
   type: string
 }
-

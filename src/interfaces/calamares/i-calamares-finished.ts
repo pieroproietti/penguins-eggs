@@ -6,9 +6,9 @@
  * license: MIT
  */
 export interface ICalamaresFinished {
-  notifyOnFinished?: boolean;
-  restartNowChecked?: boolean;
-  restartNowCommand?: string;
-  restartNowEnabled?: boolean;
-  restartNowMode?: "always" | "never" | "user-checked" | "user-unchecked";
+  notifyOnFinished?: boolean
+  restartNowChecked?: boolean
+  restartNowCommand?: string
+  restartNowEnabled?: boolean
+  restartNowMode?: 'always' | 'never' | 'user-checked' | 'user-unchecked'
 }

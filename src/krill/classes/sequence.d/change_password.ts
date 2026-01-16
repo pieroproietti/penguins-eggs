@@ -16,17 +16,16 @@ import Sequence from '../sequence.js'
  * @param newPassword - New plain text password
  */
 export default async function changePassword(this: Sequence, name = 'live', newPassword = 'evolution') {
-  
   const target = this.installTarget
-  const {familyId} = this.distro
+  const { familyId } = this.distro
 
   console.log(`Changing password for user '${name}' via SysUsers...`)
 
   // 1. CARICAMENTO
   // Se non esiste il target (caso strano), usciamo
   if (!fs.existsSync(target)) {
-      console.error(`Error: Target ${target} not found for password change.`)
-      return
+    console.error(`Error: Target ${target} not found for password change.`)
+    return
   }
 
   const sysUsers = new SysUsers(target, familyId)

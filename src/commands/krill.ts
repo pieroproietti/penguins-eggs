@@ -13,7 +13,7 @@ import https from 'node:https'
 
 import Utils from '../classes/utils.js'
 import Krill from '../krill/classes/prepare.js'
-import {shx} from '../lib/utils.js'
+import { shx } from '../lib/utils.js'
 const agent = new https.Agent({
   rejectUnauthorized: false
 })
@@ -25,8 +25,8 @@ import { IKrillConfig } from '../krill/interfaces/i_krill_config.js'
  */
 export default class KrillCommand extends Command {
   static description = 'a TUI system installer - install the system'
-static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
-static flags = {
+  static examples = ['sudo eggs install', 'sudo eggs install --unattended --halt', 'sudo eggs install --chroot']
+  static flags = {
     btrfs: Flags.boolean({ char: 'b', description: 'Format btrfs' }),
     chroot: Flags.boolean({ char: 'c', description: 'chroot before to end' }),
     crypted: Flags.boolean({ char: 'k', description: 'Crypted CLI installation' }),
@@ -41,7 +41,7 @@ static flags = {
     replace: Flags.string({ char: `R`, description: `Replace partition. eg: --replace /dev/sda3` }),
     small: Flags.boolean({ char: 's', description: 'Swap small: RAM' }),
     suspend: Flags.boolean({ char: 'S', description: 'Swap suspend: RAM x 2' }),
-    testing: Flags.boolean({ char: 't', description: "Just testing krill" }),
+    testing: Flags.boolean({ char: 't', description: 'Just testing krill' }),
     unattended: Flags.boolean({ char: 'u', description: 'Unattended installation' }),
     verbose: Flags.boolean({ char: 'v', description: 'Verbose' })
   }
@@ -83,14 +83,13 @@ static flags = {
       // Definiamo la dimensione minima richiesta in bytes (1 GB = 1024*1024*1024 bytes)
       const minSizeBytes = 1024 * 1024 * 1024
       try {
-        const sizeInBytesString = shx.exec(`lsblk -b -n -o SIZE ${replace}`).stdout.trim();
-        const partitionSize = Number.parseInt(sizeInBytesString, 10);
+        const sizeInBytesString = shx.exec(`lsblk -b -n -o SIZE ${replace}`).stdout.trim()
+        const partitionSize = Number.parseInt(sizeInBytesString, 10)
 
         if (partitionSize < minSizeBytes) {
           console.log(`partition to replace ${replace}, is too little`)
           replaceExit = true
         }
-
       } catch {
         console.log(`partition ${replace} does not exists!`)
         replaceExit = true

@@ -14,17 +14,17 @@
  * Contiene le informazioni testuali del prodotto.
  */
 export interface IBrandingStrings {
-    bootloaderEntryName: string;
-    knownIssuesUrl: string;
-    productName: string;
-    productUrl: string;
-    releaseNotesUrl: string;
-    shortProductName: string;
-    shortVersion: string;
-    shortVersionedName: string;
-    supportUrl: string;
-    version: string;
-    versionedName: string;
+  bootloaderEntryName: string
+  knownIssuesUrl: string
+  productName: string
+  productUrl: string
+  releaseNotesUrl: string
+  shortProductName: string
+  shortVersion: string
+  shortVersionedName: string
+  supportUrl: string
+  version: string
+  versionedName: string
 }
 
 /**
@@ -32,9 +32,9 @@ export interface IBrandingStrings {
  * Contiene i nomi dei file delle risorse grafiche.
  */
 export interface IBrandingImages {
-    productIcon: string;
-    productLogo: string;
-    productWelcome: string;
+  productIcon: string
+  productLogo: string
+  productWelcome: string
 }
 
 /**
@@ -43,33 +43,32 @@ export interface IBrandingImages {
  * Nota: Sono incluse sia le varianti con maiuscola che minuscola trovate nel tuo file.
  */
 export interface IBrandingStyle {
-    SidebarBackground: string;
-    sidebarBackground: string;
-    SidebarBackgroundCurrent: string;
-    sidebarBackgroundCurrent: string;
-    SidebarText: string;
-    sidebarText: string;
-    SidebarTextCurrent: string;
-    sidebarTextCurrent: string;
+  SidebarBackground: string
+  sidebarBackground: string
+  SidebarBackgroundCurrent: string
+  sidebarBackgroundCurrent: string
+  SidebarText: string
+  sidebarText: string
+  SidebarTextCurrent: string
+  sidebarTextCurrent: string
 }
-
 
 /**
  * 💡 Interfaccia Principale: IBranding
  * Mappa la struttura radice del file YAML branding.desc.
  */
 export interface IBranding {
-    // Campi di primo livello trovati:
-    componentName: string;
-    // Sezioni complesse:
-    images: IBrandingImages;
-    slideshow: string;
-    slideshowAPI: number;
+  // Campi di primo livello trovati:
+  componentName: string
+  // Sezioni complesse:
+  images: IBrandingImages
+  slideshow: string
+  slideshowAPI: number
 
-    strings: IBrandingStrings;
-    style: IBrandingStyle;
-    welcomeStyleCalamares: boolean;
+  strings: IBrandingStrings
+  style: IBrandingStyle
+  welcomeStyleCalamares: boolean
 
-    // Se ci fossero altri campi non presenti nel tuo YAML ma che Calamares potrebbe usare,
-    // andrebbero aggiunti qui come opzionali (es. window_width?: number).
+  // Se ci fossero altri campi non presenti nel tuo YAML ma che Calamares potrebbe usare,
+  // andrebbero aggiunti qui come opzionali (es. window_width?: number).
 }

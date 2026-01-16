@@ -43,12 +43,12 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Incubator {
   distro: IDistro
-installer = {} as IInstaller
-isClone: boolean
-remix: IRemix
-theme: string
-user_opt: string
-verbose = false
+  installer = {} as IInstaller
+  isClone: boolean
+  remix: IRemix
+  theme: string
+  user_opt: string
+  verbose = false
 
   /**
    *
@@ -81,189 +81,185 @@ verbose = false
     this.createInstallerDirs()
     this.createBranding()
 
-    const {distroUniqueId} = this.distro
+    const { distroUniqueId } = this.distro
 
     try {
-
       /**
        * Alpine
        */
       switch (distroUniqueId) {
-      case 'alpine': {
-        const alpine = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await alpine.create()
+        case 'alpine': {
+          const alpine = new Alpine(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await alpine.create()
 
+          /**
+           * Archlinux
+           */
 
-        /**
-         * Archlinux
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case 'archlinux': {
-        const archlinux = new Archlinux(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await archlinux.create()
+        case 'archlinux': {
+          const archlinux = new Archlinux(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await archlinux.create()
 
-        /**
-         * Manjaro ex rolling
-         */
-      
-      break;
-      }
+          /**
+           * Manjaro ex rolling
+           */
 
-      case 'beowulf': {
-        const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await beowulf.create()
-      
-      break;
-      }
+          break
+        }
 
-      case 'bookworm': {
-        const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await bookworm.create()
-      
-      break;
-      }
+        case 'beowulf': {
+          const beowulf = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await beowulf.create()
 
-      case 'bullseye': {
-        const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await bullseye.create()
-      
-      break;
-      }
+          break
+        }
 
-      case 'buster': {
-        const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await buster.create()
-      
-      break;
-      }
+        case 'bookworm': {
+          const bookworm = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await bookworm.create()
 
-      case 'chimaera': {
-        const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await chimaera.create()
-      
-      break;
-      }
+          break
+        }
 
-      case 'daedalus': {
-        const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await daedalus.create()
-      
-      break;
-      }
+        case 'bullseye': {
+          const bullseye = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await bullseye.create()
 
-      case 'devel': {
-        const devel = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await devel.create()
+          break
+        }
 
-      
-      break;
-      }
+        case 'buster': {
+          const buster = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await buster.create()
 
-      case 'excalibur': {
-        const excalibur = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await excalibur.create()
+          break
+        }
 
-        /**
-         * fedora
-         */
-      
-      break;
-      }
+        case 'chimaera': {
+          const chimaera = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await chimaera.create()
 
-      case 'fedora': {
-        const fedora = new Fedora(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await fedora.create()
+          break
+        }
 
-        /**
-         * openmamba
-         */
-      
-      break;
-      }
+        case 'daedalus': {
+          const daedalus = new Buster(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await daedalus.create()
 
-      case 'focal': {
-        const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await focal.create()
-      
-      break;
-      }
+          break
+        }
 
-      case 'forky': {
-        const forky = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await forky.create()
+        case 'devel': {
+          const devel = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await devel.create()
 
-        /**
-         * Devuan
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case 'jammy': {
-        const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await jammy.create()
-      
-      break;
-      }
+        case 'excalibur': {
+          const excalibur = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await excalibur.create()
 
-      case 'manjaro': {
-        const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await manjaro.create()
+          /**
+           * fedora
+           */
 
-        /**
-         * Debian
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case 'noble': {
-        const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await noble.create()
-      
-      break;
-      }
+        case 'fedora': {
+          const fedora = new Fedora(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await fedora.create()
 
-      case 'openmamba': {
-        const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await mamba.create()
+          /**
+           * openmamba
+           */
 
-        /**
-         * opensuse
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case 'opensuse': {
-        const suse = new Opensuse(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await suse.create()
+        case 'focal': {
+          const focal = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await focal.create()
 
-        /**
-         * Ubuntu
-         */
-      
-      break;
-      }
+          break
+        }
 
-      case 'trixie': {
-        const trixie = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
-        await trixie.create()
-      
-      break;
-      }
-      // No default
+        case 'forky': {
+          const forky = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await forky.create()
+
+          /**
+           * Devuan
+           */
+
+          break
+        }
+
+        case 'jammy': {
+          const jammy = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await jammy.create()
+
+          break
+        }
+
+        case 'manjaro': {
+          const manjaro = new Manjaro(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await manjaro.create()
+
+          /**
+           * Debian
+           */
+
+          break
+        }
+
+        case 'noble': {
+          const noble = new Noble(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await noble.create()
+
+          break
+        }
+
+        case 'openmamba': {
+          const mamba = new Openmamba(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await mamba.create()
+
+          /**
+           * opensuse
+           */
+
+          break
+        }
+
+        case 'opensuse': {
+          const suse = new Opensuse(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await suse.create()
+
+          /**
+           * Ubuntu
+           */
+
+          break
+        }
+
+        case 'trixie': {
+          const trixie = new Trixie(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await trixie.create()
+
+          break
+        }
+        // No default
       }
     } catch (error) {
-      console.error('--- ERRORE FATALE CATTURATO ---');
-      console.error('L\'esecuzione si è interrotta durante la creazione della configurazione specifica per la distro.');
+      console.error('--- ERRORE FATALE CATTURATO ---')
+      console.error("L'esecuzione si è interrotta durante la creazione della configurazione specifica per la distro.")
       console.error(error)
       process.exit(1)
     }
-
 
     if (Pacman.calamaresExists()) {
       await customizePartitions()
@@ -273,9 +269,8 @@ verbose = false
     await this.cleanupConfiguration()
   }
 
-
   /**
-   * Rewrite modules 
+   * Rewrite modules
    */
   private async cleanupConfiguration() {
     // modules
@@ -300,7 +295,6 @@ verbose = false
     destContent += yaml.dump(yamlContent)
     fs.writeFileSync(file, destContent, 'utf8')
   }
-
 
   /**
    *
@@ -448,11 +442,11 @@ verbose = false
      * install-system.sh
      */
     {
-      const sourceScript = path.resolve(__dirname, '../../../assets/calamares/install-system.sh');
-      const targetScript = '/usr/bin/install-system.sh';
-      fs.copyFileSync(sourceScript, targetScript);
-      fs.chmodSync(targetScript, 0o755);
-      fs.chownSync(targetScript, 0, 0);
+      const sourceScript = path.resolve(__dirname, '../../../assets/calamares/install-system.sh')
+      const targetScript = '/usr/bin/install-system.sh'
+      fs.copyFileSync(sourceScript, targetScript)
+      fs.chmodSync(targetScript, 0o755)
+      fs.chownSync(targetScript, 0, 0)
     }
 
     this.sudoers()
@@ -462,49 +456,49 @@ verbose = false
    * soluzione tampone from Glenn
    */
   private sudoers() {
-    const live = this.user_opt;
-    if (!live) return;
+    const live = this.user_opt
+    if (!live) return
 
-    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares';
-    const sudoersDir = '/etc/sudoers.d'; // O usa path.dirname(sudoersPath)
+    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares'
+    const sudoersDir = '/etc/sudoers.d' // O usa path.dirname(sudoersPath)
 
     // FIX: Crea la directory se non esiste
     if (!fs.existsSync(sudoersDir)) {
       try {
-        fs.mkdirSync(sudoersDir, { mode: 0o755, recursive: true });
+        fs.mkdirSync(sudoersDir, { mode: 0o755, recursive: true })
       } catch (error) {
-        console.error(`Error creating ${sudoersDir}:`, error);
+        console.error(`Error creating ${sudoersDir}:`, error)
       }
     }
 
     // Nota il SETENV: prima di NOPASSWD
-    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`;
+    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`
 
     try {
-      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
-      fs.chownSync(sudoersPath, 0, 0);
+      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 })
+      fs.chownSync(sudoersPath, 0, 0)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
   /**
    * soluzione tampone from Glenn
-   * 
+   *
    */
   private sudoersToRemove() {
-    const live = this.user_opt;
-    if (!live) return;
+    const live = this.user_opt
+    if (!live) return
 
-    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares';
+    const sudoersPath = '/etc/sudoers.d/99-eggs-calamares'
     // Nota il SETENV: prima di NOPASSWD
-    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`;
+    const content = `${live} ALL=(ALL) SETENV: NOPASSWD: /usr/bin/calamares\n`
 
     try {
-      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 });
-      fs.chownSync(sudoersPath, 0, 0);
+      fs.writeFileSync(sudoersPath, content, { encoding: 'utf8', mode: 0o440 })
+      fs.chownSync(sudoersPath, 0, 0)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 }
@@ -522,4 +516,3 @@ function write(file: string, content: string, verbose = false) {
 
   fs.writeFileSync(file, content, 'utf8')
 }
-

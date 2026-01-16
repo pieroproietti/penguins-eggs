@@ -8,7 +8,7 @@
 
 import fs from 'node:fs'
 
-import { exec, shx} from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -31,13 +31,12 @@ export default class Fedora {
   }
 
   /**
-   * 
+   *
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
     // nothing
   }
-
 
   /**
    *
@@ -47,7 +46,7 @@ export default class Fedora {
     let success = false
     try {
       await exec('dnf -y remove calamares', echo)
-      success=true
+      success = true
     } catch {
       Utils.error(`Cannot remove calamares`)
     }
@@ -98,7 +97,7 @@ export default class Fedora {
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
     if (shx.exec('/usr/bin/dnf install ' + packageName, { silent: true }).code === 0) {
-          retVal = true
+      retVal = true
     }
 
     return retVal

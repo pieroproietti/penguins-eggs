@@ -14,24 +14,24 @@ import Diversions from '../../classes/diversions.js'
 import Tools from '../../classes/tools.js'
 import Utils from '../../classes/utils.js'
 import { IEggsConfigTools } from '../../interfaces/i-config-tools.js'
-import { exec , execSync } from '../../lib/utils.js'
+import { exec, execSync } from '../../lib/utils.js'
 
 export default class ExportAppimage extends Command {
   static description = 'export penguins-eggs AppImage to the destination host'
-static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
-static flags = {
+  static examples = ['eggs export pkg', 'eggs export pkg --clean', 'eggs export pkg --all']
+  static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old .AppImage before to copy' }),
     help: Flags.help({ char: 'h' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' })
   }
-clean = false
-echo = {}
-Tu = new Tools()
-user = ''
-verbose = false
+  clean = false
+  echo = {}
+  Tu = new Tools()
+  user = ''
+  verbose = false
 
   /**
-   * 
+   *
    */
   async run(): Promise<void> {
     const { args, flags } = await this.parse(ExportAppimage)
@@ -54,8 +54,8 @@ verbose = false
 
     const remoteMountpoint = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
 
-    const localPath = "$HOME/penguins-eggs"
-    const remotePath = "/eggs/"
+    const localPath = '$HOME/penguins-eggs'
+    const remotePath = '/eggs/'
     const filter = `penguins-eggs-+([0-9.])-*.AppImage`
     // let filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.AppImage`
 

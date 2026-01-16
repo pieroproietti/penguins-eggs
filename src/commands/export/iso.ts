@@ -14,8 +14,8 @@ import { exec } from '../../lib/utils.js'
 
 export default class ExportIso extends Command {
   static description = 'export remastered ISO in the destination host'
-static examples = ['eggs export iso', 'eggs export iso --clean']
-static flags = {
+  static examples = ['eggs export iso', 'eggs export iso --clean']
+  static flags = {
     checksum: Flags.boolean({ char: 'C', description: 'export checksums md5 and sha256' }),
     clean: Flags.boolean({ char: 'c', description: 'delete old ISOs before to copy' }),
     help: Flags.help({ char: 'h' }),

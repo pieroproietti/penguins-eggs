@@ -29,9 +29,9 @@ export default async function bootloader(this: Sequence) {
     /**
      * UEFI Installation
      */
-    
+
     // DEFAULT x86_64
-    let target = `x86_64-efi` 
+    let target = `x86_64-efi`
     let extraArgs = `` // Variabile per argomenti extra come --removable
 
     // Rilevamento Architetture
@@ -39,13 +39,12 @@ export default async function bootloader(this: Sequence) {
       target = `arm64-efi`
     } else if (process.arch === 'riscv64') {
       target = `riscv64-efi`
-      extraArgs = `--removable` 
+      extraArgs = `--removable`
     }
 
     const bootloaderId = this.distro.distroLike.toLowerCase()
-    
-    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${extraArgs} ${grubForce}`
 
+    cmd = `chroot ${this.installTarget} ${grubName}-install --target=${target} --efi-directory=/boot/efi --bootloader-id=${bootloaderId} --recheck ${extraArgs} ${grubForce}`
   } else {
     /**
      * MBR (Legacy BIOS) Installation
@@ -56,9 +55,8 @@ export default async function bootloader(this: Sequence) {
   }
 
   // await Utils.debug(`grub-install: ${cmd}`)
-  
-  await exec(cmd, this.echo)
 
+  await exec(cmd, this.echo)
 
   /**
    * grub-mkconfig
@@ -66,14 +64,13 @@ export default async function bootloader(this: Sequence) {
   cmd = `chroot ${this.installTarget} ${grubName}-mkconfig -o /boot/${grubName}/grub.cfg ${this.toNull}`
   await exec(cmd, this.echo)
 
-
   /**
    * In fedora family, we need to call kernel-install to force entry creation
    */
-  if (this.distro.familyId === "fedora") {
+  if (this.distro.familyId === 'fedora') {
     /**
      * create grub2 entries
-     * 
+     *
      */
     cmd = `chroot ${this.installTarget} kernel-install add $(uname -r) /boot/vmlinuz-$(uname -r)`
     await exec(cmd, this.echo)
@@ -81,7 +78,7 @@ export default async function bootloader(this: Sequence) {
     /**
      * and not only: on RHEL, Almalinux, Rocky it take UUID from janitor
      */
-    if (this.distro.distroId === "Almalinux" || this.distro.distroId === "Rocky") {
+    if (this.distro.distroId === 'Almalinux' || this.distro.distroId === 'Rocky') {
       /**
        * grub2: adapt entries at new system
        */
@@ -92,15 +89,13 @@ export default async function bootloader(this: Sequence) {
   }
 }
 
-
 /**
- * 
- * @param installTarget 
- * @param rootUUID 
- * @param resumeUUID 
+ *
+ * @param installTarget
+ * @param rootUUID
+ * @param resumeUUID
  */
 async function updateEntries(installTarget: string, rootUUID: string, resumeUUID: string) {
-
   const entriesPath = path.join(installTarget, `/boot/loader/entries/`)
 
   const entries: string[] = fs.readdirSync(entriesPath)
@@ -123,11 +118,11 @@ async function updateEntries(installTarget: string, rootUUID: string, resumeUUID
 }
 
 /**
- * 
- * @param line 
- * @param search 
- * @param replace 
- * @returns 
+ *
+ * @param line
+ * @param search
+ * @param replace
+ * @returns
  */
 function searchAndReplace(line: string, search: string, replace: string): string {
   if (line.includes(search)) {
@@ -142,4 +137,3 @@ function searchAndReplace(line: string, search: string, replace: string): string
 
   return line
 }
-

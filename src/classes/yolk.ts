@@ -19,8 +19,8 @@ import Utils from './utils.js'
  */
 export default class Yolk {
   echo = {}
-verbose = false
-yolkDir = '/var/local/yolk'
+  verbose = false
+  yolkDir = '/var/local/yolk'
 
   /**
    *
@@ -84,7 +84,7 @@ yolkDir = '/var/local/yolk'
     await exec(cmd, { capture: true, echo: false })
 
     // Create Release date: Sat, 14 Aug 2021 07:42:00 UTC
-    const now = shx.exec('date -R -u', {silent: true}).stdout.trim()
+    const now = shx.exec('date -R -u', { silent: true }).stdout.trim()
     const content = `Archive: stable\nComponent: yolk\nOrigin: penguins-eggs\nArchitecture: ${Utils.uefiArch()} \nDate: ${now}\n`
     Utils.warning('Writing Release')
     fs.writeFileSync('Release', content)

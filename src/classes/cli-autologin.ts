@@ -19,31 +19,31 @@ const startMessage = 'eggs-start-message'
 const stopMessage = 'eggs-stop-message'
 
 export default class CliAutologin {
-
   /**
-   * 
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   *
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
-  async add(distro: string,
+  async add(
+    distro: string,
 
     version: string,
     user: string,
     userPasswd: string,
     rootPasswd: string,
-    chroot = '/') {
-
+    chroot = '/'
+  ) {
     if (!user || !userPasswd || !rootPasswd) {
       throw new Error('Missing user credentials for CLI autologin setup.')
     }
 
     // --- SYSTEMD ---
     if (Utils.isSystemd()) {
-      Utils.warning("systemd: creating CLI autologin")
+      Utils.warning('systemd: creating CLI autologin')
 
       const fileOverride = `${chroot}/etc/systemd/system/getty@tty1.service.d/override.conf`
       const dirOverride = path.dirname(fileOverride)
@@ -72,7 +72,7 @@ export default class CliAutologin {
 
       // --- OPENRC ---
     } else if (Utils.isOpenRc()) {
-      Utils.warning("openrc: creating CLI autologin")
+      Utils.warning('openrc: creating CLI autologin')
 
       const inittab = chroot + '/etc/inittab'
 
@@ -103,7 +103,7 @@ export default class CliAutologin {
 
       // --- SYSVINIT ---
     } else if (Utils.isSysvinit()) {
-      Utils.warning("sysvinit: creating CLI autologin")
+      Utils.warning('sysvinit: creating CLI autologin')
       const inittab = chroot + '/etc/inittab'
 
       // Backup for SysVInit
@@ -115,15 +115,15 @@ export default class CliAutologin {
 
       // Robust Regex Replacement for tty1 line
       // Forces /sbin/agetty and adds --noclear
-      const regex = /^(1:[0-9]*:respawn:)(.*getty\s+.*tty1.*)$/gm;
+      const regex = /^(1:[0-9]*:respawn:)(.*getty\s+.*tty1.*)$/gm
 
       if (regex.test(content)) {
-        regex.lastIndex = 0; // Reset index
-        content = content.replace(regex, (match, prefix, oldCmd) => `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`);
+        regex.lastIndex = 0 // Reset index
+        content = content.replace(regex, (match, prefix, oldCmd) => `# ORIGINAL DISABLED BY EGGS: ${match}\n${prefix}/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux`)
       } else {
         // Fallback: append config
-        Utils.warning("Standard tty1 line not found in inittab. Appending autologin configuration.");
-        content += `\n# Autologin added by penguins-eggs\n1:2345:respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux\n`;
+        Utils.warning('Standard tty1 line not found in inittab. Appending autologin configuration.')
+        content += `\n# Autologin added by penguins-eggs\n1:2345:respawn:/sbin/agetty --autologin ${user} --noclear 38400 tty1 linux\n`
       }
 
       fs.writeFileSync(inittab, content, 'utf-8')
@@ -131,46 +131,43 @@ export default class CliAutologin {
 
     await this.addIssue(distro, version, user, userPasswd, rootPasswd, chroot)
     await this.addMotd(distro, version, user, userPasswd, rootPasswd, chroot)
-
   }
 
-
   /**
-   * 
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   *
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
   async addIssue(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileIssue = `${chroot}/etc/issue`
     if (fs.existsSync(fileIssue) && !fs.lstatSync(fileIssue).isSymbolicLink()) {
-        this.msgRemove(fileIssue)
-        let content = fs.readFileSync(fileIssue, 'utf8')
-        content += startMessage + '\n'
-        content += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
-        content += `You can login with user: ${chalk.bold(user)} and password: ${chalk.bold(userPasswd)}, root password: ${chalk.bold(rootPasswd)}\n`
-        content += stopMessage + '\n'
+      this.msgRemove(fileIssue)
+      let content = fs.readFileSync(fileIssue, 'utf8')
+      content += startMessage + '\n'
+      content += `This is a ${distro}/${version} system created by Penguins' eggs.\n`
+      content += `You can login with user: ${chalk.bold(user)} and password: ${chalk.bold(userPasswd)}, root password: ${chalk.bold(rootPasswd)}\n`
+      content += stopMessage + '\n'
 
-        try {
-          fs.writeFileSync(fileIssue, content)
-        } catch (error) {
-          Utils.error(`Failed to write ${fileIssue}: ${error}`)
-        }
+      try {
+        fs.writeFileSync(fileIssue, content)
+      } catch (error) {
+        Utils.error(`Failed to write ${fileIssue}: ${error}`)
       }
+    }
   }
 
-
   /**
-   * 
-   * @param distro 
-   * @param version 
-   * @param user 
-   * @param userPasswd 
-   * @param rootPasswd 
-   * @param chroot 
+   *
+   * @param distro
+   * @param version
+   * @param user
+   * @param userPasswd
+   * @param rootPasswd
+   * @param chroot
    */
   async addMotd(distro: string, version: string, user: string, userPasswd: string, rootPasswd: string, chroot = '/') {
     const fileMotd = `${chroot}/etc/motd`
@@ -207,7 +204,6 @@ export default class CliAutologin {
     }
   }
 
-
   /**
    * remove()
    * Rimuove qualsiasi configurazione di autologin (Systemd, OpenRC, SysVinit).
@@ -215,7 +211,6 @@ export default class CliAutologin {
    * @param chroot - Il percorso della root del sistema (default: '/')
    */
   async remove(chroot = '/') {
-
     // --- SYSTEMD REMOVE ---
     if (Utils.isSystemd()) {
       // 1. Rimuove il target specifico TTY1 (quello corretto che usiamo ora)
@@ -296,11 +291,9 @@ export default class CliAutologin {
 
   private async msgRemove(path: string) {
     if (fs.existsSync(path) && !fs.lstatSync(path).isSymbolicLink()) {
-        let content = fs.readFileSync(path, 'utf8')
-        content = content.replaceAll(/eggs-start-message[\s\S]*?eggs-stop-message/g, '')
-        fs.writeFileSync(path, content, 'utf-8')
-      }
+      let content = fs.readFileSync(path, 'utf8')
+      content = content.replaceAll(/eggs-start-message[\s\S]*?eggs-stop-message/g, '')
+      fs.writeFileSync(path, content, 'utf-8')
+    }
   }
-
-
 }

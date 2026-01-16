@@ -16,30 +16,27 @@ import yaml from 'js-yaml'
 import fs from 'node:fs'
 
 import { ISettings } from '../../../interfaces/i-settings.js'
-import {shx} from '../../../lib/utils.js'
+import { shx } from '../../../lib/utils.js'
 import Utils from '../../utils.js'
 import { installer } from '../installer.js'
 
-
-
 interface SequenceItem {
-  exec?: string[];
-  show?: string[];
+  exec?: string[]
+  show?: string[]
 }
 
 // Definisce la struttura dell'intero file di configurazione
 interface CalamaresConfig {
-  branding: string;
-  'disable-cancel': boolean;
-  'disable-cancel-during-exec': boolean;
-  'dont-chroot': boolean;
-  'modules-search': string[];
-  'oem-setup': boolean;
-  'prompt-install': boolean;
-  'quit-at-end': boolean;
-  sequence: SequenceItem[];
+  branding: string
+  'disable-cancel': boolean
+  'disable-cancel-during-exec': boolean
+  'dont-chroot': boolean
+  'modules-search': string[]
+  'oem-setup': boolean
+  'prompt-install': boolean
+  'quit-at-end': boolean
+  sequence: SequenceItem[]
 }
-
 
 /**
  *
@@ -56,24 +53,24 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   }
 
   const settingsDest = dest + 'settings.conf'
-  const contentSrc = fs.readFileSync(settingsSrc, "utf8")
+  const contentSrc = fs.readFileSync(settingsSrc, 'utf8')
   const yamlDest = yaml.load(contentSrc) as CalamaresConfig
 
   // Trova gli elementi in modo sicuro
-  const showSequenceItem = yamlDest.sequence.find(item => item.show);
-  const execSequenceItem = yamlDest.sequence.find(item => item.exec);
+  const showSequenceItem = yamlDest.sequence.find((item) => item.show)
+  const execSequenceItem = yamlDest.sequence.find((item) => item.exec)
 
   if (!showSequenceItem || !execSequenceItem) {
-    throw new Error("Impossibile trovare le sezioni 'show' o 'exec' nel file settings.yaml");
+    throw new Error("Impossibile trovare le sezioni 'show' o 'exec' nel file settings.yaml")
   }
-  
+
   // Il '!' dice a TS: "sono sicuro che non è undefined"
-  let showModules = showSequenceItem.show!; 
-  let execModules = execSequenceItem.exec!;
+  let showModules = showSequenceItem.show!
+  let execModules = execSequenceItem.exec!
 
   // Filtra la lista (ora con type safety)
   if (!Utils.isSystemd()) {
-    execModules = execModules.filter(module => module !== 'machineid' && module !== 'services-systemd')
+    execModules = execModules.filter((module) => module !== 'machineid' && module !== 'services-systemd')
   }
 
   // if (displaymanager()) {
@@ -81,8 +78,8 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   // }
 
   if (isClone) {
-    execModules = execModules.filter(module => module !== 'users')
-    showModules = showModules.filter(module => module !== 'users')
+    execModules = execModules.filter((module) => module !== 'users')
+    showModules = showModules.filter((module) => module !== 'users')
   }
 
   // Riassegna gli array
@@ -90,9 +87,8 @@ export async function settings(src: string, dest: string, theme = 'eggs', isClon
   execSequenceItem.exec = execModules
   yamlDest.branding = branding
 
-  const contentDeest = yaml.dump(yamlDest);
+  const contentDeest = yaml.dump(yamlDest)
   fs.writeFileSync(settingsDest, contentDeest)
-
 
   /*
   shx.cp(settingsSrc, settingsDest)

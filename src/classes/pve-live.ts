@@ -17,7 +17,7 @@
 
 import path from 'node:path'
 
-import {shx} from '../lib/utils.js'
+import { shx } from '../lib/utils.js'
 import Systemctl from './systemctl.js'
 
 // _dirname

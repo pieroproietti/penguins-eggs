@@ -10,7 +10,7 @@ import fs, { utimesSync } from 'node:fs'
 import path from 'node:path'
 import os from 'os'
 
-import { execSync , shx } from '../lib/utils.js'
+import { execSync, shx } from '../lib/utils.js'
 // libraries
 import { exec } from '../lib/utils.js'
 import Distro from './distro.js'
@@ -24,7 +24,6 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
  * @remarks all the utilities
  */
 export default class Xdg {
-
   /**
    *
    * @param olduser
@@ -38,148 +37,142 @@ export default class Xdg {
    * @param chroot Percorso della root (default '/')
    */
   static async autologin(newuser: string, chroot = '/') {
-    if (!Pacman.isInstalledGui()) return;
+    if (!Pacman.isInstalledGui()) return
 
     /**
      * SLIM & SLIMSKI
      */
-    let slimConf = '';
+    let slimConf = ''
     if (Pacman.packageIsInstalled('slim')) {
-      slimConf = fs.existsSync(`${chroot}/etc/slim.local.conf`) ? 'slim.local.conf' : 'slim.conf';
+      slimConf = fs.existsSync(`${chroot}/etc/slim.local.conf`) ? 'slim.local.conf' : 'slim.conf'
     } else if (Pacman.packageIsInstalled('slimski')) {
-      slimConf = fs.existsSync(`${chroot}/etc/slimski.local.conf`) ? 'slimski.local.conf' : 'slimski.conf';
+      slimConf = fs.existsSync(`${chroot}/etc/slimski.local.conf`) ? 'slimski.local.conf' : 'slimski.conf'
     }
 
     if (slimConf !== '') {
-      let content = fs.readFileSync(`${chroot}/etc/${slimConf}`, 'utf8');
-      content = content.replace(/^#?auto_login\s+.*/m, 'auto_login yes');
-      content = content.replace(/^#?default_user\s+.*/m, `default_user ${newuser}`);
-      fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8');
-    }
+      let content = fs.readFileSync(`${chroot}/etc/${slimConf}`, 'utf8')
+      content = content.replace(/^#?auto_login\s+.*/m, 'auto_login yes')
+      content = content.replace(/^#?default_user\s+.*/m, `default_user ${newuser}`)
+      fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
+    } else if (Pacman.packageIsInstalled('lightdm')) {
 
     /**
      * LIGHTDM
      */
-    else if (Pacman.packageIsInstalled('lightdm')) {
-      const confPath = `${chroot}/etc/lightdm/lightdm.conf`;
+      const confPath = `${chroot}/etc/lightdm/lightdm.conf`
       if (fs.existsSync(confPath)) {
-        let content = fs.readFileSync(confPath, 'utf8');
+        let content = fs.readFileSync(confPath, 'utf8')
         if (!content.includes('[Seat:*]')) {
-          content += '\n[Seat:*]\n';
+          content += '\n[Seat:*]\n'
         }
 
         // Rimuove eventuali righe esistenti e le aggiunge pulite sotto [Seat:*]
-        content = content.replaceAll(/^autologin-user=.*/gm, '');
-        content = content.replaceAll(/^autologin-user-timeout=.*/gm, '');
-        content = content.replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`);
-        fs.writeFileSync(confPath, content.replaceAll(/\n\n+/g, '\n\n'), 'utf8');
+        content = content.replaceAll(/^autologin-user=.*/gm, '')
+        content = content.replaceAll(/^autologin-user-timeout=.*/gm, '')
+        content = content.replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
+        fs.writeFileSync(confPath, content.replaceAll(/\n\n+/g, '\n\n'), 'utf8')
       }
-    }
+    } else if (Pacman.packageIsInstalled('lxdm')) {
 
     /**
      * LXDM
      */
-    else if (Pacman.packageIsInstalled('lxdm')) {
-      const lxdmConf = `${chroot}/etc/lxdm/lxdm.conf`;
+      const lxdmConf = `${chroot}/etc/lxdm/lxdm.conf`
       if (fs.existsSync(lxdmConf)) {
-        let content = fs.readFileSync(lxdmConf, 'utf8');
-        content = content.replace(/^#?\s*autologin=.*/m, `autologin=${newuser}`);
-        fs.writeFileSync(lxdmConf, content, 'utf8');
+        let content = fs.readFileSync(lxdmConf, 'utf8')
+        content = content.replace(/^#?\s*autologin=.*/m, `autologin=${newuser}`)
+        fs.writeFileSync(lxdmConf, content, 'utf8')
       }
-    }
+    } else if (Pacman.packageIsInstalled('sddm')) {
 
     /**
      * SDDM (Modern approach con file dedicato)
      */
-    else if (Pacman.packageIsInstalled('sddm')) {
-      const confDir = `${chroot}/etc/sddm.conf.d`;
+      const confDir = `${chroot}/etc/sddm.conf.d`
       if (!fs.existsSync(confDir)) {
-        fs.mkdirSync(confDir, { recursive: true });
+        fs.mkdirSync(confDir, { recursive: true })
       }
 
-      let session = 'plasma';
+      let session = 'plasma'
       if (Pacman.isInstalledWayland()) {
-        session = fs.existsSync(`${chroot}/usr/share/wayland-sessions/cosmic.desktop`) ? 'cosmic' : 'plasma-wayland';
+        session = fs.existsSync(`${chroot}/usr/share/wayland-sessions/cosmic.desktop`) ? 'cosmic' : 'plasma-wayland'
       }
 
-      const content = `[Autologin]\nUser=${newuser}\nSession=${session}\n`;
-      fs.writeFileSync(`${confDir}/eggs-autologin.conf`, content, 'utf8');
-    }
+      const content = `[Autologin]\nUser=${newuser}\nSession=${session}\n`
+      fs.writeFileSync(`${confDir}/eggs-autologin.conf`, content, 'utf8')
+    } else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
 
     /**
      * GDM / GDM3 (Pop!_OS, Ubuntu, Debian)
      */
-    else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
-      let gdmFile = '';
-      const possiblePaths = [
-        `${chroot}/etc/gdm3/daemon.conf`,
-        `${chroot}/etc/gdm3/custom.conf`,
-        `${chroot}/etc/gdm/custom.conf`
-      ];
+      let gdmFile = ''
+      const possiblePaths = [`${chroot}/etc/gdm3/daemon.conf`, `${chroot}/etc/gdm3/custom.conf`, `${chroot}/etc/gdm/custom.conf`]
 
       for (const p of possiblePaths) {
-        if (fs.existsSync(p)) { gdmFile = p; break; }
+        if (fs.existsSync(p)) {
+          gdmFile = p
+          break
+        }
       }
 
       if (gdmFile) {
-        let content = fs.readFileSync(gdmFile, 'utf8');
-        if (!content.includes('[daemon]')) content = "[daemon]\n" + content;
+        let content = fs.readFileSync(gdmFile, 'utf8')
+        if (!content.includes('[daemon]')) content = '[daemon]\n' + content
 
         // Abilitazione chirurgica
         if (/^#?AutomaticLoginEnable=.*/m.test(content)) {
-          content = content.replace(/^#?AutomaticLoginEnable=.*/m, 'AutomaticLoginEnable=true');
+          content = content.replace(/^#?AutomaticLoginEnable=.*/m, 'AutomaticLoginEnable=true')
         } else {
-          content = content.replace('[daemon]', '[daemon]\nAutomaticLoginEnable=true');
+          content = content.replace('[daemon]', '[daemon]\nAutomaticLoginEnable=true')
         }
 
         if (/^#?AutomaticLogin=.*/m.test(content)) {
-          content = content.replace(/^#?AutomaticLogin=.*/m, `AutomaticLogin=${newuser}`);
+          content = content.replace(/^#?AutomaticLogin=.*/m, `AutomaticLogin=${newuser}`)
         } else {
-          content = content.replace('AutomaticLoginEnable=true', `AutomaticLoginEnable=true\nAutomaticLogin=${newuser}`);
+          content = content.replace('AutomaticLoginEnable=true', `AutomaticLoginEnable=true\nAutomaticLogin=${newuser}`)
         }
 
-        fs.writeFileSync(gdmFile, content, 'utf8');
+        fs.writeFileSync(gdmFile, content, 'utf8')
       }
 
       /**
        * GREETD / COSMIC (Pop!_OS COSMIC)
        */
     } else if (Pacman.packageIsInstalled('greetd')) {
-      const greetdPath = `${chroot}/etc/greetd/cosmic-greeter.toml`;
+      const greetdPath = `${chroot}/etc/greetd/cosmic-greeter.toml`
 
       // Se esiste la configurazione specifica di COSMIC
       if (fs.existsSync(greetdPath)) {
-        let content = fs.readFileSync(greetdPath, 'utf8');
+        let content = fs.readFileSync(greetdPath, 'utf8')
 
         // Se la sezione [initial_session] esiste già, la aggiorniamo, altrimenti la aggiungiamo
-        const initialSessionRegex = /\[initial_session\][^\[]*/;
-        const newInitialSession = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n\n`;
+        const initialSessionRegex = /\[initial_session\][^\[]*/
+        const newInitialSession = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n\n`
 
         if (initialSessionRegex.test(content)) {
-          content = content.replace(initialSessionRegex, newInitialSession);
+          content = content.replace(initialSessionRegex, newInitialSession)
         } else {
           // La aggiungiamo in testa o dopo la sezione general
-          content = newInitialSession + content;
+          content = newInitialSession + content
         }
 
-        fs.writeFileSync(greetdPath, content, 'utf8');
+        fs.writeFileSync(greetdPath, content, 'utf8')
       }
       // Fallback per greetd standard (config.toml) se non è COSMIC specifico
       else if (fs.existsSync(`${chroot}/etc/greetd/config.toml`)) {
-        const configPath = `${chroot}/etc/greetd/config.toml`;
-        let content = fs.readFileSync(configPath, 'utf8');
+        const configPath = `${chroot}/etc/greetd/config.toml`
+        let content = fs.readFileSync(configPath, 'utf8')
 
         // Configurazione per il login automatico su greetd generico
-        const autologinConfig = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n`;
+        const autologinConfig = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n`
 
         if (!content.includes('[initial_session]')) {
-          content = autologinConfig + content;
-          fs.writeFileSync(configPath, content, 'utf8');
+          content = autologinConfig + content
+          fs.writeFileSync(configPath, content, 'utf8')
         }
       }
     }
   }
-
 
   /**
    *
@@ -347,7 +340,6 @@ export default class Xdg {
   }
 }
 
-
 /**
  * execIfExist
  * @param cmd
@@ -382,4 +374,3 @@ async function rmIfExist(file2Remove: string, recursive = '') {
     await exec(`rm -f${recursive} ${file2Remove}`)
   }
 }
-

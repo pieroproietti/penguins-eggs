@@ -11,7 +11,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { IDistro, IEggsConfig, IRemix } from '../interfaces/index.js'
-import { exec, execSync , shx } from '../lib/utils.js'
+import { exec, execSync, shx } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 import Alpine from './pacman.d/alpine.js'
@@ -32,8 +32,8 @@ const config_tools = '/etc/penguins-eggs.d/tools.yaml' as string
  */
 export default class Pacman {
   static debs4calamares = ['calamares', 'qml-module-qtquick2', 'qml-module-qtquick-controls']
-distro = {} as IDistro
-remix = {} as IRemix
+  distro = {} as IDistro
+  remix = {} as IRemix
 
   /**
    * autocompleteInstall()
@@ -41,24 +41,23 @@ remix = {} as IRemix
    */
   static async autocompleteInstall() {
     if (Pacman.packageIsInstalled('bash-completion') && fs.existsSync('/usr/share/bash-completion/completions/')) {
-        await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
-      }
+      await exec(`cp ${__dirname}/../../scripts/eggs.bash /usr/share/bash-completion/completions/`)
+    }
 
     // Su arch è ok, su debian God know
     if (Pacman.packageIsInstalled('zsh-completions') && fs.existsSync('/usr/share/zsh/site-functions')) {
-        await exec(`cp ${__dirname}/../../scripts/_eggs /usr/share/zsh/site-functions/`)
-      }
+      await exec(`cp ${__dirname}/../../scripts/_eggs /usr/share/zsh/site-functions/`)
+    }
   }
 
   /**
    * autocompleteRemove
-   * @param verbose 
+   * @param verbose
    */
   static async autocompleteRemove(verbose = false) {
     await exec(`rm -f /usr/share/bash-completion/completions/eggs.bash`)
     await exec(`rm -f /usr/share/zsh/site-functions/._eggs`)
   }
-
 
   /**
    * return true if calamares is installed
@@ -72,49 +71,48 @@ remix = {} as IRemix
    */
   static async calamaresInstall(verbose = false): Promise<void> {
     if (this.isInstalledGui()) {
-
-      const {familyId} = this.distro()
+      const { familyId } = this.distro()
       switch (familyId) {
-      case 'alpine': {
-        await Alpine.calamaresInstall(verbose)
-      
-      break;
-      }
+        case 'alpine': {
+          await Alpine.calamaresInstall(verbose)
 
-      case 'archlinux': {
-        if (Diversions.isManjaroBased(this.distro().distroId)) {
-          await exec(`pacman -Sy --noconfirm calamares`, Utils.setEcho(true))
-        } else {
-          await Archlinux.calamaresInstall(verbose)
+          break
         }
-      
-      break;
-      }
 
-      case 'debian': {
-        await Debian.calamaresInstall(verbose)
-      
-      break;
-      }
+        case 'archlinux': {
+          if (Diversions.isManjaroBased(this.distro().distroId)) {
+            await exec(`pacman -Sy --noconfirm calamares`, Utils.setEcho(true))
+          } else {
+            await Archlinux.calamaresInstall(verbose)
+          }
 
-      case 'fedora': {
-        await Fedora.calamaresInstall(verbose)
-      
-      break;
-      }
+          break
+        }
 
-      case 'openmamba': {
-        await Openmamba.calamaresInstall(verbose)
-      
-      break;
-      }
+        case 'debian': {
+          await Debian.calamaresInstall(verbose)
 
-      case 'opensuse': {
-        await Opensuse.calamaresInstall(verbose)
-      
-      break;
-      }
-      // No default
+          break
+        }
+
+        case 'fedora': {
+          await Fedora.calamaresInstall(verbose)
+
+          break
+        }
+
+        case 'openmamba': {
+          await Openmamba.calamaresInstall(verbose)
+
+          break
+        }
+
+        case 'opensuse': {
+          await Opensuse.calamaresInstall(verbose)
+
+          break
+        }
+        // No default
       }
     }
   }
@@ -123,47 +121,46 @@ remix = {} as IRemix
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      await Alpine.calamaresPolicies(verbose)
-    
-    break;
-    }
+      case 'alpine': {
+        await Alpine.calamaresPolicies(verbose)
 
-    case 'archlinux': {
-      await Archlinux.calamaresPolicies(verbose)
-    
-    break;
-    }
+        break
+      }
 
-    case 'debian': {
-      await Debian.calamaresPolicies(verbose)
-    
-    break;
-    }
+      case 'archlinux': {
+        await Archlinux.calamaresPolicies(verbose)
 
-    case 'fedora': {
-      await Fedora.calamaresPolicies(verbose)
-    
-    break;
-    }
+        break
+      }
 
-    case 'openmamba': {
-      await Openmamba.calamaresPolicies(verbose)
-    
-    break;
-    }
+      case 'debian': {
+        await Debian.calamaresPolicies(verbose)
 
-    case 'opensuse': {
-      await Opensuse.calamaresPolicies(verbose)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        await Fedora.calamaresPolicies(verbose)
+
+        break
+      }
+
+      case 'openmamba': {
+        await Openmamba.calamaresPolicies(verbose)
+
+        break
+      }
+
+      case 'opensuse': {
+        await Opensuse.calamaresPolicies(verbose)
+
+        break
+      }
+      // No default
     }
   }
-
 
   /**
    *
@@ -171,44 +168,44 @@ remix = {} as IRemix
   static async calamaresRemove(verbose = true): Promise<boolean> {
     let retVal = false
 
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      retVal = await Alpine.calamaresRemove(verbose)
-    
-    break;
-    }
+      case 'alpine': {
+        retVal = await Alpine.calamaresRemove(verbose)
 
-    case 'archlinux': {
-      retVal = await Archlinux.calamaresRemove(verbose)
-    
-    break;
-    }
+        break
+      }
 
-    case 'debian': {
-      retVal = await Debian.calamaresRemove(verbose)
-    
-    break;
-    }
+      case 'archlinux': {
+        retVal = await Archlinux.calamaresRemove(verbose)
 
-    case 'fedora': {
-      retVal = await Fedora.calamaresRemove(verbose)
-    
-    break;
-    }
+        break
+      }
 
-    case 'openmamba': {
-      retVal = await Openmamba.calamaresRemove(verbose)
-    
-    break;
-    }
+      case 'debian': {
+        retVal = await Debian.calamaresRemove(verbose)
 
-    case 'opensuse': {
-      retVal = await Opensuse.calamaresRemove(verbose)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        retVal = await Fedora.calamaresRemove(verbose)
+
+        break
+      }
+
+      case 'openmamba': {
+        retVal = await Openmamba.calamaresRemove(verbose)
+
+        break
+      }
+
+      case 'opensuse': {
+        retVal = await Opensuse.calamaresRemove(verbose)
+
+        break
+      }
+      // No default
     }
 
     return retVal
@@ -354,7 +351,6 @@ remix = {} as IRemix
     // }
   }
 
-
   /**
    *
    * @returns
@@ -385,248 +381,244 @@ remix = {} as IRemix
     const rootPen = Utils.rootPenguin()
     await exec(`mkdir /etc/penguins-eggs.d/distros/${this.distro().distroUniqueId}`)
 
-
-
     /**
-     * Debian 10 - Buster: è il master per tutte le altre 
+     * Debian 10 - Buster: è il master per tutte le altre
      */
     const buster = `${rootPen}/conf/distros/buster`
     const trixie = `${rootPen}/conf/distros/trixie`
 
-    const {distroUniqueId} = this.distro()
+    const { distroUniqueId } = this.distro()
 
     /***********************************************************************************
-       * Alpine
-       **********************************************************************************/
+     * Alpine
+     **********************************************************************************/
     switch (distroUniqueId) {
-    case 'alpine': {
-      // eredita solo da alpine
-      const dest = '/etc/penguins-eggs.d/distros/alpine/'
-      const alpine = `${rootPen}/conf/distros/alpine/`
-      await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
+      case 'alpine': {
+        // eredita solo da alpine
+        const dest = '/etc/penguins-eggs.d/distros/alpine/'
+        const alpine = `${rootPen}/conf/distros/alpine/`
+        await exec(`cp -r ${alpine}/calamares ${dest}/calamares`, echo)
 
-      /***********************************************************************************
-       * Arch Linux
-       **********************************************************************************/
-    
-    break;
+        /***********************************************************************************
+         * Arch Linux
+         **********************************************************************************/
+
+        break
+      }
+
+      case 'archlinux': {
+        const dest = '/etc/penguins-eggs.d/distros/archlinux/'
+        const arch = `${rootPen}/conf/distros/archlinux/*`
+        await exec(`cp -r ${arch} ${dest}`, echo)
+
+        /***********************************************************************************
+         * Manjaro
+         **********************************************************************************/
+
+        break
+      }
+
+      case 'beowulf': {
+        const dest = '/etc/penguins-eggs.d/distros/beowulf'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Devuan chimaera: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'bookworm': {
+        const dest = '/etc/penguins-eggs.d/distros/bookworm'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Debian 13 trixie: eredita tutto da trixie
+         */
+
+        break
+      }
+
+      case 'bullseye': {
+        const dest = '/etc/penguins-eggs.d/distros/bullseye'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Debian 12 bookworm: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'buster': {
+        const dest = '/etc/penguins-eggs.d/distros/buster'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Debian 11 bullseye: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'chimaera': {
+        const dest = '/etc/penguins-eggs.d/distros/chimaera'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Devuan daedalus: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'daedalus': {
+        const dest = '/etc/penguins-eggs.d/distros/daedalus'
+        await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
+        /**
+         * Devuan excalibur: eredita tutto da trixie
+         */
+
+        break
+      }
+
+      case 'excalibur': {
+        const dest = '/etc/penguins-eggs.d/distros/excalibur'
+        await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
+
+        /***********************************************************************************
+         * Fedora
+         **********************************************************************************/
+
+        break
+      }
+
+      case 'fedora': {
+        const dest = '/etc/penguins-eggs.d/distros/fedora/'
+        const fedora = `${rootPen}/conf/distros/fedora/*`
+        await exec(`cp -r ${fedora} ${dest}`, echo)
+
+        /***********************************************************************************
+         * openmamba
+         **********************************************************************************/
+
+        break
+      }
+
+      case 'focal': {
+        const dest = '/etc/penguins-eggs.d/distros/focal'
+        const focal = `${rootPen}/conf/distros/focal`
+        await exec(`cp -r ${focal}/* ${dest}`, echo)
+
+        /**
+         * Ubuntu 22.04 jammy: eredita da focal
+         */
+
+        break
+      }
+
+      case 'forky': {
+        const dest = '/etc/penguins-eggs.d/distros/forky'
+        await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
+
+        /***********************************************************************************
+         * Devuan
+         **********************************************************************************/
+
+        /**
+         * Devuan beowulf: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'jammy': {
+        const dest = '/etc/penguins-eggs.d/distros/jammy'
+        const focal = `${rootPen}/conf/distros/focal`
+        await exec(`cp -r ${focal}/* ${dest}`, echo)
+
+        /**
+         * Ubuntu noble: e la nuova baseline per ubuntu
+         *
+         */
+
+        break
+      }
+
+      case 'manjaro': {
+        const dest = '/etc/penguins-eggs.d/distros/manjaro/'
+        const manjaro = `${rootPen}/conf/distros/manjaro/*`
+        await exec(`cp -r ${manjaro} ${dest}`, echo)
+
+        /***********************************************************************************
+         * Debian
+         **********************************************************************************/
+
+        /**
+         * Debian 10 buster: eredita tutto da buster
+         */
+
+        break
+      }
+
+      case 'openmamba': {
+        // eredita solo da openmamba
+        const dest = '/etc/penguins-eggs.d/distros/openmamba/'
+        const mamba = `${rootPen}/conf/distros/openmamba/*`
+        await exec(`cp -r ${mamba} ${dest}`, echo)
+
+        /***********************************************************************************
+         * opensuse
+         **********************************************************************************/
+
+        break
+      }
+
+      case 'opensuse': {
+        const dest = '/etc/penguins-eggs.d/distros/opensuse/'
+        const suse = `${rootPen}/conf/distros/opensuse/*`
+        await exec(`cp -r ${suse} ${dest}`, echo)
+
+        /***********************************************************************************
+         * Ubuntu
+         **********************************************************************************/
+
+        /**
+         * Ubuntu focal: eredita da focal
+         */
+
+        break
+      }
+
+      case 'trixie': {
+        const dest = '/etc/penguins-eggs.d/distros/trixie'
+        await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
+
+        /**
+         * Debian 14 forky eredita tutto da trixie
+         */
+
+        break
+      }
+
+      default: {
+        if (this.distro().distroUniqueId === 'noble') {
+          const dest = '/etc/penguins-eggs.d/distros/noble'
+          const noble = `${rootPen}/conf/distros/noble`
+          await exec(`cp -r ${noble}/* ${dest}`, echo)
+
+          /**
+           * Ubuntu rhino: devel
+           *
+           */
+        } else if (distroUniqueId === 'devel') {
+          const dest = '/etc/penguins-eggs.d/distros/devel'
+          const noble = `${rootPen}/conf/distros/noble`
+          await exec(`cp -r ${noble}/* ${dest}`, echo)
+        }
+      }
     }
-
-    case 'archlinux': {
-      const dest = '/etc/penguins-eggs.d/distros/archlinux/'
-      const arch = `${rootPen}/conf/distros/archlinux/*`
-      await exec(`cp -r ${arch} ${dest}`, echo)
-
-      /***********************************************************************************
-       * Manjaro
-       **********************************************************************************/
-    
-    break;
-    }
-
-    case 'beowulf': {
-      const dest = '/etc/penguins-eggs.d/distros/beowulf'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Devuan chimaera: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'bookworm': {
-      const dest = '/etc/penguins-eggs.d/distros/bookworm'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Debian 13 trixie: eredita tutto da trixie
-       */
-    
-    break;
-    }
-
-    case 'bullseye': {
-      const dest = '/etc/penguins-eggs.d/distros/bullseye'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Debian 12 bookworm: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'buster': {
-      const dest = '/etc/penguins-eggs.d/distros/buster'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Debian 11 bullseye: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'chimaera': {
-      const dest = '/etc/penguins-eggs.d/distros/chimaera'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Devuan daedalus: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'daedalus': {
-      const dest = '/etc/penguins-eggs.d/distros/daedalus'
-      await exec(`cp -r ${buster}/calamares ${dest}/calamares`, echo)
-      /**
-       * Devuan excalibur: eredita tutto da trixie
-       */
-    
-    break;
-    }
-
-    case 'excalibur': {
-      const dest = '/etc/penguins-eggs.d/distros/excalibur'
-      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
-
-      /***********************************************************************************
-       * Fedora
-       **********************************************************************************/
-    
-    break;
-    }
-
-    case 'fedora': {
-      const dest = '/etc/penguins-eggs.d/distros/fedora/'
-      const fedora = `${rootPen}/conf/distros/fedora/*`
-      await exec(`cp -r ${fedora} ${dest}`, echo)
-
-      /***********************************************************************************
-      * openmamba
-      **********************************************************************************/
-    
-    break;
-    }
-
-    case 'focal': {
-      const dest = '/etc/penguins-eggs.d/distros/focal'
-      const focal = `${rootPen}/conf/distros/focal`
-      await exec(`cp -r ${focal}/* ${dest}`, echo)
-
-
-      /**
-       * Ubuntu 22.04 jammy: eredita da focal
-       */
-    
-    break;
-    }
-
-    case 'forky': {
-      const dest = '/etc/penguins-eggs.d/distros/forky'
-      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
-
-      /***********************************************************************************
-       * Devuan
-       **********************************************************************************/
-
-      /**
-       * Devuan beowulf: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'jammy': {
-      const dest = '/etc/penguins-eggs.d/distros/jammy'
-      const focal = `${rootPen}/conf/distros/focal`
-      await exec(`cp -r ${focal}/* ${dest}`, echo)
-
-      /**
-       * Ubuntu noble: e la nuova baseline per ubuntu
-       *
-       */
-    
-    break;
-    }
-
-    case 'manjaro': {
-      const dest = '/etc/penguins-eggs.d/distros/manjaro/'
-      const manjaro = `${rootPen}/conf/distros/manjaro/*`
-      await exec(`cp -r ${manjaro} ${dest}`, echo)
-
-      /***********************************************************************************
-       * Debian
-       **********************************************************************************/
-
-
-      /**
-       * Debian 10 buster: eredita tutto da buster
-       */
-    
-    break;
-    }
-
-    case 'openmamba': {
-      // eredita solo da openmamba
-      const dest = '/etc/penguins-eggs.d/distros/openmamba/'
-      const mamba = `${rootPen}/conf/distros/openmamba/*`
-      await exec(`cp -r ${mamba} ${dest}`, echo)
-
-      /***********************************************************************************
-      * opensuse
-      **********************************************************************************/
-    
-    break;
-    }
-
-    case 'opensuse': {
-      const dest = '/etc/penguins-eggs.d/distros/opensuse/'
-      const suse = `${rootPen}/conf/distros/opensuse/*`
-      await exec(`cp -r ${suse} ${dest}`, echo)
-
-      /***********************************************************************************
-       * Ubuntu
-       **********************************************************************************/
-
-      /**
-       * Ubuntu focal: eredita da focal
-       */
-    
-    break;
-    }
-
-    case 'trixie': {
-      const dest = '/etc/penguins-eggs.d/distros/trixie'
-      await exec(`cp -r ${trixie}/calamares ${dest}/calamares`, echo)
-
-      /**
-       * Debian 14 forky eredita tutto da trixie
-       */
-    
-    break;
-    }
-
-    default: { if (this.distro().distroUniqueId === 'noble') {
-      const dest = '/etc/penguins-eggs.d/distros/noble'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-
-      /**
-       * Ubuntu rhino: devel
-       *
-       */
-    } else if (distroUniqueId === 'devel') {
-      const dest = '/etc/penguins-eggs.d/distros/devel'
-      const noble = `${rootPen}/conf/distros/noble`
-      await exec(`cp -r ${noble}/* ${dest}`, echo)
-    }
-    }
-    }
-
   }
 
   /**
@@ -657,56 +649,56 @@ remix = {} as IRemix
   static isInstalledWayland(): boolean {
     let installed = false
 
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      if (Alpine.packageIsInstalled('xwayland*')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'alpine': {
+        if (Alpine.packageIsInstalled('xwayland*')) {
+          installed = true
+        }
 
-    case 'archlinux': {
-      if (Archlinux.packageIsInstalled('xwayland')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
 
-    case 'debian': {
-      if (Debian.packageIsInstalled('xwayland')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'archlinux': {
+        if (Archlinux.packageIsInstalled('xwayland')) {
+          installed = true
+        }
 
-    case 'fedora': {
-      if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
 
-    case 'openmamba': {
-      if (Openmamba.packageIsInstalled('wayland')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'debian': {
+        if (Debian.packageIsInstalled('xwayland')) {
+          installed = true
+        }
 
-    case 'opensuse': {
-      if (Opensuse.packageIsInstalled('wayland')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
-    // No default
+
+      case 'fedora': {
+        if (Fedora.packageIsInstalled('xorg-x11-server-Xwayland*')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'openmamba': {
+        if (Openmamba.packageIsInstalled('wayland')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'opensuse': {
+        if (Opensuse.packageIsInstalled('wayland')) {
+          installed = true
+        }
+
+        break
+      }
+      // No default
     }
 
     return installed
@@ -719,56 +711,56 @@ remix = {} as IRemix
   static isInstalledXorg(): boolean {
     let installed = false
 
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      if (Alpine.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'alpine': {
+        if (Alpine.packageIsInstalled('xorg-server')) {
+          installed = true
+        }
 
-    case 'archlinux': {
-      if (Archlinux.packageIsInstalled('xorg-server-common')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
 
-    case 'debian': {
-      if (Debian.packageIsInstalled('xserver-xorg-core')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'archlinux': {
+        if (Archlinux.packageIsInstalled('xorg-server-common')) {
+          installed = true
+        }
 
-    case 'fedora': {
-      if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
 
-    case 'openmamba': {
-      if (Openmamba.packageIsInstalled('xorg-server')) {
-        installed = true
-      }
-    
-    break;
-    }
+      case 'debian': {
+        if (Debian.packageIsInstalled('xserver-xorg-core')) {
+          installed = true
+        }
 
-    case 'opensuse': {
-      if (Opensuse.packageIsInstalled('xorg-x11-server')) {
-        installed = true
+        break
       }
-    
-    break;
-    }
-    // No default
+
+      case 'fedora': {
+        if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'openmamba': {
+        if (Openmamba.packageIsInstalled('xorg-server')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'opensuse': {
+        if (Opensuse.packageIsInstalled('xorg-x11-server')) {
+          installed = true
+        }
+
+        break
+      }
+      // No default
     }
 
     return installed
@@ -837,7 +829,6 @@ remix = {} as IRemix
     }
   }
 
-
   /**
    * manpageRemove
    */
@@ -845,7 +836,6 @@ remix = {} as IRemix
     const manpageEggs = `/usr/share/man/man1/eggs.1.gz`
     await exec(`rm -rf ${manpageEggs}`)
   }
-
 
   /**
    *
@@ -869,44 +859,44 @@ remix = {} as IRemix
   static async packageInstall(packageName: string): Promise<boolean> {
     let retVal = false
 
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      retVal = await Alpine.packageInstall(packageName)
-    
-    break;
-    }
+      case 'alpine': {
+        retVal = await Alpine.packageInstall(packageName)
 
-    case 'archlinux': {
-      retVal = await Archlinux.packageInstall(packageName)
-    
-    break;
-    }
+        break
+      }
 
-    case 'debian': {
-      retVal = await Debian.packageInstall(packageName)
-    
-    break;
-    }
+      case 'archlinux': {
+        retVal = await Archlinux.packageInstall(packageName)
 
-    case 'fedora': {
-      retVal = await Fedora.packageInstall(packageName)
-    
-    break;
-    }
+        break
+      }
 
-    case 'openmamba': {
-      retVal = await Openmamba.packageInstall(packageName)
-    
-    break;
-    }
+      case 'debian': {
+        retVal = await Debian.packageInstall(packageName)
 
-    case 'opensuse': {
-      retVal = await Opensuse.packageInstall(packageName)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        retVal = await Fedora.packageInstall(packageName)
+
+        break
+      }
+
+      case 'openmamba': {
+        retVal = await Openmamba.packageInstall(packageName)
+
+        break
+      }
+
+      case 'opensuse': {
+        retVal = await Opensuse.packageInstall(packageName)
+
+        break
+      }
+      // No default
     }
 
     return retVal
@@ -919,53 +909,53 @@ remix = {} as IRemix
   static packageIsInstalled(packageName: string): boolean {
     let installed = false
 
-    const {familyId} = this.distro()
+    const { familyId } = this.distro()
     switch (familyId) {
-    case 'alpine': {
-      installed = Alpine.packageIsInstalled(packageName)
-    
-    break;
-    }
+      case 'alpine': {
+        installed = Alpine.packageIsInstalled(packageName)
 
-    case 'archlinux': {
-      installed = Archlinux.packageIsInstalled(packageName)
-    
-    break;
-    }
+        break
+      }
 
-    case 'debian': {
-      installed = Debian.packageIsInstalled(packageName)
-    
-    break;
-    }
+      case 'archlinux': {
+        installed = Archlinux.packageIsInstalled(packageName)
 
-    case 'fedora': {
-      installed = Fedora.packageIsInstalled(packageName)
-    
-    break;
-    }
+        break
+      }
 
-    case 'openmamba': {
-      installed = Openmamba.packageIsInstalled(packageName)
-    
-    break;
-    }
+      case 'debian': {
+        installed = Debian.packageIsInstalled(packageName)
 
-    case 'opensuse': {
-      installed = Opensuse.packageIsInstalled(packageName)
-    
-    break;
-    }
-    // No default
+        break
+      }
+
+      case 'fedora': {
+        installed = Fedora.packageIsInstalled(packageName)
+
+        break
+      }
+
+      case 'openmamba': {
+        installed = Openmamba.packageIsInstalled(packageName)
+
+        break
+      }
+
+      case 'opensuse': {
+        installed = Opensuse.packageIsInstalled(packageName)
+
+        break
+      }
+      // No default
     }
 
     return installed
   }
 
   /**
-   * 
-   * @param packageNpm 
-   * @returns 
+   *
+   * @param packageNpm
+   * @returns
    */
   static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
     return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()

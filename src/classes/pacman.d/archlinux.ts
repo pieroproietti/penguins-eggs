@@ -8,7 +8,7 @@
 
 import fs from 'node:fs'
 
-import {exec, shx } from '../../lib/utils.js'
+import { exec, shx } from '../../lib/utils.js'
 import Utils from '../utils.js'
 
 /**
@@ -33,13 +33,12 @@ export default class Archlinux {
   }
 
   /**
-   * 
+   *
    * calamaresPolicies
    */
   static async calamaresPolicies(verbose = false) {
     // nothing
   }
-
 
   /**
    * Archlinux: calamaresRemove
@@ -51,7 +50,7 @@ export default class Archlinux {
     const echo = Utils.setEcho(verbose)
     try {
       await exec('pacman -R calamares calamares --noconfirm', echo)
-      success=true
+      success = true
     } catch {
       Utils.error(`Cannot remove calamares`)
     }

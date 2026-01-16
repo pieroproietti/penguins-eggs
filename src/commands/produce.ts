@@ -23,15 +23,15 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 export default class Produce extends Command {
   static description = 'produce a live image from your system'
-static examples = [
+  static examples = [
     'sudo eggs produce                    # zstd fast compression',
     'sudo eggs produce --pendrive         # zstd compression optimized pendrive',
     'sudo eggs produce --clone            # clear clone (unencrypted)',
     'sudo eggs produce --homecrypt      # clone crypted home (all inside /home is cypted)',
     'sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)',
-    'sudo eggs produce --basename=colibri',
+    'sudo eggs produce --basename=colibri'
   ]
-static flags = {
+  static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
@@ -181,20 +181,20 @@ static flags = {
       }
 
       if (kernel !== '' && !fs.existsSync(`/usr/lib/modules/${kernel}`)) {
-          let kernelModules = `/usr/lib/modules/`
-          if (!fs.existsSync(kernelModules)) {
-            kernelModules = `/lib/modules/`
-          }
-
-          const kernels = fs.readdirSync(kernelModules)
-          console.log("modules available:")
-          for (const k of kernels) {
-            console.log(`- ${k}`)
-          }
-
-          console.log(`\nNo available modules for kernel version "${kernel}" in /usr/lib/modules/`)
-          process.exit(1)
+        let kernelModules = `/usr/lib/modules/`
+        if (!fs.existsSync(kernelModules)) {
+          kernelModules = `/lib/modules/`
         }
+
+        const kernels = fs.readdirSync(kernelModules)
+        console.log('modules available:')
+        for (const k of kernels) {
+          console.log(`- ${k}`)
+        }
+
+        console.log(`\nNo available modules for kernel version "${kernel}" in /usr/lib/modules/`)
+        process.exit(1)
+      }
 
       /**
        * theme: if not defined will use eggs
@@ -219,7 +219,7 @@ static flags = {
       }
 
       const i = await Config.thatWeNeed(nointeractive, verbose, homecrypt)
-      if ((i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate)) {
+      if (i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
         await Config.install(i, nointeractive, verbose)
       }
 
@@ -238,12 +238,11 @@ static flags = {
         }
       }
 
-
       Utils.titles(this.id + ' ' + this.argv)
       const ovary = new Ovary()
       Utils.warning('Produce an egg...')
       if (i.calamares) {
-        const message = "this is a GUI system, calamares is available, but NOT installed\n"
+        const message = 'this is a GUI system, calamares is available, but NOT installed\n'
         Utils.warning(message)
       }
 
@@ -251,15 +250,15 @@ static flags = {
        * se è appImage e fullcrypt esce
        */
       if (Utils.isAppImage() && fullcrypt) {
-        Utils.warning("eggs produce --fullcrypt cannot be used on AppImage")
+        Utils.warning('eggs produce --fullcrypt cannot be used on AppImage')
         console.log(`\nyou can try: "sudo eggs produce --homecrypt"`)
         process.exit(9)
       }
 
-      if (!Utils.isAppImage() && fullcrypt ) {
+      if (!Utils.isAppImage() && fullcrypt) {
         const distro = new Distro()
         if (distro.familyId === 'debian' && (distro.codenameId === 'trixie' || distro.codenameId === 'excalibur')) {
-          Utils.info("Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.")
+          Utils.info('Use eggs --fullcrypt with extreme caution, and ALWAYS first try it out in a test environment.')
           Utils.sleep(3000)
         } else {
           Utils.warning(`eggs produce --fullcrypt cannot be used on ${distro.distroId}/${distro.codenameId}`)

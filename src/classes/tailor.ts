@@ -38,7 +38,7 @@ export default class Tailor {
   constructor(costume: string, category = 'costume') {
     this.costume = costume
     this.wardrobe = path.dirname(path.dirname(costume))
-    this.log = path.dirname(this.wardrobe) + "/wardrobe.log"
+    this.log = path.dirname(this.wardrobe) + '/wardrobe.log'
     this.category = category
   }
 
@@ -54,50 +54,47 @@ export default class Tailor {
     wanted.sort()
 
     const distro = new Distro()
-    let cmd = ""
+    let cmd = ''
     switch (distro.familyId) {
-    case "alpine": {
-      cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
+      case 'alpine': {
+        cmd = `apk search | awk -F'-[0-9]' '{print $1}' | sort -u`
 
-    
-    break;
-    }
+        break
+      }
 
-    case "archlinux": {
-      cmd = `pacman -S --list | awk '{print $2}'`
+      case 'archlinux': {
+        cmd = `pacman -S --list | awk '{print $2}'`
 
-    
-    break;
-    }
+        break
+      }
 
-    case "debian": {
-      // cmd=`apt-cache --no-generate pkgnames`
-      cmd = `apt-cache pkgnames`
+      case 'debian': {
+        // cmd=`apt-cache --no-generate pkgnames`
+        cmd = `apt-cache pkgnames`
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'fedora': {
-      cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
+      case 'fedora': {
+        cmd = `dnf list --available | awk '{print $1}' | sed 's/\.[^.]*$//'`
 
-    
-    break;
-    }
+        break
+      }
 
-    case 'opensuse': { // controllare
-      // questo funziona diretto
-      cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
-    
-    break;
-    }
-    // No default
+      case 'opensuse': {
+        // controllare
+        // questo funziona diretto
+        cmd = `zypper --non-interactive packages | cut -d '|' -f 3 | sed '1,2d' | sed '/^$/d' | sort -u`
+
+        break
+      }
+      // No default
     }
 
     let available: string[] = []
     const result = await exec(cmd, { capture: true, echo: false, ignore: false })
     // trim di tutto per eseguire il confronto
-    available = result.data.split('\n').map(line => line.trim())
+    available = result.data.split('\n').map((line) => line.trim())
     // precedente
     // available = (await exec(cmd, { capture: true, echo: false, ignore: false })).data.split('\n')
     available.sort()
@@ -120,7 +117,7 @@ export default class Tailor {
       }
 
       console.log()
-      console.log("Wait 3 seconds")
+      console.log('Wait 3 seconds')
       await sleep(3000)
     }
 
@@ -163,12 +160,10 @@ export default class Tailor {
     }
   }
 
-
   /**
    *
    */
   async prepare(verbose = true, no_accessories = false, no_firmwares = false) {
-
     if (verbose) {
       this.verbose = true
       this.toNull = ''
@@ -177,13 +172,11 @@ export default class Tailor {
     this.echo = Utils.setEcho(verbose)
     Utils.warning(`preparing ${this.costume}`)
     if (!fs.existsSync(this.log)) {
-      fs.writeFileSync(this.log, "# eggs wardrobe wear\n\n")
+      fs.writeFileSync(this.log, '# eggs wardrobe wear\n\n')
     }
 
     fs.appendFileSync(this.log, `## ${this.costume}\n`)
     fs.appendFileSync(this.log, `Packages not found:\n`)
-
-
 
     /**
      * check curl presence
@@ -256,7 +249,7 @@ export default class Tailor {
 
         break
       }
- 
+
       case 'Devuan': {
         tailorList = `${this.costume}/devuan.yaml`
         if (!fs.existsSync(tailorList)) {
@@ -305,7 +298,6 @@ export default class Tailor {
       }
     } // end analyze
 
-
     /**
      * find materials
      */
@@ -334,7 +326,6 @@ export default class Tailor {
         }
       }
     }
-
 
     /**
      * sequence
@@ -472,7 +463,7 @@ export default class Tailor {
             // exec ./costume/cmd
             await exec(`${this.costume}/${cmd} `, Utils.setEcho(true))
           } else {
-            // exec cmd 
+            // exec cmd
             await exec(`${cmd}`, Utils.setEcho(true))
           }
         }
@@ -536,23 +527,23 @@ export default class Tailor {
        * sequence/accessories
        */
       if (!no_accessories && this.materials.sequence.accessories !== undefined && Array.isArray(this.materials.sequence.accessories)) {
-          step = 'wearing accessories'
-          for (const elem of this.materials.sequence.accessories) {
-            if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
-              continue
-            }
-
-            if (elem.slice(0, 2) === './') {
-              // local accessory
-              const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
-              await tailor.prepare(verbose)
-            } else {
-              // global accessory
-              const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
-              await tailor.prepare(verbose)
-            }
+        step = 'wearing accessories'
+        for (const elem of this.materials.sequence.accessories) {
+          if ((elem === 'firmwares' || elem === './firmwares') && no_firmwares) {
+            continue
           }
-        } // no-accessories
+
+          if (elem.slice(0, 2) === './') {
+            // local accessory
+            const tailor = new Tailor(`${this.costume}/${elem.slice(2)}`, 'accessory')
+            await tailor.prepare(verbose)
+          } else {
+            // global accessory
+            const tailor = new Tailor(`${this.wardrobe}/accessories/${elem}`, 'accessory')
+            await tailor.prepare(verbose)
+          }
+        }
+      } // no-accessories
     } // end sequence
 
     /**
@@ -604,7 +595,6 @@ export default class Tailor {
       }
     }
 
-
     // show log
     if (fs.existsSync(this.log)) {
       await exec(`cat ${this.log}`)
@@ -641,7 +631,6 @@ export default class Tailor {
   }
 }
 
-
 /**
  *
  * @param ms
@@ -649,6 +638,6 @@ export default class Tailor {
  */
 function sleep(ms = 0) {
   return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+    setTimeout(resolve, ms)
+  })
 }

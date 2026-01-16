@@ -23,7 +23,7 @@ export default class Locales {
     if (result.code === 0) {
       defaultLanguage = result.data.trim()
     }
-    
+
     return defaultLanguage
   }
 
@@ -31,9 +31,9 @@ export default class Locales {
    * getEnabled
    */
   async getEnabled(): Promise<string[]> {
-    let cmd="locale -a"
+    let cmd = 'locale -a'
     if (Utils.isSystemd()) {
-      cmd="localectl list-locales"
+      cmd = 'localectl list-locales'
     }
 
     const enabledLocales: string[] = []
@@ -88,5 +88,4 @@ export default class Locales {
 
     return elements
   }
-
 }

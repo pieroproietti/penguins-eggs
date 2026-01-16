@@ -13,7 +13,6 @@ import Utils from '../../../classes/utils.js'
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Sequence from '../sequence.js'
 
-
 /**
  *
  * @param this
@@ -24,21 +23,20 @@ export default async function partition(this: Sequence): Promise<boolean> {
   let retVal = false
 
   const installDevice = this.partitions.installationDevice
-  const {replacedPartition} = this.partitions
+  const { replacedPartition } = this.partitions
 
-
-  let p: string = ""
-  if (detectDeviceType(installDevice) === "standard") {
-    p = ""
-  } else if (detectDeviceType(installDevice) === "mmc") {
-    p = ""
-  } else if (detectDeviceType(installDevice) === "nvme") {
-    p = "p"
-  } else if (detectDeviceType(installDevice) === "raid") {
-    p = "p"
+  let p: string = ''
+  if (detectDeviceType(installDevice) === 'standard') {
+    p = ''
+  } else if (detectDeviceType(installDevice) === 'mmc') {
+    p = ''
+  } else if (detectDeviceType(installDevice) === 'nvme') {
+    p = 'p'
+  } else if (detectDeviceType(installDevice) === 'raid') {
+    p = 'p'
   }
 
-  const {installationMode} = this.partitions
+  const { installationMode } = this.partitions
   this.swapSize = Math.round(os.totalmem() / (1024 * 1024 * 1024)) // In GB
 
   switch (this.partitions.userSwapChoice) {
@@ -66,29 +64,23 @@ export default async function partition(this: Sequence): Promise<boolean> {
 
   if (installationMode === InstallationMode.Replace) {
     retVal = true
-
   } else if (installationMode === InstallationMode.EraseDisk && !this.efi) {
     retVal = await this.partitionBiosStandard(installDevice, p)
-
   } else if (installationMode === InstallationMode.Luks && !this.efi) {
     retVal = await this.partitionBiosLuks(installDevice, p)
-
   } else if (installationMode === InstallationMode.EraseDisk && this.efi) {
     retVal = await this.partitionUefiStandard(installDevice, p)
-
   } else if (installationMode === InstallationMode.Luks && this.efi) {
     retVal = await this.partitionUefiLuks(installDevice, p)
-
   }
 
   return retVal
 }
 
-
 /**
- * 
- * @param device 
- * @returns 
+ *
+ * @param device
+ * @returns
  */
 function detectDeviceType(device: string): string {
   if (device.includes('nvme')) return 'nvme'
@@ -96,4 +88,3 @@ function detectDeviceType(device: string): string {
   if (device.includes('mmcblk')) return 'mmc'
   return 'standard'
 }
-

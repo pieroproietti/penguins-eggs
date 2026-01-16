@@ -22,13 +22,13 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export class Buster {
   distro: IDistro
-installer = {} as IInstaller
-isClone: boolean
-release = false
-remix: IRemix
-theme: string
-user_opt: string // theme comprende il path
-verbose = false
+  installer = {} as IInstaller
+  isClone: boolean
+  release = false
+  remix: IRemix
+  theme: string
+  user_opt: string // theme comprende il path
+  verbose = false
 
   /**
    * @param remix
@@ -92,13 +92,12 @@ verbose = false
     await fisherman.shellprocess('mkinitramfs')
     await fisherman.shellprocess('boot_deploy')
     await fisherman.shellprocess('boot_reconfigure')
-    
-    // libexec recreate
-    await exec (`rm -rf /usr/libexec/calamares`)
-    await exec (`mkdir -p /usr/libexec/calamares`)
-    const scriptSrc=path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
-    await exec (`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
 
+    // libexec recreate
+    await exec(`rm -rf /usr/libexec/calamares`)
+    await exec(`mkdir -p /usr/libexec/calamares`)
+    const scriptSrc = path.resolve(__dirname, '../../../../conf/distros/noble/calamares/libexec/')
+    await exec(`cp ${scriptSrc}/*.sh /usr/libexec/calamares/`)
 
     /**
      * cfs: custom final steps

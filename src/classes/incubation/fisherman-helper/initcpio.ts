@@ -1,4 +1,4 @@
-import { access } from 'fs/promises';
+import { access } from 'fs/promises'
 
 /**
  * ./src/classes/incubation/fisherman-helper/initcpio.ts
@@ -17,28 +17,26 @@ import { exec } from '../../../lib/utils.js'
 export async function initcpio(): Promise<string> {
   try {
     const kernelVersion = (await exec('uname -r', { capture: true })).data
-    const version = kernelVersion.trim();
+    const version = kernelVersion.trim()
 
     // Logica Manjaro
     if (version.includes('MANJARO')) {
       try {
-        const parts = version.split('.');
-        const kernelName = `linux${parts[0]}${parts[1]}`;
+        const parts = version.split('.')
+        const kernelName = `linux${parts[0]}${parts[1]}`
 
         // Tentativo 1: Major/Minor (es. /etc/mkinitcpio.d/linux61.preset)
-        const manjaroPreset = `/etc/mkinitcpio.d/${kernelName}.preset`;
-        await access(manjaroPreset);
-        return manjaroPreset;
-
+        const manjaroPreset = `/etc/mkinitcpio.d/${kernelName}.preset`
+        await access(manjaroPreset)
+        return manjaroPreset
       } catch {
         try {
-          const parts = version.split('.');
-          const kernelName = `linux${parts[0]}${parts[1]}`;
+          const parts = version.split('.')
+          const kernelName = `linux${parts[0]}${parts[1]}`
           // Tentativo 2: Major/Minor con Architettura (es. /etc/mkinitcpio.d/linux61-x86_64.preset)
-          const manjaroPresetArch = `/etc/mkinitcpio.d/${kernelName}-x86_64.preset`;
-          await access(manjaroPresetArch);
-          return manjaroPresetArch;
-
+          const manjaroPresetArch = `/etc/mkinitcpio.d/${kernelName}-x86_64.preset`
+          await access(manjaroPresetArch)
+          return manjaroPresetArch
         } catch {
           // Fallito, si procede al FALLBACK ARCH
         }
@@ -46,42 +44,41 @@ export async function initcpio(): Promise<string> {
     } else if (version.includes('cachyos')) {
       // Logica CachyOS
       try {
-        let kernelType = 'linux-cachyos'; // default
+        let kernelType = 'linux-cachyos' // default
         if (version.includes('lts')) {
-          kernelType = 'linux-cachyos-lts';
+          kernelType = 'linux-cachyos-lts'
         } else if (version.includes('zen')) {
-          kernelType = 'linux-cachyos-zen';
+          kernelType = 'linux-cachyos-zen'
         } else if (version.includes('hardened')) {
-          kernelType = 'linux-hardened';
+          kernelType = 'linux-hardened'
         }
 
         const cachyPreset = `/etc/mkinitcpio.d/${kernelType}.preset`
-        await access(cachyPreset);
-        return cachyPreset;
+        await access(cachyPreset)
+        return cachyPreset
       } catch {
         // Fallito, si procede al fallback Arch
       }
     }
 
     // FALLBACK ARCH
-    let kernelType = 'linux'; // default
+    let kernelType = 'linux' // default
 
     if (version.includes('lts')) {
-      kernelType = 'linux-lts';
+      kernelType = 'linux-lts'
     } else if (version.includes('zen')) {
-      kernelType = 'linux-zen';
+      kernelType = 'linux-zen'
     } else if (version.includes('hardened')) {
-      kernelType = 'linux-hardened';
+      kernelType = 'linux-hardened'
     }
 
-    const archPreset = `/etc/mkinitcpio.d/${kernelType}.preset`;
+    const archPreset = `/etc/mkinitcpio.d/${kernelType}.preset`
 
     // Verifica che esista
-    await access(archPreset);
-    return archPreset;
-
+    await access(archPreset)
+    return archPreset
   } catch {
     // Lancia un errore se tutti i tentativi falliscono.
-    throw new Error(`Impossibile trovare un file .preset valido in /etc/mkinitcpio.d/.`);
+    throw new Error(`Impossibile trovare un file .preset valido in /etc/mkinitcpio.d/.`)
   }
 }

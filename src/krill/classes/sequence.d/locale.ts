@@ -17,7 +17,6 @@ import Sequence from '../../classes/sequence.js'
  * locale
  */
 export default async function locale(this: Sequence) {
-
   const defaultLocale = this.language
   if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
     /**
@@ -55,12 +54,10 @@ export default async function locale(this: Sequence) {
 
     const cmd = `chroot ${this.installTarget} ln -sf /usr/share/zoneinfo/${this.region}/${this.zone} /etc/localtime ${this.toNull}`
     await exec(cmd, this.echo)
-
   } else if (this.distro.familyId === 'alpine') {
-
     // locale Alpine
-    let file = this.installTarget + "/etc/profile.d/00locale.sh"
-    let content =""
+    let file = this.installTarget + '/etc/profile.d/00locale.sh'
+    let content = ''
     content += `#!/bin/sh\n`
     content += `export MUSL_LOCPATH="/usr/share/i18n/locales/musl"\n`
     content += `\n`
@@ -87,14 +84,14 @@ export default async function locale(this: Sequence) {
 
     /**
      * timezone
-     * 
+     *
      */
     const tz = `/etc/zoneinfo/${this.region}/${this.zone}`
     await exec(`chroot ${this.installTarget} rm -rf /etc/zoneinfo/* ${this.toNull}`, this.echo)
     await exec(`chroot ${this.installTarget} mkdir -p ${tz} ${this.toNull}`, this.echo)
 
-    file=`${this.installTarget}/etc/profile.d/timezone.sh`
-    content =""
+    file = `${this.installTarget}/etc/profile.d/timezone.sh`
+    content = ''
     content += `#!/bin/sh\n`
     content += `export TZ='${tz}'`
     Utils.write(file, content)

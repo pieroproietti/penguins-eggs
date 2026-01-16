@@ -6,20 +6,19 @@ import Utils from '../../../classes/utils.js'
  * confirm
  * @returns
  */
-export async function confirm(elem: JSX.Element, msg = "Confirm") {
-    redraw(elem)
-  
-    const result = JSON.parse(await Utils.customConfirmAbort(msg))
-    let retval = false
-    if (result.confirm === 'Yes') {
-      retval = true
-    } else if (result.confirm === 'Abort') {
-      process.exit()
-    }
+export async function confirm(elem: JSX.Element, msg = 'Confirm') {
+  redraw(elem)
 
-    return retval
+  const result = JSON.parse(await Utils.customConfirmAbort(msg))
+  let retval = false
+  if (result.confirm === 'Yes') {
+    retval = true
+  } else if (result.confirm === 'Abort') {
+    process.exit()
   }
 
+  return retval
+}
 
 /**
  * Occorre farglierlo rigenerare a forza
@@ -27,11 +26,9 @@ export async function confirm(elem: JSX.Element, msg = "Confirm") {
  * forceUpdate
  */
 function redraw(elem: JSX.Element) {
-    const opt: RenderOptions = {}
-    opt.patchConsole = true
-    opt.debug = false
-    console.clear()
-    render(elem, opt)
-  }
-  
-  
+  const opt: RenderOptions = {}
+  opt.patchConsole = true
+  opt.debug = false
+  console.clear()
+  render(elem, opt)
+}
