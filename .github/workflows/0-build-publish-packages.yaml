@@ -132,7 +132,7 @@ jobs:
       - name: 2. Install Debian Build Dependencies
         run: |
           apt-get update
-          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils
+          apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils sudo
           mkdir -p /etc/apt/keyrings
           curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
           echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
