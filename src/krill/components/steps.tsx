@@ -27,60 +27,60 @@ export default function Steps({ step = 1 }: stepsPros) {
     let activeFinish = false
 
     switch (step) {
-    case 1: {
-        activeWelcome = true
-    
-    break;
-    }
+        case 1: {
+            activeWelcome = true
 
-    case 2: {
-        activeLocation = true
-    
-    break;
-    }
+            break;
+        }
 
-    case 3: {
-        activeKeyboard = true
-    
-    break;
-    }
+        case 2: {
+            activeLocation = true
 
-    case 4: {
-        activePartitions = true
-    
-    break;
-    }
+            break;
+        }
 
-    case 5: {
-        activeUsers = true
-    
-    break;
-    }
+        case 3: {
+            activeKeyboard = true
 
-    case 6: {
-        activeNetwork = true
-    
-    break;
-    }
+            break;
+        }
 
-    case 7: {
-        activeSummary = true
-    
-    break;
-    }
+        case 4: {
+            activePartitions = true
 
-    case 8: {
-        activeInstall = true
-    
-    break;
-    }
+            break;
+        }
 
-    case 9: {
-        activeFinish = true
-    
-    break;
-    }
-    // No default
+        case 5: {
+            activeUsers = true
+
+            break;
+        }
+
+        case 6: {
+            activeNetwork = true
+
+            break;
+        }
+
+        case 7: {
+            activeSummary = true
+
+            break;
+        }
+
+        case 8: {
+            activeInstall = true
+
+            break;
+        }
+
+        case 9: {
+            activeFinish = true
+
+            break;
+        }
+        // No default
     }
 
     return (
@@ -105,10 +105,10 @@ type elementType = {
     active?: boolean
 }
 
-function WelcomeTab({ active = false }): JSX.Element {
+function WelcomeTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -116,10 +116,10 @@ function WelcomeTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Welcome    </Text></Box>
 }
 
-function LocationTab({ active = false }): JSX.Element {
+function LocationTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -127,10 +127,10 @@ function LocationTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Location   </Text></Box>
 }
 
-function KeyboardTab({ active = false }): JSX.Element {
+function KeyboardTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -139,10 +139,10 @@ function KeyboardTab({ active = false }): JSX.Element {
 }
 
 
-function PartitionTab({ active = false }): JSX.Element {
+function PartitionTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -150,10 +150,10 @@ function PartitionTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Partitions </Text></Box>
 }
 
-function UsersTab({ active = false }): JSX.Element {
+function UsersTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -161,10 +161,10 @@ function UsersTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Users      </Text></Box>
 }
 
-function NetworkTab({ active = false }): JSX.Element {
+function NetworkTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -172,10 +172,10 @@ function NetworkTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Network    </Text></Box>
 }
 
-function SummaryTab({ active = false }): JSX.Element {
+function SummaryTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -183,10 +183,10 @@ function SummaryTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Summary    </Text></Box>
 }
 
-function InstallTab({ active = false }): JSX.Element {
+function InstallTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }
@@ -194,10 +194,10 @@ function InstallTab({ active = false }): JSX.Element {
     return <Box><Text backgroundColor={backgroundColor} color={color}> Install    </Text></Box>
 }
 
-function FinishTab({ active = false }): JSX.Element {
+function FinishTab({ active = false }): React.JSX.Element {
     let backgroundColor = 'white'
     let color = 'black'
-    if (active){
+    if (active) {
         backgroundColor = 'black'
         color = 'white'
     }

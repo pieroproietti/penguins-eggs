@@ -39,8 +39,10 @@ export default class Daddy {
   async editConfig(config: IEggsConfig): Promise<IEggsConfig> {
     console.log(chalk.cyan('Edit and save Live system parameters\n'))
 
+    const { input, select } = await import('@inquirer/prompts');
+
     // Determine default compression option
-    let compressionOpt: number
+    let compressionOpt = 0
     switch (config.compression) {
       case 'xz': {
         compressionOpt = 1
@@ -63,58 +65,51 @@ export default class Daddy {
       config.snapshot_prefix = Utils.snapshotPrefix(this.settings.distro.distroId, this.settings.distro.codenameId)
     }
 
-    /**
-     *     // Define type-safe inquirer questions
-     * const questions: inquirer.QuestionCollection<IEggsConfig> = [
-     */
-    const questions: any = [
-      {
+    try {
+      const snapshot_prefix = await input({
         default: config.snapshot_prefix,
         message: 'LiveCD iso prefix: ',
-        name: 'snapshot_prefix',
-        type: 'input'
-      },
-      {
+      });
+
+      const snapshot_basename = await input({
         default: config.snapshot_basename,
         message: 'LiveCD iso basename: ',
-        name: 'snapshot_basename',
-        type: 'input'
-      },
-      {
+      });
+
+      const user_opt = await input({
         default: config.user_opt,
         message: 'LiveCD user:',
-        name: 'user_opt',
-        type: 'input'
-      },
-      {
+      });
+
+      const user_opt_passwd = await input({
         default: config.user_opt_passwd,
         message: 'LiveCD user password:',
-        name: 'user_opt_passwd',
-        type: 'input'
-      },
-      {
+      });
+
+      const root_passwd = await input({
         default: config.root_passwd,
         message: 'LiveCD root password:',
-        name: 'root_passwd',
-        type: 'input'
-      },
-      {
-        choices: ['fast', 'max'],
-        default: compressionOpt,
+      });
+
+      const compression = await select({
+        choices: [
+          { name: 'fast', value: 'fast' },
+          { name: 'max', value: 'max' }
+        ],
+        default: compressionOpt === 0 ? 'fast' : (compressionOpt === 1 ? 'fast' : 'max'), // improving default logic slightly, though simple mapping is fine
         message: 'LiveCD compression: ',
-        name: 'compression',
-        type: 'list'
-      }
-    ]
+      });
 
-    // occorre aggiungere ad answer
-    // i campi mancanti
+      const answers = {
+        snapshot_prefix,
+        snapshot_basename,
+        user_opt,
+        user_opt_passwd,
+        root_passwd,
+        compression
+      };
 
-    try {
-      // Prompt the user and return the typed config object
-      const answers = await inquirer.prompt<IEggsConfig>(questions)
       return { ...config, ...answers }
-      // return answers;
     } catch (error) {
       console.error(chalk.red('Error editing configuration:'), error)
       throw error

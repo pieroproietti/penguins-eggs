@@ -6,7 +6,7 @@
  * license: MIT
  */
 
-import inquirer, { Answers, DistinctQuestion } from 'inquirer'
+import inquirer, { Answers } from 'inquirer'
 
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
@@ -54,7 +54,7 @@ export type CryptoConfig = ArgonCryptoConfig | Pbkdf2CryptoConfig
 
 // --- 4. INTERACTIVE QUESTIONS (Internal) ---
 // This array is not exported.
-const questions: ReadonlyArray<DistinctQuestion> = [
+const questions = [
   {
     choices: CIPHER_OPTIONS,
     default: 'aes-xts-plain64',

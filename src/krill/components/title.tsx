@@ -20,45 +20,45 @@ type TitleProps = {
    version?: string
 }
 
-export default function Title({ title="", version=""}) : JSX.Element {
+export default function Title({ title = "", version = "" }): React.JSX.Element {
    let arch = "-"
    if (Utils.isAppImage()) {
-      arch+="AppImage"
+      arch += "AppImage"
    } else switch (process.arch) {
- case "arm64": {
+      case "arm64": {
          arch += "arm64"
-      
- break;
- }
 
- case "ia32": {
-         arch+="i386"
-      
- break;
- }
+         break;
+      }
 
- case "riscv64": {
-         arch+="riscv64"
-      
- break;
- }
+      case "ia32": {
+         arch += "i386"
 
- case "x64": {
-         arch+="x86_64"
-      
- break;
- }
- // No default
- }
+         break;
+      }
 
-   if (title==="") 
-      title=`${pjson.name}`
+      case "riscv64": {
+         arch += "riscv64"
 
-   const green = ` ${title}`.padEnd(25," ")
-   const white = ` Perri's brewery edition `.padEnd(25," ")
-   const red = ` v${pjson.version}${arch} `.padStart(25," ")
+         break;
+      }
 
-   return(
+      case "x64": {
+         arch += "x86_64"
+
+         break;
+      }
+      // No default
+   }
+
+   if (title === "")
+      title = `${pjson.name}`
+
+   const green = ` ${title}`.padEnd(25, " ")
+   const white = ` Perri's brewery edition `.padEnd(25, " ")
+   const red = ` v${pjson.version}${arch} `.padStart(25, " ")
+
+   return (
       <>
          <Box flexDirection="column" >
             <Box>
@@ -66,7 +66,7 @@ export default function Title({ title="", version=""}) : JSX.Element {
             <Box>
                <Text>E G G S: reproductive system of penguins</Text>
             </Box>
-            <Newline/>
+            <Newline />
          </Box>
          <Box flexDirection="row">
             <Text backgroundColor="green">{green}</Text>

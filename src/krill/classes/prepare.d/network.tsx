@@ -21,7 +21,7 @@ import getNetmask from '../../lib/get_netmask.js'
 import selectAddressType from '../../lib/select_address_type.js'
 import selectInterface from '../../lib/select_interface.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 
 
@@ -47,7 +47,7 @@ export async function network(this: Prepare): Promise<INet> {
         }
     }
 
-    let networkElem: JSX.Element
+    let networkElem: React.JSX.Element
     while (true) {
         networkElem = <Network address={i.address} addressType={i.addressType} dns={dnsString} domain={i.domain} gateway={i.gateway} iface={i.iface} netmask={i.netmask} />
         if (await confirm(networkElem, "Confirm Network datas?")) {

@@ -1,4 +1,5 @@
 import { render, RenderOptions } from 'ink'
+import React from 'react'
 
 import Utils from '../../../classes/utils.js'
 
@@ -6,7 +7,7 @@ import Utils from '../../../classes/utils.js'
  * confirm
  * @returns
  */
-export async function confirm(elem: JSX.Element, msg = 'Confirm') {
+export async function confirm(elem: React.JSX.Element, msg = 'Confirm') {
   redraw(elem)
 
   const result = JSON.parse(await Utils.customConfirmAbort(msg))
@@ -25,7 +26,7 @@ export async function confirm(elem: JSX.Element, msg = 'Confirm') {
  * anche quando NON cambiano i dati
  * forceUpdate
  */
-function redraw(elem: JSX.Element) {
+function redraw(elem: React.JSX.Element) {
   const opt: RenderOptions = {}
   opt.patchConsole = true
   opt.debug = false

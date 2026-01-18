@@ -9,6 +9,7 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
+        "@inquirer/prompts": "^8.2.0",
         "@oclif/core": "^4.8.0",
         "@oclif/plugin-autocomplete": "^3.2.39",
         "@oclif/plugin-help": "^6.2.36",
@@ -22,15 +23,15 @@
         "cors": "^2.8.5",
         "debug": "^4.4.3",
         "express": "^5.2.1",
-        "ink": "^5.2.1",
+        "ink": "^6.6.0",
         "ink-progress-bar": "^3.0.0",
         "ink-spinner": "^5.0.0",
-        "inquirer": "^12.11.1",
+        "inquirer": "^13.2.0",
         "js-yaml": "^4.1.1",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
-        "react": "^18.3.1",
-        "read": "^4.1.0",
+        "react": "^19.2.3",
+        "read": "^5.0.1",
         "systeminformation": "^5.30.4",
         "tftp": "^0.1.2",
         "vite": "^7.3.0",
@@ -48,19 +49,18 @@
         "@types/mocha": "^10.0.10",
         "@types/mustache": "^4.2.6",
         "@types/netmask": "^2.0.6",
-        "@types/node": "^22.19.3",
-        "@types/react": "^18.3.27",
-        "@types/read": "^0.0.32",
+        "@types/node": "^25.0.9",
+        "@types/react": "^19.2.8",
         "@types/ws": "^8.18.1",
         "chai": "^6.2.2",
         "eslint": "^9.39.2",
-        "eslint-config-oclif": "^6.0.130",
+        "eslint-config-oclif": "^6.0.132",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^13.0.0",
         "globals": "^17.0.0",
         "mocha": "^11.7.5",
-        "oclif": "^4.22.65",
-        "perrisbrewery": "^26.1.16",
+        "oclif": "^4.22.67",
+        "perrisbrewery": "../perrisbrewery",
         "prettier": "^3.8.0",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
@@ -128,11 +128,5 @@
         "version": "oclif readme && git add README.md",
         "webui": "sudo ./WebUI/venv/bin/python3 ./WebUI/backend.py"
     },
-    "types": "dist/index.d.ts",
-    "pnpm": {
-        "overrides": {
-            "react": "^18.3.1",
-            "@types/react": "^18.3.18"
-        }
-    }
+    "types": "dist/index.d.ts"
 }
