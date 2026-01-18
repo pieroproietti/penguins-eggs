@@ -23,7 +23,7 @@ import Pacman from '../../classes/pacman.js'
 import Settings from '../../classes/settings.js'
 import Utils from '../../classes/utils.js'
 import Xdg from '../../classes/xdg.js'
-import { IDevice, IDevices, IDistro , IInstaller, INet, IRemix } from '../../interfaces/index.js'
+import { IDevice, IDevices, IDistro, IInstaller, INet, IRemix } from '../../interfaces/index.js'
 import { exec, spawnSync } from '../../lib/utils.js'
 import Finished from '../components/finished.js'
 import Install from '../components/install.js'
@@ -85,7 +85,7 @@ export default class Sequence {
   // All properties (unchanged)
   installer = {} as IInstaller
   installTarget = '/tmp/calamares-krill-root'
-  is_clone =  fs.existsSync('/etc/penguins-eggs.d/is_clone')
+  is_clone = fs.existsSync('/etc/penguins-eggs.d/is_clone')
   keyboard = mKeyboard
   keyboardLayout = ''
   keyboardModel = ''
@@ -99,7 +99,7 @@ export default class Sequence {
   // luksMountpoint = `/mnt`
   luksRootName = ''
   machineId = machineId
-mkfs = mkfs
+  mkfs = mkfs
   mountFs = mountFs
   mountVfs = mountVfs
   network = {} as INet
@@ -180,7 +180,7 @@ mkfs = mkfs
     const moduleName = this.installer.multiarchModules + name + '/module.desc'
     if (fs.existsSync(moduleName)) {
       const calamaresModule = yaml.load(fs.readFileSync(moduleName, 'utf8')) as ICalamaresModule
-      let {command} = calamaresModule
+      let { command } = calamaresModule
       if (command !== '' || command !== undefined) {
         command += this.toNull
         await exec(command, this.echo)
@@ -450,7 +450,7 @@ mkfs = mkfs
 }
 
 // Helper functions (unchanged)
-async function redraw(elem: JSX.Element) {
+async function redraw(elem: React.JSX.Element) {
   const opt: RenderOptions = {}
   opt.patchConsole = false
   opt.debug = true

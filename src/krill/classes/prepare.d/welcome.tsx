@@ -12,7 +12,7 @@ import Welcome from '../../components/welcome.js'
 import { IWelcome } from '../../interfaces/i_krill.js'
 import selectLanguages from '../../lib/select_languages.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 
 /**
@@ -20,12 +20,12 @@ import {confirm} from './confirm.js'
  */
 export async function welcome(this: Prepare): Promise<IWelcome> {
 
-  let {language} = this.krillConfig
+  let { language } = this.krillConfig
   if (language === '' || language === undefined) {
     language = await this.locales.getDefault() // 'en_US.UTF-8'
   }
 
-  let welcomeElem: JSX.Element
+  let welcomeElem: React.JSX.Element
   while (true) {
     welcomeElem = <Welcome language={language} />
     if (await confirm(welcomeElem, "Confirm Welcome datas?")) {

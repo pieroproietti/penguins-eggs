@@ -11,13 +11,13 @@ import axios from 'axios'
 import React from 'react'
 
 import Utils from '../../../classes/utils.js'
-import {shx} from '../../../lib/utils.js'
+import { shx } from '../../../lib/utils.js'
 import Location from '../../components/location.js'
 import { ILocation } from '../../interfaces/i_krill.js'
 import selectRegions from '../../lib/select_regions.js'
 import selectZones from '../../lib/select_zones.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 
 /**
@@ -28,12 +28,12 @@ import {confirm} from './confirm.js'
  */
 
 export async function location(this: Prepare, language: string): Promise<ILocation> {
-    let {region} = this.krillConfig
+    let { region } = this.krillConfig
     if (region === '' || region === undefined) {
         const region = shx.exec('cut -f1 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
 
-    let {zone} = this.krillConfig
+    let { zone } = this.krillConfig
     if (zone === '' || zone === undefined) {
         zone = shx.exec('cut -f2 -d/ < /etc/timezone', { silent: true }).stdout.trim()
     }
@@ -52,7 +52,7 @@ export async function location(this: Prepare, language: string): Promise<ILocati
         console.error('error: ' + error)
     }
 
-    let locationElem: JSX.Element
+    let locationElem: React.JSX.Element
     while (true) {
         locationElem = <Location language={language} region={region} zone={zone} />
         if (await confirm(locationElem, "Confirm location datas?")) {

@@ -49,10 +49,10 @@ export default class Utils {
                      alias.family === 'IPv4' &&
                      alias.address !== '127.0.0.1' &&
                      !alias.internal
-                   && // take just the first!
+                     && // take just the first!
                      address === '') {
-                        address = alias.address
-                     }
+                     address = alias.address
+                  }
                }
             }
          }
@@ -68,9 +68,9 @@ export default class Utils {
       const ipParts = ip.split('.').map(Number);
       const maskParts = netmask.split('.').map(Number);
 
-      const broadcastParts = ipParts.map((part, index) => 
+      const broadcastParts = ipParts.map((part, index) =>
          // Bitwise OR tra il blocco IP e il blocco Netmask invertito (255 - mask)
-          part | (255 - maskParts[index])
+         part | (255 - maskParts[index])
       );
 
       return broadcastParts.join('.');
@@ -105,10 +105,10 @@ export default class Utils {
                      alias.family === 'IPv4' &&
                      alias.address !== '127.0.0.1' &&
                      !alias.internal
-                   && // take just the first!
+                     && // take just the first!
                      cidr === '' && alias.cidr !== null) {
-                           cidr = alias.cidr
-                        }
+                     cidr = alias.cidr
+                  }
                }
             }
          }
@@ -125,19 +125,23 @@ export default class Utils {
       return Boolean(shx.which(cmd));
    }
 
+
    /**
     *
     * @param msg
     */
    static async customConfirm(msg = 'Select yes to continue... '): Promise<boolean> {
-      const varResult = await Utils.customConfirmCompanion(msg)
-      const result = JSON.parse(varResult)
-      if (result.confirm === 'Yes') {
-         return true
-      }
- 
-         return false
-      
+      const { select } = await import('@inquirer/prompts');
+      const answer = await select({
+         message: msg,
+         choices: [
+            { name: 'No', value: 'No' },
+            { name: 'Yes', value: 'Yes' },
+         ],
+         default: 'No',
+      });
+      console.log('User selected:', answer); // Debug logging
+      return answer === 'Yes';
    }
 
    /**
@@ -145,21 +149,17 @@ export default class Utils {
     * @param msg
     */
    static async customConfirmAbort(msg = 'Confirm'): Promise<any> {
-      return new Promise((resolve) => {
-         const questions: any = [
-            {
-               choices: ['No', 'Yes', 'Abort'],
-               default: 'Yes',
-               message: msg,
-               name: 'confirm',
-               type: 'list'
-            }
-         ]
-
-         inquirer.prompt(questions).then((options: any) => {
-            resolve(JSON.stringify(options))
-         })
-      })
+      const { select } = await import('@inquirer/prompts');
+      const answer = await select({
+         message: msg,
+         choices: [
+            { name: 'No', value: 'No' },
+            { name: 'Yes', value: 'Yes' },
+            { name: 'Abort', value: 'Abort' },
+         ],
+         default: 'Yes',
+      });
+      return JSON.stringify({ confirm: answer });
    }
 
 
@@ -168,21 +168,16 @@ export default class Utils {
     * @param msg
     */
    static async customConfirmCompanion(msg = 'Select yes to continue... '): Promise<any> {
-      return new Promise((resolve) => {
-         const questions: any = [
-            {
-               choices: ['No', 'Yes'],
-               default: 'No',
-               message: msg,
-               name: 'confirm',
-               type: 'list'
-            }
-         ]
-
-         inquirer.prompt(questions).then((options: any) => {
-            resolve(JSON.stringify(options))
-         })
-      })
+      const { select } = await import('@inquirer/prompts');
+      const answer = await select({
+         message: msg,
+         choices: [
+            { name: 'No', value: 'No' },
+            { name: 'Yes', value: 'Yes' },
+         ],
+         default: 'No',
+      });
+      return JSON.stringify({ confirm: answer });
    }
 
    static async debug(cmd = 'cmd', procContinue = true) {
@@ -214,31 +209,31 @@ export default class Utils {
       if (Utils.isAppImage()) {
          arch += "AppImage"
       } else switch (process.arch) {
- case "arm64": {
+         case "arm64": {
             arch += "arm64"
-         
- break;
- }
 
- case "ia32": {
+            break;
+         }
+
+         case "ia32": {
             arch += "i386"
-         
- break;
- }
 
- case "riscv64": {
+            break;
+         }
+
+         case "riscv64": {
             arch += "riscv64"
-         
- break;
- }
 
- case "x64": {
+            break;
+         }
+
+         case "x64": {
             arch += "x86_64"
-         
- break;
- }
- // No default
- }
+
+            break;
+         }
+         // No default
+      }
 
       const title = `${pjson.name}`
 
@@ -266,7 +261,7 @@ export default class Utils {
 
       const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-      return Number.parseFloat((bytes / k**i).toFixed(dm)) + sizes[i];
+      return Number.parseFloat((bytes / k ** i).toFixed(dm)) + sizes[i];
    }
 
    /**
@@ -482,24 +477,24 @@ export default class Utils {
 
             // Popola solo le chiavi desiderate
             switch (trimmedKey) {
-            case 'ID': {
-               osInfo.ID = trimmedValue
-            
-            break;
-            }
+               case 'ID': {
+                  osInfo.ID = trimmedValue
 
-            case 'VERSION_CODENAME': {
-               osInfo.VERSION_CODENAME = trimmedValue
-            
-            break;
-            }
+                  break;
+               }
 
-            case 'VERSION_ID': {
-               osInfo.VERSION_ID = trimmedValue
-            
-            break;
-            }
-            // No default
+               case 'VERSION_CODENAME': {
+                  osInfo.VERSION_CODENAME = trimmedValue
+
+                  break;
+               }
+
+               case 'VERSION_ID': {
+                  osInfo.VERSION_ID = trimmedValue
+
+                  break;
+               }
+               // No default
             }
          }
       }
@@ -941,10 +936,10 @@ export default class Utils {
                      alias.family === 'IPv4' &&
                      alias.address !== '127.0.0.1' &&
                      !alias.internal
-                   && // take just the first!
+                     && // take just the first!
                      netmask === '') {
-                        netmask = alias.netmask
-                     }
+                     netmask = alias.netmask
+                  }
                }
             }
          }
@@ -1052,8 +1047,8 @@ export default class Utils {
       const sorted: { [key: string]: any } = {};
       for (const key of Object.keys(obj)
          .sort()) {
-            sorted[key] = obj[key];
-         }
+         sorted[key] = obj[key];
+      }
 
       return sorted;
    }
@@ -1082,34 +1077,34 @@ export default class Utils {
    static uefiArch(): string {
       let arch = ''
       switch (process.arch) {
-      case 'arm64': {
-         arch = 'arm64'
-      
-      break;
-      }
+         case 'arm64': {
+            arch = 'arm64'
 
-      case 'ia32': {
-         arch = 'i386'
-         // 
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
-            arch = 'amd64'
+            break;
          }
-      
-      break;
-      }
 
-      case 'riscv64': {
-         arch = 'riscv64'
-      
-      break;
-      }
+         case 'ia32': {
+            arch = 'i386'
+            // 
+            if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+               arch = 'amd64'
+            }
 
-      case 'x64': {
-         arch = 'amd64'
-      
-      break;
-      }
-      // No default
+            break;
+         }
+
+         case 'riscv64': {
+            arch = 'riscv64'
+
+            break;
+         }
+
+         case 'x64': {
+            arch = 'amd64'
+
+            break;
+         }
+         // No default
       }
 
       return arch
@@ -1129,27 +1124,27 @@ export default class Utils {
       let format = ''
 
       switch (process.arch) {
-      case 'arm64': {
-         format = 'arm64-efi'
-      
-      break;
-      }
+         case 'arm64': {
+            format = 'arm64-efi'
 
-      case 'ia32': {
-         format = 'i386-efi'
-         if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
-            format = 'x86_64-efi'
+            break;
          }
-      
-      break;
-      }
 
-      case 'x64': {
-         format = 'x86_64-efi'
-      
-      break;
-      }
-      // No default
+         case 'ia32': {
+            format = 'i386-efi'
+            if (shx.exec('uname -m', { silent: true }).stdout.trim() === 'x86_64') {
+               format = 'x86_64-efi'
+            }
+
+            break;
+         }
+
+         case 'x64': {
+            format = 'x86_64-efi'
+
+            break;
+         }
+         // No default
       }
 
       return format

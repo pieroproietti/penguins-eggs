@@ -11,16 +11,16 @@ import { render, RenderOptions } from 'ink'
 import React from 'react';
 
 import Summary from '../../components/summary.js'
-import { IKeyboard , ILocation, IPartitions, IUsers} from '../../interfaces/i_krill.js'
+import { IKeyboard, ILocation, IPartitions, IUsers } from '../../interfaces/i_krill.js'
 import { InstallationMode } from '../krill_enums.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 /**
  * SUMMARY
  */
 export async function summary(this: Prepare, location: ILocation, keyboard: IKeyboard, partitions: IPartitions, users: IUsers) {
-    let summaryElem: JSX.Element
+    let summaryElem: React.JSX.Element
 
     let message = `Double check: data on disk ${partitions.installationDevice} will be completely erased!`
     let erase = `On disk ${partitions.installationDevice} will be created a root partition formatted: ${partitions.filesystemType}`
@@ -34,7 +34,7 @@ export async function summary(this: Prepare, location: ILocation, keyboard: IKey
     if (this.unattended && this.nointeractive) {
         message = `Unattended installation will start in 5 seconds...\npress CTRL-C to abort!`
     }
-    
+
 
 
     while (true) {
@@ -54,8 +54,9 @@ export async function summary(this: Prepare, location: ILocation, keyboard: IKey
             break
         }
     }
-}
 
+    return {}
+}
 
 
 /**
@@ -63,14 +64,14 @@ export async function summary(this: Prepare, location: ILocation, keyboard: IKey
  * anche quando NON cambiano i dati
  * forceUpdate
  */
-function redraw(elem: JSX.Element) {
+function redraw(elem: React.JSX.Element) {
     const opt: RenderOptions = {}
     opt.patchConsole = true
     opt.debug = false
     console.clear()
     render(elem, opt)
-  }
-  
+}
+
 /**
  *
  * @param ms
@@ -78,8 +79,8 @@ function redraw(elem: JSX.Element) {
  */
 function sleep(ms = 0) {
     return new Promise((resolve) => {
-      setTimeout(resolve, ms);
+        setTimeout(resolve, ms);
     });
-  }
-  
-  
+}
+
+

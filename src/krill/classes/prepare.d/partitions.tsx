@@ -9,7 +9,7 @@
 
 import React from 'react'
 
-import {shx} from '../../../lib/utils.js'
+import { shx } from '../../../lib/utils.js'
 import Partitions from '../../components/partitions.js'
 import { IPartitions } from '../../interfaces/i_krill.js'
 import selectFileSystemType from '../../lib/select_filesystem_type.js'
@@ -19,13 +19,13 @@ import selectReplacedPartition from '../../lib/select_replaced_partition.js'
 import selectUserSwapChoice from '../../lib/select_user_swap_choice.js'
 import { InstallationMode, SwapChoice } from '../krill_enums.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 
 /**
  * PARTITIONS
  */
-export async function partitions(this: Prepare, installationDevice = "", crypted = false, pve = false, btrfs = false, replace=''): Promise<IPartitions> {
+export async function partitions(this: Prepare, installationDevice = "", crypted = false, pve = false, btrfs = false, replace = ''): Promise<IPartitions> {
 
     // Calamares won't use any devices with iso9660 filesystem on it.
     const drives = shx.exec('lsblk |grep disk|cut -f 1 "-d "', { silent: true }).stdout.trim().split('\n')
@@ -37,9 +37,9 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
     })
     installationDevice = driveList[0] // Solo per selezionare il default
 
-    let {replacedPartition} = this.krillConfig
+    let { replacedPartition } = this.krillConfig
 
-    let {installationMode} = this.krillConfig
+    let { installationMode } = this.krillConfig
 
     const knownInstallationModes = Object.values(InstallationMode) as Array<string>
     const knownSwapChoices = Object.values(SwapChoice) as Array<string>
@@ -62,7 +62,7 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
         userSwapChoice = SwapChoice.Small
     }
 
-    let partitionsElem: JSX.Element
+    let partitionsElem: React.JSX.Element
     while (true) {
         partitionsElem = <Partitions filesystemType={filesystemType} installationDevice={installationDevice} installationMode={installationMode} replacedPartition={replacedPartition} userSwapChoice={userSwapChoice} />
         if (await confirm(partitionsElem, "Confirm Partitions datas?")) {
@@ -78,31 +78,31 @@ export async function partitions(this: Prepare, installationDevice = "", crypted
             installationMode = await selectInstallationMode()
 
             switch (installationMode) {
-            case InstallationMode.EraseDisk: {
-                replacedPartition = ""
-                filesystemType = await selectFileSystemType()
-                userSwapChoice = await selectUserSwapChoice(userSwapChoice)
+                case InstallationMode.EraseDisk: {
+                    replacedPartition = ""
+                    filesystemType = await selectFileSystemType()
+                    userSwapChoice = await selectUserSwapChoice(userSwapChoice)
 
-            
-            break;
-            }
 
-            case InstallationMode.Luks: {
-                replacedPartition = ""
-                userSwapChoice = SwapChoice.File
-            
-            break;
-            }
+                    break;
+                }
 
-            case InstallationMode.Replace: {
-                replacedPartition = await selectReplacedPartition()
-                filesystemType = await selectFileSystemType()
-                userSwapChoice = SwapChoice.File
+                case InstallationMode.Luks: {
+                    replacedPartition = ""
+                    userSwapChoice = SwapChoice.File
 
-            
-            break;
-            }
-            // No default
+                    break;
+                }
+
+                case InstallationMode.Replace: {
+                    replacedPartition = await selectReplacedPartition()
+                    filesystemType = await selectFileSystemType()
+                    userSwapChoice = SwapChoice.File
+
+
+                    break;
+                }
+                // No default
             }
         }
     }

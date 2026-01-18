@@ -38,9 +38,9 @@ export default async function biosLuks(this: Sequence, installDevice = "", p = "
 
     // disabilito spinner per introduzione passphrase
     const message = "Creating partitions"
-    await redraw(<Install message={ message } percent = { 0} />)
+    await redraw(<Install message={message} percent={0} />)
     const passphrase = await getLuksPassphrase('evolution', 'evolution') // It's just a default
-    await redraw(<Install message={ message } percent = { 0} spinner = { this.spinner } />)
+    await redraw(<Install message={message} percent={0} spinner={this.spinner} />)
 
     // Aggiungi parametri di sicurezza espliciti
     const cipher = "aes-xts-plain64"
@@ -76,7 +76,7 @@ export default async function biosLuks(this: Sequence, installDevice = "", p = "
  *
  * @param elem
  */
-async function redraw(elem: JSX.Element) {
+async function redraw(elem: React.JSX.Element) {
     const opt: RenderOptions = {}
     opt.patchConsole = false
     opt.debug = true

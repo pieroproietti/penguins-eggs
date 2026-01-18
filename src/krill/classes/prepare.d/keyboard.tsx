@@ -17,35 +17,35 @@ import selectKeyboardModel from '../../lib/select_keyboard_model.js'
 import selectKeyboardOption from '../../lib/select_keyboard_option.js'
 import selectKeyboardVariant from '../../lib/select_keyboard_variant.js'
 import Prepare from '../prepare.js'
-import {confirm} from './confirm.js'
+import { confirm } from './confirm.js'
 
 
 /**
  * KEYBOARD
  */
 export async function keyboard(this: Prepare): Promise<IKeyboard> {
-    let {keyboardModel} = this.krillConfig
+    let { keyboardModel } = this.krillConfig
     if (keyboardModel === '' || keyboardModel === undefined) {
         keyboardModel = await this.keyboards.getModel()
     }
 
-    let {keyboardLayout} = this.krillConfig
+    let { keyboardLayout } = this.krillConfig
     if (keyboardLayout === '' || keyboardLayout === undefined) {
         keyboardLayout = await this.keyboards.getLayout()
     }
 
-    let {keyboardVariant} = this.krillConfig
+    let { keyboardVariant } = this.krillConfig
     if (keyboardVariant === '' || keyboardVariant === undefined) {
         keyboardVariant = await this.keyboards.getVariant()
     }
 
-    let {keyboardOption} = this.krillConfig
+    let { keyboardOption } = this.krillConfig
     if (keyboardOption === '' || keyboardOption === undefined) {
         keyboardOption = await this.keyboards.getOption()
     }
 
 
-    let keyboardElem: JSX.Element
+    let keyboardElem: React.JSX.Element
     while (true) {
         keyboardElem = <Keyboard keyboardLayout={keyboardLayout} keyboardModel={keyboardModel} keyboardOptions={keyboardOption} keyboardVariant={keyboardVariant} />
         if (await confirm(keyboardElem, "Confirm Keyboard datas?")) {
