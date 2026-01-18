@@ -1,12 +1,4 @@
-/**
- * ./src/lib/select_keyboard_option.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
-
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 
 import Keyboards from '../../classes/keyboards.js'
 
@@ -22,19 +14,13 @@ export default async function selectKeyboardOption(selected = ''): Promise<strin
     supported.push(o.code)
   }
 
-  const questions: any = [
-    {
-      choices: supported,
-      default: selected,
-      message: 'Select option: ',
-      name: 'option',
-      type: 'list'
-    }
-  ]
+  const choices = supported.map((o) => ({ name: o, value: o }));
 
-  return new Promise((resolve) => {
-    inquirer.prompt(questions).then((options: any) => {
-      resolve(options.option)
-    })
-  })
+  const answer = await select({
+    message: 'Select option: ',
+    choices,
+    default: selected,
+  });
+
+  return answer;
 }

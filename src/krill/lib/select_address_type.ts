@@ -1,27 +1,13 @@
-/**
- * ./src/lib/select_address_type.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
-
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 
 export default async function selectAddressType(): Promise<string> {
-  const questions: any = [
-    {
-      choices: ['dhcp', 'static'],
-      default: 'dhcp',
-      message: 'Select address type: ',
-      name: 'option',
-      type: 'list'
-    }
-  ]
-
-  return new Promise((resolve) => {
-    inquirer.prompt(questions).then((options: any) => {
-      resolve(options.option)
-    })
-  })
+  const answer = await select({
+    message: 'Select address type: ',
+    choices: [
+      { name: 'dhcp', value: 'dhcp' },
+      { name: 'static', value: 'static' },
+    ],
+    default: 'dhcp',
+  });
+  return answer;
 }
