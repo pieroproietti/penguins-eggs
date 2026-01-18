@@ -1,12 +1,4 @@
-/**
- * ./src/lib/select_filesystem_type.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
-
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
@@ -21,26 +13,18 @@ export default async function selectFileSystemType(): Promise<string> {
     partitions.defaultFileSystemType = 'ext4'
   }
 
-  const choices = ['ext4']
+  const choices = [{ name: 'ext4', value: 'ext4' }]
   if (Pacman.packageIsInstalled('progs') || Pacman.packageIsInstalled('btrfsprogs')) {
-    choices.push('btrfs')
+    choices.push({ name: 'btrfs', value: 'btrfs' })
   }
 
   partitions.defaultFileSystemType = 'ext4'
 
-  const questions: any = [
-    {
-      choices,
-      default: partitions.defaultFileSystemType,
-      message: 'Select file system type',
-      name: 'fileSystemChoices',
-      type: 'list'
-    }
-  ]
+  const answer = await select({
+    message: 'Select file system type',
+    choices,
+    default: partitions.defaultFileSystemType,
+  });
 
-  return new Promise((resolve) => {
-    inquirer.prompt(questions).then((options: any) => {
-      resolve(options.fileSystemChoices)
-    })
-  })
+  return answer;
 }

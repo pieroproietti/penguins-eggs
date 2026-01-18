@@ -1,12 +1,4 @@
-/**
- * ./src/lib/select_user_swap_choice.ts
- * penguins-eggs v.25.7.x / ecmascript 2020
- * author: Piero Proietti
- * email: piero.proietti@gmail.com
- * license: MIT
- */
-
-import inquirer from 'inquirer'
+import { select } from '@inquirer/prompts'
 import yaml from 'js-yaml'
 import fs from 'node:fs'
 
@@ -22,19 +14,13 @@ export default async function selectUserSwapChoice(initialSwapChoice: SwapChoice
     partitions.initialSwapChoice = initialSwapChoice
   }
 
-  const questions: any = [
-    {
-      choices: partitions.userSwapChoices,
-      default: partitions.initialSwapChoice,
-      message: 'Select the swap choice',
-      name: 'userSwapChoices',
-      type: 'list'
-    }
-  ]
+  const choices = partitions.userSwapChoices.map((c) => ({ name: c, value: c }));
 
-  return new Promise((resolve) => {
-    inquirer.prompt(questions).then((options: any) => {
-      resolve(options.userSwapChoices)
-    })
-  })
+  const answer = await select({
+    message: 'Select the swap choice',
+    choices,
+    default: partitions.initialSwapChoice,
+  });
+
+  return answer as SwapChoice;
 }
