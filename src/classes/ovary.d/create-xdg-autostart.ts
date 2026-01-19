@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
 
 import { IAddons } from '../../interfaces/index.js'
 import { exec } from '../../lib/utils.js'
+import Xdg from '../xdg.js'
 // classes
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
@@ -168,29 +169,11 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     // Disabilitiamo greetd per evitare che "rubi" il terminale
     try {
       await exec(`chroot ${mergedRoot} systemctl disable greetd`)
-    } catch {}
-  }
+    } catch { }
 
-  // Altri Display Manager
-  else if (Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-    const gdmFile = fs.existsSync(path.join(mergedRoot, '/etc/gdm3/daemon.conf')) ? path.join(mergedRoot, '/etc/gdm3/daemon.conf') : path.join(mergedRoot, '/etc/gdm3/custom.conf')
-    if (fs.existsSync(gdmFile)) {
-      let c = fs.readFileSync(gdmFile, 'utf8')
-      c = c.replace(/#?AutomaticLoginEnable=.*/, 'AutomaticLoginEnable=true').replace(/#?AutomaticLogin=.*/, `AutomaticLogin=${newuser}`)
-      fs.writeFileSync(gdmFile, c, 'utf8')
-    }
-  } else if (Pacman.packageIsInstalled('sddm')) {
-    const sddmConf = path.join(mergedRoot, '/etc/sddm.conf.d/eggs-autologin.conf')
-    fs.mkdirSync(path.dirname(sddmConf), { recursive: true })
-    fs.writeFileSync(sddmConf, `[Autologin]\nUser=${newuser}\nSession=cosmic\n`, 'utf8')
-  } else if (Pacman.packageIsInstalled('lightdm')) {
-    const lPath = path.join(mergedRoot, '/etc/lightdm/lightdm.conf')
-    if (fs.existsSync(lPath)) {
-      let c = fs.readFileSync(lPath, 'utf8')
-      if (!c.includes('[Seat:*]')) c += '\n[Seat:*]\n'
-      c = c.replaceAll(/autologin-user=.*/g, '').replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
-      fs.writeFileSync(lPath, c, 'utf8')
-    }
+  } else {
+    // Altri Display Manager
+    await Xdg.autologin(newuser, mergedRoot)
   }
 
   if (this.verbose) console.log(`Ovary: Autologin and Desktop links configured for user: ${newuser}`)

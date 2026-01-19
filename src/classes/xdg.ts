@@ -56,27 +56,36 @@ export default class Xdg {
       fs.writeFileSync(`${chroot}/etc/${slimConf}`, content, 'utf8')
     } else if (Pacman.packageIsInstalled('lightdm')) {
 
-    /**
-     * LIGHTDM
-     */
+      /**
+       * LIGHTDM
+       */
       const confPath = `${chroot}/etc/lightdm/lightdm.conf`
       if (fs.existsSync(confPath)) {
         let content = fs.readFileSync(confPath, 'utf8')
-        if (!content.includes('[Seat:*]')) {
-          content += '\n[Seat:*]\n'
-        }
 
         // Rimuove eventuali righe esistenti e le aggiunge pulite sotto [Seat:*]
-        content = content.replaceAll(/^autologin-user=.*/gm, '')
-        content = content.replaceAll(/^autologin-user-timeout=.*/gm, '')
-        content = content.replace('[Seat:*]', `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
+        content = content.replaceAll(/^\s*autologin-user=.*/gm, '')
+        content = content.replaceAll(/^\s*autologin-user-timeout=.*/gm, '')
+
+        // Cerca una sezione attiva [Seat:*] (non commentata)
+        // regex: inizio riga, spazi opzionali, [Seat:*], fine riga o spazio
+        const seatRegex = /^[ \t]*\[Seat:\*\]/m
+
+        if (seatRegex.test(content)) {
+          // Sostituisce la prima occorrenza attiva trovata
+          content = content.replace(seatRegex, `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
+        } else {
+          // Se non esiste attiva, la aggiunge in fondo
+          content += `\n[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0\n`
+        }
+
         fs.writeFileSync(confPath, content.replaceAll(/\n\n+/g, '\n\n'), 'utf8')
       }
     } else if (Pacman.packageIsInstalled('lxdm')) {
 
-    /**
-     * LXDM
-     */
+      /**
+       * LXDM
+       */
       const lxdmConf = `${chroot}/etc/lxdm/lxdm.conf`
       if (fs.existsSync(lxdmConf)) {
         let content = fs.readFileSync(lxdmConf, 'utf8')
@@ -85,9 +94,9 @@ export default class Xdg {
       }
     } else if (Pacman.packageIsInstalled('sddm')) {
 
-    /**
-     * SDDM (Modern approach con file dedicato)
-     */
+      /**
+       * SDDM (Modern approach con file dedicato)
+       */
       const confDir = `${chroot}/etc/sddm.conf.d`
       if (!fs.existsSync(confDir)) {
         fs.mkdirSync(confDir, { recursive: true })
@@ -102,9 +111,9 @@ export default class Xdg {
       fs.writeFileSync(`${confDir}/eggs-autologin.conf`, content, 'utf8')
     } else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
 
-    /**
-     * GDM / GDM3 (Pop!_OS, Ubuntu, Debian)
-     */
+      /**
+       * GDM / GDM3 (Pop!_OS, Ubuntu, Debian)
+       */
       let gdmFile = ''
       const possiblePaths = [`${chroot}/etc/gdm3/daemon.conf`, `${chroot}/etc/gdm3/custom.conf`, `${chroot}/etc/gdm/custom.conf`]
 
