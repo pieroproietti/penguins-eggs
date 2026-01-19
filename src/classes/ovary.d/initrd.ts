@@ -54,6 +54,8 @@ export async function initrdArch(this: Ovary) {
     if (this.distroId === 'Biglinux' || this.distroId === 'Bigcommunity') {
       dirConf = 'biglinux'
     }
+  } else if (this.distroId.toLowerCase().includes('cachyos')) {
+    dirConf = 'cachyos'
   }
 
   const restore = fs.existsSync(hookDest)
