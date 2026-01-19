@@ -60,7 +60,7 @@
         "globals": "^17.0.0",
         "mocha": "^11.7.5",
         "oclif": "^4.22.67",
-        "perrisbrewery": "../perrisbrewery",
+        "perrisbrewery": "^26.1.20",
         "prettier": "^3.8.0",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
