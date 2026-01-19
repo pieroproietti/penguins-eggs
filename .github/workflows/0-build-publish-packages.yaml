@@ -184,8 +184,8 @@ jobs:
           dnf install -y epel-release
           /usr/bin/crb enable
           dnf module enable nodejs:22 -y
-          dnf install -y nodejs
-          npm install -g pnpm
+          dnf install -y nodejs pnpm
+          # npm install -g pnpm
           echo "Installing RPM build dependencies from spec file..."
           for package in $(grep '^BuildRequires:' packaging/rpm/penguins-eggs.spec | grep -v 'pnpm' | awk '{print $2}'); do
             echo "Installing $package..."
