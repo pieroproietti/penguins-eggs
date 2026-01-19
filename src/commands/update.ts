@@ -7,8 +7,8 @@
  */
 
 import { Command, Flags } from '@oclif/core'
+import { select } from '@inquirer/prompts'
 import axios from 'axios'
-import inquirer from 'inquirer'
 import https from 'node:https'
 
 import Distro from '../classes/distro.js'
@@ -36,23 +36,23 @@ export default class Update extends Command {
    *
    */
   async choosePkg(): Promise<string> {
-    const choices: string[] = ['Abort']
-    choices.push('LAN', 'Internet', 'Source')
-
-    const questions: any = [
-      {
-        choices,
-        message: 'Select update method',
-        name: 'selected',
-        type: 'list'
-      }
+    const choices = [
+      { name: 'Abort', value: 'Abort' },
+      { name: 'LAN', value: 'LAN' },
+      { name: 'Internet', value: 'Internet' },
+      { name: 'Source', value: 'Source' },
     ]
-    const answer = await inquirer.prompt(questions)
-    if (answer.selected === 'Abort') {
+
+    const selected = await select({
+      message: 'Select update method',
+      choices,
+    })
+
+    if (selected === 'Abort') {
       process.exit(0)
     }
 
-    return answer.selected
+    return selected
   }
 
   async chooseUpdate() {
