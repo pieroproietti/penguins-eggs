@@ -135,7 +135,7 @@ jobs:
           apt-get install -y curl gpg git build-essential dpkg-dev fakeroot gnupg2 apt-utils xz-utils sudo
           mkdir -p /etc/apt/keyrings
           curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+          echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
           apt-get update
           apt-get install -y nodejs
           npm install -g pnpm
@@ -183,7 +183,7 @@ jobs:
           dnf install -y --allowerasing 'dnf-plugins-core' rpm-build curl gnupg2 rpm-sign jq
           dnf install -y epel-release
           /usr/bin/crb enable
-          dnf module enable nodejs:18 -y
+          dnf module enable nodejs:22 -y
           dnf install -y nodejs
           npm install -g pnpm
           echo "Installing RPM build dependencies from spec file..."
