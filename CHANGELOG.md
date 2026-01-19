@@ -20,6 +20,12 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.20
+This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity). Although it doesn't look much different, a plethora of packages have been updated and the code has been partially reorganized.
+* **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
+* **UX/UI**: Refactored interactive prompts (Krill, confirmations) to use `@inquirer/prompts`, allowing arrow key navigation;
+* **Core**: General dependency updates and ESM improvements;
+
 # v26.1.15
 * added Parrot 7.0 (echo) on [`derivarives.yaml`](./conf/derivatives.yaml);
 * uniformated all the extensions of YAML files to `.yaml`
