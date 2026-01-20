@@ -22,7 +22,7 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v26.1.20
 This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity).
-* **Refactoring nest**: Major cleanup of the working directory structure. Renamed hidden directories `.mnt` to `mnt` as mount point for addictional space, moved `.mnt/filesystem.squashfs` to `liveroot`, move `./mnt/iso` to `iso`, renamed `ovarium` to `bin`, removed previous symlinks;
+* **Refactoring nest**: Major cleanup of the working directory structure. Renamed hidden directories `.mnt` to `mnt` as mount point for addictional space, moved `.mnt/filesystem.squashfs` to `liveroot`, move `./mnt/iso` to `iso`, renamed `ovarium` to `bin`, removed previous symlinks (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));
 * **Core**: General dependency updates, ESM improvements, and internal refactoring (`dotMnt` -> `mnt`, `dotLiveFs` -> `liveRoot`, `xorriso` fixes).
 * **Cleanup**: Removed unused variables `machine_id` and `pmount_fixed` from `eggs.yaml` and internal structures.
 * **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
