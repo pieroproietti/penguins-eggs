@@ -42,10 +42,7 @@ export default class Config extends Command {
       await Pacman.configurationInstall(verbose)
     }
 
-    if (i.configurationRefresh) {
-      Utils.warning('- refreshing configuration for new machine...')
-      await Pacman.configurationMachineNew(verbose)
-    }
+
 
     if (i.distroTemplate) {
       Utils.warning('- copying distro templates...')
@@ -95,9 +92,6 @@ export default class Config extends Command {
     }
 
     i.configurationInstall = !Pacman.configurationCheck()
-    if (!i.configurationInstall) {
-      i.configurationRefresh = !Pacman.configurationMachineNew()
-    }
 
     return i
   }
@@ -118,7 +112,7 @@ export default class Config extends Command {
       }
 
       const i = await Config.thatWeNeed(nointeractive, verbose)
-      if (i.needUpdate || i.configurationInstall || i.configurationRefresh || i.distroTemplate) {
+      if (i.needUpdate || i.configurationInstall || i.distroTemplate) {
         await Config.install(i, nointeractive, verbose)
       }
     } else {

@@ -41,7 +41,7 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `mkdir -p ${this.nest}iso/isolinux\n`
 
   cmd += `# cleaning (nest).overlay\n`
-  cmd += `umount ${this.dotLivefs}/* > /dev/null 2>&1\n`
+  cmd += `umount ${this.liveRoot}/* > /dev/null 2>&1\n`
   cmd += `umount ${this.dotOverlay.lowerdir}/* > /dev/null 2>&1\n`
   cmd += `umount ${this.dotOverlay.upperdir}/* > /dev/null 2>&1\n`
   cmd += `umount ${this.dotOverlay.workdir}/* > /dev/null 2>&1\n`
@@ -51,8 +51,8 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `mkdir -p ${this.dotOverlay.workdir}\n`
   cmd += `sleep 1\n`
   cmd += `# cleaning plain liveroot\n`
-  cmd += `rm -rf ${this.dotLivefs}\n`
-  cmd += `mkdir -p ${this.dotLivefs}\n`
+  cmd += `rm -rf ${this.liveRoot}\n`
+  cmd += `mkdir -p ${this.liveRoot}\n`
 
   cmd += `# cleaning (nest)/bin\n`
   cmd += `rm -rf ${this.nest}bin\n`

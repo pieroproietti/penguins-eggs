@@ -70,9 +70,9 @@ export async function produce(
 
   this.kernel = kernel
   this.nest = this.settings.config.snapshot_dir
-  this.dotMnt = this.settings.iso_work
+  this.mnt = this.settings.iso_work
+  this.liveRoot = this.settings.work_dir.merged
   this.dotOverlay = this.settings.work_dir
-  this.dotLivefs = this.settings.work_dir.merged
 
   this.clone = clone
   this.homecrypt = homecrypt

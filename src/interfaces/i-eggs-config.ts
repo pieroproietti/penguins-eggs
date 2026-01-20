@@ -12,11 +12,9 @@ export interface IEggsConfig {
   initrd_img: string
   locales: string[]
   locales_default: string
-  machine_id: string
   make_efi: boolean
   make_isohybrid: boolean
   make_md5sum: boolean
-  pmount_fixed: boolean
   root_passwd: string
   snapshot_basename: string
   snapshot_dir: string // /home/eggs

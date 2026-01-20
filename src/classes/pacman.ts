@@ -241,22 +241,9 @@ export default class Pacman {
     config.compression = 'xz'
     config.ssh_pass = false
     config.timezone = 'America/New_York'
-    config.pmount_fixed = false
-
-    if (!this.calamaresExists()) {
-      config.force_installer = false
-      // console.log('Due the lacks of calamares package set force_installer = false')
-    }
-
-    if (!Pacman.isUefi() && Utils.uefiArch() !== 'i386') {
-      config.make_efi = false
-      console.log('Due the lacks of grub-efi-' + Utils.uefiArch() + '-bin package set make_efi = false')
-    }
-
     /**
      * Salvo la configurazione di eggs.yaml
      */
-    config.machine_id = '' // Utils.machineId()
     config.vmlinuz = Utils.vmlinuz()
     config.initrd_img = Utils.initrdImg()
     const settings = new Settings()
@@ -319,19 +306,7 @@ export default class Pacman {
     await this.configurationFresh()
   }
 
-  /**
-   * Ritorna vero se machine-id è uguale
-   */
-  static async configurationMachineNew(verbose = false): Promise<boolean> {
-    const settings = new Settings()
-    await settings.load()
-    const result = Utils.machineId() !== settings.config.machine_id
-    if (verbose && result) {
-      console.log('configurationMachineNew: True')
-    }
 
-    return result
-  }
 
   /**
    * Rimozione dei file di configurazione

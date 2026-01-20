@@ -71,8 +71,8 @@ export default class Ovary {
   distroId = ''
   distroLike = ''
   distroLiveMediumPath = ''
-  dotLivefs = ''
-  dotMnt = ''
+  liveRoot = ''
+  mnt = ''
   dotOverlay = {} as IWorkDir
   echo = {}
   editLiveFs = editLiveFs
