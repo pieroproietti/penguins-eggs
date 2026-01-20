@@ -93,7 +93,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
 
   cmd = cmd.replaceAll(/\s\s+/g, ' ')
 
-  Utils.writeX(`${this.settings.work_dir.ovarium}mksquashfs`, cmd)
+  Utils.writeX(`${this.settings.work_dir.bin}mksquashfs`, cmd)
   if (!scriptOnly) {
     Utils.warning('creating filesystem.squashfs on (ISO)/live')
     // Utils.warning(`compression: ` + compression)

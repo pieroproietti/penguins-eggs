@@ -69,9 +69,9 @@ export async function bindLiveFs(this: Ovary) {
       if (dir !== 'ci' && dir !== 'lost+found') {
         if (this.copied(dir)) {
           cmds.push(`# /${dir} is copied if not exists on filesystem.squashfs`)
-          const chkDir = path.join(this.settings.config.snapshot_mnt, 'filesystem.squashfs', dir)
+          const chkDir = path.join(this.settings.work_dir.merged, dir)
           cmds.push(`if ! [ -d "${chkDir}" ]; then`)
-          cmds.push(await rexec(`   cp -a /${dir} ${this.settings.config.snapshot_mnt}filesystem.squashfs`, this.verbose), `fi`)
+          cmds.push(await rexec(`   cp -a /${dir} ${this.settings.work_dir.merged}/`, this.verbose), `fi`)
           continue
         } else if (this.mergedAndOverlay(dir)) {
           cmds.push(`# /${dir} mergedAndOverlay (rw)\n`, '# create mountpoint lower')
@@ -135,7 +135,7 @@ export async function bindLiveFs(this: Ovary) {
   cmds.push(endLine)
 
   // Utils.writeXs(`${this.settings.config.snapshot_dir}bind`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}bind`, cmds)
+  Utils.writeXs(`${this.settings.work_dir.bin}bind`, cmds)
 }
 
 /**
@@ -207,7 +207,7 @@ export async function uBindLiveFs(this: Ovary) {
     cmds.push(await rexec(`umount ${this.settings.work_dir.merged}/home`, this.verbose))
   }
 
-  Utils.writeXs(`${this.settings.work_dir.ovarium}ubind`, cmds)
+  Utils.writeXs(`${this.settings.work_dir.bin}ubind`, cmds)
 }
 
 /**

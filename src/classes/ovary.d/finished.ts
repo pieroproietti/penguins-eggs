@@ -26,8 +26,8 @@ import Utils from './../utils.js'
 export function finished(this: Ovary, scriptOnly = false) {
   // Utils.titles('produce')
   if (scriptOnly) {
-    const pathOvarium = path.join(this.settings.config.snapshot_dir, 'ovarium')
-    console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the ovarium: ' + chalk.cyanBright(pathOvarium) + '.')
+    const pathOvarium = path.join(this.settings.config.snapshot_dir, 'bin')
+    console.log('eggs is finished!\n\nYou can find the scripts to build iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the bin: ' + chalk.cyanBright(pathOvarium) + '.')
     console.log('usage')
     console.log(chalk.cyanBright(`cd ${pathOvarium}`))
     console.log(chalk.cyanBright('sudo ./bind'))
