@@ -36,7 +36,7 @@ export default class Settings {
   config = {} as IEggsConfig
   distro = {} as IDistro
 
-  // efi_work = ''
+  efi_work = ''
 
   i686 = false
   incubator = {} as Incubator
@@ -134,22 +134,22 @@ export default class Settings {
       this.config.snapshot_dir += '/'
     }
 
-    this.work_dir.ovarium = this.config.snapshot_dir + 'ovarium/'
+    this.work_dir.bin = this.config.snapshot_dir + 'bin/'
 
-    // hidden .mnt under nest
-    this.config.snapshot_mnt = this.config.snapshot_dir + '.mnt/'
+    // hidden .mnt now mnt under nest
+    this.config.snapshot_mnt = this.config.snapshot_dir + 'mnt/'
     if (!this.config.snapshot_mnt.endsWith('/')) {
       this.config.snapshot_mnt += '/'
     }
 
-    // hidden .overlay under nest was under ovarium
+    // hidden .overlay under nest was under bin
     this.work_dir.lowerdir = this.config.snapshot_dir + '.overlay/lowerdir'
     this.work_dir.upperdir = this.config.snapshot_dir + '.overlay/upperdir'
     this.work_dir.workdir = this.config.snapshot_dir + '.overlay/workdir'
 
-    this.work_dir.merged = this.config.snapshot_mnt + 'filesystem.squashfs'
-    // this.efi_work = this.config.snapshot_mnt + 'efi-work/'
-    this.iso_work = this.config.snapshot_mnt + 'iso/'
+    this.work_dir.merged = this.config.snapshot_dir + 'liveroot'
+    this.efi_work = this.config.snapshot_dir + 'tmp/efi/'
+    this.iso_work = this.config.snapshot_dir + 'iso/'
 
     // remember: before was hostname, not empty
     if (this.config.snapshot_basename === '') {

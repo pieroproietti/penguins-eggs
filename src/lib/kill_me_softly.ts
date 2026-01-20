@@ -14,7 +14,7 @@ import { exec } from './utils.js'
 /**
  *
  */
-export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/home/eggs/.mnt', isos = false) {
+export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/home/eggs/mnt', isos = false) {
   const echo = Utils.setEcho(false)
   const liveFs = `${eggsMnt}filesystem.squashfs`
 
@@ -34,7 +34,7 @@ export default async function killMeSoftly(eggsRoot = `/home/eggs`, eggsMnt = '/
     await exec(`rm -rf ${eggsMnt}efi-work`)
     await exec(`rm -rf ${eggsMnt}iso`)
     await exec(`rm -rf ${eggsMnt}memdiskDir`)
-    await exec(`rm -rf ${eggsRoot}ovarium`)
+    await exec(`rm -rf ${eggsRoot}bin`)
 
     // Remove all ISOs if --isos
     if (isos) {

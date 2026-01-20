@@ -7,9 +7,9 @@
  */
 
 export interface IWorkDir {
-  lowerdir: string // default: ${ovarium}.lowerdir
-  merged: string // default: ${ovarium}.merged
-  ovarium: string // default: /home/eggs/mnt/ovarium/
-  upperdir: string // default: ${ovarium}.upperdir
-  workdir: string // default: ${ovarium}.workdir
+  lowerdir: string // default: ${bin}.lowerdir
+  merged: string // default: ${bin}.merged
+  bin: string // default: /home/eggs/mnt/bin/
+  upperdir: string // default: ${bin}.upperdir
+  workdir: string // default: ${bin}.workdir
 }

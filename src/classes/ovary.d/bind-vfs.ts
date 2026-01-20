@@ -35,7 +35,7 @@ export async function bindVfs(this: Ovary) {
     `mount -o bind /run ${this.settings.work_dir.merged}/run`
   )
   // Utils.writeXs(`${this.settings.config.snapshot_dir}bindvfs`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}bindvfs`, cmds)
+  Utils.writeXs(`${this.settings.work_dir.bin}bindvfs`, cmds)
 }
 
 /**
@@ -50,5 +50,5 @@ export async function ubindVfs(this: Ovary) {
   const cmds: string[] = []
   cmds.push(`umount ${this.settings.work_dir.merged}/dev/pts`, `umount ${this.settings.work_dir.merged}/dev`, `umount ${this.settings.work_dir.merged}/proc`, `umount ${this.settings.work_dir.merged}/run`, `umount ${this.settings.work_dir.merged}/sys`)
   // Utils.writeXs(`${this.settings.config.snapshot_dir}ubindvfs`, cmds)
-  Utils.writeXs(`${this.settings.work_dir.ovarium}ubindvfs`, cmds)
+  Utils.writeXs(`${this.settings.work_dir.bin}ubindvfs`, cmds)
 }

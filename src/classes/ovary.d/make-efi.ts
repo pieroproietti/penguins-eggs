@@ -122,7 +122,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   // 2 secondi per leggere...
   await new Promise((resolve) => setTimeout(resolve, 2000))
 
-  const efiPath = path.join(this.settings.config.snapshot_mnt, '/efi/')
+  const efiPath = this.settings.efi_work
   const efiWorkDir = path.join(efiPath, '/work/')
   const efiMemdiskDir = path.join(efiPath, '/memdisk/')
   const efiImgMnt = path.join(efiPath, 'mnt')

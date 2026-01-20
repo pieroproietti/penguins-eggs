@@ -34,13 +34,11 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `# README.md\n`
   cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.nest}README.md\n`
 
-  cmd += `# cleaning dotMnt\n`
-  cmd += `rm -rf ${this.dotMnt}efi\n`
-  cmd += `rm -rf ${this.dotMnt}filesystem.squashfs\n`
-  cmd += `rm -rf ${this.dotMnt}/iso\n`
-  cmd += `mkdir -p ${this.dotMnt}/iso/live\n`
-  cmd += `mkdir -p ${this.dotMnt}/iso/boot/grub/${Utils.uefiFormat()}\n`
-  cmd += `mkdir -p ${this.dotMnt}/iso/isolinux\n`
+  cmd += `# cleaning iso\n`
+  cmd += `rm -rf ${this.nest}iso\n`
+  cmd += `mkdir -p ${this.nest}iso/live\n`
+  cmd += `mkdir -p ${this.nest}iso/boot/grub/${Utils.uefiFormat()}\n`
+  cmd += `mkdir -p ${this.nest}iso/isolinux\n`
 
   cmd += `# cleaning (nest).overlay\n`
   cmd += `umount ${this.dotLivefs}/* > /dev/null 2>&1\n`
@@ -52,19 +50,17 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `mkdir -p ${this.dotOverlay.upperdir}\n`
   cmd += `mkdir -p ${this.dotOverlay.workdir}\n`
   cmd += `sleep 1\n`
-  cmd += `# cleaning dotLivefs\n`
+  cmd += `# cleaning plain liveroot\n`
   cmd += `rm -rf ${this.dotLivefs}\n`
   cmd += `mkdir -p ${this.dotLivefs}\n`
 
-  cmd += `# cleaning (nest)/ovarium\n`
-  cmd += `rm -rf ${this.nest}ovarium\n`
-  cmd += `mkdir -p ${this.nest}ovarium\n`
+  cmd += `# cleaning (nest)/bin\n`
+  cmd += `rm -rf ${this.nest}bin\n`
+  cmd += `mkdir -p ${this.nest}bin\n`
 
   cmd += `# cleaning (nest)/links\n`
   cmd += `rm -f ${this.nest}iso\n`
-  cmd += `ln -s ${this.nest}.mnt/iso ${this.nest}/iso\n`
   cmd += `rm -f ${this.nest}livefs\n`
-  cmd += `ln -s ${this.dotLivefs} ${this.nest}livefs\n`
   tryCatch(cmd, this.verbose)
 }
 

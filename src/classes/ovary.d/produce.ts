@@ -70,7 +70,7 @@ export async function produce(
 
   this.kernel = kernel
   this.nest = this.settings.config.snapshot_dir
-  this.dotMnt = `${this.nest}.mnt`
+  this.dotMnt = this.settings.iso_work
   this.dotOverlay = this.settings.work_dir
   this.dotLivefs = this.settings.work_dir.merged
 
@@ -452,7 +452,7 @@ export async function produce(
       /**
        * patch 4 mksquashfs
        */
-      const fname = `${this.settings.work_dir.ovarium}mksquashfs`
+      const fname = `${this.settings.work_dir.bin}mksquashfs`
       let content = fs.readFileSync(fname, 'utf8')
       const patched = '# Arch and Manjaro based distro need this link'
       // not need check, is always clean here... but OK

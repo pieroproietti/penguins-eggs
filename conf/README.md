@@ -1,66 +1,74 @@
 # Penguins' eggs 
+In January 2026, we carried out an extensive renovation of NEST to achieve a more logical structure. 
 
-FROM eggs v9.6.16 I changed a bit, hide mnt to .mnt, and create links to iso and filesystem.squashfs on the nest. Re have a more logic structure, build on the provious one, unchanged.
+Under the hood all remain unchanged, but the importants things now are more clear and standardized.
 
-## nest (/home/eggs)
-
-* iso -> .mnt/iso
-* livefs -> .mnt/filesystem.squashfs
-* ovarium
-* README.md
-* egg-of_image.iso
-* egg-of_image.md5
-* egg-of_image.sha256
-
-
-Under the hood all remain unchanged, but the importants things now are more visible.
-
-## .mnt
-* efi-work
-* filesystem.squashfs
+# nest (/home/eggs)
+* bin
 * iso
-* memdiskDir
+* liveroot
+* mnt
+* tmp/efi
+* README.md
+* egg-of_image.iso -> mnt/gg-of_image.iso
 
-### efi-work
-The directory efi is used to build the part for UEFI compatibility. It consist in two directories
-* boot 
-* efi
-
-### filesystemfs.squashfs
-
-This is the centre of the central zone, it consist in all the filesystem of your system, mounted  binded and overlay.
-Here we will made all the operations needing to have a filesystem adapted to be compressed and put in a iso image.
-Due the fact who actually is not a real copy of your filesystem, we use overlayfs to get this witable and don't cause problems at your current filesytem.
-You will find in it all the filesystem you will found in your image when it is booted.
-
-### Directory iso
-
-It is the simple structure of an iso image.
-* boot
-* efi
-* isolinux
-* live
-
-You already knw boot and efi, are necessary for UEFI and consist in the copy of efi.
-* isolinux contain the isolinux files for the boot of the livecd.
-* live contain only 3 files, vmliz, initrd.img and filesystem.squashfs who is the compressef for of the omologue directory.
-
-## ovarium
+## bin
+Previously called ovarium:
 * bind
+* bindvfs
 * mkisofs
 * mksquashfs
 * ubind
-* .overlay (moved under nest 2023-11-21)
+* ubindvfs
 
-## Customize your image before to generate it
-if you want more control on the production of your iso, try the new --dry flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to bind/ubind filesystem, squash it and create iso.
 
-* bind
-* mksquashfs
-* mkiso
-* ubind
+## iso
+Contains the structure of the iso image:
+* boot
+* EFI
+* isolinux
+* live
 
-**Attention:** this is a new feathure, things can change in the future versions. this morning was just an idea to help myself in the process to test calamares in Ubuntu and Deepin, but I'm sure someones can help me with the refinings.
+### iso/boot
+boot is the directory where we have the boot files for the iso image.
+
+### iso/EFI
+EFI is the directory where we have the EFI files for the iso image.
+
+### iso/isolinux
+isolinux contain the isolinux files for the boot of the livecd.
+
+### iso/live
+live contain only 3 files: vmliuz, initrd.img and filesystem.squashfs who is the 
+
+## liveroot
+This is where we have the liveroot scructure, it consist in all the filesystem of your system, mounted  binded and overlay, it is the base for the creation of the filesystem.squashfs.
+
+Due the fact who actually is not a real copy of your filesystem, we use overlayfs to get this witable and don't cause problems at your current filesytem.
+
+You will find in it all the filesystem you will found in your image when it is booted.
+
+## tmp/efi
+This is where we have the efi structure, it consist in all the filesystem of your system, mounted  binded and overlay, it is the base for the creation of the filesystem.squashfs.
+
+# Customize your image before to generate it
+if you want more control on the production of your iso, try the --scripts flag, it's instantaneous: will generate filesystem directory, iso structure complete and the related scripts to populate liveroot, squash it and create iso.
+
+* populate liveroot binding it to real filesystem:
+  * bin/bind
+  * bin/bindvfs
+
+* squash filesystem
+  * bin/mksquashfs
+
+* unbind liveroot:
+  * bin/ubindvfs
+  * bin/ubind
+
+* create iso:
+  * bin/mkisofs
+
+You can intervene either before squashfs, for changes to the filesystem, or before mkiso for changes to the ISO.
 
 Feel free to contact me for any suggestions.
 
