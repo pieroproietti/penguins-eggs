@@ -48,12 +48,6 @@ ssh_pass: false
 # timezone
 timezone: America/New_York
 
-# it's still used?
-pmount_fixed: false
-
-# machine_id: default /etc/machine-id
-machine_id: ''
-
 # vmlinuz, default: /path/to/vmlinuz
 vmlinuz: ''
 

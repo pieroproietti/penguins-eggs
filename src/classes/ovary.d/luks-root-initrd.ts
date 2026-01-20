@@ -17,7 +17,7 @@ import Utils from '../utils.js'
 
 // _dirname
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
-const noop = () => {}
+const noop = () => { }
 
 type ConditionalLoggers = {
   info: (msg: string) => void
@@ -54,7 +54,12 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
   log('===========================================================================')
 
   // --- Core Paths & Config ---
-  const chrootPath = path.join(this.dotMnt, 'filesystem.squashfs')
+  /*
+  * Refactored chrootPath to use this.liveRoot
+  * this.mnt points to iso directory
+  * while we need to chroot into liveroot
+  */
+  const chrootPath = this.liveRoot
   const kernelVersion = this.kernel
   const initrdBaseName = path.basename(this.initrd)
   const logBaseName = `${this.settings.config.snapshot_prefix}mkinitramfs.log.txt`

@@ -64,10 +64,7 @@ export async function editLiveFs(this: Ovary) {
     await exec(`ln -s /run/lock ${varLock}`, this.echo)
   }
 
-  // Altri fix standard
-  if (this.settings.config.pmount_fixed && fs.existsSync(`${workDir}/etc/pmount.allow`)) {
-    await exec(`sed -i 's:#/dev/sd\[a-z\]:/dev/sd\[a-z\]:' ${workDir}/etc/pmount.allow`, this.echo)
-  }
+
 
   if (fs.existsSync(`${workDir}lib/live/config/1161-openssh-server`)) {
     await exec(`rm -f ${workDir}/lib/live/config/1161-openssh-server`, this.echo)

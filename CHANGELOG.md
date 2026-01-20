@@ -24,7 +24,10 @@ The version is based on the year, month, day, and release number. They are liste
 This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity). Although it doesn't look much different, a plethora of packages have been updated and the code has been partially reorganized.
 * **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
 * **UX/UI**: Refactored interactive prompts (Krill, confirmations) to use `@inquirer/prompts`, allowing arrow key navigation;
-* **Core**: General dependency updates and ESM improvements;
+* **NEST Refactoring**: Major cleanup of the working directory structure. Removed hidden directories (`.mnt` -> `mnt`), renamed `ovarium` to `bin`, and removed legacy symlinks for a cleaner layout;
+* **CachyOS**: Fixed boot issues related to disk detection and corrected initrd configuration;
+* **Full-Crypt**: Fixed `mkinitramfs` failure during full-encrypted ISO generation;
+* **Core**: General dependency updates, ESM improvements, and internal refactoring (`dotMnt` -> `mnt`, `xorriso` fixes).
 
 # v26.1.15
 * added Parrot 7.0 (echo) on [`derivarives.yaml`](./conf/derivatives.yaml);
