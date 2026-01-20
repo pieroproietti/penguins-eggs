@@ -21,13 +21,14 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 # v26.1.20
-This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity). Although it doesn't look much different, a plethora of packages have been updated and the code has been partially reorganized.
+This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity).
 * **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
 * **UX/UI**: Refactored interactive prompts (Krill, confirmations) to use `@inquirer/prompts`, allowing arrow key navigation;
 * **NEST Refactoring**: Major cleanup of the working directory structure. Removed hidden directories (`.mnt` -> `mnt`), renamed `ovarium` to `bin`, and removed legacy symlinks for a cleaner layout;
 * **CachyOS**: Fixed boot issues related to disk detection and corrected initrd configuration;
 * **Full-Crypt**: Fixed `mkinitramfs` failure during full-encrypted ISO generation;
-* **Core**: General dependency updates, ESM improvements, and internal refactoring (`dotMnt` -> `mnt`, `xorriso` fixes).
+* **Core**: General dependency updates, ESM improvements, and internal refactoring (`dotMnt` -> `mnt`, `dotLiveFs` -> `liveRoot`, `xorriso` fixes).
+* **Cleanup**: Removed unused variables `machine_id` and `pmount_fixed` from `eggs.yaml` and internal structures.
 
 # v26.1.15
 * added Parrot 7.0 (echo) on [`derivarives.yaml`](./conf/derivatives.yaml);
