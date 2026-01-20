@@ -22,13 +22,13 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v26.1.20
 This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity).
-* **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
-* **UX/UI**: Refactored interactive prompts (Krill, confirmations) to use `@inquirer/prompts`, allowing arrow key navigation;
-* **NEST Refactoring**: Major cleanup of the working directory structure. Removed hidden directories (`.mnt` -> `mnt`), renamed `ovarium` to `bin`, and removed legacy symlinks for a cleaner layout;
-* **CachyOS**: Fixed boot issues related to disk detection and corrected initrd configuration;
-* **Full-Crypt**: Fixed `mkinitramfs` failure during full-encrypted ISO generation;
+* **Refactoring nest**: Major cleanup of the working directory structure. Renamed hidden directories `.mnt` to `mnt` as mount point for addictional space, moved `.mnt/filesystem.squashfs` to `liveroot`, move `./mnt/iso` to `iso`, renamed `ovarium` to `bin`, removed previous symlinks;
 * **Core**: General dependency updates, ESM improvements, and internal refactoring (`dotMnt` -> `mnt`, `dotLiveFs` -> `liveRoot`, `xorriso` fixes).
 * **Cleanup**: Removed unused variables `machine_id` and `pmount_fixed` from `eggs.yaml` and internal structures.
+* **LightDM**: Restored autologin functionality for live sessions by ensuring correct `autologin-user` configuration in `lightdm.conf`;
+* **UX/UI**: Refactored interactive prompts (Krill, confirmations) to use `@inquirer/prompts`, allowing arrow key navigation;
+* **CachyOS**: Fixed boot issues related to disk detection and corrected initrd configuration;
+* **Full-Crypt**: Fixed `mkinitramfs` failure during full-encrypted ISO generation;
 
 # v26.1.15
 * added Parrot 7.0 (echo) on [`derivarives.yaml`](./conf/derivatives.yaml);
