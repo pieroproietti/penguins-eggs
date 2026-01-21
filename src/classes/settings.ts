@@ -25,6 +25,7 @@ import Incubator from './incubation/incubator.js'
 import Pacman from './pacman.js'
 // classes
 import Utils from './utils.js'
+import path from 'node:path'
 
 const config_file = '/etc/penguins-eggs.d/eggs.yaml' as string
 
@@ -136,20 +137,20 @@ export default class Settings {
 
     this.work_dir.bin = this.config.snapshot_dir + 'bin/'
 
-    // hidden .mnt now mnt under nest
-    this.config.snapshot_mnt = this.config.snapshot_dir + 'mnt/'
+    // mnt under nest
+    this.config.snapshot_mnt = path.join(this.config.snapshot_dir, 'mnt/')
     if (!this.config.snapshot_mnt.endsWith('/')) {
       this.config.snapshot_mnt += '/'
     }
 
     // hidden .overlay under nest was under bin
-    this.work_dir.lowerdir = this.config.snapshot_dir + '.overlay/lowerdir'
-    this.work_dir.upperdir = this.config.snapshot_dir + '.overlay/upperdir'
-    this.work_dir.workdir = this.config.snapshot_dir + '.overlay/workdir'
+    this.work_dir.lowerdir = path.join(this.config.snapshot_dir, '.overlay/lowerdir')
+    this.work_dir.upperdir = path.join(this.config.snapshot_dir, '.overlay/upperdir')
+    this.work_dir.workdir = path.join(this.config.snapshot_dir, '.overlay/workdir')
 
-    this.work_dir.merged = this.config.snapshot_dir + 'liveroot'
-    this.efi_work = this.config.snapshot_dir + 'tmp/efi/'
-    this.iso_work = this.config.snapshot_dir + 'iso/'
+    this.work_dir.merged = path.join(this.config.snapshot_dir, 'liveroot')
+    this.efi_work = path.join(this.config.snapshot_dir, 'tmp/efi/')
+    this.iso_work = path.join(this.config.snapshot_mnt, 'iso/')
 
     // remember: before was hostname, not empty
     if (this.config.snapshot_basename === '') {
