@@ -37,7 +37,7 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
     this.uuid = Utils.uuidGen()
 
     // this.familyId = this.settings.distro.familyId
-    this.nest = this.settings.config.snapshot_mnt
+    this.nest = this.settings.config.snapshot_dir
 
     if (snapshot_prefix !== '') {
       this.settings.config.snapshot_prefix = snapshot_prefix

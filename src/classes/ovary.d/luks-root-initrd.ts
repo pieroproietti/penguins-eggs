@@ -56,7 +56,6 @@ export async function luksRootInitrd(this: Ovary, verbose = false) {
   // --- Core Paths & Config ---
   /*
   * Refactored chrootPath to use this.liveRoot
-  * this.mnt points to iso directory
   * while we need to chroot into liveroot
   */
   const chrootPath = this.liveRoot
