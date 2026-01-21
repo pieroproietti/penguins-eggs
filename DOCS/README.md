@@ -1,9 +1,10 @@
 # Start Developing with penguins-eggs
 
-`penguins-eggs` is a versatile tool for remastering Linux distributions. It supports multiple families: **Debian**, **Arch**, **Alpine**, and **Fedora**.
+`penguins-eggs` is a versatile tool for remastering Linux distributions. It supports multiple families: **Alpine**, **Arch**, **Debian/Devuan/Ubuntu** and **Fedora/RHEL9** and **openSUSE** and multiple architectures: `x86_64`, `aarch64` and `riscv64`.
 
-*   **Debian/Arch**: Support is mature, reproducible, and package creation is fully functional.
-*   **Alpine/Fedora**: Support is mature.
+All packages are managed using the native package manager of the distribution, in addiction we have AppImage packages support for all distributions. 
+
+Debian packages are released for `x86_64`, `aarch64` and `riscv64` architectures, others packages are released for `x86_64` only.
 
 ## Prerequisites
 
@@ -57,11 +58,14 @@ Configuration is handled via YAML files located in [`conf/`](../conf/). This inc
 
 ## Documentation References
 
-*   [The Nest](./THE-NEST.md): Understanding the working directory structure.
-*   [Source Code Overview](./SOURCE.md): Guide to the codebase organization.
+* [The Nest](./THE-NEST.md): Understanding the working directory structure.
+* [Source Code Overview](./SOURCE.md): Guide to the codebase organization.
 
-### Family-Specific Guides
-*   [Way to Debian](./WAY-TO-DEBIAN.md)
-*   [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
-*   [Way to AlpineLinux](./WAY-TO-ALPINE.md)
-*   [Way to Fedora](./WAY-TO-FEDORA.md)
+### **Family-Specific Guides**
+* [Alpine](./INSTALL-ALPINE.md)
+* [Arch](./INSTALL-ARCHLINUX.md)
+* [Debian](./INSTALL-DEBIAN-DEVUAN-UBUNTU.md)
+* [Enterprise Linux](./INSTALL-ENTERPRISE-LINUX.md)
+* [Fedora](./INSTALL-FEDORA.md)
+* [Manjaro](./INSTALL-MANJARO.md)
+* [openSUSE](./INSTALL-OPENSUSE.md)
