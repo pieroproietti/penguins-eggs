@@ -295,8 +295,7 @@ export default class Pxe {
     await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/vesamenu.c32')} ${path.join(this.pxeRoot, 'vesamenu.c32')}`, this.echo)
     await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/libcom32.c32')} ${path.join(this.pxeRoot, 'libcom32.c32')}`, this.echo)
     await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/libutil.c32')} ${path.join(this.pxeRoot, 'libutil.c32')}`, this.echo)
-    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/memdisk')} ${path.join(this.pxeRoot, 'memdisk')}`, this.echo)
-
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/memdisk')} ${path.join(this.pxeRoot, 'memdisk')}`, this.echo)
     await exec(`mkdir ${path.join(this.pxeRoot, 'pxelinux.cfg')}`, this.echo)
 
     let content = ''

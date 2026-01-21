@@ -1,62 +1,67 @@
-# Develop eggs on various distros
+# Start Developing with penguins-eggs
 
-To start hacking with penguins-eggs, you have four ways, one for every family: debian, arch, alpine and fedora. The best is starting with Debian or Arch, where eggs is complete, reproductive and is possible to create packages. Alpine and fedora are unfinished, not reproductive yet and lacks packaging.
+`penguins-eggs` is a versatile tool for remastering Linux distributions. It supports multiple families: **Debian**, **Arch**, **Alpine**, and **Fedora**.
 
-Basically you need to have:
-- an editor, I use `code`, but it's your choice
-- `git`
-- `nodejs`
-- `pnpm`
-- install eggs dependencies
+*   **Debian/Arch**: Support is mature, reproducible, and package creation is fully functional.
+*   **Alpine/Fedora**: Support is mature.
 
-**Note**: While not essential, it is strongly recommended to fork penguins-eggs to have your own repository
+## Prerequisites
 
-## fork penguins-eggs
-This operation is not essential but is strongly recommended as it allows us to have our own version of penguins-eggs and save our work in our git repository.
+To start contributing or modifying `eggs`, you need:
 
-The operation is rather simple, requiring us to log in at https://github.com, so we first register.
+*   **Node.js**: Checked against the `.nvmrc` or `package.json` engines.
+*   **pnpm**: The package manager used in this project.
+*   **git**: For version control.
+*   **Text Editor**: VS Code is recommended, but any editor works.
 
-In our example we will register with the name `jtburchett`
+**Note**: It is strongly recommended to **fork** the repository to your own GitHub account before starting.
 
-Then we will go to the project [penguings-eggs](https://github.com/pieroproietti/penguins-eggs) and click on the `fork` button.
+## Getting Started
 
-We will get our version of penguins-eggs at https://github.com/jtburchett/penguins-eggs.
+1.  **Fork** the project at [pieroproietti/penguins-eggs](https://github.com/pieroproietti/penguins-eggs).
+2.  **Clone** your fork locally.
+3.  **Install dependencies**:
+    ```bash
+    pnpm install
+    ```
+4.  **Build**:
+    ```bash
+    pnpm build
+    ```
+5.  **Run locally**:
+    ```bash
+    ./bin/run --help
+    ```
 
-# Historical perspective
-I suggest to think how this is a software grow up with time, so think the history of it to understand a reason.
+## Historical Context
 
-I started just with Debian and remastering Debian, then extend to Ubuntu and Devuan. In origin I have not `deb` package but produce `npm` packages for node, so inside eggs where was the code to install all the packages dependencies.
+The project has evolved significantly over time:
 
-With time, I passed to create deb packages more pratical for users and at last also for me. I started to create deb packages using [oclif](/incubation/incubator.ts`), but oclif don't manage dependencies nor pre and post install scripts.
+1.  **Origins**: Started with Debian/Ubuntu remastering using `npm` packages.
+2.  **Packaging Evolution**: Moved to native `.deb` packages using `oclif` and `perrisbrewery` to manage dependencies and install scripts properly.
+3.  **Expansion**: Extended to support **Arch Linux** (integrating `pacman` and `PKGBUILD` logic), and later **Alpine** and **Fedora**.
+4.  **Current State**: `eggs` is now a modular TypeScript application that delegates low-level package management to the host system's tools (`apt`, `pacman`, `apk`, `dnf`) while providing a unified abstraction layer.
 
-To exit to this impasse, I wrote [perrisbrewery](https://github.com/pieroproietti/perrisbrewery), so I can insert dependecies and scripts inside the package. This lead me to remove same code I had inside the sources about install dependencies.
+## Project Structure
 
-Removing dependencies from code free me a bit: in this way I can manage them in the package not in the sources.
+`eggs` is built using **TypeScript**, **Bash**, and **YAML**.
 
-Then was more easy to extend eggs to Arch, where the dependeces are included in the PKGBUILD scrips. Of course, was not so short step, involved initramfs, different paths, differents packages names and so on.
+### TypeScript
+The core logic resides in [`src/`](./SOURCE.md). See [SOURCE.md](./SOURCE.md) for a detailed breakdown of the class hierarchy and architectue.
 
-After that where was a time of relative stability, nodejs was included in the package eggs from oclif.
+### Bash
+Bash scripts are used for low-level system operations and are located in `scripts/` or embedded within templates.
 
-With version 10.x.x come the decision to not include more nodejs inside eggs, but to have it as dependence.
+### YAML
+Configuration is handled via YAML files located in [`conf/`](../conf/). This includes distro definitions, detailed configurations for `eggs`, handling of `krill` installer, and `calamares` integration.
 
-Actually, I started to extend eggs to [AlpineLinux](https://alpinelinux.org/) and [fedora](https://fedoraproject.org/it/).
+## Documentation References
 
-# SOURCES
-eggs is written using typescript, bash, and yaml files.
+*   [The Nest](./THE-NEST.md): Understanding the working directory structure.
+*   [Source Code Overview](./SOURCE.md): Guide to the codebase organization.
 
-## Typescript
-All the typescript sources are under [src](../src/) here there is a mockup of [Documentation](./SOURCE.md).
-
-## Bash
- Bash is largely used inside Typescript and alone: [scripts](../scripts/), 
- 
-## YAML
-All the configurations are in YAML, inside [conf](../conf/) for eggs, krill and calamares.
-
-
-# Differents ways
-
-## [Way to Debian](./WAY-TO-DEBIAN.md)
-## [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
-## [Way to AlpineLinux](./WAY-TO-ALPINE.md)
-## [Way to Fedora](./WAY-TO-FEDORA.md)
+### Family-Specific Guides
+*   [Way to Debian](./WAY-TO-DEBIAN.md)
+*   [Way to ArchLinux](./WAY-TO-ARCHLINUX.md)
+*   [Way to AlpineLinux](./WAY-TO-ALPINE.md)
+*   [Way to Fedora](./WAY-TO-FEDORA.md)
