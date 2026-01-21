@@ -5,7 +5,7 @@ set -e
 
 # Percorso del file initrd appena creato da dracut
 # Adatta questo percorso a quello usato dal tuo script
-INITRD_FILE="/home/eggs/.mnt/iso/live/initrd-$1" 
+INITRD_FILE="/home/eggs/mnt/iso/live/initrd-$1" 
 
 # Controlla se il file esiste prima di procedere
 if [ ! -f "$INITRD_FILE" ]; then
