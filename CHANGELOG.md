@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.21
+* **Refactoring nest**: `iso` directory was moved inside `mnt/iso` to free more space for remastering, (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));
+
 # v26.1.20
 This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity).
 * **Refactoring nest**: Major cleanup of the working directory structure. Renamed hidden directories `.mnt` to `mnt` as mount point for addictional space, moved `.mnt/filesystem.squashfs` to `liveroot`, move `./mnt/iso` to `iso`, renamed `ovarium` to `bin`, removed previous symlinks (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));

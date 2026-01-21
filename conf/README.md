@@ -5,7 +5,6 @@ Under the hood all remain unchanged, but the importants things now are more clea
 
 # nest (/home/eggs)
 * bin
-* iso
 * liveroot
 * mnt
 * tmp/efi
@@ -21,32 +20,34 @@ Previously called ovarium:
 * ubind
 * ubindvfs
 
-
-## iso
-Contains the structure of the iso image:
-* boot
-* EFI
-* isolinux
-* live
-
-### iso/boot
-boot is the directory where we have the boot files for the iso image.
-
-### iso/EFI
-EFI is the directory where we have the EFI files for the iso image.
-
-### iso/isolinux
-isolinux contain the isolinux files for the boot of the livecd.
-
-### iso/live
-live contain only 3 files: vmliuz, initrd.img and filesystem.squashfs who is the 
-
 ## liveroot
 This is where we have the liveroot scructure, it consist in all the filesystem of your system, mounted  binded and overlay, it is the base for the creation of the filesystem.squashfs.
 
 Due the fact who actually is not a real copy of your filesystem, we use overlayfs to get this witable and don't cause problems at your current filesytem.
 
 You will find in it all the filesystem you will found in your image when it is booted.
+
+## mnt
+This can be used as a mounting point for a local or remote device to obtain sufficient space for remastering if there is not enough space on the disk.
+
+### mnt/iso
+Contains the structure of the iso image:
+* boot
+* EFI
+* isolinux
+* live
+
+#### mnt/iso/boot
+boot is the directory where we have the boot files for the iso image.
+
+#### mnt/iso/EFI
+EFI is the directory where we have the EFI files for the iso image.
+
+#### mnt/iso/isolinux
+isolinux contain the isolinux files for the boot of the livecd.
+
+#### mnt/iso/live
+live contain only 3 files: vmliuz, initrd.img and filesystem.squashfs who is the 
 
 ## tmp/efi
 This is where we have the efi structure, it consist in all the filesystem of your system, mounted  binded and overlay, it is the base for the creation of the filesystem.squashfs.
