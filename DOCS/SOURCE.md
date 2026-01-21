@@ -1,56 +1,60 @@
 # SOURCE
 
-All the source is under `/src`, and is divided on:
-* classes
-* commands
-* components
-* interfaces
-* krill
-* lib
+The source code is located under `/src` and is organized into the following main directories:
 
-## commands
-`commands` contain all eggs commands we use, eg: `dad`
+*   **appimage**: Utilities for managing AppImage dependencies.
+*   **classes**: Core logic and business rules of the application.
+*   **commands**: Implementation of the CLI commands (e.g., `eggs produce`, `eggs dad`).
+*   **dhcpd-proxy**: Proxy implementation for DHCP, likely used for PXE boot features.
+*   **interfaces**: TypeScript interface definitions for type safety.
+*   **krill**: The CLI system installer.
+*   **lib**: General utility functions and helper libraries.
 
-open `dad.ts` to get a look.
+## Commands
 
-Single command have flags, examples and descriptions, and under `async run()` start their action. using generally one or more classes, or alone.
+The `commands` directory contains the implementation of all `eggs` commands. For example, `src/commands/dad.ts` corresponds to `eggs dad`.
 
-## classes
-There are a lot of classes, we now go to see the most importants.
+Each command class extends the Oclif `Command` class and implements an `async run()` method. This is the entry point for the command's execution, which typically orchestrates operations using various classes.
 
-### distro.ts
-We call often distro during our work, becouse contai a lot of values we use, regarding the currens distro.
+## Classes
 
-I divided distros in four families: `debian`, `archlinux`, `alpine` and `fedora`. 
+This directory contains the bulk of the application logic. Here are some key classes:
 
-Family `debian` don't have just Debian, but Devuan, Ubuntu and all their derivatives, eg `Linuxmint`.
+### `distro.ts`
 
-Every distro has it's `distroId` and `codenameId`, eg: `debian`, `bookwork`. Associated where are various values for paths, defaults, etc.
+This class is central to handling distribution-specific details. It detects the running distribution and initializes properties such as:
 
-`distro.ts` it's a bit a kaos actually, I'm restructuring it, becouse with the inclusions of `alpine` and `fedora` it's larger than I like to have, but it work and `Primum vivere deinde philosophari` say the old latins.
+*   **Family ID**: `debian`, `archlinux`, `alpine`, `fedora`, `openmamba`, `opensuse`.
+*   **Distro ID**: Specific distribution identifier (e.g., `Ubuntu`, `Manjaro`).
+*   **Codename**: Release codename (e.g., `noble`, `trixie`).
+*   **Paths**: Locations for live media, squashfs, and system libraries.
 
-### incubation/incubator.ts
-The same approach is for `/incubation/incubator.ts`, it take from `/incubation/distros/` the varius differents code for every distro running.
+It abstracts the differences between distributions, allowing `eggs` to run on a wide variety of systems.
 
-Incubation stands for eggs installation, it's funny name came from the idea of eggs and something to hatch eggs.
+### `incubation/incubator.ts`
 
-### ovary.ts
-This is the main eggs class, it's long, and it's the central part of eggs. When we give: `eggs produce` we are calling ovary.
+The `Incubator` class is responsible for the "incubation" phase, which prepares the system for the installation or ISO creation process. It loads distribution-specific logic from `src/classes/incubation/distros/` to handle differences in configuration and setup.
 
-### pacman.ts
-pacman.ts from `package manager` is not for Arch, or Debian, it's for all the distro. `pacman` import classes for all the distros from `./familes`: `alpine.ts`, `arclinux.ts`, `debian.ts`, `fedora.ts` and depending on that distro is running on, realize it's operation with the system commands: `apk, `pacman`, `apt`. `dnf`.
+### `ovary.ts`
 
-### utils.ts
-It contain general methods large used on the code.
+`Ovary` is the core orchestrator class for the `produce` command. It manages the entire lifecycle of the ISO creation process, including:
+*   Creating the work directory structure (The Nest).
+*   Handling partition mounting and binding.
+*   Managing encryption (LUKS).
+*   Generating the ISO image.
 
-### xdg
-All the things more or less related to xdg, eg: autologin, skel, etc.
+### `pacman.ts`
 
-### yolk
-Create a local repository used during installation to install `grub-pc or `grub-efi-amd64` depending on the hardware, this make possible to install without internet connection.
+Despite the name, `Pacman` is a generic package manager wrapper, not limited to Arch Linux. It interfaces with the underlying system package manager (`apt`, `pacman`, `dnf`, `zypper`, `apk`) to install, remove, or query packages in a unified way.
 
-It's also possible to add arbitraty packages to this repository, adding them on `/etc/penguins-eggs.d/yolk.yaml`.
+### `utils.ts`
 
-### others classes
-Generally are simpler and understandable, of course this is my idea.
+Contains static utility methods used throughout the codebase for common tasks like file system operations, string manipulation, and system command execution.
 
+### `xdg.ts`
+
+Handles XDG-related configurations, such as setting up autologin, configuring user directories, and managing desktop environment settings.
+
+### `yolk.ts`
+
+Manages a local repository mechanism used to ensure critical packages (like bootloaders) are available during installation, even without an internet connection. It can be configured via `/etc/penguins-eggs.d/yolk.yaml`.

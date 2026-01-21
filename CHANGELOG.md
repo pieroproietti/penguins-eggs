@@ -22,6 +22,7 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v26.1.21
 * **Refactoring nest**: `iso` directory was moved inside `mnt/iso` to free more space for remastering, (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));
+* **Refactoring**: Use `path.join` for safer path concatenation in `src/classes/incubation/installer.ts`;
 
 # v26.1.20
 This is the first version of penguins-eggs heavily modified with [Google Antigravity](https://gemini.google/antigravity).

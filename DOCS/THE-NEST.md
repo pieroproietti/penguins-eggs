@@ -1,56 +1,30 @@
-# A new nest
+# The Nest
 
-That is called here `nest` is the eggs `home`, usually `/home/eggs`.
+The **nest** is the working directory for `penguins-eggs`, typically located at `/home/eggs`.
+It contains all the temporary files, mount points, and structures required to build the live ISO.
 
-# Original nest
-The original structure of the nest was all under `/home/eggs`
+## Structure
 
-nest=/home/eggs
+The directory structure has been evolved to be cleaner and more explicit, removing the reliance on top-level symlinks for critical paths.
 
-* ${nest}/image.iso
-* ${nest}/efi_work
-* ${nest}/filestem.squashfs
-* ${nest}/iso
-* ${nest}/memdiskDir
-* ${nest}/ovarium
+### Visible Directories
 
-# Actual nest
-After the introduction of a mountpoint to mount spaces inside eggs to can clone/remaster systems without sufficient free space on the device, I need to rethink a bit this structure, due the fact who ovelays must to be on the same filesystem for lowerdir,upperdir and workdir and lowerdir is always local.
+*   **`${nest}/bin`**: Contains helper scripts and executables (like `mksquashfs` wrappers) used during the build process.
+*   **`${nest}/liveroot`**: This is the read-write view of the system being built. It is the merged mount point of the OverlayFS (combining the read-only host system and the read-write upper layer). Formerly known as `livefs`.
+*   **`${nest}/mnt`**: A dedicated directory for mount points.
+    *   **`${nest}/mnt/iso`**: The staging area where the final ISO image structure is assembled. This contains the `live` directory (with `filesystem.squashfs`, kernel, initrd) and bootloaders (`boot`, `EFI`).
+*   **`${nest}/tmp`**: Directory for temporary files.
+    *   **`${nest}/tmp/efi`**: Work directory for preparing EFI bootloader partitions.
 
-I created this hidden and visible structure:
+### Hidden Directories
 
-## The actual hidden nest
-* ${nest}/.mnt
-    * ${nest}/.mnt/efi_work
-    * ${nest}/.mnt/filestem.squashfs
-    * ${nest}/.mnt/iso
-    * ${nest}/.mnt/memdiskDir
-    * ${nest}/.overlay
-    * ${nest}/.overlay/lowerdir
-    * ${nest}/.overlay/upperdir
-    * ${nest}/.overlay/workdir
+*   **`${nest}/.overlay`**: Contains the internal components of the OverlayFS used to create `liveroot`.
+    *   `${nest}/.overlay/lowerdir`: The read-only base layer (bind mount of the host system).
+    *   `${nest}/.overlay/upperdir`: The read-write layer where changes made during the session are stored.
+    *   `${nest}/.overlay/workdir`: The work directory required by OverlayFS for atomicity.
 
+## Legacy Comparison
 
-## The actual visible nest
-I added two links for livefs, and iso and created a folder called ovarium for the scripts:
-
-* ${nest}/livefs -> /.mnt/eggs/filesystem.squashfs
-* ${nest}/iso -> /.mnt/eggs/iso
-* ${nest}/ovarium 
-
-# Future nest
-This was a mistake, I want to rename `ovarium` as `bin`, becouse contains scripts, and perhaps give the name .ovarium to the mountpoint, in this way:
-
-## The future hidden nest
-* ${nest}/.ovarium
-    * ${nest}/.ovarium/efi_work
-    * ${nest}/.ovarium/filestem.squashfs
-    * ${nest}/.ovarium/iso
-    * ${nest}/.ovarium/memdiskDir
-
-## The future visible nest
-
-* ${nest}/filesystem.squashfs -> /.ovarium/eggs/filesystem.squashfs
-* ${nest}/iso -> /.ovarium/eggs/iso
-* ${nest}/bin
-
+*   **Original**: Used `/home/eggs` with flat structure (`iso`, `ovarium` etc.)
+*   **Intermediate**: Used `.mnt` hidden directory with symlinks (`livefs`, `iso` -> `.mnt/...`).
+*   **Current**: Uses explicit directories (`liveroot`, `mnt/iso`, `bin`) to improve clarity and avoid symlink dereferencing issues with some tools.
