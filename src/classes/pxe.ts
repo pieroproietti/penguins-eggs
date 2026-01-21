@@ -112,7 +112,7 @@ export default class Pxe {
     if (Utils.isLive()) {
       this.eggRoot = this.distro.liveMediumPath
     } else {
-      this.eggRoot = this.settings.config.snapshot_dir + 'iso/'
+      this.eggRoot = path.join(this.settings.config.snapshot_dir, '/mnt/iso/')
     }
 
     if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_dir)) {
@@ -129,11 +129,11 @@ export default class Pxe {
 
     /**
      * Ricerca delle ISOs
-     * installed: /home/eggs/.mnt/iso/live
+     * installed: /home/eggs/mnt/iso/live
      * live: this.iso/live
      */
     const isos: string[] = []
-    const pathFiles = this.eggRoot + 'live'
+    const pathFiles = path.join(this.eggRoot, 'live')
     const files = fs.readdirSync(pathFiles)
 
     // rieva nome vmlinuz e initrdImg

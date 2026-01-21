@@ -31,7 +31,7 @@ export default class Cuckoo extends Command {
       const settings = new Settings()
       settings.load()
 
-      const nest = settings.config.snapshot_mnt
+      const nest = settings.config.snapshot_dir
       const pxeRoot = nest + 'pxe'
 
       const pxe = new Pxe(nest, pxeRoot, flags.verbose)
