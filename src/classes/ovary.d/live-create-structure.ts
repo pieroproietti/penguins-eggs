@@ -9,13 +9,13 @@
 import chalk from 'chalk'
 import mustache from 'mustache'
 // packages
-import fs from 'node:fs'
 import path from 'path'
 
 // interfaces
 // libraries
 import { exec } from '../../lib/utils.js'
 import Ovary from './../ovary.js'
+
 // classes
 import Utils from './../utils.js'
 
@@ -34,13 +34,21 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `# README.md\n`
   cmd += `cp ${path.resolve(__dirname, '../../../conf/README.md')} ${this.nest}README.md\n`
 
-  cmd += `# cleaning iso\n`
-  cmd += `rm -rf ${this.nest}iso\n`
+  cmd += `# cleaning bin\n`
+  cmd += `rm -rf ${this.nest}bin\n`
+  cmd += `mkdir -p ${this.nest}bin\n`
+
+  cmd += `# cleaning mnt\n`
+  cmd += `rm -rf ${this.nest}/mnt\n`
+  cmd += `mkdir -p ${this.nest}/mnt\n`
+
+  cmd += `# creating iso\n`
+  cmd += `rm -rf ${this.nest}/mnt/iso\n`
   cmd += `mkdir -p ${this.nest}/mnt/iso/live\n`
   cmd += `mkdir -p ${this.nest}/mnt/iso/boot/grub/${Utils.uefiFormat()}\n`
   cmd += `mkdir -p ${this.nest}/mnt/iso/isolinux\n`
 
-  cmd += `# cleaning (nest).overlay\n`
+  cmd += `# cleaning .overlay\n`
   cmd += `umount ${this.liveRoot}/* > /dev/null 2>&1\n`
   cmd += `umount ${this.dotOverlay.lowerdir}/* > /dev/null 2>&1\n`
   cmd += `umount ${this.dotOverlay.upperdir}/* > /dev/null 2>&1\n`
@@ -54,11 +62,6 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `rm -rf ${this.liveRoot}\n`
   cmd += `mkdir -p ${this.liveRoot}\n`
 
-  cmd += `# cleaning (nest)/bin\n`
-  cmd += `rm -rf ${this.nest}bin\n`
-  cmd += `mkdir -p ${this.nest}bin\n`
-
-  cmd += `# cleaning (nest)/links\n`
   tryCatch(cmd, this.verbose)
 }
 
