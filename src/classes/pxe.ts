@@ -112,10 +112,10 @@ export default class Pxe {
     if (Utils.isLive()) {
       this.eggRoot = this.distro.liveMediumPath
     } else {
-      this.eggRoot = this.settings.config.snapshot_mnt + 'iso/'
+      this.eggRoot = this.settings.config.snapshot_dir + 'iso/'
     }
 
-    if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_mnt)) {
+    if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_dir)) {
       console.log('no image available, build an image with: sudo eggs produce')
       process.exit()
     }

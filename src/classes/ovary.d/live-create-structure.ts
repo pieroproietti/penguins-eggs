@@ -36,9 +36,9 @@ export async function liveCreateStructure(this: Ovary) {
 
   cmd += `# cleaning iso\n`
   cmd += `rm -rf ${this.nest}iso\n`
-  cmd += `mkdir -p ${this.nest}iso/live\n`
-  cmd += `mkdir -p ${this.nest}iso/boot/grub/${Utils.uefiFormat()}\n`
-  cmd += `mkdir -p ${this.nest}iso/isolinux\n`
+  cmd += `mkdir -p ${this.nest}/mnt/iso/live\n`
+  cmd += `mkdir -p ${this.nest}/mnt/iso/boot/grub/${Utils.uefiFormat()}\n`
+  cmd += `mkdir -p ${this.nest}/mnt/iso/isolinux\n`
 
   cmd += `# cleaning (nest).overlay\n`
   cmd += `umount ${this.liveRoot}/* > /dev/null 2>&1\n`
@@ -59,8 +59,6 @@ export async function liveCreateStructure(this: Ovary) {
   cmd += `mkdir -p ${this.nest}bin\n`
 
   cmd += `# cleaning (nest)/links\n`
-  cmd += `rm -f ${this.nest}iso\n`
-  cmd += `rm -f ${this.nest}livefs\n`
   tryCatch(cmd, this.verbose)
 }
 
