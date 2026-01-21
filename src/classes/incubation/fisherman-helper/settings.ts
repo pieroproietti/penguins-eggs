@@ -14,7 +14,7 @@
 
 import yaml from 'js-yaml'
 import fs from 'node:fs'
-
+import Path from 'node:path'
 import { ISettings } from '../../../interfaces/i-settings.js'
 import { shx } from '../../../lib/utils.js'
 import Utils from '../../utils.js'
@@ -47,12 +47,12 @@ interface CalamaresConfig {
  */
 export async function settings(src: string, dest: string, theme = 'eggs', isClone = false) {
   let branding = theme
-  const settingsSrc = src + 'settings.yaml'
+  const settingsSrc = Path.join(src, 'settings.yaml')
   if (theme.includes('/')) {
     branding = theme.slice(Math.max(0, theme.lastIndexOf('/') + 1))
   }
 
-  const settingsDest = dest + 'settings.conf'
+  const settingsDest = Path.join(dest, 'settings.conf')
   const contentSrc = fs.readFileSync(settingsSrc, 'utf8')
   const yamlDest = yaml.load(contentSrc) as CalamaresConfig
 

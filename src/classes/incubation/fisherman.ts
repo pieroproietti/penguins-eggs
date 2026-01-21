@@ -48,12 +48,12 @@ export default class Fisherman {
    * @param isScript
    */
   async buildCalamaresModule(name: string, isScript = true, theme = 'eggs'): Promise<string> {
-    let moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch + name)
+    let moduleTemplate = path.resolve(__dirname, this.installer.templateMultiarch, name)
     if (theme !== 'eggs') {
-      moduleTemplate = theme + '/theme/calamares/calamares-modules/' + name
+      moduleTemplate = path.join(theme, 'theme/calamares/calamares-modules', name)
     }
 
-    const moduleDest = this.installer.multiarchModules + name
+    const moduleDest = path.join(this.installer.multiarchModules, name)
     const moduleScript = `/usr/sbin/${name}.sh`
 
     if (this.verbose) this.show(name, 'module', moduleDest)
@@ -62,9 +62,9 @@ export default class Fisherman {
       fs.mkdirSync(moduleDest)
     }
 
-    shx.cp(`${moduleTemplate}/module.yaml`, `${moduleDest}/module.desc`)
+    shx.cp(path.join(moduleTemplate, 'module.yaml'), path.join(moduleDest, 'module.desc'))
     if (isScript) {
-      shx.cp(`${moduleTemplate}/${name}.sh`, moduleScript)
+      shx.cp(path.join(moduleTemplate, `${name}.sh`), moduleScript)
       await exec(`chmod +x ${moduleScript}`)
     }
 
@@ -76,18 +76,18 @@ export default class Fisherman {
    * @param name
    */
   async buildCalamaresPy(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateMultiarch + '/' + name)
-    const moduleDest = this.installer.multiarchModules + name
+    const moduleSource = path.resolve(__dirname, this.installer.templateMultiarch, name)
+    const moduleDest = path.join(this.installer.multiarchModules, name)
 
     if (this.verbose) this.show(name, 'python', moduleDest)
     if (!fs.existsSync(moduleDest)) {
       fs.mkdirSync(moduleDest)
     }
 
-    shx.cp(`${moduleSource}/module.yaml`, `${moduleDest}/module.desc`)
-    shx.cp(`${moduleSource}/${name}.yaml`, `${moduleDest}/${name}.conf`)
-    shx.cp(`${moduleSource}/main.py`, moduleDest)
-    await exec(`chmod +x ${moduleSource}/main.py`)
+    shx.cp(path.join(moduleSource, 'module.yaml'), path.join(moduleDest, 'module.desc'))
+    shx.cp(path.join(moduleSource, `${name}.yaml`), path.join(moduleDest, `${name}.conf`))
+    shx.cp(path.join(moduleSource, 'main.py'), moduleDest)
+    await exec(`chmod +x ${path.join(moduleSource, 'main.py')}`)
   }
 
   /**
@@ -96,7 +96,7 @@ export default class Fisherman {
    * @param replaces [['search','replace']]
    */
   async buildModule(name: string, vendor = 'eggs') {
-    let moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.yaml')
+    let moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.yaml`)
 
     /**
      * We need vendor here to have possibility to load custom modules for calamares
@@ -115,7 +115,7 @@ export default class Fisherman {
     if (vendor !== 'eggs') {
       let customModuleSource = path.resolve(__dirname, `../../../addons/${vendor}/theme/calamares/modules/${name}.yaml`)
       if (vendor.includes('/')) {
-        customModuleSource = `${vendor}/theme/calamares/modules/${name}.yaml`
+        customModuleSource = path.join(vendor, `theme/calamares/modules/${name}.yaml`)
       }
 
       if (fs.existsSync(customModuleSource)) {
@@ -123,7 +123,7 @@ export default class Fisherman {
       }
     }
 
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     if (fs.existsSync(moduleSource)) {
       shx.cp(moduleSource, moduleDest)
       if (this.verbose) {
@@ -140,8 +140,8 @@ export default class Fisherman {
   async buildModuleDracut(initrd: string) {
     const name = 'dracut'
 
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.mustache`)
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     const template = fs.readFileSync(moduleSource, 'utf8')
     const view = { initrd }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
@@ -153,7 +153,7 @@ export default class Fisherman {
   async buildModuleFinished() {
     const name = 'finished'
     await this.buildModule(name)
-    const file = this.installer.modules + name + '.conf'
+    const file = path.join(this.installer.modules, `${name}.conf`)
     const fileContent = fs.readFileSync(file, 'utf8')
     const values = yaml.load(fileContent) as ICalamaresFinished
     values.restartNowCommand = 'reboot'
@@ -167,8 +167,8 @@ export default class Fisherman {
     const { initcpio } = await import('./fisherman-helper/initcpio.js')
     const preset = await initcpio()
     const name = 'initcpio'
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.mustache`)
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     const template = fs.readFileSync(moduleSource, 'utf8')
     const view = { preset }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
@@ -218,8 +218,8 @@ export default class Fisherman {
     }
 
     const name = 'packages'
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.mustache`)
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     const template = fs.readFileSync(moduleSource, 'utf8')
     const view = {
       backend,
@@ -233,8 +233,8 @@ export default class Fisherman {
    */
   async buildModuleRemoveuser(username: string) {
     const name = 'removeuser'
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.mustache`)
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     const template = fs.readFileSync(moduleSource, 'utf8')
     const view = { username }
     fs.writeFileSync(moduleDest, mustache.render(template, view))
@@ -251,8 +251,8 @@ export default class Fisherman {
    */
   async buildModuleUnpackfs() {
     const name = 'unpackfs'
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '.mustache')
-    const moduleDest = this.installer.modules + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}.mustache`)
+    const moduleDest = path.join(this.installer.modules, `${name}.conf`)
     const template = fs.readFileSync(moduleSource, 'utf8')
     const source = path.join(this.distro.liveMediumPath, this.distro.squashfs)
     const view = { source }
@@ -264,8 +264,8 @@ export default class Fisherman {
    * @param name
    */
   async contextualprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + name + '_context.yaml')
-    const moduleDest = this.installer.modules + name + '_context.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `${name}_context.yaml`)
+    const moduleDest = path.join(this.installer.modules, `${name}_context.conf`)
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'contextualprocess', moduleDest)
       shx.cp(moduleSource, moduleDest)
@@ -286,8 +286,8 @@ export default class Fisherman {
    * @param name
    */
   async helper(name: string) {
-    const helperSource = path.resolve(__dirname, this.installer.template + 'libexec/' + name + '.sh')
-    const helperDest = '/usr/libexec/calamares/' + name + '.sh'
+    const helperSource = path.resolve(__dirname, this.installer.template, 'libexec', `${name}.sh`)
+    const helperDest = `/usr/libexec/calamares/${name}.sh`
     if (fs.existsSync(helperSource)) {
       if (this.verbose) this.show(name, 'helper', helperDest)
 
@@ -304,8 +304,8 @@ export default class Fisherman {
    * @param name
    */
   async shellprocess(name: string) {
-    const moduleSource = path.resolve(__dirname, this.installer.templateModules + 'shellprocess@' + name + '.yaml')
-    const moduleDest = this.installer.modules + 'shellprocess@' + name + '.conf'
+    const moduleSource = path.resolve(__dirname, this.installer.templateModules, `shellprocess@${name}.yaml`)
+    const moduleDest = path.join(this.installer.modules, `shellprocess@${name}.conf`)
     if (fs.existsSync(moduleSource)) {
       if (this.verbose) this.show(name, 'shellprocess', moduleDest)
 

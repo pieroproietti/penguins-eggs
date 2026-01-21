@@ -277,7 +277,7 @@ export default class Incubator {
     const elements = fs.readdirSync(this.installer.modules)
     elements.sort()
     for (const elem of elements) {
-      const file = this.installer.modules + elem
+      const file = path.join(this.installer.modules, elem)
       const fileContent = fs.readFileSync(file, 'utf8')
       const yamlContent = yaml.load(fileContent)
       let destContent = `# ${elem} on ${this.distro.distroId}, penguins-eggs ${pjson.version}\n`
@@ -287,7 +287,7 @@ export default class Incubator {
     }
 
     // settings
-    const file = this.installer.configRoot + '/settings.conf'
+    const file = path.join(this.installer.configRoot, 'settings.conf')
     const fileContent = fs.readFileSync(file, 'utf8')
     const yamlContent = yaml.load(fileContent)
     let destContent = `# settings.conf on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
@@ -300,12 +300,12 @@ export default class Incubator {
    *
    */
   private createBranding() {
-    const dir = this.installer.configRoot + 'branding/' + this.remix.branding + '/'
+    const dir = path.join(this.installer.configRoot, 'branding', this.remix.branding)
     if (!fs.existsSync(dir)) {
       shx.exec(`mkdir ${dir} -p`)
     }
 
-    const file = dir + 'branding.desc'
+    const file = path.join(dir, 'branding.desc')
     let destContent = `# branding.desc on ${this.distro.distroId} penguins-eggs ${pjson.version}\n`
     destContent += '---\n'
     destContent += branding(this.remix, this.distro, this.theme, this.verbose)
@@ -340,27 +340,27 @@ export default class Incubator {
       }
     }
 
-    if (!fs.existsSync(this.installer.configRoot + 'branding')) {
+    if (!fs.existsSync(path.join(this.installer.configRoot, 'branding'))) {
       try {
-        fs.mkdirSync(this.installer.configRoot + 'branding')
+        fs.mkdirSync(path.join(this.installer.configRoot, 'branding'))
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'branding')
+        console.log('error: ' + error + ' creating ' + path.join(this.installer.configRoot, 'branding'))
       }
     }
 
-    if (!fs.existsSync(this.installer.configRoot + 'branding/eggs')) {
+    if (!fs.existsSync(path.join(this.installer.configRoot, 'branding/eggs'))) {
       try {
-        fs.mkdirSync(this.installer.configRoot + 'branding/eggs')
+        fs.mkdirSync(path.join(this.installer.configRoot, 'branding/eggs'))
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'branding/eggs')
+        console.log('error: ' + error + ' creating ' + path.join(this.installer.configRoot, 'branding/eggs'))
       }
     }
 
-    if (!fs.existsSync(this.installer.configRoot + 'modules')) {
+    if (!fs.existsSync(path.join(this.installer.configRoot, 'modules'))) {
       try {
-        fs.mkdirSync(this.installer.configRoot + 'modules')
+        fs.mkdirSync(path.join(this.installer.configRoot, 'modules'))
       } catch (error) {
-        console.log('error: ' + error + ' creating ' + this.installer.configRoot + 'modules')
+        console.log('error: ' + error + ' creating ' + path.join(this.installer.configRoot, 'modules'))
       }
     }
 
@@ -390,16 +390,16 @@ export default class Incubator {
 
     // console.log(`calamaresBranding: ${calamaresBranding}`)
     if (fs.existsSync(calamaresBranding)) {
-      if (!fs.existsSync(this.installer.configRoot + `branding/${this.remix.branding}`)) {
+      if (!fs.existsSync(path.join(this.installer.configRoot, `branding/${this.remix.branding}`))) {
         try {
-          fs.mkdirSync(this.installer.configRoot + `branding/${this.remix.branding}`)
+          fs.mkdirSync(path.join(this.installer.configRoot, `branding/${this.remix.branding}`))
         } catch (error) {
-          console.log('error: ' + error + ' creating ' + this.installer.configRoot + `branding/${this.remix.branding}`)
+          console.log('error: ' + error + ' creating ' + path.join(this.installer.configRoot, `branding/${this.remix.branding}`))
         }
       }
 
       // patch quirinux
-      shx.cp('-r', calamaresBranding + '/*', this.installer.configRoot + `branding/${this.remix.branding}/`)
+      shx.cp('-r', path.join(calamaresBranding, '*'), path.join(this.installer.configRoot, `branding/${this.remix.branding}`))
     } else {
       console.log(calamaresBranding)
       console.log(`${calamaresBranding} branding not found!`)

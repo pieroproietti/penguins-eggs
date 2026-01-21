@@ -62,8 +62,8 @@ export default class Pxe {
 
     // Struttura
     await exec(`mkdir ${this.pxeRoot} -p`, this.echo)
-    await exec(`ln -s ${this.eggRoot}live ${this.pxeRoot}/live`, this.echo)
-    await exec(`ln -s ${this.nest}.disk ${this.pxeRoot}/.disk`, this.echo)
+    await exec(`ln -s ${path.join(this.eggRoot, 'live')} ${path.join(this.pxeRoot, 'live')}`, this.echo)
+    await exec(`ln -s ${this.nest}.disk ${path.join(this.pxeRoot, '.disk')}`, this.echo)
 
     // Link supplementari distro
     if (this.distro.familyId === 'archlinux') {
@@ -72,8 +72,8 @@ export default class Pxe {
         filesystemName = `manjaro/x86_64/livefs.sfs`
       }
 
-      await exec(`mkdir ${this.pxeRoot}/${path.dirname(filesystemName)} -p`, this.echo)
-      await exec(`ln -s ${this.eggRoot}/live/filesystem.squashfs ${this.pxeRoot}/${filesystemName}`, this.echo)
+      await exec(`mkdir ${path.join(this.pxeRoot, path.dirname(filesystemName))} -p`, this.echo)
+      await exec(`ln -s ${path.join(this.eggRoot, 'live/filesystem.squashfs')} ${path.join(this.pxeRoot, filesystemName)}`, this.echo)
     }
 
     // Firewall per fedora
@@ -112,7 +112,7 @@ export default class Pxe {
     if (Utils.isLive()) {
       this.eggRoot = this.distro.liveMediumPath
     } else {
-      this.eggRoot = path.join(this.settings.config.snapshot_dir, '/mnt/iso/')
+      this.eggRoot = path.join(this.settings.config.snapshot_dir, 'mnt/iso')
     }
 
     if (!Utils.isLive() && !fs.existsSync(this.settings.config.snapshot_dir)) {
@@ -151,8 +151,8 @@ export default class Pxe {
      * bootLabel
      */
     this.bootLabel = 'not found'
-    if (fs.existsSync(this.eggRoot + '/.disk/mkisofs')) {
-      const a = fs.readFileSync(this.eggRoot + '/.disk/mkisofs', 'utf8')
+    if (fs.existsSync(path.join(this.eggRoot, '.disk/mkisofs'))) {
+      const a = fs.readFileSync(path.join(this.eggRoot, '.disk/mkisofs'), 'utf8')
       const b = a.slice(Math.max(0, a.indexOf('-o ') + 3))
       const c = b.slice(0, Math.max(0, b.indexOf(' ')))
       this.bootLabel = c.slice(Math.max(0, c.lastIndexOf('/') + 1))
@@ -169,7 +169,7 @@ export default class Pxe {
    */
   async httpStart() {
     const port = 80
-    const httpRoot = this.pxeRoot + '/'
+    const httpRoot = this.pxeRoot
 
     // 1. Crea un'applicazione Express
     const app = express()
@@ -277,27 +277,27 @@ export default class Pxe {
   private async bios() {
     const bootloaders = Diversions.bootloaders(this.distro.familyId)
 
-    await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/isolinux.theme.cfg ${this.pxeRoot}/isolinux.theme.cfg`, this.echo)
-    await exec(`cp ${__dirname}/../../addons/eggs/theme/livecd/splash.png ${this.pxeRoot}/splash.png`, this.echo)
+    await exec(`cp ${path.join(__dirname, '../../addons/eggs/theme/livecd/isolinux.theme.cfg')} ${path.join(this.pxeRoot, 'isolinux.theme.cfg')}`, this.echo)
+    await exec(`cp ${path.join(__dirname, '../../addons/eggs/theme/livecd/splash.png')} ${path.join(this.pxeRoot, 'splash.png')}`, this.echo)
 
     // ipxe.pxe
-    await exec(`ln -s ${bootloaders}ipxe/ipxe.pxe ${this.pxeRoot}/ipxe.pxe`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'ipxe/ipxe.pxe')} ${path.join(this.pxeRoot, 'ipxe.pxe')}`, this.echo)
 
     // snponly.efi
-    await exec(`ln -s ${bootloaders}ipxe/snponly.efi ${this.pxeRoot}/snponly.efi`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'ipxe/snponly.efi')} ${path.join(this.pxeRoot, 'snponly.efi')}`, this.echo)
 
     // pxe
-    await exec(`cp ${bootloaders}PXELINUX/pxelinux.0 ${this.pxeRoot}/pxelinux.0`, this.echo)
-    await exec(`cp ${bootloaders}PXELINUX/lpxelinux.0 ${this.pxeRoot}/lpxelinux.0`, this.echo)
+    await exec(`cp ${path.join(bootloaders, 'PXELINUX/pxelinux.0')} ${path.join(this.pxeRoot, 'pxelinux.0')}`, this.echo)
+    await exec(`cp ${path.join(bootloaders, 'PXELINUX/lpxelinux.0')} ${path.join(this.pxeRoot, 'lpxelinux.0')}`, this.echo)
 
     // syslinux
-    await exec(`ln -s ${bootloaders}syslinux/modules/bios/ldlinux.c32 ${this.pxeRoot}/ldlinux.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}syslinux/modules/bios/vesamenu.c32 ${this.pxeRoot}/vesamenu.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}syslinux/modules/bios/libcom32.c32 ${this.pxeRoot}/libcom32.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}syslinux/modules/bios/libutil.c32 ${this.pxeRoot}/libutil.c32`, this.echo)
-    await exec(`ln -s ${bootloaders}syslinux/modules/bios/memdisk ${this.pxeRoot}/memdisk`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/ldlinux.c32')} ${path.join(this.pxeRoot, 'ldlinux.c32')}`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/vesamenu.c32')} ${path.join(this.pxeRoot, 'vesamenu.c32')}`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/libcom32.c32')} ${path.join(this.pxeRoot, 'libcom32.c32')}`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/libutil.c32')} ${path.join(this.pxeRoot, 'libutil.c32')}`, this.echo)
+    await exec(`ln -s ${path.join(bootloaders, 'syslinux/modules/bios/memdisk')} ${path.join(this.pxeRoot, 'memdisk')}`, this.echo)
 
-    await exec(`mkdir ${this.pxeRoot}/pxelinux.cfg`, this.echo)
+    await exec(`mkdir ${path.join(this.pxeRoot, 'pxelinux.cfg')}`, this.echo)
 
     let content = ''
     content += '# eggs: pxelinux.cfg/default\n'
@@ -316,7 +316,7 @@ export default class Pxe {
     const kernelParams = this._getKernelParameters()
     content += `append initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} ${kernelParams}\n`
 
-    const file = `${this.pxeRoot}/pxelinux.cfg/default`
+    const file = path.join(this.pxeRoot, 'pxelinux.cfg/default')
     fs.writeFileSync(file, content)
   }
 
@@ -331,27 +331,27 @@ export default class Pxe {
     /**
      * On Debian bookworm:
      */
-    await exec(`mkdir -p ${this.pxeRoot}/grub`, this.echo)
+    await exec(`mkdir -p ${path.join(this.pxeRoot, 'grub')}`, this.echo)
 
     if (this.distro.familyId === 'debian') {
       switch (process.arch) {
         case 'arm64': {
-          await exec(`cp ${bootloaders}/grub/arm64-efi-signed/grubnetaa64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-          await exec(`cp -r ${bootloaders}/grub/arm64-efi ${this.pxeRoot}/grub`, this.echo)
+          await exec(`cp ${path.join(bootloaders, '/grub/arm64-efi-signed/grubnetaa64.efi.signed')} ${path.join(this.pxeRoot, 'grub.efi')}`, this.echo)
+          await exec(`cp -r ${path.join(bootloaders, '/grub/arm64-efi')} ${path.join(this.pxeRoot, 'grub')}`, this.echo)
 
           break
         }
 
         case 'ia32': {
-          await exec(`cp ${bootloaders}/grub/i386-efi-signed/grubnetia32.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-          await exec(`cp -r ${bootloaders}/grub/i386-efi ${this.pxeRoot}/grub`, this.echo)
+          await exec(`cp ${path.join(bootloaders, '/grub/i386-efi-signed/grubnetia32.efi.signed')} ${path.join(this.pxeRoot, 'grub.efi')}`, this.echo)
+          await exec(`cp -r ${path.join(bootloaders, '/grub/i386-efi')} ${path.join(this.pxeRoot, 'grub')}`, this.echo)
 
           break
         }
 
         case 'x64': {
-          await exec(`cp ${bootloaders}/grub/x86_64-efi-signed/grubnetx64.efi.signed ${this.pxeRoot}/grub.efi`, this.echo)
-          await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+          await exec(`cp ${path.join(bootloaders, '/grub/x86_64-efi-signed/grubnetx64.efi.signed')} ${path.join(this.pxeRoot, 'grub.efi')}`, this.echo)
+          await exec(`cp -r ${path.join(bootloaders, '/grub/x86_64-efi')} ${path.join(this.pxeRoot, 'grub')}`, this.echo)
 
           break
         }
@@ -361,12 +361,12 @@ export default class Pxe {
       /**
        * le altre distribuzione not signed
        */
-      await exec(`cp ${bootloaders}grub/x86_64-efi/monolithic/grubnetx64.efi ${this.pxeRoot}/grub.efi`, this.echo)
-      await exec(`cp -r ${bootloaders}/grub/x86_64-efi ${this.pxeRoot}/grub`, this.echo)
+      await exec(`cp ${path.join(bootloaders, 'grub/x86_64-efi/monolithic/grubnetx64.efi')} ${path.join(this.pxeRoot, 'grub.efi')}`, this.echo)
+      await exec(`cp -r ${path.join(bootloaders, '/grub/x86_64-efi')} ${path.join(this.pxeRoot, 'grub')}`, this.echo)
     }
 
     // Genera il file grub.cfg
-    const grubName = `${this.pxeRoot}/grub/grub.cfg` // Il file deve chiamarsi grub.cfg
+    const grubName = path.join(this.pxeRoot, 'grub/grub.cfg') // Il file deve chiamarsi grub.cfg
     let grubContent = ''
     grubContent += `set timeout=10\n`
     grubContent += `set default=0\n\n`
@@ -390,7 +390,7 @@ export default class Pxe {
    * configure PXE http server
    */
   private async http() {
-    const file = `${this.pxeRoot}/index.html`
+    const file = path.join(this.pxeRoot, 'index.html')
     let content = ''
     content += "<html><title>Penguin's eggs PXE server</title>"
     content += '<div style="background-image:url(\'/splash.png\');background-repeat:no-repeat;width: 640;height:480;padding:5px;border:1px solid black;">'
@@ -421,7 +421,7 @@ export default class Pxe {
     content += 'dhcp\n'
     content += `chain http://${Utils.address()}/grub.efi\n`
 
-    const file = `${this.pxeRoot}/autoexec.ipxe`
+    const file = path.join(this.pxeRoot, 'autoexec.ipxe')
     fs.writeFileSync(file, content)
   }
 }
