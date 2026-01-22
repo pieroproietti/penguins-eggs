@@ -4,7 +4,7 @@ set -e
 # --- CONFIGURAZIONE VERSIONI ---
 # Usa una versione specifica per garantire stabilità
 #NODE_VERSION="22.13.1"
-NODE_VERSION="22.21.0"
+NODE_VERSION="22.22.0"
 #BOOTLOADERS_TAG="v25.9.8"
 BOOTLOADERS_TAG="v26.1.16"
 ARCH="x86_64"
