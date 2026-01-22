@@ -16,7 +16,7 @@ import { exec } from '../lib/utils.js'
 
 export default class Dad extends Command {
   static description = 'ask help from daddy - TUI configuration helper'
-  static examples = ['sudo dad', 'sudo dad --clean', 'sudo dad --default']
+  static examples = ['sudo eggs dad', 'sudo eggs dad --clean', 'sudo eggs dad --default']
   static flags = {
     clean: Flags.boolean({ char: 'c', description: 'remove old configuration before to create' }),
     default: Flags.boolean({ char: 'd', description: 'reset to default values' }),

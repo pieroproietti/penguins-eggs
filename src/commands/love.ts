@@ -22,7 +22,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export default class Love extends Command {
   static description = 'the simplest way to get an egg!'
-  static examples = ['eggs auto']
+  static examples = ['eggs love']
   static flags = {
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
