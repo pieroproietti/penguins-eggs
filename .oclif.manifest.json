@@ -215,9 +215,9 @@
       "args": {},
       "description": "ask help from daddy - TUI configuration helper",
       "examples": [
-        "sudo dad",
-        "sudo dad --clean",
-        "sudo dad --default"
+        "sudo eggs dad",
+        "sudo eggs dad --clean",
+        "sudo eggs dad --default"
       ],
       "flags": {
         "clean": {
@@ -482,7 +482,7 @@
       "args": {},
       "description": "the simplest way to get an egg!",
       "examples": [
-        "eggs auto"
+        "eggs love"
       ],
       "flags": {
         "clone": {

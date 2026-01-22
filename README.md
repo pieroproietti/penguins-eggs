@@ -68,7 +68,7 @@ system, replicating the setup easily.
 - **Distro-Agnostic:** Works across **Debian, Devuan, Ubuntu, Arch, Fedora,
   AlmaLinux, Rocky, OpenSuSE, and Alpine**.
 - **Multi-Architecture:** Debian/Ubuntu packages are relased for `i386`,
-  `amd64`, `arm64` and `riscv64` ([more info](./architectures/README.md)).
+  `amd64`, `arm64` and `riscv64` (native recursive remastering).
 - **Fast & Efficient:** Leverages OverlayFS to avoid physically copying the
   entire filesystem, combined with zstd compression (up to 10x faster).
 - **Secure:** Supports LUKS encryption for user data within the ISO.
@@ -394,11 +394,11 @@ DESCRIPTION
   ask help from daddy - TUI configuration helper
 
 EXAMPLES
-  sudo dad
+  sudo eggs dad
 
-  sudo dad --clean
+  sudo eggs dad --clean
 
-  sudo dad --default
+  sudo eggs dad --default
 ```
 
 _See code: [src/commands/dad.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.21/src/commands/dad.ts)_
@@ -610,7 +610,7 @@ DESCRIPTION
   the simplest way to get an egg!
 
 EXAMPLES
-  $ eggs auto
+  $ eggs love
 ```
 
 _See code: [src/commands/love.ts](https://github.com/pieroproietti/penguins-eggs/blob/v26.1.21/src/commands/love.ts)_
