@@ -22,6 +22,7 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v26.1.24
 * **Snap**: Resolved compatibility issues with snap applications;
+* **Manjaro/Arch**: Fixed package creation workflow;
 
 # v26.1.21
 * **Refactoring nest**: `iso` directory was moved inside `mnt/iso` to free more space for remastering, (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));
