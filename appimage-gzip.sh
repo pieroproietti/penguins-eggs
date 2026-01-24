@@ -8,6 +8,13 @@ ARCH="x86_64"
 APP_NAME="penguins-eggs"
 CACHE_DIR="cache"
 
+# Check Node.js version
+MAJOR_NODE_VERSION=$(echo "$NODE_VERSION" | cut -d. -f1)
+if [ "$MAJOR_NODE_VERSION" -lt 22 ]; then
+    echo "ERROR: NODE_VERSION must be >= 22. Found $NODE_VERSION"
+    exit 1
+fi
+
 # --- COMPRESSIONE: GZIP ---
 # Gzip è veloce per lo sviluppo e 100% compatibile con tutti i runtime.
 # Risolve l'errore "supports only xz, zlib".
