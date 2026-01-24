@@ -89,6 +89,7 @@ jobs:
           echo "Updating PKGBUILD to $VERSION-$RELEASE_NUM"
           sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/arch/PKGBUILD
           sed -i "s/^pkgrel=.*/pkgrel=$RELEASE_NUM/" ./packaging/arch/PKGBUILD
+          sed -i "s|https://github.com/pieroproietti/penguins-eggs.git|file://${GITHUB_WORKSPACE}|" ./packaging/arch/PKGBUILD
       
       - name: 3. Create Build User
         run: |
@@ -337,6 +338,7 @@ jobs:
           echo "Updating Manjaro PKGBUILD to version: $VERSION, release: $RELEASE_NUM"
           sed -i "s/^pkgver=.*/pkgver=$VERSION/" ./packaging/manjaro/PKGBUILD
           sed -i "s/^pkgrel=.*/pkgrel=$RELEASE_NUM/" ./packaging/manjaro/PKGBUILD
+          sed -i "s|https://github.com/pieroproietti/penguins-eggs.git|file://${GITHUB_WORKSPACE}|" ./packaging/manjaro/PKGBUILD
           echo "PKGBUILD updated:"
           grep -E "^(pkgver|pkgrel)=" ./packaging/manjaro/PKGBUILD
       
