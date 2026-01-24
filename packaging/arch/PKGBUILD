@@ -5,7 +5,7 @@
 _bootloadersver=26.1.16
 
 pkgname=penguins-eggs
-pkgver=
+pkgver=26.1.24
 pkgrel=1
 pkgdesc="A console tool that allows you to remaster your system and redistribute it as live images on USB sticks or via PXE"
 arch=('any')
@@ -53,10 +53,14 @@ makedepends=(
 
 options=('!strip')
 source=(
-  "git+https://github.com/pieroproietti/penguins-eggs.git#tag=v$pkgver"
   "bootloaders.tar.gz::https://github.com/pieroproietti/penguins-bootloaders/releases/download/v$_bootloadersver/bootloaders.tar.gz"
 )
 
+prepare() {
+  # Copy local source to srcdir
+  # Exclude strict packaging dirs to avoid recursion/bloat
+  rsync -a --exclude '.git' --exclude 'packaging/arch/pkg' --exclude 'packaging/arch/src' "$startdir/../../" "$srcdir/$pkgname"
+}
 
 build() {
  cd "$srcdir"/"$pkgname"
@@ -126,5 +130,4 @@ package() {
 }
 
 # updpkgsums
-sha256sums=('37091dc5ec0e72905b5a4e61e21dcfc604b571c8492b3d9ad60a229574b59e1c'
-            'c5dcfd82a8e65160af5c93365f07776a00d44e8b531d6641f4cadbbe7b4b5baf')
+sha256sums=('c5dcfd82a8e65160af5c93365f07776a00d44e8b531d6641f4cadbbe7b4b5baf')
