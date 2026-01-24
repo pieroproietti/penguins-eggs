@@ -2,7 +2,7 @@
 set -e
 
 # --- CONFIGURAZIONE ---
-NODE_VERSION="22.21.0"
+NODE_VERSION="22.22.0"
 BOOTLOADERS_TAG="v26.1.16"
 ARCH="x86_64"
 APP_NAME="penguins-eggs"
