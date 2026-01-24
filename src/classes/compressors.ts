@@ -99,7 +99,7 @@ export default class Compressors {
     try {
       // ignore: true silenzia output (stdio='ignore')
       // Se mksquashfs fallisce (exit code != 0), execSync lancia un errore
-      execSync(`mksquashfs ${this.source} ${this.dest} -comp ${compressor} -no-xattrs -ef ${this.dest}`, { ignore: true })
+      execSync(`mksquashfs ${this.source} ${this.dest} -comp ${compressor} -ef ${this.dest}`, { ignore: true })
       result = true
     } catch {
       // Fallito (comando non trovato o compressore non supportato)
