@@ -1043,6 +1043,247 @@
         "tarballs.js"
       ]
     },
+    "tools:clean": {
+      "aliases": [],
+      "args": {},
+      "description": "clean system log, apt, etc",
+      "examples": [
+        "sudo eggs tools clean"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:clean",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "clean.js"
+      ]
+    },
+    "tools:repo": {
+      "aliases": [],
+      "args": {},
+      "description": "add/remove penguins-repos",
+      "examples": [
+        "sudo eggs tools repo --add",
+        "sudo eggs tools repo --remove"
+      ],
+      "flags": {
+        "add": {
+          "char": "a",
+          "description": "add penguins-repos",
+          "name": "add",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "nointeractive": {
+          "char": "n",
+          "description": "no user interaction",
+          "name": "nointeractive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "remove": {
+          "char": "r",
+          "description": "remove penguins-repos",
+          "name": "remove",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "verbose",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:repo",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "repo.js"
+      ]
+    },
+    "tools:skel": {
+      "aliases": [],
+      "args": {},
+      "description": "update skel from home configuration",
+      "examples": [
+        "sudo eggs tools skel",
+        "sudo eggs tools skel --user user-to-be-copied"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "user": {
+          "char": "u",
+          "description": "user to be used",
+          "name": "user",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:skel",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "skel.js"
+      ]
+    },
+    "tools:stat": {
+      "aliases": [],
+      "args": {},
+      "description": "get statistics from sourceforge",
+      "examples": [
+        "eggs tools stat",
+        "eggs tools stat --month",
+        "eggs tools stat --year"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "month": {
+          "char": "m",
+          "description": "current month",
+          "name": "month",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "year": {
+          "char": "y",
+          "description": "current year",
+          "name": "year",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:stat",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "stat.js"
+      ]
+    },
+    "tools:yolk": {
+      "aliases": [],
+      "args": {},
+      "description": "configure eggs to install without internet",
+      "examples": [
+        "sudo eggs tools yolk"
+      ],
+      "flags": {
+        "help": {
+          "char": "h",
+          "description": "Show CLI help.",
+          "name": "help",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "tools:yolk",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "dir": "/var/local/yolk",
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "tools",
+        "yolk.js"
+      ]
+    },
     "setup:install": {
       "aliases": [],
       "args": {},
@@ -1327,248 +1568,7 @@
         "wardrobe",
         "wear.js"
       ]
-    },
-    "tools:clean": {
-      "aliases": [],
-      "args": {},
-      "description": "clean system log, apt, etc",
-      "examples": [
-        "sudo eggs tools clean"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "tools:clean",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "tools",
-        "clean.js"
-      ]
-    },
-    "tools:repo": {
-      "aliases": [],
-      "args": {},
-      "description": "add/remove penguins-repos",
-      "examples": [
-        "sudo eggs tools repo --add",
-        "sudo eggs tools repo --remove"
-      ],
-      "flags": {
-        "add": {
-          "char": "a",
-          "description": "add penguins-repos",
-          "name": "add",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "nointeractive": {
-          "char": "n",
-          "description": "no user interaction",
-          "name": "nointeractive",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "remove": {
-          "char": "r",
-          "description": "remove penguins-repos",
-          "name": "remove",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "verbose",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "tools:repo",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "tools",
-        "repo.js"
-      ]
-    },
-    "tools:skel": {
-      "aliases": [],
-      "args": {},
-      "description": "update skel from home configuration",
-      "examples": [
-        "sudo eggs tools skel",
-        "sudo eggs tools skel --user user-to-be-copied"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "user": {
-          "char": "u",
-          "description": "user to be used",
-          "name": "user",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "tools:skel",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "tools",
-        "skel.js"
-      ]
-    },
-    "tools:stat": {
-      "aliases": [],
-      "args": {},
-      "description": "get statistics from sourceforge",
-      "examples": [
-        "eggs tools stat",
-        "eggs tools stat --month",
-        "eggs tools stat --year"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "month": {
-          "char": "m",
-          "description": "current month",
-          "name": "month",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "year": {
-          "char": "y",
-          "description": "current year",
-          "name": "year",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "tools:stat",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "tools",
-        "stat.js"
-      ]
-    },
-    "tools:yolk": {
-      "aliases": [],
-      "args": {},
-      "description": "configure eggs to install without internet",
-      "examples": [
-        "sudo eggs tools yolk"
-      ],
-      "flags": {
-        "help": {
-          "char": "h",
-          "description": "Show CLI help.",
-          "name": "help",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "tools:yolk",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "dir": "/var/local/yolk",
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "tools",
-        "yolk.js"
-      ]
     }
   },
-  "version": "26.1.21"
+  "version": "26.1.24"
 }
