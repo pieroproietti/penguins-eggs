@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.24
+* **Snap**: Resolved compatibility issues with snap applications;
+
 # v26.1.21
 * **Refactoring nest**: `iso` directory was moved inside `mnt/iso` to free more space for remastering, (look [here](https://github.com/pieroproietti/penguins-eggs/blob/master/conf/README.md));
 * **Refactoring**: Use `path.join` for safer path concatenation in `src/classes/incubation/installer.ts`;
