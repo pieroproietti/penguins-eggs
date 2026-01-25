@@ -113,6 +113,8 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     scriptText += 'for f in "$DESKTOP"/*.desktop; do gio set "$f" metadata::trusted true 2>/dev/null; done\n'
   } else if (Pacman.packageIsInstalled('xfce4-session')) {
     scriptText += 'for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk "{print $1}")"; done\n'
+  } else if (Pacman.packageIsInstalled('lxqt-session')) {
+    scriptText += 'for f in "$DESKTOP"/*.desktop; do chmod +x "$f"; gio set "$f" metadata::trusted true 2>/dev/null; done\n'
   } else {
     scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
   }
@@ -169,8 +171,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     // Disabilitiamo greetd per evitare che "rubi" il terminale
     try {
       await exec(`chroot ${mergedRoot} systemctl disable greetd`)
-    } catch { }
-
+    } catch {}
   } else {
     // Altri Display Manager
     await Xdg.autologin(newuser, mergedRoot)

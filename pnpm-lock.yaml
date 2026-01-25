@@ -30,8 +30,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2(debug@4.4.3)
+        specifier: ^1.13.3
+        version: 1.13.3(debug@4.4.3)
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -139,8 +139,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.2
       eslint-config-oclif:
-        specifier: ^6.0.133
-        version: 6.0.133(eslint@9.39.2)(typescript@5.9.3)
+        specifier: ^6.0.135
+        version: 6.0.135(eslint@9.39.2)(typescript@5.9.3)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.2)
@@ -154,8 +154,8 @@ importers:
         specifier: ^11.7.5
         version: 11.7.5
       oclif:
-        specifier: ^4.22.68
-        version: 4.22.68(@types/node@25.0.10)
+        specifier: ^4.22.69
+        version: 4.22.69(@types/node@25.0.10)
       perrisbrewery:
         specifier: ^26.1.20
         version: 26.1.20
@@ -1782,8 +1782,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+  axios@1.13.3:
+    resolution: {integrity: sha512-ERT8kdX7DZjtUm7IitEyV7InTHAF42iJuMArIiDIV5YtPanJkgw4hw5Dyg9fh0mihdWNn1GKaeIWErfe56UQ1g==}
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -2246,8 +2246,8 @@ packages:
     resolution: {integrity: sha512-NNTyyolSmKJicgxtoWZ/hoy2Rw56WIoWCFxgnBkXqDgi9qPKMwZs2Nx2b6SHLJvCiWWhZhWr5V46CFPo3PSPag==}
     engines: {node: '>=18.0.0'}
 
-  eslint-config-oclif@6.0.133:
-    resolution: {integrity: sha512-cCa/K8JwanplkBku4wiRuWAZ4VF6z0V23Y0wC5Sjdf2x7ZJsZ5vqg6/OJqKELXc/0TzfoLX56luHS/IIeYdnag==}
+  eslint-config-oclif@6.0.135:
+    resolution: {integrity: sha512-S0Kdgbzs8aklUqkPt7Y45krT/9j28VTm7wVzgEX84wqoTovb91hg+bt3lgFVjOZs3N7DRxP3ZrGhQtbeJMtLJg==}
     engines: {node: '>=18.18.0'}
 
   eslint-config-prettier@10.1.8:
@@ -3419,8 +3419,8 @@ packages:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
 
-  oclif@4.22.68:
-    resolution: {integrity: sha512-XYAhVTgnomHmvaOe1upNI8rTV4dNmkCF4T9onhVVUiEF4Z8M8rNJXuW8Ba5+BFLyfRIL+Rp/sFZU6EYWbZ7DEg==}
+  oclif@4.22.69:
+    resolution: {integrity: sha512-c9nB/ezO+ug3L+AkhP/kxEptL1eMlQJnCncpNuG6PEb3+SkSjVEk6QBBwQiUb44sD6xKDI+x06CtNoanCiuqeA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6446,7 +6446,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.13.2(debug@4.4.3):
+  axios@1.13.3(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
@@ -6973,7 +6973,7 @@ snapshots:
     transitivePeerDependencies:
       - eslint
 
-  eslint-config-oclif@6.0.133(eslint@9.39.2)(typescript@5.9.3):
+  eslint-config-oclif@6.0.135(eslint@9.39.2)(typescript@5.9.3):
     dependencies:
       '@eslint/compat': 1.4.1(eslint@9.39.2)
       '@eslint/eslintrc': 3.3.3
@@ -8414,7 +8414,7 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  oclif@4.22.68(@types/node@25.0.10):
+  oclif@4.22.69(@types/node@25.0.10):
     dependencies:
       '@aws-sdk/client-cloudfront': 3.975.0
       '@aws-sdk/client-s3': 3.975.0
