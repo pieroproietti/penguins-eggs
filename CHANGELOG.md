@@ -21,7 +21,19 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 # v26.1.26
-* **lxqt**: bugfix desktop links for lxqt session. Thanks to [fixitclinic](https://fixitclinic.blogspot.com/) they can convert your chromebook to linux;
+* **Fix Autologin & SDDM (LXQt/Lubuntu)**
+  * **SDDM Configuration (xdg.ts)**: Rewrote the configuration method to write directly to `/etc/sddm.conf`, bypassing distro defaults;
+  * **Session Detection**: Implemented automatic session detection in `/usr/share/xsessions` with specific priority for `Lubuntu.desktop` and `lxqt-session.desktop` to avoid incorrect fallbacks to Plasma;
+  * **Forced X11**: Set `DisplayServer=x11` in SDDM configuration to ensure stability in live mode and avoid issues with Wayland;
+  * **PAM**: Added `sddm` and `sddm-autologin` to the list of services patched with `nullok` to allow passwordless login.
+
+* **Fix Permissions & Desktop Icons**
+  * **User Permissions (create-xdg-autostart.ts)**: Moved home directory creation, recursive `chown`, and group assignment (`usermod`) logic out of conditional blocks. It is now executed for all Display Managers, resolving SDDM blocks due to inability to write `.Xauthority`;
+  * **Trusted Launchers**: Improved handling of "Untrusted" desktop icons:
+    * Added explicit `chown` of `.desktop` files to the live user;
+    * **LXQt/GNOME**: Used `gio set -t string ... metadata::trusted true` with a wait (sleep) for bus availability;
+    * **XFCE**: Implemented SHA256 checksum calculation to correctly set `metadata::xfce-exe-checksum`.
+
 # v26.1.24
 * **Snap**: Resolved compatibility issues with snap applications;
 * **Manjaro/Arch**: Fixed package creation workflow;

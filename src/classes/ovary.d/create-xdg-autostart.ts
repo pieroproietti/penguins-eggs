@@ -103,7 +103,10 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
 
   const scriptPath = path.join(mergedRoot, '/usr/bin/penguins-links-add.sh')
   let scriptText = '#!/bin/sh\nDESKTOP=$(xdg-user-dir DESKTOP)\n'
+
+  // Attendiamo che la cartella Desktop esista
   scriptText += 'while [ ! -d "$DESKTOP" ]; do sleep 1; DESKTOP=$(xdg-user-dir DESKTOP); done\n'
+
   scriptText += `cp /usr/share/applications/${installerLink} "$DESKTOP"\n`
   if (!noicons) scriptText += 'cp /usr/share/applications/penguins-eggs.desktop "$DESKTOP"\n'
   for (const link of myLinks) scriptText += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
@@ -113,7 +116,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     scriptText += 'sleep 2\n'
     scriptText += 'chown $(id -u):$(id -g) "$DESKTOP"/*.desktop\n'
     scriptText += 'chmod a+x "$DESKTOP"/*.desktop\n'
-    // Forza il tipo stringa per il metadato
+    // Forza il tipo stringa per il metadato trusted
     scriptText += 'for f in "$DESKTOP"/*.desktop; do gio set -t string "$f" metadata::trusted true || true; done\n'
     scriptText += 'touch "$DESKTOP"/*.desktop\n'
 
@@ -130,13 +133,18 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
 
   } else if (Pacman.packageIsInstalled('lxqt-session')) {
     // FIX LXQT
-    scriptText += 'sleep 2\n'
+    scriptText += 'sleep 5\n' // Aumentato sleep per dare tempo a PCManFM-Qt
     scriptText += 'chown $(id -u):$(id -g) "$DESKTOP"/*.desktop\n'
     scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
-    // LXQt moderno usa gio/metadata
-    scriptText += 'for f in "$DESKTOP"/*.desktop; do\n'
-    scriptText += '   gio set -t string "$f" metadata::trusted true || true\n'
-    scriptText += 'done\n'
+
+    // LXQt moderno usa gio/metadata se gvfs è presente
+    scriptText += 'if command -v gio >/dev/null 2>&1; then\n'
+    scriptText += '  for f in "$DESKTOP"/*.desktop; do\n'
+    scriptText += '     gio set -t string "$f" metadata::trusted true || true\n'
+    scriptText += '  done\n'
+    scriptText += 'fi\n'
+    scriptText += 'touch "$DESKTOP"/*.desktop\n'
+
   } else {
     scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
   }
@@ -168,12 +176,12 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     }
   }
 
-  // --- FIX CRITICO PER SDDM/LIGHTDM: Setup Home Directory ---
-  // Questo blocco era dentro l'if(greetd) e per questo SDDM falliva (non aveva permessi sulla home)
+  // --- FIX CRITICO PER SDDM/LIGHTDM: Setup Home Directory e Gruppi ---
+  // Questo blocco DEVE essere fuori dai condizionali del Display Manager
+  // per assicurare che la home sia scrivibile dall'utente (es. .Xauthority)
   const userHome = path.join(mergedRoot, 'home', newuser)
   if (!fs.existsSync(userHome)) fs.mkdirSync(userHome, { recursive: true })
 
-  // Assegnamo proprietà e gruppi PRIMA di gestire il display manager
   await exec(`chroot ${mergedRoot} chown -R ${newuser}:${newuser} /home/${newuser}`)
   await exec(`chroot ${mergedRoot} usermod -aG video,render,input,tty,audio,storage,power,network ${newuser}`)
 
