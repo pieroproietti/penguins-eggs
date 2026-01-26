@@ -20,6 +20,9 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.26
+* **lxqt**: bugfix desktop links for lxqt session;
+
 # v26.1.24
 * **Snap**: Resolved compatibility issues with snap applications;
 * **Manjaro/Arch**: Fixed package creation workflow;
