@@ -6,13 +6,9 @@
  * license: MIT
  */
 
-import fs, { utimesSync } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
-import os from 'os'
-
-import { execSync, shx } from '../lib/utils.js'
-// libraries
-import { exec } from '../lib/utils.js'
+import { exec, shx } from '../lib/utils.js'
 import Distro from './distro.js'
 import Pacman from './pacman.js'
 import Utils from './utils.js'
@@ -21,14 +17,11 @@ const xdg_dirs = ['DESKTOP', 'DOWNLOAD', 'TEMPLATES', 'PUBLICSHARE', 'DOCUMENTS'
 
 /**
  * Xdg: xdg-user-dirs, etc
- * @remarks all the utilities
  */
 export default class Xdg {
 
   /**
    * Forza l'autologin per il nuovo utente (live) su diversi Display Manager
-   * @param newuser Nome dell'utente live da loggare automaticamente
-   * @param chroot Percorso della root (default '/')
    */
   static async autologin(newuser: string, chroot = '/') {
     if (!Pacman.isInstalledGui()) return
@@ -56,22 +49,15 @@ export default class Xdg {
       const confPath = `${chroot}/etc/lightdm/lightdm.conf`
       if (fs.existsSync(confPath)) {
         let content = fs.readFileSync(confPath, 'utf8')
-
-        // Rimuove eventuali righe esistenti e le aggiunge pulite sotto [Seat:*]
         content = content.replaceAll(/^\s*autologin-user=.*/gm, '')
         content = content.replaceAll(/^\s*autologin-user-timeout=.*/gm, '')
 
-        // Cerca una sezione attiva [Seat:*] (non commentata)
         const seatRegex = /^[ \t]*\[Seat:\*\]/m
-
         if (seatRegex.test(content)) {
-          // Sostituisce la prima occorrenza attiva trovata
           content = content.replace(seatRegex, `[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0`)
         } else {
-          // Se non esiste attiva, la aggiunge in fondo
           content += `\n[Seat:*]\nautologin-user=${newuser}\nautologin-user-timeout=0\n`
         }
-
         fs.writeFileSync(confPath, content.replaceAll(/\n\n+/g, '\n\n'), 'utf8')
       }
 
@@ -88,53 +74,67 @@ export default class Xdg {
 
     } else if (Pacman.packageIsInstalled('sddm')) {
       /**
-       * SDDM (Modern approach con file dedicato)
+       * SDDM FIX - DIRECT CONFIGURATION
        */
-      const confDir = `${chroot}/etc/sddm.conf.d`
-      if (!fs.existsSync(confDir)) {
-        fs.mkdirSync(confDir, { recursive: true })
-      }
 
-      // --- FIX SESSION DETECTION FOR SDDM ---
-      // Invece di defaultare a 'plasma', cerchiamo cosa c'è installato
-      let session = ''
-
-      // Helper per cercare la sessione
+      // Funzione di ricerca sessione con PRIORITÀ LUBUNTU
       const findSession = (dir: string): string => {
         if (!fs.existsSync(dir)) return ''
         const files = fs.readdirSync(dir).filter(f => f.endsWith('.desktop'))
         if (files.length === 0) return ''
 
-        // Priority check
+        // --- PRIORITÀ ASSOLUTA ---
+        // Se c'è Lubuntu.desktop, usiamo quello (contiene le customizzazioni)
+        if (files.includes('Lubuntu.desktop')) return 'Lubuntu'
+        if (files.includes('lubuntu.desktop')) return 'lubuntu'
+
+        // Altre priorità LXQt
+        if (files.includes('lxqt-session.desktop')) return 'lxqt-session'
         if (files.includes('lxqt.desktop')) return 'lxqt'
+
+        // Altri DE
+        if (files.includes('ubuntu.desktop')) return 'ubuntu'
         if (files.includes('xfce.desktop')) return 'xfce'
         if (files.includes('plasma.desktop')) return 'plasma'
-        if (files.includes('mate.desktop')) return 'mate'
-        if (files.includes('cinnamon.desktop')) return 'cinnamon'
-        if (files.includes('i3.desktop')) return 'i3'
+        if (files.includes('openbox.desktop')) return 'openbox' // Ultima spiaggia
 
-        // Fallback al primo trovato rimuovendo .desktop
-        return files[0].replace('.desktop', '')
+        // Fallback generico
+        const candidates = files.filter(f => !f.includes('askpass') && !f.includes('settings'))
+        if (candidates.length > 0) return candidates[0].replace('.desktop', '')
+
+        return ''
       }
 
-      // 1. Check Wayland se supportato
-      if (Pacman.isInstalledWayland()) {
+      // 1. Rilevamento Sessione (Cerca prima in Xsessions)
+      let session = findSession(`${chroot}/usr/share/xsessions`)
+
+      // Fallback a Wayland solo se X11 non trovato
+      if (!session && Pacman.isInstalledWayland()) {
         session = findSession(`${chroot}/usr/share/wayland-sessions`)
       }
 
-      // 2. Se non trovato (o non wayland), check X11
-      if (!session) {
-        session = findSession(`${chroot}/usr/share/xsessions`)
-      }
+      // Se ancora null, forziamo Lubuntu o lxqt come fallback sicuro
+      if (!session) session = 'Lubuntu'
 
-      // 3. Last resort fallback
-      if (!session) session = 'plasma'
+      // 2. Generazione Configurazione Completa su /etc/sddm.conf
+      const sddmConfPath = `${chroot}/etc/sddm.conf`
 
-      const content = `[Autologin]\nUser=${newuser}\nSession=${session}\nRelogin=false\n`
-      fs.writeFileSync(`${confDir}/eggs-autologin.conf`, content, 'utf8')
+      const sddmContent = `[Autologin]
+User=${newuser}
+Session=${session}
+Relogin=false
 
-      // Assicuriamoci che i permessi siano corretti
-      // fs.chmodSync(`${confDir}/eggs-autologin.conf`, 0o644)
+[General]
+# Forza X11 per evitare problemi grafici in live
+DisplayServer=x11
+HaltCommand=/usr/bin/systemctl poweroff
+RebootCommand=/usr/bin/systemctl reboot
+
+[Users]
+MaximumUid=60000
+MinimumUid=1000
+`
+      fs.writeFileSync(sddmConfPath, sddmContent, 'utf8')
 
     } else if (Pacman.packageIsInstalled('gdm') || Pacman.packageIsInstalled('gdm3')) {
       /**
@@ -171,15 +171,13 @@ export default class Xdg {
 
     } else if (Pacman.packageIsInstalled('greetd')) {
       /**
-       * GREETD / COSMIC
+       * GREETD
        */
       const greetdPath = `${chroot}/etc/greetd/cosmic-greeter.toml`
-
       if (fs.existsSync(greetdPath)) {
         let content = fs.readFileSync(greetdPath, 'utf8')
         const initialSessionRegex = /\[initial_session\][^\[]*/
         const newInitialSession = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n\n`
-
         if (initialSessionRegex.test(content)) {
           content = content.replace(initialSessionRegex, newInitialSession)
         } else {
@@ -191,7 +189,6 @@ export default class Xdg {
         const configPath = `${chroot}/etc/greetd/config.toml`
         let content = fs.readFileSync(configPath, 'utf8')
         const autologinConfig = `[initial_session]\ncommand = "start-cosmic"\nuser = "${newuser}"\n`
-
         if (!content.includes('[initial_session]')) {
           content = autologinConfig + content
           fs.writeFileSync(configPath, content, 'utf8')
@@ -231,9 +228,6 @@ export default class Xdg {
     await exec(`cp /home/${user}/.bashrc /etc/skel`, echo)
     await exec(`cp /home/${user}/.profile /etc/skel`, echo)
 
-    /**
-     * copy desktop configuration
-     */
     if (Pacman.packageIsInstalled('gnome-session')) {
       await rsyncIfExist(`/home/${user}/.config`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.gtkrc-2.0`, '/etc/skel', verbose)
@@ -257,18 +251,13 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.local/share/recently-used.xbel`, '/etc/skel/.local/share', verbose)
     }
 
-    /**
-     * special cases
-     */
     await rsyncIfExist(`/home/${user}/.mozilla`, '/etc/skel', verbose)
     await rsyncIfExist(`/home/${user}/.kodi`, '/etc/skel', verbose)
 
-    // waydroid
     if (fs.existsSync(`/home/${user}/waydroid-package-manager`)) {
       await rsyncIfExist(`/home/${user}/waydroid-package-manager`, '/etc/skel', verbose)
     }
 
-    // LinuxFX
     if (fs.existsSync(`/home/${user}/.linuxfx`)) {
       await rsyncIfExist(`/home/${user}/.cinnamon`, '/etc/skel', verbose)
       await rsyncIfExist(`/home/${user}/.kde`, '/etc/skel', verbose)
@@ -282,7 +271,6 @@ export default class Xdg {
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.bash_logout', verbose)
     await execIfExist('chmod a+rwx,g-w-x,o-wx', '/etc/skel/.profile', verbose)
 
-    // quirinux
     const distro = new Distro()
     if (distro.distroId === 'Quirinux') {
       await exec('chmod -R 777 /etc/skel/.config')
@@ -296,9 +284,6 @@ export default class Xdg {
       await rsyncIfExist(`/home/${user}/.config/xfce4-theme-switcher`, '/etc/skel/.config/xfce4-theme-switcher', verbose)
     }
 
-    /**
-     * ALL Desktops cleanups
-     */
     await rmIfExist('/etc/skel/.config/user-dirs.dirs')
     await rmIfExist('/etc/skel/.config/user-dirs.locale')
     await rmIfExist('/etc/skel/.config/gtk-3.0/bookmarks/', 'r')
