@@ -13,7 +13,6 @@ import { fileURLToPath } from 'node:url'
 import { IAddons } from '../../interfaces/index.js'
 import { exec } from '../../lib/utils.js'
 import Xdg from '../xdg.js'
-
 // classes
 import Ovary from '../ovary.js'
 import Pacman from '../pacman.js'
@@ -37,7 +36,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
   /**
    * Helper per gestire file e directory in modo nativo
    */
-  const copyToLiveRoot = (srcRelative: string, destRelative: string) => {
+  const copyToLiveroot = (srcRelative: string, destRelative: string) => {
     const src = path.resolve(__dirname, srcRelative)
     const dest = path.join(mergedRoot, destRelative)
     if (fs.existsSync(src)) {
@@ -50,9 +49,9 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
    * 1. ICONE & ASSETS
    */
   const assets = ['eggs.png', 'krill.svg', 'leaves.svg']
-  for (const asset of assets) copyToLiveRoot(`../../../assets/${asset}`, `/usr/share/icons/${asset}`)
+  for (const asset of assets) copyToLiveroot(`../../../assets/${asset}`, `/usr/share/icons/${asset}`)
 
-  copyToLiveRoot('../../../assets/penguins-eggs.desktop', '/usr/share/applications/penguins-eggs.desktop')
+  copyToLiveroot('../../../assets/penguins-eggs.desktop', '/usr/share/applications/penguins-eggs.desktop')
 
   /**
    * 2. INSTALLER & POLKIT
@@ -60,9 +59,9 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
   let installerLink = 'install-system.desktop'
 
   if (Pacman.calamaresExists()) {
-    copyToLiveRoot(`../../../addons/${theme}/theme/applications/install-system.desktop`, '/usr/share/applications/install-system.desktop')
+    copyToLiveroot(`../../../addons/${theme}/theme/applications/install-system.desktop`, '/usr/share/applications/install-system.desktop')
     const policyPath = '/usr/share/polkit-1/actions/io.calamares.calamares.policy'
-    copyToLiveRoot('../../../assets/calamares/io.calamares.calamares.policy', policyPath)
+    copyToLiveroot('../../../assets/calamares/io.calamares.calamares.policy', policyPath)
     const fullPolicyPath = path.join(mergedRoot, policyPath)
     if (fs.existsSync(fullPolicyPath)) {
       let policy = fs.readFileSync(fullPolicyPath, 'utf8')
@@ -71,36 +70,36 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     }
   } else if (Pacman.packageIsInstalled('live-installer')) {
     installerLink = 'penguins-live-installer.desktop'
-    copyToLiveRoot('../../../assets/penguins-live-installer.desktop', '/usr/share/applications/penguins-live-installer.desktop')
+    copyToLiveroot('../../../assets/penguins-live-installer.desktop', '/usr/share/applications/penguins-live-installer.desktop')
   } else if (Pacman.packageIsInstalled('ubiquity')) {
     installerLink = 'penguins-ubiquity-installer.desktop'
-    copyToLiveRoot('../../../assets/penguins-ubiquity-installer.desktop', '/usr/share/applications/penguins-ubiquity-installer.desktop')
+    copyToLiveroot('../../../assets/penguins-ubiquity-installer.desktop', '/usr/share/applications/penguins-ubiquity-installer.desktop')
   } else {
     installerLink = 'penguins-krill.desktop'
-    copyToLiveRoot('../../../assets/penguins-krill.desktop', '/usr/share/applications/penguins-krill.desktop')
+    copyToLiveroot('../../../assets/penguins-krill.desktop', '/usr/share/applications/penguins-krill.desktop')
   }
 
   /**
    * 3. ADDONS
    */
-  if (myAddons.adapt) copyToLiveRoot('../../../addons/eggs/adapt/applications/eggs-adapt.desktop', '/usr/share/applications/eggs-adapt.desktop')
+  if (myAddons.adapt) copyToLiveroot('../../../addons/eggs/adapt/applications/eggs-adapt.desktop', '/usr/share/applications/eggs-adapt.desktop')
   if (myAddons.rsupport) {
-    copyToLiveRoot('../../../addons/eggs/rsupport/applications/eggs-rsupport.desktop', '/usr/share/applications/eggs-rsupport.desktop')
-    copyToLiveRoot('../../../addons/eggs/rsupport/artwork/eggs-rsupport.png', '/usr/share/icons/eggs-rsupport.png')
+    copyToLiveroot('../../../addons/eggs/rsupport/applications/eggs-rsupport.desktop', '/usr/share/applications/eggs-rsupport.desktop')
+    copyToLiveroot('../../../addons/eggs/rsupport/artwork/eggs-rsupport.png', '/usr/share/icons/eggs-rsupport.png')
   }
 
   if (myAddons.pve) {
     const pve = new PveLive()
     pve.create(mergedRoot)
-    copyToLiveRoot('../../../addons/eggs/pve/artwork/eggs-pve.png', '/usr/share/icons/eggs-pve.png')
-    copyToLiveRoot('../../../addons/eggs/pve/applications/eggs-pve.desktop', '/usr/share/applications/eggs-pve.desktop')
+    copyToLiveroot('../../../addons/eggs/pve/artwork/eggs-pve.png', '/usr/share/icons/eggs-pve.png')
+    copyToLiveroot('../../../addons/eggs/pve/applications/eggs-pve.desktop', '/usr/share/applications/eggs-pve.desktop')
   }
 
   /**
-   * 4. SCRIPT AUTOSTART (Icone Desktop)
+   * 4. SCRIPT AUTOSTART (Icone Desktop e Trust)
    */
   const autostartDir = path.join(mergedRoot, '/etc/xdg/autostart')
-  copyToLiveRoot('../../../assets/penguins-links-add.desktop', '/etc/xdg/autostart/penguins-links-add.desktop')
+  copyToLiveroot('../../../assets/penguins-links-add.desktop', '/etc/xdg/autostart/penguins-links-add.desktop')
 
   const scriptPath = path.join(mergedRoot, '/usr/bin/penguins-links-add.sh')
   let scriptText = '#!/bin/sh\nDESKTOP=$(xdg-user-dir DESKTOP)\n'
@@ -110,10 +109,11 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
   for (const link of myLinks) scriptText += `cp /usr/share/applications/${link}.desktop "$DESKTOP"\n`
 
   if (Pacman.packageIsInstalled('cosmic-session') || Pacman.packageIsInstalled('gdm3') || Pacman.packageIsInstalled('gdm')) {
-    // FIX GNOME/COSMIC: Proprietà + Type String
+    // FIX GNOME/COSMIC
     scriptText += 'sleep 2\n'
     scriptText += 'chown $(id -u):$(id -g) "$DESKTOP"/*.desktop\n'
     scriptText += 'chmod a+x "$DESKTOP"/*.desktop\n'
+    // Forza il tipo stringa per il metadato
     scriptText += 'for f in "$DESKTOP"/*.desktop; do gio set -t string "$f" metadata::trusted true || true; done\n'
     scriptText += 'touch "$DESKTOP"/*.desktop\n'
 
@@ -122,6 +122,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     scriptText += 'sleep 2\n'
     scriptText += 'chown $(id -u):$(id -g) "$DESKTOP"/*.desktop\n'
     scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
+    // Calcolo checksum sicuro (senza awk per evitare problemi di escaping)
     scriptText += 'for f in "$DESKTOP"/*.desktop; do\n'
     scriptText += '   SHA=$(sha256sum "$f" | cut -d" " -f1)\n'
     scriptText += '   gio set -t string "$f" metadata::xfce-exe-checksum "$SHA"\n'
@@ -132,6 +133,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     scriptText += 'sleep 2\n'
     scriptText += 'chown $(id -u):$(id -g) "$DESKTOP"/*.desktop\n'
     scriptText += 'chmod +x "$DESKTOP"/*.desktop\n'
+    // LXQt moderno usa gio/metadata
     scriptText += 'for f in "$DESKTOP"/*.desktop; do\n'
     scriptText += '   gio set -t string "$f" metadata::trusted true || true\n'
     scriptText += 'done\n'
@@ -144,7 +146,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
   await exec(`chmod a+x ${scriptPath}`)
 
   /**
-   * 5. LOGICA AUTOLOGIN UNIVERSALE E PERMESSI UTENTE
+   * 5. LOGICA AUTOLOGIN UNIVERSALE E SETUP UTENTE
    */
 
   // Sblocco utente (Shadow & PAM)
@@ -155,7 +157,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     if (this.verbose) console.log('Ovary: error unlocking')
   }
 
-  // PAM Services (Include SDDM per fix blocco login)
+  // --- FIX PAM: Aggiunti sddm e sddm-autologin alla lista ---
   const pamServices = ['common-auth', 'greetd', 'gdm-password', 'login', 'sddm', 'sddm-autologin']
   for (const s of pamServices) {
     const p = path.join(mergedRoot, `/etc/pam.d/${s}`)
@@ -166,16 +168,16 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     }
   }
 
-  // --- FIX CRITICO PER SDDM/LIGHTDM ---
-  // Impostiamo la home e i permessi PRIMA di entrare nel blocco greetd/else.
-  // Questo assicura che anche SDDM possa scrivere in home (es. .Xauthority)
+  // --- FIX CRITICO PER SDDM/LIGHTDM: Setup Home Directory ---
+  // Questo blocco era dentro l'if(greetd) e per questo SDDM falliva (non aveva permessi sulla home)
   const userHome = path.join(mergedRoot, 'home', newuser)
   if (!fs.existsSync(userHome)) fs.mkdirSync(userHome, { recursive: true })
 
-  // Assegna proprietà e gruppi fondamentali
+  // Assegnamo proprietà e gruppi PRIMA di gestire il display manager
   await exec(`chroot ${mergedRoot} chown -R ${newuser}:${newuser} /home/${newuser}`)
   await exec(`chroot ${mergedRoot} usermod -aG video,render,input,tty,audio,storage,power,network ${newuser}`)
-  // -------------------------------------
+
+  // --- CONFIGURAZIONE DISPLAY MANAGER ---
 
   // CASO COSMIC/GREETD: Bypass totale del Display Manager
   if (Pacman.packageIsInstalled('greetd')) {
@@ -201,6 +203,7 @@ export async function createXdgAutostart(this: Ovary, theme = 'eggs', myAddons: 
     } catch { }
   } else {
     // Altri Display Manager (SDDM, GDM, LightDM, etc.)
+    // Xdg.autologin configura solo il file di conf del DM
     await Xdg.autologin(newuser, mergedRoot)
   }
 
