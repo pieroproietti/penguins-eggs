@@ -7,6 +7,6 @@ displaymanagers:
   - lxdm
   - slim
 
-basicSetup: false
+basicSetup: true
 sddm:
   configuration_file: "/etc/sddm.conf"
