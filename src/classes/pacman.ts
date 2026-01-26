@@ -927,12 +927,7 @@ export default class Pacman {
     return installed
   }
 
-  /**
-   *
-   * @param packageNpm
-   * @returns
-   */
-  static async packageNpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
-    return shx.exec('npm show ' + packageNpm + ' version', { silent: true }).stdout.trim()
+  static async packagePnpmLast(packageNpm = 'penguins-eggs'): Promise<string> {
+    return shx.exec('pnpm view ' + packageNpm + ' version', { silent: true }).stdout.trim()
   }
 }
