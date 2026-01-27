@@ -22,10 +22,9 @@ The version is based on the year, month, day, and release number. They are liste
 
 # v26.1.26
 * **Fix Autologin & SDDM (LXQt/Lubuntu)**
-  * **SDDM Configuration (xdg.ts)**: Rewrote the configuration method to write directly to `/etc/sddm.conf`, bypassing distro defaults;
   * **Session Detection**: Implemented automatic session detection in `/usr/share/xsessions` with specific priority for `Lubuntu.desktop` and `lxqt-session.desktop` to avoid incorrect fallbacks to Plasma;
-  * **Forced X11**: Set `DisplayServer=x11` in SDDM configuration to ensure stability in live mode and avoid issues with Wayland;
   * **PAM**: Added `sddm` and `sddm-autologin` to the list of services patched with `nullok` to allow passwordless login.
+  * **Calamares**: On Lubuntu, the problem with installation using calamares remains. In particular, the file `/etc/sddm.conf.d/autologin.conf` is not updated with the username. It is preferable to use **sudo eggs krill -u** for new installations, which does not have this problem.
 
 * **Fix Permissions & Desktop Icons**
   * **User Permissions (create-xdg-autostart.ts)**: Moved home directory creation, recursive `chown`, and group assignment (`usermod`) logic out of conditional blocks. It is now executed for all Display Managers, resolving SDDM blocks due to inability to write `.Xauthority`;
