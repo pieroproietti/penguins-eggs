@@ -26,7 +26,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  * makeDotDisk
  */
 export function makeDotDisk(this: Ovary, info = '', mksquashfs = '', mkisofs = '') {
-  const dotDisk = this.settings.iso_work + '.disk'
+  const dotDisk = path.join(this.settings.iso_work, '.disk')
   if (fs.existsSync(dotDisk)) {
     shx.rm('-rf', dotDisk)
   }

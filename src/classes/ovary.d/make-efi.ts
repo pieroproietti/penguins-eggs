@@ -129,7 +129,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   const isoDir = this.settings.iso_work
 
   // create (ISO)/boot/grub
-  await exec(`mkdir ${isoDir}/boot/grub/${Utils.uefiFormat()} -p`, this.echo)
+  await exec(`mkdir ${path.join(isoDir, `/boot/grub/${Utils.uefiFormat()}`)} -p`, this.echo)
 
   // create (ISO)/EFI
   await exec(`mkdir ${isoDir}/EFI/boot -p`, this.echo)
@@ -163,8 +163,9 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
    */
 
   // Seeker GRUB config: cerca il file .disk/id/UUID
+  Utils.warning(`UUID used for boot search: ${this.uuid}`)
   let seeker = ''
-  seeker += `search --file --no-floppy --set=root /.disk/id/${this.uuid}\n`
+  seeker += `search --file --set=root /.disk/id/${this.uuid}\n`
   seeker += 'set prefix=($root)/boot/grub\n'
   seeker += 'source $prefix/${grub_cpu}-efi/grub.cfg\n'
 
@@ -175,7 +176,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
    * creating grub.cfg (1) seeker for usb on (efi.img)/boot/grub/grub.cfg
    */
   Utils.warning('creating grub.cfg seeker USB on (efi.img)/boot/grub')
-  await exec(`mkdir ${path.join(efiMemdiskDir, '/boot/grub -p')}`, this.echo)
+  await exec(`mkdir ${path.join(efiMemdiskDir, '/boot/grub')} -p`, this.echo)
   const cfgSeekerUsb = `${efiMemdiskDir}/boot/grub/grub.cfg`
   let cfgSeekerUsbText = ''
   cfgSeekerUsbText += `# grub.cfg seeker\n`
@@ -199,6 +200,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   cfgBridgeText += `source /boot/grub/grub.cfg\n`
   fs.writeFileSync(cfgBridge, cfgBridgeText)
 
+
+
   /**
    * grub bait
    */
@@ -214,6 +217,13 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   cfgBaitText += `\n`
   cfgBaitText += seeker
   Utils.write(cfgBait, cfgBaitText)
+
+  /**
+   * creating grub.cfg configuration on (ISO)/EFI/boot/grub.cfg
+   * This ensures fallback bootloader finds the config being in the same dir
+   */
+  const cfgEfiBoot = path.join(isoDir, 'EFI/boot/grub.cfg')
+  Utils.write(cfgEfiBoot, cfgBaitText)
 
   /**
    * README.md
@@ -247,47 +257,33 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   const efiImg = path.join(efiWorkDir, `boot/grub/efi.img`)
   // Aumentato leggermente il size per sicurezza
   await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
-  await exec(`/sbin/mkdosfs -F 12 ${efiImg}`, this.echo)
+  await exec(`/sbin/mkdosfs -F 16 ${efiImg}`, this.echo)
   await new Promise((resolve) => setTimeout(resolve, 500))
 
-  // mount efi.img on mountpoint mnt-img
-  await exec(`mount --make-shared -o loop ${efiImg} ${efiImgMnt}`, this.echo)
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  // Use mtools to populate efi.img without mounting
+  // 1. Create directories
+  await exec(`mmd -i ${efiImg} ::/EFI`, this.echo)
+  await exec(`mmd -i ${efiImg} ::/EFI/boot`, this.echo)
+  await exec(`mmd -i ${efiImg} ::/boot`, this.echo)
+  await exec(`mmd -i ${efiImg} ::/boot/grub`, this.echo)
 
-  // create structure inside (efi.img)
-  await exec(`mkdir -p ${efiImgMnt}/boot`, this.echo)
-  await exec(`mkdir -p ${efiImgMnt}/EFI/boot`, this.echo)
+  // 2. Copy grub.cfg to /boot/grub/grub.cfg
+  await exec(`mcopy -i ${efiImg} ${cfgSeekerUsb} ::/boot/grub/grub.cfg`, this.echo)
 
-  /**
-   * copy grubCfg1 (grub.cfg) to (efi.img)/boot/grub
-   */
-  // 1. Copia standard in /boot/grub.cfg (path interna immagine)
-  await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/boot/grub.cfg`, this.echo)
-
-  // 2. Copia i binari EFI
+  // 3. Copy EFI binaries
   if (shimEfi && fs.existsSync(shimEfi)) {
-    await exec(`cp ${shimEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
-    await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${grubEfiName()}`, this.echo)
+    await exec(`mcopy -i ${efiImg} ${shimEfi} ::/EFI/boot/${bootEfiName()}`, this.echo)
+    await exec(`mcopy -i ${efiImg} ${grubEfi} ::/EFI/boot/${grubEfiName()}`, this.echo)
   } else {
     // Se no shim (RISC-V), grub diventa il boot loader principale
-    await exec(`cp ${grubEfi} ${efiImgMnt}/EFI/boot/${bootEfiName()}`, this.echo)
+    await exec(`mcopy -i ${efiImg} ${grubEfi} ::/EFI/boot/${bootEfiName()}`, this.echo)
   }
 
-  // 3. FIX CRUCIALE PER RISC-V (e robustezza generale):
+  // 4. FIX CRUCIALE PER RISC-V (e compatibilità x86):
   // Copia il grub.cfg seeker ANCHE accanto al binario EFI in /EFI/boot/
-  // Perché GRUB portable spesso cerca il config nella sua stessa cartella.
-  await exec(`cp ${cfgSeekerUsb} ${efiImgMnt}/EFI/boot/grub.cfg`, this.echo)
-
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  if (!fs.existsSync(`${efiImgMnt}/boot/grub.cfg`)) {
-    console.log(`error copyng ${cfgSeekerUsb} seeker for USB on (efi.img)/boot/grub.cfg`)
-    process.exit(1)
+  if (process.arch === 'riscv64') {
+    await exec(`mcopy -i ${efiImg} ${cfgSeekerUsb} ::/EFI/boot/grub.cfg`, this.echo)
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  await exec(`umount ${efiImgMnt}`, this.echo)
-  await new Promise((resolve) => setTimeout(resolve, 500))
 
   // Copy isoImg in ${${isoDir}/boot/grub
   Utils.warning('copyng (efi.img) on (ISO)/boot/grub')

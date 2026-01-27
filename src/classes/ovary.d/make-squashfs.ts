@@ -66,8 +66,9 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
 
   this.addExclusion(this.settings.config.snapshot_dir /* .absolutePath() */)
 
-  if (fs.existsSync(`${this.settings.iso_work}/live/filesystem.squashfs`)) {
-    fs.unlinkSync(`${this.settings.iso_work}/live/filesystem.squashfs`)
+  const sfsPath = path.join(this.settings.iso_work, 'live/filesystem.squashfs')
+  if (fs.existsSync(sfsPath)) {
+    fs.unlinkSync(sfsPath)
   }
 
   const compression = `-comp ${this.settings.config.compression}`
@@ -89,7 +90,7 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
    * [-e list of exclude dirs/files]
    */
   const sfsName = 'filesystem.squashfs'
-  let cmd = `mksquashfs ${this.settings.work_dir.merged} ${this.settings.iso_work}live/${sfsName} ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
+  let cmd = `mksquashfs ${this.settings.work_dir.merged} ${sfsPath} ${compression} ${limit} -wildcards -ef ${this.settings.config.snapshot_excludes} ${this.settings.session_excludes}`
 
   cmd = cmd.replaceAll(/\s\s+/g, ' ')
 

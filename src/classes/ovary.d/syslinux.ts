@@ -44,7 +44,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
   await exec(`cp ${sysPath}/vesamenu.c32 ${this.settings.iso_work}/isolinux/`, this.echo)
 
   const splashDest = `${this.settings.iso_work}/isolinux/splash.png`
-  const isolinuxThemeDest = this.settings.iso_work + 'isolinux/isolinux.theme.cfg'
+  const isolinuxThemeDest = path.join(this.settings.iso_work, 'isolinux/isolinux.theme.cfg')
   const isolinuxDest = `${this.settings.iso_work}/isolinux/isolinux.cfg`
 
   let splashSrc = ''
@@ -69,7 +69,7 @@ export async function syslinux(this: Ovary, theme = 'eggs') {
     /**
      * isolinux.cfg from isolinux.main.cfg
      */
-    this.settings.iso_work + 'isolinux/isolinux.cfg'
+    path.join(this.settings.iso_work, 'isolinux/isolinux.cfg')
     isolinuxTemplate = `${theme}/theme/livecd/isolinux.main.cfg`
     if (!fs.existsSync(isolinuxTemplate)) {
       isolinuxTemplate = path.resolve(__dirname, '../../../addons/eggs/theme/livecd/isolinux.main.cfg')
