@@ -86,9 +86,6 @@ export default class Xdg {
         // --- PRIORITÀ ASSOLUTA ---
         // Se c'è Lubuntu.desktop, usiamo quello (contiene le customizzazioni)
         if (files.includes('Lubuntu.desktop')) return 'Lubuntu'
-        if (files.includes('lubuntu.desktop')) return 'lubuntu'
-
-        // Altre priorità LXQt
         if (files.includes('lxqt-session.desktop')) return 'lxqt-session'
         if (files.includes('lxqt.desktop')) return 'lxqt'
 
@@ -116,23 +113,17 @@ export default class Xdg {
       // Se ancora null, forziamo Lubuntu o lxqt come fallback sicuro
       if (!session) session = 'Lubuntu'
 
-      // 2. Generazione Configurazione Completa su /etc/sddm.conf
-      const sddmConfPath = `${chroot}/etc/sddm.conf`
+      // 2. Generazione Configurazione Completa su /etc/sddm.conf.d/eggs-live-autologin.conf
+      const sddmConfDir = `${chroot}/etc/sddm.conf.d`
+      if (!fs.existsSync(sddmConfDir)) {
+        fs.mkdirSync(sddmConfDir, { recursive: true })
+      }
+      const sddmConfPath = `${sddmConfDir}/autologin.conf`
 
       const sddmContent = `[Autologin]
 User=${newuser}
 Session=${session}
 Relogin=false
-
-[General]
-# Forza X11 per evitare problemi grafici in live
-DisplayServer=x11
-HaltCommand=/usr/bin/systemctl poweroff
-RebootCommand=/usr/bin/systemctl reboot
-
-[Users]
-MaximumUid=60000
-MinimumUid=1000
 `
       fs.writeFileSync(sddmConfPath, sddmContent, 'utf8')
 
