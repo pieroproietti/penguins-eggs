@@ -106,6 +106,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = fal
     command = `xorriso -as mkisofs \
                     -J \
                     -joliet-long \
+                    -r \
                     -l \
                     -iso-level 3 \
                     ${isoHybridMbr} \
