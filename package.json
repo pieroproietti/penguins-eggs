@@ -34,8 +34,8 @@
         "read": "^5.0.1",
         "systeminformation": "^5.30.6",
         "tftp": "^0.1.2",
-        "vite": "^7.3.0",
-        "ws": "^8.18.3"
+        "vite": "^7.3.1",
+        "ws": "^8.19.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.3",
@@ -59,8 +59,8 @@
         "glob": "^13.0.0",
         "globals": "^17.2.0",
         "mocha": "^11.7.5",
-        "oclif": "^4.22.69",
-        "perrisbrewery": "../perrisbrewery",
+        "oclif": "^4.22.70",
+        "perrisbrewery": "link:../perrisbrewery",
         "prettier": "^3.8.1",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",

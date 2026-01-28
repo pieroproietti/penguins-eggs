@@ -123,7 +123,7 @@ export default class ExportPkg extends Command {
         }
 
         // filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
-        filter = `penguins-eggs-+([0-9.])-*${arch}.deb`
+        filter = `penguins-eggs_+([0-9.])-*${arch}.deb`
 
         /**
          * fedora
