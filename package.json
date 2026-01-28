@@ -16,7 +16,7 @@
         "@oclif/plugin-version": "^2.2.36",
         "@types/express": "^5.0.6",
         "ansis": "^4.2.0",
-        "axios": "^1.13.3",
+        "axios": "^1.13.4",
         "bcryptjs": "^3.0.3",
         "chalk": "^5.6.2",
         "cli-cursor": "^5.0.0",
@@ -30,7 +30,7 @@
         "js-yaml": "^4.1.1",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
-        "react": "^19.2.3",
+        "react": "^19.2.4",
         "read": "^5.0.1",
         "systeminformation": "^5.30.6",
         "tftp": "^0.1.2",
@@ -50,14 +50,14 @@
         "@types/mustache": "^4.2.6",
         "@types/netmask": "^2.0.6",
         "@types/node": "^25.0.10",
-        "@types/react": "^19.2.9",
+        "@types/react": "^19.2.10",
         "@types/ws": "^8.18.1",
         "chai": "^6.2.2",
         "eslint": "^9.39.2",
         "eslint-config-oclif": "^6.0.135",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^13.0.0",
-        "globals": "^17.1.0",
+        "globals": "^17.2.0",
         "mocha": "^11.7.5",
         "oclif": "^4.22.69",
         "perrisbrewery": "^26.1.20",
@@ -66,7 +66,7 @@
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.53.1"
+        "typescript-eslint": "^8.54.0"
     },
     "engines": {
         "node": ">=22.22.0"
