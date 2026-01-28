@@ -21,7 +21,7 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
 # v26.1.28
-Revert to debian package denomination: `penguins-eggs_26.1.20-amd64.deb`.
+- **Fixed:** Corrected a regression in the package naming convention. Changed the separator between name and version back to `_` (underscore) from `-` (hyphen) to fix repository compatibility issues observed in recent builds.
 
 # v26.1.27
 * **Fix UEFI Boot on x86_64**: Resolved a regression where the ISO failed to boot on UEFI x86_64 systems (dropping to UEFI shell). This was caused by a configuration conflict with the recent RISC-V support changes. The `grub.cfg` file intended for RISC-V is now correctly restricted to that architecture only.
