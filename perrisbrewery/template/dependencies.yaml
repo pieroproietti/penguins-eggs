@@ -1,0 +1,57 @@
+# Description: This file contains the dependencies for the packages in the project.
+---
+##
+# common dependencies 
+common:
+  - coreutils 
+  - cryptsetup 
+  - cryptsetup-bin
+  - cryptsetup-initramfs
+  - curl # wardrobe
+  - dbus-bin | uuid-runtime 
+  - dosfstools # eggs
+  - dpkg-dev  # yolk
+  - git # wardrobe
+  - gpg # eggs
+  - jq # mom
+  - live-boot | dracut
+  - live-boot-doc | dracut
+  - live-boot-initramfs-tools | dracut
+  - live-config-systemd | live-config-sysvinit | dracut 
+  - live-tools | dracut-live
+  - lvm2  # pvdisplay in krill
+  - nodejs (>= 22)
+  - parted 
+  - pxelinux
+  - policykit-1 | pkexec # calamares
+  - rsync
+  - squashfs-tools
+  - sshfs # eggs
+  - xorriso
+
+  # bootloaders common
+  - ipxe
+  - pxelinux
+
+arch:
+  amd64:
+  - grub-efi-amd64-bin
+  - isolinux
+  - shim-signed
+  - syslinux
+  
+  
+  i386:
+  - grub-pc-bin
+  - isolinux
+  - grub-efi-ia32-bin
+  - syslinux
+  
+  arm64:
+  - grub-efi-arm64-bin
+  - shim-signed
+  - u-boot-tools
+
+  riscv64:
+    - grub-efi-riscv64-bin
+  

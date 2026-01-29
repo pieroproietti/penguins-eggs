@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=Install System CLI
+Comment=Install the system to your disk (CLI)
+Exec=x-terminal-emulator -e "sudo eggs krill"
+Icon=krill
+Terminal=false
+Categories=Qt;System;

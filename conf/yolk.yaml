@@ -1,0 +1,8 @@
+# it's used to build yolk
+---
+packages:
+- cryptsetup
+- grub-efi-amd64
+- grub-pc
+- keyutils
+- shim-signed

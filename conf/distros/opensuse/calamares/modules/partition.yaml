@@ -1,0 +1,35 @@
+# partition.conf on Opensuse-tumbleweed, penguins-eggs 10.1.1
+---
+efiSystemPartition: /boot/efi
+userSwapChoices:
+  - none
+  - small
+  - suspend
+  - file
+drawNestedPartitions: false
+alwaysShowPartitionLabels: true
+initialPartitioningChoice: none
+initialSwapChoice: none
+defaultFileSystemType: btrfs
+availableFileSystemTypes:
+  - ext4
+requiredStorage: 6
+
+# =========================================================
+# CONFIGURAZIONE SPECIFICA PER I SOTTOVOLUMI BTRFS
+# Questa è la configurazione standard di openSUSE
+# =========================================================
+btrfsSubvolumes:
+    # La sintassi è "percorso_sul_sistema_installato": "nome_sottovolume"
+    "/": "@"
+    "/boot/grub2/i386-pc": "@/boot/grub2/i386-pc"
+    "/boot/grub2/x86_64-efi": "@/boot/grub2/x86_64-efi"
+    "/home": "@/home"
+    "/opt": "@/opt"
+    "/root": "@/root"
+    "/srv": "@/srv"
+    "/tmp": "@/tmp"
+    "/usr/local": "@/usr/local"
+    # La directory /var è gestita in modo speciale per escludere
+    # alcuni percorsi dagli snapshot (log, cache, etc.)
+    "/var": "@/var"

@@ -1,0 +1,8 @@
+# Debian Buster
+# sources-yolk
+---
+type: "job"
+name: "sources-yolk"
+interface: "process"
+command: "/usr/sbin/sources-yolk.sh"
+timeout: 600

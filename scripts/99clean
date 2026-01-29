@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Uscita immediata in caso di errore
+set -e
+
+# Percorso del file initrd appena creato da dracut
+# Adatta questo percorso a quello usato dal tuo script
+INITRD_FILE="/home/eggs/mnt/iso/live/initrd-$1" 
+
+# Controlla se il file esiste prima di procedere
+if [ ! -f "$INITRD_FILE" ]; then
+    echo "Errore: il file initrd $INITRD_FILE non è stato trovato!"
+    exit 1
+fi
+
+# Crea una directory temporanea sicura
+TMP_DIR=$(mktemp -d)
+
+echo ">>> Pulizia dell'initrd: ${INITRD_FILE}"
+echo ">>> Directory temporanea: ${TMP_DIR}"
+
+# Entra nella directory temporanea e scompatta l'archivio
+cd "${TMP_DIR}"
+# La compressione è zstd, come da tua configurazione dracut
+zstd -d < "${INITRD_FILE}" | cpio -idm
+
+echo ">>> Rimozione degli hook UUID specifici dell'host..."
+# Usiamo -f per non dare errore se i file non esistono
+rm -f ./var/lib/dracut/hooks/emergency/80-*
+rm -f ./var/lib/dracut/hooks/initqueue/finished/devexists-*
+
+echo ">>> Ricompressione dell'initrd pulito..."
+# Ricreiamo l'archivio cpio e lo ricomprimiamo con zstd
+find . | cpio -o -H newc | zstd -T0 > "${INITRD_FILE}.clean"
+
+echo ">>> Sostituzione del file originale con la versione pulita."
+mv "${INITRD_FILE}.clean" "${INITRD_FILE}"
+
+echo ">>> Pulizia della directory temporanea."
+rm -rf "${TMP_DIR}"
+
+echo ">>> FATTO! L'initrd è stato pulito con successo."

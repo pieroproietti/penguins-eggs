@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ "$(id -u)" != "0" ]; then
+   echo "Please use sudo" 1>&2
+   exit 1
+fi
+clear
+echo ">>> Re-install penguis-Eggs Saving Yolk"
+tmpDir=$(mktemp -d)
+mv /var/local/yolk "${tmpDir}"
+apt-get -y purge penguins-eggs
+dpkg -i /tmp/penguins-eggs*.deb
+mv "${tmpDir}/yolk" /var/local
+eggs dad -d

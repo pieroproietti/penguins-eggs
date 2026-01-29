@@ -1,0 +1,20 @@
+# Debian/bookworm
+---
+userGroup: users
+defaultGroups:
+  - cdrom
+  - input
+  - floppy
+  - wheel
+  - audio
+  - dip
+  - video
+  - plugdev
+  - netdev
+  # lpadmin
+  # scanner
+  # bluetooth
+autologinGroup: autologin
+sudoersGroup: sudo
+setRootPassword: true
+doReusePassword: false

@@ -1,0 +1,28 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Assistenza remota
+GenericName=Assistenza remota
+Exec=dwagent.sh
+Comment=Assistenza remota
+Keywords=calamares;system;install;debian;installer
+Icon=eggs-rsupport
+Terminal=false
+Name[it]=Assistenza remota
+GenericName[it]=Assistenza remota
+Comment[it]=Assistenza remota via dwagent
+Name[en]=Remote Assistance
+GenericName[en]=Remote Assistance
+Comment[en]=Remote assistance via dwagent
+Name[es]=Asistencia remota
+GenericName[es]=Asistencia remota
+Comment[es]=Asistencia remota a través de dwagent
+Name[pt]=Assistência remota 
+GenericName[pt]=Assistência remota
+Comment[pt]=Assistência remota via dwagent
+Name[fr]=Téléassistance
+GenericName[fr]=Téléassistance
+Comment[fr]=Téléassistance via un dwagent
+
+

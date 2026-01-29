@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Penguins Eggs
+Comment=CLI tool for Linux remastering and live system creation
+Exec=eggs
+Icon=penguins-eggs
+Type=Application
+Categories=System;ConsoleOnly;
+Terminal=true
+NoDisplay=false

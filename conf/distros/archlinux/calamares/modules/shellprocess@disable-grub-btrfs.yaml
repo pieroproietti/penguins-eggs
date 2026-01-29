@@ -1,0 +1,9 @@
+---
+message: Disable grub-btrfs temporarily
+dontchroot: false
+script:
+  - command: /bin/sh -c "if [ -x /usr/bin/grub-btrfs ]; then chmod -x /usr/bin/grub-btrfs; fi"
+    timeout: 10
+  - command: /bin/sh -c "if [ -f /etc/grub.d/41_snapshots-btrfs ]; then chmod -x /etc/grub.d/41_snapshots-btrfs; fi"
+    timeout: 10
+    

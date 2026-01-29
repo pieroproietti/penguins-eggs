@@ -1,0 +1,47 @@
+#!/bin/bash
+# prerm script for penguins-eggs_9.7.8-1
+#
+#echo ">>> $0 $1 $2 $3 $4<<<"
+
+# sanitize /usr/lib/penguins-eggs/
+rm -rf /usr/lib/penguins-eggs/distros
+rm -rf /usr/lib/penguins-eggs/eui
+rm -rf /usr/lib/penguins-eggs/krill
+
+# remove man eggs
+if [ -f "/usr/share/man/man1/eggs.1.gz" ]; then
+    rm -f /usr/share/man/man1/eggs.1.gz
+fi
+
+# remove eggs.bash 
+if [ -f "/etc/bash_completion.d/eggs.bash" ]; then
+    rm -f /etc/bash_completion.d/eggs.bash
+fi
+
+
+# remove calamares customization
+FILE=/var/lib/dpkg/info/calamares.list
+if [ -f "$FILE" ]; then
+    rm -rf /etc/calamares
+
+    # remove scripts calamares/krill
+    rm -f /usr/sbin/bootloader-config.sh
+    rm -f /usr/sbin/remove-link.sh
+    rm -f /usr/sbin/sources-yolk.sh
+
+    # remove eggs calamares-modules x86_64
+    rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/bootloader-config  
+    rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/remove-link  
+    rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk  
+    rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/sources-yolk-undo
+    rm -rf /usr/lib/x86_64-linux-gnu/calamares/modules/cleanup
+
+    # remove eggs calamares-modules i386
+    rm -rf /usr/lib/i386-linux-gnu/calamares/modules/bootloader-config  
+    rm -rf /usr/lib/i386-linux-gnu/calamares/modules/remove-link  
+    rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk  
+    rm -rf /usr/lib/i386-linux-gnu/calamares/modules/sources-yolk-undo
+    rm -rf /usr/lib/i386-linux-gnu/calamares/modules/cleanup
+fi
+
+exit 0

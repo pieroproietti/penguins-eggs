@@ -1,0 +1,17 @@
+Source: {{{name}}}
+Section: {{{section}}}
+Priority: {{{priority}}}
+Maintainer: {{{mantainer}}}
+Standards-Version: 4.5.0
+Package: {{{name}}}
+Architecture: {{{arch}}}
+Version: {{{version}}}
+Depends: {{{depends}}}
+Suggests: calamares
+Conflicts: calamares-settings-debian, calamares-settings-ubuntu, eggs
+Replaces: eggs
+Description: {{{description}}}
+ Penguins-eggs is a versatile remastering tool that allows users to create
+ custom live ISO images. It supports multiple Linux distributions, including
+ Arch, Debian, Devuan, Ubuntu, and others.
+ 

@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+
+HERE="$(dirname "$(readlink -f "$0")")"
+APP_DIR="$HERE/usr/lib/penguins-eggs"
+
+# Imposta le variabili d'ambiente mancanti per D-Bus e XDG
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp/runtime-$USER}"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}"
+
+# Crea la directory runtime se non esiste
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 0700 "$XDG_RUNTIME_DIR"
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HERE/usr/bin:$HERE/usr/lib/penguins-eggs/node/bin"
+export NODE_PATH="$APP_DIR/node_modules"
+
+# Imposta la cache per l'autocomplete nello stesso percorso dell'app nativa
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}/"
+export OCLIF_CACHE_PATH="$XDG_CACHE_HOME"
+mkdir -p "$OCLIF_CACHE_PATH/autocomplete/functions"
+
+# Usa una directory scrivibile per il file first-run
+FIRST_RUN_DIR="$XDG_CACHE_HOME"
+FIRST_RUN_FILE="$FIRST_RUN_DIR/first-run"
+
+# Setup automatico al primo avvio (solo se non è il comando setup)
+if [ ! -f "$FIRST_RUN_FILE" ] && [ "$1" != "setup" ]; then
+    EGGS_HOME="$HERE/usr/lib/penguins-eggs"
+    "$EGGS_HOME/node/bin/node" "$EGGS_HOME/dist/appimage/first-run-check.js" || echo "Warning during setup check"
+
+    mkdir -p "$FIRST_RUN_DIR"
+    touch "$FIRST_RUN_FILE"    
+fi
+
+cd "$APP_DIR"
+# Sopprime i warning specifici di oclif/autocomplete
+NODE_NO_WARNINGS=1 exec "$HERE/usr/lib/penguins-eggs/node/bin/node" --no-warnings "dist/bin/run.js" "$@"

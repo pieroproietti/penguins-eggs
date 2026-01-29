@@ -1,0 +1,22 @@
+# Penguins' eggs
+# tools.yaml
+---
+penguins_eggs_conf: /etc/penguins-eggs.d/eggs.yaml
+
+# path to local iso
+localPathIso: /home/eggs
+
+# you can adapt this configuration to your needs
+remoteHost: 192.168.1.2
+
+# always root
+remoteUser: root
+
+# path to remote host
+remotePathPackages: /eggs
+remotePathIso: /var/lib/vz/template/iso/
+
+
+# NOT used more
+filterPackages: _not_used_more
+localPathDeb: _not_used_more

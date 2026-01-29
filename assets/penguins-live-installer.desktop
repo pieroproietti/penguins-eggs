@@ -1,0 +1,27 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Linux Mint installer
+GenericName=Linux Mint installer
+Exec=sudo /usr/bin/live-installer
+Comment=Linux Mint installer
+Keywords=system;install;debian;installer
+Icon=leaves
+Terminal=false
+Categories=System;
+Name[it]=Linux Mint installer
+GenericName[it]=Installa sistema
+Comment[it]=Installazione sistema
+Name[en]=Linux Mint installer
+GenericName[en]=Linux Mint installer
+Comment[en]=Linux Mint installer
+Name[es]=Instalación del sistema
+GenericName[es]=Instalación del sistema
+Comment[es]=Instalación del sistema
+Name[pt]=Instalação do sistema
+GenericName[pt]=Instalação do sistema
+Comment[pt]=Instalação do sistema
+Name[fr]=Installation du système
+GenericName[fr]=Installation du système
+Comment[fr]=Installation du système

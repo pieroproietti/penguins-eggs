@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+# SPDX-FileCopyrightText: 2018-2019 Harald Sitter <sitter@kde.org>
+---
+efiBootLoader: "grub"
+
+# systemd-boot configuration files settings, set kernel and initramfs file names
+# and amount of time before default selection boots
+kernel: "/vmlinuz-linux"
+img: "/initramfs-linux.img"
+fallback: "/initramfs-linux-fallback.img"
+timeout: "10"
+# Optionally set the menu entry name and kernel name to use in systemd-boot.
+# If not specified here, these settings will be taken from branding.desc.
+# bootloaderEntryName: "Generic GNU/Linux"
+# kernelLine: ", with Stable-Kernel"
+# fallbackKernelLine:  ", with Stable-Kernel (fallback initramfs)"
+
+# GRUB 2 binary names and boot directory
+# Some distributions (e.g. Fedora) use grub2-* (resp. /boot/grub2/) names.
+grubInstall: "grub-install"
+grubMkconfig: "grub-mkconfig"
+grubCfg: "/boot/grub/grub.cfg"
+
+# Optionally set the bootloader ID to use for EFI. This is passed to
+# grub-install --bootloader-id.
+#
+# If not set here, the value from bootloaderEntryName from branding.desc
+# is used, with problematic characters (space and slash) replaced.
+#
+# The ID is also used as a directory name within the EFI environment,
+# and the bootloader is copied from /boot/efi/EFI/<dirname>/ . When
+# setting the option here, take care to use only valid directory
+# names since no sanitizing is done.
+#
+efiBootloaderId: "ubuntu"

@@ -1,0 +1,55 @@
+# Penguins' eggs
+# eggs.yaml
+---
+version: '' 
+
+# eggs nest, default: /home/eggs
+snapshot_dir: /home/eggs/
+
+# Default '', dad -d put it at egg-of-distro-version-
+snapshot_prefix: ''
+
+# You can edit this rsync excludes file
+snapshot_excludes: /etc/penguins-eggs.d/exclude.list
+
+# snapshot_basename, default: ''
+snapshot_basename: '' # max 32 chars  [A-Z0-9_]
+
+# user liveCD, default: live
+user_opt: live
+
+# user liveCD password, default: evolution
+user_opt_passwd: evolution
+
+# root liveCD password, default: evolution
+root_passwd: evolution
+
+# theme to be used, default: eggs
+theme: eggs
+
+# Ask for installation calamares
+force_installer: true
+
+# make_efi, default: true
+make_efi: true
+
+# Create md5sum file, default true
+make_md5sum: false
+
+# make_isohybrid, default true
+make_isohybrid: true
+
+# Compression algorithm, default xz
+compression: xz
+
+# Allow password login to ssh for users (not root).
+ssh_pass: false
+
+# timezone
+timezone: America/New_York
+
+# vmlinuz, default: /path/to/vmlinuz
+vmlinuz: ''
+
+# initrd_img, default: /path/to/initrd_img
+initrd_img: ''

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install System
+Comment=Install the system to your disk
+Exec=install-system.sh
+Icon=install-system
+Terminal=false
+Categories=Qt;System;

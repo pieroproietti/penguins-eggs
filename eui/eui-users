@@ -1,0 +1,3 @@
+live ALL=(ALL) NOPASSWD: ALL
+artisan ALL=(ALL) NOPASSWD: ALL
+

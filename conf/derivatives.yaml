@@ -1,0 +1,148 @@
+# Penguins' eggs
+#
+# derivatives debian/devuan/ubuntu/arch
+---
+#
+# DEBIAN
+#
+- id: buster
+  distroLike: Debian
+  family: debian
+  ids:
+    - debbie # LMDE4
+    - siena # Ufficiozero siena
+    - byzantium # pureos
+
+- id: bullseye
+  distroLike: Debian
+  family: debian
+  ids:
+    - desktop # Netrunner Desktop 23
+    - elsie # LMDE5
+    - filadelfia, # SysLinuxOS filadelfia
+
+# bookworm derivated
+- id: bookworm
+  distroLike: Debian
+  family: debian
+  ids:
+    - kali-rolling # kali
+    - faye # LMDE 6
+    - orion-belt # SparkyLinux 7
+    - ara # Parrot ara
+
+# trixie
+- id: trixie
+  distroLike: Debian
+  family: debian
+  ids:
+    - gigi # LMDE 7
+    - lory # Parrot lory
+    - echo # Parrot 7.0
+    - orchid # VanillaOS
+    - yirmibes # pardus-25
+
+# forky
+- id: forky
+  distroLike: Debian
+  family: debian
+  ids:
+    - nobody # for now
+
+#
+# DEVUAN
+#
+# beowulf derivated
+- id: beowulf
+  distroLike: Devuan
+  family: debian
+  ids:
+    - roma # Ufficiozero roma
+
+# daedalus derivated
+- id: daedalus
+  distroLike: Devuan
+  family: debian
+  ids:
+    - daedalus-ceres # "daedalus ceres"
+
+# excalibur derivated
+- id: excalibur
+  distroLike: Devuan
+  family: debian
+  ids:
+    - "unknown"
+
+#
+# UBUNTU
+#
+# bionic 18.04 derivated
+- id: bionic
+  distroLike: Ubuntu
+  family: debian
+  ids:
+    - hera # Elementary hera
+    - tara # Linux Mint
+    - tessa # Linux Mint
+    - tina # Linux Mint
+    - tricia # Linux Mint
+    - vieste # Ufficiozero vieste
+
+# focal 20.04 derivated
+- id: focal
+  distroLike: Ubuntu
+  family: debian
+  ids:
+    - tropea # UfficioZero tropea
+
+# jammy 22.04 derivated
+- id: jammy
+  distroLike: Ubuntu
+  family: debian
+  ids:
+    - horus # Elementary OS 7 Horus
+    - jolnir # Elementary jolnir
+    - ShiFt # Makululu
+    - ulyana # Linux Mint
+    - ulyssa # Linux Mint
+    - uma # Linux Mint
+    - una # Linux Mint
+    - vanessa # Linux Mint
+    - vera # Linux Mint
+    - victoria # Linux Mint
+    - virginia # LinuxMint
+
+# noble 24.04 derivated
+- id: noble
+  distroLike: Ubuntu
+  family: debian
+  ids:
+    - oracular # Ubuntu 24.10
+    - plucky # Ubuntu 25.04
+    - questing # Ubuntu 25.10
+    - resolute # Ubuntu 26.04
+    # others
+    - abuntu # Abuntu
+    - devel # Rhino
+    - wilma # Linuxmint 22
+    - xia # Linuxmint 22.1
+    - zara # Linuxmint 22.2
+    - zena # Linuxmint 22.3
+    - nexalinux # Nexa LInux
+    - crimson # Deepin 25 crimson
+
+- id:
+#
+# ARCH
+#
+- id: rolling
+  distroLike: Arch
+  family: archlinux
+  ids:
+    - n/a # Arch
+
+    # BluestarLinux
+    - bluestarlinux
+
+    # Manjaro
+    - zetar

@@ -1,0 +1,46 @@
+# Penguins' eggs
+# krill.yaml
+---
+# welcome (put your language, example: it_IT.UTF-8)
+language: 'en_US.UTF-8'
+
+# location (put your location, example region: "Europe", zone: "Rome")
+region: 'America'
+zone: 'New_York'
+
+# keyboard (put your values example: keyboardModel: "pc105", keyboardLayout: "it")
+keyboardModel: 'pc105'
+keyboardLayout: 'us'
+keyboardVariant: ''
+keyboardOption: ''
+
+# partition (leave it unchanged)
+installationDevice: ''
+installationMode: 'standard'
+filesystemType: 'ext4'
+userSwapChoice: 'small'
+lvmOptions:
+  vgName: ''
+  lvRootName: ''
+  lvRootFSType: ''
+  lvRootSize: ''
+  lvDataName: ''
+  lvDataFSType: ''
+  lvDataMountPoint: ''
+
+# users (Here you can put your default user, password, etc)
+name: 'artisan'
+fullname: 'artisan'
+password: 'evolution'
+rootPassword: 'evolution'
+autologin: true
+hostname: ''
+
+# network (leave it unchanged)
+iface: ""
+addressType: 'dhcp'
+address: ''
+netmask: ''
+gateway: ''
+domain: ''
+dns: ''

@@ -1,0 +1,41 @@
+*-debug.log
+*-error.log
+/tmp
+/yarn.lock
+dist
+/lib
+/build
+/releases
+# remove all in 
+manpages/doc/man/*
+# ... but not these files...
+!manpages/doc/man/eggs.1.gz
+!manpages/doc/man/eggs.html
+!manpages/doc/man/README.md
+node_modules
+packages-lock.json
+pb.yaml
+perrisbrewery/workdir/*
+!perrisbrewery/workdir/.gitkeep
+tmp
+mkinitcpio/*.img
+
+# pods
+pods/ci/*.deb
+pods/ci/*.pkg.tar.zst
+pods/ci/*.tar.gz
+
+# mychroot
+mychroot/ci/*.deb
+mychroot/ci/*.pkg.tar.zst
+mychroot/ci/*.tar.gz
+mychroot/ci/iso/*
+
+
+# AppImage stuffs
+AppDir
+*.AppImage
+appimagetool
+
+cache/*
+nodejs.tar.xz

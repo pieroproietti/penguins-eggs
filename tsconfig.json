@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "strict": true,
+    "target": "es2022",
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "ts-node": {
+    "esm": true
+  }
+}

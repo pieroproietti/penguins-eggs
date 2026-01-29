@@ -1,0 +1,18 @@
+---
+displaymanagers:
+  - lightdm
+  - gdm
+  - mdm
+  - sddm
+  - lxdm
+  - slim
+
+greetd:
+  greeter_user: "tom_bombadil"
+  greeter_group: "wheel"
+  greeter_css_location: "/etc/greetd/style.css"
+lightdm:
+  preferred_greeters: ["lightdm-greeter.desktop", "slick-greeter.desktop"]
+sddm:
+  configuration_file: "/etc/sddm.conf"
+

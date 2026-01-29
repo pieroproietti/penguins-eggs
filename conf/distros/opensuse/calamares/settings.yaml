@@ -1,0 +1,39 @@
+modules-search: [ local ]
+
+sequence:
+- show:
+  - welcome
+  - locale
+  - keyboard
+  - partition
+  - users
+  - summary
+- exec:
+  - partition 
+  - mount
+  - unpackfs
+  - machineid
+  - fstab
+  - locale
+  - keyboard
+  - localecfg
+  - plymouthcfg
+  - luksbootkeyfile
+  - dracutlukscfg
+  - users
+  - displaymanager 
+  - networkcfg
+  - hwclock
+  - services-systemd 
+  - dracut
+  - bootloaderspecification
+  - grubcfg
+  - bootloader
+  - packages
+  - removeuser
+  - umount
+- show:
+  - finished
+branding: default
+prompt-install: true
+dont-chroot: false

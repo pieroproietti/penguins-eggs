@@ -1,0 +1,17 @@
+# Debian/bookworm
+---
+userGroup: users
+defaultGroups:
+  - audio
+  - cdrom
+  - dialout
+  - floppy
+  - users
+  - video
+  # netdev
+  # plugdev
+autologinGroup: autologin
+sudoersGroup: sudo
+setRootPassword: true
+doReusePassword: false
+

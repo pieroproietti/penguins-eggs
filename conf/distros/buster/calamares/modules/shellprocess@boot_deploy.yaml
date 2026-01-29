@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2020 Harald Sitter <sitter@kde.org>
+# SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
+#
+---
+message: "Preparing the boot environment..."
+dontChroot: true
+timeout: 300
+script:
+    - cp --preserve=timestamps __LIVE_MEDIUM_PATH__live/vmlinuz-`uname -r` ${ROOT}/boot/vmlinuz-`uname -r`

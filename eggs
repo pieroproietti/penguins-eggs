@@ -1,0 +1,2 @@
+#node --trace-warnings ./bin/run.js $*
+node  --unhandled-rejections=strict ./bin/run.js $*
