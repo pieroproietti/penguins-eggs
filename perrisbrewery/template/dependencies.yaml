@@ -20,7 +20,7 @@ common:
   - live-config-systemd | live-config-sysvinit | dracut 
   - live-tools | dracut-live
   - lvm2  # pvdisplay in krill
-  - nodejs (>= 22)
+  - mtools # eggs (efi.img)
   - parted 
   - pxelinux
   - policykit-1 | pkexec # calamares
@@ -35,6 +35,7 @@ common:
 
 arch:
   amd64:
+  - nodejs (>= 22)
   - grub-efi-amd64-bin
   - isolinux
   - shim-signed
@@ -42,16 +43,19 @@ arch:
   
   
   i386:
+  - nodejs (>= 22)
   - grub-pc-bin
   - isolinux
   - grub-efi-ia32-bin
   - syslinux
   
   arm64:
+  - nodejs (>= 22)
   - grub-efi-arm64-bin
   - shim-signed
   - u-boot-tools
 
   riscv64:
-    - grub-efi-riscv64-bin
+  - nodejs (>= 18)
+  - grub-efi-riscv64-bin
   

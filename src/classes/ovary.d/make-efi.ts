@@ -256,19 +256,31 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
    */
   const efiImg = path.join(efiWorkDir, `boot/grub/efi.img`)
   // Aumentato leggermente il size per sicurezza
-  await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)
-  await exec(`/sbin/mkdosfs -F 16 ${efiImg}`, this.echo)
+  if ((await exec(`dd if=/dev/zero of=${efiImg} bs=1M count=16`, this.echo)).code !== 0) {
+    Utils.error(`Error creating ${efiImg}`)
+    process.exit(1)
+  }
+  if ((await exec(`/sbin/mkdosfs -F 16 ${efiImg}`, this.echo)).code !== 0) {
+    Utils.error(`Error formatting ${efiImg}`)
+    process.exit(1)
+  }
   await new Promise((resolve) => setTimeout(resolve, 500))
 
   // Use mtools to populate efi.img without mounting
   // 1. Create directories
-  await exec(`mmd -i ${efiImg} ::/EFI`, this.echo)
+  if ((await exec(`mmd -i ${efiImg} ::/EFI`, this.echo)).code !== 0) {
+    Utils.error(`Error creating ::/EFI on ${efiImg}`)
+    process.exit(1)
+  }
   await exec(`mmd -i ${efiImg} ::/EFI/boot`, this.echo)
   await exec(`mmd -i ${efiImg} ::/boot`, this.echo)
   await exec(`mmd -i ${efiImg} ::/boot/grub`, this.echo)
 
   // 2. Copy grub.cfg to /boot/grub/grub.cfg
-  await exec(`mcopy -i ${efiImg} ${cfgSeekerUsb} ::/boot/grub/grub.cfg`, this.echo)
+  if ((await exec(`mcopy -i ${efiImg} ${cfgSeekerUsb} ::/boot/grub/grub.cfg`, this.echo)).code !== 0) {
+    Utils.error(`Error copying grub.cfg to ${efiImg}`)
+    process.exit(1)
+  }
 
   // 3. Copy EFI binaries
   if (shimEfi && fs.existsSync(shimEfi)) {
@@ -276,7 +288,10 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     await exec(`mcopy -i ${efiImg} ${grubEfi} ::/EFI/boot/${grubEfiName()}`, this.echo)
   } else {
     // Se no shim (RISC-V), grub diventa il boot loader principale
-    await exec(`mcopy -i ${efiImg} ${grubEfi} ::/EFI/boot/${bootEfiName()}`, this.echo)
+    if ((await exec(`mcopy -i ${efiImg} ${grubEfi} ::/EFI/boot/${bootEfiName()}`, this.echo)).code !== 0) {
+      Utils.error(`Error copying ${grubEfi} to ${efiImg}`)
+      process.exit(1)
+    }
   }
 
   // 4. FIX CRUCIALE PER RISC-V (e compatibilità x86):

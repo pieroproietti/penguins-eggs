@@ -97,7 +97,7 @@ sudo mount --rbind /dev dev/
 
 # Entriamo in chroot emulato
 # Nota: La versione del kernel in QEMU_UNAME è fittizia per ingannare uname
-sudo QEMU_UNAME="6.12.57+deb13-riscv64" chroot . /bin/bash
+sudo QEMU_UNAME="6.12.63+deb13-riscv64" chroot . /bin/bash
 ```
 
 Una volta dentro la chroot:

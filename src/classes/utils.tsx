@@ -1139,6 +1139,12 @@ export default class Utils {
             break;
          }
 
+         case 'riscv64': {
+            format = 'riscv64-efi'
+
+            break;
+         }
+
          case 'x64': {
             format = 'x86_64-efi'
 

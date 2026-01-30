@@ -72,7 +72,9 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = fal
   let isolinuxCat = ''
   let x86_boot_params = ''
 
+  let legacyBoot = false
   if (process.arch !== 'arm64' && process.arch !== 'riscv64') {
+    legacyBoot = true
     isolinuxBin = `-b isolinux/isolinux.bin`
     isolinuxCat = `-c isolinux/boot.cat`
     // Questi sono i parametri che su RISC-V causano il fallimento di xorriso
@@ -85,7 +87,9 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = fal
     let uefi_isohybridGptBasdat = ''
     let uefi_noEmulBoot = ''
     if (this.settings.config.make_efi) {
-      uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      if (legacyBoot) {
+        uefi_elToritoAltBoot = '-eltorito-alt-boot'
+      }
       uefi_e = '-e boot/grub/efi.img'
       uefi_isohybridGptBasdat = '-isohybrid-gpt-basdat'
       uefi_noEmulBoot = '-no-emul-boot'
