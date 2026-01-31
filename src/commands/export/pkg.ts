@@ -75,44 +75,37 @@ export default class ExportPkg extends Command {
         localPath = `/home/${this.user}/packages/aports/${arch}`
         remotePath = `${this.Tu.config.remotePathPackages}/alpine/${arch}`
         filter = `penguins-eggs-+([0-9.])-*.apk`
-        // filter = `penguins-eggs-*[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*.apk`
-
-        /**
-         * Arch/Manjaro
-         */
-
         break
       }
 
+      /**
+       * Arch/Manjaro
+       */
       case 'archlinux': {
         /**
-         * Manjaro
+         * Arch/Manjaro: Manjaro
          */
         if (Diversions.isManjaroBased(distroId)) {
           Utils.warning(`exporting Manjaro .pkg.tar.zst packages`)
           localPath = `/home/${this.user}/penguins-packs/manjaro/penguins-eggs`
           remotePath = this.Tu.config.remotePathPackages + '/manjaro'
           filter = `penguins-eggs-+([0-9.])-*-any.pkg.tar.*`
-          // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.*`
-
-          /**
-           * Arch
-           */
         } else {
+          /**
+           * Arch/Manjaro:Arch
+           */
           Utils.warning(`exporting Arch .pkg.tar.zst packages`)
           localPath = `/home/${this.user}/penguins-packs/aur/penguins-eggs`
           remotePath = this.Tu.config.remotePathPackages + '/aur'
           filter = `penguins-eggs-+([0-9.])-*-any.pkg.tar.zst`
-          // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*-any.pkg.tar.zst`
         }
-
-        /**
-         * Debian
-         */
 
         break
       }
 
+      /**
+       * Debian
+       */
       case 'debian': {
         Utils.warning(`exporting Devuan/Debian/Ubuntu DEB packages`)
         localPath = `/home/${this.user}/penguins-eggs/releases`
@@ -121,18 +114,14 @@ export default class ExportPkg extends Command {
         if (this.all) {
           arch = '*'
         }
-
-        // filter = `penguins-eggs_[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*_${arch}.deb`
-        filter = `penguins-eggs_+([0-9.])-*${arch}.deb`
-
-        /**
-         * fedora
-         */
-
+        filter = `penguins-eggs_+([0-9.])-?_${arch}.deb`
         break
       }
 
       case 'fedora': {
+        /**
+         * fedora
+         */
         let repo = 'fedora'
         let ftype = 'fc??'
         let warning = `exporting Fedora RPM packages`
@@ -148,34 +137,32 @@ export default class ExportPkg extends Command {
         filter = `penguins-eggs-+([0-9.])-*.${ftype}.x86_64.rpm`
         // filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.${ftype}.x86_64.rpm`
 
-        /**
-         * openmamba
-         */
 
         break
       }
 
       case 'openmamba': {
+        /**
+         * openmamba
+         */
         Utils.warning(`exporting Openmamba RPM packages`)
         localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
         remotePath = this.Tu.config.remotePathPackages + '/openmamba'
         filter = `penguins-eggs-+([0-9.])-*.mamba.*.rpm`
         // filter = `penguins-eggs-[0-9][0-9].@([0-9]|[0-1][0-9]).@([0-9]|[0-3][0-9])-*mamba.*.rpm`
 
-        /**
-         * opensuse
-         */
 
         break
       }
 
       case 'opensuse': {
+        /**
+         * opensuse
+         */
         Utils.warning(`exporting OpenSuSE RPM packages`)
         localPath = `/home/${this.user}/rpmbuild/RPMS/x86_64`
         remotePath = this.Tu.config.remotePathPackages + '/opensuse'
         filter = `penguins-eggs-+([0-9.])-*.rpm`
-        // filter = `penguins-eggs-[0-9][0-9].[0-9]*.[0-9]*-*.opensuse.x86_64.rpm`
-
         break
       }
       // No default
