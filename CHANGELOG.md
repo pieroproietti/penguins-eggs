@@ -20,6 +20,11 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.1.31
+* **RISC-V Support**: Fixed `async hook stack has become corrupted` error by checking architecture and using `execSync` instead of `exec` where necessary.
+* **Node.js**: Updated `ensure-node` script to correctly handle package downloads on `riscv64`, ensuring compatibility with Node.js 22+.
+* **General**: functionality verified on all architectures.
+
 # v26.1.28
 - **Fixed:** Corrected a regression in the package naming convention. Changed the separator between name and version back to `_` (underscore) from `-` (hyphen) to fix repository compatibility issues observed in recent builds.
 

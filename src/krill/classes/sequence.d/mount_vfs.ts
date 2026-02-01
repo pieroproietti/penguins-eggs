@@ -16,25 +16,25 @@ export async function mountVfs(this: Sequence) {
   /**
    * dev
    */
-  await exec(`mkdir ${this.installTarget}/dev ${this.toNull}`, this.echo)
+  await exec(`mkdir -p ${this.installTarget}/dev ${this.toNull}`, this.echo)
   await exec(`mount -o bind /dev ${this.installTarget}/dev ${this.toNull}`, this.echo)
 
   /**
    * dev/pts
    */
-  await exec(`mkdir ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
+  await exec(`mkdir -p ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
   await exec(`mount -o bind /dev/pts ${this.installTarget}/dev/pts ${this.toNull}`, this.echo)
 
   /**
    * proc
    */
-  await exec(`mkdir ${this.installTarget}/proc ${this.toNull}`, this.echo)
+  await exec(`mkdir -p ${this.installTarget}/proc ${this.toNull}`, this.echo)
   await exec(`mount -o bind /proc ${this.installTarget}/proc ${this.toNull}`, this.echo)
 
   /**
    * sys
    */
-  await exec(`mkdir ${this.installTarget}/sys ${this.toNull}`, this.echo)
+  await exec(`mkdir -p ${this.installTarget}/sys ${this.toNull}`, this.echo)
   await exec(`mount -o bind /sys ${this.installTarget}/sys ${this.toNull}`, this.echo)
 
   /**
@@ -48,7 +48,7 @@ export async function mountVfs(this: Sequence) {
   /**
    * run: use recursive binding rbins
    */
-  await exec(`mkdir ${this.installTarget}/run ${this.toNull}`, this.echo)
+  await exec(`mkdir -p ${this.installTarget}/run ${this.toNull}`, this.echo)
   await exec(`mount -o rbind /run ${this.installTarget}/run ${this.toNull}`, this.echo)
 }
 

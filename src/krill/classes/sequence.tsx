@@ -171,7 +171,7 @@ export default class Sequence {
       await exec(`chroot ${this.installTarget} /bin/bash`)
       cliCursor.hide()
     } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
+      await Utils.pressKeyToExit(error instanceof Error ? error.message : JSON.stringify(error))
     }
   }
 
@@ -189,7 +189,7 @@ export default class Sequence {
   }
 
   async showProblem(message: string, currErr: any) {
-    message = `We was on "${message}", get error: ${JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
+    message = `We was on "${message}", get error: ${currErr instanceof Error ? currErr.message : JSON.stringify(currErr)}, type "exit" to exit from krill emergency shell.`
     try {
       await redraw(
         <>
@@ -203,7 +203,7 @@ export default class Sequence {
       await exec("/bin/bash")
       cliCursor.hide()
     } catch (error) {
-      await Utils.pressKeyToExit(JSON.stringify(error))
+      await Utils.pressKeyToExit(error instanceof Error ? error.message : JSON.stringify(error))
     }
   }
 

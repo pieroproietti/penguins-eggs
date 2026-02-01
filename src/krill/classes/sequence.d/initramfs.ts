@@ -27,6 +27,7 @@ export default async function initramfs(this: Sequence) {
       const cmd = `chroot ${this.installTarget} mkinitfs`
       await exec(cmd, this.echo)
 
+      // Rimuovere questa riga dopo il test
       break
     }
 

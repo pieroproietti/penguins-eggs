@@ -8,7 +8,7 @@
  */
 
 import Utils from '../../../classes/utils.js'
-import { exec } from '../../../lib/utils.js'
+import { exec, execSync } from '../../../lib/utils.js'
 import Sequence from '../../classes/sequence.js'
 
 /**
@@ -18,12 +18,12 @@ import Sequence from '../../classes/sequence.js'
 export default async function umount(this: Sequence, mountPoint = '') {
   let message = 'umount: ' + mountPoint
   if (Utils.isMountpoint(mountPoint)) {
-    const cmd = `umount ${mountPoint} ${this.toNull}`
+    const cmd = `umount -l ${mountPoint} ${this.toNull}`
     try {
       await exec(cmd, this.echo)
       await exec('sleep 1', this.echo)
     } catch (error) {
-      message += cmd + JSON.stringify(error)
+      message += cmd + (error instanceof Error ? error.message : JSON.stringify(error))
       await Utils.pressKeyToExit(message, true)
     }
   }

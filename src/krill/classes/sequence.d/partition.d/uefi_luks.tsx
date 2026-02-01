@@ -55,15 +55,17 @@ export default async function uefiLuks(this: Sequence, installDevice = "", p = "
   const hash = "sha512"
 
   // ROOT
-  const cryptoRoot = await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}3`, this.echo)
-  if (cryptoRoot.code !== 0) {
-    Utils.warning(`Error: ${cryptoRoot.code} ${cryptoRoot.data}`)
+  try {
+    await exec(`echo -n "${passphrase}" | cryptsetup --batch-mode --cipher ${cipher} --key-size ${keySize} --hash ${hash} --key-file=- -v luksFormat --type luks2 ${installDevice}${p}3`, this.echo)
+  } catch (error: any) {
+    Utils.warning(`Error: ${error.message}`)
     process.exit(1)
   }
 
-  const cryptoRootOpen = await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 ${this.luksRootName}`, this.echo)
-  if (cryptoRootOpen.code !== 0) {
-    Utils.warning(`Error: ${cryptoRootOpen.code} ${cryptoRootOpen.data}`)
+  try {
+    await exec(`echo -n "${passphrase}" | cryptsetup --key-file=- luksOpen --type luks2 ${installDevice}${p}3 ${this.luksRootName}`, this.echo)
+  } catch (error: any) {
+    Utils.warning(`Error: ${error.message}`)
     process.exit(1)
   }
 
