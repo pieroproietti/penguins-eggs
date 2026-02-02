@@ -29,6 +29,7 @@ depends="
   lsblk
   lvm2
   mkinitfs
+  mtools
   musl-locales
   nodejs
   parted

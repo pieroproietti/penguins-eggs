@@ -76,6 +76,7 @@ Requires:       fuse
 Requires:       git
 Requires:       jq
 Requires:       lvm2
+Requires:       mtools
 Requires:       nodejs
 Requires:       nvme-cli
 Requires:       parted
