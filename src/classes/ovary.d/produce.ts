@@ -444,8 +444,8 @@ export async function produce(
         hashExt = '.md5'
       }
 
-      await exec(`mkdir ${this.settings.iso_work}${path.dirname(filesystemName)} -p`, this.echo)
-      await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+      await exec(`mkdir ${path.join(this.settings.iso_work, path.dirname(filesystemName))} -p`, this.echo)
+      await exec(`ln ${path.join(this.settings.iso_work, 'live/filesystem.squashfs')} ${path.join(this.settings.iso_work, filesystemName)}`, this.echo)
 
       /**
        * patch 4 mksquashfs
@@ -463,6 +463,10 @@ export async function produce(
       }
     }
 
-    await this.makeIso(mkIsofsCmd, scriptOnly)
+    if (this.dtb === '') {
+      await this.makeIso(mkIsofsCmd, scriptOnly)
+    } else {
+      await this.makeImg(scriptOnly)
+    }
   }
 }

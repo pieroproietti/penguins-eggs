@@ -34,6 +34,7 @@ export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
+    dtb: Flags.string({ description: 'path to Device Tree Blob (DTB). Embedded devices' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
@@ -138,6 +139,15 @@ export default class Produce extends Command {
       let basename = '' // se vuoto viene definito da loadsetting (default nome dell'host)
       if (flags.basename !== undefined) {
         basename = flags.basename
+      }
+
+      let dtb = ''
+      if (flags.dtb !== undefined) {
+        dtb = flags.dtb
+        if (!fs.existsSync(dtb)) {
+          Utils.warning('dtb: ' + chalk.white(dtb) + ' not found!')
+          process.exit()
+        }
       }
 
       const compressors = new Compressors()
@@ -267,7 +277,7 @@ export default class Produce extends Command {
         }
       }
 
-      if (await ovary.fertilization(prefix, basename, theme, compression, !nointeractive)) {
+      if (await ovary.fertilization(prefix, basename, dtb, theme, compression, !nointeractive)) {
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
       }

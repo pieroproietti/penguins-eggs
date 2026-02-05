@@ -38,7 +38,11 @@ export function finished(this: Ovary, scriptOnly = false) {
     console.log(chalk.cyanBright('sudo ./ubind'))
     console.log('happy hacking!')
   } else {
-    console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+    if (this.dtb === '') {
+      console.log('eggs is finished!\n\nYou can find the file iso: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+    } else {
+      console.log('eggs is finished!\n\nYou can find the file img: ' + chalk.cyanBright(this.settings.isoFilename) + '\nin the nest: ' + chalk.cyanBright(this.settings.config.snapshot_dir) + '.')
+    }
   }
 
   console.log()

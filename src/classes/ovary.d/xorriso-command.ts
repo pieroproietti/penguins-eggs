@@ -48,7 +48,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = fal
   const postfix = Utils.getPostfix()
   console.log('postfix:', postfix)
   this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
-  console.log('isoFilename:', this.settings.isoFilename)
+  // console.log('isofilename:', this.settings.isoFilename)
 
   const output = this.settings.config.snapshot_mnt + this.settings.isoFilename
 

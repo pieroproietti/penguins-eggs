@@ -238,8 +238,8 @@ _eggs() {
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
 "autocomplete[Display autocomplete installation instructions.]" \
-"help[Display help for eggs.]" \
 "version[]" \
+"help[Display help for eggs.]" \
 
     ;;
     args)
@@ -293,8 +293,8 @@ _arguments -S \
 "(-c --clean)"{-c,--clean}"[remove old configuration before to create]" \
 "(-d --default)"{-d,--default}"[reset to default values]" \
 "(-f --file)"{-f,--file}"[use a file configuration custom]:file:_files" \
-"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
@@ -329,13 +329,13 @@ _arguments -S \
 "*: :_files" ;; 
 love)
 _arguments -S \
-"(-h --help)"{-h,--help}"[Show CLI help.]" \
-"(-v --verbose)"{-v,--verbose}"[]" \
-"(-H --hidden)"{-H,--hidden}"[stealth mode]" \
-"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
-"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
+"(-h --help)"{-h,--help}"[Show CLI help.]" \
+"(-H --hidden)"{-H,--hidden}"[stealth mode]" \
+"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
+"(-n --nointeractive)"{-n,--nointeractive}"[no user interaction]" \
+"(-v --verbose)"{-v,--verbose}"[]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 mom)
@@ -347,12 +347,14 @@ produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
+--dtb"[path to Device Tree Blob (DTB). Embedded devices]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
-"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
-"(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
+"(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-H --hidden)"{-H,--hidden}"[stealth mode]" \
+"(-k --homecrypt)"{-k,--homecrypt}"[clone crypted home]" \
+"(-i --includeRootHome)"{-i,--includeRootHome}"[folder /root is included on live]" \
 "(-K --kernel)"{-K,--kernel}"[kernel version]:file:_files" \
 "*"--links"[desktop links]:file:_files" \
 "(-m --max)"{-m,--max}"[max compression: xz -Xbcj ...]" \
@@ -364,7 +366,6 @@ _arguments -S \
 "(-s --script)"{-s,--script}"[script mode. Generate scripts to manage iso build]" \
 "(-S --standard)"{-S,--standard}"[standard compression: xz -b 1M]" \
 --theme"[theme for livecd, calamares branding and partitions]:file:_files" \
-"(-i --includeRootHome)"{-i,--includeRootHome}"[folder /root is included on live]" \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 "(-y --yolk)"{-y,--yolk}"[force yolk renew]" \
 --help"[Show help for command]" \
@@ -386,15 +387,15 @@ _arguments -S \
 "(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-help)
-_arguments -S \
-"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 version)
 _arguments -S \
 --json"[Format output as json.]" \
 --verbose"[Show additional information about the CLI.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+help)
+_arguments -S \
+"(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac

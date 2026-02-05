@@ -42,6 +42,7 @@ import { luksShrink } from './ovary.d/luks-shrink.js'
 import { makeDotDisk } from './ovary.d/make-dot-disk.js'
 import { makeEfi } from './ovary.d/make-efi.js'
 import { makeIso } from './ovary.d/make-iso.js'
+import { makeImg } from './ovary.d/make-img.js'
 import { addExclusion, makeSquashfs } from './ovary.d/make-squashfs.js'
 import { copied, merged, mergedAndOverlay } from './ovary.d/merged.js'
 import { produce } from './ovary.d/produce.js'
@@ -112,6 +113,7 @@ export default class Ovary {
   luksShrink = luksShrink
   makeDotDisk = makeDotDisk
   makeEfi = makeEfi
+  makeImg = makeImg
   makeIso = makeIso
   makeSquashfs = makeSquashfs
   merged = merged
@@ -132,5 +134,6 @@ export default class Ovary {
   verbose = false
   vmlinuz = ''
   volid = ''
+  dtb = ''
   xorrisoCommand = xorrisoCommand
 }
