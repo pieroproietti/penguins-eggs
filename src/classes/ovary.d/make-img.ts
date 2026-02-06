@@ -82,12 +82,15 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'cp "$SRC_DIR/live/$KERNEL_BIN" /mnt/tmp_boot/live/\n'
     script += 'cp "$SRC_DIR/live/$INITRD_BIN" /mnt/tmp_boot/live/\n'
     script += 'cp -r "$SRC_DIR/EFI" /mnt/tmp_boot/\n'
+    script += 'cp -r "$SRC_DIR/.disk" /mnt/tmp_boot/\n'
+    script += 'cp -r "$SRC_DIR/boot" /mnt/tmp_boot/\n'
     script += 'cp "$DTB_PATH" /mnt/tmp_boot/\n'
     script += '\n'
 
     script += '# --- COPIA P2 (ROOT) ---\n'
     script += 'mkdir -p /mnt/tmp_root/live\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" /mnt/tmp_root/live/\n'
+    script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt /mnt/tmp_root/ 2>/dev/null || true\n'
     script += '\n'
 
     script += '# 7. Generazione EXTLINUX (U-Boot Logic)\n'
@@ -96,7 +99,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'label eggs-linux\n'
     script += '  kernel /live/$KERNEL_BIN\n'
     script += '  initrd /live/$INITRD_BIN\n'
-    script += '  fdt /$DTB_NAME\n'
+    script += '  # fdt /$DTB_NAME\n'
     script += '  append boot=live components quiet splash console=ttyS0,115200n8 console=tty0 root=LABEL=ROOT\n'
     script += 'EOF\n'
     script += '\n'
@@ -112,7 +115,6 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
 
     const mkImg = path.join(this.settings.work_dir.bin, 'mkimg')
     Utils.writeX(mkImg, script)
-    console.log(mkImg)
 
     if (!scriptOnly) {
         await exec(mkImg, Utils.setEcho(this.verbose))
