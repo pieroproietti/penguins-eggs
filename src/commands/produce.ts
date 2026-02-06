@@ -144,7 +144,7 @@ export default class Produce extends Command {
       let dtb = ''
       if (flags.dtb !== undefined) {
         dtb = flags.dtb
-        if (!fs.existsSync(dtb)) {
+        if (dtb !== 'none' && !fs.existsSync(dtb)) {
           Utils.warning('dtb: ' + chalk.white(dtb) + ' not found!')
           process.exit()
         }

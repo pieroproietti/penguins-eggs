@@ -84,7 +84,9 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'cp -r "$SRC_DIR/EFI" /mnt/tmp_boot/\n'
     script += 'cp -r "$SRC_DIR/.disk" /mnt/tmp_boot/\n'
     script += 'cp -r "$SRC_DIR/boot" /mnt/tmp_boot/\n'
-    script += 'cp "$DTB_PATH" /mnt/tmp_boot/\n'
+    if (this.dtb !== 'none') {
+        script += 'cp "$DTB_PATH" /mnt/tmp_boot/\n'
+    }
     script += '\n'
 
     script += '# --- COPIA P2 (ROOT) ---\n'
@@ -93,16 +95,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt /mnt/tmp_root/ 2>/dev/null || true\n'
     script += '\n'
 
-    script += '# 7. Generazione EXTLINUX (U-Boot Logic)\n'
-    script += 'mkdir -p /mnt/tmp_boot/extlinux\n'
-    script += 'cat <<EOF | tee /mnt/tmp_boot/extlinux/extlinux.conf >/dev/null\n'
-    script += 'label eggs-linux\n'
-    script += '  kernel /live/$KERNEL_BIN\n'
-    script += '  initrd /live/$INITRD_BIN\n'
-    script += '  # fdt /$DTB_NAME\n'
-    script += '  append boot=live components quiet splash console=ttyS0,115200n8 console=tty0 root=LABEL=ROOT\n'
-    script += 'EOF\n'
-    script += '\n'
+
 
     script += '# 8. Cleanup\n'
     script += 'umount /mnt/tmp_boot /mnt/tmp_root\n'
