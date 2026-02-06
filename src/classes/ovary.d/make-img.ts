@@ -18,11 +18,13 @@ import Utils from '../utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * makeIso
- * cmd: cmd 4 xorriso
+ * makeImg
  */
 export async function makeImg(this: Ovary, scriptOnly = false) {
+
+    Utils.warning('make live image')
     const srcDir = path.join(this.nest, 'mnt/iso')
+    const mntDir = path.join(this.nest, 'mnt/img')
     const dtbPath = this.dtb
     const imgName = this.settings.isoFilename.replace('.iso', '.img')
     const imgLnk = this.settings.config.snapshot_dir + imgName
@@ -35,6 +37,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += `DTB_PATH="${dtbPath}"\n`
     script += `IMG_NAME="${workImg}"\n`
     script += `IMG_LNK="${imgLnk}"\n`
+    script += `MNT_DIR="${mntDir}"\n`
     script += '\n'
 
     script += '# 1. Rilevamento Versioni Kernel\n'
@@ -72,35 +75,33 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += '\n'
 
     script += '# 6. Mount & Copia\n'
-    script += 'mkdir -p /mnt/tmp_boot /mnt/tmp_root\n'
-    script += 'mount "${LOOP_DEV}p1" /mnt/tmp_boot\n'
-    script += 'mount "${LOOP_DEV}p2" /mnt/tmp_root\n'
+    script += 'mkdir -p "$MNT_DIR/tmp_boot" "$MNT_DIR/tmp_root"\n'
+    script += 'mount "${LOOP_DEV}p1" "$MNT_DIR/tmp_boot"\n'
+    script += 'mount "${LOOP_DEV}p2" "$MNT_DIR/tmp_root"\n'
     script += '\n'
 
     script += '# --- COPIA P1 (BOOT) ---\n'
-    script += 'mkdir -p /mnt/tmp_boot/live\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_BIN" /mnt/tmp_boot/live/\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_BIN" /mnt/tmp_boot/live/\n'
-    script += 'cp -r "$SRC_DIR/EFI" /mnt/tmp_boot/\n'
-    script += 'cp -r "$SRC_DIR/.disk" /mnt/tmp_boot/\n'
-    script += 'cp -r "$SRC_DIR/boot" /mnt/tmp_boot/\n'
+    script += 'mkdir -p "$MNT_DIR/tmp_boot/live"\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_BIN" "$MNT_DIR/tmp_boot/live/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_BIN" "$MNT_DIR/tmp_boot/live/"\n'
+    script += 'cp -r "$SRC_DIR/EFI" "$MNT_DIR/tmp_boot/"\n'
+    script += 'cp -r "$SRC_DIR/.disk" "$MNT_DIR/tmp_boot/"\n'
+    script += 'cp -r "$SRC_DIR/boot" "$MNT_DIR/tmp_boot/"\n'
+    script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt "$MNT_DIR/tmp_boot/" 2>/dev/null || true\n'
     if (this.dtb !== 'none') {
-        script += 'cp "$DTB_PATH" /mnt/tmp_boot/\n'
+        script += 'cp "$DTB_PATH" "$MNT_DIR/tmp_boot/"\n'
     }
     script += '\n'
 
     script += '# --- COPIA P2 (ROOT) ---\n'
-    script += 'mkdir -p /mnt/tmp_root/live\n'
-    script += 'cp "$SRC_DIR/live/filesystem.squashfs" /mnt/tmp_root/live/\n'
-    script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt /mnt/tmp_root/ 2>/dev/null || true\n'
+    script += 'mkdir -p "$MNT_DIR/tmp_root/live"\n'
+    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/tmp_root/live/"\n'
     script += '\n'
 
 
-
     script += '# 8. Cleanup\n'
-    script += 'umount /mnt/tmp_boot /mnt/tmp_root\n'
+    script += 'umount "$MNT_DIR/tmp_boot" "$MNT_DIR/tmp_root"\n'
     script += 'losetup -d "$LOOP_DEV"\n'
-    script += 'rmdir /mnt/tmp_boot /mnt/tmp_root\n'
     script += '\n'
     script += '# 9. crate a link\n'
     script += 'ln -sf "$IMG_NAME" "$IMG_LNK"\n'

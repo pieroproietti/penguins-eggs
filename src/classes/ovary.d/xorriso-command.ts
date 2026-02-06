@@ -46,7 +46,7 @@ export async function xorrisoCommand(this: Ovary, clone = false, homecrypt = fal
 
   // postfix (data)
   const postfix = Utils.getPostfix()
-  console.log('postfix:', postfix)
+  // console.log('postfix:', postfix)
   this.settings.isoFilename = prefix + this.volid + '_' + Utils.uefiArch() + typology + postfix
   // console.log('isofilename:', this.settings.isoFilename)
 
