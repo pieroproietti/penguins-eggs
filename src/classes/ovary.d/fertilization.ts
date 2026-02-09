@@ -20,7 +20,7 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
 /**
  * @returns {boolean} success
  */
-export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_basename = '', dtb = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
+export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_basename = '', dtbDir = '', theme = '', compression = '', nointeratctive = false): Promise<boolean> {
   // familyId, distroId from Distrb
   const distro = new Distro()
   this.familyId = distro.familyId
@@ -47,9 +47,9 @@ export async function fertilization(this: Ovary, snapshot_prefix = '', snapshot_
       this.settings.config.snapshot_basename = snapshot_basename
     }
 
-    // dtb
-    if (dtb !== '') {
-      this.dtb = dtb
+    // dtbDir
+    if (dtbDir !== '') {
+      this.dtbDir = dtbDir
     }
 
     if (theme !== '') {

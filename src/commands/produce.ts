@@ -34,7 +34,7 @@ export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
-    dtb: Flags.string({ description: 'path to Device Tree Blob (DTB). Embedded devices' }),
+    dtbdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory. Embedded devices' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),
@@ -141,11 +141,11 @@ export default class Produce extends Command {
         basename = flags.basename
       }
 
-      let dtb = ''
-      if (flags.dtb !== undefined) {
-        dtb = flags.dtb
-        if (dtb !== 'none' && !fs.existsSync(dtb)) {
-          Utils.warning('dtb: ' + chalk.white(dtb) + ' not found!')
+      let dtbDir = ''
+      if (flags.dtbdir !== undefined) {
+        dtbDir = flags.dtbdir
+        if (dtbDir !== 'none' && !fs.existsSync(dtbDir)) {
+          Utils.warning('dtbDir: ' + chalk.white(dtbDir) + ' not found!')
           process.exit()
         }
       }
@@ -277,7 +277,7 @@ export default class Produce extends Command {
         }
       }
 
-      if (await ovary.fertilization(prefix, basename, dtb, theme, compression, !nointeractive)) {
+      if (await ovary.fertilization(prefix, basename, dtbDir, theme, compression, !nointeractive)) {
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
       }

@@ -607,9 +607,9 @@
           "multiple": false,
           "type": "option"
         },
-        "dtb": {
-          "description": "path to Device Tree Blob (DTB). Embedded devices",
-          "name": "dtb",
+        "dtbdir": {
+          "description": "path to Device Tree Blobs (DTB) directory. Embedded devices",
+          "name": "dtbdir",
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
@@ -1048,6 +1048,58 @@
         "commands",
         "export",
         "tarballs.js"
+      ]
+    },
+    "setup:install": {
+      "aliases": [],
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
+      "examples": [
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "setup:install",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "setup",
+        "install.js"
+      ]
+    },
+    "setup:purge": {
+      "aliases": [],
+      "args": {},
+      "description": "Automatically check and install system prerequisites",
+      "examples": [
+        "eggs setup                           # this help",
+        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
+        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
+      ],
+      "flags": {},
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "setup:purge",
+      "pluginAlias": "penguins-eggs",
+      "pluginName": "penguins-eggs",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": false,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "setup",
+        "purge.js"
       ]
     },
     "tools:clean": {
@@ -1522,58 +1574,6 @@
         "commands",
         "wardrobe",
         "wear.js"
-      ]
-    },
-    "setup:install": {
-      "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
-      "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
-      ],
-      "flags": {},
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "setup:install",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "setup",
-        "install.js"
-      ]
-    },
-    "setup:purge": {
-      "aliases": [],
-      "args": {},
-      "description": "Automatically check and install system prerequisites",
-      "examples": [
-        "eggs setup                           # this help",
-        "sudo eggs setup install              # install native dependencies, autocomplete, man, etc",
-        "sudo eggs setup purge                # purge all configurations, autocomplete, man, etc installed from penguins-eggs AppImage"
-      ],
-      "flags": {},
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "setup:purge",
-      "pluginAlias": "penguins-eggs",
-      "pluginName": "penguins-eggs",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": false,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "setup",
-        "purge.js"
       ]
     }
   },

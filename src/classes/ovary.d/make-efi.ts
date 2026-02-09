@@ -410,8 +410,8 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
   }
 
   let devicetree = ''
-  if (this.dtb !== '') {
-    devicetree = `devicetree /${path.basename(this.dtb)}`
+  if (this.dtbDir !== '') {
+    // devicetree = `devicetree /${path.basename(this.dtbDir)}`
   }
 
   const view = {

@@ -26,7 +26,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     Utils.warning('make live image (RISC-V Spacemit K1 Native)')
     const srcDir = path.join(this.nest, 'mnt/iso')
     const mntDir = path.join(this.nest, 'mnt/img')
-    const dtbPath = this.dtb
+    const dtbDir = this.dtbDir
     const imgName = this.settings.isoFilename.replace('.iso', '.img')
     const imgLnk = this.settings.config.snapshot_dir + imgName
     const workImg = this.settings.config.snapshot_mnt + imgName
@@ -45,7 +45,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
 
     let script = '#!/bin/bash\n'
     script += `SRC_DIR="${srcDir}"\n`
-    script += `DTB_PATH="${dtbPath}"\n`
+    script += `DTB_DIR="${dtbDir}"\n`
     script += `IMG_NAME="${workImg}"\n`
     script += `IMG_LNK="${imgLnk}"\n`
     script += `MNT_DIR="${mntDir}"\n`
@@ -57,11 +57,10 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     // Estrae la versione pura (es. da vmlinuz-6.6.63-spacemit -> 6.6.63-spacemit)
     script += 'KERNEL_VER=${KERNEL_FULL#vmlinuz-}\n'
     script += 'INITRD_BIN=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
-    script += 'DTB_NAME=$(basename "$DTB_PATH")\n'
     script += '\n'
     script += 'echo "Kernel: $KERNEL_FULL (Ver: $KERNEL_VER)"\n'
     script += 'echo "Initrd: $INITRD_BIN"\n'
-    script += 'echo "DTB: $DTB_NAME"\n'
+    script += 'echo "DTB DIR: $DTB_DIR"\n'
     script += '\n'
 
     script += '# 2. Calcolo Spazio\n'
@@ -109,10 +108,10 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += '# 2. Struttura DTB specifica (spacemit/VERSIONE/)\n'
     script += '# NOTA: Bianbu usa "spacemit/6.6.63". Noi usiamo la versione rilevata.\n'
     script += 'mkdir -p "$MNT_DIR/tmp_boot/spacemit/$KERNEL_VER"\n'
-    script += 'if [ -f "$DTB_PATH" ]; then\n'
-    script += '    cp "$DTB_PATH" "$MNT_DIR/tmp_boot/spacemit/$KERNEL_VER/"\n'
+    script += 'if [ -d "$DTB_DIR" ]; then\n'
+    script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/tmp_boot/spacemit/$KERNEL_VER/"\n'
     script += 'else\n'
-    script += '    echo "WARNING: DTB not found at $DTB_PATH"\n'
+    script += '    echo "WARNING: DTB_DIR not found at $DTB_DIR"\n'
     script += 'fi\n'
 
     script += '# 3. Generazione env_k1-x.txt (IL SEGRETO!)\n'
@@ -133,7 +132,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'label eggs-live\n'
     script += '  kernel /$KERNEL_FULL\n'
     script += '  initrd /$INITRD_BIN\n'
-    script += '  fdt /spacemit/$KERNEL_VER/$DTB_NAME\n'
+    script += '  # fdt /spacemit/$KERNEL_VER/k1-x_deb1.dtb\n'
     script += '  append boot=live components quiet splash console=ttyS0,115200 earlycon=sbi clk_ignore_unused rootwait\n'
     script += 'EOF\n'
     script += '\n'

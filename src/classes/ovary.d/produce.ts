@@ -463,7 +463,7 @@ export async function produce(
       }
     }
 
-    if (this.dtb === '') {
+    if (this.dtbDir === '') {
       await this.makeIso(mkIsofsCmd, scriptOnly)
     } else {
       await this.makeImg(scriptOnly)
