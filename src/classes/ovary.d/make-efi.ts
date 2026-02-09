@@ -411,7 +411,7 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
 
   let devicetree = ''
   if (this.dtb !== '') {
-    devicetree = `/${path.basename(this.dtb)}`
+    devicetree = `devicetree /${path.basename(this.dtb)}`
   }
 
   const view = {
