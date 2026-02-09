@@ -33,7 +33,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
 
     // Path to musebook assets (assuming we are in dev or they are deployed)
     // We try to find them relative to the package root
-    const musebookDir = path.resolve(__dirname, '../../../../musebook')
+    const musebookDir = path.resolve(__dirname, '../../../musebook')
 
     // rename isoFilename to img
     this.settings.isoFilename = imgName

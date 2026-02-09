@@ -81,6 +81,7 @@
         "/dracut",
         "/eui",
         "/manpages",
+        "/musebook",
         "/mkinitcpio",
         "/mkinitfs",
         "/perrisbrewery",
