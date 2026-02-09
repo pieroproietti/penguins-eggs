@@ -19,11 +19,11 @@ import Utils from '../utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * makeImg
+ * makeImg - RISC-V Spacemit K1 Native Boot
  */
 export async function makeImg(this: Ovary, scriptOnly = false) {
 
-    Utils.warning('make live image')
+    Utils.warning('make live image (RISC-V Spacemit K1 Native)')
     const srcDir = path.join(this.nest, 'mnt/iso')
     const mntDir = path.join(this.nest, 'mnt/img')
     const dtbPath = this.dtb
@@ -32,10 +32,8 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     const workImg = this.settings.config.snapshot_mnt + imgName
 
     // Path to musebook assets
-    // Assicuriamoci che questo percorso esista o cerchiamo alternative
     let musebookDir = path.resolve(__dirname, '../../../musebook')
     if (!fs.existsSync(musebookDir)) {
-        // Fallback se stiamo eseguendo da un'altra posizione o pacchetto installato
         musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
         if (!fs.existsSync(musebookDir)) {
             Utils.warning(`Warning: MuseBook assets dir not found at ${musebookDir}`)
@@ -45,7 +43,6 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     // rename isoFilename to img
     this.settings.isoFilename = imgName
 
-    // USARE BACKTICKS (`) PER INTERPOLARE LE VARIABILI TYPESCRIPT!
     let script = '#!/bin/bash\n'
     script += `SRC_DIR="${srcDir}"\n`
     script += `DTB_PATH="${dtbPath}"\n`
@@ -55,54 +52,46 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += `MUSEBOOK_DIR="${musebookDir}"\n`
     script += '\n'
 
-    script += '# 1. Rilevamento Versioni Kernel\n'
-    script += 'KERNEL_BIN=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
+    script += '# 1. Rilevamento Versioni Kernel e DTB\n'
+    script += 'KERNEL_FULL=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
+    // Estrae la versione pura (es. da vmlinuz-6.6.63-spacemit -> 6.6.63-spacemit)
+    script += 'KERNEL_VER=${KERNEL_FULL#vmlinuz-}\n'
     script += 'INITRD_BIN=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'DTB_NAME=$(basename "$DTB_PATH")\n'
     script += '\n'
+    script += 'echo "Kernel: $KERNEL_FULL (Ver: $KERNEL_VER)"\n'
+    script += 'echo "Initrd: $INITRD_BIN"\n'
+    script += 'echo "DTB: $DTB_NAME"\n'
+    script += '\n'
 
     script += '# 2. Calcolo Spazio\n'
-    script += '# ROOT necessita dimensione squashfs + margine (es. 1.5GB per sicurezza)\n'
     script += 'ROOT_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-    script += 'TOTAL_SIZE=$((ROOT_SIZE + 1536)) # 1GB margine + 512MB Boot\n'
+    script += 'TOTAL_SIZE=$((ROOT_SIZE + 1536)) \n'
     script += '\n'
 
     script += 'echo "Creating raw image: ${TOTAL_SIZE}MB..."\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=0 seek=$TOTAL_SIZE status=none\n'
     script += '\n'
 
-    script += '# 3. Partizionamento (GPT via sgdisk) - Layout musebook\n'
-    script += '# Questo passaggio è CRUCIALE per definire le partizioni 1, 2, 3 dove iniettiamo i bootloader\n'
+    script += '# 3. Partizionamento (GPT) - Layout Bianbu Originale\n'
+    script += '# Usiamo -a 1 per allineamento esatto ai settori\n'
     script += 'sgdisk -o "$IMG_NAME"\n'
-
-    script += '# 1: SPL (256-767) - Settori RAW\n'
-    script += 'sgdisk -n 1:256:767     -c 1:"spl"      -t 1:8300 "$IMG_NAME"\n'
-
-    script += '# 2: Env (768-895)\n'
-    script += 'sgdisk -n 2:768:895     -c 2:"env"      -t 2:8300 "$IMG_NAME"\n'
-
-    script += '# 3: U-Boot (2048-4095)\n'
-    script += 'sgdisk -n 3:2048:4095   -c 3:"uboot"    -t 3:8300 "$IMG_NAME"\n'
-
-    script += '# 4: Reserved (4096-8191)\n'
-    script += 'sgdisk -n 4:4096:8191   -c 4:"reserved" -t 4:8300 "$IMG_NAME"\n'
-
-    script += '# 5: BOOT (8192-532479) -> 256MB approx - TIPO EF00 (EFI System)\n'
-    script += 'sgdisk -n 5:8192:532479 -c 5:"boot"     -t 5:EF00 "$IMG_NAME"\n'
-
-    script += '# 6: ROOT (Tutto il resto)\n'
-    script += 'sgdisk -n 6:532480:0    -c 6:"root"     -t 6:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -a 1 -n 1:256:767     -c 1:"spl"      -t 1:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -a 1 -n 2:768:895     -c 2:"env"      -t 2:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -a 1 -n 3:2048:4095   -c 3:"uboot"    -t 3:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -a 1 -n 4:4096:8191   -c 4:"reserved" -t 4:8300 "$IMG_NAME"\n'
+    script += '# P5 Boot: Ext4 (Type 8300) - Obbligatorio per questo U-Boot\n'
+    script += 'sgdisk -a 1 -n 5:8192:532479 -c 5:"boot"     -t 5:8300 "$IMG_NAME"\n'
+    script += '# P6 Root: Ext4\n'
+    script += 'sgdisk -a 1 -n 6:532480:0    -c 6:"root"     -t 6:8300 "$IMG_NAME"\n'
     script += '\n'
 
     script += '# 4. Loopback Setup\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
-    script += 'echo "Loop device: $LOOP_DEV"\n'
     script += '\n'
 
-    script += '# 5. Formattazione\n'
-    script += '# P5 = Boot (FAT32) - Label BOOTFS\n'
-    script += 'mkfs.vfat -F 32 -n "BOOTFS" "${LOOP_DEV}p5"\n'
-    script += '# P6 = Root (EXT4) - Label ROOTFS\n'
+    script += '# 5. Formattazione (EXT4 ovunque)\n'
+    script += 'mkfs.ext4 -L "BOOTFS" -m 0 -q "${LOOP_DEV}p5"\n'
     script += 'mkfs.ext4 -L "ROOTFS" -m 0 -q "${LOOP_DEV}p6"\n'
     script += '\n'
 
@@ -112,55 +101,69 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/tmp_root"\n'
     script += '\n'
 
-    script += '# --- COPIA P5 (BOOT) ---\n'
-    script += 'mkdir -p "$MNT_DIR/tmp_boot/live"\n'
-    script += '# Copiamo Kernel e Initrd anche nella partizione di boot per facilitare GRUB\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_BIN" "$MNT_DIR/tmp_boot/live/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_BIN" "$MNT_DIR/tmp_boot/live/"\n'
-    script += 'cp -r "$SRC_DIR/EFI" "$MNT_DIR/tmp_boot/"\n'
-    script += 'cp -r "$SRC_DIR/.disk" "$MNT_DIR/tmp_boot/"\n'
-    script += 'cp -r "$SRC_DIR/boot" "$MNT_DIR/tmp_boot/"\n'
+    script += '# --- POPOLAMENTO BOOT (Mimicry Bianbu) ---\n'
+    script += '# 1. Kernel e Initrd nella root di boot\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FULL" "$MNT_DIR/tmp_boot/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_BIN" "$MNT_DIR/tmp_boot/"\n'
 
-    script += '# Copia log opzionali\n'
-    script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt "$MNT_DIR/tmp_boot/" 2>/dev/null || true\n'
+    script += '# 2. Struttura DTB specifica (spacemit/VERSIONE/)\n'
+    script += '# NOTA: Bianbu usa "spacemit/6.6.63". Noi usiamo la versione rilevata.\n'
+    script += 'mkdir -p "$MNT_DIR/tmp_boot/spacemit/$KERNEL_VER"\n'
+    script += 'if [ -f "$DTB_PATH" ]; then\n'
+    script += '    cp "$DTB_PATH" "$MNT_DIR/tmp_boot/spacemit/$KERNEL_VER/"\n'
+    script += 'else\n'
+    script += '    echo "WARNING: DTB not found at $DTB_PATH"\n'
+    script += 'fi\n'
 
-    script += '# Copia DTB nella root della partizione di BOOT (Fondamentale per il config di GRUB)\n'
-    if (this.dtb !== 'none' && this.dtb !== '') {
-        script += 'cp "$DTB_PATH" "$MNT_DIR/tmp_boot/"\n'
-    }
+    script += '# 3. Generazione env_k1-x.txt (IL SEGRETO!)\n'
+    script += 'echo "Generating /boot/env_k1-x.txt..."\n'
+    script += 'ENV_FILE="$MNT_DIR/tmp_boot/env_k1-x.txt"\n'
+    script += 'echo "knl_name=$KERNEL_FULL" > "$ENV_FILE"\n'
+    script += 'echo "ramdisk_name=$INITRD_BIN" >> "$ENV_FILE"\n'
+    script += 'echo "dtb_dir=spacemit/$KERNEL_VER" >> "$ENV_FILE"\n'
+
+    script += '# 4. Tentativo di Override Bootargs (Live Boot)\n'
+    script += '# Proviamo ad aggiungere bootargs qui. Se U-Boot lo ignora, proveremo extlinux come fallback.\n'
+    script += 'echo "bootargs=boot=live components quiet splash console=ttyS0,115200 earlycon=sbi clk_ignore_unused rootwait" >> "$ENV_FILE"\n'
     script += '\n'
 
-    script += '# --- COPIA P6 (ROOT) ---\n'
+    script += '# 5. Extlinux Fallback (Non si sa mai)\n'
+    script += 'mkdir -p "$MNT_DIR/tmp_boot/extlinux"\n'
+    script += 'cat <<EOF > "$MNT_DIR/tmp_boot/extlinux/extlinux.conf"\n'
+    script += 'label eggs-live\n'
+    script += '  kernel /$KERNEL_FULL\n'
+    script += '  initrd /$INITRD_BIN\n'
+    script += '  fdt /spacemit/$KERNEL_VER/$DTB_NAME\n'
+    script += '  append boot=live components quiet splash console=ttyS0,115200 earlycon=sbi clk_ignore_unused rootwait\n'
+    script += 'EOF\n'
+    script += '\n'
+
+    script += '# --- COPIA ROOT (SquashFS Live) ---\n'
     script += 'mkdir -p "$MNT_DIR/tmp_root/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/tmp_root/live/"\n'
     script += '\n'
-
 
     script += '# 8. Cleanup\n'
     script += 'umount "$MNT_DIR/tmp_boot" "$MNT_DIR/tmp_root"\n'
     script += 'losetup -d "$LOOP_DEV"\n'
     script += '\n'
 
-    script += '# 9. Inietta i Bootloader (Il trapianto)\n'
-    script += '# Questo scrive direttamente nei settori del file immagine, sovrascrivendo l\'inizio delle partizioni 1 e 3\n'
+    script += '# 9. Inietta i Bootloader\n'
     script += 'echo "Scrittura Bootloader..."\n'
     script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ] && [ -f "$MUSEBOOK_DIR/uboot.itb" ]; then\n'
     script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
     script += '    dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
     script += '    sync\n'
-    script += '    echo "Bootloaders injected successfully!"\n'
+    script += '    echo "Bootloaders injected!"\n'
     script += 'else\n'
-    script += '    echo "ERROR: Bootloader files not found in $MUSEBOOK_DIR"\n'
-    script += '    echo "L\'immagine non sarà avviabile sul MuseBook!"\n'
+    script += '    echo "ERROR: Bootloader files missing!"\n'
     script += 'fi\n'
     script += '\n'
 
-    script += '# 10. create a link\n'
+    script += '# 10. Link\n'
     script += 'ln -sf "$IMG_NAME" "$IMG_LNK"\n'
 
-
     const mkImg = path.join(this.settings.work_dir.bin, 'mkimg')
-    // console.log(mkImg)
     Utils.writeX(mkImg, script)
 
     if (!scriptOnly) {
