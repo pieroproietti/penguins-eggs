@@ -8,6 +8,7 @@
 
 // packages
 import path from 'node:path'
+import fs from 'node:fs'
 
 // classes
 import { exec } from '../../lib/utils.js'
@@ -22,7 +23,6 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname)
  */
 export async function makeImg(this: Ovary, scriptOnly = false) {
 
-
     Utils.warning('make live image')
     const srcDir = path.join(this.nest, 'mnt/iso')
     const mntDir = path.join(this.nest, 'mnt/img')
@@ -31,13 +31,21 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     const imgLnk = this.settings.config.snapshot_dir + imgName
     const workImg = this.settings.config.snapshot_mnt + imgName
 
-    // Path to musebook assets (assuming we are in dev or they are deployed)
-    // We try to find them relative to the package root
-    const musebookDir = path.resolve(__dirname, '../../../musebook')
+    // Path to musebook assets
+    // Assicuriamoci che questo percorso esista o cerchiamo alternative
+    let musebookDir = path.resolve(__dirname, '../../../musebook')
+    if (!fs.existsSync(musebookDir)) {
+        // Fallback se stiamo eseguendo da un'altra posizione o pacchetto installato
+        musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
+        if (!fs.existsSync(musebookDir)) {
+            Utils.warning(`Warning: MuseBook assets dir not found at ${musebookDir}`)
+        }
+    }
 
     // rename isoFilename to img
     this.settings.isoFilename = imgName
 
+    // USARE BACKTICKS (`) PER INTERPOLARE LE VARIABILI TYPESCRIPT!
     let script = '#!/bin/bash\n'
     script += `SRC_DIR="${srcDir}"\n`
     script += `DTB_PATH="${dtbPath}"\n`
@@ -54,7 +62,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += '\n'
 
     script += '# 2. Calcolo Spazio\n'
-    script += '# ROOT necessita dimensione squashfs + margine (es. 1GB)\n'
+    script += '# ROOT necessita dimensione squashfs + margine (es. 1.5GB per sicurezza)\n'
     script += 'ROOT_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
     script += 'TOTAL_SIZE=$((ROOT_SIZE + 1536)) # 1GB margine + 512MB Boot\n'
     script += '\n'
@@ -63,30 +71,38 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=0 seek=$TOTAL_SIZE status=none\n'
     script += '\n'
 
-    script += '# 3. Partizionamento (GPT via sgdisk) - Layout musebook/1.sh\n'
+    script += '# 3. Partizionamento (GPT via sgdisk) - Layout musebook\n'
+    script += '# Questo passaggio è CRUCIALE per definire le partizioni 1, 2, 3 dove iniettiamo i bootloader\n'
     script += 'sgdisk -o "$IMG_NAME"\n'
-    script += '# 1: SPL (256-767)\n'
-    script += 'sgdisk -n 1:256:767    -c 1:"spl"      -t 1:8300 "$IMG_NAME"\n'
+
+    script += '# 1: SPL (256-767) - Settori RAW\n'
+    script += 'sgdisk -n 1:256:767     -c 1:"spl"      -t 1:8300 "$IMG_NAME"\n'
+
     script += '# 2: Env (768-895)\n'
-    script += 'sgdisk -n 2:768:895    -c 2:"env"      -t 2:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -n 2:768:895     -c 2:"env"      -t 2:8300 "$IMG_NAME"\n'
+
     script += '# 3: U-Boot (2048-4095)\n'
-    script += 'sgdisk -n 3:2048:4095  -c 3:"uboot"    -t 3:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -n 3:2048:4095   -c 3:"uboot"    -t 3:8300 "$IMG_NAME"\n'
+
     script += '# 4: Reserved (4096-8191)\n'
-    script += 'sgdisk -n 4:4096:8191  -c 4:"reserved" -t 4:8300 "$IMG_NAME"\n'
-    script += '# 5: BOOT (8192-532479) -> 256MB approx\n'
-    script += 'sgdisk -n 5:8192:532479 -c 5:"boot" -t 5:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -n 4:4096:8191   -c 4:"reserved" -t 4:8300 "$IMG_NAME"\n'
+
+    script += '# 5: BOOT (8192-532479) -> 256MB approx - TIPO EF00 (EFI System)\n'
+    script += 'sgdisk -n 5:8192:532479 -c 5:"boot"     -t 5:EF00 "$IMG_NAME"\n'
+
     script += '# 6: ROOT (Tutto il resto)\n'
-    script += 'sgdisk -n 6:532480:0    -c 6:"root" -t 6:8300 "$IMG_NAME"\n'
+    script += 'sgdisk -n 6:532480:0    -c 6:"root"     -t 6:8300 "$IMG_NAME"\n'
     script += '\n'
 
     script += '# 4. Loopback Setup\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
+    script += 'echo "Loop device: $LOOP_DEV"\n'
     script += '\n'
 
     script += '# 5. Formattazione\n'
-    script += '# P5 = Boot (FAT32)\n'
+    script += '# P5 = Boot (FAT32) - Label BOOTFS\n'
     script += 'mkfs.vfat -F 32 -n "BOOTFS" "${LOOP_DEV}p5"\n'
-    script += '# P6 = Root (EXT4)\n'
+    script += '# P6 = Root (EXT4) - Label ROOTFS\n'
     script += 'mkfs.ext4 -L "ROOTFS" -m 0 -q "${LOOP_DEV}p6"\n'
     script += '\n'
 
@@ -98,13 +114,18 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
 
     script += '# --- COPIA P5 (BOOT) ---\n'
     script += 'mkdir -p "$MNT_DIR/tmp_boot/live"\n'
+    script += '# Copiamo Kernel e Initrd anche nella partizione di boot per facilitare GRUB\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_BIN" "$MNT_DIR/tmp_boot/live/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_BIN" "$MNT_DIR/tmp_boot/live/"\n'
     script += 'cp -r "$SRC_DIR/EFI" "$MNT_DIR/tmp_boot/"\n'
     script += 'cp -r "$SRC_DIR/.disk" "$MNT_DIR/tmp_boot/"\n'
     script += 'cp -r "$SRC_DIR/boot" "$MNT_DIR/tmp_boot/"\n'
+
+    script += '# Copia log opzionali\n'
     script += 'cp "$SRC_DIR/"*mkinitramfs.log.txt "$MNT_DIR/tmp_boot/" 2>/dev/null || true\n'
-    if (this.dtb !== 'none') {
+
+    script += '# Copia DTB nella root della partizione di BOOT (Fondamentale per il config di GRUB)\n'
+    if (this.dtb !== 'none' && this.dtb !== '') {
         script += 'cp "$DTB_PATH" "$MNT_DIR/tmp_boot/"\n'
     }
     script += '\n'
@@ -121,13 +142,16 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
     script += '\n'
 
     script += '# 9. Inietta i Bootloader (Il trapianto)\n'
+    script += '# Questo scrive direttamente nei settori del file immagine, sovrascrivendo l\'inizio delle partizioni 1 e 3\n'
     script += 'echo "Scrittura Bootloader..."\n'
     script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ] && [ -f "$MUSEBOOK_DIR/uboot.itb" ]; then\n'
     script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
     script += '    dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
-    script += '    echo "Bootloaders injected!"\n'
+    script += '    sync\n'
+    script += '    echo "Bootloaders injected successfully!"\n'
     script += 'else\n'
-    script += '    echo "WARNING: Bootloader files not found in $MUSEBOOK_DIR"\n'
+    script += '    echo "ERROR: Bootloader files not found in $MUSEBOOK_DIR"\n'
+    script += '    echo "L\'immagine non sarà avviabile sul MuseBook!"\n'
     script += 'fi\n'
     script += '\n'
 
@@ -136,7 +160,7 @@ export async function makeImg(this: Ovary, scriptOnly = false) {
 
 
     const mkImg = path.join(this.settings.work_dir.bin, 'mkimg')
-    console.log(mkImg)
+    // console.log(mkImg)
     Utils.writeX(mkImg, script)
 
     if (!scriptOnly) {
