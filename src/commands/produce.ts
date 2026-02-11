@@ -34,7 +34,7 @@ export default class Produce extends Command {
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
-    dtbdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory. Embedded devices' }),
+    dtbdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
     fullcrypt: Flags.boolean({ char: 'f', description: 'clone crypted full' }),

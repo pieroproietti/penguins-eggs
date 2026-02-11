@@ -228,6 +228,8 @@ export async function produce(
      */
     const reCreate = true
     let mksquashfsCmd = ''
+    let mkIsofsCmd = ''
+    let mkImgCmd = ''
     if (reCreate) {
       // start pre-clone
 
@@ -370,7 +372,19 @@ export async function produce(
         this.installHomecryptSupport(squashfsRoot, homeImgPath)
       }
 
-      mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
+
+      if (this.dtbDir === '') {
+        mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
+        mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
+        this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
+      } else {
+        mkImgCmd = await this.makeImg()
+        if (!scriptOnly) {
+          console.log(`exec: ${mkImgCmd}`)
+          await exec(mkImgCmd, Utils.setEcho(this.verbose))
+        }
+      }
+
       await this.uBindLiveFs() // we don't need more
     }
 
@@ -398,8 +412,6 @@ export async function produce(
       await this.syslinux(this.theme)
     }
 
-    const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
-    this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
     /**
      * AntiX/MX LINUX
@@ -465,8 +477,6 @@ export async function produce(
 
     if (this.dtbDir === '') {
       await this.makeIso(mkIsofsCmd, scriptOnly)
-    } else {
-      await this.makeImg(scriptOnly)
     }
   }
 }

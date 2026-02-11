@@ -128,7 +128,7 @@ if [ "$USE_UBOOT" = true ]; then
     $QEMU_CMD $QEMU_OPTS_NOKVM -vga std \
         -drive file="$IMG",format=raw,if=virtio
 else
-    # Default for EFI/BIOS
+# Default for EFI/BIOS
     $QEMU_CMD $QEMU_OPTS \
         -device virtio-scsi-pci,id=scsi0 \
         -device scsi-hd,drive=hd0,bus=scsi0.0 \

@@ -347,7 +347,7 @@ produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
---dtb"[path to Device Tree Blob (DTB). Embedded devices]:file:_files" \
+--dtbdir"[path to Device Tree Blobs (DTB) directory. Embedded devices]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \

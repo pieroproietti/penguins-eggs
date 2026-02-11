@@ -21,12 +21,11 @@ import Utils from '../utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
- * squashFs: crea in live filesystem.squashfs
+ * getStandardExclusions
+ * returns a list of exclusions
  */
-export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootHome = false): Promise<string> {
-  if (this.verbose) {
-    console.log('Ovary: makeSquashfs')
-  }
+export function getStandardExclusions(ovary: Ovary, includeRootHome = false): string[] {
+  const excludes: string[] = []
 
   /**
    * exclude all the accurence of cryptdisks in rc0.d, etc
@@ -34,22 +33,22 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
   const fexcludes = ['/boot/efi/EFI', '/boot/loader/entries/', '/etc/fstab', '/var/lib/containers/', '/var/lib/docker/', '/etc/mtab', '/etc/udev/rules.d/70-persistent-cd.rules', '/etc/udev/rules.d/70-persistent-net.rules']
 
   for (const i in fexcludes) {
-    this.addExclusion(fexcludes[i])
+    excludes.push(fexcludes[i])
   }
 
   /**
    * Non sò che fa, ma sicuro non serve per archlinux
    */
-  if (this.familyId === 'debian') {
+  if (ovary.familyId === 'debian') {
     const rcd = ['rc0.d', 'rc1.d', 'rc2.d', 'rc3.d', 'rc4.d', 'rc5.d', 'rc6.d', 'rcS.d']
     let files: string[]
     // escludo per ci
     for (const i in rcd) {
-      if (fs.existsSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)) {
-        files = fs.readdirSync(`${this.settings.work_dir.merged}/etc/${rcd[i]}`)
+      if (fs.existsSync(`${ovary.settings.work_dir.merged}/etc/${rcd[i]}`)) {
+        files = fs.readdirSync(`${ovary.settings.work_dir.merged}/etc/${rcd[i]}`)
         for (const n in files) {
           if (files[n].includes('cryptdisks')) {
-            this.addExclusion(`/etc/${rcd[i]}${files[n]}`)
+            excludes.push(`/etc/${rcd[i]}${files[n]}`)
           }
         }
       }
@@ -60,11 +59,27 @@ export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootH
    * secure
    */
   if (!includeRootHome) {
-    this.addExclusion(`root/*`)
-    this.addExclusion(`root/.*`)
+    excludes.push(`root/*`)
+    excludes.push(`root/.*`)
   }
 
-  this.addExclusion(this.settings.config.snapshot_dir /* .absolutePath() */)
+  excludes.push(ovary.settings.config.snapshot_dir /* .absolutePath() */)
+
+  return excludes
+}
+
+/**
+ * squashFs: crea in live filesystem.squashfs
+ */
+export async function makeSquashfs(this: Ovary, scriptOnly = false, includeRootHome = false): Promise<string> {
+  if (this.verbose) {
+    console.log('Ovary: makeSquashfs')
+  }
+
+  const excludes = getStandardExclusions(this, includeRootHome)
+  for (const exclusion of excludes) {
+    this.addExclusion(exclusion)
+  }
 
   const sfsPath = path.join(this.settings.iso_work, 'live/filesystem.squashfs')
   if (fs.existsSync(sfsPath)) {

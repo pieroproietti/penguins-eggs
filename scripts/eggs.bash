@@ -24,7 +24,7 @@ kill --help --isos --nointeractive --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
 love --clone --fullcrypt --help --hidden --homecrypt --nointeractive --verbose
 mom --help
-produce --addons --basename --dtb --clone --excludes --fullcrypt --help --hidden --homecrypt --includeRootHome --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --verbose --yolk
+produce --addons --basename --dtbdir --clone --excludes --fullcrypt --help --hidden --homecrypt --includeRootHome --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --verbose --yolk
 setup:install 
 setup:purge 
 status --help --verbose

@@ -528,7 +528,7 @@ export default class Utils {
     * @returns eggName
     */
    static getPostfix(): string {
-      const postfix = '_' + Utils.formatDate(new Date()) + '.iso'
+      const postfix = '_' + Utils.formatDate(new Date())
       return postfix
    }
 
