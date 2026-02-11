@@ -39,7 +39,7 @@
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.3",
-        "@eslint/js": "^9.39.2",
+        "@eslint/js": "^10.0.1",
         "@oclif/prettier-config": "^0.2.1",
         "@oclif/test": "^4.1.16",
         "@types/chai": "^5.2.3",
@@ -53,7 +53,7 @@
         "@types/react": "^19.2.14",
         "@types/ws": "^8.18.1",
         "chai": "^6.2.2",
-        "eslint": "^9.39.2",
+        "eslint": "^10.0.0",
         "eslint-config-oclif": "^6.0.137",
         "eslint-config-prettier": "^10.1.8",
         "glob": "^13.0.2",
