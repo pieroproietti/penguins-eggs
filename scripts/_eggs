@@ -237,9 +237,9 @@ _eggs() {
 "produce[produce a live image from your system]" \
 "status[informations about eggs status]" \
 "update[update the Penguins' eggs tool]" \
-"autocomplete[Display autocomplete installation instructions.]" \
 "version[]" \
 "help[Display help for eggs.]" \
+"autocomplete[Display autocomplete installation instructions.]" \
 
     ;;
     args)
@@ -330,6 +330,7 @@ _arguments -S \
 love)
 _arguments -S \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
+--dtbdir"[path to Device Tree Blobs (DTB) directory]:file:_files" \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
 "(-h --help)"{-h,--help}"[Show CLI help.]" \
 "(-H --hidden)"{-H,--hidden}"[stealth mode]" \
@@ -347,7 +348,7 @@ produce)
 _arguments -S \
 "*"--addons"[addons to be used: adapt, pve, rsupport]:file:_files" \
 --basename"[basename]:file:_files" \
---dtbdir"[path to Device Tree Blobs (DTB) directory. Embedded devices]:file:_files" \
+--dtbdir"[path to Device Tree Blobs (DTB) directory]:file:_files" \
 "(-c --clone)"{-c,--clone}"[clone (uncrypted)]" \
 "*"--excludes"[use: static, homes, home]:file:_files" \
 "(-f --fullcrypt)"{-f,--fullcrypt}"[clone crypted full]" \
@@ -382,11 +383,6 @@ _arguments -S \
 "(-v --verbose)"{-v,--verbose}"[verbose]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
-autocomplete)
-_arguments -S \
-"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
---help"[Show help for command]" \
-"*: :_files" ;; 
 version)
 _arguments -S \
 --json"[Format output as json.]" \
@@ -396,6 +392,11 @@ _arguments -S \
 help)
 _arguments -S \
 "(-n --nested-commands)"{-n,--nested-commands}"[Include all nested commands in the output.]" \
+--help"[Show help for command]" \
+"*: :_files" ;; 
+autocomplete)
+_arguments -S \
+"(-r --refresh-cache)"{-r,--refresh-cache}"[Refresh cache (ignores displaying instructions)]" \
 --help"[Show help for command]" \
 "*: :_files" ;; 
 esac

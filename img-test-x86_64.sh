@@ -73,8 +73,9 @@ if [ "$USE_UBOOT" = true ]; then
 else
     # UEFI (OVMF) configuration (Default)
     OVMF_CODE=""
-    # Prioritize unified OVMF.fd (common in /usr/share/ovmf/) which works with -bios
-    # Avoid OVMF_CODE_*.fd with -bios as they require pflash pairing with VARS
+    OVMF_VARS=""
+    
+    # 1. Look for unified OVMF (easiest, works with -bios)
     for f in /usr/share/ovmf/OVMF.fd /usr/share/qemu/OVMF.fd /usr/share/OVMF/OVMF.fd; do
         if [ -f "$f" ]; then
             OVMF_CODE="$f"
@@ -82,20 +83,31 @@ else
         fi
     done
 
-    # Fallback: if we only find code parts (should ideally implement pflash logic, but let's try to detect valid unified ones first)
+    # 2. Look for split OVMF (Code + Vars) - Debian/Ubuntu standard
     if [ -z "$OVMF_CODE" ]; then
         for f in /usr/share/OVMF/OVMF_CODE_4M.fd /usr/share/OVMF/OVMF_CODE.fd; do
             if [ -f "$f" ]; then
-                 echo "Warning: Found split OVMF code $f. This might fail with -bios."
                  OVMF_CODE="$f"
+                 # Find matching VARS
+                 VARS_NAME=$(echo "$f" | sed 's/CODE/VARS/')
+                 if [ -f "$VARS_NAME" ]; then
+                     OVMF_VARS="$VARS_NAME"
+                 fi
                  break
             fi
         done
     fi
 
     if [ -n "$OVMF_CODE" ]; then
-        echo "Found UEFI Firmware: $OVMF_CODE"
-        BIOS_OPTS="-bios $OVMF_CODE"
+        if [ -n "$OVMF_VARS" ]; then
+             echo "Found Split UEFI Firmware: $OVMF_CODE + $OVMF_VARS"
+             # Copy vars to tmp to avoid modifying system file
+             cp "$OVMF_VARS" /tmp/OVMF_VARS.fd
+             BIOS_OPTS="-drive if=pflash,format=raw,readonly=on,file=$OVMF_CODE -drive if=pflash,format=raw,file=/tmp/OVMF_VARS.fd"
+        else
+             echo "Found Unified UEFI Firmware: $OVMF_CODE"
+             BIOS_OPTS="-bios $OVMF_CODE"
+        fi
     else
         echo "Warning: OVMF firmware not found, attempting legacy boot..."
     fi
@@ -130,7 +142,7 @@ if [ "$USE_UBOOT" = true ]; then
 else
 # Default for EFI/BIOS
     $QEMU_CMD $QEMU_OPTS \
-        -device virtio-scsi-pci,id=scsi0 \
-        -device scsi-hd,drive=hd0,bus=scsi0.0 \
-        -drive file="$IMG",format=raw,if=none,id=hd0
+        -device ahci,id=ahci0 \
+        -device ide-hd,drive=disk0,bus=ahci0.0 \
+        -drive file="$IMG",format=raw,if=none,id=disk0
 fi

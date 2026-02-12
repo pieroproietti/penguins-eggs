@@ -380,8 +380,8 @@ export async function produce(
       } else {
         mkImgCmd = await this.makeImg()
         if (!scriptOnly) {
-          console.log(`exec: ${mkImgCmd}`)
-          await exec(mkImgCmd, Utils.setEcho(this.verbose))
+          Utils.warning(mkImgCmd)
+          await exec(mkImgCmd)
         }
       }
 
