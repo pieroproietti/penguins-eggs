@@ -132,11 +132,11 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mkdir -p "$MNT_DIR/root_mp/live" "$MNT_DIR/root_mp/boot/extlinux"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n'
 
-    script += 'KERNEL_FULL=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
-    script += 'INITRD_BIN=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
-    script += 'KERNEL_VER=${KERNEL_FULL#vmlinuz-}\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_FULL" "$MNT_DIR/root_mp/boot/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_BIN" "$MNT_DIR/root_mp/boot/"\n\n'
+    script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
+    script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
+    script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/root_mp/boot/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/root_mp/boot/"\n\n'
 
     script += 'if [ -d "$DTB_DIR" ]; then\n'
     script += '    mkdir -p "$MNT_DIR/root_mp/boot/spacemit/$KERNEL_VER"\n'
@@ -146,8 +146,8 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '# 5. Configurazione Extlinux\n'
     script += 'cat <<EOF > "$MNT_DIR/root_mp/boot/extlinux/extlinux.conf"\n'
     script += 'label linux\n'
-    script += '    kernel /boot/${KERNEL_FULL}\n'
-    script += '    initrd /boot/${INITRD_BIN}\n'
+    script += '    kernel /boot/${KERNEL_FILE}\n'
+    script += '    initrd /boot/${INITRD_FILE}\n'
     script += '    fdtdir /boot/spacemit/${KERNEL_VER}/\n'
     script += '    append root=LABEL=LIVE boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
@@ -172,7 +172,6 @@ async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<stri
 // ============================================================================
 
 function getVariables(ovary: Ovary) {
-    const userLive = ovary.settings.config.user_opt
     const srcDir = path.join(ovary.nest, 'mnt/iso')
     const mntDir = path.join(ovary.nest, 'mnt/img')
     const dtbDir = ovary.dtbDir
@@ -188,7 +187,7 @@ function getVariables(ovary: Ovary) {
         musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
     }
 
-    return { srcDir, mntDir, dtbDir, imgLnk, workImg, mergedDir, snapshotExcludes, musebookDir, userLive }
+    return { srcDir, mntDir, dtbDir, imgLnk, workImg, mergedDir, snapshotExcludes, musebookDir }
 }
 
 function getScriptHeader(vars: any) {
@@ -202,7 +201,6 @@ function getScriptHeader(vars: any) {
     script += `MUSEBOOK_DIR="${vars.musebookDir}"\n`
     script += `MERGED_DIR="${vars.mergedDir}"\n`
     script += `SNAPSHOT_EXCLUDES="${vars.snapshotExcludes}"\n`
-    script += `USER_LIVE="${vars.userLive}"\n\n`
     return script
 }
 
