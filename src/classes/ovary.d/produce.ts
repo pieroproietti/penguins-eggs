@@ -228,6 +228,8 @@ export async function produce(
      */
     const reCreate = true
     let mksquashfsCmd = ''
+    let mkIsofsCmd = ''
+    let mkImgCmd = ''
     if (reCreate) {
       // start pre-clone
 
@@ -370,7 +372,18 @@ export async function produce(
         this.installHomecryptSupport(squashfsRoot, homeImgPath)
       }
 
+
       mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
+      mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
+      this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
+      if (this.dtbDir !== '') {
+        mkImgCmd = await this.makeImg()
+        if (!scriptOnly) {
+          Utils.warning(mkImgCmd)
+          await exec(mkImgCmd)
+        }
+      }
+
       await this.uBindLiveFs() // we don't need more
     }
 
@@ -398,8 +411,6 @@ export async function produce(
       await this.syslinux(this.theme)
     }
 
-    const mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
-    this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
 
     /**
      * AntiX/MX LINUX
@@ -444,8 +455,8 @@ export async function produce(
         hashExt = '.md5'
       }
 
-      await exec(`mkdir ${this.settings.iso_work}${path.dirname(filesystemName)} -p`, this.echo)
-      await exec(`ln ${this.settings.iso_work}live/filesystem.squashfs ${this.settings.iso_work}${filesystemName}`, this.echo)
+      await exec(`mkdir ${path.join(this.settings.iso_work, path.dirname(filesystemName))} -p`, this.echo)
+      await exec(`ln ${path.join(this.settings.iso_work, 'live/filesystem.squashfs')} ${path.join(this.settings.iso_work, filesystemName)}`, this.echo)
 
       /**
        * patch 4 mksquashfs
@@ -463,6 +474,8 @@ export async function produce(
       }
     }
 
-    await this.makeIso(mkIsofsCmd, scriptOnly)
+    if (this.dtbDir === '') {
+      await this.makeIso(mkIsofsCmd, scriptOnly)
+    }
   }
 }

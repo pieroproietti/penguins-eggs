@@ -137,6 +137,14 @@ export default class SysUsers {
     this.subgidLines = this.readFile('etc/subgid')
   }
 
+
+  /**
+   * Verifica l'esistenza di un gruppo
+   */
+  public groupExists(groupName: string): boolean {
+    return !!this.group.find((g) => g.groupName === groupName)
+  }
+
   /**
    * Rimuove completamente un utente
    */
@@ -262,7 +270,7 @@ export default class SysUsers {
       // 2. Fix SELinux (Solo RHEL Family)
       if (['almalinux', 'centos', 'fedora', 'rhel', 'rocky'].includes(this.distroFamily)) {
         // await exec, echo false per non sporcare i log
-        await exec(`chcon -t ${contextType} ${fullPath}`, { echo: false }).catch(() => {})
+        await exec(`chcon -t ${contextType} ${fullPath}`, { echo: false }).catch(() => { })
       }
     } catch (error) {
       console.error(`SysUsers Error writing ${relativePath}:`, error)

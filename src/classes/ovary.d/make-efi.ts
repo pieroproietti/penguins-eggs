@@ -409,12 +409,18 @@ export async function makeEfi(this: Ovary, theme = 'eggs') {
     // Se non trova nulla, mantiene l'originale kernelName come fallback
   }
 
+  let devicetree = ''
+  if (this.dtbDir !== '') {
+    // devicetree = `devicetree /${path.basename(this.dtbDir)}`
+  }
+
   const view = {
     fullname,
     initrdImg: `/live/${path.basename(this.initrd)}`,
     kernel: this.kernel,
     kernel_parameters,
-    vmlinuz: `/live/${kernelName}` // Usiamo il nome verificato
+    vmlinuz: `/live/${kernelName}`, // Usiamo il nome verificato
+    devicetree: devicetree
   }
 
   let cfgMainText = ''

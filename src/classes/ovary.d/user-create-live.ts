@@ -62,15 +62,13 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
   sysUsers.addUserToGroup(username, adminGroup)
 
   // GRUPPO AUTOLOGIN (Fondamentale per la live!)
-  // Creiamo il gruppo se non esiste (logica semplificata: lo aggiungiamo a sysUsers se manca?)
-  // SysUsers.addUserToGroup fallisce silenziosamente se il gruppo non c'è.
-  // Per sicurezza su Fedora/Arch, autologin di solito esiste o va creato.
-  // Proviamo ad aggiungerlo:
-  sysUsers.addUserToGroup(username, 'autologin') // <--- PUNTO E VIRGOLA FONDAMENTALE QUI!
+  sysUsers.addUserToGroup(username, 'autologin')
 
   // Aggiungiamo anche ai gruppi standard audio/video/network se esistono
   for (const grp of ['video', 'audio', 'network', 'input', 'lp', 'storage', 'optical']) {
-    sysUsers.addUserToGroup(username, grp)
+    if (sysUsers.groupExists(grp)) {
+      sysUsers.addUserToGroup(username, grp)
+    }
   }
 
   // 4. SALVATAGGIO ATOMICO SU DISCO
@@ -99,7 +97,7 @@ export default async function userCreateLive(this: Ovary): Promise<void> {
   // 6. FIX SELINUX SPECIFICO PER HOME LIVE
   if (['almalinux', 'centos', 'fedora', 'rhel', 'rocky'].includes(familyId)) {
     try {
-      await exec(`chcon -R -t user_home_t ${homeDir}`, { echo: false }).catch(() => {})
+      await exec(`chcon -R -t user_home_t ${homeDir}`, { echo: false }).catch(() => { })
       // Nota: .autorelabel nella root della live potrebbe rallentare il boot,
       // ma è meglio averlo se i contesti sono dubbi.
       // await exec(`touch ${target}/.autorelabel`, { echo: false })

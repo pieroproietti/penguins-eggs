@@ -1,0 +1,25 @@
+#!/bin/bash
+echo "Compile and Create Image"
+set -e
+
+echo "1. Build source (skipping GPG signature)"
+pnpm deb
+
+echo "2. reinstall penguins-eggs saving yolk"
+sudo ./resyd
+
+echo "3. Create live image (using local source)"
+sudo eggs love --dtbdir none -n
+
+echo "4. Locate latest image"
+LATEST_IMG=$(ls -t /home/eggs/mnt/egg-of_debian-trixie-colibri_amd64_*.img 2>/dev/null | head -n1)
+
+if [ -z "$LATEST_IMG" ]; then
+    echo "Error: No image found in /home/eggs/mnt/"
+    exit 1
+fi
+
+echo "Found image: $LATEST_IMG"
+
+echo "5. Test image with QEMU"
+sudo ./img-test-x86_64.sh "$LATEST_IMG"

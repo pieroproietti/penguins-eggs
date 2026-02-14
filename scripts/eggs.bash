@@ -15,16 +15,16 @@ adapt --help --verbose
 calamares --help --install --nointeractive --policies --release --remove --theme --verbose
 config --clean --help --nointeractive --verbose
 cuckoo --help --verbose
-dad --clean --default --file --nointeractive --help --verbose
+dad --clean --default --file --help --nointeractive --verbose
 export:appimage --clean --help --verbose
 export:iso --checksum --clean --help --verbose
 export:pkg --all --clean --help --verbose
 export:tarballs --clean --help --verbose
 kill --help --isos --nointeractive --verbose
 krill --btrfs --chroot --crypted --domain --halt --help --ip --nointeractive --none --pve --random --replace --small --suspend --testing --unattended --verbose
-love --help --verbose --hidden --nointeractive --clone --homecrypt --fullcrypt
+love --clone --dtbdir --fullcrypt --help --hidden --homecrypt --nointeractive --verbose
 mom --help
-produce --addons --basename --clone --homecrypt --fullcrypt --excludes --help --hidden --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --includeRootHome --verbose --yolk
+produce --addons --basename --dtbdir --clone --excludes --fullcrypt --help --hidden --homecrypt --includeRootHome --kernel --links --max --noicon --nointeractive --pendrive --prefix --release --script --standard --theme --verbose --yolk
 setup:install 
 setup:purge 
 status --help --verbose
@@ -38,9 +38,9 @@ wardrobe:get --help --verbose
 wardrobe:list --distro --help --verbose
 wardrobe:show --help --json --verbose --wardrobe
 wardrobe:wear --help --no_accessories --no_firmwares --verbose --wardrobe
-autocomplete --refresh-cache
-help --nested-commands
 version --json --verbose
+help --nested-commands
+autocomplete --refresh-cache
 "
 
   function __trim_colon_commands()

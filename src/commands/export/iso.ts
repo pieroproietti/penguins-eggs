@@ -34,17 +34,18 @@ export default class ExportIso extends Command {
 
     const rmount = `/tmp/eggs-${(Math.random() + 1).toString(36).slice(7)}`
     let cmd = `rm -f ${rmount}\n`
-    const filters = ['*.iso', '*.md5', '*.sha256']
+    const filters = ['*.iso', '*.img', '*.md5', '*.sha256']
     cmd += `mkdir ${rmount}\n`
     cmd += `sshfs ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso} ${rmount}\n`
     if (flags.clean) {
       cmd += `rm -f ${rmount}/${Tu.snapshot_name}*\n`
     }
 
-    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[0]} ${rmount}\n`
+    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[0]} ${rmount} 2>/dev/null || true\n`
+    cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[1]} ${rmount} 2>/dev/null || true\n`
     if (flags.checksum) {
-      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[1]} ${rmount}\n`
-      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[2]} ${rmount}\n`
+      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[2]} ${rmount} 2>/dev/null || true\n`
+      cmd += `cp ${Tu.snapshot_dir}${Tu.snapshot_name}${filters[3]} ${rmount} 2>/dev/null || true\n`
     }
 
     cmd += 'sync\n'
@@ -53,14 +54,14 @@ export default class ExportIso extends Command {
 
     if (!flags.verbose) {
       if (flags.clean) {
-        console.log(`remove  ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filters[0]}`)
+        console.log(`remove  ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}${Tu.snapshot_name}${filters[0]}|img`)
       }
 
       if (flags.checksum) {
-        console.log(`export  ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[1]}/${filters[2]} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
+        console.log(`export  ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[2]}/${filters[3]} to ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
       }
 
-      console.log(`scp     ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[0]} ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
+      console.log(`scp     ${Tu.config.localPathIso}/${Tu.snapshot_name}${filters[0]}|img ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathIso}`)
     }
 
     await exec(cmd, echo)
