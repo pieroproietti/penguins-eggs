@@ -56,7 +56,11 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
     script += 'mkfs.vfat -F32 -n "EFI" "${LOOP_DEV}p1"\n'
-    script += `mkfs.ext4 -L "ROOTFS" -m 0 -q "\${LOOP_DEV}p2"\n\n`
+    script += `mkfs.ext4 -L "ROOTFS" -m 0 -q "\${LOOP_DEV}p2"\n`
+    script += 'UUID_EFI=$(blkid -s UUID -o value "${LOOP_DEV}p1")\n'
+    script += 'UUID_ROOT=$(blkid -s UUID -o value "${LOOP_DEV}p2")\n'
+    script += 'echo "UUID_EFI=${UUID_EFI}"\n'
+    script += 'echo "UUID_ROOT=${UUID_ROOT}"\n\n'
 
     script += '# 4. Mount (UEFI Style)\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
@@ -67,19 +71,28 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'mkdir -p "$MNT_DIR/boot_mp/EFI/BOOT"\n'
 
     // Modules
-    const grubModules = 'part_gpt part_msdos fat ext2 iso9660 search search_fs_uuid search_label file configfile normal linux boot all_video gfxterm gettext help scsi ata ahci ehci ohci uhci usb usbms echo ls cat reboot minicmd nativedisk regexp test efi_gop efi_uga video_bochs video_cirrus lvm luks gcry_rijndael gcry_sha256 pbkdf2 relocator mmap cpuid'
+    const grubModules = 'part_gpt part_msdos fat ext2 iso9660 search search_fs_uuid search_label search_fs_file file configfile normal linux boot all_video gfxterm gettext help echo ls cat reboot minicmd nativedisk regexp test efi_gop efi_uga video_bochs video_cirrus lvm luks gcry_rijndael gcry_sha256 pbkdf2 relocator mmap cpuid serial'
 
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/EFI/BOOT/early.cfg"\n'
-
+    script += 'insmod serial\n'
+    script += 'serial --unit=0 --speed=115200\n'
+    script += 'terminal_input console serial\n'
+    script += 'terminal_output console serial\n'
     script += 'echo "EARLY: Starting early.cfg"\n'
-    script += 'ls\n'
-    script += 'echo "EARLY: Searching for EFI partition..."\n'
-    script += 'search --no-floppy --set=root --label EFI\n'
-    script += 'echo "EARLY: Root is $root"\n'
-    script += 'set prefix=($root)/EFI/BOOT\n'
-    script += 'echo "EARLY: Loading grub.cfg from $prefix"\n'
-    script += 'configfile ($root)/EFI/BOOT/grub.cfg\n'
+    script += 'echo "EARLY: Searching for EFI partition via UUID: ${UUID_EFI}..."\n'
+    script += 'search --no-floppy --fs-uuid --set=root ${UUID_EFI}\n'
+    script += 'if [ -z "\\$root" ]; then\n'
+    script += '    echo "EARLY: Search failed, invalid \\$root"\n'
+    script += '    echo "EARLY: Trying cmdpath: \\$cmdpath"\n'
+    script += '    set root=(\\$cmdpath)\n'
+    script += 'fi\n'
+    script += 'echo "EARLY: Root is \\$root"\n'
+    script += 'set prefix=(\\$root)/EFI/BOOT\n'
+    script += 'echo "EARLY: Loading grub.cfg from \\$prefix"\n'
+    script += 'configfile (\\$root)/EFI/BOOT/grub.cfg\n'
     script += 'echo "EARLY: Failed to load configfile!"\n'
+    script += 'ls\n'
+    script += 'sleep 10\n'
     script += 'EOF\n\n'
 
     script += `grub-mkimage -c "$MNT_DIR/boot_mp/EFI/BOOT/early.cfg" -O x86_64-efi -o "$MNT_DIR/boot_mp/EFI/BOOT/BOOTX64.EFI" -p "/EFI/BOOT" ${grubModules}\n`
@@ -89,32 +102,41 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/EFI/BOOT/grub.cfg"\n'
     script += 'set timeout=5\n'
     script += 'echo "ESP: Loaded grub.cfg in EFI partition"\n'
-    script += 'echo "ESP: Searching for ROOTFS..."\n'
-    script += 'search --no-floppy --set=root --label ROOTFS\n'
-    script += 'if [ -z "$root" ]; then\n'
-    script += '    echo "ESP: ROOTFS label not found, trying file..."\n'
+    script += 'echo "ESP: Searching for ROOTFS UUID: ${UUID_ROOT}..."\n'
+    script += 'search --no-floppy --fs-uuid --set=root ${UUID_ROOT}\n'
+    script += 'if [ -z "\\$root" ]; then\n'
+    script += '    echo "ESP: ROOTFS not found, trying file..."\n'
     script += '    search --no-floppy --set=root --file /boot/grub/grub.cfg\n'
     script += 'fi\n'
-    script += 'if [ -z "$root" ]; then\n'
+    script += 'if [ -z "\\$root" ]; then\n'
     script += '    echo "ERROR: Root partition not found!"\n'
     script += '    ls\n'
     script += '    sleep 10\n'
     script += 'else\n'
-    script += '    echo "ESP: Found root at $root"\n'
-    script += '    set prefix=($root)/boot/grub\n'
+    script += '    echo "ESP: Found root at \\$root"\n'
+    script += '    set prefix=(\\$root)/boot/grub\n'
     script += '    echo "ESP: Loading real grub.cfg..."\n'
-    script += '    configfile ($root)/boot/grub/grub.cfg\n'
+    script += '    configfile (\\$root)/boot/grub/grub.cfg\n'
     script += 'fi\n'
     script += 'EOF\n\n'
 
     // --- RSYNC ---
+    // Ensure UsrMerge symlinks exist before rsync to prevent directory creation
+    script += '# --- UsrMerge Symlinks ---\n'
+    script += 'ln -sf usr/bin "$MNT_DIR/root_mp/bin"\n'
+    script += 'ln -sf usr/sbin "$MNT_DIR/root_mp/sbin"\n'
+    script += 'ln -sf usr/lib "$MNT_DIR/root_mp/lib"\n'
+    script += 'ln -sf usr/lib64 "$MNT_DIR/root_mp/lib64"\n\n'
+
     script += getRsyncLogic.call(this, includeRootHome)
 
     // --- POST CONFIG ---
     script += '# --- x86_64 POST-CONFIG ---\n'
     script += 'mkdir -p "$MNT_DIR/root_mp/etc"\n'
     script += 'echo "LABEL=ROOTFS  /          ext4  errors=remount-ro  0  1" > "$MNT_DIR/root_mp/etc/fstab"\n'
-    script += 'echo "LABEL=EFI     /boot/efi  vfat  umount=0077        0  1" >> "$MNT_DIR/root_mp/etc/fstab"\n'
+    //script += 'echo "LABEL=EFI     /boot/efi  vfat  umount=0077        0  1" >> "$MNT_DIR/root_mp/etc/fstab"\n'
+    script += 'echo "LABEL=EFI     /boot/efi  vfat  umask=0077        0  1" >> "$MNT_DIR/root_mp/etc/fstab"\n'
+    script += 'mkdir -p "$MNT_DIR/root_mp/boot/efi"\n'
 
     script += 'mkdir -p "$MNT_DIR/root_mp/boot/grub/x86_64-efi"\n'
     script += 'cp -r /usr/lib/grub/x86_64-efi/*.mod "$MNT_DIR/root_mp/boot/grub/x86_64-efi/"\n'
@@ -128,9 +150,14 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'set default=0\n'
     script += 'insmod all_video\n'
     script += 'insmod gfxterm\n'
-    script += 'menuentry "Penguins Eggs (x86_64)" {\n'
-    script += '    search --no-floppy --set=root --label ROOTFS\n'
-    script += '    linux /boot/$KERNEL root=LABEL=ROOTFS rw quiet splash\n'
+    script += 'insmod serial\n'
+    script += 'serial --unit=0 --speed=115200\n'
+    script += 'terminal_input console serial\n'
+    script += 'terminal_output console serial\n'
+    script += 'menuentry "Penguins Eggs" {\n'
+    script += '    echo "Loading Linux..."\n'
+    script += '    linux /boot/$KERNEL root=UUID=${UUID_ROOT} rw console=ttyS0\n'
+    script += '    echo "Loading initrd..."\n'
     script += '    initrd /boot/$INITRD\n'
     script += '}\n'
     script += 'EOF\n\n'
@@ -140,6 +167,10 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
 
     return await writeScript.call(this, script)
 }
+
+
+
+
 
 /**
  * makeImgRiscv64
