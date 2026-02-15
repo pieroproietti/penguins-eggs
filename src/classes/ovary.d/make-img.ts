@@ -31,10 +31,10 @@ export async function makeImg(this: Ovary, includeRootHome = false): Promise<str
 
 /**
  * makeImgAmd64
- * Versione "Brute Force" con configurazione EMBEDDED
+ * Versione aggiornata con sfdisk per UEFI (x86_64)
  */
 async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('make live image (x86_64 UEFI) - Brute Force Mode')
+    Utils.warning('make live image (x86_64 UEFI) - sfdisk Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
@@ -44,10 +44,16 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1024))\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=0 seek=$TOTAL_SIZE status=none\n\n'
 
-    script += '# 2. Partizionamento\n'
-    script += 'sgdisk -o "$IMG_NAME"\n'
-    script += 'sgdisk -n 1:2048:+256M -c 1:"EFI" -t 1:ef00 "$IMG_NAME"\n'
-    script += 'sgdisk -n 2:0:0        -c 2:"$IMG_VOLID" -t 2:8300 "$IMG_NAME"\n\n'
+    script += '# 2. Partizionamento (sfdisk UEFI layout)\n'
+    script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
+    script += 'label: gpt\n'
+    script += 'unit: sectors\n'
+    script += '\n'
+    // p1: EFI System Partition (256M), GUID: C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+    script += 'start=2048, size=524288, type=C12A7328-F81F-11D2-BA4B-00A0C93EC93B, name="EFI"\n'
+    // p2: Linux Root (il resto), GUID: 0FC63DAF-8483-4772-8E79-3D69D8477DE4
+    script += 'start=526336, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="$IMG_VOLID"\n'
+    script += 'EOF\n\n'
 
     script += '# 3. Formattazione\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
@@ -68,59 +74,28 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/root_mp/boot/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/root_mp/boot/"\n\n'
 
-    // LISTA MODULI COMPLETA: Inseriamo tutto il necessario per non dipendere dal prefix
     const grubModules = 'part_gpt part_msdos fat ext2 search search_label configfile normal linux all_video efi_gop echo test loadenv'
 
-    script += '# 6. ESP Setup - Generazione binario con configurazione incorporata\n'
+    script += '# 6. ESP Setup\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp/EFI/BOOT"\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/EFI/BOOT/embedded_grub.cfg"\n'
     script += 'insmod part_gpt\n'
     script += 'insmod fat\n'
     script += 'insmod ext2\n'
     script += 'insmod search_label\n'
-    script += 'echo "Searching for $IMG_VOLID partition..."\n'
     script += 'search --no-floppy --label --set=root "$IMG_VOLID"\n'
     script += 'set prefix=(\$root)/boot/grub\n'
     script += 'configfile /boot/grub/grub.cfg\n'
     script += 'EOF\n\n'
 
-    // IL COMANDO MANCANTE: Crea il binario EFI incorporando la configurazione sopra
     script += `grub-mkimage -c "$MNT_DIR/boot_mp/EFI/BOOT/embedded_grub.cfg" -O x86_64-efi -o "$MNT_DIR/boot_mp/EFI/BOOT/BOOTX64.EFI" -p "" ${grubModules}\n\n`
 
-    script += '# 8. GRUB Config Principale (nella partizione LIVE)\n'
+    script += '# 8. GRUB Config Principale\n'
     script += 'cat <<EOF > "$MNT_DIR/root_mp/boot/grub/grub.cfg"\n'
     script += 'set timeout=5\n'
     script += 'insmod all_video\n'
     script += 'menuentry "Penguins Eggs Live" {\n'
-    script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n' // root=LABEL=$IMG_VOLID handled by search --label --set=root? No, usually cmdline needs it too for initrd to find it.
-    // Wait, the original code didn't have root=LABEL=LIVE in the linux line for Amd64?
-    // Let me check line 95...
-    // script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n'
-    // It seems AMD64 relies on 'boot=live' finding the medium, or maybe search set root.
-    // However, I should probably check if I need to add it.
-    // The instructions said: "Replace root=LABEL=LIVE with root=LABEL=${IMG_VOLID} (escaped correctly for the script) in the kernel command line."
-    // BUT line 95 DOES NOT HAVE root=LABEL=LIVE.
-    // Checking Riscv64... Line 152: script += '    append root=LABEL=LIVE boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
-    // So Riscv64 HAS it. Amd64 DOES NOT.
-    // I will stick to what is there for Amd64 (no root=LABEL=...) unless I see it.
-    // Wait, checking the file execution flow.
-    // Amd64 uses 'search --set=root LIVE'.
-    // Then 'linux /boot/... boot=live ...'
-    // 'boot=live' usually scans for the filesystem.
-    // If I change the label of the filesystem, 'boot=live' might still find it if it just looks for a live filesystem structure?
-    // Or maybe it needs 'live-media-path' or 'bootfrom'.
-    // In 'make-iso.ts' or others, usually 'boot=live' is enough if uuid/label mechanisms are used by functionality in initrd.
-    // The user request was: "Il disco IMG viene creato con label LIVE, vorrei che venisse usato il valore di ovary.volid da metter in getVariables come imgVolid e quindi da usare come IMG_VOLID"
-    // So I should just replace "LIVE" where it exists.
-    // In Amd64 it exists in sgdisk, mkfs, and search.
-    // In Riscv64 it exists in sgdisk, mkfs, and append root=LABEL=LIVE.
-    // So for Amd64, I will NOT add root=LABEL=... if it wasn't there.
-
-    // Resume replacement for Amd64 search.
-    // Lines 81-82:
-    // script += 'echo "Searching for LIVE partition..."\n'
-    // script += 'search --no-floppy --label --set=root LIVE\n'
-
+    script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n'
     script += '    initrd /boot/' + '$INITRD_FILE' + '\n'
     script += '}\n'
     script += 'EOF\n\n'
@@ -133,10 +108,11 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
 
 
 /**
- * makeImgRiscv64
+ * makeImgRiscv64 
+ * Replicating Bianbu partition scheme for Spacemit K1
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1)')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Bianbu Layout')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
@@ -146,49 +122,71 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1024))\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=0 seek=$TOTAL_SIZE status=none\n\n'
 
-    script += '# 2. Partizionamento (Offset 2MB per SPL/U-Boot)\n'
-    script += 'sgdisk -o "$IMG_NAME"\n'
-    script += 'sgdisk -a 1 -n 1:4096:0 -c 1:"$IMG_VOLID" -t 1:8300 "$IMG_NAME"\n\n'
+
+    script += '# 2. Partizionamento (Uso di sfdisk per forzare i settori esatti)\n'
+    script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
+    script += 'label: gpt\n'
+    script += 'unit: sectors\n'
+    script += 'first-lba: 34\n'
+    script += '\n'
+    script += 'start=256, size=512, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="env"\n'
+    script += 'start=768, size=128, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="factory"\n'
+    script += 'start=2048, size=2048, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="spl"\n'
+    script += 'start=4096, size=4096, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="uboot"\n'
+    script += 'start=8192, size=524288, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="BOOT"\n'
+    script += 'start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="$IMG_VOLID"\n'
+    script += 'EOF\n\n'
 
     script += '# 3. Loop & Format\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
-    script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p1"\n'
-    script += 'mkdir -p "$MNT_DIR/root_mp"\n'
-    script += 'mount "${LOOP_DEV}p1" "$MNT_DIR/root_mp"\n\n'
+    script += 'sleep 2\n'
+    script += 'mkfs.ext4 -L "BOOT" -m 0 -q "${LOOP_DEV}p5"\n'
+    script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p6"\n'
+    script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
+    script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
+    script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
 
     script += '# 4. Popolamento Live e Boot\n'
-    script += 'mkdir -p "$MNT_DIR/root_mp/live" "$MNT_DIR/root_mp/boot/extlinux"\n'
+    script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n'
 
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/root_mp/boot/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/root_mp/boot/"\n\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n\n'
 
     script += 'if [ -d "$DTB_DIR" ]; then\n'
-    script += '    mkdir -p "$MNT_DIR/root_mp/boot/spacemit/$KERNEL_VER"\n'
-    script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/root_mp/boot/spacemit/$KERNEL_VER/"\n'
+    script += '    mkdir -p "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER"\n'
+    script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
     script += 'fi\n\n'
 
     script += '# 5. Configurazione Extlinux\n'
-    script += 'cat <<EOF > "$MNT_DIR/root_mp/boot/extlinux/extlinux.conf"\n'
+    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n'
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
     script += 'label linux\n'
-    script += '    kernel /boot/${KERNEL_FILE}\n'
-    script += '    initrd /boot/${INITRD_FILE}\n'
-    script += '    fdtdir /boot/spacemit/${KERNEL_VER}/\n'
+    script += '    kernel /${KERNEL_FILE}\n'
+    script += '    initrd /${INITRD_FILE}\n'
+    script += '    fdtdir /spacemit/${KERNEL_VER}/\n'
     script += '    append root=LABEL=$IMG_VOLID boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Iniezione Bootloader (Settori 256 e 2048)\n'
-    script += 'dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
-    script += 'dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n\n'
+    script += '# 6. Iniezione Bootloader\n'
+    // Controllo esistenza binari per evitare dd falliti
+    script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ] && [ -f "$MUSEBOOK_DIR/uboot.itb" ]; then\n'
+    script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
+    script += '    dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
+    script += 'else\n'
+    script += '    echo "ERROR: Bootloader binaries not found in $MUSEBOOK_DIR"\n'
+    script += '    exit 1\n'
+    script += 'fi\n\n'
 
     script += getCleanupLogic()
     script += getFinalizeLogic()
 
     return await writeScript.call(this, script)
 }
+
 
 async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
     Utils.warning('make live image (ARM64) - Not yet implemented')
@@ -206,7 +204,8 @@ function getVariables(ovary: Ovary) {
 
     ovary.settings.isoFilename = ovary.settings.config.snapshot_prefix + ovary.volid + '_' + Utils.uefiArch() + Utils.getPostfix() + '.img'
     const imgLnk = ovary.settings.config.snapshot_dir + ovary.settings.isoFilename
-    const workImg = ovary.settings.config.snapshot_mnt + ovary.settings.isoFilename
+    const imgName = ovary.settings.config.snapshot_mnt + ovary.settings.isoFilename
+    const imgVolid = ovary.volid
     const mergedDir = ovary.settings.work_dir.merged
     const snapshotExcludes = ovary.settings.config.snapshot_excludes
 
@@ -215,22 +214,21 @@ function getVariables(ovary: Ovary) {
         musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
     }
 
-    const imgVolid = ovary.volid
-    return { srcDir, mntDir, dtbDir, imgLnk, workImg, mergedDir, snapshotExcludes, musebookDir, imgVolid }
+    return { srcDir, mntDir, dtbDir, imgLnk, imgName, mergedDir, snapshotExcludes, musebookDir, imgVolid }
 }
 
 function getScriptHeader(vars: any) {
     let script = '#!/bin/bash\n'
     script += 'set -ex\n\n'
-    script += `SRC_DIR="${vars.srcDir}"\n`
-    script += `DTB_DIR="${vars.dtbDir}"\n`
-    script += `IMG_NAME="${vars.workImg}"\n`
     script += `IMG_LNK="${vars.imgLnk}"\n`
+    script += `IMG_NAME="${vars.imgName}"\n`
+    script += `IMG_VOLID="${vars.imgVolid}"\n`
+    script += `DTB_DIR="${vars.dtbDir}"\n`
+    script += `MERGED_DIR="${vars.mergedDir}"\n`
     script += `MNT_DIR="${vars.mntDir}"\n`
     script += `MUSEBOOK_DIR="${vars.musebookDir}"\n`
-    script += `MERGED_DIR="${vars.mergedDir}"\n`
+    script += `SRC_DIR="${vars.srcDir}"\n`
     script += `SNAPSHOT_EXCLUDES="${vars.snapshotExcludes}"\n`
-    script += `IMG_VOLID="${vars.imgVolid}"\n`
     return script
 }
 
