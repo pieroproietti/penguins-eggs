@@ -111,37 +111,45 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
  * makeImgRiscv64 
  * Replicating Bianbu partition scheme for Spacemit K1
  */
+/**
+ * makeImgRiscv64 
+ * Strategia: Header Injection (Preserva la firma SDC al settore 0)
+ */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Bianbu Layout')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Bianbu Env Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. CALCOLO DIMENSIONI ---\n'
+    script += '# --- 1. CREAZIONE IMMAGINE E INIEZIONE HEADER ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
     script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1024))\n'
-    script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=0 seek=$TOTAL_SIZE status=none\n\n'
 
+    script += 'if [ -f "$MUSEBOOK_DIR/boot_header.bin" ]; then\n'
+    script += '    cp "$MUSEBOOK_DIR/boot_header.bin" "$IMG_NAME"\n'
+    script += '    truncate -s ${TOTAL_SIZE}M "$IMG_NAME"\n'
+    script += 'else\n'
+    script += '    exit 1\n'
+    script += 'fi\n\n'
 
-    script += '# 2. Partizionamento (Uso di sfdisk per forzare i settori esatti)\n'
+    script += '# 2. Partizionamento (Label bootfs/rootfs)\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
     script += 'unit: sectors\n'
-    script += 'first-lba: 34\n'
-    script += '\n'
+    script += 'first-lba: 34\n\n'
     script += 'start=256, size=512, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="env"\n'
     script += 'start=768, size=128, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="factory"\n'
     script += 'start=2048, size=2048, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="spl"\n'
     script += 'start=4096, size=4096, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="uboot"\n'
-    script += 'start=8192, size=524288, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="BOOT"\n'
-    script += 'start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="$IMG_VOLID"\n'
+    script += 'start=8192, size=524288, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="bootfs"\n'
+    script += 'start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="rootfs"\n'
     script += 'EOF\n\n'
 
     script += '# 3. Loop & Format\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
-    script += 'mkfs.ext4 -L "BOOT" -m 0 -q "${LOOP_DEV}p5"\n'
-    script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p6"\n'
+    script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
+    script += 'mkfs.ext4 -L "rootfs" -m 0 -q "${LOOP_DEV}p6"\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
     script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
@@ -153,6 +161,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
+
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n\n'
 
@@ -161,31 +170,17 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
     script += 'fi\n\n'
 
-    script += '# 5. Configurazione Extlinux\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n'
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
-    script += 'label linux\n'
-    script += '    kernel /${KERNEL_FILE}\n'
-    script += '    initrd /${INITRD_FILE}\n'
-    script += '    fdtdir /spacemit/${KERNEL_VER}/\n'
-    script += '    append root=LABEL=$IMG_VOLID boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
+    script += '# 5. Generazione env_k1-x.txt (Bianbu Style)\n'
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
+    script += 'knl_name=${KERNEL_FILE}\n'
+    script += 'ramdisk_name=${INITRD_FILE}\n'
+    script += 'dtb_dir=spacemit/${KERNEL_VER}\n'
+    // Aggiungiamo anche i parametri di boot eggs necessari
+    script += 'bootargs=root=LABEL=rootfs boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Iniezione Bootloader (Binari estratti dall\'originale)\n'
-    script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ] && [ -f "$MUSEBOOK_DIR/uboot.itb" ]; then\n'
-    script += '    echo "Writing verified bootloader binaries..."\n'
-    // Scriviamo SPL al settore 256
-    script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
-    // Scriviamo U-Boot al settore 2048
-    script += '    dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
-
-    // FONDAMENTALE?: Ripariamo la tabella GPT per la nuova dimensione del file
-    script += '    echo "Fixing GPT table for the current image size..."\n'
-    script += '    sgdisk -e "$IMG_NAME"\n'
-    script += 'else\n'
-    script += '    echo "ERROR: Verified bootloader binaries not found in $MUSEBOOK_DIR"\n'
-    script += '    exit 1\n'
-    script += 'fi\n\n'
+    script += '# 6. Finalizzazione GPT\n'
+    script += 'sgdisk -e "$IMG_NAME"\n\n'
 
     script += getCleanupLogic()
     script += getFinalizeLogic()

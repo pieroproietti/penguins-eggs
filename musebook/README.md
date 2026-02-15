@@ -174,3 +174,29 @@ label eggs
 
 # Partizione 2 (ext4)
 ISO/live/filesystem.squashfs -> ROOT/live/filesystem.squashfs
+
+
+L'immagine originale di Bianbu usa un GPT "ibrido" o modificato dove il settore 0 contiene dati vitali per il boot (SDC...). Usando cp boot_header.bin "$IMG_NAME", portiamo dietro tutto:
+
+La firma SDC al settore 0.
+
+L'SPL già pronto.
+
+U-Boot già pronto.
+
+sfdisk poi si occuperà solo di dire al kernel dove trovare le partizioni 5 e 6, ma senza toccare i byte magici iniziali.
+
+Vuoi provare a generare il boot_header.bin e vedere se con questo metodo il Musebook finalmente "sente" la SD? Se così funziona, avremo un template universale per tutte le tue build RISC-V.
+
+```
+sudo dd if=bianbu-25.04-desktop-k1-v3.0.1-release-20250815185656.img \
+        of=boot_header.bin bs=512 count=8192
+```
+
+Cosa abbiamo ottenuto con questo codice:
+
+Compatibilità Totale: Copiando i primi 8192 settori, portiamo con noi la firma SDC, l'SPL e l'U-Boot originale. Il Musebook non potrà più ignorare la SD.
+
+Semplificazione: Non abbiamo più bisogno dei singoli comandi dd per spl.bin e uboot.itb, poiché sono già inclusi nel pacchetto boot_header.bin.
+
+Flessibilità: Lo script crea comunque le tue partizioni Eggs (BOOT e ROOT) e le formatta ex-novo, garantendo che i tuoi file siano puliti.
