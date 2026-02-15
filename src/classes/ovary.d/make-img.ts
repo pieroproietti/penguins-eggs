@@ -171,13 +171,19 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '    append root=LABEL=$IMG_VOLID boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Iniezione Bootloader\n'
-    // Controllo esistenza binari per evitare dd falliti
+    script += '# 6. Iniezione Bootloader (Binari estratti dall\'originale)\n'
     script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ] && [ -f "$MUSEBOOK_DIR/uboot.itb" ]; then\n'
+    script += '    echo "Writing verified bootloader binaries..."\n'
+    // Scriviamo SPL al settore 256
     script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
+    // Scriviamo U-Boot al settore 2048
     script += '    dd if="$MUSEBOOK_DIR/uboot.itb" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
+
+    // FONDAMENTALE?: Ripariamo la tabella GPT per la nuova dimensione del file
+    script += '    echo "Fixing GPT table for the current image size..."\n'
+    script += '    sgdisk -e "$IMG_NAME"\n'
     script += 'else\n'
-    script += '    echo "ERROR: Bootloader binaries not found in $MUSEBOOK_DIR"\n'
+    script += '    echo "ERROR: Verified bootloader binaries not found in $MUSEBOOK_DIR"\n'
     script += '    exit 1\n'
     script += 'fi\n\n'
 
