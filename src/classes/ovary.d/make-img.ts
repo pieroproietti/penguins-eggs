@@ -47,13 +47,13 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += '# 2. Partizionamento\n'
     script += 'sgdisk -o "$IMG_NAME"\n'
     script += 'sgdisk -n 1:2048:+256M -c 1:"EFI" -t 1:ef00 "$IMG_NAME"\n'
-    script += 'sgdisk -n 2:0:0        -c 2:"LIVE" -t 2:8300 "$IMG_NAME"\n\n'
+    script += 'sgdisk -n 2:0:0        -c 2:"$IMG_VOLID" -t 2:8300 "$IMG_NAME"\n\n'
 
     script += '# 3. Formattazione\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
     script += 'mkfs.vfat -F32 -n "EFI" "${LOOP_DEV}p1"\n'
-    script += 'mkfs.ext4 -L "LIVE" -m 0 -q "${LOOP_DEV}p2"\n\n'
+    script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p2"\n\n'
 
     script += '# 4. Mount\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
@@ -78,8 +78,8 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'insmod fat\n'
     script += 'insmod ext2\n'
     script += 'insmod search_label\n'
-    script += 'echo "Searching for LIVE partition..."\n'
-    script += 'search --no-floppy --label --set=root LIVE\n'
+    script += 'echo "Searching for $IMG_VOLID partition..."\n'
+    script += 'search --no-floppy --label --set=root "$IMG_VOLID"\n'
     script += 'set prefix=(\$root)/boot/grub\n'
     script += 'configfile /boot/grub/grub.cfg\n'
     script += 'EOF\n\n'
@@ -92,7 +92,35 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'set timeout=5\n'
     script += 'insmod all_video\n'
     script += 'menuentry "Penguins Eggs Live" {\n'
-    script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n'
+    script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n' // root=LABEL=$IMG_VOLID handled by search --label --set=root? No, usually cmdline needs it too for initrd to find it.
+    // Wait, the original code didn't have root=LABEL=LIVE in the linux line for Amd64?
+    // Let me check line 95...
+    // script += '    linux /boot/' + '$KERNEL_FILE' + ' boot=live components quiet splash\n'
+    // It seems AMD64 relies on 'boot=live' finding the medium, or maybe search set root.
+    // However, I should probably check if I need to add it.
+    // The instructions said: "Replace root=LABEL=LIVE with root=LABEL=${IMG_VOLID} (escaped correctly for the script) in the kernel command line."
+    // BUT line 95 DOES NOT HAVE root=LABEL=LIVE.
+    // Checking Riscv64... Line 152: script += '    append root=LABEL=LIVE boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
+    // So Riscv64 HAS it. Amd64 DOES NOT.
+    // I will stick to what is there for Amd64 (no root=LABEL=...) unless I see it.
+    // Wait, checking the file execution flow.
+    // Amd64 uses 'search --set=root LIVE'.
+    // Then 'linux /boot/... boot=live ...'
+    // 'boot=live' usually scans for the filesystem.
+    // If I change the label of the filesystem, 'boot=live' might still find it if it just looks for a live filesystem structure?
+    // Or maybe it needs 'live-media-path' or 'bootfrom'.
+    // In 'make-iso.ts' or others, usually 'boot=live' is enough if uuid/label mechanisms are used by functionality in initrd.
+    // The user request was: "Il disco IMG viene creato con label LIVE, vorrei che venisse usato il valore di ovary.volid da metter in getVariables come imgVolid e quindi da usare come IMG_VOLID"
+    // So I should just replace "LIVE" where it exists.
+    // In Amd64 it exists in sgdisk, mkfs, and search.
+    // In Riscv64 it exists in sgdisk, mkfs, and append root=LABEL=LIVE.
+    // So for Amd64, I will NOT add root=LABEL=... if it wasn't there.
+
+    // Resume replacement for Amd64 search.
+    // Lines 81-82:
+    // script += 'echo "Searching for LIVE partition..."\n'
+    // script += 'search --no-floppy --label --set=root LIVE\n'
+
     script += '    initrd /boot/' + '$INITRD_FILE' + '\n'
     script += '}\n'
     script += 'EOF\n\n'
@@ -120,11 +148,11 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
 
     script += '# 2. Partizionamento (Offset 2MB per SPL/U-Boot)\n'
     script += 'sgdisk -o "$IMG_NAME"\n'
-    script += 'sgdisk -a 1 -n 1:4096:0 -c 1:"LIVE" -t 1:8300 "$IMG_NAME"\n\n'
+    script += 'sgdisk -a 1 -n 1:4096:0 -c 1:"$IMG_VOLID" -t 1:8300 "$IMG_NAME"\n\n'
 
     script += '# 3. Loop & Format\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
-    script += 'mkfs.ext4 -L "LIVE" -m 0 -q "${LOOP_DEV}p1"\n'
+    script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p1"\n'
     script += 'mkdir -p "$MNT_DIR/root_mp"\n'
     script += 'mount "${LOOP_DEV}p1" "$MNT_DIR/root_mp"\n\n'
 
@@ -149,7 +177,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '    kernel /boot/${KERNEL_FILE}\n'
     script += '    initrd /boot/${INITRD_FILE}\n'
     script += '    fdtdir /boot/spacemit/${KERNEL_VER}/\n'
-    script += '    append root=LABEL=LIVE boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
+    script += '    append root=LABEL=$IMG_VOLID boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
     script += '# 6. Iniezione Bootloader (Settori 256 e 2048)\n'
@@ -187,7 +215,8 @@ function getVariables(ovary: Ovary) {
         musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
     }
 
-    return { srcDir, mntDir, dtbDir, imgLnk, workImg, mergedDir, snapshotExcludes, musebookDir }
+    const imgVolid = ovary.volid
+    return { srcDir, mntDir, dtbDir, imgLnk, workImg, mergedDir, snapshotExcludes, musebookDir, imgVolid }
 }
 
 function getScriptHeader(vars: any) {
@@ -201,6 +230,7 @@ function getScriptHeader(vars: any) {
     script += `MUSEBOOK_DIR="${vars.musebookDir}"\n`
     script += `MERGED_DIR="${vars.mergedDir}"\n`
     script += `SNAPSHOT_EXCLUDES="${vars.snapshotExcludes}"\n`
+    script += `IMG_VOLID="${vars.imgVolid}"\n`
     return script
 }
 
