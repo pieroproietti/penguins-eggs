@@ -109,14 +109,10 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
 
 /**
  * makeImgRiscv64 
- * Replicating Bianbu partition scheme for Spacemit K1
- */
-/**
- * makeImgRiscv64 
  * Strategia: Header Injection (Preserva la firma SDC al settore 0)
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Bianbu Env Mode')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Identity Clone Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
@@ -132,22 +128,26 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '    exit 1\n'
     script += 'fi\n\n'
 
-    script += '# 2. Partizionamento (Label bootfs/rootfs)\n'
+    script += '# 2. Partizionamento con ID Originali (Identità Bianbu)\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
+    // Disk identifier originale
+    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n'
     script += 'unit: sectors\n'
     script += 'first-lba: 34\n\n'
-    script += 'start=256, size=512, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="env"\n'
-    script += 'start=768, size=128, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="factory"\n'
-    script += 'start=2048, size=2048, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="spl"\n'
-    script += 'start=4096, size=4096, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="uboot"\n'
-    script += 'start=8192, size=524288, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="bootfs"\n'
-    script += 'start=532480, type=0FC63DAF-8483-4772-8E79-3D69D8477DE4, name="rootfs"\n'
+    script += 'start=256, size=512, name="env"\n'
+    script += 'start=768, size=128, name="factory"\n'
+    script += 'start=2048, size=2048, name="spl"\n'
+    script += 'start=4096, size=4096, name="uboot"\n'
+    // Partition GUID originale per bootfs (p5)
+    script += 'start=8192, size=524288, uuid=22B753D6-6BB5-4F45-8937-6FFA7CDDAE98, name="bootfs"\n'
+    script += 'start=532480, name="rootfs"\n'
     script += 'EOF\n\n'
 
     script += '# 3. Loop & Format\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
+    // Usiamo le label che U-Boot si aspetta
     script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
     script += 'mkfs.ext4 -L "rootfs" -m 0 -q "${LOOP_DEV}p6"\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
@@ -170,16 +170,16 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
     script += 'fi\n\n'
 
-    script += '# 5. Generazione env_k1-x.txt (Bianbu Style)\n'
+    script += '# 5. Generazione env_k1-x.txt (Sincronizzato con nomi Eggs)\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
     script += 'knl_name=${KERNEL_FILE}\n'
     script += 'ramdisk_name=${INITRD_FILE}\n'
     script += 'dtb_dir=spacemit/${KERNEL_VER}\n'
-    // Aggiungiamo anche i parametri di boot eggs necessari
+    // Assicuriamoci che i bootargs passino i parametri live corretti
     script += 'bootargs=root=LABEL=rootfs boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Finalizzazione GPT\n'
+    script += '# 6. Finalizzazione GPT (Sposta la tabella secondaria alla fine del file)\n'
     script += 'sgdisk -e "$IMG_NAME"\n\n'
 
     script += getCleanupLogic()
@@ -187,6 +187,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
 
     return await writeScript.call(this, script)
 }
+
 
 
 async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
