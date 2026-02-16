@@ -200,3 +200,5 @@ Compatibilità Totale: Copiando i primi 8192 settori, portiamo con noi la firma 
 Semplificazione: Non abbiamo più bisogno dei singoli comandi dd per spl.bin e uboot.itb, poiché sono già inclusi nel pacchetto boot_header.bin.
 
 Flessibilità: Lo script crea comunque le tue partizioni Eggs (BOOT e ROOT) e le formatta ex-novo, garantendo che i tuoi file siano puliti.
+
+[Miniera d'oro](https://www.workswithriscv.guide/wiki/hardware/K1/bianbu-multiboot.html)

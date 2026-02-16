@@ -106,32 +106,36 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     return await writeScript.call(this, script)
 }
 
-
 /**
  * makeImgRiscv64 
- * Strategia: Header Injection (Preserva la firma SDC al settore 0)
+ * Strategia: Full Identity Mode con pre-allocazione reale
+ */
+/**
+ * makeImgRiscv64 
+ * Strategia: Header Injection + Bianbu Multiboot Env
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Identity Clone Mode')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Multiboot Guide Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. CREAZIONE IMMAGINE E INIEZIONE HEADER ---\n'
+    script += '# --- 1. PRE-ALLOCAZIONE E INIEZIONE BINARI ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-    script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1024))\n'
+    script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1500))\n' // Margine ampio per dati e boot
 
-    script += 'if [ -f "$MUSEBOOK_DIR/boot_header.bin" ]; then\n'
-    script += '    cp "$MUSEBOOK_DIR/boot_header.bin" "$IMG_NAME"\n'
-    script += '    truncate -s ${TOTAL_SIZE}M "$IMG_NAME"\n'
-    script += 'else\n'
-    script += '    exit 1\n'
+    script += 'echo "Allocating image file..."\n'
+    script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n'
+
+    script += 'echo "Injecting Boot Header and ENV binary..."\n'
+    script += 'dd if="$MUSEBOOK_DIR/boot_header.bin" of="$IMG_NAME" conv=notrunc status=none\n'
+    script += 'if [ -f "$MUSEBOOK_DIR/env_original.bin" ]; then\n'
+    script += '    dd if="$MUSEBOOK_DIR/env_original.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
     script += 'fi\n\n'
 
-    script += '# 2. Partizionamento con ID Originali (Identità Bianbu)\n'
+    script += '# 2. Partizionamento Identità Bianbu (GUID originali)\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
-    // Disk identifier originale
     script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n'
     script += 'unit: sectors\n'
     script += 'first-lba: 34\n\n'
@@ -139,22 +143,20 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'start=768, size=128, name="factory"\n'
     script += 'start=2048, size=2048, name="spl"\n'
     script += 'start=4096, size=4096, name="uboot"\n'
-    // Partition GUID originale per bootfs (p5)
     script += 'start=8192, size=524288, uuid=22B753D6-6BB5-4F45-8937-6FFA7CDDAE98, name="bootfs"\n'
     script += 'start=532480, name="rootfs"\n'
     script += 'EOF\n\n'
 
-    script += '# 3. Loop & Format\n'
+    script += '# 3. Formattazione e Mount\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
-    // Usiamo le label che U-Boot si aspetta
     script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
     script += 'mkfs.ext4 -L "rootfs" -m 0 -q "${LOOP_DEV}p6"\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
     script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
 
-    script += '# 4. Popolamento Live e Boot\n'
+    script += '# 4. Popolamento Dati Live\n'
     script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n'
 
@@ -163,23 +165,25 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
 
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n'
 
     script += 'if [ -d "$DTB_DIR" ]; then\n'
     script += '    mkdir -p "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER"\n'
     script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
     script += 'fi\n\n'
 
-    script += '# 5. Generazione env_k1-x.txt (Sincronizzato con nomi Eggs)\n'
+    script += '# 5. Generazione env_k1-x.txt (Sintassi Bianbu Multiboot)\n'
+    // La guida suggerisce path relativi dalla root della partizione o assoluti /
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    script += 'knl_name=${KERNEL_FILE}\n'
-    script += 'ramdisk_name=${INITRD_FILE}\n'
-    script += 'dtb_dir=spacemit/${KERNEL_VER}\n'
-    // Assicuriamoci che i bootargs passino i parametri live corretti
+    script += 'knl_name=/${KERNEL_FILE}\n'
+    script += 'ramdisk_name=/${INITRD_FILE}\n'
+    script += 'dtb_dir=/spacemit/${KERNEL_VER}\n'
+    // Aggiungiamo root=LABEL=rootfs per coerenza con il nostro mkfs
     script += 'bootargs=root=LABEL=rootfs boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Finalizzazione GPT (Sposta la tabella secondaria alla fine del file)\n'
+    script += '# 6. Cleanup e Finalizzazione\n'
+    script += 'sync\n'
     script += 'sgdisk -e "$IMG_NAME"\n\n'
 
     script += getCleanupLogic()
@@ -187,7 +191,6 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
 
     return await writeScript.call(this, script)
 }
-
 
 
 async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
