@@ -108,10 +108,6 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
 
 /**
  * makeImgRiscv64 
- * Strategia: Full Identity Mode con pre-allocazione reale
- */
-/**
- * makeImgRiscv64 
  * Strategia: Header Injection + Bianbu Multiboot Env
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
@@ -123,10 +119,10 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '# --- 1. PRE-ALLOCAZIONE E INIEZIONE BINARI ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
     script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1500))\n' // Margine ampio per dati e boot
-
+    
     script += 'echo "Allocating image file..."\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n'
-
+    
     script += 'echo "Injecting Boot Header and ENV binary..."\n'
     script += 'dd if="$MUSEBOOK_DIR/boot_header.bin" of="$IMG_NAME" conv=notrunc status=none\n'
     script += 'if [ -f "$MUSEBOOK_DIR/env_original.bin" ]; then\n'
@@ -136,7 +132,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '# 2. Partizionamento Identità Bianbu (GUID originali)\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
-    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n'
+    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n' 
     script += 'unit: sectors\n'
     script += 'first-lba: 34\n\n'
     script += 'start=256, size=512, name="env"\n'
@@ -163,10 +159,10 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
-
+    
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n'
-
+    
     script += 'if [ -d "$DTB_DIR" ]; then\n'
     script += '    mkdir -p "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER"\n'
     script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
@@ -191,7 +187,6 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
 
     return await writeScript.call(this, script)
 }
-
 
 async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
     Utils.warning('make live image (ARM64) - Not yet implemented')

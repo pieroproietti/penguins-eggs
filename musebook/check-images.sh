@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configurazione percorsi
-IMG_EGGS="/home/eggs/mnt/egg-of_bianbu-noble-musebook_riscv64_2026-02-*.img"
+IMG_EGGS="/var/lib/vz/template/iso/egg-of_bianbu-noble-musebook_riscv64_2026-02-*.img"
 IMG_ORIG="/zfs/original/template/iso/bianbu-25.04-desktop-k1-v3.0.1-release-20250815185656.img"
 
 echo "=== ANALISI COMPARATIVA IMMAGINI RISC-V K1 ==="
