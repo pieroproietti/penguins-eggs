@@ -106,33 +106,32 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     return await writeScript.call(this, script)
 }
 
+
+async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
+    Utils.warning('make live image (ARM64) - Not yet implemented')
+    throw new Error("ARM64 support not yet implemented")
+}
+
 /**
- * makeImgRiscv64 
- * Strategia: Header Injection + Bianbu Multiboot Env
+ * makeImgRiscv64
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Multiboot Guide Mode')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Atomic Injection Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. PRE-ALLOCAZIONE E INIEZIONE BINARI ---\n'
+    script += '# --- 1. ALLOCAZIONE IMMAGINE VERGINE ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-    script += 'TOTAL_SIZE=$((SQUASH_SIZE + 1500))\n' // Margine ampio per dati e boot
-    
-    script += 'echo "Allocating image file..."\n'
-    script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n'
-    
-    script += 'echo "Injecting Boot Header and ENV binary..."\n'
-    script += 'dd if="$MUSEBOOK_DIR/boot_header.bin" of="$IMG_NAME" conv=notrunc status=none\n'
-    script += 'if [ -f "$MUSEBOOK_DIR/env_original.bin" ]; then\n'
-    script += '    dd if="$MUSEBOOK_DIR/env_original.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
-    script += 'fi\n\n'
+    script += 'TOTAL_SIZE=$((SQUASH_SIZE + 2000))\n'
+    script += 'echo "Creating empty file: ${TOTAL_SIZE}MB..."\n'
+    script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n\n'
 
-    script += '# 2. Partizionamento Identità Bianbu (GUID originali)\n'
+    script += '# 2. PARTIZIONAMENTO GPT (Su file pulito, nessun errore) ---\n'
+    script += 'echo "Applying GPT partition table..."\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
-    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n' 
+    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n'
     script += 'unit: sectors\n'
     script += 'first-lba: 34\n\n'
     script += 'start=256, size=512, name="env"\n'
@@ -143,7 +142,29 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'start=532480, name="rootfs"\n'
     script += 'EOF\n\n'
 
-    script += '# 3. Formattazione e Mount\n'
+    script += '# 3. INIEZIONE ATOMICA DEI BINARI DI BOOT (Sopra le partizioni) ---\n'
+    script += 'echo "Injecting Bootloader components into sectors..."\n'
+
+    // Firma SDC al settore 0 (necessaria per l'accensione)
+    script += 'dd if="$MUSEBOOK_DIR/boot_header_sector0.bin" of="$IMG_NAME" bs=512 count=1 conv=notrunc status=none\n'
+
+    // U-Boot Environment (Settore 256)
+    script += 'if [ -f "$MUSEBOOK_DIR/env.bin" ]; then\n'
+    script += '    dd if="$MUSEBOOK_DIR/env.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
+    script += 'fi\n'
+
+    // SPL (Settore 2048)
+    script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ]; then\n'
+    script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
+    script += 'fi\n'
+
+    // U-Boot (Settore 4096)
+    script += 'if [ -f "$MUSEBOOK_DIR/uboot.bin" ]; then\n'
+    script += '    dd if="$MUSEBOOK_DIR/uboot.bin" of="$IMG_NAME" bs=512 seek=4096 conv=notrunc status=none\n'
+    script += 'fi\n\n'
+
+
+    script += '# 4. FORMATTAZIONE E MOUNT ---\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
     script += 'sleep 2\n'
     script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
@@ -152,45 +173,40 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
 
-    script += '# 4. Popolamento Dati Live\n'
-    script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
-    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n'
-
+    script += '# 5. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
-    script += 'KERNEL_VER=${KERNEL_FILE#vmlinuz-}\n'
-    
-    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/"\n'
-    
-    script += 'if [ -d "$DTB_DIR" ]; then\n'
-    script += '    mkdir -p "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER"\n'
-    script += '    cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/$KERNEL_VER/"\n'
-    script += 'fi\n\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
 
-    script += '# 5. Generazione env_k1-x.txt (Sintassi Bianbu Multiboot)\n'
-    // La guida suggerisce path relativi dalla root della partizione o assoluti /
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    script += 'knl_name=/${KERNEL_FILE}\n'
-    script += 'ramdisk_name=/${INITRD_FILE}\n'
-    script += 'dtb_dir=/spacemit/${KERNEL_VER}\n'
-    // Aggiungiamo root=LABEL=rootfs per coerenza con il nostro mkfs
-    script += 'bootargs=root=LABEL=rootfs boot=live components rw rootwait console=ttyS0,115200 earlycon=sbi\n'
+    // Test visivo: copia bianbu.bmp se presente
+    script += 'if [ -f "$MUSEBOOK_DIR/bianbu.bmp" ]; then\n'
+    script += '    cp "$MUSEBOOK_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
+    script += 'fi\n'
+
+    script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
+    script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
+
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
+    script += 'label Eggs-Live\n'
+    script += '  kernel /vmlinuz\n'
+    script += '  initrd /initrd.img\n'
+    script += '  fdt /dtb/spacemit/k1-x_MUSE-Book.dtb\n'
+    script += '  append root=LABEL=rootfs boot=live components rw rootwait console=tty1 console=ttyS0,115200 earlycon=sbi\n'
     script += 'EOF\n\n'
 
-    script += '# 6. Cleanup e Finalizzazione\n'
+    script += '# 6. POPOLAMENTO ROOTFS ---\n'
+    script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
+    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n\n'
+
+    script += '# 7. CHIUSURA ---\n'
     script += 'sync\n'
-    script += 'sgdisk -e "$IMG_NAME"\n\n'
+    script += 'sgdisk -e "$IMG_NAME"\n'
 
     script += getCleanupLogic()
     script += getFinalizeLogic()
 
     return await writeScript.call(this, script)
-}
-
-async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<string> {
-    Utils.warning('make live image (ARM64) - Not yet implemented')
-    throw new Error("ARM64 support not yet implemented")
 }
 
 // ============================================================================
