@@ -121,11 +121,23 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. ALLOCAZIONE IMMAGINE VERGINE ---\n'
+    script += '# --- 1. CALCOLO PRECISO DIMENSIONE IMMAGINE ---\n'
+    // 1.1. Spazio per SquashFS (in MB)
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-    script += 'TOTAL_SIZE=$((SQUASH_SIZE + 2000))\n'
-    script += 'echo "Creating empty file: ${TOTAL_SIZE}MB..."\n'
+
+    // 1.2. Spazio fisso per le partizioni iniziali e bootfs (in MB)
+    // 4MB (binari boot) + 256MB (bootfs) = 260MB
+    script += 'BOOT_SYSTEM_RESERVED=260\n'
+
+    // 1.3. Margine di sicurezza per ext4, allineamento e GPT secondaria
+    script += 'MARGIN=500\n'
+
+    // 1.4. Somma totale
+    script += 'TOTAL_SIZE=$((SQUASH_SIZE + BOOT_SYSTEM_RESERVED + MARGIN))\n'
+
+    script += 'echo "Dimensionamento immagine: $TOTAL_SIZE MB (Squash: $SQUASH_SIZE, Boot/System: $BOOT_SYSTEM_RESERVED, Margine: $MARGIN)"\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n\n'
+
 
     script += '# 2. PARTIZIONAMENTO GPT (Su file pulito, nessun errore) ---\n'
     script += 'echo "Applying GPT partition table..."\n'
@@ -141,6 +153,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'start=8192, size=524288, uuid=22B753D6-6BB5-4F45-8937-6FFA7CDDAE98, name="bootfs"\n'
     script += 'start=532480, name="rootfs"\n'
     script += 'EOF\n\n'
+
 
     script += '# 3. INIEZIONE ATOMICA DEI BINARI DI BOOT (Sopra le partizioni) ---\n'
     script += 'echo "Injecting Bootloader components into sectors..."\n'
@@ -173,6 +186,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
 
+
     script += '# 5. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
@@ -187,17 +201,21 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
     script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
 
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
-    script += 'label Eggs-Live\n'
-    script += '  kernel /vmlinuz\n'
-    script += '  initrd /initrd.img\n'
-    script += '  fdt /dtb/spacemit/k1-x_MUSE-Book.dtb\n'
-    script += '  append root=LABEL=rootfs boot=live components rw rootwait console=tty1 console=ttyS0,115200 earlycon=sbi\n'
-    script += 'EOF\n\n'
+    script += 'echo "Constructing extlinux.conf with SSD-derived parameters..."\n';
+    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n';
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n';
+    script += 'label Eggs-Live\n';
+    script += '  kernel vmlinuz\n';
+    script += '  initrd initrd.img\n';
+    script += '  fdt dtb/spacemit/k1-x_MUSE-Book.dtb\n';
+    script += '  append root=/dev/mmcblk0p6 boot=live components rw earlycon=sbi earlyprintk splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system rootwait rootdelay=10\n';
+    script += 'EOF\n\n';
+
 
     script += '# 6. POPOLAMENTO ROOTFS ---\n'
     script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n\n'
+
 
     script += '# 7. CHIUSURA ---\n'
     script += 'sync\n'
