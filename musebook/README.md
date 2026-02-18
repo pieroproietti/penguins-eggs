@@ -17,6 +17,11 @@ Sector 2048: spl.bin.
 
 Sector 4096: uboot.bin.
 
+Created a env_k1-x.txt file in Partition 5 (bootfs, ext4).
+
+* copied necessary files to Partition 5 (bootfs, ext4);
+*copied /live/filesystem.squashfs to partition 6 (rootfs, ext4).
+
 Firmware Recognition: The MuseBook recognizes the SD card and starts U-Boot (the Bianbu logo appears).
 
 ❌ The Issue: Reboot Loop
@@ -40,5 +45,7 @@ Any insights or suggestions on how to debug the U-Boot environment without a ser
 
 Thanks in advance!
 
+* [Repository:](https://github.com/pieroproietti/penguins-eggs)
+* [Download img here](https://sourceforge.net/projects/penguins-eggs/files/Isos/)
 
 [Miniera d'oro](https://www.workswithriscv.guide/wiki/hardware/K1/bianbu-multiboot.html)

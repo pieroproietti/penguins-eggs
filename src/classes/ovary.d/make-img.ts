@@ -201,9 +201,24 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
     script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
 
+    script += 'echo "Creating env_k1-x.txt (Matching original Bianbu logic)..."\n'
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
+    // Definiamo i nomi dei file come si aspetta il firmware
+    script += 'knl_name=vmlinuz\n'
+    script += 'ramdisk_name=initrd.img\n'
+    script += 'dtb_dir=dtb/spacemit\n'
+    script += 'fdt_file=k1-x_MUSE-Book.dtb\n'
+
+    // Stringa dei bootargs (Parametri del Kernel)
+    script += 'bootargs=root=/dev/mmcblk0p6 boot=live components rw earlycon=sbi earlyprintk console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system rootwait rootdelay=10\n'
+
+    // Comando di boot che usa le variabili appena definite
+    script += 'bootcmd=echo "Eggs: Loading from SD..."; load mmc 0:5 \${kernel_addr_r} \${knl_name}; load mmc 0:5 \${ramdisk_addr_r} \${ramdisk_name}; load mmc 0:5 \${fdt_addr_r} \${dtb_dir}/\${fdt_file}; echo "Eggs: Booting..."; setenv bootargs "\${bootargs}"; booti \${kernel_addr_r} \${ramdisk_addr_r} \${fdt_addr_r}\n'
+    script += 'EOF\n\n'
+
     script += 'echo "Constructing extlinux.conf with SSD-derived parameters..."\n';
-    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n';
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n';
+    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux.disabled"\n';
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux.disabled/extlinux.conf"\n';
     script += 'label Eggs-Live\n';
     script += '  kernel vmlinuz\n';
     script += '  initrd initrd.img\n';
