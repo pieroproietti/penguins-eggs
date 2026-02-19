@@ -9,7 +9,7 @@
     },
     "bugs": "https://github.com/pieroproietti/penguins-eggs/issues",
     "dependencies": {
-        "@inquirer/prompts": "^8.2.0",
+        "@inquirer/prompts": "^8.2.1",
         "@oclif/core": "^4.8.0",
         "@oclif/plugin-autocomplete": "^3.2.40",
         "@oclif/plugin-help": "^6.2.37",
@@ -26,13 +26,13 @@
         "ink": "^6.7.0",
         "ink-progress-bar": "^3.0.0",
         "ink-spinner": "^5.0.0",
-        "inquirer": "^13.2.2",
+        "inquirer": "^13.2.5",
         "js-yaml": "^4.1.1",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
         "react": "^19.2.4",
         "read": "^5.0.1",
-        "systeminformation": "^5.30.7",
+        "systeminformation": "^5.31.1",
         "tftp": "^0.1.2",
         "vite": "^7.3.1",
         "ws": "^8.19.0"
@@ -54,19 +54,19 @@
         "@types/ws": "^8.18.1",
         "chai": "^6.2.2",
         "eslint": "^10.0.0",
-        "eslint-config-oclif": "^6.0.137",
+        "eslint-config-oclif": "^6.0.140",
         "eslint-config-prettier": "^10.1.8",
-        "glob": "^13.0.2",
+        "glob": "^13.0.5",
         "globals": "^17.3.0",
         "mocha": "^11.7.5",
-        "oclif": "^4.22.77",
+        "oclif": "^4.22.79",
         "perrisbrewery": "^26.1.28",
         "prettier": "^3.8.1",
         "shx": "^0.4.0",
         "ts-node": "10.9.2",
         "ts-prune": "^0.10.3",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.55.0"
+        "typescript-eslint": "^8.56.0"
     },
     "engines": {
         "node": ">=22"
