@@ -197,14 +197,14 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'label Eggs-Live\n'
     script += '  kernel /vmlinuz\n'
     script += '  initrd /initrd.img\n'
-    script += '  fdt /dtb/spacemit/\$DTB_NAME\n'
-    script += '  append root=LABEL=rootfs boot=live components rw earlycon=sbi earlyprintk quiet splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 rdinit=/init workqueue.default_affinity_scope=system rootwait rootfstype=ext4\n'
+    script += '  fdt /dtb/spacemit/$DTB_NAME\n'
+    script += '  append boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
     script += 'EOF\n\n'
 
     script += 'echo "Writing env_k1-x.txt..."\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    script += 'bootargs=root=LABEL=rootfs boot=live components rw earlycon=sbi earlyprintk quiet splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 rdinit=/init workqueue.default_affinity_scope=system rootwait rootfstype=ext4\n'
-    script += 'bootcmd=ext4load mmc 0:5 \${kernel_addr_r} vmlinuz; ext4load mmc 0:5 \${ramdisk_addr_r} initrd.img; ext4load mmc 0:5 \${fdt_addr_r} dtb/spacemit/\$DTB_NAME; booti \${kernel_addr_r} \${ramdisk_addr_r} \${fdt_addr_r}\n'
+    script += 'bootargs=boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
+    script += 'bootcmd=ext4load mmc 0:5 \\${kernel_addr_r} vmlinuz; ext4load mmc 0:5 \\${ramdisk_addr_r} initrd.img; ext4load mmc 0:5 \\${fdt_addr_r} dtb/spacemit/$DTB_NAME; booti \\${kernel_addr_r} \\${ramdisk_addr_r} \\${fdt_addr_r}\n'
     script += 'EOF\n\n'
 
     script += '# --- 6. POPOLAMENTO ROOTFS ---\n'
