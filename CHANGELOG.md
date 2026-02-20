@@ -20,6 +20,13 @@ It took years of work to create the penguins-eggs, and I also incurred expenses 
 # CHANGELOG
 The version is based on the year, month, day, and release number. They are listed in reverse order, with the first being the most recent.
 
+# v26.2.20
+- SBC Support: Actively working on producing IMG images (via eggs) alongside standard ISOs for Single Board Computers (SBCs).
+
+- SpacemiT MuseBook X1: Developing specific support to enable remastering for this device (RISC-V).
+
+- Release Schedule: New version releases are temporarily delayed while these features are being finalized.
+
 # v26.1.31
 * **RISC-V Support**: Fixed `async hook stack has become corrupted` error by checking architecture and using `execSync` instead of `exec` where necessary.
 * **Node.js**: Updated `ensure-node` script to correctly handle package downloads on `riscv64`, ensuring compatibility with Node.js 22+.
