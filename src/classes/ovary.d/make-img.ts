@@ -57,6 +57,8 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
 
     script += '# 3. Formattazione\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
+    script += 'sync\n'
+    script += 'partprobe "${LOOP_DEV}"\n'
     script += 'sleep 2\n'
     script += 'mkfs.vfat -F32 -n "EFI" "${LOOP_DEV}p1"\n'
     script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p2"\n\n'
@@ -114,71 +116,59 @@ async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<stri
 
 /**
  * makeImgRiscv64
+ * logic for RISC-V (Spacemit K1 / Musebook)
+ * Sequenza: Partizionamento -> Iniezione DD -> Formattazione -> Test Visivo
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Atomic Injection Mode')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Safe Sequence Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. CALCOLO PRECISO DIMENSIONE IMMAGINE ---\n'
-    // 1.1. Spazio per SquashFS (in MB)
+    script += '# --- 1. CALCOLO DIMENSIONI ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-
-    // 1.2. Spazio fisso per le partizioni iniziali e bootfs (in MB)
-    // 4MB (binari boot) + 256MB (bootfs) = 260MB
     script += 'BOOT_SYSTEM_RESERVED=260\n'
-
-    // 1.3. Margine di sicurezza per ext4, allineamento e GPT secondaria
     script += 'MARGIN=500\n'
-
-    // 1.4. Somma totale
     script += 'TOTAL_SIZE=$((SQUASH_SIZE + BOOT_SYSTEM_RESERVED + MARGIN))\n'
-
-    script += 'echo "Dimensionamento immagine: $TOTAL_SIZE MB (Squash: $SQUASH_SIZE, Boot/System: $BOOT_SYSTEM_RESERVED, Margine: $MARGIN)"\n'
+    script += 'echo "Creating image: $TOTAL_SIZE MB"\n'
     script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n\n'
 
-
-    script += '# 2. PARTIZIONAMENTO GPT (Su file pulito, nessun errore) ---\n'
-    script += 'echo "Applying GPT partition table..."\n'
+    script += '# --- 2. PARTIZIONAMENTO GPT (Prima del bootloader) ---\n'
+    script += 'echo "Writing GPT table..."\n'
     script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
     script += 'label: gpt\n'
-    script += 'label-id: 7AE23FD7-5475-46FD-9BFB-DF2EEA0F2D77\n'
     script += 'unit: sectors\n'
     script += 'first-lba: 34\n\n'
     script += 'start=256, size=512, name="env"\n'
     script += 'start=768, size=128, name="factory"\n'
     script += 'start=2048, size=2048, name="spl"\n'
     script += 'start=4096, size=4096, name="uboot"\n'
-    script += 'start=8192, size=524288, uuid=22B753D6-6BB5-4F45-8937-6FFA7CDDAE98, name="bootfs"\n'
+    script += 'start=8192, size=524288, name="bootfs"\n'
     script += 'start=532480, name="rootfs"\n'
-    script += 'EOF\n\n'
+    script += 'EOF\n'
+    script += 'sync\n\n'
 
-
-    script += '# 3. INIEZIONE ATOMICA DEI BINARI DI BOOT (Sopra le partizioni) ---\n'
-    script += 'echo "Injecting Bootloader components into sectors..."\n'
-
-    // Firma SDC al settore 0 (necessaria per l'accensione)
+    script += '# --- 3. INIEZIONE ATOMICA (Dopo il partizionamento) ---\n'
+    script += 'echo "Injecting bootloader binaries with conv=notrunc..."\n'
     script += 'dd if="$MUSEBOOK_DIR/boot_header_sector0.bin" of="$IMG_NAME" bs=512 count=1 conv=notrunc status=none\n'
 
-    // U-Boot Environment (Settore 256)
     script += 'if [ -f "$MUSEBOOK_DIR/env.bin" ]; then\n'
     script += '    dd if="$MUSEBOOK_DIR/env.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
     script += 'fi\n'
 
-    // SPL (Settore 2048)
     script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ]; then\n'
     script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
     script += 'fi\n'
 
-    // U-Boot (Settore 4096)
     script += 'if [ -f "$MUSEBOOK_DIR/uboot.bin" ]; then\n'
     script += '    dd if="$MUSEBOOK_DIR/uboot.bin" of="$IMG_NAME" bs=512 seek=4096 conv=notrunc status=none\n'
-    script += 'fi\n\n'
+    script += 'fi\n'
+    script += 'sync\n\n'
 
-
-    script += '# 4. FORMATTAZIONE E MOUNT ---\n'
+    script += '# --- 4. FORMATTAZIONE E MOUNT ---\n'
     script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
+    script += 'sync\n'
+    script += 'partprobe "${LOOP_DEV}"\n'
     script += 'sleep 2\n'
     script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
     script += 'mkfs.ext4 -L "rootfs" -m 0 -q "${LOOP_DEV}p6"\n'
@@ -186,61 +176,50 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
     script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
 
+    script += '# --- 5. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
+    // Test visivo richiesto: copia bianbu.bmp
+    script += 'if [ -f "$MUSEBOOK_DIR/bianbu.bmp" ]; then\n'
+    script += '    echo "Copying boot logo (bianbu.bmp)..."\n'
+    script += '    cp "$MUSEBOOK_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
+    script += 'fi\n'
 
-    script += '# 5. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
-
-    // Test visivo: copia bianbu.bmp se presente
-    script += 'if [ -f "$MUSEBOOK_DIR/bianbu.bmp" ]; then\n'
-    script += '    cp "$MUSEBOOK_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
-    script += 'fi\n'
-
     script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
     script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
 
-    script += 'echo "Creating env_k1-x.txt (Matching original Bianbu logic)..."\n'
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    // Definiamo i nomi dei file come si aspetta il firmware
-    script += 'knl_name=vmlinuz\n'
-    script += 'ramdisk_name=initrd.img\n'
-    script += 'dtb_dir=dtb/spacemit\n'
-    script += 'fdt_file=k1-x_MUSE-Book.dtb\n'
+    script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/dtb/spacemit/" | grep "MUSE-Book" | head -n1))\n'
 
-    // Stringa dei bootargs (Parametri del Kernel)
-    script += 'bootargs=root=/dev/mmcblk0p6 boot=live components rw earlycon=sbi earlyprintk console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system rootwait rootdelay=10\n'
-
-    // Comando di boot che usa le variabili appena definite
-    script += 'bootcmd=echo "Eggs: Loading from SD..."; load mmc 0:5 \${kernel_addr_r} \${knl_name}; load mmc 0:5 \${ramdisk_addr_r} \${ramdisk_name}; load mmc 0:5 \${fdt_addr_r} \${dtb_dir}/\${fdt_file}; echo "Eggs: Booting..."; setenv bootargs "\${bootargs}"; booti \${kernel_addr_r} \${ramdisk_addr_r} \${fdt_addr_r}\n'
+    script += 'echo "Writing extlinux.conf..."\n'
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
+    script += 'label Eggs-Live\n'
+    script += '  kernel /vmlinuz\n'
+    script += '  initrd /initrd.img\n'
+    script += '  fdt /dtb/spacemit/\$DTB_NAME\n'
+    script += '  append root=LABEL=rootfs boot=live components rw earlycon=sbi earlyprintk quiet splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 rdinit=/init workqueue.default_affinity_scope=system rootwait rootfstype=ext4\n'
     script += 'EOF\n\n'
 
-    script += 'echo "Constructing extlinux.conf with SSD-derived parameters..."\n';
-    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux.disabled"\n';
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux.disabled/extlinux.conf"\n';
-    script += 'label Eggs-Live\n';
-    script += '  kernel vmlinuz\n';
-    script += '  initrd initrd.img\n';
-    script += '  fdt dtb/spacemit/k1-x_MUSE-Book.dtb\n';
-    script += '  append root=/dev/mmcblk0p6 boot=live components rw earlycon=sbi earlyprintk splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system rootwait rootdelay=10\n';
-    script += 'EOF\n\n';
+    script += 'echo "Writing env_k1-x.txt..."\n'
+    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
+    script += 'bootargs=root=LABEL=rootfs boot=live components rw earlycon=sbi earlyprintk quiet splash plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 console=ttyS0,115200 loglevel=8 clk_ignore_unused swiotlb=65536 rdinit=/init workqueue.default_affinity_scope=system rootwait rootfstype=ext4\n'
+    script += 'bootcmd=ext4load mmc 0:5 \${kernel_addr_r} vmlinuz; ext4load mmc 0:5 \${ramdisk_addr_r} initrd.img; ext4load mmc 0:5 \${fdt_addr_r} dtb/spacemit/\$DTB_NAME; booti \${kernel_addr_r} \${ramdisk_addr_r} \${fdt_addr_r}\n'
+    script += 'EOF\n\n'
 
-
-    script += '# 6. POPOLAMENTO ROOTFS ---\n'
+    script += '# --- 6. POPOLAMENTO ROOTFS ---\n'
     script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n\n'
 
-
-    script += '# 7. CHIUSURA ---\n'
+    script += '# --- 7. CHIUSURA ---\n'
     script += 'sync\n'
     script += 'sgdisk -e "$IMG_NAME"\n'
-
     script += getCleanupLogic()
     script += getFinalizeLogic()
 
     return await writeScript.call(this, script)
 }
+
 
 // ============================================================================
 // HELPERS
