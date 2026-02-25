@@ -8,7 +8,7 @@
 
 import { Command, Flags } from '@oclif/core'
 import chalk from 'chalk'
-import fs, { link } from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 
 import Compressors from '../classes/compressors.js'
@@ -29,7 +29,10 @@ export default class Produce extends Command {
     'sudo eggs produce --clone            # clear clone (unencrypted)',
     'sudo eggs produce --homecrypt      # clone crypted home (all inside /home is cypted)',
     'sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)',
-    'sudo eggs produce --basename=colibri'
+    'sudo eggs produce --basename=colibri',
+    'sudo eggs produce --recovery         # add recovery tools',
+    'sudo eggs produce --recovery --recovery-gui=minimal  # with GUI',
+    'sudo eggs produce --recovery --recovery-rescapp      # with rescapp'
   ]
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
@@ -49,12 +52,62 @@ export default class Produce extends Command {
     nointeractive: Flags.boolean({ char: 'n', description: 'no user interaction' }),
     pendrive: Flags.boolean({ char: 'p', description: 'optimized for pendrive: zstd -b 1M -Xcompression-level 15' }),
     prefix: Flags.string({ char: 'P', description: 'prefix' }),
+    recovery: Flags.boolean({ description: 'layer penguins-recovery tools onto the produced ISO' }),
+    'recovery-gui': Flags.string({ description: 'GUI profile for recovery: minimal, touch, or full', options: ['minimal', 'touch', 'full'] }),
+    'recovery-rescapp': Flags.boolean({ description: 'include rescapp GUI wizard in recovery ISO' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
     theme: Flags.string({ description: 'theme for livecd, calamares branding and partitions' }),
     verbose: Flags.boolean({ char: 'v', description: 'verbose' }),
     yolk: Flags.boolean({ char: 'y', description: 'force yolk renew' })
+  }
+
+  /**
+   * Apply penguins-recovery tools to a produced ISO.
+   * Downloads the adapter if not present, then runs it against the ISO.
+   */
+  private async applyRecovery(isoPath: string, guiProfile?: string, withRescapp?: boolean, verbose?: boolean): Promise<void> {
+    const recoveryRepo = 'https://github.com/Interested-Deving-1896/penguins-recovery'
+    const recoveryDir = '/usr/local/share/penguins-recovery'
+    const adapterScript = `${recoveryDir}/adapters/adapter.sh`
+
+    Utils.warning('Applying penguins-recovery tools to ISO...')
+
+    if (!fs.existsSync(adapterScript)) {
+      Utils.warning(`Downloading penguins-recovery from ${recoveryRepo}`)
+      const { execSync } = await import('node:child_process')
+      try {
+        execSync(`git clone --depth=1 ${recoveryRepo} ${recoveryDir}`, {
+          stdio: verbose ? 'inherit' : 'pipe'
+        })
+      } catch {
+        console.log(chalk.red('Failed to download penguins-recovery. Skipping recovery layer.'))
+        console.log(chalk.yellow(`Install manually: git clone ${recoveryRepo} ${recoveryDir}`))
+        return
+      }
+    }
+
+    const outputIso = isoPath.replace('.iso', '-recovery.iso')
+    let cmd = `sudo ${adapterScript} --input "${isoPath}" --output "${outputIso}"`
+
+    if (guiProfile) {
+      cmd += ` --gui ${guiProfile}`
+    }
+
+    if (withRescapp) {
+      cmd += ' --with-rescapp'
+    }
+
+    Utils.warning(`Running: ${cmd}`)
+    const { execSync } = await import('node:child_process')
+    try {
+      execSync(cmd, { stdio: 'inherit' })
+      console.log(chalk.green(`Recovery ISO created: ${outputIso}`))
+    } catch {
+      console.log(chalk.red('penguins-recovery adapter failed. Original ISO is unchanged.'))
+      console.log(chalk.yellow(`You can run manually: ${cmd}`))
+    }
   }
 
   async run(): Promise<void> {
@@ -280,6 +333,16 @@ export default class Produce extends Command {
       if (await ovary.fertilization(prefix, basename, dtbDir, theme, compression, !nointeractive)) {
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
+
+        // Post-produce: layer penguins-recovery tools onto the ISO
+        if (flags.recovery && !scriptOnly) {
+          await this.applyRecovery(
+            ovary.settings.config.snapshot_dir + ovary.settings.isoFilename,
+            flags['recovery-gui'],
+            flags['recovery-rescapp'],
+            verbose
+          )
+        }
       }
     } else {
       Utils.useRoot(this.id)
