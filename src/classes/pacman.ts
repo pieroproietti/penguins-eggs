@@ -18,6 +18,7 @@ import Alpine from './pacman.d/alpine.js'
 import Archlinux from './pacman.d/archlinux.js'
 import Debian from './pacman.d/debian.js'
 import Fedora from './pacman.d/fedora.js'
+import Gentoo from './pacman.d/gentoo.js'
 import Openmamba from './pacman.d/openmamba.js'
 import Opensuse from './pacman.d/opensuse.js'
 import Settings from './settings.js'
@@ -101,6 +102,12 @@ export default class Pacman {
           break
         }
 
+        case 'gentoo': {
+          await Gentoo.calamaresInstall(verbose)
+
+          break
+        }
+
         case 'openmamba': {
           await Openmamba.calamaresInstall(verbose)
 
@@ -143,6 +150,12 @@ export default class Pacman {
 
       case 'fedora': {
         await Fedora.calamaresPolicies(verbose)
+
+        break
+      }
+
+      case 'gentoo': {
+        await Gentoo.calamaresPolicies(verbose)
 
         break
       }
@@ -190,6 +203,12 @@ export default class Pacman {
 
       case 'fedora': {
         retVal = await Fedora.calamaresRemove(verbose)
+
+        break
+      }
+
+      case 'gentoo': {
+        retVal = await Gentoo.calamaresRemove(verbose)
 
         break
       }
@@ -474,9 +493,13 @@ export default class Pacman {
         const fedora = `${rootPen}/conf/distros/fedora/*`
         await exec(`cp -r ${fedora} ${dest}`, echo)
 
-        /***********************************************************************************
-         * openmamba
-         **********************************************************************************/
+        break
+      }
+
+      case 'gentoo': {
+        const dest = '/etc/penguins-eggs.d/distros/gentoo/'
+        const gentoo = `${rootPen}/conf/distros/gentoo/*`
+        await exec(`cp -r ${gentoo} ${dest}`, echo)
 
         break
       }
@@ -658,6 +681,14 @@ export default class Pacman {
         break
       }
 
+      case 'gentoo': {
+        if (Gentoo.packageIsInstalled('x11-base/xwayland')) {
+          installed = true
+        }
+
+        break
+      }
+
       case 'openmamba': {
         if (Openmamba.packageIsInstalled('wayland')) {
           installed = true
@@ -714,6 +745,14 @@ export default class Pacman {
 
       case 'fedora': {
         if (Fedora.packageIsInstalled('xorg-x11-server-Xorg.x86_64')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'gentoo': {
+        if (Gentoo.packageIsInstalled('x11-base/xorg-server')) {
           installed = true
         }
 
@@ -860,6 +899,12 @@ export default class Pacman {
         break
       }
 
+      case 'gentoo': {
+        retVal = await Gentoo.packageInstall(packageName)
+
+        break
+      }
+
       case 'openmamba': {
         retVal = await Openmamba.packageInstall(packageName)
 
@@ -906,6 +951,12 @@ export default class Pacman {
 
       case 'fedora': {
         installed = Fedora.packageIsInstalled(packageName)
+
+        break
+      }
+
+      case 'gentoo': {
+        installed = Gentoo.packageIsInstalled(packageName)
 
         break
       }

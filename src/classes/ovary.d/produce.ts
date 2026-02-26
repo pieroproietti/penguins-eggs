@@ -277,6 +277,7 @@ export async function produce(
           }
 
           case 'fedora':
+          case 'gentoo':
           case 'openmamba':
           case 'opensuse':
           case 'voidlinux': {

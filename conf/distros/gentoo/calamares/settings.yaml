@@ -1,0 +1,44 @@
+# Gentoo settings
+---
+# "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
+modules-search: [local, /usr/lib/calamares/modules, /usr/lib64/calamares/modules, /usr/share/calamares]
+
+sequence:
+  # Phase 1 - prepare.
+  - show:
+      - welcome
+      - locale
+      - keyboard
+      - partition
+      - users
+      - summary
+
+  # Phase 2 - install.
+  - exec:
+      - partition
+      - mount
+      - unpackfs
+      - networkcfg
+      - machineid
+      - locale
+      - keyboard
+      - localecfg
+      - luksbootkeyfile
+      - fstab
+      - users
+      - displaymanager
+      - hwclock
+      - grubcfg
+      - bootloader
+      - packages
+      - removeuser
+      - umount
+
+  # Phase 3 - postinstall.
+  - show:
+      - finished
+
+branding: default
+prompt-install: false
+dont-chroot: false
+quit-at-end: false

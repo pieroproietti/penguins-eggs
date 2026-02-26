@@ -198,7 +198,13 @@ export default class Fisherman {
         break
       }
 
-      case 'fedora': {
+      case 'gentoo': {
+        backend = 'portage'
+
+        break
+      }
+
+      case 'opensuse': {
         backend = 'zypper'
 
         break

@@ -122,6 +122,16 @@ class Distro implements IDistro {
         break
       }
 
+      case 'Gentoo': {
+        this.familyId = 'gentoo'
+        this.distroLike = 'Gentoo'
+        this.codenameId = 'rolling'
+        this.distroUniqueId = this.familyId
+        this.liveMediumPath = '/run/initramfs/live/'
+
+        break
+      }
+
       case 'Openmamba': {
         this.familyId = 'openmamba'
         this.distroLike = 'Openmamba'
@@ -421,6 +431,8 @@ class Distro implements IDistro {
      */
     if (this.familyId === 'debian') {
       this.usrLibPath = '/usr/lib/' + Utils.usrLibPath()
+    } else if (this.familyId === 'gentoo') {
+      this.usrLibPath = '/usr/lib64/'
     } else if (this.familyId === 'opensuse') {
       this.usrLibPath = '/usr/lib64/'
     }
