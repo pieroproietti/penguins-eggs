@@ -199,6 +199,25 @@ export class DependencyManager {
           break
         }
 
+        // ==========================================
+        // CHROMIUMOS / GENTOO (Portage)
+        // ==========================================
+        case 'chromiumos':
+        case 'gentoo': {
+          console.log('[eggs] ChromiumOS/Gentoo: installing dependencies via emerge...')
+          const packages = [
+            'sys-fs/squashfs-tools',
+            'dev-libs/libisoburn',
+            'sys-kernel/dracut',
+            'sys-apps/dosfstools',
+            'sys-boot/grub',
+            'sys-boot/syslinux',
+            'net-misc/rsync',
+          ]
+          execSync(`emerge --ask=n ${packages.join(' ')}`, { stdio: 'inherit' })
+          return true
+        }
+
         default: {
           console.warn(`[eggs] Distribuzione '${this.familyId}' non supportata dai meta-pacchetti automatici.`)
           return false
@@ -246,6 +265,13 @@ export class DependencyManager {
         case 'opensuse': {
           // rpm -q funziona per tutte le distro RPM
           execSync(`rpm -q ${META_PACKAGE_NAME}`, { stdio: 'ignore' })
+          return true
+        }
+
+        case 'chromiumos':
+        case 'gentoo': {
+          // Check if key dependencies are installed via Portage
+          execSync(`equery -q list squashfs-tools`, { stdio: 'ignore' })
           return true
         }
 
@@ -328,6 +354,13 @@ export class DependencyManager {
           console.log(`[eggs] Removing package ${META_PACKAGE_NAME} (Zypper)...`)
           // -u (--clean-deps) rimuove anche le dipendenze non più necessarie
           execSync(`zypper rm -y -u ${META_PACKAGE_NAME}`, { stdio: 'inherit' })
+          return true
+        }
+
+        case 'chromiumos':
+        case 'gentoo': {
+          console.log(`[eggs] ChromiumOS/Gentoo: dependencies installed via emerge are not auto-removed.`)
+          console.log(`[eggs] Use 'emerge --depclean' to clean unused packages.`)
           return true
         }
 

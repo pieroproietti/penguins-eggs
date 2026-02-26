@@ -98,6 +98,43 @@ export async function produce(
   }
 
   /**
+   * ChromiumOS: detect read-only rootfs and set up overlay if needed.
+   * On dm-verity-protected ChromeOS, the rootfs is read-only.
+   * We use the overlayroot pattern: accept the read-only rootfs,
+   * use tmpfs for eggs' temp files, and snapshot the lower rootfs.
+   */
+  if (this.familyId === 'chromiumos') {
+    const { isRootReadOnly, isRootVerityProtected, isOverlayActive, getSnapshotRootPath, setupOverlayForProduce } = await import('./cros_verity.js')
+
+    if (isRootReadOnly()) {
+      Utils.warning('Read-only rootfs detected (dm-verity protected)')
+
+      if (isRootVerityProtected()) {
+        Utils.warning('dm-verity is active on root partition')
+      }
+
+      if (isOverlayActive()) {
+        Utils.warning('Overlayfs already active -- snapshotting lower (verified) rootfs')
+      }
+
+      // Set up tmpfs overlay for eggs work files if needed
+      const overlayWorkDir = '/tmp/eggs-overlay-work'
+      const overlay = await setupOverlayForProduce(overlayWorkDir, this.echo)
+      if (overlay.overlayMounted) {
+        Utils.warning(`Overlay mounted: upper=${overlay.upperDir}`)
+      }
+
+      // Use the real (lower) rootfs for snapshotting, not the overlay
+      const snapshotRoot = getSnapshotRootPath()
+      if (snapshotRoot !== '/') {
+        Utils.warning(`Snapshot root: ${snapshotRoot} (lower rootfs)`)
+        // The liveRoot for squashfs creation should use the real rootfs
+        this.liveRoot = snapshotRoot
+      }
+    }
+  }
+
+  /**
    * define kernel
    */
   if (this.kernel === '') {
@@ -276,6 +313,7 @@ export async function produce(
             break
           }
 
+          case 'chromiumos':
           case 'fedora':
           case 'openmamba':
           case 'opensuse':
@@ -374,6 +412,37 @@ export async function produce(
 
 
       mksquashfsCmd = await this.makeSquashfs(scriptOnly, includeRootHome)
+
+      /**
+       * ChromiumOS: generate dm-verity hash tree for the squashfs.
+       * This creates filesystem.squashfs.verity alongside the squashfs
+       * and records the root hash for embedding in the kernel cmdline.
+       * The live ISO will boot with verified integrity (same model as ChromeOS).
+       */
+      if (this.familyId === 'chromiumos' && !scriptOnly) {
+        const { generateVerityHashTree, hasVeritysetup, buildVerityCmdline } = await import('./cros_verity.js')
+        const { installAllVerityModules } = await import('./dracut_verity_module.js')
+
+        const squashfsFile = path.join(this.settings.iso_work, 'live', 'filesystem.squashfs')
+        if (hasVeritysetup() && fs.existsSync(squashfsFile)) {
+          try {
+            // Generate verity hash tree
+            const verity = await generateVerityHashTree(squashfsFile, this.echo)
+
+            // Save root hash for later use in kernel cmdline and CrOS image
+            const hashFile = path.join(this.settings.iso_work, 'live', 'verity.roothash')
+            fs.writeFileSync(hashFile, verity.rootHash)
+
+            // Install dracut verity modules so initramfs can verify at boot
+            await installAllVerityModules(this.echo)
+
+            Utils.warning(`dm-verity enabled: root hash saved to ${hashFile}`)
+          } catch (error) {
+            Utils.warning(`dm-verity hash generation failed (non-fatal): ${error}`)
+          }
+        }
+      }
+
       mkIsofsCmd = (await this.xorrisoCommand(clone, homecrypt, fullcrypt)).replaceAll(/\s\s+/g, ' ')
       this.makeDotDisk(this.volid, mksquashfsCmd, mkIsofsCmd)
       if (this.dtbDir !== '') {
@@ -476,6 +545,72 @@ export async function produce(
 
     if (this.dtbDir === '') {
       await this.makeIso(mkIsofsCmd, scriptOnly)
+    }
+
+    /**
+     * ChromiumOS: optionally produce a CrOS-compatible disk image
+     * alongside the standard ISO. The CrOS image can be dd'd to USB
+     * and booted via depthcharge on Chromebooks.
+     *
+     * Requires: cgpt, futility (from vboot-utils)
+     * Optional: submarine .kpart (for depthcharge boot without custom firmware)
+     */
+    if (this.familyId === 'chromiumos' && Utils.commandExists('cgpt')) {
+      const { createCrosImage, hasFutility } = await import('./cros_image.js')
+      const { createSubmarineImage, isSubmarineAvailable } = await import('./submarine_boot.js')
+
+      const squashfsPath = path.join(this.settings.iso_work, 'live', 'filesystem.squashfs')
+      const isoDir = this.settings.config.snapshot_dir
+      const baseName = path.basename(this.settings.isoFilename, '.iso')
+      const arch = process.arch === 'arm64' ? 'arm64' as const : 'x86_64' as const
+
+      if (fs.existsSync(squashfsPath)) {
+        // Build kernel cmdline, including verity root hash if available
+        const hashFile = path.join(this.settings.iso_work, 'live', 'verity.roothash')
+        let cmdline = `root=live:LABEL=ROOT-A rd.live.image rd.live.dir=/live rd.live.squashimg=filesystem.squashfs cros_debug`
+        if (fs.existsSync(hashFile)) {
+          const rootHash = fs.readFileSync(hashFile, 'utf8').trim()
+          cmdline += ` verity.usr=LABEL=ROOT-A verity.usrhash=${rootHash}`
+          cmdline += ` verity_squash_root_hash=${rootHash} verity_squash_root_slot=a`
+        }
+
+        // Submarine boot image (preferred -- works without custom firmware)
+        if (isSubmarineAvailable(arch) || Utils.commandExists('curl')) {
+          try {
+            const submarineImg = path.join(isoDir, `${baseName}-submarine.bin`)
+            Utils.warning('Producing submarine boot image for Chromebook depthcharge...')
+            await createSubmarineImage({
+              arch,
+              vmlinuz: Utils.vmlinuz(),
+              initramfs: path.join(this.settings.iso_work, 'live', 'initrd.img'),
+              cmdline,
+              squashfs: squashfsPath,
+              outputImage: submarineImg,
+              verbose: this.verbose,
+            })
+          } catch (error) {
+            Utils.warning(`Submarine image creation failed (non-fatal): ${error}`)
+          }
+        }
+
+        // Direct signed kernel image (alternative -- requires dev mode)
+        if (hasFutility()) {
+          try {
+            const crosImg = path.join(isoDir, `${baseName}-cros.bin`)
+            Utils.warning('Producing CrOS signed kernel image...')
+            await createCrosImage({
+              vmlinuz: Utils.vmlinuz(),
+              cmdline,
+              squashfs: squashfsPath,
+              outputImage: crosImg,
+              arch,
+              verbose: this.verbose,
+            })
+          } catch (error) {
+            Utils.warning(`CrOS image creation failed (non-fatal): ${error}`)
+          }
+        }
+      }
     }
   }
 }

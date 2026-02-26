@@ -25,6 +25,10 @@ export function remove(distro: IDistro): string {
     packages.push('penguins-eggs', 'live-boot', 'live-boot-doc', 'live-boot-initramfs-tools', 'live-tools')
   }
 
+  if (distro.familyId === 'chromiumos') {
+    packages.push('penguins-eggs')
+  }
+
   const installedPackages: string[] = []
   for (const elem of packages) {
     if (Pacman.packageIsInstalled(elem)) {

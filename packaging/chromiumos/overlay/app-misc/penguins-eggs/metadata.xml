@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>piero.proietti@gmail.com</email>
+		<name>Piero Proietti</name>
+	</maintainer>
+	<longdescription lang="en">
+		Penguins-eggs is a remaster system tool that creates live ISOs from
+		running Linux systems. It supports the ChromiumOS family (ChromiumOS,
+		ChromeOS, FydeOS/openFyde, ThoriumOS, WayneOS, Brunch) via Portage
+		package management, dracut initramfs, and squashfs rootfs snapshots.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">pieroproietti/penguins-eggs</remote-id>
+		<bugs-to>https://github.com/pieroproietti/penguins-eggs/issues</bugs-to>
+	</upstream>
+</pkgmetadata>

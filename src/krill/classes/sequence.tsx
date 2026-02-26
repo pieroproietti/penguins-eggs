@@ -311,6 +311,7 @@ export default class Sequence {
       await this.executeStep("Locale", 70, async () => {
         if (this.distro.familyId === 'alpine' ||
           this.distro.familyId === 'archlinux' ||
+          this.distro.familyId === 'chromiumos' ||
           this.distro.familyId === 'debian') {
           await this.locale()
         }
@@ -319,7 +320,7 @@ export default class Sequence {
       await this.executeStep("Settings keyboard", 71, () => this.keyboard())
 
       // Locale configuration
-      if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
+      if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'chromiumos' || this.distro.familyId === 'debian') {
         await this.executeStep("Locale configuration", 72, async () => {
           await this.localeCfg()
           await exec("chroot " + this.installTarget + " locale-gen" + this.toNull)
@@ -430,6 +431,15 @@ export default class Sequence {
     // OpenSUSE-specific setup
     if (this.distro.familyId === 'opensuse') {
       await exec('dmsetup remove_all')
+    }
+
+    // ChromiumOS-specific setup: use cgpt for partitioning if available
+    if (this.distro.familyId === 'chromiumos') {
+      if (Utils.commandExists('cgpt')) {
+        Utils.warning('ChromiumOS: cgpt detected, CrOS partition layout available')
+      } else {
+        Utils.warning('ChromiumOS: cgpt not found, using standard GPT partitioning')
+      }
     }
 
     // Set flags

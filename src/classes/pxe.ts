@@ -249,7 +249,9 @@ export default class Pxe {
         break
       }
 
+      case 'chromiumos':
       case 'fedora':
+      case 'gentoo':
       case 'openmamba':
       case 'opensuse': {
         lp = `initrd=http://${Utils.address()}/live/${path.basename(this.initrdImg)} \

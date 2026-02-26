@@ -198,8 +198,17 @@ export default class Fisherman {
         break
       }
 
-      case 'fedora': {
+      case 'opensuse': {
         backend = 'zypper'
+
+        break
+      }
+
+      case 'chromiumos': {
+        // ChromiumOS uses Portage (emerge) as its package manager.
+        // Calamares packagechooser backend for Portage is 'portage'.
+        // Falls back to 'dummy' if calamares doesn't support portage backend.
+        backend = 'dummy'
 
         break
       }

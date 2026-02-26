@@ -183,6 +183,22 @@ export default class Repo extends Command {
           break
         }
 
+        case 'chromiumos':
+        case 'gentoo': {
+          /**
+           * ChromiumOS/Gentoo: repos are managed via Portage overlays
+           */
+          if (flags.add) {
+            Utils.warning('ChromiumOS/Gentoo: add the penguins-eggs overlay to /etc/portage/repos.conf/')
+            Utils.warning('Or use: eselect repository enable penguins-eggs')
+          } else if (flags.remove) {
+            Utils.warning('ChromiumOS/Gentoo: remove the penguins-eggs overlay from /etc/portage/repos.conf/')
+            Utils.warning('Or use: eselect repository disable penguins-eggs')
+          }
+
+          break
+        }
+
         default: {
           /**
            * All the others

@@ -88,6 +88,13 @@ export default class Tailor {
 
         break
       }
+
+      case 'chromiumos':
+      case 'gentoo': {
+        cmd = `equery -q list '*' | sed 's/-[0-9].*//' | sed 's|.*/||' | sort -u`
+
+        break
+      }
       // No default
     }
 
@@ -296,6 +303,20 @@ export default class Tailor {
 
         break
       }
+
+      case 'ChromiumOS':
+      case 'Gentoo': {
+        tailorList = `${this.costume}/gentoo.yaml`
+        if (!fs.existsSync(tailorList)) {
+          tailorList = `${this.costume}/chromiumos.yaml`
+          if (!fs.existsSync(tailorList)) {
+            console.log(`no costume definition found compatible ChromiumOS/Gentoo`)
+            process.exit()
+          }
+        }
+
+        break
+      }
     } // end analyze
 
     /**
@@ -412,6 +433,12 @@ export default class Tailor {
               await exec('zypper refresh', Utils.setEcho(true))
               break
             }
+
+            case 'chromiumos':
+            case 'gentoo': {
+              await exec('emerge --sync', Utils.setEcho(false))
+              break
+            }
           }
         }
 
@@ -445,6 +472,12 @@ export default class Tailor {
 
               case 'opensuse': {
                 await exec('zypper update', Utils.setEcho(true))
+                break
+              }
+
+              case 'chromiumos':
+              case 'gentoo': {
+                await exec('emerge --update --deep --newuse @world', Utils.setEcho(false))
                 break
               }
             }
@@ -501,6 +534,12 @@ export default class Tailor {
               // Quanto mi è costato
               // await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install --no-confirm`)
               await this.packagesInstall(this.materials.sequence.packages, 'packages', `zypper install --no-confirm`)
+              break
+            }
+
+            case 'chromiumos':
+            case 'gentoo': {
+              await this.packagesInstall(this.materials.sequence.packages, 'packages', `emerge --ask=n`)
               break
             }
           }

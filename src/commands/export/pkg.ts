@@ -165,6 +165,15 @@ export default class ExportPkg extends Command {
         filter = `penguins-eggs-+([0-9.])-*.rpm`
         break
       }
+
+      case 'chromiumos':
+      case 'gentoo': {
+        Utils.warning(`exporting Gentoo/ChromiumOS packages`)
+        localPath = `/home/${this.user}/penguins-eggs-export`
+        remotePath = this.Tu.config.remotePathPackages + '/gentoo'
+        filter = `penguins-eggs-+([0-9.])*.tar.gz`
+        break
+      }
       // No default
     }
 

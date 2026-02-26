@@ -1,0 +1,16 @@
+# ChromiumOS family derivatives
+# Detected by distroId from /etc/os-release or /etc/lsb-release
+---
+- ChromiumOS
+- Chromiumos
+- ChromeOS
+- Chromeos
+- FydeOS
+- Fydeos
+- openFyde
+- Openfyde
+- ThoriumOS
+- Thoriumos
+- WayneOS
+- Wayneos
+- Brunch

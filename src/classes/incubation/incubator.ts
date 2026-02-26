@@ -252,6 +252,14 @@ export default class Incubator {
 
           break
         }
+
+        case 'chromiumos': {
+          // ChromiumOS uses dracut-based templates like Fedora
+          const chromiumos = new Fedora(this.installer, this.remix, this.distro, this.user_opt, release, this.theme, this.isClone, this.verbose)
+          await chromiumos.create()
+
+          break
+        }
         // No default
       }
     } catch (error) {

@@ -25,6 +25,19 @@ export default async function localeCfg(this: Sequence) {
   if (this.distro.familyId === 'debian') {
     // Format: en_US.UTF-8 UTF-8
     supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
+  } else if (this.distro.familyId === 'chromiumos' || this.distro.familyId === 'gentoo') {
+    // Gentoo/ChromiumOS: same format as Arch -- /etc/locale.gen with commented entries
+    if (fs.existsSync('/etc/locale.gen')) {
+      const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf8').split('\n')
+      for (let line of supportedsSource) {
+        if (line.slice(0, 2) !== '# ') {
+          line = line.slice(1)
+        }
+        supporteds.push(line)
+      }
+    } else if (fs.existsSync('/usr/share/i18n/SUPPORTED')) {
+      supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
+    }
   } else if (this.distro.familyId === 'archlinux') {
     const supportedsSource = fs.readFileSync('/etc/locale.gen', 'utf8').split('\n')
     for (let line of supportedsSource) {

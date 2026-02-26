@@ -79,6 +79,18 @@ export default class Locales {
         supporteds = await this.getEnabled()
         break
       }
+
+      case 'chromiumos':
+      case 'gentoo': {
+        // Gentoo/ChromiumOS: read /usr/share/i18n/SUPPORTED if available,
+        // otherwise fall back to getEnabled() from locale -a
+        if (fs.existsSync('/usr/share/i18n/SUPPORTED')) {
+          supporteds = fs.readFileSync('/usr/share/i18n/SUPPORTED', 'utf8').split('\n')
+        } else {
+          supporteds = await this.getEnabled()
+        }
+        break
+      }
     }
 
     const elements: string[] = []
