@@ -51,3 +51,24 @@ qemu-system-riscv64 \
   -drive file=disco-target.qcow2,format=qcow2,if=none,id=drive0 \
   -device virtio-rng-pci \
   -netdev user,id=net0 -device virtio-net-pci,netdev=net0
+
+
+## Patch per init-config.sh non presente 
+sudo mkdir -p /usr/lib/live
+sudo tee /usr/lib/live/init-config.sh <<EOF
+# Minimal init-config.sh for Debian Forky RISC-V
+export LIVE_CONFIG_CMDLINE="\$(cat /proc/cmdline)"
+EOF
+
+## 1 Disabilita i nomi delle interfacce dinamici nel GRUB
+sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0 /' /etc/default/grub
+sudo update-grub
+
+# 2. Configura la rete su eth0 (che ora sarà il nome fisso)
+sudo tee /etc/network/interfaces <<EOF
+auto lo
+iface lo inet loopback
+
+allow-hotplug eth0
+iface eth0 inet dhcp
+EOF
