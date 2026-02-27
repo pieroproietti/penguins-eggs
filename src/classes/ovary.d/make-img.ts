@@ -9,6 +9,7 @@ import fs from 'node:fs'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
 import Diversions from '../diversions.js'
+
 import { getStandardExclusions } from './make-squashfs.js'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
