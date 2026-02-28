@@ -15,6 +15,7 @@ import { exec, execSync, shx } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 import Alpine from './pacman.d/alpine.js'
+import Android from './pacman.d/android.js'
 import Archlinux from './pacman.d/archlinux.js'
 import Debian from './pacman.d/debian.js'
 import Fedora from './pacman.d/fedora.js'
@@ -112,7 +113,17 @@ export default class Pacman {
 
           break
         }
-        // No default
+
+        case 'android': {
+          // Android: no-op (Calamares not supported, use krill)
+          break
+        }
+  
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
+        break
+      }
+      // No default
       }
     }
   }
@@ -156,6 +167,11 @@ export default class Pacman {
       case 'opensuse': {
         await Opensuse.calamaresPolicies(verbose)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -203,6 +219,11 @@ export default class Pacman {
       case 'opensuse': {
         retVal = await Opensuse.calamaresRemove(verbose)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -673,6 +694,11 @@ export default class Pacman {
 
         break
       }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
+        break
+      }
       // No default
     }
 
@@ -733,6 +759,11 @@ export default class Pacman {
           installed = true
         }
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -869,6 +900,11 @@ export default class Pacman {
       case 'opensuse': {
         retVal = await Opensuse.packageInstall(packageName)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
