@@ -1,0 +1,172 @@
+# .cm/gitstream.cm
+# gitStream automation rules for penguins-eggs repository.
+# Install: https://github.com/linear-b/gitstream
+#
+# Auto-labels PRs by changed paths, assigns reviewers for distro-specific
+# changes, and auto-merges documentation-only PRs.
+
+manifest:
+  version: 1.0
+
+automations:
+
+  # --- Auto-labeling ---
+
+  label_wardrobe:
+    if:
+      - {{ files | match(regex=r/addons\/|conf\//) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "wardrobe"
+          color: "#7B68EE"
+
+  label_packaging:
+    if:
+      - {{ files | match(regex=r/packaging\/|\.deb|\.rpm|appimage/) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "packaging"
+          color: "#FF8C00"
+
+  label_installer:
+    if:
+      - {{ files | match(regex=r/src\/krill\/|calamares/) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "installer"
+          color: "#DC143C"
+
+  label_core:
+    if:
+      - {{ files | match(regex=r/src\/classes\/ovary/) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "core"
+          color: "#FF0000"
+
+  label_cli:
+    if:
+      - {{ files | match(regex=r/src\/commands\//) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "cli"
+          color: "#4169E1"
+
+  label_docs:
+    if:
+      - {{ files | allDocs }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "docs"
+          color: "#0E8A16"
+
+  label_ci:
+    if:
+      - {{ files | match(regex=r/\.github\//) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "ci"
+          color: "#FBCA04"
+
+  label_dracut:
+    if:
+      - {{ files | match(regex=r/dracut\//) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "initrd/dracut"
+          color: "#B60205"
+
+  label_mkinitcpio:
+    if:
+      - {{ files | match(regex=r/mkinitcpio\//) | some }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "initrd/mkinitcpio"
+          color: "#B60205"
+
+  label_small_change:
+    if:
+      - {{ branch.diff.size < 50 }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "small"
+          color: "#C5DEF5"
+
+  label_large_change:
+    if:
+      - {{ branch.diff.size > 500 }}
+    run:
+      - action: add-label@v1
+        args:
+          label: "large"
+          color: "#E99695"
+
+  # --- Auto-assign reviewers ---
+
+  assign_distro_debian:
+    if:
+      - {{ files | match(regex=r/conf\/(debian|devuan|ubuntu)/) | some }}
+    run:
+      - action: add-comment@v1
+        args:
+          comment: "This PR modifies Debian/Ubuntu/Devuan configurations. Please ensure distro-specific testing."
+
+  assign_distro_arch:
+    if:
+      - {{ files | match(regex=r/conf\/(arch|manjaro)|mkinitcpio/) | some }}
+    run:
+      - action: add-comment@v1
+        args:
+          comment: "This PR modifies Arch/Manjaro configurations. Please ensure distro-specific testing."
+
+  assign_distro_fedora:
+    if:
+      - {{ files | match(regex=r/conf\/(fedora|alma)|dracut/) | some }}
+    run:
+      - action: add-comment@v1
+        args:
+          comment: "This PR modifies Fedora/RHEL configurations. Please ensure distro-specific testing."
+
+  # --- Auto-merge ---
+
+  auto_merge_docs:
+    if:
+      - {{ files | allDocs }}
+      - {{ approvals.approved | length >= 1 }}
+    run:
+      - action: merge@v1
+        args:
+          wait_for_all_checks: true
+
+  auto_merge_small_safe:
+    if:
+      - {{ branch.diff.size < 20 }}
+      - {{ files | match(regex=r/src\/classes\/ovary|src\/krill/) | nope }}
+      - {{ approvals.approved | length >= 1 }}
+    run:
+      - action: merge@v1
+        args:
+          wait_for_all_checks: true
+
+  # --- Require extra review for core changes ---
+
+  require_extra_review_core:
+    if:
+      - {{ files | match(regex=r/src\/classes\/ovary/) | some }}
+    run:
+      - action: set-required-approvals@v1
+        args:
+          approvals: 2
+      - action: add-comment@v1
+        args:
+          comment: "This PR modifies core ISO production code. Requires 2 approvals."
