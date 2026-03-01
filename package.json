@@ -81,11 +81,11 @@
         "/dracut",
         "/eui",
         "/manpages",
-        "/musebook",
         "/mkinitcpio",
         "/mkinitfs",
         "/perrisbrewery",
-        "/scripts"
+        "/scripts",
+        "/spacemit"
     ],
     "homepage": "https://penguins-eggs.net",
     "keywords": [

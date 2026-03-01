@@ -8,9 +8,6 @@ import path from 'node:path'
 import fs from 'node:fs'
 import Ovary from '../ovary.js'
 import Utils from '../utils.js'
-import Diversions from '../diversions.js'
-
-import { getStandardExclusions } from './make-squashfs.js'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
@@ -118,70 +115,34 @@ async function makeImgArm64(this: Ovary, includeRootHome: boolean): Promise<stri
 /**
  * makeImgRiscv64
  * logic for RISC-V (Spacemit K1 / Musebook)
- * Sequenza: Partizionamento -> Iniezione DD -> Formattazione -> Test Visivo
+ * Sequence: Creating ext4 volumes -> Populating -> Genimage pack
  */
 async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
-    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - Safe Sequence Mode')
+    Utils.warning('Generating Live Raw Image (RISC-V Spacemit K1) - genimage Mode')
 
     const vars = getVariables(this)
     let script = getScriptHeader(vars)
 
-    script += '# --- 1. CALCOLO DIMENSIONI ---\n'
+    script += '# --- 1. CALCOLO DIMENSIONI E CREAZIONE EXT4 VOLUMES ---\n'
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
-    script += 'BOOT_SYSTEM_RESERVED=260\n'
-    script += 'MARGIN=500\n'
-    script += 'TOTAL_SIZE=$((SQUASH_SIZE + BOOT_SYSTEM_RESERVED + MARGIN))\n'
-    script += 'echo "Creating image: $TOTAL_SIZE MB"\n'
-    script += 'dd if=/dev/zero of="$IMG_NAME" bs=1M count=$TOTAL_SIZE status=none\n\n'
+    script += 'ROOTFS_SIZE=$((SQUASH_SIZE + 1024))\n'
+    script += 'echo "Creating bootfs.ext4: 256 MB"\n'
+    script += 'dd if=/dev/zero of="$MNT_DIR/bootfs.ext4" bs=1M count=256 status=none\n'
+    script += 'mkfs.ext4 -L "bootfs" -m 0 -q "$MNT_DIR/bootfs.ext4"\n'
 
-    script += '# --- 2. PARTIZIONAMENTO GPT (Prima del bootloader) ---\n'
-    script += 'echo "Writing GPT table..."\n'
-    script += 'cat <<EOF | sfdisk --force "$IMG_NAME"\n'
-    script += 'label: gpt\n'
-    script += 'unit: sectors\n'
-    script += 'first-lba: 34\n\n'
-    script += 'start=256, size=512, name="env"\n'
-    script += 'start=768, size=128, name="factory"\n'
-    script += 'start=2048, size=2048, name="spl"\n'
-    script += 'start=4096, size=4096, name="uboot"\n'
-    script += 'start=8192, size=524288, name="bootfs"\n'
-    script += 'start=532480, name="rootfs"\n'
-    script += 'EOF\n'
-    script += 'sync\n\n'
+    script += 'echo "Creating rootfs.ext4: $ROOTFS_SIZE MB"\n'
+    script += 'dd if=/dev/zero of="$MNT_DIR/rootfs.ext4" bs=1M count=$ROOTFS_SIZE status=none\n'
+    script += 'mkfs.ext4 -L "rootfs" -m 0 -q "$MNT_DIR/rootfs.ext4"\n\n'
 
-    script += '# --- 3. INIEZIONE ATOMICA (Dopo il partizionamento) ---\n'
-    script += 'echo "Injecting bootloader binaries with conv=notrunc..."\n'
-    script += 'dd if="$MUSEBOOK_DIR/boot_header_sector0.bin" of="$IMG_NAME" bs=512 count=1 conv=notrunc status=none\n'
-
-    script += 'if [ -f "$MUSEBOOK_DIR/env.bin" ]; then\n'
-    script += '    dd if="$MUSEBOOK_DIR/env.bin" of="$IMG_NAME" bs=512 seek=256 conv=notrunc status=none\n'
-    script += 'fi\n'
-
-    script += 'if [ -f "$MUSEBOOK_DIR/spl.bin" ]; then\n'
-    script += '    dd if="$MUSEBOOK_DIR/spl.bin" of="$IMG_NAME" bs=512 seek=2048 conv=notrunc status=none\n'
-    script += 'fi\n'
-
-    script += 'if [ -f "$MUSEBOOK_DIR/uboot.bin" ]; then\n'
-    script += '    dd if="$MUSEBOOK_DIR/uboot.bin" of="$IMG_NAME" bs=512 seek=4096 conv=notrunc status=none\n'
-    script += 'fi\n'
-    script += 'sync\n\n'
-
-    script += '# --- 4. FORMATTAZIONE E MOUNT ---\n'
-    script += 'LOOP_DEV=$(losetup -fP --show "$IMG_NAME")\n'
-    script += 'sync\n'
-    script += 'partprobe "${LOOP_DEV}"\n'
-    script += 'sleep 2\n'
-    script += 'mkfs.ext4 -L "bootfs" -m 0 -q "${LOOP_DEV}p5"\n'
-    script += 'mkfs.ext4 -L "rootfs" -m 0 -q "${LOOP_DEV}p6"\n'
+    script += '# --- 2. MOUNT VOLUMES ---\n'
     script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
-    script += 'mount "${LOOP_DEV}p5" "$MNT_DIR/boot_mp"\n'
-    script += 'mount "${LOOP_DEV}p6" "$MNT_DIR/root_mp"\n\n'
+    script += 'mount -o loop "$MNT_DIR/bootfs.ext4" "$MNT_DIR/boot_mp"\n'
+    script += 'mount -o loop "$MNT_DIR/rootfs.ext4" "$MNT_DIR/root_mp"\n\n'
 
-    script += '# --- 5. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
-    // Test visivo richiesto: copia bianbu.bmp
-    script += 'if [ -f "$MUSEBOOK_DIR/bianbu.bmp" ]; then\n'
+    script += '# --- 3. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
+    script += 'if [ -f "$SPACEMIT_DIR/bianbu.bmp" ]; then\n'
     script += '    echo "Copying boot logo (bianbu.bmp)..."\n'
-    script += '    cp "$MUSEBOOK_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
+    script += '    cp "$SPACEMIT_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
     script += 'fi\n'
 
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
@@ -208,13 +169,28 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'bootcmd=ext4load mmc 0:5 \\${kernel_addr_r} vmlinuz; ext4load mmc 0:5 \\${ramdisk_addr_r} initrd.img; ext4load mmc 0:5 \\${fdt_addr_r} dtb/spacemit/$DTB_NAME; booti \\${kernel_addr_r} \\${ramdisk_addr_r} \\${fdt_addr_r}\n'
     script += 'EOF\n\n'
 
-    script += '# --- 6. POPOLAMENTO ROOTFS ---\n'
+    script += '# --- 4. POPOLAMENTO ROOTFS ---\n'
     script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
     script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n\n'
 
-    script += '# --- 7. CHIUSURA ---\n'
+    script += '# --- 5. UMOUNT VOLUMES ---\n'
     script += 'sync\n'
-    script += 'sgdisk -e "$IMG_NAME"\n'
+    script += 'umount -R "$MNT_DIR/boot_mp" || true\n'
+    script += 'umount -R "$MNT_DIR/root_mp" || true\n\n'
+
+    script += '# --- 6. GENIMAGE EXECUTION ---\n'
+    script += 'echo "Preparing genimage input directory..."\n'
+    script += 'mkdir -p "$MNT_DIR/input" "$MNT_DIR/output" "$MNT_DIR/tmp"\n'
+    script += 'cp -r "$SPACEMIT_DIR/"* "$MNT_DIR/input/"\n'
+    script += 'mv "$MNT_DIR/bootfs.ext4" "$MNT_DIR/input/bootfs.ext4"\n'
+    script += 'mv "$MNT_DIR/rootfs.ext4" "$MNT_DIR/input/rootfs.ext4"\n'
+    script += 'echo "Running genimage..."\n'
+    script += 'echo genimage --inputpath "$MNT_DIR/input" --outputpath "$MNT_DIR/output" --rootpath "$MNT_DIR/output" --tmppath "$MNT_DIR/tmp" --config "$MNT_DIR/input/genimage.cfg"\n'
+    script += 'genimage --inputpath "$MNT_DIR/input" --outputpath "$MNT_DIR/output" --rootpath "$MNT_DIR/output" --tmppath "$MNT_DIR/tmp" --config "$MNT_DIR/input/genimage.cfg"\n'
+    script += 'echo "Moving generated image to destination..."\n'
+    script += 'mv "$MNT_DIR/output/sdcard.img" "$IMG_NAME"\n\n'
+
+    script += '# --- 7. CHIUSURA ---\n'
     script += getCleanupLogic()
     script += getFinalizeLogic()
 
@@ -238,12 +214,12 @@ function getVariables(ovary: Ovary) {
     const mergedDir = ovary.settings.work_dir.merged
     const snapshotExcludes = ovary.settings.config.snapshot_excludes
 
-    let musebookDir = path.resolve(__dirname, '../../../musebook')
-    if (!fs.existsSync(musebookDir)) {
-        musebookDir = path.resolve('/usr/share/penguins-eggs/musebook')
+    let spacemitDir = path.resolve(__dirname, '../../../spacemit')
+    if (!fs.existsSync(spacemitDir)) {
+        spacemitDir = path.resolve('/usr/share/penguins-eggs/spacemit')
     }
 
-    return { srcDir, mntDir, dtbDir, imgLnk, imgName, mergedDir, snapshotExcludes, musebookDir, imgVolid }
+    return { srcDir, mntDir, dtbDir, imgLnk, imgName, mergedDir, snapshotExcludes, spacemitDir, imgVolid }
 }
 
 function getScriptHeader(vars: any) {
@@ -255,7 +231,7 @@ function getScriptHeader(vars: any) {
     script += `DTB_DIR="${vars.dtbDir}"\n`
     script += `MERGED_DIR="${vars.mergedDir}"\n`
     script += `MNT_DIR="${vars.mntDir}"\n`
-    script += `MUSEBOOK_DIR="${vars.musebookDir}"\n`
+    script += `SPACEMIT_DIR="${vars.spacemitDir}"\n`
     script += `SRC_DIR="${vars.srcDir}"\n`
     script += `SNAPSHOT_EXCLUDES="${vars.snapshotExcludes}"\n`
     return script
