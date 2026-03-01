@@ -1,0 +1,59 @@
+# docker-compose.yml
+# Self-hosted eggs ISO registry using Gogs + Giftless (LFS server).
+#
+# Provides:
+# - Gogs: Git web UI for managing repos, releases, and users
+# - Giftless: Git LFS server with local storage (configurable for S3/GCS)
+# - PostgreSQL: Database for Gogs
+#
+# Usage:
+#   docker compose up -d
+#   Open http://localhost:3000 for Gogs
+#   LFS endpoint: http://localhost:5000
+
+version: '3.8'
+
+services:
+  gogs:
+    image: gogs/gogs:latest
+    container_name: eggs-gogs
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    volumes:
+      - gogs-data:/data
+      - gogs-repos:/data/git/gogs-repositories
+    environment:
+      - RUN_MODE=prod
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: eggs-postgres
+    environment:
+      POSTGRES_USER: gogs
+      POSTGRES_PASSWORD: gogs_password
+      POSTGRES_DB: gogs
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  giftless:
+    image: datopian/giftless:latest
+    container_name: eggs-lfs
+    ports:
+      - "5000:5000"
+    volumes:
+      - lfs-storage:/lfs-storage
+      - ./giftless.yaml:/app/giftless.yaml
+    environment:
+      - GIFTLESS_CONFIG_FILE=/app/giftless.yaml
+    restart: unless-stopped
+
+volumes:
+  gogs-data:
+  gogs-repos:
+  postgres-data:
+  lfs-storage:

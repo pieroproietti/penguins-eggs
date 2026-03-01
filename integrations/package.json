@@ -1,0 +1,108 @@
+{
+  "name": "penguins-eggs-integrations",
+  "version": "0.1.0",
+  "description": "Integration plugins extending Penguins-Eggs with 31 git-based projects across 6 feature domains",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./distribution": {
+      "import": "./dist/src/distribution/index.js",
+      "types": "./dist/src/distribution/index.d.ts"
+    },
+    "./decentralized": {
+      "import": "./dist/src/decentralized/index.js",
+      "types": "./dist/src/decentralized/index.d.ts"
+    },
+    "./config-management": {
+      "import": "./dist/src/config-management/index.js",
+      "types": "./dist/src/config-management/index.d.ts"
+    },
+    "./build-infra": {
+      "import": "./dist/src/build-infra/index.js",
+      "types": "./dist/src/build-infra/index.d.ts"
+    },
+    "./dev-workflow": {
+      "import": "./dist/src/dev-workflow/index.js",
+      "types": "./dist/src/dev-workflow/index.d.ts"
+    },
+    "./packaging": {
+      "import": "./dist/src/packaging/index.js",
+      "types": "./dist/src/packaging/index.d.ts"
+    }
+  },
+  "bin": {
+    "eggs-integrations": "./bin/cli.js"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "bin/",
+    "tsconfig.json",
+    "plugins/dev-workflow/pr-automation/",
+    "plugins/dev-workflow/security-scan/",
+    "plugins/dev-workflow/dev-tools/",
+    "plugins/distribution/gogs-registry/",
+    "plugins/packaging/gitpack-install/",
+    "plugins/packaging/release-downloader/eggs-download.sh",
+    "plugins/decentralized/ipfs-mirror/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prebuild": "rm -rf dist",
+    "test": "mocha",
+    "test:phase1": "mocha 'test/phase1/**/*.test.ts'",
+    "test:phase2": "mocha 'test/phase2/**/*.test.ts'",
+    "test:phase3": "mocha 'test/phase3/**/*.test.ts'",
+    "test:phase4": "mocha 'test/phase4/**/*.test.ts'",
+    "test:phase5": "mocha 'test/phase5/**/*.test.ts'",
+    "test:phase6": "mocha 'test/phase6/**/*.test.ts'",
+    "validate": "bash test/validate.sh",
+    "prepare": "tsc",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "penguins-eggs",
+    "linux",
+    "iso",
+    "live-usb",
+    "remaster",
+    "git-lfs",
+    "ipfs",
+    "brig",
+    "system-transparency",
+    "btrfs",
+    "wardrobe",
+    "gitfs"
+  ],
+  "author": "penguins-eggs-integrations",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/penguins-eggs/integrations"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.0.0",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

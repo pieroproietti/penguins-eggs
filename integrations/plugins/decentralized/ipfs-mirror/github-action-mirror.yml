@@ -1,0 +1,66 @@
+# .github/workflows/ipfs-mirror.yml
+# CI job to mirror penguins-eggs repo to IPFS on each release.
+# Uses whyrusleeping/git-ipfs-rehost approach.
+
+name: IPFS Mirror
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install IPFS
+        run: |
+          wget -q https://dist.ipfs.tech/kubo/v0.24.0/kubo_v0.24.0_linux-amd64.tar.gz
+          tar xzf kubo_v0.24.0_linux-amd64.tar.gz
+          sudo ./kubo/install.sh
+          ipfs init
+
+      - name: Start IPFS daemon
+        run: |
+          ipfs daemon &
+          sleep 5
+
+      - name: Add repo to IPFS
+        id: ipfs
+        run: |
+          CID=$(ipfs add -r -Q --pin=true .)
+          echo "cid=${CID}" >> "$GITHUB_OUTPUT"
+          echo "Repository CID: ${CID}"
+
+      - name: Add release assets to IPFS
+        if: github.event_name == 'release'
+        run: |
+          mkdir -p /tmp/release-assets
+          # Download release assets
+          gh release download "${{ github.event.release.tag_name }}" -D /tmp/release-assets || true
+          if [ -n "$(ls /tmp/release-assets/)" ]; then
+            ASSETS_CID=$(ipfs add -r -Q --pin=true /tmp/release-assets)
+            echo "Release assets CID: ${ASSETS_CID}"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release notes with CID
+        if: github.event_name == 'release'
+        run: |
+          BODY="${{ github.event.release.body }}"
+          BODY="${BODY}
+
+          ---
+          **IPFS Mirror**
+          - Source: \`${{ steps.ipfs.outputs.cid }}\`
+          - Gateway: https://ipfs.io/ipfs/${{ steps.ipfs.outputs.cid }}"
+
+          gh release edit "${{ github.event.release.tag_name }}" --notes "${BODY}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
