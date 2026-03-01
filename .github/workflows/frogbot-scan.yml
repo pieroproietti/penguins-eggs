@@ -11,7 +11,7 @@
 name: Frogbot Security Scan
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize]
   push:
     branches: [master, main]
@@ -26,19 +26,20 @@ permissions:
 
 jobs:
   scan-pr:
-    if: github.event_name == 'pull_request_target'
+    if: github.event_name == 'pull_request' && secrets.JF_URL != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - uses: jfrog/frogbot@v2
         env:
@@ -50,17 +51,20 @@ jobs:
           JF_GIT_REPO: penguins-eggs
 
   scan-repo:
-    if: github.event_name == 'push' || github.event_name == 'schedule'
+    if: (github.event_name == 'push' || github.event_name == 'schedule') && secrets.JF_URL != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
       - uses: jfrog/frogbot@v2
         env:
