@@ -30,6 +30,7 @@
         "js-yaml": "^4.1.1",
         "mustache": "^4.2.0",
         "netmask": "^2.0.2",
+        "penguins-eggs-integrations": "file:../penguins-eggs-integrations",
         "react": "^19.2.4",
         "read": "^5.0.1",
         "systeminformation": "^5.31.1",
