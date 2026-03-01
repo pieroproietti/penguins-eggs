@@ -151,17 +151,17 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
-    // script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
+    //script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit"\n'
     // script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
-
     // script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/dtb/spacemit/" | grep "MUSE-Book" | head -n1))\n'
 
     script += 'echo "Writing extlinux.conf..."\n'
+    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
     script += 'label Eggs-Live\n'
     script += '  kernel /vmlinuz\n'
     script += '  initrd /initrd.img\n'
-    script += '  fdt /dtb/spacemit/$DTB_NAME\n'
+    script += '  fdt /boot/spacemit/$DTB_NAME\n'
     script += '  append boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
     script += 'EOF\n\n'
 
