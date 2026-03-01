@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   scan-pr:
-    if: github.event_name == 'pull_request' && secrets.JF_URL != ''
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +42,7 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
 
       - uses: jfrog/frogbot@v2
+        if: env.JF_URL != ''
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
@@ -51,7 +52,7 @@ jobs:
           JF_GIT_REPO: penguins-eggs
 
   scan-repo:
-    if: (github.event_name == 'push' || github.event_name == 'schedule') && secrets.JF_URL != ''
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,6 +68,7 @@ jobs:
         run: pnpm install --frozen-lockfile --ignore-scripts
 
       - uses: jfrog/frogbot@v2
+        if: env.JF_URL != ''
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
