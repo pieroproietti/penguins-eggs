@@ -1,0 +1,72 @@
+{
+  "name": "eggs-ai",
+  "version": "0.1.0",
+  "description": "AI agent for Penguins-Eggs — diagnostics, guided ISO building, config generation, and knowledge-base Q&A",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "eggs-ai": "./bin/eggs-ai.js",
+    "eggs-ai-mcp": "./dist/mcp/server.js"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./sdk": "./dist/sdk/index.js",
+    "./providers": "./dist/providers/index.js",
+    "./bridge": "./dist/bridge/daemon-client.js",
+    "./engine": "./dist/engine/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "serve": "tsx src/index.ts serve",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "doctor": "tsx src/index.ts doctor",
+    "ask": "tsx src/index.ts ask"
+  },
+  "keywords": [
+    "penguins-eggs",
+    "ai",
+    "linux",
+    "iso",
+    "live-system",
+    "remastering",
+    "agent"
+  ],
+  "author": "Eggs-AI Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Interested-Deving-1896/eggs-ai.git"
+  },
+  "homepage": "https://github.com/Interested-Deving-1896/eggs-ai#readme",
+  "bugs": {
+    "url": "https://github.com/Interested-Deving-1896/eggs-ai/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "dist/",
+    "bin/",
+    "proto/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "inquirer": "^12.4.2",
+    "ora": "^8.2.0",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

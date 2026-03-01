@@ -1,0 +1,27 @@
+[Unit]
+Description=Eggs-AI API Server
+Documentation=https://github.com/Interested-Deving-1896/eggs-ai
+After=network.target
+# Start after eggs-gui daemon if present
+After=eggs-gui.service
+Wants=eggs-gui.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/eggs-ai serve --port 3737 --host 127.0.0.1
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+# Read API keys from environment file if present
+EnvironmentFile=-/etc/eggs-ai/env
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/tmp
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

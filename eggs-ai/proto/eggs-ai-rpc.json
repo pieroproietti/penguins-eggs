@@ -1,0 +1,185 @@
+{
+  "jsonrpc": "2.0",
+  "info": {
+    "title": "eggs-ai JSON-RPC methods",
+    "version": "0.1.0",
+    "description": "AI method group for the eggs-gui daemon. These methods extend the eggs-gui.json schema with AI-powered assistance."
+  },
+  "methods": {
+    "ai.doctor": {
+      "description": "AI-powered system diagnostics for penguins-eggs",
+      "params": {
+        "type": "object",
+        "properties": {
+          "complaint": {
+            "type": "string",
+            "description": "Optional description of the problem"
+          },
+          "provider": {
+            "type": "string",
+            "description": "LLM provider name (default: auto-detect)"
+          },
+          "model": {
+            "type": "string",
+            "description": "Model name override"
+          }
+        }
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "string",
+            "description": "AI diagnostic report with fix commands"
+          }
+        }
+      }
+    },
+    "ai.build": {
+      "description": "AI-guided ISO build plan generation",
+      "params": {
+        "type": "object",
+        "properties": {
+          "build": {
+            "type": "object",
+            "properties": {
+              "desktop": { "type": "string" },
+              "installer": { "type": "string", "enum": ["calamares", "krill", "none"] },
+              "compression": { "type": "string", "enum": ["fast", "standard", "max"] },
+              "prefix": { "type": "string" },
+              "basename": { "type": "string" },
+              "clone": { "type": "boolean" },
+              "release": { "type": "boolean" },
+              "dryRun": { "type": "boolean" },
+              "description": { "type": "string" }
+            }
+          },
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        }
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.config.explain": {
+      "description": "Explain the current eggs.yaml in plain English",
+      "params": {
+        "type": "object",
+        "properties": {
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        }
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.config.generate": {
+      "description": "Generate an eggs.yaml for a specific purpose",
+      "params": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "description": "What the ISO is for (e.g., 'minimal rescue USB')"
+          },
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        },
+        "required": ["purpose"]
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.calamares": {
+      "description": "Calamares installer AI assistant",
+      "params": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        }
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.wardrobe": {
+      "description": "Wardrobe/costume system AI assistant",
+      "params": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        }
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.ask": {
+      "description": "General Q&A about penguins-eggs",
+      "params": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The question to ask"
+          },
+          "history": {
+            "type": "array",
+            "description": "Previous conversation messages for context",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": { "type": "string", "enum": ["user", "assistant"] },
+                "content": { "type": "string" }
+              }
+            }
+          },
+          "provider": { "type": "string" },
+          "model": { "type": "string" }
+        },
+        "required": ["question"]
+      },
+      "result": {
+        "type": "object",
+        "properties": {
+          "result": { "type": "string" }
+        }
+      }
+    },
+    "ai.providers": {
+      "description": "List available LLM providers",
+      "params": {},
+      "result": {
+        "type": "object",
+        "properties": {
+          "providers": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

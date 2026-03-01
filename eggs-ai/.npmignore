@@ -1,0 +1,9 @@
+src/
+test/
+examples/
+packaging/
+.gitignore
+vitest.config.ts
+tsconfig.json
+*.tsbuildinfo
+.eggs-ai.yaml
