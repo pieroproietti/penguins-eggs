@@ -185,6 +185,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mv "$MNT_DIR/bootfs.ext4" "$MNT_DIR/input/bootfs.ext4"\n'
     script += 'mv "$MNT_DIR/rootfs.ext4" "$MNT_DIR/input/rootfs.ext4"\n'
     script += 'echo "Running genimage..."\n'
+
     script += 'echo genimage --inputpath "$MNT_DIR/input" --outputpath "$MNT_DIR/output" --rootpath "$MNT_DIR/output" --tmppath "$MNT_DIR/tmp" --config "$MNT_DIR/input/genimage.cfg"\n'
     script += 'genimage --inputpath "$MNT_DIR/input" --outputpath "$MNT_DIR/output" --rootpath "$MNT_DIR/output" --tmppath "$MNT_DIR/tmp" --config "$MNT_DIR/input/genimage.cfg"\n'
     script += 'echo "Moving generated image to destination..."\n'
