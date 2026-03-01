@@ -59,30 +59,35 @@ const checkoutStep: Step = {
   uses: 'actions/checkout@v4',
 }
 
-const setupNodeStep = (version = '20'): Step => ({
+const setupNodeStep = (version = '22'): Step => ({
   name: 'Setup Node.js',
   uses: 'actions/setup-node@v4',
   with: { 'node-version': version },
 })
 
+const installPnpmStep: Step = {
+  name: 'Install pnpm',
+  run: 'npm install -g pnpm',
+}
+
 const installDepsStep: Step = {
   name: 'Install dependencies',
-  run: 'npm ci',
+  run: 'pnpm install --frozen-lockfile',
 }
 
 const buildStep: Step = {
   name: 'Build',
-  run: 'npm run build',
+  run: 'pnpm run build',
 }
 
 const lintStep: Step = {
   name: 'Lint',
-  run: 'npm run lint',
+  run: 'pnpm run lint',
 }
 
 const testStep: Step = {
   name: 'Test',
-  run: 'npm test',
+  run: 'pnpm test',
 }
 
 // --- Workflow definitions ---
@@ -103,6 +108,7 @@ const ciWorkflow: Workflow = {
       steps: [
         checkoutStep,
         setupNodeStep(),
+        installPnpmStep,
         installDepsStep,
         buildStep,
         lintStep,
@@ -115,7 +121,7 @@ const ciWorkflow: Workflow = {
       strategy: {
         matrix: {
           os: ['ubuntu-latest', 'ubuntu-22.04'],
-          node: ['18', '20', '22'],
+          node: ['22'],
         },
         'fail-fast': false,
       },
@@ -126,6 +132,7 @@ const ciWorkflow: Workflow = {
           uses: 'actions/setup-node@v4',
           with: { 'node-version': '${{ matrix.node }}' },
         },
+        installPnpmStep,
         installDepsStep,
         buildStep,
       ],
@@ -148,11 +155,12 @@ const releaseWorkflow: Workflow = {
       steps: [
         checkoutStep,
         setupNodeStep(),
+        installPnpmStep,
         installDepsStep,
         buildStep,
         {
           name: 'Build Debian package',
-          run: 'npm run deb',
+          run: 'pnpm run deb',
         },
         {
           name: 'Build AppImage',
@@ -200,6 +208,7 @@ const isoTestWorkflow: Workflow = {
           ].join('\n'),
         },
         setupNodeStep(),
+        installPnpmStep,
         installDepsStep,
         buildStep,
         {

@@ -40,7 +40,9 @@
   },
   "files": [
     "dist/",
+    "src/",
     "bin/",
+    "tsconfig.json",
     "plugins/dev-workflow/pr-automation/",
     "plugins/dev-workflow/security-scan/",
     "plugins/dev-workflow/dev-tools/",
@@ -61,6 +63,7 @@
     "test:phase5": "mocha 'test/phase5/**/*.test.ts'",
     "test:phase6": "mocha 'test/phase6/**/*.test.ts'",
     "validate": "bash test/validate.sh",
+    "prepare": "tsc",
     "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
