@@ -1,0 +1,32 @@
+# Go
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Node
+node_modules/
+desktop/dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Build artifacts
+*.deb
+*.rpm
+*.AppImage
+
+# Runtime
+/tmp/eggs-gui.sock
