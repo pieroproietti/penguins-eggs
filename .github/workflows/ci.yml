@@ -21,15 +21,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
       - name: Test
-        run: npm test
+        run: pnpm test
   build-matrix:
     name: Build on ${{ matrix.os }} / Node ${{ matrix.node }}
     runs-on: ${{ matrix.os }}
@@ -39,8 +41,6 @@ jobs:
           - ubuntu-latest
           - ubuntu-22.04
         node:
-          - "18"
-          - "20"
           - "22"
       fail-fast: false
     steps:
@@ -50,7 +50,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: npm run build
+        run: pnpm run build

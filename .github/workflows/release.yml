@@ -18,13 +18,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build
-        run: npm run build
+        run: pnpm run build
       - name: Build Debian package
-        run: npm run deb
+        run: pnpm run deb
       - name: Build AppImage
         run: bash appimage.sh
       - name: Create GitHub Release
