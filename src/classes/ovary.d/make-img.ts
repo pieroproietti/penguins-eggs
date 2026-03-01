@@ -151,7 +151,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
-    //script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit"\n'
+    // script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit"\n'
     // script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
     // script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/dtb/spacemit/" | grep "MUSE-Book" | head -n1))\n'
 
@@ -247,7 +247,9 @@ function getCleanupLogic() {
     script += 'sync\n'
     script += 'umount -R "$MNT_DIR/root_mp" || true\n'
     script += 'umount -R "$MNT_DIR/boot_mp" || true\n'
-    script += 'losetup -d "$LOOP_DEV"\n\n'
+    script += 'if [ -n "$LOOP_DEV" ] && [ -b "$LOOP_DEV" ]; then\n' // Se esiste e se è un block device
+    script += '    losetup -d "$LOOP_DEV" || true\n'
+    script += 'fi\n\n'
     return script
 }
 
