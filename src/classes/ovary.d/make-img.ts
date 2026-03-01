@@ -124,6 +124,8 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     let script = getScriptHeader(vars)
 
     script += '# --- 1. CALCOLO DIMENSIONI E CREAZIONE EXT4 VOLUMES ---\n'
+    script += 'mkdir -p "$MNT_DIR/img"\n'
+
     script += 'SQUASH_SIZE=$(du -sm "$SRC_DIR/live/filesystem.squashfs" | cut -f1)\n'
     script += 'ROOTFS_SIZE=$((SQUASH_SIZE + 1024))\n'
     script += 'echo "Creating bootfs.ext4: 256 MB"\n'
@@ -149,10 +151,10 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
     script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
     script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
-    script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
+    // script += 'mkdir -p "$MNT_DIR/boot_mp/dtb/spacemit" "$MNT_DIR/boot_mp/extlinux"\n'
+    // script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/dtb/spacemit/"\n'
 
-    script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/dtb/spacemit/" | grep "MUSE-Book" | head -n1))\n'
+    // script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/dtb/spacemit/" | grep "MUSE-Book" | head -n1))\n'
 
     script += 'echo "Writing extlinux.conf..."\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
@@ -163,10 +165,12 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '  append boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
     script += 'EOF\n\n'
 
+
     script += 'echo "Writing env_k1-x.txt..."\n'
     script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    script += 'bootargs=boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
-    script += 'bootcmd=ext4load mmc 0:5 \\${kernel_addr_r} vmlinuz; ext4load mmc 0:5 \\${ramdisk_addr_r} initrd.img; ext4load mmc 0:5 \\${fdt_addr_r} dtb/spacemit/$DTB_NAME; booti \\${kernel_addr_r} \\${ramdisk_addr_r} \\${fdt_addr_r}\n'
+    script += 'knl_name=vmlinuz-6.6.63\n'
+    script += 'ramdisk_name=initrd.img-6.6.63\n'
+    script += 'dtb_dir=spacemit/6.6.63\n'
     script += 'EOF\n\n'
 
     script += '# --- 4. POPOLAMENTO ROOTFS ---\n'
