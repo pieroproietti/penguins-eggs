@@ -1,0 +1,99 @@
+# Example Eggs-AI configuration file
+# Copy to ~/.eggs-ai.yaml or ./.eggs-ai.yaml
+#
+# This file lets you:
+#   1. Register custom LLM providers (any OpenAI-compatible API)
+#   2. Create aliases for built-in providers with preset models
+#   3. Set a default provider so you don't need --provider every time
+
+# Default provider used when --provider flag is omitted
+default_provider: gemini
+
+providers:
+  # ── Cloud APIs ──────────────────────────────────────────
+
+  # DeepSeek
+  - name: deepseek
+    type: custom
+    baseUrl: https://api.deepseek.com/v1
+    envKey: DEEPSEEK_API_KEY
+    model: deepseek-chat
+
+  # Together AI
+  - name: together
+    type: custom
+    baseUrl: https://api.together.xyz/v1
+    envKey: TOGETHER_API_KEY
+    model: meta-llama/Llama-3-70b-chat-hf
+
+  # Fireworks AI
+  - name: fireworks
+    type: custom
+    baseUrl: https://api.fireworks.ai/inference/v1
+    envKey: FIREWORKS_API_KEY
+    model: accounts/fireworks/models/llama-v3p1-70b-instruct
+
+  # Perplexity (online search-augmented)
+  - name: perplexity
+    type: custom
+    baseUrl: https://api.perplexity.ai
+    envKey: PERPLEXITY_API_KEY
+    model: llama-3.1-sonar-large-128k-online
+
+  # OpenRouter (access many models via one API)
+  - name: openrouter
+    type: custom
+    baseUrl: https://openrouter.ai/api/v1
+    envKey: OPENROUTER_API_KEY
+    model: anthropic/claude-sonnet-4-20250514
+
+  # ── Local / Self-hosted ─────────────────────────────────
+
+  # LM Studio (local GUI app)
+  - name: lmstudio
+    type: custom
+    baseUrl: http://localhost:1234/v1
+    model: local-model
+
+  # LocalAI (local OpenAI-compatible server)
+  - name: localai
+    type: custom
+    baseUrl: http://localhost:8080/v1
+    model: gpt-4
+
+  # vLLM (high-performance local inference)
+  - name: vllm
+    type: custom
+    baseUrl: http://localhost:8000/v1
+    model: meta-llama/Llama-3-8b-chat-hf
+
+  # text-generation-webui (with OpenAI extension)
+  - name: textgen
+    type: custom
+    baseUrl: http://localhost:5000/v1
+    model: default
+
+  # ── Built-in provider aliases with preset models ────────
+
+  # Use a specific OpenAI model by name
+  - name: gpt4
+    type: openai
+    model: gpt-4o
+    envKey: OPENAI_API_KEY
+
+  - name: gpt4-mini
+    type: openai
+    model: gpt-4o-mini
+    envKey: OPENAI_API_KEY
+
+  # Use a specific Claude model by name
+  - name: claude
+    type: anthropic
+    model: claude-sonnet-4-20250514
+    envKey: ANTHROPIC_API_KEY
+
+  # Use a specific Gemini model
+  - name: gemini-pro
+    type: gemini
+    model: gemini-2.5-pro-preview-06-05
+    envKey: GEMINI_API_KEY
