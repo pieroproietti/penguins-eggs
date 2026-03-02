@@ -1,0 +1,32 @@
+# Wardrobe costume: developer
+# Includes git developer tools for eggs-produced developer distros.
+#
+# Tools included:
+# - lazygit (jesseduffield/lazygit) — terminal UI for git
+# - git-insight (avimehenwal/git-insight) — repo analytics
+# - git-swift (ddddami/git-swift) — fuzzy branch switcher
+
+name: developer
+description: Git developer tools for power users
+author: penguins-eggs-integrations
+
+# Packages to install (distro-agnostic names where possible)
+packages:
+  - git
+  - curl
+  - wget
+  - jq
+  - fzf
+  - ripgrep
+  - fd-find
+  - bat
+  - htop
+
+# These are installed from GitHub releases (not distro repos)
+github_releases:
+  - repo: jesseduffield/lazygit
+    binary: lazygit
+    install_dir: /usr/local/bin
+  - repo: ddddami/git-swift
+    binary: git-swift
+    install_dir: /usr/local/bin

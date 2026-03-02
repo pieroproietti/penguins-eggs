@@ -1,0 +1,41 @@
+# giftless.yaml
+# Configuration for the Giftless LFS server.
+# Stores ISO blobs locally by default. Switch to S3/GCS for production.
+
+TRANSFER_ADAPTERS:
+  basic:
+    factory: giftless.transfer.basic_streaming:factory
+    options:
+      storage_class: LocalStorage
+      storage_options:
+        path: /lfs-storage
+
+# For S3 storage, uncomment and configure:
+# TRANSFER_ADAPTERS:
+#   basic:
+#     factory: giftless.transfer.basic_streaming:factory
+#     options:
+#       storage_class: giftless.storage.amazon_s3:AmazonS3Storage
+#       storage_options:
+#         bucket_name: eggs-lfs
+#         region: us-east-1
+
+# For Google Cloud Storage:
+# TRANSFER_ADAPTERS:
+#   basic:
+#     factory: giftless.transfer.basic_streaming:factory
+#     options:
+#       storage_class: giftless.storage.google_cloud:GoogleCloudStorage
+#       storage_options:
+#         bucket_name: eggs-lfs
+#         project_name: my-project
+
+AUTH_PROVIDERS:
+  - giftless.auth.allow_anon:read_write
+
+# For production, use JWT auth:
+# AUTH_PROVIDERS:
+#   - factory: giftless.auth.jwt:factory
+#     options:
+#       algorithm: HS256
+#       public_key: your-secret-key

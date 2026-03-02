@@ -16,6 +16,7 @@ import Distro from '../classes/distro.js'
 import Ovary from '../classes/ovary.js'
 import Utils from '../classes/utils.js'
 import { IAddons, IExcludes } from '../interfaces/index.js'
+import { exec } from '../lib/utils.js'
 import Config from './config.js'
 
 // _dirname
@@ -60,6 +61,9 @@ export default class Produce extends Command {
     recovery: Flags.boolean({ description: 'layer penguins-recovery tools onto the produced ISO' }),
     'recovery-gui': Flags.string({ description: 'GUI profile for recovery: minimal, touch, or full', options: ['minimal', 'touch', 'full'] }),
     'recovery-rescapp': Flags.boolean({ description: 'include rescapp GUI wizard in recovery ISO' }),
+    lfs: Flags.boolean({ description: 'track produced ISO in git-lfs after build' }),
+    ipfs: Flags.boolean({ description: 'publish produced ISO to IPFS via brig after build' }),
+    snapshot: Flags.boolean({ description: 'create BTRFS snapshots before/after build (requires BTRFS)' }),
     release: Flags.boolean({ description: 'release: remove penguins-eggs, calamares and dependencies after installation' }),
     script: Flags.boolean({ char: 's', description: 'script mode. Generate scripts to manage iso build' }),
     standard: Flags.boolean({ char: 'S', description: 'standard compression: xz -b 1M' }),
@@ -377,6 +381,16 @@ export default class Produce extends Command {
       }
 
       if (await ovary.fertilization(prefix, basename, dtbDir, theme, compression, !nointeractive)) {
+        // --- Integration: pre-produce hooks ---
+        if (flags.snapshot) {
+          try {
+            const { btrfsBeforeProduce } = await import('penguins-eggs-integrations/build-infra')
+            await btrfsBeforeProduce(exec, verbose)
+          } catch (err: any) {
+            if (verbose) Utils.warning(`BTRFS snapshot skipped: ${err.message}`)
+          }
+        }
+
         await ovary.produce(kernel, clone, homecrypt, fullcrypt, hidden, scriptOnly, yolkRenew, release, myAddons, myLinks, excludes, nointeractive, noicon, includeRootHome, verbose)
         ovary.finished(scriptOnly)
 
@@ -388,6 +402,43 @@ export default class Produce extends Command {
             flags['recovery-rescapp'],
             verbose
           )
+        }
+
+        // --- Integration: post-produce hooks ---
+        const isoPath = path.join(ovary.settings.config.snapshot_dir, ovary.settings.isoFilename)
+
+        if (flags.snapshot) {
+          try {
+            const { btrfsAfterProduce } = await import('penguins-eggs-integrations/build-infra')
+            const isoSize = fs.existsSync(isoPath) ? fs.statSync(isoPath).size : 0
+            await btrfsAfterProduce(ovary.settings.isoFilename, isoSize, exec, verbose)
+          } catch (err: any) {
+            if (verbose) Utils.warning(`BTRFS snapshot skipped: ${err.message}`)
+          }
+        }
+
+        if (flags.lfs) {
+          try {
+            const { lfsAfterProduce } = await import('penguins-eggs-integrations/distribution')
+            await lfsAfterProduce(ovary.settings.isoFilename, ovary.settings.config.snapshot_dir, verbose, exec)
+          } catch (err: any) {
+            Utils.warning(`LFS tracking failed: ${err.message}`)
+          }
+        }
+
+        if (flags.ipfs) {
+          try {
+            const { BrigPublisher } = await import('penguins-eggs-integrations/decentralized')
+            const publisher = new BrigPublisher(exec, verbose)
+            if (await publisher.isInstalled()) {
+              const result = await publisher.publish(isoPath)
+              console.log(`IPFS: published ${ovary.settings.isoFilename} CID=${result.cid}`)
+            } else {
+              Utils.warning('brig not installed, skipping IPFS publish')
+            }
+          } catch (err: any) {
+            Utils.warning(`IPFS publish failed: ${err.message}`)
+          }
         }
       }
     } else {
