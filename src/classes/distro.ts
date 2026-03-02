@@ -20,6 +20,19 @@ import Utils from './utils.js'
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 /**
+ * Map Android API levels to version codenames
+ */
+const androidCodenames: Record<string, string> = {
+  '30': 'r',          // Android 11
+  '31': 's',          // Android 12
+  '32': 's-v2',       // Android 12L
+  '33': 'tiramisu',   // Android 13
+  '34': 'upside-down-cake', // Android 14
+  '35': 'vanilla-ice-cream', // Android 15
+  '36': 'baklava',    // Android 16
+}
+
+/**
  * Classe
  */
 class Distro implements IDistro {
@@ -171,6 +184,25 @@ class Distro implements IDistro {
         this.liveMediumPath = '/run/initramfs/live/'
         this.usrLibPath = '/usr/lib64/'
         this.isCalamaresAvailable = false // krill is the primary installer
+
+        break
+      }
+
+      case 'Android':
+      case 'BlissOS':
+      case 'LineageOS':
+      case 'GrapheneOS':
+      case 'BassOS': {
+        /**
+         * Android/AOSP family
+         */
+        this.familyId = 'android'
+        this.distroLike = 'Android'
+        this.codenameId = this.getAndroidCodename()
+        this.distroUniqueId = 'android'
+        this.isCalamaresAvailable = false
+        this.liveMediumPath = '/mnt/runtime/'
+        this.squashfs = 'system.sfs'
 
         break
       }
@@ -517,6 +549,21 @@ class Distro implements IDistro {
     }
 
     /**
+     * Fallback: detect Android environment via build.prop or Waydroid
+     * if os-release didn't identify it
+     */
+    if (this.familyId !== 'android' && Distro.isAndroidEnvironment()) {
+      this.familyId = 'android'
+      this.distroLike = 'Android'
+      this.distroId = Distro.detectAndroidDistroId()
+      this.codenameId = this.getAndroidCodename()
+      this.distroUniqueId = 'android'
+      this.isCalamaresAvailable = false
+      this.liveMediumPath = '/mnt/runtime/'
+      this.squashfs = 'system.sfs'
+    }
+
+    /**
      * lettura os_release per i pulsanti
      */
     const os_release = '/etc/os-release'
@@ -538,6 +585,101 @@ class Distro implements IDistro {
         }
       }
     }
+  }
+
+  /**
+   * Read a property from Android's build.prop files
+   */
+  static readBuildProp(key: string): string {
+    const buildPropPaths = [
+      '/system/build.prop',
+      '/vendor/build.prop',
+      '/system/system/build.prop',
+      '/var/lib/waydroid/overlay/system/build.prop',
+    ]
+
+    for (const propPath of buildPropPaths) {
+      if (fs.existsSync(propPath)) {
+        try {
+          const data = fs.readFileSync(propPath, 'utf8')
+          for (const line of data.split('\n')) {
+            const trimmed = line.trim()
+            if (trimmed.startsWith(key + '=')) {
+              return trimmed.slice(key.length + 1)
+            }
+          }
+        } catch {
+          // permission denied or other read error, try next
+        }
+      }
+    }
+
+    return ''
+  }
+
+  /**
+   * Detect if we're running in an Android environment
+   * Checks: build.prop, Waydroid config, /proc/cmdline androidboot params
+   */
+  static isAndroidEnvironment(): boolean {
+    // Check for Android build.prop
+    if (fs.existsSync('/system/build.prop')) {
+      return true
+    }
+
+    // Check for Waydroid
+    if (fs.existsSync('/var/lib/waydroid/waydroid.cfg')) {
+      return true
+    }
+
+    // Check for androidboot in kernel cmdline
+    try {
+      if (fs.existsSync('/proc/cmdline')) {
+        const cmdline = fs.readFileSync('/proc/cmdline', 'utf8')
+        if (cmdline.includes('androidboot')) {
+          return true
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    return false
+  }
+
+  /**
+   * Detect the Android distribution name from build.prop
+   */
+  static detectAndroidDistroId(): string {
+    const displayId = Distro.readBuildProp('ro.build.display.id').toLowerCase()
+    const brand = Distro.readBuildProp('ro.product.brand').toLowerCase()
+
+    if (displayId.includes('bliss') || brand.includes('bliss')) return 'BlissOS'
+    if (displayId.includes('bass')) return 'BassOS'
+    if (displayId.includes('lineage') || brand.includes('lineage')) return 'LineageOS'
+    if (displayId.includes('graphene') || brand.includes('graphene')) return 'GrapheneOS'
+
+    // Check for Waydroid specifically
+    if (fs.existsSync('/var/lib/waydroid/waydroid.cfg')) return 'Waydroid'
+
+    return 'Android'
+  }
+
+  /**
+   * Get Android version codename from build.prop SDK level
+   */
+  private getAndroidCodename(): string {
+    const sdkVersion = Distro.readBuildProp('ro.build.version.sdk')
+    if (sdkVersion && androidCodenames[sdkVersion]) {
+      return androidCodenames[sdkVersion]
+    }
+
+    const versionRelease = Distro.readBuildProp('ro.build.version.release')
+    if (versionRelease) {
+      return `android-${versionRelease}`
+    }
+
+    return 'android'
   }
 }
 

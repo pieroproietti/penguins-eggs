@@ -15,6 +15,7 @@ import { exec, execSync, shx } from '../lib/utils.js'
 import Distro from './distro.js'
 import Diversions from './diversions.js'
 import Alpine from './pacman.d/alpine.js'
+import Android from './pacman.d/android.js'
 import Archlinux from './pacman.d/archlinux.js'
 import ChromiumOS from './pacman.d/chromiumos.js'
 import Debian from './pacman.d/debian.js'
@@ -126,6 +127,11 @@ export default class Pacman {
 
           break
         }
+
+        case 'android': {
+          // Android: no-op (Calamares not supported, use krill)
+          break
+        }
         // No default
       }
     }
@@ -182,6 +188,11 @@ export default class Pacman {
       case 'chromiumos': {
         await ChromiumOS.calamaresPolicies(verbose)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -241,6 +252,11 @@ export default class Pacman {
       case 'chromiumos': {
         retVal = await ChromiumOS.calamaresRemove(verbose)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -740,6 +756,11 @@ export default class Pacman {
 
         break
       }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
+        break
+      }
       // No default
     }
 
@@ -816,6 +837,11 @@ export default class Pacman {
           installed = true
         }
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default
@@ -964,6 +990,11 @@ export default class Pacman {
       case 'chromiumos': {
         retVal = await ChromiumOS.packageInstall(packageName)
 
+        break
+      }
+
+      case 'android': {
+        // Android: no-op (Calamares not supported, use krill)
         break
       }
       // No default

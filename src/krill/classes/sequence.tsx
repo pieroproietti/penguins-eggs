@@ -265,6 +265,12 @@ export default class Sequence {
    * Main installation sequence - Linear and clear
    */
   private async runInstallationSequence(chroot = false): Promise<void> {
+    // Android has a fundamentally different install sequence
+    if (this.distro.familyId === 'android') {
+      await this.runAndroidInstallSequence()
+      return
+    }
+
     // 1. Partitioning and formatting
     let isPartitioned = false
     await this.executeStep("Creating partitions", 0, async () => {
@@ -457,6 +463,72 @@ export default class Sequence {
     }
 
     await this.settings.load()
+  }
+
+  /**
+   * Android-specific installation sequence.
+   * Replaces the standard Linux sequence with Android partition layout,
+   * system.sfs unpacking, Android fstab, and Android bootloader config.
+   */
+  private async runAndroidInstallSequence(): Promise<void> {
+    const { androidUefi, androidBios } = await import('./sequence.d/partition.d/android_x86.js')
+    const { androidUnpackfs } = await import('./sequence.d/android_unpackfs.js')
+    const { androidBootloader } = await import('./sequence.d/android_bootloader.js')
+    const { androidPostInstall } = await import('./sequence.d/android_postinstall.js')
+
+    // 1. Partition the disk (Android layout)
+    await this.executeStep('Partitioning disk (Android layout)', 0, async () => {
+      const installDevice = this.partitions.installationDevice
+      const p = installDevice.includes('nvme') || installDevice.includes('mmcblk') ? 'p' : ''
+
+      if (this.efi) {
+        await androidUefi.call(this, installDevice, p)
+      } else {
+        await androidBios.call(this, installDevice, p)
+      }
+    })
+
+    // 2. Format partitions
+    await this.executeStep('Formatting partitions', 10, async () => {
+      await this.mkfs()
+    })
+
+    // 3. Mount target partitions
+    await this.executeStep('Mounting target partitions', 15, async () => {
+      await this.mountFs()
+    })
+
+    // 4. Mount virtual filesystems
+    await this.executeStep('Mounting virtual filesystems', 20, async () => {
+      await this.mountVfs()
+    })
+
+    // 5. Unpack Android system (system.sfs → /system)
+    await this.executeStep('Unpacking Android system', 25, async () => {
+      await androidUnpackfs.call(this)
+    })
+
+    // 6. Generate Android fstab
+    await this.executeStep('Generating Android fstab', 60, async () => {
+      const { androidFstab } = await import('./sequence.d/android_fstab.js')
+      await androidFstab.call(this, this.partitions.installationDevice)
+    })
+
+    // 7. Install bootloader
+    await this.executeStep('Installing bootloader', 70, async () => {
+      await androidBootloader.call(this)
+    })
+
+    // 8. Android post-install (SELinux, permissions, build.prop)
+    await this.executeStep('Android post-install', 80, async () => {
+      await androidPostInstall.call(this)
+    })
+
+    // 9. Unmount
+    await this.executeStep('Unmounting filesystems', 95, async () => {
+      await this.umountVfs()
+      await this.umount()
+    })
   }
 }
 
