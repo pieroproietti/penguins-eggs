@@ -1,0 +1,68 @@
+# ThoriumOS flavour costume
+# Installs Thorium browser (Alex313031/thorium) into a ChromiumOS image.
+# Thorium provides pre-built Linux binaries as .deb and tarballs.
+---
+name: thoriumos
+author: penguins-eggs
+description: ChromiumOS with Thorium browser (compiler-optimized Chromium)
+release: "1.0"
+distributions:
+  - ChromiumOS
+  - Chromeos
+  - Brunch
+  - ThoriumOS
+  - Gentoo
+reboot: false
+
+sequence:
+  repositories:
+    sources_list: []
+    sources_list_d: []
+    update: false
+    upgrade: false
+
+  packages:
+    - wget
+    - curl
+    - xdg-utils
+
+  packages_python: []
+
+  accessories: []
+
+  cmds:
+    # Download and install latest Thorium release
+    - mkdir -p /opt/thorium
+    - >-
+      THORIUM_URL=$(curl -s https://api.github.com/repos/Alex313031/thorium/releases/latest |
+      grep -o 'https://[^"]*thorium-browser_[^"]*_amd64.deb' | head -1) &&
+      wget -q -O /tmp/thorium.deb "$THORIUM_URL" &&
+      dpkg -x /tmp/thorium.deb /opt/thorium-extract &&
+      cp -r /opt/thorium-extract/opt/chromium.org/thorium/* /opt/thorium/ &&
+      rm -rf /opt/thorium-extract /tmp/thorium.deb ||
+      echo "Thorium download failed, trying tarball..." &&
+      THORIUM_TAR=$(curl -s https://api.github.com/repos/Alex313031/thorium/releases/latest |
+      grep -o 'https://[^"]*Thorium_Browser_[^"]*_x64.tar.bz2' | head -1) &&
+      wget -q -O /tmp/thorium.tar.bz2 "$THORIUM_TAR" &&
+      tar xjf /tmp/thorium.tar.bz2 -C /opt/thorium --strip-components=1 &&
+      rm -f /tmp/thorium.tar.bz2
+    # Create symlink
+    - ln -sf /opt/thorium/thorium-browser /usr/local/bin/thorium-browser
+    # Create desktop entry
+    - >-
+      cat > /usr/share/applications/thorium-browser.desktop << 'DESKTOP'
+      [Desktop Entry]
+      Name=Thorium Browser
+      Comment=Compiler-optimized Chromium browser
+      Exec=/opt/thorium/thorium-browser %U
+      Terminal=false
+      Type=Application
+      Icon=/opt/thorium/product_logo_256.png
+      Categories=Network;WebBrowser;
+      MimeType=text/html;text/xml;application/xhtml+xml;
+      DESKTOP
+
+finalize:
+  customize: false
+  cmds:
+    - echo "ThoriumOS flavour installed"

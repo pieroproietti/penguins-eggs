@@ -1,0 +1,34 @@
+# Stock Chromium costume (default)
+# Installs the standard open-source Chromium browser via Portage.
+---
+name: chromiumos
+author: penguins-eggs
+description: ChromiumOS with stock Chromium browser
+release: "1.0"
+distributions:
+  - ChromiumOS
+  - Chromeos
+  - Brunch
+  - Gentoo
+reboot: false
+
+sequence:
+  repositories:
+    sources_list: []
+    sources_list_d: []
+    update: false
+    upgrade: false
+
+  packages:
+    - www-client/chromium
+
+  packages_python: []
+
+  accessories: []
+
+  cmds: []
+
+finalize:
+  customize: false
+  cmds:
+    - echo "Stock ChromiumOS flavour installed"

@@ -29,11 +29,16 @@ export default class Produce extends Command {
     'sudo eggs produce --clone            # clear clone (unencrypted)',
     'sudo eggs produce --homecrypt      # clone crypted home (all inside /home is cypted)',
     'sudo eggs produce --fullcrypt      # clone crypted full (entire system is crypted)',
-    'sudo eggs produce --basename=colibri'
+    'sudo eggs produce --basename=colibri',
+    'sudo eggs produce --cros-flavour=thorium   # ChromiumOS with Thorium browser',
+    'sudo eggs produce --cros-flavour=brave     # ChromiumOS with Brave browser',
+    'sudo eggs produce --cros-flavour=custom --cros-browser-repo=https://github.com/user/fork  # custom browser'
   ]
   static flags = {
     addons: Flags.string({ description: 'addons to be used: adapt, pve, rsupport', multiple: true }),
     basename: Flags.string({ description: 'basename' }),
+    'cros-browser-repo': Flags.string({ description: 'custom browser repo URL for ChromiumOS flavour' }),
+    'cros-flavour': Flags.string({ description: 'ChromiumOS browser flavour: chromium, thorium, brave, vanadium, bromite, cromite' }),
     dtbdir: Flags.string({ description: 'path to Device Tree Blobs (DTB) directory' }),
     clone: Flags.boolean({ char: 'c', description: 'clone (uncrypted)' }),
     excludes: Flags.string({ description: 'use: static, homes, home', multiple: true }),
@@ -225,6 +230,47 @@ export default class Produce extends Command {
         if (!fs.existsSync(theme + '/theme')) {
           console.log('Cannot find theme: ' + theme)
           process.exit()
+        }
+      }
+
+      /**
+       * ChromiumOS flavour: install selected browser before snapshotting
+       */
+      const crosFlavourId = flags['cros-flavour']
+      const crosBrowserRepo = flags['cros-browser-repo']
+      if (crosFlavourId) {
+        const distro = new Distro()
+        if (distro.familyId !== 'chromiumos') {
+          Utils.warning(`--cros-flavour is only supported on ChromiumOS (detected: ${distro.familyId})`)
+          process.exit(1)
+        }
+
+        const { getFlavour, createCustomFlavour, installFlavour, getFlavourBranding, listDesktopFlavours } = await import('../classes/ovary.d/cros_flavour.js')
+
+        let flavour = getFlavour(crosFlavourId)
+        if (!flavour && crosFlavourId === 'custom') {
+          if (!crosBrowserRepo) {
+            Utils.warning('--cros-browser-repo is required when using --cros-flavour=custom')
+            process.exit(1)
+          }
+          flavour = createCustomFlavour(crosBrowserRepo)
+        }
+
+        if (!flavour) {
+          Utils.warning(`Unknown ChromiumOS flavour: ${crosFlavourId}. Available: ${listDesktopFlavours().join(', ')}`)
+          process.exit(1)
+        }
+
+        Utils.warning(`ChromiumOS flavour: ${flavour.name}`)
+        await installFlavour(flavour, crosBrowserRepo)
+
+        // Apply branding to basename/prefix if not explicitly set
+        const branding = getFlavourBranding(flavour)
+        if (!flags.basename) {
+          basename = branding.isoPrefix
+        }
+        if (!flags.prefix) {
+          prefix = ''
         }
       }
 

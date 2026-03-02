@@ -1,0 +1,65 @@
+# BraveOS flavour costume
+# Installs Brave browser into a ChromiumOS image.
+# Brave provides pre-built Linux binaries.
+---
+name: braveos
+author: penguins-eggs
+description: ChromiumOS with Brave browser (privacy-focused with built-in ad blocking)
+release: "1.0"
+distributions:
+  - ChromiumOS
+  - Chromeos
+  - Brunch
+  - Gentoo
+reboot: false
+
+sequence:
+  repositories:
+    sources_list: []
+    sources_list_d: []
+    update: false
+    upgrade: false
+
+  packages:
+    - wget
+    - curl
+    - xdg-utils
+
+  packages_python: []
+
+  accessories: []
+
+  cmds:
+    # Download and install latest Brave release
+    - mkdir -p /opt/brave
+    - >-
+      BRAVE_URL=$(curl -s https://api.github.com/repos/brave/brave-browser/releases/latest |
+      grep -o 'https://[^"]*brave-browser-[^"]*-linux-amd64.zip' | head -1) &&
+      wget -q -O /tmp/brave.zip "$BRAVE_URL" &&
+      unzip -o /tmp/brave.zip -d /opt/brave &&
+      rm -f /tmp/brave.zip ||
+      echo "Brave zip not found, trying standalone..." &&
+      wget -q -O /tmp/brave.tar.bz2
+      "https://github.com/nicothin/nicothin/releases/latest/download/brave-browser-nightly-linux-amd64.tar.bz2" &&
+      tar xjf /tmp/brave.tar.bz2 -C /opt/brave --strip-components=1 &&
+      rm -f /tmp/brave.tar.bz2
+    # Create symlink
+    - ln -sf /opt/brave/brave-browser /usr/local/bin/brave-browser
+    # Create desktop entry
+    - >-
+      cat > /usr/share/applications/brave-browser.desktop << 'DESKTOP'
+      [Desktop Entry]
+      Name=Brave Browser
+      Comment=Privacy-focused browser with built-in ad blocking
+      Exec=/opt/brave/brave-browser %U
+      Terminal=false
+      Type=Application
+      Icon=/opt/brave/product_logo_128.png
+      Categories=Network;WebBrowser;
+      MimeType=text/html;text/xml;application/xhtml+xml;
+      DESKTOP
+
+finalize:
+  customize: false
+  cmds:
+    - echo "BraveOS flavour installed"

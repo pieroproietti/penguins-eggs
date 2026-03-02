@@ -1,0 +1,16 @@
+# ChromiumOS wardrobe index
+# Lists available costumes (browser flavours) for ChromiumOS images.
+#
+# Usage:
+#   eggs wardrobe list --wardrobe chromiumos
+#   eggs wardrobe wear --costume thorium --wardrobe chromiumos
+#   eggs produce --cros-flavour thorium
+---
+name: chromiumos
+description: ChromiumOS flavours with different Chromium-based browsers
+author: penguins-eggs
+costumes:
+  - chromium    # Stock Chromium (default)
+  - thorium     # Alex313031/thorium - compiler-optimized
+  - brave       # brave/brave-browser - privacy-focused
+  - custom      # Any git repo via --cros-browser-repo
