@@ -58,27 +58,27 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'sync\n'
     script += 'partprobe "${LOOP_DEV}"\n'
     script += 'sleep 2\n'
-    script += 'mkfs.vfat -F32 -n "EFI" "${LOOP_DEV}p1"\n'
+    script += 'mkfs.fat32 -F32 -L "EFI" "${LOOP_DEV}p1"\n'
     script += 'mkfs.ext4 -L "$IMG_VOLID" -m 0 -q "${LOOP_DEV}p2"\n\n'
 
     script += '# 4. Mount\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
-    script += 'mount "${LOOP_DEV}p1" "$MNT_DIR/boot_mp"\n'
-    script += 'mount "${LOOP_DEV}p2" "$MNT_DIR/root_mp"\n\n'
+    script += 'mkdir -p "$MNT_DIR/bootfs" "$MNT_DIR/rootfs"\n'
+    script += 'mount "${LOOP_DEV}p1" "$MNT_DIR/bootfs"\n'
+    script += 'mount "${LOOP_DEV}p2" "$MNT_DIR/rootfs"\n\n'
 
     script += '# 5. Copia file\n'
-    script += 'mkdir -p "$MNT_DIR/root_mp/live" "$MNT_DIR/root_mp/boot/grub"\n'
-    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n'
+    script += 'mkdir -p "$MNT_DIR/rootfs/live" "$MNT_DIR/rootfs/boot/grub"\n'
+    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/rootfs/live/"\n'
     script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/root_mp/boot/"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/root_mp/boot/"\n\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/rootfs/boot/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/rootfs/boot/"\n\n'
 
     const grubModules = 'part_gpt part_msdos fat ext2 search search_label configfile normal linux all_video efi_gop echo test loadenv'
 
     script += '# 6. ESP Setup\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp/EFI/BOOT"\n'
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/EFI/BOOT/embedded_grub.cfg"\n'
+    script += 'mkdir -p "$MNT_DIR/bootfs/EFI/BOOT"\n'
+    script += 'cat <<EOF > "$MNT_DIR/bootfs/EFI/BOOT/embedded_grub.cfg"\n'
     script += 'insmod part_gpt\n'
     script += 'insmod fat\n'
     script += 'insmod ext2\n'
@@ -88,10 +88,10 @@ async function makeImgAmd64(this: Ovary, includeRootHome: boolean) {
     script += 'configfile /boot/grub/grub.cfg\n'
     script += 'EOF\n\n'
 
-    script += `grub-mkimage -c "$MNT_DIR/boot_mp/EFI/BOOT/embedded_grub.cfg" -O x86_64-efi -o "$MNT_DIR/boot_mp/EFI/BOOT/BOOTX64.EFI" -p "" ${grubModules}\n\n`
+    script += `grub-mkimage -c "$MNT_DIR/bootfs/EFI/BOOT/embedded_grub.cfg" -O x86_64-efi -o "$MNT_DIR/bootfs/EFI/BOOT/BOOTX64.EFI" -p "" ${grubModules}\n\n`
 
     script += '# 8. GRUB Config Principale\n'
-    script += 'cat <<EOF > "$MNT_DIR/root_mp/boot/grub/grub.cfg"\n'
+    script += 'cat <<EOF > "$MNT_DIR/rootfs/boot/grub/grub.cfg"\n'
     script += 'set timeout=5\n'
     script += 'insmod all_video\n'
     script += 'menuentry "Penguins Eggs Live" {\n'
@@ -137,52 +137,52 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'mkfs.ext4 -L "rootfs" -m 0 -q "$MNT_DIR/rootfs.ext4"\n\n'
 
     script += '# --- 2. MOUNT VOLUMES ---\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp" "$MNT_DIR/root_mp"\n'
-    script += 'mount -o loop "$MNT_DIR/bootfs.ext4" "$MNT_DIR/boot_mp"\n'
-    script += 'mount -o loop "$MNT_DIR/rootfs.ext4" "$MNT_DIR/root_mp"\n\n'
+    script += 'mkdir -p "$MNT_DIR/bootfs" "$MNT_DIR/rootfs"\n'
+    script += 'mount -o loop "$MNT_DIR/bootfs.ext4" "$MNT_DIR/bootfs"\n'
+    script += 'mount -o loop "$MNT_DIR/rootfs.ext4" "$MNT_DIR/rootfs"\n\n'
 
     script += '# --- 3. POPOLAMENTO BOOTFS (KERNEL, DTB, LOGO) ---\n'
     script += 'if [ -f "$SPACEMIT_DIR/bianbu.bmp" ]; then\n'
     script += '    echo "Copying boot logo (bianbu.bmp)..."\n'
-    script += '    cp "$SPACEMIT_DIR/bianbu.bmp" "$MNT_DIR/boot_mp/"\n'
+    script += '    cp "$SPACEMIT_DIR/bianbu.bmp" "$MNT_DIR/bootfs/"\n'
     script += 'fi\n'
 
-    script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinuz-*" | head -n1))\n'
+    script += 'KERNEL_FILE=$(basename $(find "$SRC_DIR/live" -name "vmlinu*" | head -n1))\n'
     script += 'INITRD_FILE=$(basename $(find "$SRC_DIR/live" -name "initrd.img-*" | head -n1))\n'
-    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/boot_mp/vmlinuz"\n'
-    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/boot_mp/initrd.img"\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp/spacemit"\n'
-    script += 'cp "$DTB_DIR"/*.dtb "$MNT_DIR/boot_mp/spacemit/"\n'
+    script += 'cp "$SRC_DIR/live/$KERNEL_FILE" "$MNT_DIR/bootfs/"\n'
+    script += 'cp "$SRC_DIR/live/$INITRD_FILE" "$MNT_DIR/bootfs/"\n'
+    script += 'cp -r /boot/spacemit "$MNT_DIR/bootfs/"\n'
 
 
-    /* serve solo per extlinux
-    script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/boot_mp/spacemit/" | grep "MUSE-Book" | head -n1))\n'
+    /* extlinux
+    script += 'DTB_NAME=$(basename $(ls "$MNT_DIR/bootfs/spacemit/" | grep "MUSE-Book" | head -n1))\n'
     script += 'echo "Writing extlinux.conf..."\n'
-    script += 'mkdir -p "$MNT_DIR/boot_mp/extlinux"\n'
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/extlinux/extlinux.conf"\n'
+    script += 'mkdir -p "$MNT_DIR/bootfs/extlinux"\n'
+    script += 'cat <<EOF > "$MNT_DIR/bootfs/extlinux/extlinux.conf"\n'
     script += 'label Eggs-Live\n'
-    script += '  kernel /vmlinuz\n'
-    script += '  initrd /initrd.img\n'
+    script += '  kernel /vmlinuz-6.6.63\n'
+    script += '  initrd /initrd.img-6.6.63\n'
     script += '  fdt /boot/spacemit/$DTB_NAME\n'
     script += '  append boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
     script += 'EOF\n\n'
     */
 
+    /* env_k1-x.txt */
     script += 'echo "Writing env_k1-x.txt..."\n'
-    script += 'cat <<EOF > "$MNT_DIR/boot_mp/env_k1-x.txt"\n'
-    script += 'knl_name=vmlinuz\n'
-    script += 'ramdisk_name=initrd.img\n'
+    script += 'cat <<EOF > "$MNT_DIR/bootfs/env_k1-x.txt"\n'
+    script += 'knl_name=vmlinuz-6.6.63\n'
+    script += 'ramdisk_name=initrd.img-6.6.63\n'
     script += 'dtb_dir=spacemit/6.6.63\n'
     script += 'EOF\n\n'
 
     script += '# --- 4. POPOLAMENTO ROOTFS ---\n'
-    script += 'mkdir -p "$MNT_DIR/root_mp/live"\n'
-    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/root_mp/live/"\n\n'
+    script += 'mkdir -p "$MNT_DIR/rootfs/live"\n'
+    script += 'cp "$SRC_DIR/live/filesystem.squashfs" "$MNT_DIR/rootfs/live/"\n\n'
 
     script += '# --- 5. UMOUNT VOLUMES ---\n'
     script += 'sync\n'
-    script += 'umount -R "$MNT_DIR/boot_mp" || true\n'
-    script += 'umount -R "$MNT_DIR/root_mp" || true\n\n'
+    script += 'umount -R "$MNT_DIR/bootfs" || true\n'
+    script += 'umount -R "$MNT_DIR/rootfs" || true\n\n'
 
     script += '# --- 6. GENIMAGE EXECUTION ---\n'
     script += 'echo "Preparing genimage input directory..."\n'
@@ -247,8 +247,8 @@ function getScriptHeader(vars: any) {
 function getCleanupLogic() {
     let script = '# --- CLEANUP ---\n'
     script += 'sync\n'
-    script += 'umount -R "$MNT_DIR/root_mp" || true\n'
-    script += 'umount -R "$MNT_DIR/boot_mp" || true\n'
+    script += 'umount -R "$MNT_DIR/rootfs" || true\n'
+    script += 'umount -R "$MNT_DIR/bootfs" || true\n'
     script += 'if [ -n "$LOOP_DEV" ] && [ -b "$LOOP_DEV" ]; then\n' // Se esiste e se è un block device
     script += '    losetup -d "$LOOP_DEV" || true\n'
     script += 'fi\n\n'
