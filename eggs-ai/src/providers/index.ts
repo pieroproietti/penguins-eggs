@@ -7,6 +7,7 @@ import { AnthropicProvider } from './anthropic.js';
 import { MistralProvider } from './mistral.js';
 import { GroqProvider } from './groq.js';
 import { CustomProvider } from './custom.js';
+import { MyclawProvider } from './myclaw.js';
 
 export type { LLMProvider, Message, ProviderConfig, ProviderFactory } from './base.js';
 export { ProviderRegistry } from './base.js';
@@ -54,6 +55,18 @@ ProviderRegistry.register('custom', (config) => {
     config.baseUrl,
     config.model || 'default',
     config.apiKey,
+  );
+});
+
+ProviderRegistry.register('myclaw', (config) => {
+  const key = config.apiKey || process.env.OPENAI_API_KEY;
+  if (!key) throw new Error('API key required. Set OPENAI_API_KEY or pass --api-key.');
+  return new MyclawProvider(
+    key,
+    config.model,
+    config.baseUrl,
+    config.timeoutMs as number | undefined,
+    config.retryCount as number | undefined,
   );
 });
 

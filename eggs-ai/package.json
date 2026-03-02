@@ -12,7 +12,8 @@
     ".": "./dist/index.js",
     "./sdk": "./dist/sdk/index.js",
     "./providers": "./dist/providers/index.js",
-    "./bridge": "./dist/bridge/daemon-client.js"
+    "./bridge": "./dist/bridge/daemon-client.js",
+    "./engine": "./dist/engine/index.js"
   },
   "scripts": {
     "build": "tsc",

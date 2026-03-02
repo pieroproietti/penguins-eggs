@@ -389,11 +389,13 @@ program
     }
   });
 
-// ─── interactive chat ─────────────────────────────────────
+// ─── interactive chat (with session persistence) ──────────
 program
   .command('chat')
-  .description('Interactive chat session about penguins-eggs')
-  .action(async () => {
+  .description('Interactive chat with session persistence and optional agentic mode')
+  .option('--resume [sessionId]', 'Resume a previous session ("latest" for most recent)')
+  .option('--agentic', 'Enable agentic mode with tool use')
+  .action(async (cmdOpts) => {
     console.log(BANNER);
     console.log(chalk.dim('Interactive mode. Type "exit" or "quit" to leave.\n'));
 
@@ -401,41 +403,124 @@ program
     const provider = getProvider(opts);
     console.log(chalk.dim('Provider: ' + provider.name + '\n'));
 
+    const { runAgentLoop, sessionStore, InMemoryEventBus, SessionLogSubscriber, MetricsSubscriber, loadProfileBrief } = await import('./engine/index.js');
     const { default: inquirer } = await import('inquirer');
+
+    const bus = new InMemoryEventBus<import('./engine/index.js').AgentEvent>();
+    const sessionLog = new SessionLogSubscriber();
+    const metrics = new MetricsSubscriber();
+    bus.subscribe((e) => { sessionLog.handle(e).catch(() => {}); });
+    bus.subscribe((e) => { metrics.handle(e).catch(() => {}); });
+
+    const profileBrief = await loadProfileBrief();
+    if (profileBrief) console.log(chalk.dim('User profile loaded.\n'));
+
+    const useAgentic = cmdOpts.agentic ?? false;
     const history: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+
+    if (cmdOpts.resume) {
+      try {
+        const targetId = cmdOpts.resume === true || cmdOpts.resume === 'latest'
+          ? await sessionStore.findLatest() : cmdOpts.resume;
+        if (targetId) {
+          const session = await sessionStore.restore(targetId);
+          if (session) {
+            for (const msg of session.messages) {
+              if (msg.role === 'user' || msg.role === 'assistant') history.push({ role: msg.role, content: msg.content });
+            }
+            console.log(chalk.green(`Resumed session: ${targetId} (${history.length} messages)\n`));
+          } else { console.log(chalk.yellow('No previous session found. Starting fresh.\n')); }
+        }
+      } catch (err) { console.log(chalk.yellow(`Could not resume: ${err instanceof Error ? err.message : err}\n`)); }
+    }
 
     while (true) {
       const { question } = await inquirer.prompt<{ question: string }>([
-        {
-          type: 'input',
-          name: 'question',
-          message: chalk.cyan('eggs-ai>'),
-          validate: (input: string) => input.trim().length > 0 || 'Please enter a question',
-        },
+        { type: 'input', name: 'question', message: chalk.cyan('eggs-ai>'), validate: (input: string) => input.trim().length > 0 || 'Please enter a question' },
       ]);
-
-      if (['exit', 'quit', 'q'].includes(question.toLowerCase().trim())) {
-        console.log(chalk.dim('\nGoodbye!'));
-        break;
-      }
+      if (['exit', 'quit', 'q'].includes(question.toLowerCase().trim())) { console.log(chalk.dim('\nGoodbye!')); break; }
 
       try {
-        const answer = await withSpinner('Thinking...', () =>
-          askQuestion(provider, question, history),
-        );
+        let answer: string;
+        if (useAgentic) {
+          answer = await runAgentLoop(provider, question, {
+            bus, maxSteps: 10,
+            onEvent: (event) => {
+              if (event.type === 'tool_call') console.log(chalk.dim(`  [tool] ${event.tool}(${JSON.stringify(event.input).slice(0, 80)})`));
+              if (event.type === 'tool_result') console.log(chalk.dim(`  [result] ${event.ok ? 'ok' : 'error'}: ${event.output.slice(0, 100)}`));
+            },
+          });
+        } else {
+          answer = await withSpinner('Thinking...', () => askQuestion(provider, question, history));
+        }
         console.log('\n' + answer + '\n');
-
         history.push({ role: 'user', content: question });
         history.push({ role: 'assistant', content: answer });
-
-        // Keep history manageable
-        if (history.length > 20) {
-          history.splice(0, 2);
-        }
-      } catch (err) {
-        console.error(chalk.red(`\nError: ${err instanceof Error ? err.message : err}\n`));
-      }
+        if (history.length > 20) history.splice(0, 2);
+      } catch (err) { console.error(chalk.red(`\nError: ${err instanceof Error ? err.message : err}\n`)); }
     }
+    await sessionLog.flush();
+    await metrics.flush();
+  });
+
+// ─── agent (autonomous mode) ─────────────────────────────
+program
+  .command('agent')
+  .description('Run an autonomous agent task with multi-step tool use (powered by myclaw engine)')
+  .argument('<task>', 'Task description in plain English')
+  .option('--max-steps <n>', 'Maximum tool-use steps', '10')
+  .option('--dry-run', 'Show tool calls without executing destructive commands')
+  .action(async (task: string, cmdOpts) => {
+    console.log(BANNER);
+    const opts = program.opts();
+    const provider = getProvider(opts);
+    console.log(chalk.dim('Provider: ' + provider.name));
+    console.log(chalk.dim(`Mode: autonomous agent (max ${cmdOpts.maxSteps} steps)\n`));
+
+    const { runAgentLoop, InMemoryEventBus, SessionLogSubscriber, MetricsSubscriber, checkGate, loadProfileBrief } = await import('./engine/index.js');
+
+    const bus = new InMemoryEventBus<import('./engine/index.js').AgentEvent>();
+    const sessionLog = new SessionLogSubscriber();
+    const metricsSubscriber = new MetricsSubscriber();
+    bus.subscribe((e) => { sessionLog.handle(e).catch(() => {}); });
+    bus.subscribe((e) => { metricsSubscriber.handle(e).catch(() => {}); });
+
+    if (cmdOpts.dryRun) {
+      checkGate.setApprovalCallback(({ command, reason }) => {
+        console.log(chalk.yellow(`  [dry-run] Would execute: ${command}`));
+        console.log(chalk.yellow(`  [dry-run] Reason: ${reason}`));
+        return false;
+      });
+    } else {
+      const { default: inquirer } = await import('inquirer');
+      checkGate.setApprovalCallback(async ({ command, reason }) => {
+        console.log(chalk.yellow(`\n  Destructive command: ${command}`));
+        console.log(chalk.yellow(`  Reason: ${reason}`));
+        const { approved } = await inquirer.prompt<{ approved: boolean }>([
+          { type: 'confirm', name: 'approved', message: 'Allow this command?', default: false },
+        ]);
+        return approved;
+      });
+    }
+
+    const profileBrief = await loadProfileBrief();
+    const profileCtx = profileBrief ? `\n\nUser profile:\n${profileBrief}` : '';
+
+    const result = await runAgentLoop(provider, task + profileCtx, {
+      bus, maxSteps: parseInt(cmdOpts.maxSteps, 10),
+      onEvent: (event) => {
+        if (event.type === 'start') console.log(chalk.dim(`[step ${event.step}] Starting agent loop...`));
+        if (event.type === 'tool_call') console.log(chalk.cyan(`[step ${event.step}] ${event.tool}(${JSON.stringify(event.input).slice(0, 100)})`));
+        if (event.type === 'tool_result') console.log(chalk.dim(`  -> ${event.ok ? 'ok' : 'error'}: ${event.output.slice(0, 200)}`));
+        if (event.type === 'error') console.log(chalk.red(`[step ${event.step}] Error: ${event.error}`));
+        if (event.type === 'max_steps') console.log(chalk.yellow(`\nReached max steps (${event.step}). Generating final answer...`));
+      },
+    });
+
+    console.log('\n' + chalk.bold('Result:'));
+    console.log(result);
+    await sessionLog.flush();
+    await metricsSubscriber.flush();
   });
 
 program.parse();

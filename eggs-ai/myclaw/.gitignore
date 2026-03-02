@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.vscode
+.DS_Store
+__pycache__/
+*.py[cod]
+.myclawrc.json
+task/

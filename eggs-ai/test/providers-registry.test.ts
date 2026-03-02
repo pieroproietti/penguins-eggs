@@ -23,6 +23,7 @@ describe('ProviderRegistry', () => {
     expect(names).toContain('mistral');
     expect(names).toContain('groq');
     expect(names).toContain('custom');
+    expect(names).toContain('myclaw');
   });
 
   it('registers and retrieves a custom provider', () => {

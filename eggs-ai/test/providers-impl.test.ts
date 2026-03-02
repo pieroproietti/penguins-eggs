@@ -5,6 +5,7 @@ import { AnthropicProvider } from '../src/providers/anthropic.js';
 import { MistralProvider } from '../src/providers/mistral.js';
 import { GroqProvider } from '../src/providers/groq.js';
 import { CustomProvider } from '../src/providers/custom.js';
+import { MyclawProvider } from '../src/providers/myclaw.js';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -203,5 +204,109 @@ describe('CustomProvider', () => {
 
     const headers = mockFetch.mock.calls[0][1].headers;
     expect(headers).not.toHaveProperty('Authorization');
+  });
+});
+
+describe('MyclawProvider', () => {
+  it('returns plain text when no tool calls', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'myclaw response' } }] }),
+    });
+
+    const provider = new MyclawProvider('sk-test', 'gpt-4o-mini');
+    const result = await provider.chat([{ role: 'user', content: 'hello' }]);
+
+    expect(result).toBe('myclaw response');
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.openai.com/v1/chat/completions',
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          Authorization: 'Bearer sk-test',
+        }),
+      }),
+    );
+  });
+
+  it('serializes tool calls as JSON blocks', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: 'Let me check that.',
+            tool_calls: [
+              {
+                id: 'call_1',
+                type: 'function',
+                function: { name: 'eggs_inspect', arguments: '{}' },
+              },
+            ],
+          },
+        }],
+      }),
+    });
+
+    const provider = new MyclawProvider('sk-test', 'gpt-4o-mini');
+    const result = await provider.chat([{ role: 'user', content: 'check system' }]);
+
+    expect(result).toContain('Let me check that.');
+    expect(result).toContain('"tool": "eggs_inspect"');
+    expect(result).toContain('```json');
+  });
+
+  it('handles tool calls without text', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        choices: [{
+          message: {
+            content: '',
+            tool_calls: [
+              {
+                id: 'call_1',
+                type: 'function',
+                function: { name: 'eggs_run', arguments: '{"args":"status"}' },
+              },
+            ],
+          },
+        }],
+      }),
+    });
+
+    const provider = new MyclawProvider('sk-test');
+    const result = await provider.chat([{ role: 'user', content: 'run status' }]);
+
+    expect(result).toContain('"tool": "eggs_run"');
+    expect(result).toContain('"args": "status"');
+  });
+
+  it('uses custom baseUrl', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ choices: [{ message: { content: 'ok' } }] }),
+    });
+
+    const provider = new MyclawProvider('sk-test', 'gpt-4o', 'http://localhost:8080/v1');
+    await provider.chat([{ role: 'user', content: 'hi' }]);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'http://localhost:8080/v1/chat/completions',
+      expect.anything(),
+    );
+  });
+
+  it('throws on API error', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: false, status: 401, text: async () => 'Unauthorized' });
+    const provider = new MyclawProvider('bad-key');
+    await expect(provider.chat([{ role: 'user', content: 'hi' }]))
+      .rejects.toThrow('Myclaw provider error: 401');
+  });
+
+  it('isAvailable returns false on error', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('ECONNREFUSED'));
+    const provider = new MyclawProvider('sk-test');
+    expect(await provider.isAvailable()).toBe(false);
   });
 });
