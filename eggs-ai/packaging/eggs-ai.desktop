@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Eggs-AI
+Comment=AI agent for Penguins-Eggs
+Exec=eggs-ai chat
+Terminal=true
+Type=Application
+Categories=System;Utility;
+Keywords=eggs;iso;linux;ai;
