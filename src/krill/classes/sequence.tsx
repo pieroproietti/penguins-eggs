@@ -311,7 +311,8 @@ export default class Sequence {
       await this.executeStep("Locale", 70, async () => {
         if (this.distro.familyId === 'alpine' ||
           this.distro.familyId === 'archlinux' ||
-          this.distro.familyId === 'debian') {
+          this.distro.familyId === 'debian' ||
+          this.distro.familyId === 'gentoo') {
           await this.locale()
         }
       })
@@ -319,7 +320,7 @@ export default class Sequence {
       await this.executeStep("Settings keyboard", 71, () => this.keyboard())
 
       // Locale configuration
-      if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
+      if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian' || this.distro.familyId === 'gentoo') {
         await this.executeStep("Locale configuration", 72, async () => {
           await this.localeCfg()
           await exec("chroot " + this.installTarget + " locale-gen" + this.toNull)

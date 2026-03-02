@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>piero.proietti@gmail.com</email>
+		<name>Piero Proietti</name>
+	</maintainer>
+	<longdescription lang="en">
+		Penguins-eggs is a console tool that allows you to remaster your
+		system and redistribute it as live images on USB sticks or via PXE.
+		It supports creating bootable ISOs from a running system, with
+		optional encryption and both GUI (calamares) and CLI (krill) installers.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">pieroproietti/penguins-eggs</remote-id>
+		<bugs-to>https://github.com/pieroproietti/penguins-eggs/issues</bugs-to>
+	</upstream>
+</pkgmetadata>

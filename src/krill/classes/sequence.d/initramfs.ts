@@ -62,6 +62,16 @@ export default async function initramfs(this: Sequence) {
       break
     }
 
+    case 'gentoo': {
+      /**
+       * Gentoo: uses dracut or genkernel for initramfs
+       */
+      const cmd = `chroot ${this.installTarget} dracut -f`
+      await exec(cmd, this.echo)
+
+      break
+    }
+
     case 'opensuse': {
       /**
        * Opensuse
