@@ -18,7 +18,7 @@ import Sequence from '../../classes/sequence.js'
  */
 export default async function locale(this: Sequence) {
   const defaultLocale = this.language
-  if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'debian') {
+  if (this.distro.familyId === 'archlinux' || this.distro.familyId === 'chromiumos' || this.distro.familyId === 'debian' || this.distro.familyId === 'gentoo') {
     /**
      * influcence: - /etc/default/locale
      *             - /etc/locale.conf

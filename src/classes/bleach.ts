@@ -59,6 +59,17 @@ export default class Bleach {
         break
       }
 
+      case 'chromiumos':
+      case 'gentoo': {
+        // Clean Portage distfiles and binary packages cache
+        await exec(`rm -rf /var/tmp/portage/*`, echo)
+        await exec(`rm -rf /usr/portage/distfiles/*`, echo)
+        await exec(`rm -rf /var/cache/distfiles/*`, echo)
+        await exec(`rm -rf /var/cache/binpkgs/*`, echo)
+
+        break
+      }
+
       case 'opensuse': {
         await exec(`zypper clean`, echo)
 

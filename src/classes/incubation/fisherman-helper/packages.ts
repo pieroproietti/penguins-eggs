@@ -25,7 +25,7 @@ export function remove(distro: IDistro): string {
     packages.push('penguins-eggs', 'live-boot', 'live-boot-doc', 'live-boot-initramfs-tools', 'live-tools')
   }
 
-  if (distro.familyId === 'gentoo') {
+  if (distro.familyId === 'gentoo' || distro.familyId === 'chromiumos') {
     packages.push('penguins-eggs')
   }
 

@@ -16,6 +16,7 @@ import Distro from './distro.js'
 import Diversions from './diversions.js'
 import Alpine from './pacman.d/alpine.js'
 import Archlinux from './pacman.d/archlinux.js'
+import ChromiumOS from './pacman.d/chromiumos.js'
 import Debian from './pacman.d/debian.js'
 import Fedora from './pacman.d/fedora.js'
 import Gentoo from './pacman.d/gentoo.js'
@@ -119,6 +120,12 @@ export default class Pacman {
 
           break
         }
+
+        case 'chromiumos': {
+          await ChromiumOS.calamaresInstall(verbose)
+
+          break
+        }
         // No default
       }
     }
@@ -168,6 +175,12 @@ export default class Pacman {
 
       case 'opensuse': {
         await Opensuse.calamaresPolicies(verbose)
+
+        break
+      }
+
+      case 'chromiumos': {
+        await ChromiumOS.calamaresPolicies(verbose)
 
         break
       }
@@ -221,6 +234,12 @@ export default class Pacman {
 
       case 'opensuse': {
         retVal = await Opensuse.calamaresRemove(verbose)
+
+        break
+      }
+
+      case 'chromiumos': {
+        retVal = await ChromiumOS.calamaresRemove(verbose)
 
         break
       }
@@ -307,6 +326,7 @@ export default class Pacman {
     execSync(`mkdir -p ${init}`)
     shx.cp(path.resolve(__dirname, '../../conf/README.md'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives.yaml'), confRoot)
+    shx.cp(path.resolve(__dirname, '../../conf/derivatives_chromiumos.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/derivatives_fedora.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/krill.yaml'), confRoot)
     shx.cp(path.resolve(__dirname, '../../conf/love.yaml'), confRoot)
@@ -600,6 +620,14 @@ export default class Pacman {
         break
       }
 
+      case 'chromiumos': {
+        const dest = '/etc/penguins-eggs.d/distros/chromiumos/'
+        const chromiumos = `${rootPen}/conf/distros/chromiumos/*`
+        await exec(`cp -r ${chromiumos} ${dest}`, echo)
+
+        break
+      }
+
       default: {
         if (this.distro().distroUniqueId === 'noble') {
           const dest = '/etc/penguins-eggs.d/distros/noble'
@@ -704,6 +732,14 @@ export default class Pacman {
 
         break
       }
+
+      case 'chromiumos': {
+        if (ChromiumOS.isInstalledWayland()) {
+          installed = true
+        }
+
+        break
+      }
       // No default
     }
 
@@ -769,6 +805,14 @@ export default class Pacman {
 
       case 'opensuse': {
         if (Opensuse.packageIsInstalled('xorg-x11-server')) {
+          installed = true
+        }
+
+        break
+      }
+
+      case 'chromiumos': {
+        if (ChromiumOS.isInstalledXorg()) {
           installed = true
         }
 
@@ -916,6 +960,12 @@ export default class Pacman {
 
         break
       }
+
+      case 'chromiumos': {
+        retVal = await ChromiumOS.packageInstall(packageName)
+
+        break
+      }
       // No default
     }
 
@@ -969,6 +1019,12 @@ export default class Pacman {
 
       case 'opensuse': {
         installed = Opensuse.packageIsInstalled(packageName)
+
+        break
+      }
+
+      case 'chromiumos': {
+        installed = ChromiumOS.packageIsInstalled(packageName)
 
         break
       }

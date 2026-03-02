@@ -278,6 +278,16 @@ export default class Update extends Command {
 
           break
         }
+
+        case 'chromiumos':
+        case 'gentoo': {
+          repo = 'gentoo'
+          filter = `penguins-eggs-*.tar.gz`
+          copy = `scp ${Tu.config.remoteUser}@${Tu.config.remoteHost}:${Tu.config.remotePathPackages}/${repo}/${filter} /tmp`
+          install = `cd /tmp && tar xzf ${filter} && cd penguins-eggs && ./install.sh`
+
+          break
+        }
         // No default
       }
     }
@@ -330,6 +340,13 @@ export default class Update extends Command {
 
       case 'opensuse': {
         cmd = String.raw`sudo zypper install penguins-eggs\zypper install --force penguins-eggs`
+
+        break
+      }
+
+      case 'chromiumos':
+      case 'gentoo': {
+        cmd = 'sudo emerge app-misc/penguins-eggs'
 
         break
       }

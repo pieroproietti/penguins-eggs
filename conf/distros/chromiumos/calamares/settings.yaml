@@ -1,0 +1,55 @@
+# ChromiumOS
+---
+# "local" is LIBDIR/calamares/modules with settings in SHARE/calamares/modules
+modules-search: [ local, /usr/lib/calamares/modules ]
+
+oem-setup: false
+disable-cancel: false
+disable-cancel-during-exec: false
+quit-at-end: false
+
+#
+# SEQUENCE
+#
+sequence:
+  # Phase 1 - prepare.
+  - show:
+      - welcome
+      - locale
+      - keyboard
+      - partition
+      - users
+      - summary
+
+  # Phase 2 - install.
+  - exec:
+      - partition
+      - mount
+      - unpackfs
+      - machineid
+      - fstab
+      - locale
+      - keyboard
+      - localecfg
+      - luksbootkeyfile
+      - dracutlukscfg
+      - users
+      - displaymanager
+      - networkcfg
+      - hwclock
+      - services-systemd
+      - dracut
+      - bootloader
+      - bootloaderspecification
+      - grubcfg
+      - packages
+      - removeuser
+      - umount
+
+  # Phase 3 - postinstall.
+  - show:
+      - finished
+
+branding: default
+prompt-install: false
+dont-chroot: false

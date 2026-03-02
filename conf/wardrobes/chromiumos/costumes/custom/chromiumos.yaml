@@ -1,0 +1,54 @@
+# Custom Chromium fork costume (template)
+# Clone a custom Chromium-based browser from a git repo and build/install it.
+#
+# Usage:
+#   eggs produce --cros-flavour custom --cros-browser-repo https://github.com/user/chromium-fork
+#
+# The repo is cloned to /opt/custom-browser-src and the build script is run.
+# Override this costume by placing a chromiumos.yaml in your wardrobe.
+---
+name: custom-chromiumos
+author: penguins-eggs
+description: ChromiumOS with a custom Chromium-based browser from a git repo
+release: "1.0"
+distributions:
+  - ChromiumOS
+  - Chromeos
+  - Brunch
+  - Gentoo
+reboot: false
+
+sequence:
+  repositories:
+    sources_list: []
+    sources_list_d: []
+    update: false
+    upgrade: false
+
+  packages:
+    - git
+    - wget
+    - curl
+    - xdg-utils
+
+  packages_python: []
+
+  accessories: []
+
+  cmds:
+    # The cros_flavour.ts module replaces CUSTOM_BROWSER_REPO at runtime
+    - mkdir -p /opt/custom-browser
+    - git clone --depth 1 CUSTOM_BROWSER_REPO /opt/custom-browser-src
+    # Try common build patterns
+    - >-
+      cd /opt/custom-browser-src &&
+      if [ -f build.sh ]; then bash build.sh;
+      elif [ -f Makefile ]; then make && make install DESTDIR=/opt/custom-browser;
+      elif [ -f setup.py ]; then python setup.py install --prefix=/opt/custom-browser;
+      else echo "No build script found. Place built binaries in /opt/custom-browser manually.";
+      fi
+
+finalize:
+  customize: false
+  cmds:
+    - echo "Custom ChromiumOS flavour installed"

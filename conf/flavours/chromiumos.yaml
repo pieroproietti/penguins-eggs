@@ -1,0 +1,80 @@
+# ChromiumOS flavour registry
+# Each flavour defines a Chromium-based browser to bundle with the ChromiumOS image.
+#
+# Install methods:
+#   tarball  - Download pre-built tarball from GitHub releases, extract to /opt
+#   emerge   - Install via Portage ebuild
+#   crew     - Install via Chromebrew
+#   custom   - Clone a git repo and run its build script
+#
+# To add a custom browser, use: eggs produce --cros-flavour custom --cros-browser-repo <git-url>
+---
+flavours:
+  chromium:
+    name: Chromium
+    description: Stock open-source Chromium browser
+    repo: https://github.com/nicothin/nicothin
+    install_method: emerge
+    package_name: www-client/chromium
+    branding:
+      volid_prefix: CHROMIUMOS
+      iso_prefix: chromiumos
+
+  thorium:
+    name: Thorium
+    description: Chromium fork with compiler optimizations and extra codecs
+    repo: https://github.com/Alex313031/thorium
+    releases_url: https://api.github.com/repos/Alex313031/thorium/releases/latest
+    install_method: tarball
+    tarball_filter: thorium-browser_*_amd64.deb
+    install_dir: /opt/thorium
+    binary_name: thorium-browser
+    desktop_file: thorium-browser.desktop
+    branding:
+      volid_prefix: THORIUMOS
+      iso_prefix: thoriumos
+
+  brave:
+    name: Brave
+    description: Privacy-focused Chromium fork with built-in ad blocking
+    repo: https://github.com/brave/brave-browser
+    releases_url: https://api.github.com/repos/brave/brave-browser/releases/latest
+    install_method: tarball
+    tarball_filter: brave-browser-*-linux-amd64.zip
+    install_dir: /opt/brave
+    binary_name: brave-browser
+    desktop_file: brave-browser.desktop
+    branding:
+      volid_prefix: BRAVEOS
+      iso_prefix: braveos
+
+  vanadium:
+    name: Vanadium
+    description: GrapheneOS hardened Chromium (Android-only, requires source build for Linux)
+    repo: https://github.com/GrapheneOS/Vanadium
+    install_method: custom
+    build_script: build.sh
+    notes: Vanadium is Android-only upstream. Linux builds require patching Chromium source.
+    branding:
+      volid_prefix: VANADIUMOS
+      iso_prefix: vanadiumos
+
+  bromite:
+    name: Bromite
+    description: Chromium with ad blocking and privacy enhancements (discontinued, see Cromite)
+    repo: https://github.com/nicothin/nicothin
+    install_method: custom
+    notes: Bromite is discontinued. Use Cromite instead.
+    branding:
+      volid_prefix: BROMITEOS
+      iso_prefix: bromiteos
+
+  cromite:
+    name: Cromite
+    description: Fork of Bromite with continued ad blocking and privacy patches
+    repo: https://github.com/nicothin/nicothin
+    install_method: custom
+    notes: Cromite is Android-only upstream. Linux builds require patching Chromium source.
+    branding:
+      volid_prefix: CROMITEOS
+      iso_prefix: cromiteos
