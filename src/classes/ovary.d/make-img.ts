@@ -163,7 +163,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += '  kernel /vmlinuz-6.6.63\n'
     script += '  initrd /initrd.img-6.6.63\n'
     script += '  fdt /boot/spacemit/$DTB_NAME\n'
-    script += '  append boot=live components rw earlycon=sbi earlyprintk plymouth.ignore-serial-consoles plymouth.prefer-fbcon console=tty1 loglevel=8 clk_ignore_unused swiotlb=65536 workqueue.default_affinity_scope=system\n'
+    script += '  append boot=live console=tty0 earlycon=sbi components root=/dev/ram0 rw ignore_loglevel debug\n'
     script += 'EOF\n\n'
     */
 
@@ -173,6 +173,7 @@ async function makeImgRiscv64(this: Ovary, includeRootHome: boolean) {
     script += 'knl_name=vmlinuz-6.6.63\n'
     script += 'ramdisk_name=initrd.img-6.6.63\n'
     script += 'dtb_dir=spacemit/6.6.63\n'
+    script += 'bootargs=console=tty0 earlycon=sbi boot=live components root=/dev/ram0 rw ignore_loglevel debug\n'
     script += 'EOF\n\n'
 
     script += '# --- 4. POPOLAMENTO ROOTFS ---\n'
