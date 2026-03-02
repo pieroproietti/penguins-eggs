@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=eggs-gui
+Comment=Unified GUI for penguins-eggs
+Exec=eggs-tui
+Icon=eggs-gui
+Terminal=true
+Type=Application
+Categories=System;
+Keywords=eggs;iso;remaster;linux;
